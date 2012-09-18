@@ -11,7 +11,7 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../../src/viewer/Three.js"></script>
+	<script type="text/javascript" src="../../build/Three.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler-0.1.js"></script>
 	<title>Example</title>
 	<style>
@@ -205,7 +205,7 @@
 
 		function Resize ()
 		{
-			var fixSize = true;
+			var fixSize = false;
 			if (!fixSize) {
 				var margin = 10;
 				var canvas = document.getElementById ('example');
@@ -255,7 +255,7 @@
 </head>
 
 <body>
-	<canvas id="example" width="600" height="200" style="border : 1px solid black; margin : 10px;"></canvas>
+	<canvas id="example" width="600" height="200"></canvas>
 </body>
 
 </html>
