@@ -1,0 +1,58 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<script type="text/javascript" src="../../src/viewer/Three.js"></script>
+	<script type="text/javascript" src="../../build/jsmodeler-0.1.js"></script>
+	<title>Example</title>
+	<script type="text/javascript">
+		
+		function Load ()
+		{
+			var viewerSettings = {
+				'cameraEyePosition' : [-2.0, -1.5, 1.0],
+				'cameraCenterPosition' : [0.0, 0.0, 0.0],
+				'cameraUpVector' : [0.0, 0.0, 1.0],
+				'fieldOfView' : 45.0,
+				'nearClippingPlane' : 0.1,
+				'farClippingPlane' : 1000.0,
+				'lightAmbientColor' : [0.5, 0.5, 0.5],
+				'lightDiffuseColor' :	[0.8, 0.8, 0.8]
+			};
+
+			var viewer = new JSM.Viewer ();
+			viewer.Start ('example', viewerSettings);
+
+			var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
+
+			var meshes = JSM.ConvertBodyToThreeMeshes (body);
+			for (var i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}		
+
+			viewer.Draw ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+
+	</script>
+
+</head>
+
+<body>
+	<canvas id="example" width="1000" height="500"></canvas>
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/demo.css">
+	<script type="text/javascript" src="../../src/viewer/Three.js"></script>
+	<script type="text/javascript" src="../../build/jsmodeler-0.1.js"></script>
+	<script type="text/javascript" src="include/editor.js"></script>
+	<script type="text/javascript" src="include/demo.js"></script>
+	<title>Example</title>
+	<script type="text/javascript">
+		
+		var demo = null;
+		
+		function RunHash ()
+		{
+			var module = window.location.hash.substr (1);
+			switch (module) {
+				case 'cuboid':
+					demo.GenerateCuboidUI ();
+					demo.GenerateCuboid ();
+					break;
+
+				case 'sphere':
+					demo.GenerateSphereUI ();
+					demo.GenerateSphere ();
+					break;
+
+				case 'cylinder':
+					demo.GenerateCylinderUI ();
+					demo.GenerateCylinder ();
+					break;
+
+				case 'cone':
+					demo.GenerateConeUI ();
+					demo.GenerateCone ();
+					break;
+
+				case 'torus':
+					demo.GenerateTorusUI ();
+					demo.GenerateTorus ();
+					break;
+
+				case 'polytorus':
+					demo.GeneratePolyTorusUI ();
+					demo.GeneratePolyTorus ();
+					break;
+
+				case 'prism':
+					demo.GeneratePrismUI ();
+					demo.GeneratePrism ();
+					break;
+
+				case 'prismshell':
+					demo.GeneratePrismShellUI ();
+					demo.GeneratePrismShell ();
+					break;
+
+				case 'revolved':
+					demo.GenerateRevolvedUI ();
+					demo.GenerateRevolved ();
+					break;
+
+				case 'solids':
+					demo.GenerateSolidUI ();
+					demo.GenerateSolid ('Tetrahedron');
+					break;
+
+				case 'function':
+					demo.GenerateFunctionUI ();
+					demo.GenerateFunction ('Tetrahedron');
+					break;
+
+				default:
+					demo.GenerateCuboidUI ();
+					demo.GenerateCuboid ();
+					break;
+			}
+			
+			demo.Draw ();	
+		}
+
+		function Resize ()
+		{
+			var margin = 20;
+			var canvas = document.getElementById ('demo');
+			var header = document.getElementById ('header');
+			var menu = document.getElementById ('menu');
+			var left = document.getElementById ('left');
+			
+			canvas.width = document.body.clientWidth - left.clientWidth - 2.0 * margin;
+			canvas.height = document.body.clientHeight - header.clientHeight - menu.clientHeight - 2.0 * margin;
+
+			if (demo != null) {
+				demo.Resize ();
+			}
+		}
+
+		function Load ()
+		{
+			demo = new JSMDemo ();
+			if (!demo.Initialize ('demo', 'leftmenu')) {
+				var leftDiv = document.getElementById ('left');
+				leftDiv.innerHTML = 'Your browser does not support WebGL. Use a real browser.';
+				return;
+			}
+
+			window.onresize = Resize;
+			window.onhashchange = RunHash;
+			
+			Resize ();
+			RunHash ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+
+	</script>
+
+</head>
+
+<body>
+	<div id="header">
+		<span id="headerbig">JSModeler</span>
+		<span id="headersmall">demonstration</span>
+	</div>
+	<div id="menu">
+		<a href="demonstration.html#cuboid">cuboid</a> | 
+		<a href="demonstration.html#sphere">sphere</a> | 
+		<a href="demonstration.html#cylinder">cylinder</a> | 
+		<a href="demonstration.html#cone">cone</a> | 
+		<a href="demonstration.html#torus">torus</a> | 
+		<a href="demonstration.html#polytorus">polytorus</a> | 
+		<a href="demonstration.html#prism">prism</a> | 
+		<a href="demonstration.html#prismshell">prismshell</a> | 
+		<a href="demonstration.html#revolved">revolved</a> |  
+		<a href="demonstration.html#solids">solids</a> |  
+		<a href="demonstration.html#function">function</a>  
+	</div>
+	<div id="left">
+		<div id="leftmenu" class="leftbox">
+		</div>
+		<div class="leftbox">
+			<a href="#">go to project home page</a>
+		</div>
+	</div>
+	<div id="right">
+		<canvas id="demo" width="1000" height="500"></canvas>
+	</div>
+</body>
+
+</html>

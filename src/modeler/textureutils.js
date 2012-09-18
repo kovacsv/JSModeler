@@ -1,0 +1,218 @@
+JSM.CalculatePlanarTextureCoord = function (coord, system)
+{
+	var result = new JSM.Coord2D ();
+
+	var e1 = JSM.VectorNormalize (system.e1);
+	var e2 = JSM.VectorNormalize (system.e2);
+	var e3 = JSM.VectorNormalize (system.e3);
+
+	var xyPlane = new JSM.Plane ();
+	var xzPlane = new JSM.Plane ();
+	var yzPlane = new JSM.Plane ();
+
+	xyPlane.SetFromCoordAndDirection (system.origo, e3);
+	xzPlane.SetFromCoordAndDirection (system.origo, e2);
+	yzPlane.SetFromCoordAndDirection (system.origo, e1);
+	
+	var projected = JSM.ProjectCoordToPlane (coord, xyPlane);
+	result.x = JSM.CoordPlaneSignedDistance (projected, xzPlane);
+	result.y = JSM.CoordPlaneSignedDistance (projected, yzPlane);
+
+	return result;
+}
+
+JSM.CalculatePolygonPlanarTextureCoords = function (body, index)
+{
+	var result = [];
+	var polygon = body.GetPolygon (index);
+	var system = body.GetTextureProjectionCoords ();
+
+	var i, coord;
+	for (i = 0; i < polygon.VertexIndexCount (); i++) {
+		coord = body.GetVertexPosition (polygon.GetVertexIndex (i));
+		result.push (JSM.CalculatePlanarTextureCoord (coord, system));
+	}
+	
+	return result;
+}
+
+JSM.CalculateCubicTextureCoord = function (coord, normal, system)
+{
+	var result = new JSM.Coord2D ();
+
+	var e1 = JSM.VectorNormalize (system.e1);
+	var e2 = JSM.VectorNormalize (system.e2);
+	var e3 = JSM.VectorNormalize (system.e3);
+
+	var correctPlane = -1;
+	var maxProduct = 0.0;
+	
+	var i, currentDirection, product;
+	for (i = 0; i < 3; i++) {
+		if (i === 0) {
+			currentDirection = e1;
+		} else if (i === 1) {
+			currentDirection = e2;
+		} else if (i === 2) {
+			currentDirection = e3;
+		}
+
+		product = Math.abs (JSM.VectorDot (normal, currentDirection));
+		if (JSM.IsGreater (product, maxProduct)) {
+			correctPlane = i;
+			maxProduct = product;
+		}
+	}
+
+	if (correctPlane === -1) {
+		return result;
+	}
+
+	var planeSystem = null;
+	if (correctPlane === 0) {
+		planeSystem = new JSM.CoordSystem (
+			system.origo,
+			e3,
+			e2,
+			JSM.VectorMultiply (e1, -1)
+		);
+	} else if (correctPlane === 1) {
+		planeSystem = new JSM.CoordSystem (
+			system.origo,
+			e3,
+			e1,
+			e2
+		);
+	} else if (correctPlane === 2) {
+		planeSystem = new JSM.CoordSystem (
+			system.origo,
+			e2,
+			e1,
+			JSM.VectorMultiply (e3, -1)
+		);
+	}
+	
+	if (planeSystem === null) {
+		return result;
+	}
+
+	return JSM.CalculatePlanarTextureCoord (coord, planeSystem);
+}
+
+JSM.CalculatePolygonCubicTextureCoords = function (body, index, normal)
+{
+	var result = [];
+	var polygon = body.GetPolygon (index);
+	var system = body.GetTextureProjectionCoords ();
+
+	var i, coord;
+	for (i = 0; i < polygon.VertexIndexCount (); i++) {
+		coord = body.GetVertexPosition (polygon.GetVertexIndex (i));
+		result.push (JSM.CalculateCubicTextureCoord (coord, normal, system));
+	}
+	
+	return result;
+}
+
+JSM.CalculateCylindricalTextureCoord = function (coord, normal, system)
+{
+	var result = new JSM.Coord2D ();
+
+	var e3Direction = JSM.VectorNormalize (system.e3);
+	if (JSM.VectorsAreCollinear (e3Direction, normal)) {
+		result = JSM.CalculateCubicTextureCoord (coord, normal, system);
+		return [result, 0.0];
+	}
+
+	var baseLine = new JSM.Line (system.origo, e3Direction);
+	var projectedCoord = JSM.ProjectCoordToLine (coord, baseLine);
+	var projectedDistance = JSM.CoordSignedDistance (system.origo, projectedCoord, system.e3);
+
+	var e1Direction = JSM.VectorNormalize (system.e1);
+	var coordDirection = JSM.CoordSub (coord, projectedCoord);
+	var angle = JSM.GetVectorsFullAngle (e1Direction, coordDirection, e3Direction);
+	var radius = JSM.VectorLength (system.e1);
+
+	result.x = angle * radius;
+	result.y = projectedDistance;
+	return [result, angle];
+}
+
+JSM.CalculatePolygonCylindricalTextureCoords = function (body, index, normal)
+{
+	var result = [];
+	var angles = [];
+
+	var polygon = body.GetPolygon (index);
+	var system = body.GetTextureProjectionCoords ();
+
+	var angle = 0;
+	var i, j, coord, textureValues;
+	for (i = 0; i < polygon.VertexIndexCount (); i++) {
+		coord = body.GetVertexPosition (polygon.GetVertexIndex (i));
+		textureValues = JSM.CalculateCylindricalTextureCoord (coord, normal, system);
+		result.push (textureValues[0]);
+		angles.push (textureValues[1]);
+	}
+
+	var e3Direction = JSM.VectorNormalize (system.e3);
+	if (JSM.VectorsAreCollinear (e3Direction, normal)) {
+		return result;
+	}
+	
+	var needRepair = false;
+	for (i = 0; i < angles.length; i++) {
+		for (j = i + 1; j < angles.length; j++) {
+			if (JSM.IsGreater (Math.abs (angles[i] - angles[j]), Math.PI)) {
+				needRepair = true;
+				break;
+			}
+		}
+		if (needRepair) {
+			break;
+		}
+	}
+
+	if (needRepair) {
+		var radius = JSM.VectorLength (system.e1);
+		for (i = 0; i < angles.length; i++) {
+			if (JSM.IsLower (angles[i], Math.PI)) {
+				result[i].x = radius * (angles[i] + 2.0 * Math.PI);
+			}
+		}
+	}
+	
+	return result;
+}
+
+JSM.CalculatePolygonTextureCoords = function (body, polygonNormals, index)
+{
+	var result = [];
+	var projection = body.GetTextureProjectionType ();
+	var system = body.GetTextureProjectionCoords ();
+	var polygon = body.GetPolygon (index);
+	var normal = polygonNormals[index];
+
+	if (projection === 'Planar') {
+		result = JSM.CalculatePolygonPlanarTextureCoords (body, index);
+	} else if (projection === 'Cubic') {
+		result = JSM.CalculatePolygonCubicTextureCoords (body, index, normal);
+	} else if (projection === 'Cylindrical') {
+		result = JSM.CalculatePolygonCylindricalTextureCoords (body, index, normal);
+	}
+
+	return result;
+}
+
+JSM.CalculateBodyTextureCoords = function (body)
+{
+	var result = [];
+	var system = body.GetTextureProjectionCoords ();
+	var polygonNormals = JSM.CalculateBodyPolygonNormals (body);
+	
+	var i, j, polygon, coord;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		result[i] = JSM.CalculatePolygonTextureCoords (body, polygonNormals, i);
+	}
+	return result;
+};
