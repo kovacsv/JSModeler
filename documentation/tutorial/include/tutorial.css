@@ -1,0 +1,61 @@
+html, body
+{
+	color : #000000;
+	background : #ffffff;
+	font-size : 12px;
+	font-family : Arial, cursive;
+}
+
+#frame
+{
+	width : 620px;
+	margin : 20px auto;
+}
+
+div.title1
+{
+	font-size : 25px;
+	margin-top : 60px;
+	margin-bottom : 40px;
+	padding-bottom : 10px;
+	border-bottom : 1px solid #000000;
+}
+
+div.title2
+{
+	font-size : 20px;
+	margin-top : 40px;
+	margin-bottom : 20px;
+}
+
+div.demo
+{
+	text-align : center;
+	margin : 10px 0px;
+	padding : 10px;
+	border : 1px dotted #cccccc;
+}
+
+ul li
+{
+	margin : 10px 0px;
+}
+
+pre
+{
+	margin : 10px 0px;
+	padding : 10px;
+	border : 1px dotted #cccccc;
+}
+
+a
+{
+	color : #225588;
+	background : transparent;
+	text-decoration : none;
+}
+
+a:hover
+{
+	text-decoration : underline;
+}
