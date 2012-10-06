@@ -14,16 +14,16 @@ JSM.ConvertRawDataToThreeMeshes = function (rawData, textureLoadedCallback)
 			
 			var ambientColor = new THREE.Color ();
 			var diffuseColor = new THREE.Color ();
+			var specularColor = new THREE.Color ();
 			ambientColor.setRGB (materialData['ambient'][0], materialData['ambient'][1], materialData['ambient'][2]);
 			diffuseColor.setRGB (materialData['diffuse'][0], materialData['diffuse'][1], materialData['diffuse'][2]);
+			specularColor.setRGB (materialData['specular'][0], materialData['specular'][1], materialData['specular'][2]);
 
-			var material = new THREE.MeshLambertMaterial ({
-					ambient : ambientColor.getHex (),
-					color : diffuseColor.getHex ()
-				}
-			);
-			
 			if (textureName !== undefined) {
+				ambientColor.setRGB (1.0, 1.0, 1.0);
+				diffuseColor.setRGB (1.0, 1.0, 1.0);
+				specularColor.setRGB (1.0, 1.0, 1.0);
+				
 				if (textureOffset === undefined) {
 					textureOffset = [0.0, 0.0];
 				}
@@ -31,7 +31,13 @@ JSM.ConvertRawDataToThreeMeshes = function (rawData, textureLoadedCallback)
 					textureScale = [1.0, 1.0];
 				}
 			}
-
+			
+			var material = new THREE.MeshLambertMaterial ({
+					ambient : ambientColor.getHex (),
+					color : diffuseColor.getHex ()
+				}
+			);
+			
 			if (materialData['opacity'] !== 1.0) {
 				material.opacity = materialData['opacity'];
 				material.transparent = true;
@@ -43,6 +49,7 @@ JSM.ConvertRawDataToThreeMeshes = function (rawData, textureLoadedCallback)
 						textureLoadedCallback ();
 					}
 				});
+				
 				texture.wrapS = THREE.RepeatWrapping;
 				texture.wrapT = THREE.RepeatWrapping;
 				material.map = texture;
