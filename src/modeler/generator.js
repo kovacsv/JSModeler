@@ -381,7 +381,6 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 		result.AddVertex (new JSM.BodyVertex (offseted));
 	}
 
-
 	var top, ntop;
 	for (i = 0; i < count; i++) {
 		curr = i;
@@ -413,6 +412,123 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 
 	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolygon[1], basePolygon[0]));
 	var origo = new JSM.Coord (basePolygon[0].x, basePolygon[0].y, basePolygon[0].z);
+	var e3 = JSM.VectorNormalize (direction);
+	var e2 = JSM.VectorCross (e3, firstDirection);
+	var e1 = JSM.VectorCross (e2, e3);
+
+	result.SetTextureProjectionType ('Cubic');
+	result.SetTextureProjectionCoords (new JSM.CoordSystem (
+		origo,
+		e1,
+		e2,
+		e3
+	));
+
+	return result;
+};
+
+JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withStartAndEnd, withTopAndBottom)
+{
+	var result = new JSM.Body ();
+	var count = basePolyLine.length;
+
+	var angles = [];
+	
+	var i, prev, curr, next;
+	var prevDir, nextDir, angle;
+	for (i = 0; i < count; i++) {
+		if (i === 0 || i === count - 1) {
+			angle = Math.PI / 2.0;
+		} else {
+			prev = i - 1;
+			curr = i;
+			next = i + 1;
+
+			nextDir = JSM.CoordSub (basePolyLine[next], basePolyLine[curr]);
+			prevDir = JSM.CoordSub (basePolyLine[prev], basePolyLine[curr]);
+			angle = JSM.GetVectorsAngle (nextDir, prevDir) / 2.0;
+			if (JSM.CoordTurnType (basePolyLine[prev], basePolyLine[curr], basePolyLine[next], direction) === 'Clockwise') {
+				angle = Math.PI - angle;
+			}
+		}
+		
+		angles.push (angle);
+	}
+
+	var innerBasePolyLine = [];
+	var distance, innerCoord, offsetDirection;
+	for (i = 0; i < count; i++) {
+		curr = i;
+		if (i === count - 1) {
+			offsetDirection = JSM.CoordSub (basePolyLine[curr - 1], basePolyLine[curr]);
+		} else {
+			next = (i + 1) % count;
+			offsetDirection = JSM.CoordSub (basePolyLine[curr], basePolyLine[next]);
+		}
+
+		angle = angles[curr];
+		distance = width / Math.sin (angle);
+		innerCoord = JSM.CoordOffset (basePolyLine[curr], offsetDirection, distance);
+		innerCoord = JSM.CoordRotate (innerCoord, direction, -(Math.PI - angle), basePolyLine[curr]);
+		innerBasePolyLine.push (innerCoord);
+	}
+
+	for (i = 0; i < count; i++) {
+		result.AddVertex (new JSM.BodyVertex (basePolyLine[i]));
+	}
+
+	for (i = 0; i < count; i++) {
+		result.AddVertex (new JSM.BodyVertex (innerBasePolyLine[i]));
+	}
+
+	var offseted;
+	for (i = 0; i < count; i++) {
+		offseted = JSM.CoordOffset (basePolyLine[i], direction, height);
+		result.AddVertex (new JSM.BodyVertex (offseted));
+	}
+
+	for (i = 0; i < count; i++) {
+		offseted = JSM.CoordOffset (innerBasePolyLine[i], direction, height);
+		result.AddVertex (new JSM.BodyVertex (offseted));
+	}
+
+	var top, ntop;
+	for (i = 0; i < count - 1; i++) {
+		curr = i;
+		next = curr + 1;
+		top = curr + 2 * count;
+		ntop = top + 1;
+		result.AddPolygon (new JSM.BodyPolygon ([curr, next, ntop, top]));
+		result.AddPolygon (new JSM.BodyPolygon ([curr + count, top + count, ntop + count, next + count]));
+	}
+
+	if (withStartAndEnd) {
+		curr = 0;
+		next = curr + count;
+		top = curr + 2 * count;
+		ntop = curr + 3 * count;
+		result.AddPolygon (new JSM.BodyPolygon ([curr, top, ntop, next]));
+
+		curr = count - 1;
+		next = curr + count;
+		top = curr + 2 * count;
+		ntop = curr + 3 * count;
+		result.AddPolygon (new JSM.BodyPolygon ([curr, next, ntop, top]));
+	}
+
+	if (withTopAndBottom) {
+		for (i = 0; i < count - 1; i++) {
+			curr = i;
+			next = curr + 1;
+			top = i + count;
+			ntop = top + 1;
+			result.AddPolygon (new JSM.BodyPolygon ([curr, top, ntop, next]));
+			result.AddPolygon (new JSM.BodyPolygon ([curr + 2 * count, next + 2 * count, ntop + 2 * count, top + 2 * count]));
+		}
+	}
+
+	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolyLine[1], basePolyLine[0]));
+	var origo = new JSM.Coord (basePolyLine[0].x, basePolyLine[0].y, basePolyLine[0].z);
 	var e3 = JSM.VectorNormalize (direction);
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);

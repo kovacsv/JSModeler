@@ -430,6 +430,81 @@ JSMDemo.prototype =
 		this.AddBodyToViewer (body);
 	},
 
+	GenerateLineShellUI : function ()
+	{
+		this.ClearUI ();
+
+		this.GenerateUITitleElement ('Prismshell parameters');
+		this.GenerateUITextElement ('base polygon:');
+		this.GenerateUICanvasElement ('editorCanvas');
+		this.GenerateUITextElement ('height:');
+		this.GenerateUIInputElement ('1.0');
+		this.GenerateUITextElement ('width:');
+		this.GenerateUIInputElement ('0.1');
+		this.GenerateUITextElement ('other:');
+		this.GenerateUICheckBoxElement ('with start and end', true);
+		this.GenerateUICheckBoxElement ('with top and bottom', true);
+		
+		var settings = {
+			mode : 'Polyline',
+			color : '#00aa00'
+		};
+	
+		this.editor.Initialize ('editorCanvas', settings);
+		this.editor.AddCoord ([50, 50]);
+		this.editor.AddCoord ([50, 100]);
+		this.editor.AddCoord ([100, 100]);
+		this.editor.AddCoord ([100, 150]);
+		this.editor.AddCoord ([150, 150]);
+		this.editor.AddCoord ([150, 50]);
+		this.editor.AddCoord ([150, 50]);
+
+		var myThis = this;
+		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateLineShell ();});
+	},
+
+	GenerateLineShell : function ()
+	{
+		var ConvertValue = function (x, size, scale)
+		{
+			var half = size / 2.0;
+			var result = x - half;
+			return result * scale;
+		}
+
+		var body = new JSM.Body ();
+		if (!this.editor.finished || this.editor.coords.length <= 1) {
+			this.AddBodyToViewer (body);
+			return;
+		}
+		
+		var inputs = document.getElementsByTagName ('input');
+		var direction = new JSM.Vector (0.0, 0.0, 1.0);
+		var height = parseFloat (inputs[0].value);
+		var width = parseFloat (inputs[1].value);
+		var withStartAndEnd = inputs[2].checked;
+		var withTopAndBottom = inputs[3].checked;
+
+		if (width <= 0.0 || height <= 0.0) {
+			this.AddBodyToViewer (body);
+			return;
+		}
+		
+		var basePoints = [];
+		var coords = this.editor.coords;
+		
+		var i, coord, x, y;
+		for (i = 0; i < coords.length; i++) {
+			coord = coords[i];
+			x = ConvertValue (coord[0], this.editor.canvas.width, 1.0 / 100.0);
+			y = -ConvertValue (coord[1], this.editor.canvas.height, 1.0 / 100.0);
+			basePoints.push (new JSM.Coord (x, y, -height / 2.0));
+		}
+		
+		body = JSM.GenerateLineShell (basePoints, direction, height, width, withStartAndEnd, withTopAndBottom);
+		this.AddBodyToViewer (body);
+	},
+
 	GenerateRevolvedUI : function ()
 	{
 		this.ClearUI ();

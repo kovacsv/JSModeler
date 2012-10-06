@@ -148,7 +148,8 @@
 
 			var coord = new JSM.Coord (1.0, 2.0, 3.0);
 			var normal = new JSM.Coord (0.0, 1.0, 0.0);
-			var coord2D = JSM.GetCoord2DFromCoord (coord, normal);
+			var origo = new JSM.Coord (0.0, 0.0, 0.0);
+			var coord2D = JSM.GetCoord2DFromCoord (coord, origo, normal);
 			test.Assert (JSM.CoordIsEqual2D (coord2D, new JSM.Coord (1.0, -3.0)));
 
 			var coords = [
@@ -179,7 +180,6 @@
 			];
 			var normal3 = JSM.CalculateNormal (coords3);
 			test.Assert (JSM.CoordIsEqual (normal3, new JSM.Coord (0.0, 0.0, -1.0)));
-			
 			var vector1 = new JSM.Vector (1.0, 0.0, 0.0);
 			var vector2 = new JSM.Vector (0.0, 1.0, 0.0);
 			test.Assert (JSM.IsEqual (JSM.GetVectorsAngle (vector1, vector2), Math.PI / 2.0));
@@ -1359,6 +1359,23 @@
 			test.Assert (JSM.CoordIsEqual (prism.GetVertex (10).position, new JSM.Vector (0.0, 0.0, 1.0)));
 		}
 
+		function GenerateLineShellTest (test)
+		{
+			var basePoints = [
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (1.0, 0.0, 0.0),
+				new JSM.Coord (1.0, 1.0, 0.0),
+				new JSM.Coord (0.5, 2.0, 0.0),
+				new JSM.Coord (0.0, 1.0, 0.0)
+			];
+			
+			var direction = new JSM.Vector (0.0, 0.0, 1.0);
+			var shell = JSM.GenerateLineShell (basePoints, direction, 1.0, 0.1, true, true);
+			test.Assert (shell.VertexCount () == 20 && shell.PolygonCount () == 18);
+			test.Assert (JSM.CoordIsEqual (shell.GetVertex (0).position, new JSM.Vector (0.0, 0.0, 0.0)));
+			test.Assert (JSM.CoordIsEqual (shell.GetVertex (10).position, new JSM.Vector (0.0, 0.0, 1.0)));
+		}
+
 		function GenerateTorusTest (test)
 		{
 			//JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, innerSegmentation, isCurved)
@@ -1861,6 +1878,7 @@
 			test.AddTestCase (GenerateConeTest, 'GenerateConeTest');
 			test.AddTestCase (GeneratePrismTest, 'GeneratePrismTest');
 			test.AddTestCase (GeneratePrismShellTest, 'GeneratePrismShellTest');
+			test.AddTestCase (GenerateLineShellTest, 'GenerateLineShellTest');
 			test.AddTestCase (GenerateTorusTest, 'GenerateTorusTest');
 			test.AddTestCase (GenerateRuledTest, 'GenerateRuledTest');
 			test.AddTestCase (GenerateRevolvedTest, 'GenerateRevolvedTest');

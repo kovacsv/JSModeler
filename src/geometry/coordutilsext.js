@@ -30,9 +30,10 @@ JSM.PolarToCartesian = function (radius, theta)
 
 JSM.CoordTurnType = function (a, b, c, normal)
 {
-	var a2 = JSM.GetCoord2DFromCoord (a, normal);
-	var b2 = JSM.GetCoord2DFromCoord (b, normal);
-	var c2 = JSM.GetCoord2DFromCoord (c, normal);
+	var origo = new JSM.Coord (0.0, 0.0, 0.0);
+	var a2 = JSM.GetCoord2DFromCoord (a, origo, normal);
+	var b2 = JSM.GetCoord2DFromCoord (b, origo, normal);
+	var c2 = JSM.GetCoord2DFromCoord (c, origo, normal);
 	var turnType = JSM.CoordTurnType2D (a2, b2, c2);
 
 	var zNormal = new JSM.Vector (0.0, 0.0, 1.0);
@@ -88,12 +89,11 @@ JSM.CylindricalToCartesian = function (radius, theta, height)
 	return result;
 };
 
-JSM.GetCoord2DFromCoord = function (coord, normal)
+JSM.GetCoord2DFromCoord = function (coord, origo, normal)
 {
 	var zNormal = new JSM.Vector (0.0, 0.0, 1.0);
 	var axis = JSM.VectorCross (normal, zNormal);
 	var angle = JSM.GetVectorsAngle (normal, zNormal);
-	var origo = new JSM.Coord (0.0, 0.0, 0.0);
 
 	var rotated = JSM.CoordRotate (coord, axis, angle, origo);
 	return new JSM.Coord2D (rotated.x, rotated.y);

@@ -374,10 +374,11 @@ JSM.PolygonTriangulate = function (polygon)
 	var polygon2D = new JSM.Polygon2D ();
 	var normal = JSM.CalculateNormal (polygon.vertices);
 
+	var origo = new JSM.Coord (0.0, 0.0, 0.0);
 	var vertexCount = polygon.Count ();
 	var i, vertex;
 	for (i = 0; i < vertexCount; i++) {
-		vertex = JSM.GetCoord2DFromCoord (polygon.GetVertex (i), normal);
+		vertex = JSM.GetCoord2DFromCoord (polygon.GetVertex (i), origo, normal);
 		polygon2D.AddVertex (vertex.x, vertex.y);
 	}
 	
