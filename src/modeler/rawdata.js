@@ -34,7 +34,8 @@ JSM.ConvertRawDataToThreeMeshes = function (rawData, textureLoadedCallback)
 			
 			var material = new THREE.MeshLambertMaterial ({
 					ambient : ambientColor.getHex (),
-					color : diffuseColor.getHex ()
+					color : diffuseColor.getHex (),
+					side : THREE.DoubleSide
 				}
 			);
 			
@@ -94,7 +95,6 @@ JSM.ConvertRawDataToThreeMeshes = function (rawData, textureLoadedCallback)
 			}
 
 			var mesh = new THREE.Mesh (geometry, material);
-			mesh.doubleSided = true;
 			result.push (mesh);
 		};
 

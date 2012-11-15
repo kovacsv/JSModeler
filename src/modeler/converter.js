@@ -185,9 +185,9 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		if (materialIndex !== -1) {
 			material = new THREE.MeshLambertMaterial ({
 				ambient : materials.GetMaterial (materialIndex).ambient,
-				color : materials.GetMaterial (materialIndex).diffuse
-				}
-			);
+				color : materials.GetMaterial (materialIndex).diffuse,
+				side : THREE.DoubleSide
+			});
 			if (hasOpacity) {
 				material.opacity = materials.GetMaterial (materialIndex).opacity;
 				material.transparent = true;
@@ -206,13 +206,13 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		} else {
 			material = new THREE.MeshLambertMaterial ({
 				ambient : 0x00cc00,
-				color : 0x00cc00
+				color : 0x00cc00,
+				side : THREE.DoubleSide
 				}
 			);
 		}
 		
 		var mesh = new THREE.Mesh (geometry, material);
-		mesh.doubleSided = true;
 		meshes.push (mesh);
 	};
 
