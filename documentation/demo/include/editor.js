@@ -8,6 +8,7 @@ Editor = function ()
 	this.finished = null;
 	
 	this.settings = null;
+	this.enable = null;
 };
 
 Editor.prototype =
@@ -39,6 +40,7 @@ Editor.prototype =
 			if (settings.color != undefined) this.settings.color = settings.color;
 		}
 		
+		this.enable = true;
 		this.Draw ();
 		return true;
 	},
@@ -55,9 +57,18 @@ Editor.prototype =
 		this.coords.push (coord);
 		this.Draw ();
 	},
+
+	Enable : function (enable)
+	{
+		this.enable = enable;
+	},
 	
 	Draw : function ()
 	{
+		if (!this.enable) {
+			return false;
+		}
+	
 		this.context.clearRect (0, 0, this.canvas.width, this.canvas.height);
 		
 		this.context.fillStyle = '#ffffff';
@@ -150,6 +161,7 @@ Editor.prototype =
 
 	OnMouseDown : function (event)
 	{
+		this.enable = true;
 		if (this.finished) {
 			this.coords = [];
 			this.finished = false;
