@@ -112,6 +112,9 @@
 
 		function Load ()
 		{
+			window.onresize = Resize;
+			Resize ();
+
 			demo = new JSMDemo ();
 			if (!demo.Initialize ('demo', 'leftmenu')) {
 				var leftDiv = document.getElementById ('left');
@@ -119,10 +122,7 @@
 				return;
 			}
 
-			window.onresize = Resize;
 			window.onhashchange = RunHash;
-			
-			Resize ();
 			RunHash ();
 		}
 	
@@ -138,7 +138,7 @@
 <body>
 	<div id="header">
 		<span id="headerbig">JSModeler</span>
-		<span id="headersmall">demonstration</span>
+		<span id="headersmall">generator demonstration</span>
 	</div>
 	<div id="menu">
 		<a href="demonstration.html#cuboid">cuboid</a> | 

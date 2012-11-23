@@ -1,0 +1,77 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/demo.css">
+	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
+	<script type="text/javascript" src="include/editor.js"></script>
+	<script type="text/javascript" src="include/tridemo.js"></script>
+	<title>JSModeler demonstration</title>
+	<script type="text/javascript">
+		var demo = null;
+	
+		function Resize ()
+		{
+			var margin = 20;
+			var canvas = document.getElementById ('demo');
+			var header = document.getElementById ('header');
+			var left = document.getElementById ('left');
+			
+			canvas.width = document.body.clientWidth - left.clientWidth - 2.0 * margin;
+			canvas.height = document.body.clientHeight - header.clientHeight - 2.0 * margin;
+
+			if (demo != null) {
+				demo.Resize ();
+			}
+		}
+
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+
+			demo = new JSMTriangulationDemo ();
+			if (!demo.Initialize ('demo', 'leftmenu')) {
+				var leftDiv = document.getElementById ('left');
+				leftDiv.innerHTML = 'Your browser does not support WebGL. Use a real browser.';
+				return;
+			}
+			demo.GenerateTriangulationUI ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+
+	</script>
+
+</head>
+
+<body>
+	<div id="header">
+		<span id="headerbig">JSModeler</span>
+		<span id="headersmall">triangulation demonstration</span>
+	</div>
+	<div id="left">
+		<div id="leftmenu" class="leftbox">
+		</div>
+		<div class="leftbox">
+			<a href="https://github.com/kovacsv/JSModeler">go to project home page</a>
+		</div>
+	</div>
+	<div id="right">
+		<canvas id="demo" width="1000" height="500"></canvas>
+	</div>
+</body>
+
+</html>
