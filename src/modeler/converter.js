@@ -304,3 +304,123 @@ JSM.ConvertModelToThreeMeshes = function (model, materials, conversionData)
 
 	return meshes;
 }
+
+JSM.ConvertBodyContentToSTL = function (body, name, hasConvexPolygons)
+{
+	var AddLineToContent = function (line)
+	{
+		stlContent += line + '\n';
+	};
+
+	var AddTriangleToContent = function (normal, vertex1, vertex2, vertex3)
+	{
+		AddLineToContent ('\tfacet normal ' + normal.x + ' ' + normal.y + ' ' + normal.z);
+		AddLineToContent ('\t\touter loop');
+		AddLineToContent ('\t\t\tvertex ' + vertex1.x + ' ' + vertex1.y + ' ' + vertex1.z);
+		AddLineToContent ('\t\t\tvertex ' + vertex2.x + ' ' + vertex2.y + ' ' + vertex2.z);
+		AddLineToContent ('\t\t\tvertex ' + vertex3.x + ' ' + vertex3.y + ' ' + vertex3.z);
+		AddLineToContent ('\t\tendloop');
+		AddLineToContent ('\tendfacet');
+	};
+	
+	var AddPolygon = function (index)
+	{
+		var polygon = body.GetPolygon (index);
+		var count = polygon.VertexIndexCount ();
+		if (count < 3) {
+			return;
+		}
+		
+		var vertex1, vertex2, vertex3;
+		var normal1, normal2, normal3;
+		var uv1, uv2, uv3;
+
+		if (count === 3) {
+			var normal = JSM.CalculateBodyPolygonNormal (body, index);
+			vertex1 = body.GetVertex (polygon.GetVertexIndex (0)).position;
+			vertex2 = body.GetVertex (polygon.GetVertexIndex (1)).position;
+			vertex3 = body.GetVertex (polygon.GetVertexIndex (2)).position;
+			AddTriangleToContent (normal, vertex1, vertex2, vertex3);
+		} else {
+			var useTriangulation = true;
+			if (hasConvexPolygons !== undefined && hasConvexPolygons) {
+				useTriangulation = false;
+			}
+		
+			var i;
+			var normal = JSM.CalculateBodyPolygonNormal (body, index);
+			if (useTriangulation) {
+				var polygon3D = new JSM.Polygon ();
+				
+				var vertex;
+				for (i = 0; i < count; i++) {
+					vertex = body.GetVertex (polygon.vertices[i]);
+					polygon3D.AddVertex (vertex.position.x, vertex.position.y, vertex.position.z);
+				}
+				
+				var triangles = JSM.PolygonTriangulate (polygon3D, normal);
+				
+				var triangle;
+				for (i = 0; i < triangles.length; i++) {
+					triangle = triangles[i];
+					vertex1 = body.GetVertex (polygon.GetVertexIndex (triangle[0])).position;
+					vertex2 = body.GetVertex (polygon.GetVertexIndex (triangle[1])).position;
+					vertex3 = body.GetVertex (polygon.GetVertexIndex (triangle[2])).position;
+					AddTriangleToContent (normal, vertex1, vertex2, vertex3);
+				}
+			} else {
+				for (i = 0; i < count - 2; i++) {
+					vertex1 = body.GetVertex (polygon.GetVertexIndex (0)).position;
+					vertex2 = body.GetVertex (polygon.GetVertexIndex ((i + 1) % count)).position;
+					vertex3 = body.GetVertex (polygon.GetVertexIndex ((i + 2) % count)).position;
+					AddTriangleToContent (normal, vertex1, vertex2, vertex3);
+				}
+			}
+		}
+	};
+
+	var stlContent = '';
+
+	var i;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		AddPolygon (i);
+	}
+
+	return stlContent;
+}
+
+JSM.ConvertBodyToSTL = function (body, name, hasConvexPolygons)
+{
+	var AddLineToContent = function (line)
+	{
+		stlContent += line + '\n';
+	};
+
+	var stlContent = '';
+	
+	AddLineToContent ('solid ' + name);
+	stlContent += JSM.ConvertBodyContentToSTL (body, name, hasConvexPolygons);
+	AddLineToContent ('endsolid ' + name);
+	
+	return stlContent;
+}
+
+JSM.ConvertModelToSTL = function (model, name, hasConvexPolygons)
+{
+	var AddLineToContent = function (line)
+	{
+		stlContent += line + '\n';
+	};
+
+	var stlContent = '';
+
+	AddLineToContent ('solid ' + name);
+	var i, body;
+	for (i = 0; i < model.BodyCount (); i++) {
+		body = model.GetBody (i);
+		stlContent += JSM.ConvertBodyContentToSTL (body, name + (i + 1).toString (), hasConvexPolygons);
+	}
+	AddLineToContent ('endsolid ' + name);
+
+	return stlContent;
+}

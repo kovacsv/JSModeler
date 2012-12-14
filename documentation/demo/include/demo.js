@@ -1,5 +1,6 @@
 JSMDemo = function ()
 {
+	this.body = null;
 	this.viewer = null;
 	this.uiDiv = null;
 	this.editor = null;
@@ -55,14 +56,14 @@ JSMDemo.prototype =
 		var ySize = parseFloat (inputs[1].value);
 		var zSize = parseFloat (inputs[2].value);
 		
-		var body = new JSM.Body ();
+		this.body = new JSM.Body ();
 		if (xSize <= 0.0 || xSize <= 0.0 || xSize <= 0.0) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 		
-		body = JSM.GenerateCuboid (xSize, ySize, zSize);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GenerateCuboid (xSize, ySize, zSize);
+		this.AddBodyToViewer (this.body);
 	},
 
 	GenerateSphereUI : function ()
@@ -88,14 +89,14 @@ JSMDemo.prototype =
 		var segmentation = parseInt (inputs[1].value);
 		var curved = inputs[2].checked;
 		
-		var body = new JSM.Body ();
+		this.body = new JSM.Body ();
 		if (radius <= 0.0 || segmentation <= 1) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 
-		body = JSM.GenerateSphere (radius, segmentation, curved);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GenerateSphere (radius, segmentation, curved);
+		this.AddBodyToViewer (this.body);
 	},
 
 	GenerateCylinderUI : function ()
@@ -126,14 +127,14 @@ JSMDemo.prototype =
 		var withTopAndBottom = inputs[3].checked;
 		var curved = inputs[4].checked;
 		
-		var body = new JSM.Body ();
+		this.body = new JSM.Body ();
 		if (radius <= 0.0 || height <= 0.0 || segmentation <= 2) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 
-		body = JSM.GenerateCylinder (radius, height, segmentation, withTopAndBottom, curved);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GenerateCylinder (radius, height, segmentation, withTopAndBottom, curved);
+		this.AddBodyToViewer (this.body);
 	},
 
 	GenerateConeUI : function ()
@@ -167,14 +168,14 @@ JSMDemo.prototype =
 		var withTopAndBottom = inputs[4].checked;
 		var curved = inputs[5].checked;
 		
-		var body = new JSM.Body ();
+		this.body = new JSM.Body ();
 		if (topRadius < 0.0 || bottomRadius < 0.0 || (topRadius == 0.0 && bottomRadius == 0.0) || height <= 0.0 || segmentation <= 2) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 
-		body = JSM.GenerateCone (topRadius, bottomRadius, height, segmentation, withTopAndBottom, curved);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GenerateCone (topRadius, bottomRadius, height, segmentation, withTopAndBottom, curved);
+		this.AddBodyToViewer (this.body);
 	},
 
 	GenerateTorusUI : function ()
@@ -205,14 +206,14 @@ JSMDemo.prototype =
 		var innerSegmentation = parseInt (inputs[3].value);
 		var curved = inputs[4].checked;
 		
-		var body = new JSM.Body ();
+		this.body = new JSM.Body ();
 		if (outerRadius < 0.0 || innerRadius < 0.0 || outerSegmentation <= 2 || innerSegmentation <= 2) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 
-		body = JSM.GenerateTorus (outerRadius, innerRadius, outerSegmentation, innerSegmentation, curved);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GenerateTorus (outerRadius, innerRadius, outerSegmentation, innerSegmentation, curved);
+		this.AddBodyToViewer (this.body);
 	},
 
 	GeneratePolyTorusUI : function ()
@@ -256,9 +257,9 @@ JSMDemo.prototype =
 			return result * scale;
 		}
 
-		var body = new JSM.Body ();
+		this.body = new JSM.Body ();
 		if (!this.editor.finished || this.editor.coords.length <= 2) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 		
@@ -268,7 +269,7 @@ JSMDemo.prototype =
 		var curved = inputs[2].checked;
 
 		if (outerRadius <= 0.0 || outerSegmentation <= 2) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 		
@@ -283,8 +284,8 @@ JSMDemo.prototype =
 			basePoints.push (new JSM.Coord2D (x, y));
 		}
 
-		body = JSM.GeneratePolyTorus (basePoints, outerRadius, outerSegmentation, curved);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GeneratePolyTorus (basePoints, outerRadius, outerSegmentation, curved);
+		this.AddBodyToViewer (this.body);
 	},
 
 	GeneratePrismUI : function ()
@@ -326,9 +327,9 @@ JSMDemo.prototype =
 			return result * scale;
 		}
 
-		var body = new JSM.Body ();
+		this.body = new JSM.Body ();
 		if (!this.editor.finished || this.editor.coords.length <= 2) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 		
@@ -338,7 +339,7 @@ JSMDemo.prototype =
 		var withTopAndBottom = inputs[1].checked;
 
 		if (height <= 0.0) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 		
@@ -353,8 +354,8 @@ JSMDemo.prototype =
 			basePoints.push (new JSM.Coord (x, y, -height / 2.0));
 		}
 
-		body = JSM.GeneratePrism (basePoints, direction, height, withTopAndBottom);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GeneratePrism (basePoints, direction, height, withTopAndBottom);
+		this.AddBodyToViewer (this.body);
 	},
 
 	GeneratePrismShellUI : function ()
@@ -398,9 +399,9 @@ JSMDemo.prototype =
 			return result * scale;
 		}
 
-		var body = new JSM.Body ();
+		this.body = new JSM.Body ();
 		if (!this.editor.finished || this.editor.coords.length <= 2) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 		
@@ -411,7 +412,7 @@ JSMDemo.prototype =
 		var withTopAndBottom = inputs[2].checked;
 
 		if (width <= 0.0 || height <= 0.0) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 		
@@ -426,8 +427,8 @@ JSMDemo.prototype =
 			basePoints.push (new JSM.Coord (x, y, -height / 2.0));
 		}
 		
-		body = JSM.GeneratePrismShell (basePoints, direction, height, width, withTopAndBottom);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GeneratePrismShell (basePoints, direction, height, width, withTopAndBottom);
+		this.AddBodyToViewer (this.body);
 	},
 
 	GenerateLineShellUI : function ()
@@ -472,9 +473,9 @@ JSMDemo.prototype =
 			return result * scale;
 		}
 
-		var body = new JSM.Body ();
+		this.body = new JSM.Body ();
 		if (!this.editor.finished || this.editor.coords.length <= 1) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 		
@@ -486,7 +487,7 @@ JSMDemo.prototype =
 		var withTopAndBottom = inputs[3].checked;
 
 		if (width <= 0.0 || height <= 0.0) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 		
@@ -501,8 +502,8 @@ JSMDemo.prototype =
 			basePoints.push (new JSM.Coord (x, y, -height / 2.0));
 		}
 		
-		body = JSM.GenerateLineShell (basePoints, direction, height, width, withStartAndEnd, withTopAndBottom);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GenerateLineShell (basePoints, direction, height, width, withStartAndEnd, withTopAndBottom);
+		this.AddBodyToViewer (this.body);
 	},
 
 	GenerateRevolvedUI : function ()
@@ -555,9 +556,9 @@ JSMDemo.prototype =
 			return -result * scale;
 		}
 
-		var body = new JSM.Body ();
+		this.body = new JSM.Body ();
 		if (!this.editor.finished || this.editor.coords.length <= 1) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 		
@@ -569,7 +570,7 @@ JSMDemo.prototype =
 		var curved = inputs[3].checked;
 
 		if (segmentation <= 2) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 		
@@ -584,8 +585,8 @@ JSMDemo.prototype =
 			polyLine.push (new JSM.Coord (x, 0.0, z));
 		}
 
-		body = JSM.GenerateRevolved (polyLine, axis, angle, segmentation, withTopAndBottom, curved);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GenerateRevolved (polyLine, axis, angle, segmentation, withTopAndBottom, curved);
+		this.AddBodyToViewer (this.body);
 	},
 
 	GenerateSolidUI : function ()
@@ -617,8 +618,8 @@ JSMDemo.prototype =
 	
 	GenerateSolid : function (name)
 	{
-		body = JSM.GenerateSolidWithRadius (name, 1.0);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GenerateSolidWithRadius (name, 1.0);
+		this.AddBodyToViewer (this.body);
 	},
 
 	GenerateFunctionUI : function ()
@@ -658,9 +659,9 @@ JSMDemo.prototype =
 		var segmentation = parseInt (inputs[5].value);
 		var curved = inputs[6].checked;
 		
-		var body = new JSM.Body ();
+		this.body = new JSM.Body ();
 		if (xMax <= xMin || yMax <= yMin || segmentation <= 1) {
-			this.AddBodyToViewer (body);
+			this.AddBodyToViewer (this.body);
 			return;
 		}
 
@@ -668,8 +669,8 @@ JSMDemo.prototype =
 		var intervalMax = new JSM.Coord2D (xMax, yMax);
 		
 		var myThis = this;
-		body = JSM.GenerateFunctionSurface (function (x, y) { return myThis.TheFunction (x, y); }, intervalMin, intervalMax, segmentation, curved);
-		this.AddBodyToViewer (body);
+		this.body = JSM.GenerateFunctionSurface (function (x, y) { return myThis.TheFunction (x, y); }, intervalMin, intervalMax, segmentation, curved);
+		this.AddBodyToViewer (this.body);
 	},
 
 	ClearUI : function ()
@@ -766,7 +767,7 @@ JSMDemo.prototype =
 		this.viewer.RemoveMeshes ();
 		for (var i = 0; i < meshes.length; i++) {
 			this.viewer.AddMesh (meshes[i]);
-		}	
+		}
 	},
 	
 	Resize : function ()

@@ -66,6 +66,13 @@ div.leftbox
 	margin : 10px;
 }
 
+#stltext
+{
+	position : absolute;
+	display : none;
+	border : 1px solid #e5e5e5;
+}
+
 div.title
 {
 	font-weight : bold;

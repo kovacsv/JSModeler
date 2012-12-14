@@ -94,9 +94,28 @@
 			demo.Draw ();	
 		}
 
+		function ExportToSTL ()
+		{
+			var stltext = document.getElementById ('stltext');
+			var stlContent = JSM.ConvertBodyToSTL (demo.body, 'JSModelerModel');
+			stltext.style.display = 'block';
+			stltext.value = stlContent;
+		}
+		
+		function DocumentClick (clickEvent)
+		{
+			var target = clickEvent.target;
+			var stltext = document.getElementById ('stltext');
+			if (target != stltext) {
+				if (stltext.style.display !== 'none') {
+					stltext.style.display = 'none';
+				}
+			}
+		}			
 		function Resize ()
 		{
 			var margin = 20;
+			var floatingMargin = 100;
 			var canvas = document.getElementById ('demo');
 			var header = document.getElementById ('header');
 			var menu = document.getElementById ('menu');
@@ -108,6 +127,12 @@
 			if (demo != null) {
 				demo.Resize ();
 			}
+			
+			var stltext = document.getElementById ('stltext');
+			stltext.style.left = floatingMargin + 'px';
+			stltext.style.top = floatingMargin + 'px';
+			stltext.style.width = (document.body.clientWidth - 2.0 * floatingMargin) + 'px';
+			stltext.style.height = (document.body.clientHeight - 2.0 * floatingMargin) + 'px';
 		}
 
 		function Load ()
@@ -123,6 +148,7 @@
 			}
 
 			window.onhashchange = RunHash;
+			document.onclick = DocumentClick;
 			RunHash ();
 		}
 	
@@ -158,12 +184,14 @@
 		<div id="leftmenu" class="leftbox">
 		</div>
 		<div class="leftbox">
+			<a href="javascript:ExportToSTL ();">export model to stl</a><br>
 			<a href="https://github.com/kovacsv/JSModeler">go to project home page</a>
 		</div>
 	</div>
 	<div id="right">
 		<canvas id="demo" width="1000" height="500"></canvas>
 	</div>
+	<textarea id="stltext"></textarea>
 </body>
 
 </html>

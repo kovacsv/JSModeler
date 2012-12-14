@@ -759,11 +759,112 @@ JSM.GenerateRuledFromSectors = function (aSector, bSector, lineSegmentation, mes
 
 	var polygon;
 	for (i = 0; i < polygons.length; i++) {
-		vertices = polygons[i];
-		polygon = new JSM.BodyPolygon (vertices);
+		vertexIndices = polygons[i];
+		polygon = new JSM.BodyPolygon (vertexIndices);
 		if (isCurved) {
 			polygon.SetCurveGroup (0);
 		}
+		result.AddPolygon (polygon);
+	}
+
+	result.SetTextureProjectionType ('Cubic');
+	result.SetTextureProjectionCoords (new JSM.CoordSystem (
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (1.0, 0.0, 0.0),
+		new JSM.Coord (0.0, 1.0, 0.0),
+		new JSM.Coord (0.0, 0.0, 1.0)
+	));
+
+	return result;
+};
+
+JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegmentation, meshSegmentation, isCurved, height)
+{
+	var result = new JSM.Body ();
+
+	var aCoords = [];
+	var bCoords = [];
+	JSM.GetLineSegmentation (aSector.beg, aSector.end, lineSegmentation, aCoords);
+	JSM.GetLineSegmentation (bSector.beg, bSector.end, lineSegmentation, bCoords);
+
+	var vertices = [];
+	var polygons = [];
+	JSM.GetRuledMesh (aCoords, bCoords, meshSegmentation, vertices, polygons);
+
+	var i;
+	for (i = 0; i < vertices.length; i++) {
+		result.AddVertex (new JSM.BodyVertex (vertices[i]));
+	}
+
+	var polygon;
+	for (i = 0; i < polygons.length; i++) {
+		vertexIndices = polygons[i];
+		polygon = new JSM.BodyPolygon (vertexIndices);
+		if (isCurved) {
+			polygon.SetCurveGroup (0);
+		}
+		result.AddPolygon (polygon);
+	}
+	
+	var topVertexCount = result.VertexCount ();
+
+	var newVertex;
+	for (i = 0; i < vertices.length; i++) {
+		vertex = vertices[i];
+		newVertex = new JSM.Coord (vertex.x, vertex.y, vertex.z);
+		newVertex.z -= height;
+		result.AddVertex (new JSM.BodyVertex (newVertex));
+	}
+
+	var j, newVertexIndices;
+	for (i = 0; i < polygons.length; i++) {
+		vertexIndices = polygons[i];
+		newVertexIndices = [];
+		for (j = vertexIndices.length - 1; j >= 0; j--) {
+			newVertexIndices.push (vertexIndices[j] + topVertexCount);
+		}
+		polygon = new JSM.BodyPolygon (newVertexIndices);
+		if (isCurved) {
+			polygon.SetCurveGroup (0);
+		}
+		result.AddPolygon (polygon);
+	}
+
+	var current, next, top, ntop;
+	
+	for (i = 0; i < meshSegmentation; i++) {
+		current = i + topVertexCount;
+		next = current + 1;
+		top = current - topVertexCount;
+		ntop = top + 1;
+		polygon = new JSM.BodyPolygon ([current, next, ntop, top]);
+		result.AddPolygon (polygon);
+	}
+
+	for (i = 0; i < meshSegmentation; i++) {
+		current = i + (lineSegmentation * (meshSegmentation + 1)) + topVertexCount;
+		next = current + 1;
+		top = current - topVertexCount;
+		ntop = top + 1;
+		polygon = new JSM.BodyPolygon ([current, top, ntop, next]);
+		result.AddPolygon (polygon);
+	}
+
+	for (i = 0; i < lineSegmentation; i++) {
+		current = i * (meshSegmentation + 1) + topVertexCount;
+		next = current + meshSegmentation + 1;
+		top = current - topVertexCount;
+		ntop = top + meshSegmentation + 1;
+		polygon = new JSM.BodyPolygon ([current, top, ntop, next]);
+		result.AddPolygon (polygon);
+	}
+
+	for (i = 0; i < lineSegmentation; i++) {
+		current = (i + 1) * meshSegmentation + i + topVertexCount;
+		next = current + meshSegmentation + 1;
+		top = current - topVertexCount;
+		ntop = top + meshSegmentation + 1;
+		polygon = new JSM.BodyPolygon ([current, next, ntop, top]);
 		result.AddPolygon (polygon);
 	}
 
@@ -910,6 +1011,30 @@ JSM.GenerateFunctionSurface = function (function3D, intervalMin, intervalMax, se
 
 	var i, coord, functionValue;
 	for (i = 0; i < result.VertexCount (); i++) {
+		coord = result.GetVertexPosition (i);
+		coord.z = function3D (coord.x, coord.y);
+	}
+
+	result.SetTextureProjectionType ('Cubic');
+	result.SetTextureProjectionCoords (new JSM.CoordSystem (
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (1.0, 0.0, 0.0),
+		new JSM.Coord (0.0, 1.0, 0.0),
+		new JSM.Coord (0.0, 0.0, 1.0)
+	));
+
+	return result;
+};
+
+JSM.GenerateFunctionSurfaceSolid = function (function3D, intervalMin, intervalMax, segmentation, isCurved, bottomZ)
+{
+	var aSector = new JSM.Sector (new JSM.Coord (intervalMax.x, intervalMin.y, 0.0), new JSM.Coord (intervalMin.x, intervalMin.y, 0.0));
+	var bSector = new JSM.Sector (new JSM.Coord (intervalMax.x, intervalMax.y, 0.0), new JSM.Coord (intervalMin.x, intervalMax.y, 0.0));
+	var result = JSM.GenerateRuledFromSectorsWithHeight (aSector, bSector, segmentation, segmentation, isCurved, bottomZ);
+
+	var i, coord, functionValue;
+	var topVertexCount = (segmentation + 1) * (segmentation + 1);
+	for (i = 0; i < topVertexCount; i++) {
 		coord = result.GetVertexPosition (i);
 		coord.z = function3D (coord.x, coord.y);
 	}
