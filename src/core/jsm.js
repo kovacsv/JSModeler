@@ -5,7 +5,7 @@
 
 var JSM = {
 	mainVersion : 0,
-	subVersion : 4
+	subVersion : 5
 };
 
 JSM.Eps = 0.00000001;

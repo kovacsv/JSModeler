@@ -47,6 +47,7 @@ JSMDemo.prototype =
 
 		var myThis = this;
 		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateCuboid ();});
+		this.EnableSubdivision (true);
 	},
 
 	GenerateCuboid : function ()
@@ -80,6 +81,7 @@ JSMDemo.prototype =
 	
 		var myThis = this;
 		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateSphere ();});
+		this.EnableSubdivision (false);
 	},
 
 	GenerateSphere : function ()
@@ -116,6 +118,7 @@ JSMDemo.prototype =
 	
 		var myThis = this;
 		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateCylinder ();});
+		this.EnableSubdivision (true);
 	},
 
 	GenerateCylinder : function ()
@@ -156,6 +159,7 @@ JSMDemo.prototype =
 	
 		var myThis = this;
 		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateCone ();});
+		this.EnableSubdivision (true);
 	},
 
 	GenerateCone : function ()
@@ -195,6 +199,7 @@ JSMDemo.prototype =
 	
 		var myThis = this;
 		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateTorus ();});
+		this.EnableSubdivision (false);
 	},
 
 	GenerateTorus : function ()
@@ -246,6 +251,7 @@ JSMDemo.prototype =
 
 		var myThis = this;
 		this.GenerateUIButtonElement ('generate', function () {myThis.GeneratePolyTorus ();});
+		this.EnableSubdivision (false);
 	},
 
 	GeneratePolyTorus : function ()
@@ -316,6 +322,7 @@ JSMDemo.prototype =
 
 		var myThis = this;
 		this.GenerateUIButtonElement ('generate', function () {myThis.GeneratePrism ();});
+		this.EnableSubdivision (true);
 	},
 
 	GeneratePrism : function ()
@@ -388,6 +395,7 @@ JSMDemo.prototype =
 
 		var myThis = this;
 		this.GenerateUIButtonElement ('generate', function () {myThis.GeneratePrismShell ();});
+		this.EnableSubdivision (true);
 	},
 
 	GeneratePrismShell : function ()
@@ -462,6 +470,7 @@ JSMDemo.prototype =
 
 		var myThis = this;
 		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateLineShell ();});
+		this.EnableSubdivision (true);
 	},
 
 	GenerateLineShell : function ()
@@ -539,6 +548,7 @@ JSMDemo.prototype =
 
 		var myThis = this;
 		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateRevolved ();});
+		this.EnableSubdivision (false);
 	},
 
 	GenerateRevolved : function ()
@@ -614,6 +624,8 @@ JSMDemo.prototype =
 		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'Rhombicosidodecahedron\')">rhombicosidodecahedron</a>');
 		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'TruncatedIcosidodecahedron\')">truncated icosidodecahedron</a>');
 		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'SnubDodecahedron\')">snub dodecahedron</a>');
+
+		this.EnableSubdivision (true);
 	},
 	
 	GenerateSolid : function (name)
@@ -640,6 +652,7 @@ JSMDemo.prototype =
 	
 		var myThis = this;
 		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateFunction ();});
+		this.EnableSubdivision (false);
 	},
 
 	TheFunction : function (x, y)
@@ -760,6 +773,22 @@ JSMDemo.prototype =
 		this.uiDiv.appendChild (div);
 	},
 
+	EnableSubdivision : function (enable)
+	{
+		var subdivision = document.getElementById ('subdivisionoption');
+		if (enable) {
+			subdivision.style.display = 'block';
+		} else {
+			subdivision.style.display = 'none';
+		}
+	},
+	
+	CatmullClarkSubdivision : function ()
+	{
+		this.body = JSM.CatmullClarkSubdivision (this.body, 1);
+		this.AddBodyToViewer (this.body);
+	},
+	
 	AddBodyToViewer : function (body)
 	{
 		var meshes = JSM.ConvertBodyToThreeMeshes (body);
