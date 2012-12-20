@@ -94,6 +94,11 @@
 			demo.Draw ();	
 		}
 
+		function CatmullClarkSubdivision ()
+		{
+			demo.CatmullClarkSubdivision ();
+		}
+		
 		function ExportToSTL ()
 		{
 			var stltext = document.getElementById ('stltext');
@@ -184,7 +189,12 @@
 		<div id="leftmenu" class="leftbox">
 		</div>
 		<div class="leftbox">
+			<div id="subdivisionoption" style="display:none;" >
+				<a href="javascript:CatmullClarkSubdivision ();">catmull-clark subdivision</a>
+			</div>
 			<a href="javascript:ExportToSTL ();">export model to stl</a><br>
+		</div>
+		<div class="leftbox">
 			<a href="https://github.com/kovacsv/JSModeler">go to project home page</a>
 		</div>
 	</div>
