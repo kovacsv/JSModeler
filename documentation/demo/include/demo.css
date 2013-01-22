@@ -66,11 +66,28 @@ div.leftbox
 	margin : 10px;
 }
 
-#stltext
+#floating
 {
 	position : absolute;
 	display : none;
+}
+
+#stltext
+{
+	width : 100%;
+	height : 100%;
 	border : 1px solid #e5e5e5;
+	display : none;
+}
+
+#svgcontent
+{
+	color : #000000;
+	background : #ffffff;
+	width : 100%;
+	height : 100%;
+	border : 1px solid #e5e5e5;
+	display : none;
 }
 
 div.title

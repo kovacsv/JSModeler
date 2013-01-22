@@ -23,5 +23,10 @@ JSM.Plane.prototype =
 		this.b = normal.y;
 		this.c = normal.z;
 		this.d = -(this.a * coord.x + this.b * coord.y + this.c * coord.z);
+	},
+	
+	Clone : function ()
+	{
+		return new JSM.Plane (this.a, this.b, this.c, this.d);
 	}
 };

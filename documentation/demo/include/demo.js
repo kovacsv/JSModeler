@@ -101,6 +101,40 @@ JSMDemo.prototype =
 		this.AddBodyToViewer (this.body);
 	},
 
+	GenerateTriSphereUI : function ()
+	{
+		this.ClearUI ();
+
+		this.GenerateUITitleElement ('Sphere parameters');
+		this.GenerateUITextElement ('radius:');
+		this.GenerateUIInputElement ('0.5');
+		this.GenerateUITextElement ('iterations:');
+		this.GenerateUIInputElement ('3');
+		this.GenerateUITextElement ('other:');
+		this.GenerateUICheckBoxElement ('smooth surface', true);
+	
+		var myThis = this;
+		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateTriSphere ();});
+		this.EnableSubdivision (false);
+	},
+
+	GenerateTriSphere : function ()
+	{
+		var inputs = document.getElementsByTagName ('input');
+		var radius = parseFloat (inputs[0].value);
+		var iterations = parseInt (inputs[1].value);
+		var curved = inputs[2].checked;
+		
+		this.body = new JSM.Body ();
+		if (radius <= 0.0) {
+			this.AddBodyToViewer (this.body);
+			return;
+		}
+
+		this.body = JSM.GenerateTriangulatedSphere (radius, iterations, curved);
+		this.AddBodyToViewer (this.body);
+	},
+
 	GenerateCylinderUI : function ()
 	{
 		this.ClearUI ();
@@ -686,6 +720,124 @@ JSMDemo.prototype =
 		this.AddBodyToViewer (this.body);
 	},
 
+	GenerateSuperShapeUI : function ()
+	{
+		this.ClearUI ();
+
+		this.GenerateUITitleElement ('Supershape parameters');
+		this.GenerateUITextElement ('a:');
+		this.GenerateUIDoubleInputElement ('1', '1');
+		this.GenerateUITextElement ('b:');
+		this.GenerateUIDoubleInputElement ('1', '1');
+		this.GenerateUITextElement ('m:');
+		this.GenerateUIDoubleInputElement ('8', '2');
+		this.GenerateUITextElement ('n1:');
+		this.GenerateUIDoubleInputElement ('5', '5');
+		this.GenerateUITextElement ('n2:');
+		this.GenerateUIDoubleInputElement ('5', '5');
+		this.GenerateUITextElement ('n3:');
+		this.GenerateUIDoubleInputElement ('8', '2');
+		this.GenerateUITextElement ('segmentation:');
+		this.GenerateUIInputElement ('100');
+		this.GenerateUITextElement ('other:');
+		this.GenerateUICheckBoxElement ('smooth surface', true);
+	
+		var myThis = this;
+		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateSuperShape ();});
+		//this.GenerateUIButtonElement ('generate random', function () {myThis.GenerateRandomSuperShape ();});
+		this.EnableSubdivision (false);
+	},
+
+	GenerateRandomSuperShape : function ()
+	{
+		var inputs = document.getElementsByTagName ('input');
+		inputs[0].value = 1;
+		inputs[1].value = 1;
+		inputs[2].value = 1;
+		inputs[3].value = 1;
+		inputs[4].value = JSM.RandomInt (1, 10);
+		inputs[5].value = JSM.RandomInt (1, 10);
+		inputs[6].value = JSM.RandomInt (1, 10);
+		inputs[7].value = JSM.RandomInt (1, 10);
+		inputs[8].value = JSM.RandomInt (1, 10);
+		inputs[9].value = JSM.RandomInt (1, 10);
+		inputs[10].value = JSM.RandomInt (1, 10);
+		inputs[11].value = JSM.RandomInt (1, 10);
+		this.GenerateSuperShape ();
+	},
+	
+	GenerateSuperShape : function ()
+	{
+		var inputs = document.getElementsByTagName ('input');
+		var a_lon = parseFloat (inputs[0].value);
+		var a_lat = parseFloat (inputs[1].value);
+		var b_lon = parseFloat (inputs[2].value);
+		var b_lat = parseFloat (inputs[3].value);
+		var m_lon = parseFloat (inputs[4].value);
+		var m_lat = parseFloat (inputs[5].value);
+		var n1_lon = parseFloat (inputs[6].value);
+		var n1_lat = parseFloat (inputs[7].value);
+		var n2_lon = parseFloat (inputs[8].value);
+		var n2_lat = parseFloat (inputs[9].value);
+		var n3_lon = parseFloat (inputs[10].value);
+		var n3_lat = parseFloat (inputs[11].value);
+		var segmentation = parseInt (inputs[12].value);
+		var curved = inputs[13].checked;
+		
+		this.body = new JSM.Body ();
+		if (a_lon == 0 || a_lat == 0 || b_lon == 0 || b_lat == 0 || segmentation <= 1) {
+			this.AddBodyToViewer (this.body);
+			return;
+		}
+		
+		this.body = JSM.GenerateSuperShape (a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
+											a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat,
+											segmentation, curved);
+		this.AddBodyToViewer (this.body);
+	},
+
+	GenerateLegoBrickUI : function ()
+	{
+		this.ClearUI ();
+
+		this.GenerateUITitleElement ('legobrick parameters');
+		this.GenerateUITextElement ('row count:');
+		this.GenerateUIInputElement ('2');
+		this.GenerateUITextElement ('column count:');
+		this.GenerateUIInputElement ('3');
+		this.GenerateUITextElement ('segmentation:');
+		this.GenerateUIInputElement ('25');
+		this.GenerateUITextElement ('other:');
+		this.GenerateUICheckBoxElement ('large brick', true);
+		this.GenerateUICheckBoxElement ('top cylinders', true);
+		this.GenerateUICheckBoxElement ('smooth surface', true);
+	
+		var myThis = this;
+		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateLegoBrick ();});
+		this.EnableSubdivision (false);
+	},
+
+	GenerateLegoBrick : function ()
+	{
+		var inputs = document.getElementsByTagName ('input');
+		var rows = parseFloat (inputs[0].value);
+		var columns = parseFloat (inputs[1].value);
+		var segmentation = parseInt (inputs[2].value);
+		var isLarge = inputs[3].checked;
+		var hasTopCylinders = inputs[4].checked;
+		var curved = inputs[5].checked;
+		
+		this.body = new JSM.Body ();
+		if (rows < 1 || columns < 1 || segmentation <= 1) {
+			this.AddBodyToViewer (this.body);
+			return;
+		}
+		
+		this.body = JSM.GenerateLegoBrick (rows, columns, isLarge, hasTopCylinders, segmentation, curved);
+		this.body.OffsetToOrigo ();
+		this.AddBodyToViewer (this.body);
+	},
+	
 	ClearUI : function ()
 	{
 		this.uiDiv.innerHTML = '';

@@ -10,6 +10,11 @@ JSM.Line2D.prototype =
 	{
 		this.start = beg || new JSM.Coord2D ();
 		this.direction = end || new JSM.Vector2D ()
+	},
+	
+	Clone : function ()
+	{
+		return new JSM.Line2D (this.start.Clone (), this.direction.Clone ());
 	}
 };
 
@@ -25,5 +30,10 @@ JSM.Line.prototype =
 	{
 		this.start = beg || new JSM.Coord ();
 		this.direction = end || new JSM.Vector ()
+	},
+	
+	Clone : function ()
+	{
+		return new JSM.Line (this.start.Clone (), this.direction.Clone ());
 	}
 };

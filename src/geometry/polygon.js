@@ -33,18 +33,19 @@ JSM.Polygon2D.prototype =
 		return this.vertices.length;
 	},
 
-	Clone : function (source)
-	{
-		if (source instanceof JSM.Polygon2D) {
-			this.vertices = source.vertices.slice (0);
-		} else if (source instanceof Array) {
-			this.vertices = source.slice (0);
-		}
-	},
-	
 	Clear : function ()
 	{
 		this.vertices = [];
+	},
+
+	Clone : function (source)
+	{
+		var result = new JSM.Polygon2D ();
+		var i;
+		for (i = 0; i < this.vertices.length; i++) {
+			result.vertices.push (this.vertices[i].Clone ());
+		}
+		return result;
 	}
 };
 
@@ -84,17 +85,18 @@ JSM.Polygon.prototype =
 		return this.vertices.length;
 	},
 
-	Clone : function (source)
-	{
-		if (source instanceof JSM.Polygon) {
-			this.vertices = source.vertices.slice (0);
-		} else if (source instanceof Array) {
-			this.vertices = source.slice (0);
-		}
-	},
-	
 	Clear : function ()
 	{
 		this.vertices = [];
+	},
+
+	Clone : function (source)
+	{
+		var result = new JSM.Polygon ();
+		var i;
+		for (i = 0; i < this.vertices.length; i++) {
+			result.vertices.push (this.vertices[i].Clone ());
+		}
+		return result;
 	}
 };

@@ -288,6 +288,30 @@ JSM.Viewer.prototype =
 		return radius;
 	},
 	
+	GetObjectsUnderMouse : function ()
+	{
+		var projector = new THREE.Projector ();
+		var mouseX = (this.mouse.currX / this.canvas.width) * 2 - 1;
+		var mouseY = -(this.mouse.currY / this.canvas.height) * 2 + 1;
+		
+		var cameraPosition = this.camera.position;
+		var vector = new THREE.Vector3 (mouseX, mouseY, 0.5);
+		projector.unprojectVector (vector, this.camera);
+
+		var ray = new THREE.Ray (cameraPosition, vector.subSelf (cameraPosition).normalize ());
+		return ray.intersectObjects (this.scene.children);
+	},
+	
+	GetFaceUnderMouse : function ()
+	{
+		var intersects = this.GetObjectsUnderMouse ();
+		var faceIndex = -1;
+		if (intersects.length > 0) {
+			faceIndex = intersects[0].faceIndex;
+		}
+		return faceIndex;
+	},
+
 	Draw : function ()
 	{
 		this.camera.position = this.cameraMove.eye;

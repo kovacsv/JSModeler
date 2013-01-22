@@ -35,6 +35,11 @@
 					demo.GenerateSphere ();
 					break;
 
+				case 'trisphere':
+					demo.GenerateTriSphereUI ();
+					demo.GenerateTriSphere ();
+					break;
+
 				case 'cylinder':
 					demo.GenerateCylinderUI ();
 					demo.GenerateCylinder ();
@@ -85,6 +90,16 @@
 					demo.GenerateFunction ('Tetrahedron');
 					break;
 
+				case 'supershape':
+					demo.GenerateSuperShapeUI ();
+					demo.GenerateSuperShape ();
+					break;
+
+				case 'legobrick':
+					demo.GenerateLegoBrickUI ();
+					demo.GenerateLegoBrick ();
+					break;
+
 				default:
 					demo.GenerateCuboidUI ();
 					demo.GenerateCuboid ();
@@ -101,22 +116,49 @@
 		
 		function ExportToSTL ()
 		{
+			var floating = document.getElementById ('floating');
 			var stltext = document.getElementById ('stltext');
 			var stlContent = JSM.ConvertBodyToSTL (demo.body, 'JSModelerModel');
-			stltext.style.display = 'block';
 			stltext.value = stlContent;
+			stltext.style.display = 'block';
+			floating.style.display = 'block';
 		}
 		
+		function ExportToSVG ()
+		{
+			var floating = document.getElementById ('floating');
+			var svgcontent = document.getElementById ('svgcontent');
+			var svgSettings = new JSM.SVGSettings (demo.viewer.cameraMove, demo.viewer.settings['fieldOfView'], demo.viewer.settings['nearClippingPlane'], demo.viewer.settings['farClippingPlane']);
+			JSM.ConvertBodyToSVG (demo.body, svgSettings, svgcontent);
+			svgcontent.style.display = 'block';
+			floating.style.display = 'block';
+		}
+
 		function DocumentClick (clickEvent)
 		{
-			var target = clickEvent.target;
+			var floating = document.getElementById ('floating');
 			var stltext = document.getElementById ('stltext');
-			if (target != stltext) {
-				if (stltext.style.display !== 'none') {
+			var svgcontent = document.getElementById ('svgcontent');
+			var isInFloating = false;
+			
+			var target = clickEvent.target;
+			while (target !== null) {
+				if (target === floating) {
+					isInFloating = true;
+					break;
+				}
+				target = target.parentElement;
+			}
+			
+			if (!isInFloating) {
+				if (floating.style.display !== 'none') {
+					floating.style.display = 'none';
 					stltext.style.display = 'none';
+					svgcontent.style.display = 'none';
 				}
 			}
-		}			
+		}
+		
 		function Resize ()
 		{
 			var margin = 20;
@@ -133,11 +175,17 @@
 				demo.Resize ();
 			}
 			
-			var stltext = document.getElementById ('stltext');
-			stltext.style.left = floatingMargin + 'px';
-			stltext.style.top = floatingMargin + 'px';
-			stltext.style.width = (document.body.clientWidth - 2.0 * floatingMargin) + 'px';
-			stltext.style.height = (document.body.clientHeight - 2.0 * floatingMargin) + 'px';
+			var floating = document.getElementById ('floating');
+			floating.style.left = floatingMargin + 'px';
+			floating.style.top = floatingMargin + 'px';
+			floating.style.width = (document.body.clientWidth - 2.0 * floatingMargin) + 'px';
+			floating.style.height = (document.body.clientHeight - 2.0 * floatingMargin) + 'px';
+
+			var svgcontent = document.getElementById ('svgcontent');
+			svgcontent.style.left = floatingMargin + 'px';
+			svgcontent.style.top = floatingMargin + 'px';
+			svgcontent.setAttribute ('width', document.body.clientWidth - 2.0 * floatingMargin);
+			svgcontent.setAttribute ('height', document.body.clientHeight - 2.0 * floatingMargin);
 		}
 
 		function Load ()
@@ -174,6 +222,7 @@
 	<div id="menu">
 		<a href="demonstration.html#cuboid">cuboid</a> | 
 		<a href="demonstration.html#sphere">sphere</a> | 
+		<a href="demonstration.html#trisphere">trisphere</a> | 
 		<a href="demonstration.html#cylinder">cylinder</a> | 
 		<a href="demonstration.html#cone">cone</a> | 
 		<a href="demonstration.html#torus">torus</a> | 
@@ -181,9 +230,11 @@
 		<a href="demonstration.html#prism">prism</a> | 
 		<a href="demonstration.html#prismshell">prismshell</a> | 
 		<a href="demonstration.html#lineshell">lineshell</a> | 
-		<a href="demonstration.html#revolved">revolved</a> |  
-		<a href="demonstration.html#solids">solids</a> |  
-		<a href="demonstration.html#function">function</a>  
+		<a href="demonstration.html#revolved">revolved</a> | 
+		<a href="demonstration.html#solids">solids</a> | 
+		<a href="demonstration.html#function">function</a> |
+		<a href="demonstration.html#supershape">supershape</a> | 
+		<a href="demonstration.html#legobrick">legobrick</a>
 	</div>
 	<div id="left">
 		<div id="leftmenu" class="leftbox">
@@ -192,6 +243,7 @@
 			<div id="subdivisionoption" style="display:none;" >
 				<a href="javascript:CatmullClarkSubdivision ();">catmull-clark subdivision</a>
 			</div>
+			<a href="javascript:ExportToSVG ();">export model to svg</a><br>
 			<a href="javascript:ExportToSTL ();">export model to stl</a><br>
 		</div>
 		<div class="leftbox">
@@ -201,7 +253,10 @@
 	<div id="right">
 		<canvas id="demo" width="1000" height="500"></canvas>
 	</div>
-	<textarea id="stltext"></textarea>
+	<div id="floating">
+		<textarea id="stltext"></textarea>
+		<svg id="svgcontent" xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>
+	</div>
 </body>
 
 </html>

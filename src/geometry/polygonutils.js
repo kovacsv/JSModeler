@@ -258,9 +258,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 		return true;
 	};
 
-	var poly = new JSM.Polygon2D ();
-	poly.Clone (polygon);
-	poly.Clone (polygon.vertices);
+	var poly = polygon.Clone ();
 	var count = poly.Count ();
 	if (count < 3) {
 		return [];
@@ -383,4 +381,40 @@ JSM.PolygonTriangulate = function (polygon)
 	}
 	
 	return JSM.PolygonTriangulate2D (polygon2D);
+};
+
+JSM.OffsetPolygonContour = function (polygon, width)
+{
+	var count = polygon.Count ();
+	var normal = JSM.CalculateNormal (polygon.vertices);
+
+	var prev, curr, next;
+	var prevVertex, currVertex, nextVertex;
+	var prevDir, nextDir;
+	var distance, offsetedCoord;
+	
+	var result = new JSM.Polygon ();
+	for (i = 0; i < count; i++) {
+		prev = (i === 0 ? count - 1 : i - 1);
+		curr = i;
+		next = (i === count - 1 ? 0 : i + 1);
+		
+		prevVertex = polygon.GetVertex (prev);
+		currVertex = polygon.GetVertex (curr);
+		nextVertex = polygon.GetVertex (next);
+
+		prevDir = JSM.CoordSub (prevVertex, currVertex);
+		nextDir = JSM.CoordSub (nextVertex, currVertex);
+		angle = JSM.GetVectorsAngle (prevDir, nextDir) / 2.0;
+		if (JSM.CoordTurnType (prevVertex, currVertex, nextVertex, normal) === 'Clockwise') {
+			angle = Math.PI - angle;
+		}
+
+		distance = width / Math.sin (angle);
+		offsetedCoord = JSM.CoordOffset (currVertex, nextDir, distance);
+		offsetedCoord = JSM.CoordRotate (offsetedCoord, normal, angle, currVertex);
+		result.AddVertex (offsetedCoord.x, offsetedCoord.y, offsetedCoord.z);
+	}
+	
+	return result;
 };

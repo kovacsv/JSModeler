@@ -34,5 +34,16 @@ JSM.Transformation.prototype =
 		result.y = this.matrix[4] * coord.x + this.matrix[5] * coord.y + this.matrix[6] * coord.z + this.matrix[7];
 		result.z = this.matrix[8] * coord.x + this.matrix[9] * coord.y + this.matrix[10] * coord.z + this.matrix[11];
 		return result;
+	},
+	
+	Clone : function ()
+	{
+		var result = new JSM.Transformation;
+		result.matrix = [
+			this.matrix[0], this.matrix[1], this.matrix[2], this.matrix[3],
+			this.matrix[4], this.matrix[5], this.matrix[6], this.matrix[7],
+			this.matrix[8], this.matrix[9], this.matrix[10], this.matrix[11]
+		];
+		return result;
 	}
 };

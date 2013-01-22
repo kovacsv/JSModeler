@@ -48,7 +48,7 @@ JSM.GenerateSphere = function (radius, segmentation, isCurved)
 	for (i = 1; i < segments; i++) {
 		theta = 0;
 		for (j = 0; j < circle; j++) {
-			result.AddVertex (new JSM.BodyVertex (JSM.SphericalToCartesian (radius, theta, phi)));
+			result.AddVertex (new JSM.BodyVertex (JSM.SphericalToCartesian (radius, phi, theta)));
 			theta += step;
 		}
 		phi += step;
@@ -120,6 +120,119 @@ JSM.GenerateSphere = function (radius, segmentation, isCurved)
 	return result;
 };
 
+JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
+{
+	var GenerateIcosahedron = function (radius) {
+		var result = new JSM.Body ();
+
+		var a = 1.0;
+		var b = 0.0;
+		var c = (1.0 + Math.sqrt (5.0)) / 2.0;
+
+		JSM.AddVertexToBody (result, +b, +a, +c);
+		JSM.AddVertexToBody (result, +b, +a, -c);
+		JSM.AddVertexToBody (result, +b, -a, +c);
+		JSM.AddVertexToBody (result, +b, -a, -c);
+
+		JSM.AddVertexToBody (result, +a, +c, +b);
+		JSM.AddVertexToBody (result, +a, -c, +b);
+		JSM.AddVertexToBody (result, -a, +c, +b);
+		JSM.AddVertexToBody (result, -a, -c, +b);
+
+		JSM.AddVertexToBody (result, +c, +b, +a);
+		JSM.AddVertexToBody (result, -c, +b, +a);
+		JSM.AddVertexToBody (result, +c, +b, -a);
+		JSM.AddVertexToBody (result, -c, +b, -a);
+
+		JSM.AddPolygonToBody (result, [0, 2, 8]);
+		JSM.AddPolygonToBody (result, [0, 4, 6]);
+		JSM.AddPolygonToBody (result, [0, 6, 9]);
+		JSM.AddPolygonToBody (result, [0, 8, 4]);
+		JSM.AddPolygonToBody (result, [0, 9, 2]);
+		JSM.AddPolygonToBody (result, [1, 3, 11]);
+		JSM.AddPolygonToBody (result, [1, 4, 10]);
+		JSM.AddPolygonToBody (result, [1, 6, 4]);
+		JSM.AddPolygonToBody (result, [1, 10, 3]);
+		JSM.AddPolygonToBody (result, [1, 11, 6]);
+		JSM.AddPolygonToBody (result, [2, 5, 8]);
+		JSM.AddPolygonToBody (result, [2, 7, 5]);
+		JSM.AddPolygonToBody (result, [2, 9, 7]);
+		JSM.AddPolygonToBody (result, [3, 5, 7]);
+		JSM.AddPolygonToBody (result, [3, 7, 11]);
+		JSM.AddPolygonToBody (result, [3, 10, 5]);
+		JSM.AddPolygonToBody (result, [4, 8, 10]);
+		JSM.AddPolygonToBody (result, [6, 11, 9]);
+		JSM.AddPolygonToBody (result, [5, 10, 8]);
+		JSM.AddPolygonToBody (result, [7, 9, 11]);
+
+		return result;
+	}
+
+	var result = GenerateIcosahedron ();
+	
+	var currentRadius = JSM.VectorLength (result.GetVertexPosition (0));
+	var scale = radius / currentRadius;
+
+	var i, j, vertex;
+	for (i = 0; i < result.VertexCount (); i++) {
+		vertex = result.GetVertex (i);
+		vertex.SetPosition (JSM.VectorMultiply (vertex.GetPosition (), scale));
+	}
+	
+	var iteration, oldVertexCoord, oldBody, adjacencyList;
+	var currentEdge, edgeVertexIndices;
+	var currentPgon, polygonVertexIndices;
+	for (iteration = 0; iteration < iterations; iteration++) {
+		oldBody = result;
+		
+		result = new JSM.Body ();
+		adjacencyList = JSM.CalculateAdjacencyList (oldBody);
+		for (i = 0; i < adjacencyList.verts.length; i++) {
+			oldVertexCoord = oldBody.GetVertexPosition (i);
+			JSM.AddVertexToBody (result, oldVertexCoord.x, oldVertexCoord.y, oldVertexCoord.z);
+		}
+		
+		edgeVertexIndices = [];
+		for (i = 0; i < adjacencyList.edges.length; i++) {
+			currentEdge = adjacencyList.edges[i];
+			midcoord = JSM.MidCoord (oldBody.GetVertexPosition (currentEdge.vert1), oldBody.GetVertexPosition (currentEdge.vert2));
+			edgeCoord = JSM.VectorMultiply (JSM.VectorNormalize (midcoord), radius);
+			edgeVertexIndices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));		
+		}
+
+		for (i = 0; i < adjacencyList.pgons.length; i++) {
+			currentPgon = adjacencyList.pgons[i];
+			polygonVertexIndices = [];
+			for (j = 0; j < currentPgon.pedges.length; j++) {
+				currentPolyEdge = currentPgon.pedges[j];
+				polygonVertexIndices.push (JSM.GetPolyEdgeStartVertex (currentPolyEdge, adjacencyList));
+				polygonVertexIndices.push (edgeVertexIndices[currentPolyEdge.index]);
+			}
+
+			JSM.AddPolygonToBody (result, [polygonVertexIndices[0], polygonVertexIndices[1], polygonVertexIndices[5]]);
+			JSM.AddPolygonToBody (result, [polygonVertexIndices[1], polygonVertexIndices[2], polygonVertexIndices[3]]);
+			JSM.AddPolygonToBody (result, [polygonVertexIndices[3], polygonVertexIndices[4], polygonVertexIndices[5]]);
+			JSM.AddPolygonToBody (result, [polygonVertexIndices[1], polygonVertexIndices[3], polygonVertexIndices[5]]);
+		}
+	}
+
+	if (isCurved) {
+		for (i = 0; i < result.PolygonCount (); i++) {
+			result.GetPolygon (i).SetCurveGroup (0);
+		}
+	}
+	
+	result.SetTextureProjectionType ('Cubic');
+	result.SetTextureProjectionCoords (new JSM.CoordSystem (
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (1.0, 0.0, 0.0),
+		new JSM.Coord (0.0, 1.0, 0.0),
+		new JSM.Coord (0.0, 0.0, 1.0)
+	));
+
+	return result;
+};
+
 JSM.GenerateCylinder = function (radius, height, segmentation, withTopAndBottom, isCurved)
 {
 	var result = new JSM.Body ();
@@ -130,8 +243,8 @@ JSM.GenerateCylinder = function (radius, height, segmentation, withTopAndBottom,
 	
 	var i;
 	for (i = 0; i < segments; i++) {
-		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (radius, theta, height / 2.0)));
-		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (radius, theta, -height / 2.0)));
+		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (radius, height / 2.0, theta)));
+		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (radius, -height / 2.0, theta)));
 		theta -= step;
 	}
 
@@ -183,21 +296,21 @@ JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, with
 	var step = 2.0 * Math.PI / segments;
 
 	if (topDegenerated) {
-		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (0.0, 0.0, height / 2.0)));
+		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (0.0, height / 2.0, 0.0)));
 	}
 	
 	var i;
 	for (i = 0; i < segments; i++) {
 		if (!topDegenerated) {
-			result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (topRadius, theta, height / 2.0)));
+			result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (topRadius, height / 2.0, theta)));
 		}
 		if (!bottomDegenerated) {
-			result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (bottomRadius, theta, -height / 2.0)));
+			result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (bottomRadius, -height / 2.0, theta)));
 		}
 		theta -= step;
 	}
 	if (bottomDegenerated) {
-		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (0.0, 0.0, -height / 2.0)));
+		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (0.0, -height / 2.0, 0.0)));
 	}
 
 	var current, next, polygon;
@@ -330,42 +443,12 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 	var result = new JSM.Body ();
 	var count = basePolygon.length;
 
-	var angles = [];
-	
-	var i, prev, curr, next;
-	var prevDir, nextDir, angle;
-	for (i = 0; i < count; i++) {
-		prev = (i === 0 ? count - 1 : i - 1);
-		curr = i;
-		next = (i === count - 1 ? 0 : i + 1);
-
-		nextDir = JSM.CoordSub (basePolygon[next], basePolygon[curr]);
-		prevDir = JSM.CoordSub (basePolygon[prev], basePolygon[curr]);
-		angle = JSM.GetVectorsAngle (nextDir, prevDir) / 2.0;
-		if (JSM.CoordTurnType (basePolygon[prev], basePolygon[curr], basePolygon[next], direction) === 'Clockwise') {
-			angle = Math.PI - angle;
-		}
-		angles.push (angle);
-	}
-
-	var innerBasePolygon = [];
-	var distance, innerCoord, offsetDirection;
-	for (i = 0; i < count; i++) {
-		curr = i;
-		next = (i + 1) % count;
-		angle = angles[curr];
-
-		distance = width / Math.sin (angle);
-		offsetDirection = JSM.CoordSub (basePolygon[curr], basePolygon[next]);
-		innerCoord = JSM.CoordOffset (basePolygon[curr], offsetDirection, distance);
-		innerCoord = JSM.CoordRotate (innerCoord, direction, -(Math.PI - angle), basePolygon[curr]);
-		innerBasePolygon.push (innerCoord);
-	}
-
+	var i;
 	for (i = 0; i < count; i++) {
 		result.AddVertex (new JSM.BodyVertex (basePolygon[i]));
 	}
 
+	var innerBasePolygon = JSM.OffsetPolygonContour (new JSM.Polygon (basePolygon), width).vertices;
 	for (i = 0; i < count; i++) {
 		result.AddVertex (new JSM.BodyVertex (innerBasePolygon[i]));
 	}
@@ -381,7 +464,7 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 		result.AddVertex (new JSM.BodyVertex (offseted));
 	}
 
-	var top, ntop;
+	var curr, next, top, ntop;
 	for (i = 0; i < count; i++) {
 		curr = i;
 		next = curr + 1;
@@ -759,8 +842,8 @@ JSM.GenerateRuledFromSectors = function (aSector, bSector, lineSegmentation, mes
 
 	var polygon;
 	for (i = 0; i < polygons.length; i++) {
-		vertexIndices = polygons[i];
-		polygon = new JSM.BodyPolygon (vertexIndices);
+		polygonVertexIndices = polygons[i];
+		polygon = new JSM.BodyPolygon (polygonVertexIndices);
 		if (isCurved) {
 			polygon.SetCurveGroup (0);
 		}
@@ -776,6 +859,18 @@ JSM.GenerateRuledFromSectors = function (aSector, bSector, lineSegmentation, mes
 	));
 
 	return result;
+};
+
+JSM.GenerateGrid = function (xSize, ySize, xSegmentation, ySegmentation, curved)
+{
+	var xSector = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (xSize, 0.0, 0.0));
+	var ySector = new JSM.Sector (new JSM.Coord (0.0, ySize, 0.0), new JSM.Coord (xSize, ySize, 0.0));
+	return JSM.GenerateRuledFromSectors (xSector, ySector, xSegmentation, ySegmentation, curved);
+};
+
+JSM.GenerateQuadGrid = function (size, segmentation, curved)
+{
+	return JSM.GenerateGrid (size, size, segmentation, segmentation, curved);
 };
 
 JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegmentation, meshSegmentation, isCurved, height)
@@ -798,8 +893,8 @@ JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegment
 
 	var polygon;
 	for (i = 0; i < polygons.length; i++) {
-		vertexIndices = polygons[i];
-		polygon = new JSM.BodyPolygon (vertexIndices);
+		polygonVertexIndices = polygons[i];
+		polygon = new JSM.BodyPolygon (polygonVertexIndices);
 		if (isCurved) {
 			polygon.SetCurveGroup (0);
 		}
@@ -816,14 +911,14 @@ JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegment
 		result.AddVertex (new JSM.BodyVertex (newVertex));
 	}
 
-	var j, newVertexIndices;
+	var j, newpolygonVertexIndices;
 	for (i = 0; i < polygons.length; i++) {
-		vertexIndices = polygons[i];
-		newVertexIndices = [];
-		for (j = vertexIndices.length - 1; j >= 0; j--) {
-			newVertexIndices.push (vertexIndices[j] + topVertexCount);
+		polygonVertexIndices = polygons[i];
+		newpolygonVertexIndices = [];
+		for (j = polygonVertexIndices.length - 1; j >= 0; j--) {
+			newpolygonVertexIndices.push (polygonVertexIndices[j] + topVertexCount);
 		}
-		polygon = new JSM.BodyPolygon (newVertexIndices);
+		polygon = new JSM.BodyPolygon (newpolygonVertexIndices);
 		if (isCurved) {
 			polygon.SetCurveGroup (0);
 		}
@@ -1047,5 +1142,50 @@ JSM.GenerateFunctionSurfaceSolid = function (function3D, intervalMin, intervalMa
 		new JSM.Coord (0.0, 0.0, 1.0)
 	));
 
+	return result;
+};
+
+JSM.GenerateSuperShape = function (a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
+								   a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat,
+								   segmentation, isCurved)
+{
+	var CartesianToSpherical = function (coord)
+	{
+		var result = new JSM.Coord ();
+		var radius = Math.sqrt (coord.x * coord.x + coord.y * coord.y + coord.z * coord.z);
+		var phi = Math.asin (coord.z / radius);
+		var theta = Math.atan2 (coord.y, coord.x);
+		return [radius, phi, theta];
+	};
+
+	var CalculateSuperFormula = function (p, a, b, m, n1, n2, n3)
+	{
+		var abs1 = Math.abs (Math.cos (m * p / 4.0) / a);
+		var abs2 = Math.abs (Math.sin (m * p / 4.0) / b);
+		return Math.pow (Math.pow (abs1, n2) + Math.pow (abs2, n3), -1.0 / n1);
+	};
+
+	var CalculateSuperFormulaCoordinate = function (phi, theta)
+	{
+		var coord = new JSM.Coord ();
+		var rPhi = CalculateSuperFormula (phi, a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat);
+		var rTheta = CalculateSuperFormula (theta, a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon);
+		coord.x = rTheta * Math.cos (theta) * rPhi * Math.cos (phi);
+		coord.y = rTheta * Math.sin (theta) * rPhi * Math.cos (phi);
+		coord.z = rPhi * Math.sin (phi);
+		return coord;
+	};
+
+	var result = JSM.GenerateSphere (1.0, segmentation, isCurved);
+
+	var i, j, vertex, coord, spherical, newCoord;
+	for (i = 0; i < result.VertexCount (); i++) {
+		vertex = result.GetVertex (i);
+		coord = vertex.position;
+		spherical = CartesianToSpherical (coord);
+		newCoord = CalculateSuperFormulaCoordinate (spherical[1], spherical[2]);
+		vertex.SetPosition (newCoord);
+	}
+	
 	return result;
 };

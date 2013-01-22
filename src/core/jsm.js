@@ -5,7 +5,7 @@
 
 var JSM = {
 	mainVersion : 0,
-	subVersion : 5
+	subVersion : 6
 };
 
 JSM.Eps = 0.00000001;
@@ -83,4 +83,9 @@ JSM.ArcCos = function (value)
 	}
 	
 	return Math.acos (value);
+};
+
+JSM.RandomInt = function (from, to)
+{
+	return Math.floor ((Math.random () * (to - from + 1)) + from); 
 };

@@ -142,10 +142,10 @@
 			var another = JSM.VectorSetLength (vector, 5.0);
 			test.Assert (JSM.CoordIsEqual (another, new JSM.Coord (5.0, 0.0, 0.0)));
 
-			var cartesian = JSM.SphericalToCartesian (1.0, 90.0 * JSM.DegRad, 0.0 * JSM.DegRad);
+			var cartesian = JSM.SphericalToCartesian (1.0, 0.0, 90.0 * JSM.DegRad);
 			test.Assert (JSM.CoordIsEqual (cartesian, new JSM.Coord (0.0, 0.0, 1.0)));
 
-			var cartesian = JSM.CylindricalToCartesian (1.0, 90.0 * JSM.DegRad, 1.0);
+			var cartesian = JSM.CylindricalToCartesian (1.0, 1.0, 90.0 * JSM.DegRad);
 			test.Assert (JSM.CoordIsEqual (cartesian, new JSM.Coord (0.0, 1.0, 1.0)));
 
 			var coord = new JSM.Coord (1.0, 2.0, 3.0);
@@ -844,6 +844,35 @@
 			test.Assert (triangles[2].toString () == [0, 3, 4].toString ());
 		}
 
+		function PolygonOffsetTest (test)
+		{
+			var polygon = new JSM.Polygon ();
+			polygon.AddVertex (0.0, 0.0, 0.0);
+			polygon.AddVertex (1.0, 0.0, 0.0);
+			polygon.AddVertex (1.0, 1.0, 0.0);
+			polygon.AddVertex (0.0, 1.0, 0.0);
+			
+			var offseted = JSM.OffsetPolygonContour (polygon, 0.2);
+			test.Assert (JSM.CoordIsEqual (offseted.vertices[0], new JSM.Coord (0.2, 0.2, 0.0)));
+			test.Assert (JSM.CoordIsEqual (offseted.vertices[1], new JSM.Coord (0.8, 0.2, 0.0)));
+			test.Assert (JSM.CoordIsEqual (offseted.vertices[2], new JSM.Coord (0.8, 0.8, 0.0)));
+			test.Assert (JSM.CoordIsEqual (offseted.vertices[3], new JSM.Coord (0.2, 0.8, 0.0)));
+
+			var polygon = new JSM.Polygon ();
+			polygon.AddVertex (0.0, 0.0, 0.0);
+			polygon.AddVertex (2.0, 0.0, 0.0);
+			polygon.AddVertex (2.0, 1.0, 0.0);
+			polygon.AddVertex (1.0, 1.0, 0.0);
+			polygon.AddVertex (1.0, 2.0, 0.0);
+			
+			var offseted = JSM.OffsetPolygonContour (polygon, 0.2);
+			test.Assert (JSM.CoordIsEqual (offseted.vertices[0], new JSM.Coord (0.32360679774997897, 0.2, 0.0)));
+			test.Assert (JSM.CoordIsEqual (offseted.vertices[1], new JSM.Coord (1.8, 0.2, 0.0)));
+			test.Assert (JSM.CoordIsEqual (offseted.vertices[2], new JSM.Coord (1.8, 0.8, 0.0)));
+			test.Assert (JSM.CoordIsEqual (offseted.vertices[3], new JSM.Coord (0.8, 0.8, 0.0)));
+			test.Assert (JSM.CoordIsEqual (offseted.vertices[4], new JSM.Coord (0.8, 1.1527864045000422, 0.0)));
+		}
+		
 		function PlaneTest (test)
 		{
 			var plane = new JSM.Plane (1.0, 2.0, 3.0, 4.0);
@@ -2017,6 +2046,7 @@
 			test.AddTestCase (PolygonVertexVisibility2DTest, 'PolygonVertexVisibility2DTest');
 			test.AddTestCase (PolygonTriangulation2DTest, 'PolygonTriangulation2DTest');
 			test.AddTestCase (PolygonTriangulationTest, 'PolygonTriangulationTest');
+			test.AddTestCase (PolygonOffsetTest, 'PolygonOffsetTest');
 			test.AddTestCase (PlaneTest, 'PlaneTest');
 			test.AddTestCase (BodyTest, 'BodyTest');
 			test.AddTestCase (ModelTest, 'ModelTest');

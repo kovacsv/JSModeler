@@ -28,6 +28,11 @@ JSM.BodyVertex.prototype =
 	SetPosition : function (position)
 	{
 		this.position = position;
+	},
+	
+	Clone : function ()
+	{
+		return new JSM.BodyVertex (this.position.Clone ());
 	}
 };
 
@@ -42,7 +47,7 @@ JSM.BodyPolygon.prototype =
 	{
 		return this.vertices[index];
 	},
-	
+
 	VertexIndexCount : function ()
 	{
 		return this.vertices.length;
@@ -82,6 +87,18 @@ JSM.BodyPolygon.prototype =
 	{
 		this.material = source.material;
 		this.curved = source.curved;
+	},
+	
+	Clone : function ()
+	{
+		var result = new JSM.BodyPolygon ();
+		var i;
+		for (i = 0; i < this.vertices.length; i++) {
+			result.vertices.push (this.vertices[i]);
+		}
+		result.material = this.material;
+		result.curved = this.curved;
+		return result;
 	}
 };
 
@@ -234,6 +251,25 @@ JSM.Body.prototype =
 		}
 	},
 
+	Merge : function (body)
+	{
+		var oldVertexCount = this.vertices.length;
+		
+		var i, j;
+		for (i = 0; i < body.VertexCount (); i++) {
+			this.vertices.push (body.GetVertex (i).Clone ());
+		};
+		
+		var newPolygon;
+		for (i = 0; i < body.PolygonCount (); i++) {
+			newPolygon = body.GetPolygon (i).Clone ();
+			for (j = 0; j < newPolygon.VertexIndexCount (); j++) {
+				newPolygon.vertices[j] += oldVertexCount;
+			}
+			this.polygons.push (newPolygon);
+		}
+	},
+	
 	Clear : function ()
 	{
 		this.vertices = [];

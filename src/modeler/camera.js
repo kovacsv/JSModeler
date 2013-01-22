@@ -63,5 +63,15 @@ JSM.Camera.prototype =
 		this.center = JSM.CoordRotate (this.center, horizontalDirection, radAngleY, this.origo);
 
 		this.up = verticalDirection;
+	},
+	
+	Clone : function ()
+	{
+		var result = new JSM.Camera ();
+		result.origo = this.origo;
+		result.eye = this.eye;
+		result.center = this.center;
+		result.up = this.up;
+		return result;
 	}
 };

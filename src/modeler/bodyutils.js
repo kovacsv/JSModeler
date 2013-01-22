@@ -105,3 +105,37 @@ JSM.CalculateBodyVertexNormals = function (body)
 	
 	return result;
 };
+
+JSM.GetGaussianParameterToReachEpsilonAtValue = function (x, a, b, epsilon)
+{
+	return Math.sqrt (-(Math.pow (x - b, 2.0) / (2.0 * Math.log (epsilon / Math.abs (a)))));
+};
+
+JSM.GetGaussianValue = function (x, a, b, c)
+{
+	return a * Math.exp (-(Math.pow (x - b, 2.0) / (2.0 * Math.pow (c, 2.0))));
+};
+
+JSM.SoftMoveBodyVertex = function (body, index, radius, direction, distance)
+{
+	var referenceCoord = body.GetVertex (index).position;
+
+	var eps = 0.00001;
+	var a = distance;
+	var b = 0.0;
+	var c = JSM.GetGaussianParameterToReachEpsilonAtValue (radius, a, b, eps);
+
+	var i, x, currentDistance, newDistance, currentCoord;
+	for (i = 0; i < body.VertexCount (); i++) {
+		currentDistance = JSM.CoordDistance (referenceCoord, body.GetVertex (i).position);
+		if (JSM.IsGreater (currentDistance, radius)) {
+			continue;
+		}
+
+		x = currentDistance;
+		newDistance = JSM.GetGaussianValue (x, distance, b, c);
+
+		currentCoord = body.GetVertex (i).position;
+		body.GetVertex (i).position = JSM.CoordOffset (currentCoord, direction, newDistance);
+	}
+};

@@ -10,6 +10,11 @@ JSM.Coord2D.prototype =
 	{
 		this.x = x || 0.0;
 		this.y = y || 0.0;
+	},
+	
+	Clone : function ()
+	{
+		return new JSM.Coord2D (this.x, this.y);
 	}
 };
 
@@ -27,6 +32,11 @@ JSM.Coord.prototype =
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	},
+	
+	Clone : function ()
+	{
+		return new JSM.Coord (this.x, this.y, this.z);
 	}
 };
 

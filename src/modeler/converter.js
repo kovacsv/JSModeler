@@ -2,7 +2,7 @@ JSM.ConversionData = function (textureLoadedCallback, hasConvexPolygons)
 {
 	this.textureLoadedCallback = textureLoadedCallback;
 	this.hasConvexPolygons = hasConvexPolygons;
-}
+};
 
 JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, textureCoords, conversionData)
 {
@@ -211,7 +211,10 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 				}
 			);
 		}
-		
+
+		geometry.computeCentroids();
+		geometry.computeFaceNormals();
+
 		var mesh = new THREE.Mesh (geometry, material);
 		meshes.push (mesh);
 	};
@@ -287,7 +290,7 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 	}
 	
 	return JSM.ConvertBodyToThreeMeshesSpecial (body, materials, vertexNormals, textureCoords, conversionData);
-}
+};
 
 JSM.ConvertModelToThreeMeshes = function (model, materials, conversionData)
 {
@@ -303,7 +306,7 @@ JSM.ConvertModelToThreeMeshes = function (model, materials, conversionData)
 	}
 
 	return meshes;
-}
+};
 
 JSM.ConvertBodyContentToSTL = function (body, name, hasConvexPolygons)
 {
@@ -387,7 +390,7 @@ JSM.ConvertBodyContentToSTL = function (body, name, hasConvexPolygons)
 	}
 
 	return stlContent;
-}
+};
 
 JSM.ConvertBodyToSTL = function (body, name, hasConvexPolygons)
 {
@@ -403,7 +406,7 @@ JSM.ConvertBodyToSTL = function (body, name, hasConvexPolygons)
 	AddLineToContent ('endsolid ' + name);
 	
 	return stlContent;
-}
+};
 
 JSM.ConvertModelToSTL = function (model, name, hasConvexPolygons)
 {
@@ -423,4 +426,167 @@ JSM.ConvertModelToSTL = function (model, name, hasConvexPolygons)
 	AddLineToContent ('endsolid ' + name);
 
 	return stlContent;
+};
+
+JSM.ConvertBodyToGDL = function (body)
+{
+	var AddToContent = function (line)
+	{
+		gdlContent += line;
+	};
+
+	var AddLineToContent = function (line)
+	{
+		gdlContent += line + '\n';
+	};
+
+	var AddVertex = function (index)
+	{
+		var vertCoord = body.GetVertex (index).position;
+		AddLineToContent ('vert ' + vertCoord.x + ', ' + vertCoord.y + ', ' + vertCoord.z);
+	};
+
+	var AddEdge = function (index)
+	{
+		var edge = al.edges[index];
+		AddLineToContent ('edge ' + (edge.vert1 + 1) + ', ' + (edge.vert2 + 1) + ', -1, -1, 0');
+	};
+
+	var AddPolygon = function (index)
+	{
+		var pgon = al.pgons[index];
+		AddToContent ('pgon ' + pgon.pedges.length + ', 0, 0, ');
+		var i, pedge;
+		for (i = 0; i < pgon.pedges.length; i++) {
+			pedge = pgon.pedges[i];
+			if (!pedge.reverse) {
+				AddToContent ((pedge.index + 1));
+			} else {
+				AddToContent (-(pedge.index + 1));
+			}
+			if (i < pgon.pedges.length - 1) {
+				AddToContent (', ');
+			}
+		}
+		AddLineToContent ('');
+	};
+
+	var gdlContent = '';
+	AddLineToContent ('base');
+	var al = JSM.CalculateAdjacencyList (body);
+	
+	var i;
+	for (i = 0; i < al.verts.length; i++) {
+		AddVertex (i);
+	}
+
+	for (i = 0; i < al.edges.length; i++) {
+		AddEdge (i);
+	}
+	
+	for (i = 0; i < al.pgons.length; i++) {
+		AddPolygon (i);
+	}
+
+	AddLineToContent ('body -1');
+	return gdlContent;
+};
+
+JSM.ConvertModelToGDL = function (model, name, hasConvexPolygons)
+{
+	var gdlContent = '';
+	
+	var i, body;
+	for (i = 0; i < model.BodyCount (); i++) {
+		body = model.GetBody (i);
+		gdlContent += JSM.ConvertBodyToGDL (body);
+	}
+
+	return gdlContent;
+};
+
+JSM.SVGSettings = function (camera, fieldOfView, nearPlane, farPlane, hiddenLine)
+{
+	this.camera = camera;
+	this.fieldOfView = fieldOfView;
+	this.nearPlane = nearPlane;
+	this.farPlane = farPlane;
+	this.hiddenLine = hiddenLine;
+	this.clear = true;
+};
+
+JSM.ConvertBodyToSVG = function (body, settings, svgObject)
+{
+	if (settings.clear) {
+		while (svgObject.lastChild) {
+			svgObject.removeChild (svgObject.lastChild);
+		}
+	}
+
+	var svgNameSpace = "http://www.w3.org/2000/svg";
+	var width = svgObject.getAttribute ('width');
+	var height = svgObject.getAttribute ('height');
+	
+	var eye = settings.camera.eye;
+	var center = settings.camera.center;
+	var up = settings.camera.up;
+	var fieldOfView = settings.fieldOfView;
+	var aspectRatio = width / height;
+	var nearPlane = settings.nearPlane;
+	var farPlane = settings.farPlane;
+	var viewPort = [0, 0, width, height];
+	var hiddenLine = settings.hiddenLine;
+
+	var i, j, ordered, orderedPolygons;
+	
+	if (hiddenLine) {
+		orderedPolygons = JSM.OrderPolygons (body, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort)
+	} else {
+		orderedPolygons = [];
+		for (i = 0; i < body.PolygonCount (); i++) {
+			orderedPolygons.push (i);
+		}
+	}
+
+	var body, polygon, points, coord, projected, x, y, svgPolyon;
+	for (i = 0; i < orderedPolygons.length; i++) {
+		points = '';
+		polygon = body.GetPolygon (orderedPolygons[i]);
+		for (j = 0; j < polygon.VertexIndexCount (); j++) {
+			coord = body.GetVertexPosition (polygon.GetVertexIndex (j));
+			projected = JSM.Project (coord, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+			x = projected.x;
+			y = height - projected.y;
+			points = points + x + ', ' + y;
+			if (j < polygon.VertexIndexCount () - 1) {
+				points = points + ', ';
+			}
+		}
+
+		svgPolyon = document.createElementNS (svgNameSpace, 'polygon');
+		svgPolyon.setAttributeNS (null, 'points', points);
+		if (hiddenLine) {
+			svgPolyon.setAttributeNS (null, 'fill', 'white');
+		} else {
+			svgPolyon.setAttributeNS (null, 'fill', 'none');
+		}
+		svgPolyon.setAttributeNS (null, 'stroke', 'black');
+		svgObject.appendChild (svgPolyon);
+	}
+
+	return true;
+};
+
+JSM.ConvertModelToSVG = function (model, settings, svgObject)
+{
+	settings.clear = false;
+	while (svgObject.lastChild) {
+		svgObject.removeChild (svgObject.lastChild);
+	}
+
+	var i, body;
+	for (i = 0; i < model.BodyCount (); i++) {
+		body = model.GetBody (i);
+		JSM.ConvertBodyToSVG (body, settings, svgObject);
+	}
 }

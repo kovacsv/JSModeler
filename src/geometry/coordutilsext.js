@@ -71,7 +71,7 @@ JSM.CalculateNormal = function (coords)
 	return normalized;
 };
 
-JSM.SphericalToCartesian = function (radius, theta, phi)
+JSM.SphericalToCartesian = function (radius, phi, theta)
 {
 	var result = new JSM.Coord ();
 	result.x = radius * Math.sin (phi) * Math.cos (theta);
@@ -80,7 +80,7 @@ JSM.SphericalToCartesian = function (radius, theta, phi)
 	return result;
 };
 
-JSM.CylindricalToCartesian = function (radius, theta, height)
+JSM.CylindricalToCartesian = function (radius, height, theta)
 {
 	var result = new JSM.Coord ();
 	result.x = radius * Math.cos (theta);
