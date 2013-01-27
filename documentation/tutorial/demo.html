@@ -24,6 +24,11 @@
 			margin : 0px;
 			padding : 0px;
 		}
+		
+		canvas
+		{
+			display : block;
+		}
 	</style>
 
 	<script type="text/javascript">
@@ -207,10 +212,9 @@
 		{
 			var fixSize = false;
 			if (!fixSize) {
-				var margin = 10;
 				var canvas = document.getElementById ('example');
 				canvas.width = document.body.clientWidth;
-				canvas.height = document.body.clientHeight - margin;
+				canvas.height = document.body.clientHeight;
 	
 				if (viewer != null) {
 					viewer.Resize ();

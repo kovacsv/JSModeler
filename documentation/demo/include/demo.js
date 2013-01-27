@@ -796,48 +796,6 @@ JSMDemo.prototype =
 		this.AddBodyToViewer (this.body);
 	},
 
-	GenerateLegoBrickUI : function ()
-	{
-		this.ClearUI ();
-
-		this.GenerateUITitleElement ('legobrick parameters');
-		this.GenerateUITextElement ('row count:');
-		this.GenerateUIInputElement ('2');
-		this.GenerateUITextElement ('column count:');
-		this.GenerateUIInputElement ('3');
-		this.GenerateUITextElement ('segmentation:');
-		this.GenerateUIInputElement ('25');
-		this.GenerateUITextElement ('other:');
-		this.GenerateUICheckBoxElement ('large brick', true);
-		this.GenerateUICheckBoxElement ('top cylinders', true);
-		this.GenerateUICheckBoxElement ('smooth surface', true);
-	
-		var myThis = this;
-		this.GenerateUIButtonElement ('generate', function () {myThis.GenerateLegoBrick ();});
-		this.EnableSubdivision (false);
-	},
-
-	GenerateLegoBrick : function ()
-	{
-		var inputs = document.getElementsByTagName ('input');
-		var rows = parseFloat (inputs[0].value);
-		var columns = parseFloat (inputs[1].value);
-		var segmentation = parseInt (inputs[2].value);
-		var isLarge = inputs[3].checked;
-		var hasTopCylinders = inputs[4].checked;
-		var curved = inputs[5].checked;
-		
-		this.body = new JSM.Body ();
-		if (rows < 1 || columns < 1 || segmentation <= 1) {
-			this.AddBodyToViewer (this.body);
-			return;
-		}
-		
-		this.body = JSM.GenerateLegoBrick (rows, columns, isLarge, hasTopCylinders, segmentation, curved);
-		this.body.OffsetToOrigo ();
-		this.AddBodyToViewer (this.body);
-	},
-	
 	ClearUI : function ()
 	{
 		this.uiDiv.innerHTML = '';
