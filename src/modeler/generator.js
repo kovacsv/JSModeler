@@ -510,6 +510,37 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 	return result;
 };
 
+JSM.GenerateCylinderShell = function (radius, height, width, segmentation, withTopAndBottom, isCurved)
+{
+	var GenerateCircle = function (radius, segmentation, bottom)
+	{
+		var result = [];
+		var step = 2.0 * Math.PI / segmentation;
+		var theta, cartesian;
+		var i = 0;
+		for (i = 0; i < segmentation; i++) {
+			theta = i * step;
+			cartesian = JSM.PolarToCartesian (radius, theta)
+			result.push (new JSM.Coord (cartesian.x, cartesian.y, bottom));
+		}
+		return result;
+	};
+
+	var normal = new JSM.Vector (0.0, 0.0, 1.0);
+	var circle = GenerateCircle (radius, segmentation, -height / 2.0);
+	var result = JSM.GeneratePrismShell (circle, normal, height, width, withTopAndBottom);
+	
+	var i;
+	if (isCurved) {
+		for (i = 0; i < segmentation; i++) {
+			result.GetPolygon (2 * i).SetCurveGroup (0);
+			result.GetPolygon (2 * i + 1).SetCurveGroup (0);
+		}
+	}
+	
+	return result;
+};
+
 JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withStartAndEnd, withTopAndBottom)
 {
 	var result = new JSM.Body ();

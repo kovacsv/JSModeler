@@ -6,13 +6,17 @@ JSM.ConversionData = function (textureLoadedCallback, hasConvexPolygons)
 
 JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, textureCoords, conversionData)
 {
-	var AddTriangle = function (geometry, vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
+	var AddTriangle = function (geometry, vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3, data)
 	{
 		var lastVertexIndex = geometry.vertices.length;
 		geometry.vertices.push (new THREE.Vector3 (vertex1.x, vertex1.y, vertex1.z));
 		geometry.vertices.push (new THREE.Vector3 (vertex2.x, vertex2.y, vertex2.z));
 		geometry.vertices.push (new THREE.Vector3 (vertex3.x, vertex3.y, vertex3.z));
-		geometry.faces.push (new THREE.Face3 (lastVertexIndex + 0, lastVertexIndex + 1, lastVertexIndex + 2));
+		var face = new THREE.Face3 (lastVertexIndex + 0, lastVertexIndex + 1, lastVertexIndex + 2);
+		if (data != null) {
+			face.data = data;
+		}
+		geometry.faces.push (face);
 		
 		if (normal1 !== undefined && normal2 !== undefined && normal3 !== undefined) {
 			var normalArray = [];
@@ -42,6 +46,7 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		var vertex1, vertex2, vertex3;
 		var normal1, normal2, normal3;
 		var uv1, uv2, uv3;
+		var data = polygon.data;
 
 		if (count === 3) {
 			vertex1 = body.GetVertex (polygon.GetVertexIndex (0)).position;
@@ -74,7 +79,8 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 				normal3,
 				uv1,
 				uv2,
-				uv3
+				uv3,
+				data
 			);
 		} else {
 			var i;
@@ -128,7 +134,8 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 						normal3,
 						uv1,
 						uv2,
-						uv3
+						uv3,
+						data
 					);
 				}
 			} else {
@@ -163,7 +170,8 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 						normal3,
 						uv1,
 						uv2,
-						uv3
+						uv3,
+						data
 					);
 				}
 			}
@@ -254,7 +262,9 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		CreateGeometry (polygons, i);
 	}
 
-	CreateGeometry (polygonsWithNoMaterial, -1);
+	if (polygonsWithNoMaterial.length !== 0) {
+		CreateGeometry (polygonsWithNoMaterial, -1);
+	}
 	return meshes;
 };
 

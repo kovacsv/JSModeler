@@ -189,6 +189,23 @@ JSM.Viewer.prototype =
         this.scene.add (mesh);
         this.Draw ();
 	},
+	
+	GetMesh : function (index)
+	{
+		var currentIndex = 0;
+		var i, current;
+		for (i = 0; i < this.scene.__objects.length; i++) {
+			current = this.scene.__objects[i];
+			if (current instanceof THREE.Mesh) {
+				if (currentIndex == index) {
+					return current;
+				}
+				currentIndex++;
+			}
+		}
+		alert ('not found');
+		return new THREE.Mesh ();
+	},
 
 	RemoveMeshes : function ()
 	{
@@ -305,13 +322,23 @@ JSM.Viewer.prototype =
 	GetFaceUnderMouse : function ()
 	{
 		var intersects = this.GetObjectsUnderMouse ();
+		var face = null;
+		if (intersects.length > 0) {
+			face = intersects[0].face;
+		}
+		return face;
+	},
+
+	GetFaceIndexUnderMouse : function ()
+	{
+		var intersects = this.GetObjectsUnderMouse ();
 		var faceIndex = -1;
 		if (intersects.length > 0) {
 			faceIndex = intersects[0].faceIndex;
 		}
 		return faceIndex;
 	},
-
+	
 	Draw : function ()
 	{
 		this.camera.position = this.cameraMove.eye;

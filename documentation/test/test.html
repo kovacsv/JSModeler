@@ -1390,6 +1390,12 @@
 			test.Assert (JSM.CoordIsEqual (prism.GetVertex (10).position, new JSM.Vector (0.0, 0.0, 1.0)));
 		}
 
+		function GenerateCylinderShellTest (test)
+		{
+			var cylinder = JSM.GenerateCylinderShell (1, 1, 0.1, 10, true, false);
+			test.Assert (cylinder.VertexCount () == 4 * 10 && cylinder.PolygonCount () == 4 * 10);
+		}
+
 		function GenerateLineShellTest (test)
 		{
 			var basePoints = [
@@ -1409,7 +1415,6 @@
 
 		function GenerateTorusTest (test)
 		{
-			//JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, innerSegmentation, isCurved)
 			var prism = JSM.GenerateTorus (1.0, 5.0, 10, 10, true);
 			test.Assert (prism.VertexCount () == 100 && prism.PolygonCount () == 100);
 		}
@@ -2061,6 +2066,7 @@
 			test.AddTestCase (GenerateConeTest, 'GenerateConeTest');
 			test.AddTestCase (GeneratePrismTest, 'GeneratePrismTest');
 			test.AddTestCase (GeneratePrismShellTest, 'GeneratePrismShellTest');
+			test.AddTestCase (GenerateCylinderShellTest, 'GenerateCylinderShellTest');
 			test.AddTestCase (GenerateLineShellTest, 'GenerateLineShellTest');
 			test.AddTestCase (GenerateTorusTest, 'GenerateTorusTest');
 			test.AddTestCase (GenerateRuledTest, 'GenerateRuledTest');
