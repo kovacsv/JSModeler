@@ -1,0 +1,251 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="legobuilder.css">
+	<script type="text/javascript" src="../../build/Three.js"></script>
+	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
+	<script type="text/javascript" src="legogenerator.js"></script>
+	<script type="text/javascript" src="legoeditor.js"></script>
+	<title>JSModeler Lego Example</title>
+
+	<script type="text/javascript">
+		var editor = null;
+		var viewer = null;
+		var legoBuild = null;
+
+		function GenerateLegoBuild (index)
+		{
+			var bodyAndMaterials = legoBuild.GetBodyAndMaterials (index);
+			var meshes = JSM.ConvertBodyToThreeMeshes (bodyAndMaterials[0], bodyAndMaterials[1]);
+			for (var i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}
+		}
+		
+		function Resize ()
+		{
+			var margin = 10;
+			var left = document.getElementById ('left');
+			var canvas = document.getElementById ('example');
+			canvas.width = window.innerWidth - left.clientWidth - 3 * margin;
+			canvas.height = window.innerHeight - 3 * margin;
+
+			if (viewer != null) {
+				viewer.Resize ();
+			}
+		}
+
+		function BrickAdded (editorBrick)
+		{
+			function ConvertColor (color) {
+				var resultFormat = '0x' + color.substr (1);
+				return parseInt (resultFormat);
+			};
+		
+			// rows and columns are swapped
+			legoBuild.AddLegoBrick (new JSM.LegoBrick (editorBrick.positionY, editorBrick.positionX, editorBrick.columns, editorBrick.rows, editorBrick.isLarge, ConvertColor (editorBrick.color)));
+			GenerateLegoBuild (legoBuild.BrickCount () - 1);
+			viewer.Draw ();
+		}
+		
+		function GetColorTable ()
+		{
+			var colors = [
+				'#FEC400',
+				'#E76318',
+				'#DE000D',
+				'#80081B',
+				'#0057A8',
+				'#478CC6',
+				'#007B28',
+				'#5F8265',
+				'#95B90B',
+				'#5B1C0C',
+				'#8D7452',
+				'#D67240'
+			];
+			return colors;
+		}
+		
+		function SetEditorDefaultColor (index)
+		{
+			var colors = GetColorTable ();		
+			var elements = document.getElementsByClassName ('color');
+
+			var i, element;
+			for (i = 0; i < elements.length; i++) {
+				element = elements[i];
+				if (i == index) {
+					element.style.height = '30px';
+				} else {
+					element.style.height = '20px';
+				}
+			}
+			
+			editor.SetDefaultColor (colors[index]);
+		}
+		
+		function SetEditorDefaultIsLarge ()
+		{
+			var largeText = 'large';
+			var smallText = 'small';
+			var element = document.getElementById ('islargebutton');
+			if (element.innerHTML == smallText) {
+				editor.SetDefaultIsLarge (true);
+				element.innerHTML = largeText;
+			} else if (element.innerHTML == largeText) {
+				editor.SetDefaultIsLarge (false);
+				element.innerHTML = smallText;
+			}
+		}
+
+		function Undo ()
+		{
+			var currentBrickCount = legoBuild.BrickCount ();
+			if (currentBrickCount > 1) {
+				editor.RemoveLastBrick ();
+				legoBuild.RemoveLastBrick ();
+				viewer.RemoveLastMesh ();
+			}
+		}
+		
+		function Clear ()
+		{
+			var currentBrickCount = legoBuild.BrickCount ();
+			if (currentBrickCount > 1) {
+				editor.RemoveAllBricks ();
+				legoBuild.RemoveAllBricks ();
+				var i;
+				for (i = 0; i < currentBrickCount - 1; i++) {
+					viewer.RemoveLastMesh ();
+				}
+			}
+		}
+
+		function Random ()
+		{
+			var R = function (from, to)
+			{
+				return JSM.RandomInt (from, to);
+			};
+		
+			var colors = GetColorTable ();
+			var rows = R (1, 4);
+			var columns = R (1, 4);
+			var tableSize = editor.GetTableSize ();
+			
+			editor.AddBrick (new LegoEditorBrick (R (0, tableSize - rows), R (0, tableSize - columns), rows, columns, R (0, 1), colors[R (0, colors.length - 1)]));
+		}
+
+		function Error ()
+		{
+			document.getElementById ('left').style.display = 'none';
+			document.getElementById ('right').style.display = 'none';
+			alert ('Your browser does not support WebGL.');
+		}
+		
+		function Load ()
+		{
+			var TextureLoaded = function () {
+				viewer.Draw ();
+			};
+
+			var viewerSettings = {
+				"cameraEyePosition" : [1.0, -1.5, 1.0],
+				"cameraCenterPosition" : [0.0, 0.0, 0.0],
+				"cameraUpVector" : [0, 0, 1],
+				"fieldOfView" : 45,
+				"nearClippingPlane" : 1,
+				"farClippingPlane" : 100000,
+				"lightAmbientColor" : [0.5, 0.5, 0.5],
+				"lightDiffuseColor" : [0.5, 0.5, 0.5]
+			};
+
+			window.onresize = Resize;
+			Resize ();
+
+			var settings = {
+				mode : 'Polygon',
+				color : '#00aa00'
+			};
+			
+			var tableSize = 15;
+			
+			editor = new LegoEditor ();
+			if (!editor.Initialize ('editorCanvas', tableSize, BrickAdded)) {
+				Error ();
+				return;
+			}
+			
+			SetEditorDefaultColor (2);
+			SetEditorDefaultIsLarge ();
+
+			viewer = new JSM.Viewer ();
+			if (!viewer.Start ('example', viewerSettings)) {
+				Error ();
+				return;
+			}
+			
+			legoBuild = new JSM.LegoBuild (new JSM.LegoTable (tableSize, tableSize));
+			GenerateLegoBuild (0);
+			
+			viewer.FitInWindow ();
+			viewer.Draw ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="left">
+		<div id="menu">
+			<div class="colorpicker">
+				<div class="button">
+					<a href="javascript:SetEditorDefaultColor (0);"><div class="color" style="background: #FEC400;"></div></a>
+					<a href="javascript:SetEditorDefaultColor (1);"><div class="color" style="background: #E76318;"></div></a>
+					<a href="javascript:SetEditorDefaultColor (2);"><div class="color" style="background: #DE000D;"></div></a>
+					<a href="javascript:SetEditorDefaultColor (3);"><div class="color" style="background: #80081B;"></div></a>
+					<a href="javascript:SetEditorDefaultColor (4);"><div class="color" style="background: #0057A8;"></div></a>
+					<a href="javascript:SetEditorDefaultColor (5);"><div class="color" style="background: #478CC6;"></div></a>
+					<a href="javascript:SetEditorDefaultColor (6);"><div class="color" style="background: #007B28;"></div></a>
+					<a href="javascript:SetEditorDefaultColor (7);"><div class="color" style="background: #5F8265;"></div></a>
+					<a href="javascript:SetEditorDefaultColor (8);"><div class="color" style="background: #95B90B;"></div></a>
+					<a href="javascript:SetEditorDefaultColor (9);"><div class="color" style="background: #5B1C0C;"></div></a>
+					<a href="javascript:SetEditorDefaultColor (10);"><div class="color" style="background: #8D7452;"></div></a>
+					<a href="javascript:SetEditorDefaultColor (11);"><div class="color" style="background: #D67240;"></div></a>
+				</div>
+				<div class="clearer"></div>
+			</div>
+			<div class="controls">
+				<a href="javascript:Undo ();"><div class="button">undo</div></a>
+				<a href="javascript:SetEditorDefaultIsLarge ();"><div id="islargebutton" class="button">small</div></a>
+				<a href="javascript:Clear ();"><div class="button" style="float : right; margin-right : 0px;">clear</div></a>
+				<div class="clearer"></div>
+			</div>
+			<canvas id="editorCanvas" width="300" height="300"></canvas>
+			<div class="projectlink">
+				<a href="https://github.com/kovacsv/JSModeler">go to JSModeler project home page</a>
+			</div>
+		</div>
+	</div>
+	<div id="right">
+		<canvas id="example" width="1000" height="500"></canvas>
+	</div>
+</body>
+
+</html>

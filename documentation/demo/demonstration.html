@@ -190,8 +190,11 @@
 
 			demo = new JSMDemo ();
 			if (!demo.Initialize ('demo', 'leftmenu')) {
-				var leftDiv = document.getElementById ('left');
-				leftDiv.innerHTML = 'Your browser does not support WebGL. Use a real browser.';
+				document.getElementById ('header').style.display = 'none';
+				document.getElementById ('menu').style.display = 'none';
+				document.getElementById ('left').style.display = 'none';
+				document.getElementById ('right').style.display = 'none';
+				alert ('Your browser does not support WebGL.');
 				return;
 			}
 

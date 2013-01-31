@@ -1,4 +1,4 @@
-JSM.GenerateClock = function (radius)
+JSM.GenerateClock = function (radius, segmentation)
 {
 	var OffsetBody = function (body, offset)
 	{
@@ -55,7 +55,6 @@ JSM.GenerateClock = function (radius)
 	materials.AddMaterial (new JSM.Material (0x222222, 0x222222));
 	
 	var height = radius / 20;
-	var segmentation = 100;
 	var isCurved = true;
 	var markerLength = 2.0 * height;
 	

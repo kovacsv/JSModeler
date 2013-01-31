@@ -90,7 +90,7 @@ JSM.Viewer.prototype =
 	InitThree : function (canvasName)
 	{
 		this.canvas = document.getElementById (canvasName);
-        if (!this.canvas) {
+        if (!this.canvas || !this.canvas.getContext) {
 			return false;
 		}
 
@@ -206,18 +206,33 @@ JSM.Viewer.prototype =
 		alert ('not found');
 		return new THREE.Mesh ();
 	},
-
+	
 	RemoveMeshes : function ()
 	{
-		for (var i = 0; i < this.scene.__objects.length; i++) {
-			var current = this.scene.__objects[i];
+		var i, current;
+		for (i = 0; i < this.scene.__objects.length; i++) {
+			current = this.scene.__objects[i];
 			if (current instanceof THREE.Mesh) {
 				this.scene.remove (current);
 				i--;
 			}
 		}
+		this.Draw ();
     },
-	
+
+	RemoveLastMesh : function ()
+	{
+		var i, current;
+		for (i = this.scene.__objects.length; i >= 0; i--) {
+			current = this.scene.__objects[i];
+			if (current instanceof THREE.Mesh) {
+				this.scene.remove (current);
+				this.Draw ();
+				return;
+			}
+		}
+    },
+
 	Resize : function ()
 	{
 		this.camera.aspect = this.canvas.width / this.canvas.height;
@@ -339,6 +354,16 @@ JSM.Viewer.prototype =
 		return faceIndex;
 	},
 	
+	GetPointUnderMouse : function ()
+	{
+		var intersects = this.GetObjectsUnderMouse ();
+		var point = null;
+		if (intersects.length > 0) {
+			point = intersects[0].point;
+		}
+		return point;
+	},
+
 	Draw : function ()
 	{
 		this.camera.position = this.cameraMove.eye;

@@ -8,7 +8,6 @@ JSM.BodyPolygon = function (vertices)
 	this.vertices = vertices || [];
 	this.material = -1;
 	this.curved = -1;
-	this.data = null;
 };
 
 JSM.Body = function ()
@@ -84,21 +83,10 @@ JSM.BodyPolygon.prototype =
 		this.curved = group;
 	},
 	
-	GetData : function ()
-	{
-		return this.data;
-	},
-	
-	SetData : function (data)
-	{
-		this.data = data;
-	},
-
 	InheritAttributes : function (source)
 	{
 		this.material = source.material;
 		this.curved = source.curved;
-		this.data = source.data;
 	},
 	
 	Clone : function ()
@@ -110,7 +98,6 @@ JSM.BodyPolygon.prototype =
 		}
 		result.material = this.material;
 		result.curved = this.curved;
-		result.data = this.data;
 		return result;
 	}
 };
@@ -175,14 +162,6 @@ JSM.Body.prototype =
 		}
 	},
 	
-	SetPolygonsData : function (data)
-	{
-		var i;
-		for (i = 0; i < this.polygons.length; i++) {
-			this.polygons[i].SetData (data);
-		}
-	},
-
 	GetTextureProjectionType : function ()
 	{
 		return this.projection;
