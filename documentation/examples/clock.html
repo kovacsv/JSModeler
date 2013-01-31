@@ -14,7 +14,7 @@
 	<script type="text/javascript" src="../../build/Three.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
 	<script type="text/javascript" src="clockgenerator.js"></script>
-	<title>Example</title>
+	<title>JSModeler Clock Example</title>
 
 	<style>
 		html, body
@@ -92,7 +92,7 @@
 			viewer = new JSM.Viewer ();
 			viewer.Start ('example', viewerSettings);
 			
-			var modelAndMaterials = JSM.GenerateClock (1.0);
+			var modelAndMaterials = JSM.GenerateClock (1.0, 100);
 			
 			var conversionData = new JSM.ConversionData (null, true);
 			var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1], conversionData);
