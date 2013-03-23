@@ -109,13 +109,23 @@
 			demo.CatmullClarkSubdivision ();
 		}
 		
-		function ExportToSTL ()
+		function ExportToStl ()
 		{
 			var floating = document.getElementById ('floating');
-			var stltext = document.getElementById ('stltext');
-			var stlContent = JSM.ConvertBodyToSTL (demo.body, 'JSModelerModel');
-			stltext.value = stlContent;
-			stltext.style.display = 'block';
+			var exporttext = document.getElementById ('exporttext');
+			var stlContent = JSM.ExportBodyToStl (demo.body, 'JSModelerModel');
+			exporttext.value = stlContent;
+			exporttext.style.display = 'block';
+			floating.style.display = 'block';
+		}
+		
+		function ExportToObj ()
+		{
+			var floating = document.getElementById ('floating');
+			var exporttext = document.getElementById ('exporttext');
+			var stlContent = JSM.ExportBodyToObj (demo.body);
+			exporttext.value = stlContent;
+			exporttext.style.display = 'block';
 			floating.style.display = 'block';
 		}
 		
@@ -124,7 +134,7 @@
 			var floating = document.getElementById ('floating');
 			var svgcontent = document.getElementById ('svgcontent');
 			var svgSettings = new JSM.SVGSettings (demo.viewer.cameraMove, demo.viewer.settings['fieldOfView'], demo.viewer.settings['nearClippingPlane'], demo.viewer.settings['farClippingPlane']);
-			JSM.ConvertBodyToSVG (demo.body, svgSettings, svgcontent);
+			JSM.ExportBodyToSVG (demo.body, null, svgSettings, svgcontent);
 			svgcontent.style.display = 'block';
 			floating.style.display = 'block';
 		}
@@ -132,7 +142,7 @@
 		function DocumentClick (clickEvent)
 		{
 			var floating = document.getElementById ('floating');
-			var stltext = document.getElementById ('stltext');
+			var exporttext = document.getElementById ('exporttext');
 			var svgcontent = document.getElementById ('svgcontent');
 			var isInFloating = false;
 			
@@ -148,7 +158,7 @@
 			if (!isInFloating) {
 				if (floating.style.display !== 'none') {
 					floating.style.display = 'none';
-					stltext.style.display = 'none';
+					exporttext.style.display = 'none';
 					svgcontent.style.display = 'none';
 				}
 			}
@@ -241,7 +251,8 @@
 				<a href="javascript:CatmullClarkSubdivision ();">catmull-clark subdivision</a>
 			</div>
 			<a href="javascript:ExportToSVG ();">export model to svg</a><br>
-			<a href="javascript:ExportToSTL ();">export model to stl</a><br>
+			<a href="javascript:ExportToStl ();">export model to stl</a><br>
+			<a href="javascript:ExportToObj ();">export model to obj</a><br>
 		</div>
 		<div class="leftbox">
 			<a href="https://github.com/kovacsv/JSModeler">go to project home page</a>
@@ -251,7 +262,7 @@
 		<canvas id="demo" width="1000" height="500"></canvas>
 	</div>
 	<div id="floating">
-		<textarea id="stltext"></textarea>
+		<textarea id="exporttext"></textarea>
 		<svg id="svgcontent" xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>
 	</div>
 </body>

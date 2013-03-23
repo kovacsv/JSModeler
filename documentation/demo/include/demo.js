@@ -637,27 +637,35 @@ JSMDemo.prototype =
 	{
 		this.ClearUI ();
 
-		this.GenerateUITitleElement ('Platonic solids');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'Tetrahedron\')">tetrahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'Hexahedron\')">hexahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'Octahedron\')">octahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'Dodecahedron\')">dodecahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'Icosahedron\')">icosahedron</a>');
+		this.GenerateUITitleElement ('<a href="JavaScript:demo.ShowHideDivs ([\'solids1\'], [\'solids2\', \'solids3\'])">Platonic solids</a>');
+		this.GenerateUIDivElement ('solids1', '');
+		this.GenerateUITextElementInDiv ('solids1', '<a href="JavaScript:demo.GenerateSolid (\'Tetrahedron\')">tetrahedron</a>');
+		this.GenerateUITextElementInDiv ('solids1', '<a href="JavaScript:demo.GenerateSolid (\'Hexahedron\')">hexahedron</a>');
+		this.GenerateUITextElementInDiv ('solids1', '<a href="JavaScript:demo.GenerateSolid (\'Octahedron\')">octahedron</a>');
+		this.GenerateUITextElementInDiv ('solids1', '<a href="JavaScript:demo.GenerateSolid (\'Dodecahedron\')">dodecahedron</a>');
+		this.GenerateUITextElementInDiv ('solids1', '<a href="JavaScript:demo.GenerateSolid (\'Icosahedron\')">icosahedron</a>');
 
-		this.GenerateUITitleElement ('<br>Archimedean solids');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'TruncatedTetrahedron\')">truncated tetrahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'Cuboctahedron\')">cuboctahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'TruncatedCube\')">truncated cube</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'TruncatedOctahedron\')">truncated octahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'Rhombicuboctahedron\')">rhombicuboctahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'TruncatedCuboctahedron\')">truncated cuboctahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'SnubCube\')">snub cube</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'Icosidodecahedron\')">icosidodecahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'TruncatedDodecahedron\')">truncated dodecahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'TruncatedIcosahedron\')">truncated icosahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'Rhombicosidodecahedron\')">rhombicosidodecahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'TruncatedIcosidodecahedron\')">truncated icosidodecahedron</a>');
-		this.GenerateUITextElement ('<a href="JavaScript:demo.GenerateSolid (\'SnubDodecahedron\')">snub dodecahedron</a>');
+		this.GenerateUITitleElement ('<br><a href="JavaScript:demo.ShowHideDivs ([\'solids2\'], [\'solids1\', \'solids3\'])">Archimedean solids</a>');
+		this.GenerateUIDivElement ('solids2', 'none');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'TruncatedTetrahedron\')">truncated tetrahedron</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'Cuboctahedron\')">cuboctahedron</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'TruncatedCube\')">truncated cube</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'TruncatedOctahedron\')">truncated octahedron</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'Rhombicuboctahedron\')">rhombicuboctahedron</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'TruncatedCuboctahedron\')">truncated cuboctahedron</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'SnubCube\')">snub cube</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'Icosidodecahedron\')">icosidodecahedron</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'TruncatedDodecahedron\')">truncated dodecahedron</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'TruncatedIcosahedron\')">truncated icosahedron</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'Rhombicosidodecahedron\')">rhombicosidodecahedron</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'TruncatedIcosidodecahedron\')">truncated icosidodecahedron</a>');
+		this.GenerateUITextElementInDiv ('solids2', '<a href="JavaScript:demo.GenerateSolid (\'SnubDodecahedron\')">snub dodecahedron</a>');
+
+		this.GenerateUITitleElement ('<br><a href="JavaScript:demo.ShowHideDivs ([\'solids3\'], [\'solids1\', \'solids2\'])">Dodecahedron stellations</a>');
+		this.GenerateUIDivElement ('solids3', 'none');
+		this.GenerateUITextElementInDiv ('solids3', '<a href="JavaScript:demo.GenerateSolid (\'SmallStellatedDodecahedron\')">small stellated dodecahedron</a>');
+		this.GenerateUITextElementInDiv ('solids3', '<a href="JavaScript:demo.GenerateSolid (\'GreatDodecahedron\')">great dodecahedron</a>');
+		this.GenerateUITextElementInDiv ('solids3', '<a href="JavaScript:demo.GenerateSolid (\'GreatStellatedDodecahedron\')">great stellated dodecahedron</a>');
 
 		this.EnableSubdivision (true);
 	},
@@ -881,6 +889,56 @@ JSMDemo.prototype =
 		canvas.id = canvasName;
 		div.appendChild (canvas);
 		this.uiDiv.appendChild (div);
+	},
+
+	GenerateUIDivElement : function (divId, displayStyle)
+	{
+		var myThis = this;
+
+		var div = document.createElement ('div');
+		div.id = divId;
+		div.style.display = displayStyle;
+		this.uiDiv.appendChild (div);
+	},
+
+	GenerateUITextElementInDiv : function (parentDivName, text)
+	{
+		var parentDiv = document.getElementById (parentDivName);
+		var div = document.createElement ('div');
+		div.innerHTML = text;
+		div.className = 'text';
+		parentDiv.appendChild (div);
+	},
+	
+	ShowDiv : function (div)
+	{
+		div.style.display = 'block';
+	},
+	
+	HideDiv : function (div)
+	{
+		div.style.display = 'none';
+	},
+
+	ShowHideDiv : function (divName)
+	{
+		var div = document.getElementById (divName);
+		if (div.style.display == 'none') {
+			this.ShowDiv (div);
+		} else {
+			this.HideDiv (div);
+		}
+	},
+	
+	ShowHideDivs : function (toShow, toHide)
+	{
+		var i;
+		for (i = 0; i < toShow.length; i++) {
+			this.ShowDiv (document.getElementById (toShow[i]));
+		}
+		for (i = 0; i < toHide.length; i++) {
+			this.HideDiv (document.getElementById (toHide[i]));
+		}
 	},
 
 	EnableSubdivision : function (enable)
