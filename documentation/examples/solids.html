@@ -1,0 +1,248 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="solids.css">
+	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
+	<title>JSModeler Solids Example</title>
+
+	<script type="text/javascript">
+		var body = null;
+		var viewer = null;
+		var lastName = 'Hexahedron';
+		var coloredFaces = true;
+	
+		function ChangeShowFaces ()
+		{
+			var check = document.getElementById ('showfacescheck');
+			viewer.hiddenLine = check.checked;
+			viewer.Draw ();
+		}
+	
+		function ChangeColoredFaces ()
+		{
+			var check = document.getElementById ('coloredfacescheck');
+			coloredFaces = check.checked;
+			SetBody (lastName);
+		}
+	
+		function SetBody (name)
+		{
+			lastName = name;
+		
+			viewer.RemoveBodies ();
+			body = JSM.GenerateSolidWithRadius (name, 1.0);
+			
+			if (coloredFaces) {
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
+				materials.AddMaterial (new JSM.Material (0x279b61, 0x279b61));
+				materials.AddMaterial (new JSM.Material (0xcc3333, 0xcc3333));
+
+				var vertexCountToColor = [];
+				var currentColor = 0;
+					
+				var i, polygon, vertexCount;
+				for (i = 0; i < body.PolygonCount (); i++) {
+					polygon = body.GetPolygon (i);
+					vertexCount = polygon.VertexIndexCount ();
+					if (vertexCountToColor[vertexCount] === undefined) {
+						vertexCountToColor[vertexCount] = currentColor;
+						currentColor++;
+					}
+					polygon.SetMaterialIndex (vertexCountToColor[vertexCount]);
+				}
+			}
+			
+			viewer.AddBody (body, materials);
+			viewer.Draw ();		
+		}
+	
+		function ShowHide (index, count)
+		{
+			var i, div;
+			for (i = 1; i <= count; i++) {
+				div = document.getElementById ('showhide' + i);
+				if (i == index) {
+					div.style.display = '';
+				} else {
+					div.style.display = 'none';
+				}
+			}
+		}
+	
+		function ExportToStl ()
+		{
+			var floating = document.getElementById ('floating');
+			var exporttext = document.getElementById ('exporttext');
+			var stlContent = JSM.ExportBodyToStl (body[0], 'JSModelerModel');
+			exporttext.value = stlContent;
+			exporttext.style.display = 'block';
+			floating.style.display = 'block';
+		}
+		
+		function ExportToObj ()
+		{
+			var floating = document.getElementById ('floating');
+			var exporttext = document.getElementById ('exporttext');
+			var stlContent = JSM.ExportBodyToObj (body[0]);
+			exporttext.value = stlContent;
+			exporttext.style.display = 'block';
+			floating.style.display = 'block';
+		}
+
+		function ExportToSvg ()
+		{
+			var svg = document.getElementById ('example');
+			var serializer = new XMLSerializer ();
+			var xml = serializer.serializeToString(svg);
+			window.open ("data:image/svg+xml," + xml);
+		}
+
+		function DocumentClick (clickEvent)
+		{
+			var floating = document.getElementById ('floating');
+			var exporttext = document.getElementById ('exporttext');
+			var isInFloating = false;
+			
+			var target = clickEvent.target;
+			while (target !== null) {
+				if (target === floating) {
+					isInFloating = true;
+					break;
+				}
+				target = target.parentElement;
+			}
+			
+			if (!isInFloating) {
+				if (floating.style.display !== 'none') {
+					floating.style.display = 'none';
+					exporttext.style.display = 'none';
+				}
+			}
+		}
+
+		function Resize ()
+		{
+			var margin = 10;
+			var left = document.getElementById ('left');
+			var canvas = document.getElementById ('example');
+			canvas.setAttribute ('width', window.innerWidth - left.clientWidth - 3 * margin);
+			canvas.setAttribute ('height', window.innerHeight - 3 * margin);
+
+			if (viewer != null) {
+				viewer.Resize ();
+			}
+
+			var floatingMargin = 100;
+			var floating = document.getElementById ('floating');
+			floating.style.left = floatingMargin + 'px';
+			floating.style.top = floatingMargin + 'px';
+			floating.style.width = (document.body.clientWidth - 2.0 * floatingMargin) + 'px';
+			floating.style.height = (document.body.clientHeight - 2.0 * floatingMargin) + 'px';
+		}
+
+		function Load ()
+		{
+			ShowHide (1, 3);
+			var viewerSettings = {
+				'cameraEyePosition' : [3, 2, 3],
+				'cameraCenterPosition' : [0.0, 0.0, 0.0],
+				'cameraUpVector' : [0.0, 0.0, 1.0],
+				'fieldOfView' : 45.0,
+				'nearClippingPlane' : 0.1,
+				'farClippingPlane' : 1000.0
+			};
+
+			window.onresize = Resize;
+			document.onclick = DocumentClick;
+			Resize ();
+
+			document.getElementById ('showfacescheck').checked = true;
+			document.getElementById ('coloredfacescheck').checked = true;
+			
+			viewer = new JSM.SVGViewer ();
+			var success = viewer.Start ('example', viewerSettings, true);
+
+			SetBody (lastName);
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="left">
+		<div id="menu">
+			<div id="title">
+				<span id="titlemain">solids</span>
+				<span id="titleversion">1.0</span>
+			</div>
+			<div class="box">
+				<a href="javascript:ShowHide (1, 3);"><div class="boxtitle">platonic solids</div></a>
+				<div id="showhide1" class="boxcontent">
+					<a href="javascript:SetBody ('Tetrahedron')">tetrahedron</a><br>
+					<a href="javascript:SetBody ('Hexahedron')">hexahedron</a><br>
+					<a href="javascript:SetBody ('Octahedron')">octahedron</a><br>
+					<a href="javascript:SetBody ('Dodecahedron')">dodecahedron</a><br>
+					<a href="javascript:SetBody ('Icosahedron')">icosahedron</a>
+				</div>
+				<a href="javascript:ShowHide (2, 3);"><div class="boxtitle">archimedean solids</div></a>
+				<div id="showhide2" class="boxcontent">
+					<a href="javascript:SetBody ('TruncatedTetrahedron')">truncated tetrahedron</a><br>
+					<a href="javascript:SetBody ('Cuboctahedron')">cuboctahedron</a><br>
+					<a href="javascript:SetBody ('TruncatedCube')">truncated cube</a><br>
+					<a href="javascript:SetBody ('TruncatedOctahedron')">truncated octahedron</a><br>
+					<a href="javascript:SetBody ('Rhombicuboctahedron')">rhombicuboctahedron</a><br>
+					<a href="javascript:SetBody ('TruncatedCuboctahedron')">truncated cuboctahedron</a><br>
+					<a href="javascript:SetBody ('SnubCube')">snub cube</a><br>
+					<a href="javascript:SetBody ('Icosidodecahedron')">icosidodecahedron</a><br>
+					<a href="javascript:SetBody ('TruncatedDodecahedron')">truncated dodecahedron</a><br>
+					<a href="javascript:SetBody ('TruncatedIcosahedron')">truncated icosahedron</a><br>
+					<a href="javascript:SetBody ('Rhombicosidodecahedron')">rhombicosidodecahedron</a><br>
+					<a href="javascript:SetBody ('TruncatedIcosidodecahedron')">truncated icosidodecahedron</a><br>
+					<a href="javascript:SetBody ('SnubDodecahedron')">snub dodecahedron</a>
+				</div>
+				<a href="javascript:ShowHide (3, 3);"><div class="boxtitle">dodecahedron stellations</div></a>
+				<div id="showhide3" class="boxcontent">
+					<a href="javascript:SetBody ('SmallStellatedDodecahedron')">small stellated dodecahedron</a><br>
+					<a href="javascript:SetBody ('GreatDodecahedron')">great dodecahedron</a><br>
+					<a href="javascript:SetBody ('GreatStellatedDodecahedron')">great stellated dodecahedron</a>
+				</div>
+			</div>
+			<div class="box">
+				<div class="boxtitle">settings</div>
+				<input id="showfacescheck" type="checkbox" checked= "true" onchange="javascript:ChangeShowFaces ();">show faces<br>
+				<input id="coloredfacescheck" type="checkbox" checked= "true" onchange="javascript:ChangeColoredFaces ();">colored faces
+			</div>
+			<div class="box">
+				<a href="javascript:ExportToStl ();">export model to stl</a><br>
+				<a href="javascript:ExportToObj ();">export model to obj</a><br>
+				<a href="javascript:ExportToSvg ();">export model to svg</a><br>
+				<a href="https://github.com/kovacsv/JSModeler">go to project home page</a>
+			</div>
+		</div>
+	</div>
+	<div id="right">
+		<svg id="example" xmlns="http://www.w3.org/2000/svg" version="1.1" width="800" height="500"></svg>
+	</div>
+	<div id="floating">
+		<textarea id="exporttext"></textarea>
+	</div>
+</body>
+
+</html>

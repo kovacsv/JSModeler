@@ -4,7 +4,9 @@ JSM.SVGViewer = function ()
 	this.cameraMove = null;
 	this.settings = null;
 	this.bodies = null;
-	this.hiddenLine = false;
+	this.hiddenLine = null;
+	this.mouse = null;
+	this.touch = null;
 };
 
 JSM.SVGViewer.prototype =
@@ -50,6 +52,7 @@ JSM.SVGViewer.prototype =
 			'nearClippingPlane' : 0.1,
 			'farClippingPlane' : 1000.0
 		};
+		this.hiddenLine = false;
 	
 		if (settings != undefined) {
 			if (settings['cameraEyePosition'] !== undefined) this.settings['cameraEyePosition'] = settings['cameraEyePosition'];
@@ -58,10 +61,7 @@ JSM.SVGViewer.prototype =
 			if (settings['fieldOfView'] !== undefined) this.settings['fieldOfView'] = settings['fieldOfView'];
 			if (settings['nearClippingPlane'] !== undefined) this.settings['nearClippingPlane'] = settings['nearClippingPlane'];
 			if (settings['farClippingPlane'] !== undefined) this.settings['farClippingPlane'] = settings['farClippingPlane'];
-		}
-		
-		if (hiddenLine !== undefined) {
-			this.hiddenLine = hiddenLine;
+			if (hiddenLine !== undefined) this.hiddenLine = hiddenLine;
 		}
 		
 		return true;
@@ -85,6 +85,11 @@ JSM.SVGViewer.prototype =
 			return false;
 		}
 
+		this.touch = new JSM.Touch ();
+		if (!this.touch) {
+			return false;
+		}
+
 		var myThis = this;
 		
 		if (document.addEventListener) {
@@ -96,16 +101,29 @@ JSM.SVGViewer.prototype =
 			this.canvas.addEventListener ('mousedown', function (event) {myThis.OnMouseDown (event);}, false);
 			this.canvas.addEventListener ('DOMMouseScroll', function (event) {myThis.OnMouseWheel (event);}, false);
 			this.canvas.addEventListener ('mousewheel', function (event) {myThis.OnMouseWheel (event);}, false);
+			this.canvas.addEventListener ('touchstart', function (event) {myThis.OnTouchStart (event);}, false);
+			this.canvas.addEventListener ('touchmove', function (event) {myThis.OnTouchMove (event);}, false);
+			this.canvas.addEventListener ('touchend', function (event) {myThis.OnTouchEnd (event);}, false);
 		}
 		
 		return true;
 	},
 
-	AddBody : function (body)
+	AddBody : function (body, materials)
 	{
-		this.bodies.push (body);
+		this.bodies.push ([body, materials]);
 	},
 	
+	RemoveBodies : function ()
+	{
+		this.bodies = [];
+    },
+
+	Resize : function ()
+	{
+		this.Draw ();
+	},
+
 	Draw : function ()
 	{
 		var i, bodies;
@@ -118,7 +136,7 @@ JSM.SVGViewer.prototype =
 		
 		for (i = 0; i < this.bodies.length; i++) {
 			body = this.bodies[i];
-			JSM.ConvertBodyToSVG (body, svgSettings, this.canvas);
+			JSM.ExportBodyToSVG (body[0], body[1], svgSettings, this.canvas);
 		}
 
 		return true;
@@ -175,5 +193,28 @@ JSM.SVGViewer.prototype =
 		var zoomIn = delta > 0;
 		this.cameraMove.Zoom (zoomIn);
 		this.Draw ();
+	},
+	
+	OnTouchStart : function (event)
+	{
+		this.touch.Start (event);
+	},
+
+	OnTouchMove : function (event)
+	{
+		this.touch.Move (event);
+		if (!this.touch.down) {
+			return;
+		}
+		
+		var ratio = -0.5;
+		this.cameraMove.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
+		
+		this.Draw ();
+	},
+
+	OnTouchEnd : function (event)
+	{
+		this.touch.End (event, this.canvas);
 	}
 };

@@ -62,6 +62,51 @@ JSM.IsSolidBody = function (body)
 	return true;
 };
 
+JSM.CheckSolidBody = function (body)
+{
+	var adjacencyList = JSM.CalculateAdjacencyList (body);
+	var i, j, edge, pedge, found, pgon1, pgon2, pgon1Reverse, pgon2Reverse;
+	for (i = 0; i < adjacencyList.edges.length; i++) {
+		edge = adjacencyList.edges[i];
+		if (edge.pgon1 === -1 || edge.pgon2 === -1) {
+			return false;
+		}
+		
+		pgon1 = adjacencyList.pgons[edge.pgon1];
+		found = false;
+		for (j = 0; j < pgon1.pedges.length; j++) {
+			pedge = pgon1.pedges[j];
+			if (pedge.index == i) {
+				pgon1Reverse = pedge.reverse;
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			return false;
+		}
+		
+		pgon2 = adjacencyList.pgons[edge.pgon2];
+		found = false;
+		for (j = 0; j < pgon2.pedges.length; j++) {
+			pedge = pgon2.pedges[j];
+			if (pedge.index == i) {
+				pgon2Reverse = pedge.reverse;
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			return false;
+		}
+		
+		if (pgon1Reverse == pgon2Reverse) {
+			return false;
+		}
+	}
+	return true;
+};
+
 JSM.CalculateAdjacencyList = function (body)
 {
 	var AddEdge = function (from, to, polygon)

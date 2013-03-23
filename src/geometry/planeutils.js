@@ -78,7 +78,6 @@ JSM.LinePlaneIntersection = function (line, plane)
 	return result;
 };
 
-
 JSM.CoordPlaneSignedDistance = function (coord, plane)
 {
 	var x = coord.x;

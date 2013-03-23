@@ -139,3 +139,49 @@ JSM.SoftMoveBodyVertex = function (body, index, radius, direction, distance)
 		body.GetVertex (i).position = JSM.CoordOffset (currentCoord, direction, newDistance);
 	}
 };
+
+JSM.CalculatePolygonCentroid = function (body, index)
+{
+	var polygon = body.GetPolygon (index);
+	var count = polygon.VertexIndexCount ();
+	
+	var result = new JSM.Coord ();
+	var i;
+	for (i = 0; i < count; i++) {
+		result = JSM.CoordAdd (result, body.GetVertexPosition (polygon.GetVertexIndex (i)));
+	}
+	
+	result = JSM.VectorMultiply (result, 1.0 / count);
+	return result;
+};
+
+JSM.TriangulateWithCentroids = function (body)
+{
+	var result = new JSM.Body ();
+	
+	var i, j, vertCoord;
+	for (i = 0; i < body.VertexCount (); i++) {
+		vertCoord = body.GetVertex (i).position;
+		result.AddVertex (new JSM.BodyVertex (new JSM.Coord (vertCoord.x, vertCoord.y, vertCoord.z)));
+	}
+
+	var polygon, oldPolygon, vertexCount, curr, next, centroid;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		vertCoord = JSM.CalculatePolygonCentroid (body, i);
+		centroid = result.VertexCount ();
+		result.AddVertex (new JSM.BodyVertex (new JSM.Coord (vertCoord.x, vertCoord.y, vertCoord.z)));
+		
+		oldPolygon = body.GetPolygon (i);
+		vertexCount = oldPolygon.VertexIndexCount ();
+		for (j = 0; j < vertexCount; j++) {
+			curr = oldPolygon.GetVertexIndex (j);
+			next = oldPolygon.GetVertexIndex (j < vertexCount - 1 ? j + 1 : 0);
+			polygon = new JSM.BodyPolygon ([curr, next, centroid]);
+			polygon.material = oldPolygon.material;
+			polygon.curved = oldPolygon.curved;
+			result.AddPolygon (polygon);
+		}
+	}
+	
+	return result;
+};

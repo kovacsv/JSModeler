@@ -49,17 +49,34 @@ JSM.CoordTurnType = function (a, b, c, normal)
 	return turnType;
 };
 
+JSM.CalculateCentroid = function (coords)
+{
+	var count = coords.length;
+	var centroid = new JSM.Coord (0.0, 0.0, 0.0);
+	if (count >= 1) {
+		var i;
+		for (var i = 0; i < count; i++) {
+			centroid = JSM.CoordAdd (centroid, coords[i]);
+		}
+		centroid = JSM.VectorMultiply (centroid, 1.0 / count);
+	}
+
+	return centroid;
+};
+
 JSM.CalculateNormal = function (coords)
 {
 	var count = coords.length;
 	var normal = new JSM.Vector (0.0, 0.0, 0.0);
 	if (count >= 3) {
-		for (var i = 0; i < count; i++) {
-			var currentIndex = i % count;
-			var nextIndex = (i + 1) % count;
+		var i, currentIndex, nextIndex;
+		var current, next;
+		for (i = 0; i < count; i++) {
+			currentIndex = i % count;
+			nextIndex = (i + 1) % count;
 	
-			var current = coords[currentIndex];
-			var next = coords[nextIndex];
+			current = coords[currentIndex];
+			next = coords[nextIndex];
 	
 			normal.x += (current.y - next.y) * (current.z + next.z);
 			normal.y += (current.z - next.z) * (current.x + next.x);

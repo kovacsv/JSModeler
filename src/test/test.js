@@ -9,32 +9,54 @@ JSM.Test = function (resultDiv)
 	this.result = document.getElementById (resultDiv);
 	this.testCases = [];
 
-	this.basicStyle = 'color:#000000;';
-	this.successStyle = 'color:#00aa00;';
-	this.failStyle = 'color:#aa0000;';
+	this.footerStyle = 'color : #000000; padding : 5px; clear : both;';
+	this.testCaseStyle = 'color : #666666; background : #eeeeee; margin : 3px; padding : 5px; border : 1px solid #cccccc; border-radius : 5px; float : left;';
+	this.successStyle = 'color : #009900;';
+	this.failStyle = 'color : #990000;';
 
-	this.currentTest = null;
-	this.allPassed = null;
+	this.failedCount = null;
+	
+	this.currentAssert = null;
+	this.allAssertPassed = null;
+
+	this.testCaseResult = null;
+	this.testCaseAsserts = null;
 };
 
 JSM.Test.prototype =
 {
 	Run : function ()
 	{
-		for (var i = 0; i < this.testCases.length; i++) {
-			testCase = this.testCases[i];
-			if (testCase.callback == null) {
-				continue;
-			}
-			
-			this.currentTest = 1;
-			this.allPassed = true;
-
-			this.WriteName (testCase.name);
-			testCase.callback (this);
-	
-			this.WriteTestCaseResult ();
+		this.Start ();
+		var i;
+		for (i = 0; i < this.testCases.length; i++) {
+			this.RunOneTestByIndex (i);
 		}
+		this.End ();
+	},
+	
+	RunOneTestByName : function (name)
+	{
+		var i, testCase;
+		for (i = 0; i < this.testCases.length; i++) {
+			testCase = this.testCases[i];
+			if (testCase.name == name) {
+				this.RunOneTestByIndex (i);
+				break;
+			}
+		}
+	},
+
+	RunOneTestByIndex : function (index)
+	{
+		var testCase = this.testCases[index];
+		if (testCase.callback == null) {
+			return;
+		}
+		
+		this.StartTestCase (testCase.name);
+		testCase.callback (this);
+		this.EndTestCase ();
 	},
 	
 	AddTestCase : function (callback, name)
@@ -45,39 +67,65 @@ JSM.Test.prototype =
 	Assert : function (condition)
 	{
 		if (!condition) {
-			this.allPassed = false;
+			if (this.allAssertPassed) {
+				this.failedCount += 1;
+			}
+			this.allAssertPassed = false;
 		}
 
-		this.WriteTestCaseAssert (condition);
-		this.currentTest++;
+		var style = condition ? this.successStyle : this.failStyle;
+		this.testCaseAsserts += '<span style=\"' + style + '\">' + this.currentAssert + '</span> ';
+		this.currentAssert++;
 	},
 
-	WriteName : function (string)
+	Start : function ()
 	{
-		var style = this.basicStyle;
-		var text = 'No Name';
-		if (string != null) {
-			text = string
+		this.result.innerHTML = '';
+		this.failedCount = 0;
+	},
+
+	End : function ()
+	{
+		var result = '';
+		result += '<div style="' + this.footerStyle + '">';
+		result += 'Test set contains ' + this.testCases.length + ' tests. ';
+		if (this.failedCount == 0) {
+			result += 'All tests succeeded.';
+		} else {
+			result += this.failedCount + ' tests failed. ';
+		}
+		result += '</div>';
+		
+		this.result.innerHTML += result;
+	},
+
+	StartTestCase : function (testCaseName)
+	{
+		this.currentAssert = 1;
+		this.allAssertPassed = true;
+
+		this.testCaseResult = '';
+		this.testCaseAsserts = '';
+
+		var name = 'No Name';
+		if (testCaseName !== undefined && testCaseName !== null) {
+			name = testCaseName;
 		}
 		
-		this.Write ('<span style=\"' + style + '\">' + text + ':</span> ');
+		this.testCaseResult += '<span>' + name + '</span>';
 	},
 	
-	WriteTestCaseAssert : function (condition)
+	EndTestCase : function ()
 	{
-		var style = condition ? this.successStyle : this.failStyle;
-		this.Write ('<span style=\"' + style + '\">' + this.currentTest + '</span> ');
-	},	
-
-	WriteTestCaseResult : function ()
-	{
-		var style = this.allPassed ? this.successStyle : this.failStyle;
-		var text = this.allPassed ? 'success' : 'fail';
-		this.Write ('<span style=\"' + style + '\"> - ' + text + '</span><br>');
-	},
-	
-	Write : function (string)
-	{
-		this.result.innerHTML += string;
+		var result = '';
+		
+		result += '<div style=\"' + this.testCaseStyle + '\">';
+		result += this.testCaseResult;
+		if (!this.allAssertPassed) {
+			result += ': ' + this.testCaseAsserts;
+		}
+		result += '</div>';
+		
+		this.result.innerHTML += result;
 	}
 };

@@ -88,3 +88,67 @@ JSM.ProjectCoordToLine = function (coord, line)
 	result.Set (c.x, c.y, c.z);
 	return result;
 }
+
+JSM.LineLineClosestPoint = function (aLine, bLine, aClosestPoint, bClosestPoint)
+{
+	function Dmnop (v, m, n, o, p)
+	{
+		var result = (v[m].x - v[n].x) * (v[o].x - v[p].x) + (v[m].y - v[n].y) * (v[o].y - v[p].y) + (v[m].z - v[n].z) * (v[o].z - v[p].z);
+		return result;
+	}
+
+	var aDir = JSM.VectorNormalize (aLine.direction);
+	var aStart = aLine.start;
+	var aEnd = JSM.CoordAdd (aStart, aDir);
+
+	var bDir = JSM.VectorNormalize (bLine.direction);
+	var bStart = bLine.start;
+	var bEnd = JSM.CoordAdd (bStart, bDir);
+	
+	var v = [aStart, aEnd, bStart, bEnd];
+	
+	var d1010 = Dmnop (v, 1, 0, 1, 0);
+	var d0210 = Dmnop (v, 0, 2, 1, 0);
+	var d0232 = Dmnop (v, 0, 2, 3, 2);
+	var d3210 = Dmnop (v, 3, 2, 1, 0);
+	var d3232 = Dmnop (v, 3, 2, 3, 2);
+	var denom = (d1010 * d3232 - d3210 * d3210);
+	if (JSM.IsEqual (denom, 0.0)) {
+		return false;
+	}
+	
+	var nom = (d0232 * d3210 - d0210 * d3232);
+	var mua = nom / denom;
+	var mub = (d0232 + mua * d3210) / d3232;
+
+	if (aClosestPoint !== undefined) {
+		var aDir = JSM.VectorNormalize (JSM.CoordSub (aEnd, aStart));
+		var aClosest = JSM.CoordAdd (aStart, JSM.VectorMultiply (aDir, mua));
+		aClosestPoint.Set (aClosest.x, aClosest.y, aClosest.z);
+	}
+	
+	if (bClosestPoint !== undefined) {
+		var bClosest = JSM.CoordAdd (bStart, JSM.VectorMultiply (bDir, mub));
+		bClosestPoint.Set (bClosest.x, bClosest.y, bClosest.z);
+	}
+	
+	return true;
+}
+
+JSM.LineLinePosition = function (aLine, bLine, intersection)
+{
+	var aClosestPoint = new JSM.Coord ();
+	var bClosestPoint = new JSM.Coord ();
+	if (!JSM.LineLineClosestPoint (aLine, bLine, aClosestPoint, bClosestPoint)) {
+		return 'LinesIntersectsCoincident';
+	}
+	
+	if (JSM.CoordIsEqual (aClosestPoint, bClosestPoint)) {
+		if (intersection !== undefined) {
+			intersection.Set (aClosestPoint.x, aClosestPoint.y, aClosestPoint.z);
+		}
+		return 'LinesIntersectsOnePoint';
+	}
+	
+	return 'LinesDontIntersects';
+}

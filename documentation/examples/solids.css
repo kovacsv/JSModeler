@@ -1,0 +1,124 @@
+html, body
+{
+	color : #000000;
+	background : #ffffff;
+	font-size : 12px;
+	font-family : Arial, cursive;
+	margin : 0px;
+	padding : 0px;
+	width : 100%;
+	height : 100%;
+}
+
+#left
+{
+	color : #000000;
+	background : #ffffff;
+	width : 250px;
+	float : left;
+}
+
+#title
+{
+	padding : 10px;
+}
+
+#titlemain
+{
+	color : #333333;
+	background : transparent;
+	font-size : 40px;
+}
+
+#titleversion
+{
+	color : #aaaaaa;
+	background : transparent;
+	font-size : 20px;
+	margin-left : 10px;
+}
+
+#menu
+{
+	padding : 20px;
+}
+
+#right
+{
+	float : left;
+}
+
+#example
+{
+	margin : 0px;
+}
+
+#floating
+{
+	position : absolute;
+	display : none;
+}
+
+#exporttext
+{
+	width : 100%;
+	height : 100%;
+	border : 1px solid #e5e5e5;
+	display : none;
+}
+
+div.controls
+{
+	margin-bottom : 10px;
+}
+
+div.clearer
+{
+	clear : both;
+}
+
+div.box
+{
+	color : #000000;
+	background : #f5f5f5;
+	padding : 10px;
+	margin-bottom : 10px;
+	border : 1px solid #e5e5e5;
+	border-radius : 5px;
+}
+
+div.boxtitle
+{
+	margin-bottom : 5px;
+	font-weight : bold;
+}
+
+div.boxcontent
+{
+	margin-left : 10px;
+	margin-bottom : 15px;
+}
+
+div.projectlink
+{
+	text-align : center;
+	margin-top : 24px
+}
+
+div.projectlink a
+{
+	color : #959595;
+	background : transparent;
+}
+
+a
+{
+	color : #000000;
+	background : transparent;
+	text-decoration : none;
+}
+
+a:hover
+{
+	text-decoration : underline;
+}

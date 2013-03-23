@@ -1,6 +1,8 @@
 JSM.GenerateSolidWithRadius = function (solidName, radius)
 {
 	var result = new JSM.Body ();
+	var equalRadius = true;
+	
 	if (solidName === 'Tetrahedron') {
 		result = JSM.GenerateTetrahedron ();
 	} else if (solidName === 'Hexahedron') {
@@ -37,13 +39,36 @@ JSM.GenerateSolidWithRadius = function (solidName, radius)
 		result = JSM.GenerateTruncatedIcosidodecahedron ();
 	} else if (solidName === 'SnubDodecahedron') {
 		result = JSM.GenerateSnubDodecahedron ();
+	} else if (solidName === 'SmallStellatedDodecahedron') {
+		result = JSM.GenerateSmallStellatedDodecahedron ();
+		equalRadius = false;
+	} else if (solidName === 'GreatDodecahedron') {
+		result = JSM.GenerateGreatDodecahedron ();
+		equalRadius = false;
+	} else if (solidName === 'GreatStellatedDodecahedron') {
+		result = JSM.GenerateGreatStellatedDodecahedron ();
+		equalRadius = false;
 	}
 
 	if (result.VertexCount () > 0) {
-		var currentRadius = JSM.VectorLength (result.GetVertexPosition (0));
-		var scale = radius / currentRadius;
-
-		var i, vertex;
+		var i;
+	
+		var maxRadius = 0.0;
+		if (equalRadius) {
+			maxRadius = JSM.VectorLength (result.GetVertexPosition (0));
+		} else {
+			var currentRadius;
+			for (i = 0; i < result.VertexCount (); i++) {
+				currentRadius = JSM.VectorLength (result.GetVertexPosition (i));
+				if (JSM.IsGreater (currentRadius, maxRadius)) {
+					maxRadius = currentRadius;
+				}
+			}
+		}
+		
+		var scale = radius / maxRadius;
+		
+		var vertex;
 		for (i = 0; i < result.VertexCount (); i++) {
 			vertex = result.GetVertex (i);
 			vertex.SetPosition (JSM.VectorMultiply (vertex.GetPosition (), scale));
@@ -1526,4 +1551,160 @@ JSM.GenerateSnubDodecahedron = function ()
 	JSM.AddPolygonToBody (result, [11, 23, 35, 47, 59]);
 
 	return result;
+};
+
+JSM.AddCumulatedPolygonToBody = function (body, vertices, height)
+{
+	var CalculatePolygonCentroidAndNormal = function (vertices, centroidCoord, normalVector)
+	{
+		var vertexCoords = [];
+		
+		var i;
+		for (i = 0; i < vertices.length; i++) {
+			vertexCoords.push (body.GetVertexPosition (vertices[i]));
+		}
+		
+		var centroid = JSM.CalculateCentroid (vertexCoords);
+		var normal = JSM.CalculateNormal (vertexCoords);
+
+		centroidCoord.Set (centroid.x, centroid.y, centroid.z);
+		normalVector.Set (normal.x, normal.y, normal.z);
+	};		
+
+	var centroidCoord = new JSM.Coord ();
+	var normalVector = new JSM.Vector ();
+	CalculatePolygonCentroidAndNormal (vertices, centroidCoord, normalVector);
+	centroidCoord = JSM.CoordOffset (centroidCoord, normalVector, height);
+	
+	centroid = body.VertexCount ();
+	JSM.AddVertexToBody (body, centroidCoord.x, centroidCoord.y, centroidCoord.z);
+
+	var count = vertices.length;
+
+	var i, curr, next, centroid;
+	for (i = 0; i < count; i++) {
+		curr = vertices[i];
+		next = vertices [i < count - 1 ? i + 1 : 0];
+		JSM.AddPolygonToBody (body, [curr, next, centroid]);
+	}
+};
+
+JSM.GenerateCumulatedDodecahedron = function (pyramidUnitHeight)
+{
+	var result = new JSM.Body ();
+
+	var a = 1.0;
+	var b = 0.0;
+	var c = (1.0 + Math.sqrt (5.0)) / 2.0;
+	var d = 1.0 / c;
+
+	JSM.AddVertexToBody (result, +a, +a, +a);
+	JSM.AddVertexToBody (result, +a, +a, -a);
+	JSM.AddVertexToBody (result, +a, -a, +a);
+	JSM.AddVertexToBody (result, -a, +a, +a);
+	JSM.AddVertexToBody (result, +a, -a, -a);
+	JSM.AddVertexToBody (result, -a, +a, -a);
+	JSM.AddVertexToBody (result, -a, -a, +a);
+	JSM.AddVertexToBody (result, -a, -a, -a);
+
+	JSM.AddVertexToBody (result, +b, +d, +c);
+	JSM.AddVertexToBody (result, +b, +d, -c);
+	JSM.AddVertexToBody (result, +b, -d, +c);
+	JSM.AddVertexToBody (result, +b, -d, -c);
+
+	JSM.AddVertexToBody (result, +d, +c, +b);
+	JSM.AddVertexToBody (result, +d, -c, +b);
+	JSM.AddVertexToBody (result, -d, +c, +b);
+	JSM.AddVertexToBody (result, -d, -c, +b);
+
+	JSM.AddVertexToBody (result, +c, +b, +d);
+	JSM.AddVertexToBody (result, -c, +b, +d);
+	JSM.AddVertexToBody (result, +c, +b, -d);
+	JSM.AddVertexToBody (result, -c, +b, -d);
+
+	var edgeLength = Math.sqrt (5.0) - 1.0;
+	var height = edgeLength * pyramidUnitHeight;
+	
+	JSM.AddCumulatedPolygonToBody (result, [0, 8, 10, 2, 16], height);
+	JSM.AddCumulatedPolygonToBody (result, [0, 16, 18, 1, 12], height);
+	JSM.AddCumulatedPolygonToBody (result, [0, 12, 14, 3, 8], height);
+	JSM.AddCumulatedPolygonToBody (result, [1, 9, 5, 14, 12], height);
+	JSM.AddCumulatedPolygonToBody (result, [1, 18, 4, 11, 9], height);
+	JSM.AddCumulatedPolygonToBody (result, [2, 10, 6, 15, 13], height);
+	JSM.AddCumulatedPolygonToBody (result, [2, 13, 4, 18, 16], height);
+	JSM.AddCumulatedPolygonToBody (result, [3, 14, 5, 19, 17], height);
+	JSM.AddCumulatedPolygonToBody (result, [3, 17, 6, 10, 8], height);
+	JSM.AddCumulatedPolygonToBody (result, [4, 13, 15, 7, 11], height);
+	JSM.AddCumulatedPolygonToBody (result, [5, 9, 11, 7, 19], height);
+	JSM.AddCumulatedPolygonToBody (result, [6, 17, 19, 7, 15], height);
+
+	return result;	
+};
+
+JSM.GenerateCumulatedIcosahedron = function (pyramidUnitHeight)
+{
+	var result = new JSM.Body ();
+
+	var a = 1.0;
+	var b = 0.0;
+	var c = (1.0 + Math.sqrt (5.0)) / 2.0;
+
+	JSM.AddVertexToBody (result, +b, +a, +c);
+	JSM.AddVertexToBody (result, +b, +a, -c);
+	JSM.AddVertexToBody (result, +b, -a, +c);
+	JSM.AddVertexToBody (result, +b, -a, -c);
+
+	JSM.AddVertexToBody (result, +a, +c, +b);
+	JSM.AddVertexToBody (result, +a, -c, +b);
+	JSM.AddVertexToBody (result, -a, +c, +b);
+	JSM.AddVertexToBody (result, -a, -c, +b);
+
+	JSM.AddVertexToBody (result, +c, +b, +a);
+	JSM.AddVertexToBody (result, -c, +b, +a);
+	JSM.AddVertexToBody (result, +c, +b, -a);
+	JSM.AddVertexToBody (result, -c, +b, -a);
+
+	var edgeLength = 2;
+	var height = edgeLength * pyramidUnitHeight;
+
+	JSM.AddCumulatedPolygonToBody (result, [0, 2, 8], height);
+	JSM.AddCumulatedPolygonToBody (result, [0, 4, 6], height);
+	JSM.AddCumulatedPolygonToBody (result, [0, 6, 9], height);
+	JSM.AddCumulatedPolygonToBody (result, [0, 8, 4], height);
+	JSM.AddCumulatedPolygonToBody (result, [0, 9, 2], height);
+	JSM.AddCumulatedPolygonToBody (result, [1, 3, 11], height);
+	JSM.AddCumulatedPolygonToBody (result, [1, 4, 10], height);
+	JSM.AddCumulatedPolygonToBody (result, [1, 6, 4], height);
+	JSM.AddCumulatedPolygonToBody (result, [1, 10, 3], height);
+	JSM.AddCumulatedPolygonToBody (result, [1, 11, 6], height);
+	JSM.AddCumulatedPolygonToBody (result, [2, 5, 8], height);
+	JSM.AddCumulatedPolygonToBody (result, [2, 7, 5], height);
+	JSM.AddCumulatedPolygonToBody (result, [2, 9, 7], height);
+	JSM.AddCumulatedPolygonToBody (result, [3, 5, 7], height);
+	JSM.AddCumulatedPolygonToBody (result, [3, 7, 11], height);
+	JSM.AddCumulatedPolygonToBody (result, [3, 10, 5], height);
+	JSM.AddCumulatedPolygonToBody (result, [4, 8, 10], height);
+	JSM.AddCumulatedPolygonToBody (result, [6, 11, 9], height);
+	JSM.AddCumulatedPolygonToBody (result, [5, 10, 8], height);
+	JSM.AddCumulatedPolygonToBody (result, [7, 9, 11], height);
+
+	return result;
+};
+
+JSM.GenerateSmallStellatedDodecahedron = function ()
+{
+	var pyramidUnitHeight = Math.sqrt ((5.0 + 2.0 * Math.sqrt (5.0)) / 5.0);
+	return JSM.GenerateCumulatedDodecahedron (pyramidUnitHeight);
+};
+
+JSM.GenerateGreatDodecahedron = function ()
+{
+	var pyramidUnitHeight = -Math.sqrt ((7.0 - 3.0 * Math.sqrt (5.0)) / 6.0);
+	return JSM.GenerateCumulatedIcosahedron (pyramidUnitHeight);
+};
+
+JSM.GenerateGreatStellatedDodecahedron = function ()
+{
+	var pyramidUnitHeight = Math.sqrt ((7.0 + 3.0 * Math.sqrt (5.0)) / 6.0);
+	return JSM.GenerateCumulatedIcosahedron (pyramidUnitHeight);
 };

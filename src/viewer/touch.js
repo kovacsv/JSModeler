@@ -24,8 +24,12 @@ JSM.Touch.prototype =
 		var touch = event.touches[0];
 
 		this.down = true;
-		this.prevX = touch.pageX - div.offsetLeft;
-		this.prevY = touch.pageY - div.offsetTop;
+		this.prevX = touch.pageX;
+		this.prevY = touch.pageY;
+		if (div !== undefined) {
+			this.prevX = touch.prevX - div.offsetLeft;
+			this.prevY = touch.prevX - div.offsetTop;
+		}
 	},
 
 	Move : function (event, div)
@@ -40,8 +44,12 @@ JSM.Touch.prototype =
 		}
 		var touch = event.touches[0];
 
-		this.currX = touch.pageX - div.offsetLeft;
-		this.currY = touch.pageY - div.offsetTop;
+		this.currX = touch.pageX;
+		this.currY = touch.pageY;
+		if (div !== undefined) {
+			this.currX = touch.currX - div.offsetLeft;
+			this.currY = touch.currY - div.offsetTop;
+		}
 		this.diffX = this.currX - this.prevX;
 		this.diffY = this.currY - this.prevY;
 		this.prevX = this.currX;

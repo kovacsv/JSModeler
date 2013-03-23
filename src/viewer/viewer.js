@@ -233,14 +233,6 @@ JSM.Viewer.prototype =
 		}
     },
 
-	Resize : function ()
-	{
-		this.camera.aspect = this.canvas.width / this.canvas.height;
-		this.camera.updateProjectionMatrix (); 
-		this.renderer.setSize (this.canvas.width, this.canvas.height);
-		this.Draw ();
-	},
-
 	FitInWindow : function ()
 	{
 		var center = this.GetCenter ();

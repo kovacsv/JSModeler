@@ -1,4 +1,3 @@
-// http://www.siggraph.org/education/materials/HyperGraph/scanline/visibility/painter.htm
 JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort)
 {
 	var SwapArrayValues = function (array, from, to)
@@ -38,12 +37,12 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 		return result;	
 	};
 	
-	var GetBoundingBox = function (coords)
+	var GetBoundingBox = function (projectedPolygon)
 	{
 		var min = new JSM.Coord2D (JSM.Inf, JSM.Inf);
 		var max = new JSM.Coord2D (-JSM.Inf, -JSM.Inf);
-		for (i = 0; i < coords.length; i++) {
-			coord = coords[i];
+		for (i = 0; i < projectedPolygon.length; i++) {
+			coord = projectedPolygon[i];
 			min.x = JSM.Minimum (min.x, coord.x);
 			min.y = JSM.Minimum (min.y, coord.y);
 			max.x = JSM.Maximum (max.x, coord.x);
@@ -59,7 +58,9 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 		var viewDirection = JSM.VectorNormalize (JSM.CoordSub (center, eye));
 		cameraPlane.SetFromCoordAndDirection (eye, viewDirection);
 		
-		var i, j, polygon, coord, distance, minDistance, maxDistance, projectedPolygon;
+		var i, j, polygon, coord, distance, minDistance, maxDistance;
+		var polygonCenter, polygonCenterDistance, projectedPolygon, xyBoundingBox;
+		var polygonNormal, polygonViewVector, polygonDirection, polygonPlane;
 		for (i = 0; i < body.PolygonCount (); i++) {
 			minDistance = JSM.Inf;
 			maxDistance = -JSM.Inf;
@@ -74,50 +75,43 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 					maxDistance = distance;
 				}
 			}
-			minZDistances.push (minDistance);
-			maxZDistances.push (maxDistance);
-			
-			polygonNormals.push (JSM.CalculateBodyPolygonNormal (body, i));
-			var polygonCenter = GetPolygonCenter (i);
-			polygonCenters.push (polygonCenter);
-			polygonCenterDistances.push (JSM.CoordPlaneDistance (polygonCenter, cameraPlane));
-			projectedPolygon = GetProjectedPolygon (i);
-			projectedPolygons.push (projectedPolygon);
-			xyBoundingBoxes.push (GetBoundingBox (projectedPolygon));
-		}
-	};
-	
-	var OrderPolygonsByMaxZDistance = function ()
-	{
-		var count = body.PolygonCount ();
-		
-		var i, j;
-		for (i = 0; i < count; i++) {
-			orderedByMaxZDistance.push (i);
-		}
 
-		var s, p, swap;
-		for (i = 0; i < count - 1; i++) {
-			for (j = 0; j < count - i - 1; j++) {
-				s = orderedByMaxZDistance[j];
-				p = orderedByMaxZDistance[j + 1];
-				swap = false;
-				if (JSM.IsLower (maxZDistances[s], maxZDistances[p])) {
-					swap = true;
-				} else if (JSM.IsEqual (maxZDistances[s], maxZDistances[p])) {
-					if (JSM.IsLower (polygonCenterDistances[s], polygonCenterDistances[p])) {
-						swap = true;
-					}
-				}
-				if (swap) {
-					SwapArrayValues (orderedByMaxZDistance, j, j + 1);
-				}
+			minViewDistances.push (minDistance);
+			maxViewDistances.push (maxDistance);
+			
+			polygonCenter = GetPolygonCenter (i);
+			polygonCenterDistance = JSM.CoordPlaneDistance (polygonCenter, cameraPlane);
+			polygonCenters.push (polygonCenter);
+			polygonCenterDistances.push (polygonCenterDistance);
+
+			projectedPolygon = GetProjectedPolygon (i);
+			xyBoundingBox = GetBoundingBox (projectedPolygon);
+			projectedPolygons.push (projectedPolygon);
+			xyBoundingBoxes.push (xyBoundingBox);
+
+			polygonNormal = JSM.CalculateBodyPolygonNormal (body, i);
+			polygonViewVector = JSM.VectorNormalize (JSM.CoordSub (polygonCenter, eye));
+			polygonDirection = JSM.VectorDot (polygonNormal, polygonViewVector);
+			if (JSM.IsGreaterOrEqual (polygonDirection, 0.0)) {
+				polygonNormal = JSM.VectorMultiply (polygonNormal, -1);
 			}
+
+			polygonPlane = new JSM.Plane ();
+			polygonPlane.SetFromCoordAndDirection (polygonCenter, polygonNormal);
+			polygonPlanes.push (polygonPlane);
 		}
 	};
 	
-	var BoxesOverlap = function (sBox, pBox)
+	var PolygonViewOverlap = function (s, p)
 	{
+		return JSM.IsLowerOrEqual (minViewDistances[s], maxViewDistances[p]);
+	};
+	
+	var PolygonBoxesOverlap = function (s, p)
+	{
+		var sBox = xyBoundingBoxes[s];
+		var pBox = xyBoundingBoxes[p];
+		
 		if (JSM.IsLower (sBox[1].x, pBox[0].x) || JSM.IsGreater (sBox[0].x, pBox[1].x)) {
 			return false;
 		}
@@ -129,40 +123,15 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 		return true;
 	};
 
-	var IsBehindPlane = function (s, p)
+	var PolygonIsFrontOfPlane = function (s, p)
 	{
-		var sPolygon = body.GetPolygon (s);
-		var pPolygon = body.GetPolygon (p);
-		
-		var sFirstCoord = body.GetVertexPosition (sPolygon.GetVertexIndex (0));
-		var pFirstCoord = body.GetVertexPosition (pPolygon.GetVertexIndex (0));
-		
-		var sViewVector = JSM.VectorNormalize (JSM.CoordSub (polygonCenters[s], eye));
-		var pViewVector = JSM.VectorNormalize (JSM.CoordSub (polygonCenters[p], eye));
-		
-		var sPlane = new JSM.Plane ();
-		var pPlane = new JSM.Plane ();
-
-		var sNormal = polygonNormals[s];
-		var pNormal = polygonNormals[p];
-
-		var sDot = JSM.VectorDot (sNormal, sViewVector);
-		var pDot = JSM.VectorDot (pNormal, pViewVector);
-		
-		if (JSM.IsGreaterOrEqual (sDot, 0.0)) {
-			sNormal = JSM.VectorMultiply (sNormal, -1);
-		}
-		
-		if (JSM.IsGreaterOrEqual (pDot, 0.0)) {
-			pNormal = JSM.VectorMultiply (pNormal, -1);
-		}	
-
-		sPlane.SetFromCoordAndDirection (sFirstCoord, sNormal);
-		pPlane.SetFromCoordAndDirection (pFirstCoord, pNormal);
-
-		var isSBehindP = true;
+		var sPlane = polygonPlanes[s];
+		var pPlane = polygonPlanes[p];
 
 		var i, coord;
+
+		var isSBehindP = true;
+		var sPolygon = body.GetPolygon (s);
 		for (i = 0; i < sPolygon.VertexIndexCount (); i++) {
 			coord = body.GetVertexPosition (sPolygon.GetVertexIndex (i));
 			if (JSM.CoordPlanePosition (coord, pPlane) === 'CoordInFrontOfPlane') {
@@ -172,10 +141,11 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 		}
 		
 		if (isSBehindP) {
-			return true;
+			return false;
 		}
 
 		var isPFrontOfS = true;
+		var pPolygon = body.GetPolygon (p);
 		for (i = 0; i < pPolygon.VertexIndexCount (); i++) {
 			coord = body.GetVertexPosition (pPolygon.GetVertexIndex (i));
 			if (JSM.CoordPlanePosition (coord, sPlane) === 'CoordAtBackOfPlane') {
@@ -185,111 +155,97 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 		}
 		
 		if (isPFrontOfS) {
+			return false;
+		}
+		
+		return true;
+	};
+
+	var HasLowerDistance = function (s, p)
+	{
+		if (JSM.IsLower (maxViewDistances[s], maxViewDistances[p])) {
 			return true;
+		} else if (JSM.IsEqual (maxViewDistances[s], maxViewDistances[p])) {
+			if (JSM.IsLower (polygonCenterDistances[s], polygonCenterDistances[p])) {
+				return true;
+			}
 		}
 		
 		return false;
 	};
 	
-	var Test0 = function (s, p)
+	var OrderPolygonsByMaxViewDistance = function ()
 	{
-		if (JSM.IsLowerOrEqual (minZDistances[s], maxZDistances[p])) {
-			return false;
-		}
+		var count = ordered.length;
 		
-		return true;
+		var i, j;
+		for (i = 0; i < count - 1; i++) {
+			for (j = 0; j < count - i - 1; j++) {
+				if (HasLowerDistance (ordered[j], ordered[j + 1])) {
+					SwapArrayValues (ordered, j, j + 1);
+				}
+			}
+		}
 	};
 
-	var Test1 = function (s, p)
+	var NeedToChangeOrder = function (s, p)
 	{
-		if (BoxesOverlap (xyBoundingBoxes[s], xyBoundingBoxes[p])) {
-			return false;
-		}
-		
-		return true;
-	};
-	
-	var Test2 = function (s, p)
-	{
-		if (!IsBehindPlane (s, p)) {
-			return false;
-		}
-		
-		return true;
-	};
-
-	var PolygonIsBehind = function (s, p)
-	{
-		if (Test0 (s, p)) {
-			return true;
+		if (needToChangeOrderCache[s][p] != null) {
+			return needToChangeOrderCache[s][p];
 		}
 
-		if (Test1 (s, p)) {
-			return true;
+		if (PolygonViewOverlap (s, p)) {
+			if (PolygonBoxesOverlap (s, p)) {
+				if (PolygonIsFrontOfPlane (s, p)) {
+					needToChangeOrderCache[s][p] = true;
+					return true;
+				}
+			}
 		}
 
-		if (Test2 (s, p)) {
-			return true;
-		}
-
+		needToChangeOrderCache[s][p] = false;
 		return false;
 	};
 	
 	var ReorderPolygons = function ()
 	{
 		var count = ordered.length;
-		
-		var i, j, k, s, p;
-		
-		var compared = [];
-		for (i = 0; i < count; i++) {
-			compared[i] = [];
-			for (j = 0; j < count; j++) {
-				compared[i].push (false);
-			}
-		}
-		
-		for (i = 0; i < count; i++) {
-			s = ordered[i];
-			for (j = i + 1; j < count; j++) {
-				p = ordered[j];
-				if (!compared[s][p]) {
-					compared[s][p] = true;
-					compared[p][s] = true;
-					if (!PolygonIsBehind (s, p)) {
-						for (k = j; k > i; k--) {
-							ordered[k] = ordered[k - 1];
-						}
-						ordered[i] = p;
-						i--;
-						break;
-					}
+
+		var i, j;
+		for (i = 0; i < count - 1; i++) {
+			for (j = 0; j < count - i - 1; j++) {
+				if (NeedToChangeOrder (ordered[j], ordered[j + 1])) {
+					SwapArrayValues (ordered, j, j + 1);
 				}
 			}
-		}
-		
-		for (i = 0; i < count; i++) {
-			if (ordered[i] == undefined) {
-				alert (i);
-			}
-		}
+		}		
 	}
 	
 	var result = [];
 	
 	var projectedPolygons = [];
 	var xyBoundingBoxes = [];
-	var minZDistances = [];
-	var maxZDistances = [];
-	var polygonNormals = [];
+	var minViewDistances = [];
+	var maxViewDistances = [];
 	var polygonCenters = [];
 	var polygonCenterDistances = [];
-	CalculatePolygonValues ();
+	var polygonPlanes = [];
 	
-	var orderedByMaxZDistance = [];
-	OrderPolygonsByMaxZDistance ();
+	var ordered = [];
+	var needToChangeOrderCache = [];
+	var count = body.PolygonCount ();
+	
+	var i, j;
+	for (i = 0; i < count; i++) {
+		ordered.push (i);
+		needToChangeOrderCache.push ([]);
+		for (j = 0; j < count; j++) {
+			needToChangeOrderCache[i].push (null);
+		}
+	}
 
-	var ordered = orderedByMaxZDistance;
+	CalculatePolygonValues ();
+	OrderPolygonsByMaxViewDistance ();
 	ReorderPolygons ();
 	
 	result = ordered;
