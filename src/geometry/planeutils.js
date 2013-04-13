@@ -1,3 +1,26 @@
+JSM.GetPlaneFromCoordAndDirection = function (coord, direction)
+{
+	var plane = new JSM.Plane ();
+	var normal = JSM.VectorNormalize (direction);
+	var pa = normal.x;
+	var pb = normal.y;
+	var pc = normal.z;
+	var pd = -(pa * coord.x + pb * coord.y + pc * coord.z);
+	plane.Set (pa, pb, pc, pd);
+	return plane;
+}
+
+JSM.GetPlaneFromThreeCoords = function (a, b, c)
+{
+	var plane = new JSM.Plane ();
+	var pa = (b.y - a.y) * (c.z - a.z) - (c.y - a.y) * (b.z - a.z);
+	var pb = (b.z - a.z) * (c.x - a.x) - (c.z - a.z) * (b.x - a.x);
+	var pc = (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+	var pd = -(pa * a.x + pb * a.y + pc * a.z);
+	plane.Set (pa, pb, pc, pd);
+	return plane;
+}
+
 JSM.CoordPlanePosition = function (coord, plane)
 {
 	var a = plane.a;

@@ -16,15 +16,6 @@ JSM.Plane.prototype =
 		this.d = d || 0.0;	
 	},
 	
-	SetFromCoordAndDirection : function (coord, direction)
-	{
-		var normal = JSM.VectorNormalize (direction);
-		this.a = normal.x;
-		this.b = normal.y;
-		this.c = normal.z;
-		this.d = -(this.a * coord.x + this.b * coord.y + this.c * coord.z);
-	},
-	
 	Clone : function ()
 	{
 		return new JSM.Plane (this.a, this.b, this.c, this.d);

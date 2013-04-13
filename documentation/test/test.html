@@ -30,9 +30,11 @@
 	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
 	<script type="text/javascript" src="../../src/geometry/planeutils.js"></script>
 	<script type="text/javascript" src="../../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
 	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
 	<script type="text/javascript" src="../../src/modeler/body.js"></script>
 	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/material.js"></script>
 	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
 	<script type="text/javascript" src="../../src/modeler/subdivision.js"></script>
 	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
@@ -43,7 +45,7 @@
 	<script type="text/javascript" src="../../src/modeler/painter.js"></script>
 	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
 	<script type="text/javascript" src="../../src/test/test.js"></script>
-	<title>Example</title>
+	<title>JSModeler Test</title>
 
 	<script type="text/javascript">
 		function CoreTest (test)
@@ -231,6 +233,31 @@
 			test.Assert (JSM.IsEqual (JSM.CoordSignedDistance (coord1, coord3, JSM.CoordSub (coord1, coord3)), -1.0));
 		}
 
+		function CircleTest (test)
+		{
+			test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 0.0 * JSM.DegRad), new JSM.Coord2D (1.0, 0.0)));
+			test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 90.0 * JSM.DegRad), new JSM.Coord2D (0.0, 1.0)));
+			test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 180.0 * JSM.DegRad), new JSM.Coord2D (-1.0, 0.0)));
+			test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 270.0 * JSM.DegRad), new JSM.Coord2D (0.0, -1.0)));
+			test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 360.0 * JSM.DegRad), new JSM.Coord2D (1.0, 0.0)));
+			test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 450.0 * JSM.DegRad), new JSM.Coord2D (0.0, 1.0)));
+			
+			var unitRadius = 2.0 * 1.0 * Math.PI;
+			test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 0.0 * JSM.DegRad), 0.0));
+			test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 90.0 * JSM.DegRad), unitRadius / 4.0));
+			test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 180.0 * JSM.DegRad), unitRadius / 2.0));
+			test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 270.0 * JSM.DegRad), 3.0 * unitRadius / 4.0));
+			test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 360.0 * JSM.DegRad), unitRadius));
+			test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 450.0 * JSM.DegRad), 5.0 * unitRadius / 4.0));
+			
+			test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, 0.0), 0.0 * JSM.DegRad));
+			test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, unitRadius / 4.0), 90.0 * JSM.DegRad));
+			test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, unitRadius / 2.0), 180.0 * JSM.DegRad));
+			test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, 3.0 * unitRadius / 4.0), 270.0 * JSM.DegRad));
+			test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, unitRadius), 360.0 * JSM.DegRad));
+			test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, 5.0 * unitRadius / 4.0), 450.0 * JSM.DegRad));
+		}
+		
 		function MatrixTest (test)
 		{
 			var vector1 = [1, 2, 3, 4];
@@ -922,68 +949,84 @@
 			test.Assert (plane.a == 1.0 && plane.b == 2.0 && plane.c == 3.0 && plane.d == 4.0);
 			plane.Set (5.0, 6.0, 7.0, 8.0);
 			test.Assert (plane.a == 5.0 && plane.b == 6.0 && plane.c == 7.0 && plane.d == 8.0);
-			plane.SetFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0));
 			test.Assert (plane.a == 0.0 && plane.b == 0.0 && plane.c == 1.0 && plane.d == 0.0);
-
-			var plane1 = new JSM.Plane ();
-			var plane2 = new JSM.Plane ();
-			var plane3 = new JSM.Plane ();
+			plane = JSM.GetPlaneFromThreeCoords (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0), new JSM.Vector (0.0, 1.0, 0.0));
+			test.Assert (plane.a == 0.0 && plane.b == 0.0 && plane.c == 1.0 && plane.d == 0.0);
 
 			var coord1 = new JSM.Coord (0.0, 0.0, 0.0);
 			var coord1b = new JSM.Coord (0.0, 0.0, 2.0);
 			var coord2 = new JSM.Coord (1.0, 0.0, 0.0);
 			var coord3 = new JSM.Coord (1.0, 1.0, 1.0);
 
-			plane1.SetFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0));
-			plane2.SetFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
-			plane3.SetFromCoordAndDirection (new JSM.Coord (1.0, 1.0, 1.0), new JSM.Vector (0.0, 0.0, 1.0));
+			var plane1a = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0));
+			var plane2a = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
+			var plane3a = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.0, 1.0, 1.0), new JSM.Vector (0.0, 0.0, 1.0));
 			
-			test.Assert (JSM.CoordPlanePosition (coord1, plane1) == 'CoordOnPlane');
-			test.Assert (JSM.CoordPlanePosition (coord1, plane2) == 'CoordOnPlane');
-			test.Assert (JSM.CoordPlanePosition (coord1b, plane3) == 'CoordInFrontOfPlane');
-			test.Assert (JSM.CoordPlanePosition (coord1, plane3) == 'CoordAtBackOfPlane');
-
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneSignedDirectionalDistance (coord1, new JSM.Coord (1.0, 0.0, 0.0), plane1), 0.0));
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneSignedDirectionalDistance (coord1, new JSM.Coord (1.0, 0.0, 0.0), plane2), 0.0));
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneSignedDirectionalDistance (coord1, new JSM.Coord (0.0, 0.0, 1.0), plane3), -1.0));
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneSignedDirectionalDistance (coord1, new JSM.Coord (0.0, 1.0, 1.0), plane3), -1.4142135623));
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneSignedDirectionalDistance (coord1b, new JSM.Coord (0.0, 1.0, 1.0), plane3), 1.4142135623));
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneDirectionalDistance (coord1, new JSM.Coord (0.0, 1.0, 1.0), plane3), 1.4142135623));
+			var plane1b = JSM.GetPlaneFromThreeCoords (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
+			var plane2b = JSM.GetPlaneFromThreeCoords (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
+			var plane3b = JSM.GetPlaneFromThreeCoords (new JSM.Coord (1.0, 1.0, 1.0), new JSM.Coord (2.0, 1.0, 1.0), new JSM.Coord (1.0, 2.0, 1.0));
 			
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord1, plane1), 0.0));
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord1, plane2), 0.0));
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord1, plane3), 1.0));
-
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord2, plane1), 0.0));
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord2, plane2), 1.0));
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord2, plane3), 1.0));
-
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord3, plane1), 1.0));
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord3, plane2), 1.0));
-			test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord3, plane3), 0.0));
+			var plane1, plane2, plane3;
+			var i;
+			for (i = 0; i < 2; i++) {
+				if (i == 0) {
+					plane1 = plane1a;
+					plane2 = plane2a;
+					plane3 = plane3a;
+				} else if (i == 1) {
+					plane1 = plane1b;
+					plane2 = plane2b;
+					plane3 = plane3b;
+				}
 			
-			test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord1, plane1), new JSM.Coord (0.0, 0.0, 0.0)));
-			test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord1, plane2), new JSM.Coord (0.0, 0.0, 0.0)));
-			test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord1, plane3), new JSM.Coord (0.0, 0.0, 1.0)));
+				test.Assert (JSM.CoordPlanePosition (coord1, plane1) == 'CoordOnPlane');
+				test.Assert (JSM.CoordPlanePosition (coord1, plane2) == 'CoordOnPlane');
+				test.Assert (JSM.CoordPlanePosition (coord1b, plane3) == 'CoordInFrontOfPlane');
+				test.Assert (JSM.CoordPlanePosition (coord1, plane3) == 'CoordAtBackOfPlane');
 
-			test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord2, plane1), new JSM.Coord (1.0, 0.0, 0.0)));
-			test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord2, plane2), new JSM.Coord (0.0, 0.0, 0.0)));
-			test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord2, plane3), new JSM.Coord (1.0, 0.0, 1.0)));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneSignedDirectionalDistance (coord1, new JSM.Coord (1.0, 0.0, 0.0), plane1), 0.0));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneSignedDirectionalDistance (coord1, new JSM.Coord (1.0, 0.0, 0.0), plane2), 0.0));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneSignedDirectionalDistance (coord1, new JSM.Coord (0.0, 0.0, 1.0), plane3), -1.0));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneSignedDirectionalDistance (coord1, new JSM.Coord (0.0, 1.0, 1.0), plane3), -1.4142135623));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneSignedDirectionalDistance (coord1b, new JSM.Coord (0.0, 1.0, 1.0), plane3), 1.4142135623));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneDirectionalDistance (coord1, new JSM.Coord (0.0, 1.0, 1.0), plane3), 1.4142135623));
+				
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord1, plane1), 0.0));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord1, plane2), 0.0));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord1, plane3), 1.0));
 
-			test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord3, plane1), new JSM.Coord (1.0, 1.0, 0.0)));
-			test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord3, plane2), new JSM.Coord (0.0, 1.0, 1.0)));
-			test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord3, plane3), new JSM.Coord (1.0, 1.0, 1.0)));
-			
-			var line1 = new JSM.Line (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
-			var line2 = new JSM.Line (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0));
-			var line3 = new JSM.Line (new JSM.Coord (1.0, 2.0, 3.0), new JSM.Vector (0.0, 0.0, 1.0));
-			test.Assert (JSM.LinePlanePosition (line1, plane1) == 'LineParallelToPlane');
-			test.Assert (JSM.LinePlanePosition (line2, plane1) == 'LineIntersectsPlane');
-			
-			var intersection = new JSM.Coord ();
-			test.Assert (JSM.LinePlanePosition (line3, plane1, intersection) == 'LineIntersectsPlane');
-			test.Assert (JSM.CoordIsEqual (intersection, new JSM.Coord (1.0, 2.0, 0.0)));
-			test.Assert (JSM.CoordIsEqual (JSM.LinePlaneIntersection (line3, plane1), new JSM.Coord (1.0, 2.0, 0.0)));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord2, plane1), 0.0));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord2, plane2), 1.0));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord2, plane3), 1.0));
+
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord3, plane1), 1.0));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord3, plane2), 1.0));
+				test.Assert (JSM.IsEqual (JSM.CoordPlaneDistance (coord3, plane3), 0.0));
+				
+				test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord1, plane1), new JSM.Coord (0.0, 0.0, 0.0)));
+				test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord1, plane2), new JSM.Coord (0.0, 0.0, 0.0)));
+				test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord1, plane3), new JSM.Coord (0.0, 0.0, 1.0)));
+
+				test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord2, plane1), new JSM.Coord (1.0, 0.0, 0.0)));
+				test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord2, plane2), new JSM.Coord (0.0, 0.0, 0.0)));
+				test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord2, plane3), new JSM.Coord (1.0, 0.0, 1.0)));
+
+				test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord3, plane1), new JSM.Coord (1.0, 1.0, 0.0)));
+				test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord3, plane2), new JSM.Coord (0.0, 1.0, 1.0)));
+				test.Assert (JSM.CoordIsEqual (JSM.ProjectCoordToPlane (coord3, plane3), new JSM.Coord (1.0, 1.0, 1.0)));
+				
+				var line1 = new JSM.Line (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
+				var line2 = new JSM.Line (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0));
+				var line3 = new JSM.Line (new JSM.Coord (1.0, 2.0, 3.0), new JSM.Vector (0.0, 0.0, 1.0));
+				test.Assert (JSM.LinePlanePosition (line1, plane1) == 'LineParallelToPlane');
+				test.Assert (JSM.LinePlanePosition (line2, plane1) == 'LineIntersectsPlane');
+				
+				var intersection = new JSM.Coord ();
+				test.Assert (JSM.LinePlanePosition (line3, plane1, intersection) == 'LineIntersectsPlane');
+				test.Assert (JSM.CoordIsEqual (intersection, new JSM.Coord (1.0, 2.0, 0.0)));
+				test.Assert (JSM.CoordIsEqual (JSM.LinePlaneIntersection (line3, plane1), new JSM.Coord (1.0, 2.0, 0.0)));
+			}
 		}
 
 		function BodyTest (test)
@@ -1123,9 +1166,9 @@
 			body.SetTextureProjectionType ('Planar');
 			body.SetTextureProjectionCoords (new JSM.CoordSystem (
 				new JSM.Coord (0.0, 0.0, 0.0),
-				new JSM.Coord (0.0, 0.0, 1.0),
 				new JSM.Coord (1.0, 0.0, 0.0),
-				new JSM.Coord (0.0, 1.0, 0.0)
+				new JSM.Coord (0.0, 0.0, 1.0),
+				new JSM.Coord (0.0, 0.0, 0.0)
 			));
 			
 			var textureCoords = JSM.CalculateBodyTextureCoords (body);
@@ -1140,22 +1183,22 @@
 				new JSM.Coord (0.2, 0.0, 0.2),
 				new JSM.Coord (0.0, 0.0, 1.0),
 				new JSM.Coord (1.0, 0.0, 0.0),
-				new JSM.Coord (0.0, 1.0, 0.0)
+				new JSM.Coord (0.0, 0.0, 0.0)
 			));
 			
-			var textureCoords = JSM.CalculateBodyTextureCoords (body);
+			textureCoords = JSM.CalculateBodyTextureCoords (body);
 			test.Assert (textureCoords.length == 1);
 			test.Assert (textureCoords[0].length == 4);
 			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (-0.2, -0.2)));
-			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (0.8, -0.2)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (-0.2, 0.8)));
 			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (0.8, 0.8)));
-			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (-0.2, 0.8)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0.8, -0.2)));
 
 			body.SetTextureProjectionCoords (new JSM.CoordSystem (
 				new JSM.Coord (0.0, 0.0, 0.0),
-				new JSM.Coord (0.0, 0.0, 1.0),
 				new JSM.Coord (1.0, 0.0, 0.0),
-				new JSM.Coord (0.0, 1.0, 0.0)
+				new JSM.Coord (0.0, 0.0, 1.0),
+				new JSM.Coord (0.0, 0.0, 0.0)
 			));
 
 			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, 0.0)));
@@ -1163,11 +1206,11 @@
 			
 			body.AddPolygon (new JSM.BodyPolygon ([0, 3, 5, 4]));
 
-			var textureCoords = JSM.CalculateBodyTextureCoords (body);
+			textureCoords = JSM.CalculateBodyTextureCoords (body);
 			test.Assert (textureCoords.length == 2);
 			test.Assert (textureCoords[0].length == 4);
 			test.Assert (textureCoords[1].length == 4);
-			
+
 			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
 			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
 			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
@@ -1177,6 +1220,80 @@
 			test.Assert (JSM.CoordIsEqual2D (textureCoords[1][1], new JSM.Coord2D (0, 1)));
 			test.Assert (JSM.CoordIsEqual2D (textureCoords[1][2], new JSM.Coord2D (0, 1)));
 			test.Assert (JSM.CoordIsEqual2D (textureCoords[1][3], new JSM.Coord2D (0, 0)));
+
+			var body = new JSM.Body ();
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 0.0, 0.0)));
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 0.0, 0.0)));
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 1.0, 0.0)));
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, 0.0)));
+			
+			body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2, 3]));
+			
+			body.projection = 'Planar';
+			body.coords = new JSM.CoordSystem (
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (1.0, 0.0, 0.0),
+				new JSM.Coord (0.0, 1.0, 0.0),
+				new JSM.Coord (100.0, 200.0, 300.0)
+			);
+
+			textureCoords = JSM.CalculateBodyTextureCoords (body);
+			test.Assert (textureCoords.length == 1);
+			test.Assert (textureCoords[0].length == 4);
+			
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+
+			body.projection = 'Planar';
+			body.coords = new JSM.CoordSystem (
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (10.0, 0.0, 0.0),
+				new JSM.Coord (0.0, 20.0, 0.0),
+				new JSM.Coord (100.0, 200.0, 300.0)
+			);
+
+			textureCoords = JSM.CalculateBodyTextureCoords (body);
+			test.Assert (textureCoords.length == 1);
+			test.Assert (textureCoords[0].length == 4);
+			
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+
+			body.coords = new JSM.CoordSystem (
+				new JSM.Coord (0.2, 0.2, 1.0),
+				new JSM.Coord (1.0, 0.0, 0.0),
+				new JSM.Coord (0.0, 1.0, 0.0),
+				new JSM.Coord (100.0, 200.0, 300.0)
+			);
+
+			textureCoords = JSM.CalculateBodyTextureCoords (body);
+			test.Assert (textureCoords.length == 1);
+			test.Assert (textureCoords[0].length == 4);
+			
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (-0.2, -0.2)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (0.8, -0.2)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (0.8, 0.8)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (-0.2, 0.8)));
+
+			body.coords = new JSM.CoordSystem (
+				new JSM.Coord (0.2, 0.3, 1.0),
+				new JSM.Coord (1.0, 0.0, 0.0),
+				new JSM.Coord (0.0, 1.0, 0.0),
+				null
+			);
+
+			textureCoords = JSM.CalculateBodyTextureCoords (body);
+			test.Assert (textureCoords.length == 1);
+			test.Assert (textureCoords[0].length == 4);
+			
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (-0.2, -0.3)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (0.8, -0.3)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (0.8, 0.7)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (-0.2, 0.7)));
 		}
 		
 		function BodyCubicTextureCoordTest (test)
@@ -1203,6 +1320,35 @@
 				new JSM.Coord (1.0, 0.0, 0.0),
 				new JSM.Coord (0.0, 1.0, 0.0),
 				new JSM.Coord (0.0, 0.0, 1.0)
+			));
+
+			var textureCoords = JSM.CalculateBodyTextureCoords (body);
+			test.Assert (textureCoords.length == 3);
+			test.Assert (textureCoords[0].length == 4);
+			test.Assert (textureCoords[1].length == 4);
+			test.Assert (textureCoords[2].length == 4);
+			
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+			
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[1][0], new JSM.Coord2D (0, 0)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[1][1], new JSM.Coord2D (0, 1)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[1][2], new JSM.Coord2D (1, 1)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[1][3], new JSM.Coord2D (1, 0)));
+
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[2][0], new JSM.Coord2D (0, 0)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[2][1], new JSM.Coord2D (1, 0)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[2][2], new JSM.Coord2D (1, 1)));
+			test.Assert (JSM.CoordIsEqual2D (textureCoords[2][3], new JSM.Coord2D (0, 1)));
+
+			body.SetTextureProjectionType ('Cubic');
+			body.SetTextureProjectionCoords (new JSM.CoordSystem (
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (10.0, 0.0, 0.0),
+				new JSM.Coord (0.0, 20.0, 0.0),
+				new JSM.Coord (0.0, 0.0, 30.0)
 			));
 
 			var textureCoords = JSM.CalculateBodyTextureCoords (body);
@@ -1690,8 +1836,7 @@
 				new JSM.Coord (0.0, 1.0, 0.0)
 			];
 
-			var plane = new JSM.Plane ();
-			plane.SetFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+			var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 			var indexTable = [];
 			var cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 
@@ -1710,13 +1855,13 @@
 				indexTable[3] == 3
 				);
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (-1.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (-1.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 0);
 			test.Assert (indexTable.length == 0);
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 4);
@@ -1734,7 +1879,7 @@
 				indexTable[3] == 3
 				);		
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 4);
@@ -1752,7 +1897,7 @@
 				indexTable[3] == -1
 				);		
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (0.8, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.8, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 4);	
@@ -1770,7 +1915,7 @@
 				indexTable[3] == 3
 				);		
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 2);
@@ -1784,7 +1929,7 @@
 				indexTable[1] == 3
 				);
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 1.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 1.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 3);
@@ -1807,7 +1952,7 @@
 				new JSM.Coord (1.0, -1.0, 0.0)
 			];
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 4);
@@ -1825,7 +1970,7 @@
 				indexTable[3] == -1
 				);		
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 4);
@@ -1854,7 +1999,7 @@
 				new JSM.Coord (0.0, 3.0, 0.0)
 			];
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (3.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (3.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 8);
@@ -1880,7 +2025,7 @@
 				indexTable[7] == 7
 				);
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (1.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 8);
@@ -1906,7 +2051,7 @@
 				indexTable[7] == 7
 				);
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 4);
@@ -1924,7 +2069,7 @@
 				indexTable[3] == 7
 				);
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (1.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 6);
@@ -1946,7 +2091,7 @@
 				indexTable[5] == 7
 				);
 
-			plane.SetFromCoordAndDirection (new JSM.Coord (1.5, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
+			plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.5, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
 			indexTable = [];
 			cutted = JSM.CutPolygonByPlane (polygon, plane, indexTable);
 			test.Assert (cutted.length == 8);
@@ -2181,6 +2326,9 @@
 		{
 			var gdl1Ref = "base\nvert 0, 0, 0 ! 1\nvert 1, 0, 0 ! 2\nvert 0, 1, 0 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
 			var gdl2Ref = "base\nvert 0, 0, 1 ! 1\nvert 1, 0, 1 ! 2\nvert 0, 1, 1 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
+			var gdlMatHeader = "define material \"material1\" 2, 0,0.8,0 ! 1\ndefine material \"material2\" 2, 0.8,0,0 ! 2\n";
+			var gdlGeom1Ref = "base\nvert 0, 0, 0 ! 1\nvert 1, 0, 0 ! 2\nvert 0, 1, 0 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\nset material \"material1\"\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
+			var gdlGeom2Ref = "base\nvert 0, 0, 1 ! 1\nvert 1, 0, 1 ! 2\nvert 0, 1, 1 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\nset material \"material2\"\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
 			var stl1Ref = "solid Body1\n\tfacet normal 0 0 1\n\t\touter loop\n\t\t\tvertex 0 0 0\n\t\t\tvertex 1 0 0\n\t\t\tvertex 0 1 0\n\t\tendloop\n\tendfacet\nendsolid Body1\n";
 			var stl2Ref = "solid Body2\n\tfacet normal 0 0 1\n\t\touter loop\n\t\t\tvertex 0 0 1\n\t\t\tvertex 1 0 1\n\t\t\tvertex 0 1 1\n\t\tendloop\n\tendfacet\nendsolid Body2\n";
 			var modelStlRef = "solid Model\n\tfacet normal 0 0 1\n\t\touter loop\n\t\t\tvertex 0 0 0\n\t\t\tvertex 1 0 0\n\t\t\tvertex 0 1 0\n\t\tendloop\n\tendfacet\n\tfacet normal 0 0 1\n\t\touter loop\n\t\t\tvertex 0 0 1\n\t\t\tvertex 1 0 1\n\t\t\tvertex 0 1 1\n\t\tendloop\n\tendfacet\nendsolid Model\n";
@@ -2199,10 +2347,14 @@
 			body2.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 1)));
 			body2.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 1)));
 			body2.AddPolygon (new JSM.BodyPolygon ([0, 1, 2]));
-
+			body2.GetPolygon (0).SetMaterialIndex (0);
+			
 			var model = new JSM.Model ();
 			model.AddBody (body1);
 			model.AddBody (body2);
+			
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
 			
 			var gdl1 = JSM.ExportBodyToGDL (body1);
 			test.Assert (gdl1 == gdl1Ref);
@@ -2210,6 +2362,13 @@
 			test.Assert (gdl2 == gdl2Ref);
 			var modelGdl = JSM.ExportModelToGDL (model);
 			test.Assert (modelGdl == gdl1 + gdl2);
+
+			var gdl1 = JSM.ExportBodyToGDL (body1, materials);
+			test.Assert (gdl1 == gdlMatHeader + gdlGeom1Ref);
+			var gdl2 = JSM.ExportBodyToGDL (body2, materials);
+			test.Assert (gdl2 == gdlMatHeader + gdlGeom2Ref);
+			var modelGdl = JSM.ExportModelToGDL (model, materials);
+			test.Assert (modelGdl == gdlMatHeader + gdlGeom1Ref + gdlGeom2Ref);
 
 			var stl1 = JSM.ExportBodyToStl (body1, 'Body1');
 			test.Assert (stl1 == stl1Ref);
@@ -2372,11 +2531,206 @@
 			test.Assert (ordered[0] == 4 && ordered[1] == 3 && ordered[2] == 2 && ordered[3] == 1 && ordered[4] == 0);
 		}
 		
+		function ConvexHullTest (test)
+		{
+			var result = [];
+			var coord = [];
+			
+			coords = [];
+		
+			result = JSM.ConvexHull2D (coords);
+			test.Assert (result.toString () == '');
+
+			coords = [
+				new JSM.Coord2D	(0, 0)
+			];
+		
+			result = JSM.ConvexHull2D (coords);
+			test.Assert (result.toString () == '');
+
+			coords = [
+				new JSM.Coord2D	(0, 0),
+				new JSM.Coord2D	(1, 0)
+			];
+
+			result = JSM.ConvexHull2D (coords);
+			test.Assert (result.toString () == '');
+
+			coords = [
+				new JSM.Coord2D	(0, 0),
+				new JSM.Coord2D	(1, 0),
+				new JSM.Coord2D	(1, 1)
+			];
+
+			result = JSM.ConvexHull2D (coords);
+			test.Assert (result.toString () == '0,1,2');
+
+			coords = [
+				new JSM.Coord2D	(0, 0),
+				new JSM.Coord2D	(1, 0),
+				new JSM.Coord2D	(1, 1),
+				new JSM.Coord2D	(0, 1)
+			];
+
+			result = JSM.ConvexHull2D (coords);
+			test.Assert (result.toString () == '0,1,2,3');
+
+			coords = [
+				new JSM.Coord2D	(0, 0),
+				new JSM.Coord2D	(1, 0),
+				new JSM.Coord2D	(0.5, 0.5),
+				new JSM.Coord2D	(1, 1),
+				new JSM.Coord2D	(0, 1)
+			];
+			
+			result = JSM.ConvexHull2D (coords);
+			test.Assert (result.toString () == '0,1,3,4');
+
+			coords = [
+				new JSM.Coord2D	(0, 0),
+				new JSM.Coord2D	(1, 0),
+				new JSM.Coord2D	(0.5, 0.1),
+				new JSM.Coord2D	(0.6, 0.2),
+				new JSM.Coord2D	(0.7, 0.3),
+				new JSM.Coord2D	(0.8, 0.4),
+				new JSM.Coord2D	(1, 1),
+				new JSM.Coord2D	(0, 1)
+			];
+
+			result = JSM.ConvexHull2D (coords);
+			test.Assert (result.toString () == '0,1,6,7');
+
+			coords = [
+				new JSM.Coord2D	(0.5, 0.1),
+				new JSM.Coord2D	(0.6, 0.2),
+				new JSM.Coord2D	(0.7, 0.3),
+				new JSM.Coord2D	(0.8, 0.4),
+				new JSM.Coord2D	(0, 0),
+				new JSM.Coord2D	(1, 0),
+				new JSM.Coord2D	(1, 1),
+				new JSM.Coord2D	(0, 1)
+			];
+
+			result = JSM.ConvexHull2D (coords);
+			test.Assert (result.toString () == '4,5,6,7');
+
+			coords = [
+				new JSM.Coord2D	(2, 4),
+				new JSM.Coord2D	(3, 2),
+				new JSM.Coord2D	(4, 1),
+				new JSM.Coord2D	(5, 6),
+				new JSM.Coord2D	(1, 5),
+				new JSM.Coord2D	(0, 4),
+				new JSM.Coord2D	(2, 0)
+			];
+
+			result = JSM.ConvexHull2D (coords);
+			test.Assert (result.toString () == '5,6,2,3,4');
+
+			coords = [
+				new JSM.Coord2D	(2, 5),
+				new JSM.Coord2D	(3, 3),
+				new JSM.Coord2D	(1, 3),
+				new JSM.Coord2D	(5, 6),
+				new JSM.Coord2D	(0, 1),
+				new JSM.Coord2D	(4, 2),
+				new JSM.Coord2D	(6, 1),
+				new JSM.Coord2D	(4, 4),
+				new JSM.Coord2D	(6, 6),
+				new JSM.Coord2D	(0, 6)
+			];
+
+			result = JSM.ConvexHull2D (coords);
+			test.Assert (result.toString () == '4,6,8,3,9');
+
+			coords = [];
+			result = JSM.ConvexHull3D (coords);
+			test.Assert (result.toString () == '');
+
+			coords.push (new JSM.Coord (0, 0, 0));
+			result = JSM.ConvexHull3D (coords);
+			test.Assert (result.toString () == '');
+
+			coords.push (new JSM.Coord (1, 0, 0));
+			result = JSM.ConvexHull3D (coords);
+			test.Assert (result.toString () == '');
+
+			coords.push (new JSM.Coord (1, 1, 0));
+			result = JSM.ConvexHull3D (coords);
+			test.Assert (result.toString () == '');
+
+			coords.push (new JSM.Coord (0, 1, 0));
+			result = JSM.ConvexHull3D (coords);
+			test.Assert (result.toString () == '0,1,2,0,2,3,2,1,3,1,0,3');
+
+			coords = [
+				new JSM.Coord (0, 0, 0),
+				new JSM.Coord (1, 0, 0),
+				new JSM.Coord (1, 1, 0),
+				new JSM.Coord (0, 1, 0),
+				new JSM.Coord (0, 0, 1),
+				new JSM.Coord (1, 0, 1),
+				new JSM.Coord (1, 1, 1),
+				new JSM.Coord (0, 1, 1)
+			];
+
+			result = JSM.ConvexHull3D (coords);
+			test.Assert (result.toString () == '2,1,3,1,0,3,0,1,5,4,0,5,1,2,6,5,1,6,3,0,7,0,4,7,2,3,7,6,2,7,4,5,7,5,6,7');
+			
+			var a = 1.0;
+			var b = 0.0;
+			var c = (1.0 + Math.sqrt (5.0)) / 2.0;
+			var d = 1.0 / c;
+			
+			coords = [
+				new JSM.Coord (+a, +a, +a),
+				new JSM.Coord (+a, +a, -a),
+				new JSM.Coord (+a, -a, +a),
+				new JSM.Coord (-a, +a, +a),
+				
+				new JSM.Coord (+a, -a, -a),
+				new JSM.Coord (-a, +a, -a),
+				new JSM.Coord (-a, -a, +a),
+				new JSM.Coord (-a, -a, -a),
+
+				new JSM.Coord (+b, +d, +c),
+				new JSM.Coord (+b, +d, -c),
+				new JSM.Coord (+b, -d, +c),
+				new JSM.Coord (+b, -d, -c),
+
+				new JSM.Coord (+d, +c, +b),
+				new JSM.Coord (+d, -c, +b),
+				new JSM.Coord (-d, +c, +b),
+				new JSM.Coord (-d, -c, +b),
+
+				new JSM.Coord (+c, +b, +d),
+				new JSM.Coord (-c, +b, +d),
+				new JSM.Coord (+c, +b, -d),
+				new JSM.Coord (-c, +b, -d)
+			];
+			
+			result = JSM.ConvexHull3D (coords);
+			test.Assert (result.toString () == '3,8,14,8,0,14,0,12,14,1,9,14,12,1,14,9,5,14,2,10,15,13,2,15,10,6,15,7,11,15,11,4,15,4,13,15,10,2,16,0,8,16,8,10,16,6,10,17,8,3,17,10,8,17,4,11,18,9,1,18,11,9,18,1,12,18,12,0,18,0,16,18,2,13,18,16,2,18,13,4,18,11,7,19,5,9,19,9,11,19,3,14,19,17,3,19,14,5,19,7,15,19,15,6,19,6,17,19');
+
+			coords.push (new JSM.Coord (0, 0, 0));
+			coords.push (new JSM.Coord (0.1, 0, 0));
+			coords.push (new JSM.Coord (0.1, 0.1, 0));
+			coords.push (new JSM.Coord (0, 0.1, 0));
+			coords.push (new JSM.Coord (0, 0, 0.1));
+			coords.push (new JSM.Coord (0.1, 0, 0.1));
+			coords.push (new JSM.Coord (0.1, 0.1, 0.1));
+			coords.push (new JSM.Coord (0, 0.1, 0.1));
+
+			result = JSM.ConvexHull3D (coords);
+			test.Assert (result.toString () == '3,8,14,8,0,14,0,12,14,1,9,14,12,1,14,9,5,14,2,10,15,13,2,15,10,6,15,7,11,15,11,4,15,4,13,15,10,2,16,0,8,16,8,10,16,6,10,17,8,3,17,10,8,17,4,11,18,9,1,18,11,9,18,1,12,18,12,0,18,0,16,18,2,13,18,16,2,18,13,4,18,11,7,19,5,9,19,9,11,19,3,14,19,17,3,19,14,5,19,7,15,19,15,6,19,6,17,19');
+		}
+		
 		function Load ()
 		{
 			var test = new JSM.Test ('result');
 			test.AddTestCase (CoreTest, 'CoreTest');
 			test.AddTestCase (VectorTest, 'VectorTest');
+			test.AddTestCase (CircleTest, 'CircleTest');
 			test.AddTestCase (MatrixTest, 'MatrixTest');
 			test.AddTestCase (ArcLengthTest, 'ArcLengthTest');
 			test.AddTestCase (TransformationTest, 'TransformationTest');
@@ -2420,6 +2774,7 @@
 			test.AddTestCase (TriangulateWithCentroidsTest, 'TriangulateWithCentroidsTest');
 			test.AddTestCase (CheckSolidBodyTest, 'CheckSolidBodyTest');
 			test.AddTestCase (PainterTest, 'PainterTest');
+			test.AddTestCase (ConvexHullTest, 'ConvexHullTest');
 			test.Run ();
 		}
 		

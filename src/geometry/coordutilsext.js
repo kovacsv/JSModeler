@@ -28,6 +28,20 @@ JSM.PolarToCartesian = function (radius, theta)
 	return result;
 };
 
+JSM.GetPolarArcLengthFromAngle = function (radius, theta)
+{
+	return theta * radius;
+};
+
+JSM.GetPolarAngleFromArcLength = function (radius, arcLength)
+{
+	if (JSM.IsEqual (radius, 0.0)) {
+		return 0.0;
+	}
+	
+	return arcLength / radius;
+};
+
 JSM.CoordTurnType = function (a, b, c, normal)
 {
 	var origo = new JSM.Coord (0.0, 0.0, 0.0);
@@ -120,6 +134,18 @@ JSM.GetArcLength = function (a, b, radius)
 {
 	var angle = JSM.GetVectorsAngle (a, b);
 	return angle * radius;
+};
+
+JSM.GetVectorsFullAngle = function (referenceVector, currentVector, normal)
+{
+	var angle = JSM.GetVectorsAngle (referenceVector, currentVector);
+	var origo = new JSM.Coord (0.0, 0.0, 0.0);
+	
+	if (JSM.CoordTurnType (currentVector, origo, referenceVector, normal) == 'Clockwise') {
+		angle = 2.0 * Math.PI - angle;
+	}
+	
+	return angle;
 };
 
 JSM.GetFullArcLength = function (referenceVector, currentVector, radius, normal)

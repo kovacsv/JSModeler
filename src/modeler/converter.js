@@ -25,9 +25,9 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 
 		if (uv1 !== undefined && uv2 !== undefined && uv3 !== undefined) {
 			var uvArray = [];
-			uvArray.push (new THREE.UV (uv1.x, uv1.y));
-			uvArray.push (new THREE.UV (uv2.x, uv2.y));
-			uvArray.push (new THREE.UV (uv3.x, uv3.y));
+			uvArray.push (new THREE.UV (uv1.x, -uv1.y));
+			uvArray.push (new THREE.UV (uv2.x, -uv2.y));
+			uvArray.push (new THREE.UV (uv3.x, -uv3.y));
 			geometry.faceVertexUvs[0].push (uvArray);
 		}
 	};
@@ -174,8 +174,9 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 	var CreateGeometry = function (polygonIndices, materialIndex)
 	{
 		var geometry = new THREE.Geometry ();
-		var hasTexture = (materialIndex !== -1 && materials.GetMaterial (materialIndex).texture !== null);
-		var hasOpacity = (materialIndex !== -1 && materials.GetMaterial (materialIndex).opacity !== 1.0);
+		var modelerMaterial = materials.GetMaterial (materialIndex);
+		var hasTexture = (modelerMaterial.texture !== null);
+		var hasOpacity = (modelerMaterial.opacity !== 1.0);
 
 		var i;
 		for (i = 0; i < polygonIndices.length; i++) {
@@ -183,34 +184,25 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		}
 
 		var material = null;		
-		if (materialIndex !== -1) {
-			material = new THREE.MeshLambertMaterial ({
-				ambient : materials.GetMaterial (materialIndex).ambient,
-				color : materials.GetMaterial (materialIndex).diffuse,
-				side : THREE.DoubleSide
-			});
-			if (hasOpacity) {
-				material.opacity = materials.GetMaterial (materialIndex).opacity;
-				material.transparent = true;
-			} 
-			if (hasTexture) {
-				var textureName = materials.GetMaterial (materialIndex).texture;
-				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (image) {
-					if (conversionData !== undefined && conversionData.textureLoadedCallback !== undefined) {
-						conversionData.textureLoadedCallback ();
-					}
-				});
-				texture.wrapS = THREE.RepeatWrapping;
-				texture.wrapT = THREE.RepeatWrapping;
-				material.map = texture;
-			}
-		} else {
-			material = new THREE.MeshLambertMaterial ({
-				ambient : 0x00cc00,
-				color : 0x00cc00,
-				side : THREE.DoubleSide
+		material = new THREE.MeshLambertMaterial ({
+			ambient : modelerMaterial.ambient,
+			color : modelerMaterial.diffuse,
+			side : THREE.DoubleSide
+		});
+		if (hasOpacity) {
+			material.opacity = modelerMaterial.opacity;
+			material.transparent = true;
+		} 
+		if (hasTexture) {
+			var textureName = modelerMaterial.texture;
+			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (image) {
+				if (conversionData !== undefined && conversionData.textureLoadedCallback !== undefined) {
+					conversionData.textureLoadedCallback ();
 				}
-			);
+			});
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
+			material.map = texture;
 		}
 
 		geometry.computeCentroids();
@@ -226,10 +218,12 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 	var hasVertexNormals = (vertexNormals !== undefined && vertexNormals !== null);
 	var hasTextureCoords = (textureCoords !== undefined && textureCoords !== null);
 	
-	if (materials !== undefined && materials !== null) {
-		for (i = 0; i < materials.Count (); i++) {
-			polygonsByMaterial[i] = [];
-		}
+	if (materials === undefined || materials === null) {
+		materials = new JSM.Materials ();
+	}
+	
+	for (i = 0; i < materials.Count (); i++) {
+		polygonsByMaterial[i] = [];
 	}
 
 	var polygon, material;

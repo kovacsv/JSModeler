@@ -1,0 +1,98 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="simple.css">
+	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
+	<script type="text/javascript" src="circlesgenerator.js"></script>
+	<title>JSModeler Circles Example</title>
+
+	<script type="text/javascript">
+		function ExportToSvg ()
+		{
+			var svg = document.getElementById ('example');
+			var serializer = new XMLSerializer ();
+			var xml = serializer.serializeToString (svg);
+			window.open ("data:image/svg+xml," + xml);
+		}
+
+		function Resize ()
+		{
+			var margin = 10;
+			var left = document.getElementById ('left');
+			var canvas = document.getElementById ('example');
+			canvas.setAttribute ('width', window.innerWidth - left.clientWidth - 3 * margin);
+			canvas.setAttribute ('height', window.innerHeight - 3 * margin);
+		}
+
+		function Generate ()
+		{
+			var svgObject = document.getElementById ('example');
+			var largeCircleRadius = document.getElementById ('largecircleradius').value;
+			var smallCircleRadius = document.getElementById ('smallcircleradius').value;
+			var controlPointRadius = document.getElementById ('controlpointradius').value;
+			var rotationSpeed = document.getElementById ('rotationspeed').value;
+			var showCircles = document.getElementById ('showcirclescheck').checked;
+			JSM.GenerateSVGCircles (svgObject, largeCircleRadius, smallCircleRadius, controlPointRadius, rotationSpeed, showCircles);
+		}
+		
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+
+			document.getElementById ('showcirclescheck').checked = true;
+			Generate ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="left">
+		<div id="menu">
+			<div id="title">
+				<span id="titlemain">circles</span>
+				<span id="titleversion">1.0</span>
+			</div>
+			<div class="box">
+				<div class="boxtitle">settings</div>
+				<div class="text">large circle radius:</div>
+				<input id="largecircleradius" type="text" value="200">
+				<div class="text">small circle radius:</div>
+				<input id="smallcircleradius" type="text" value="100">
+				<div class="text">control point radius:</div>
+				<input id="controlpointradius" type="text" value="50">
+				<div class="text">rotation speed:</div>
+				<input id="rotationspeed" type="text" value="50">
+				<div class="text">other:</div>
+				<input id="showcirclescheck" type="checkbox" checked= "true">show circles
+				<div class="button"><input type="button" value="generate" onclick="Generate ();"></div>
+			</div>
+			<div class="box">
+				<a href="javascript:ExportToSvg ();">export drawing to svg</a><br>
+				<a href="https://github.com/kovacsv/JSModeler">go to project home page</a>
+			</div>
+		</div>
+	</div>
+	<div id="right">
+		<svg id="example" xmlns="http://www.w3.org/2000/svg" version="1.1" width="800" height="500"></svg>
+	</div>
+</body>
+
+</html>

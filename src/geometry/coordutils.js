@@ -114,18 +114,6 @@ JSM.GetVectorsAngle = function (a, b)
 	return JSM.ArcCos (product);
 };
 
-JSM.GetVectorsFullAngle = function (referenceVector, currentVector, normal)
-{
-	var angle = JSM.GetVectorsAngle (referenceVector, currentVector);
-	var origo = new JSM.Coord (0.0, 0.0, 0.0);
-	
-	if (JSM.CoordTurnType (currentVector, origo, referenceVector, normal) == 'Clockwise') {
-		angle = 2.0 * Math.PI - angle;
-	}
-	
-	return angle;
-};
-
 JSM.VectorsAreCollinear = function (a, b)
 {
 	var angle = JSM.GetVectorsAngle (a, b);

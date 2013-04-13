@@ -23,6 +23,31 @@ JSM.Coord2D.prototype =
 	}
 };
 
+JSM.PolarCoord = function (radius, angle)
+{
+	this.radius = radius || 1.0;
+	this.angle = angle || 0.0;
+};
+
+JSM.PolarCoord.prototype =
+{
+	Set : function (radius, angle)
+	{
+		this.radius = radius || 1.0;
+		this.angle = angle || 0.0;
+	},
+	
+	ToString : function ()
+	{
+		return ('(' + this.radius + ', ' + this.angle + ')');
+	},
+	
+	Clone : function ()
+	{
+		return new JSM.PolarCoord (this.radius, this.angle);
+	}
+};
+
 JSM.Coord = function (x, y, z)
 {
 	this.x = x || 0.0;

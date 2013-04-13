@@ -70,7 +70,8 @@ JSM.Viewer.prototype =
 			'nearClippingPlane' : 0.1,
 			'farClippingPlane' : 1000.0,
 			'lightAmbientColor' : [0.5, 0.5, 0.5],
-			'lightDiffuseColor' :	[1.0, 1.0, 1.0]
+			'lightDiffuseColor' :[1.0, 1.0, 1.0],
+			'fixLightDirection' : null
 		};
 	
 		if (settings != undefined) {
@@ -82,6 +83,7 @@ JSM.Viewer.prototype =
 			if (settings['farClippingPlane'] !== undefined) this.settings['farClippingPlane'] = settings['farClippingPlane'];
 			if (settings['lightAmbientColor'] !== undefined) this.settings['lightAmbientColor'] = settings['lightAmbientColor'];
 			if (settings['lightDiffuseColor'] !== undefined) this.settings['lightDiffuseColor'] = settings['lightDiffuseColor'];
+			if (settings['fixLightDirection'] !== undefined) this.settings['fixLightDirection'] = settings['fixLightDirection'];
 		}
 
 		return true;
@@ -158,7 +160,11 @@ JSM.Viewer.prototype =
 			return false;
 		}
 		
-		this.directionalLight.position.set (0.0, 0.0, 1.0).normalize ();
+		if (this.settings['fixLightDirection'] !== null) {
+			this.directionalLight.position.set (this.settings['fixLightDirection'][0], this.settings['fixLightDirection'][1], this.settings['fixLightDirection'][2]).normalize ();
+		} else {
+			this.directionalLight.position.set (0.0, 0.0, 1.0).normalize ();
+		}
 		this.scene.add (this.directionalLight);
 		return true;
 	},
@@ -361,7 +367,9 @@ JSM.Viewer.prototype =
 		this.camera.position = this.cameraMove.eye;
 		this.camera.up = this.cameraMove.up;
 		this.camera.lookAt (this.cameraMove.center);
-		this.directionalLight.position = new THREE.Vector3 ().sub (this.cameraMove.eye, this.cameraMove.center);
+		if (this.settings['fixLightDirection'] === null) {
+			this.directionalLight.position = new THREE.Vector3 ().sub (this.cameraMove.eye, this.cameraMove.center);
+		}
 		this.renderer.render (this.scene, this.camera);
 		return true;
 	},

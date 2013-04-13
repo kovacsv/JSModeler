@@ -161,6 +161,7 @@ JSM.GenerateDodecahedron = function ()
 	JSM.AddVertexToBody (result, +a, +a, -a);
 	JSM.AddVertexToBody (result, +a, -a, +a);
 	JSM.AddVertexToBody (result, -a, +a, +a);
+	
 	JSM.AddVertexToBody (result, +a, -a, -a);
 	JSM.AddVertexToBody (result, -a, +a, -a);
 	JSM.AddVertexToBody (result, -a, -a, +a);

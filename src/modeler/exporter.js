@@ -197,7 +197,44 @@ JSM.ExportModelToObj = function (model, name, hasConvexPolygons)
 	return objContent;
 };
 
-JSM.ExportBodyToGDL = function (body)
+JSM.ExportMaterialsToGDL = function (materials)
+{
+	var HexColorToRGBColorString = function (hexColor)
+	{
+		var rgb = JSM.HexColorToRGBColor (hexColor);
+		var result = rgb[0] / 255.0 + ',' + rgb[1] / 255.0 + ',' + rgb[2] / 255.0;
+		return result;
+	};
+
+	var AddLineToContent = function (line)
+	{
+		gdlContent += line + '\n';
+	};
+
+	var AddMaterial = function (material, index)
+	{
+		var rgbString = HexColorToRGBColorString (material.diffuse);
+		AddLineToContent ('define material "material' + index + '" 2, ' + rgbString + ' ! ' + index);
+	};
+	
+	var gdlContent = '';
+	var writeMaterials = false;
+	if (materials !== undefined && materials !== null) {
+		writeMaterials = true;
+	}
+
+	var i;
+	if (writeMaterials) {
+		AddMaterial (materials.GetDefaultMaterial (), 1);
+		for (i = 0; i < materials.Count (); i++) {
+			AddMaterial (materials.GetMaterial (i), i + 2);
+		}
+	}
+	
+	return gdlContent;
+};
+
+JSM.ExportBodyGeometryToGDL = function (body, writeMaterials)
 {
 	var AddToContent = function (line)
 	{
@@ -223,6 +260,11 @@ JSM.ExportBodyToGDL = function (body)
 
 	var AddPolygon = function (index)
 	{
+		if (writeMaterials) {
+			var materialIndex = body.GetPolygon (index).GetMaterialIndex () + 2;
+			AddLineToContent ('set material "material' + materialIndex + '"');
+		}
+	
 		var pgon = al.pgons[index];
 		AddToContent ('pgon ' + pgon.pedges.length + ', 0, 0, ');
 		var i, pedge;
@@ -242,10 +284,10 @@ JSM.ExportBodyToGDL = function (body)
 	};
 
 	var gdlContent = '';
+
 	AddLineToContent ('base');
 	var al = JSM.CalculateAdjacencyList (body);
 	
-	var i;
 	for (i = 0; i < al.verts.length; i++) {
 		AddVertex (i);
 	}
@@ -262,14 +304,33 @@ JSM.ExportBodyToGDL = function (body)
 	return gdlContent;
 };
 
-JSM.ExportModelToGDL = function (model, name, hasConvexPolygons)
+JSM.ExportBodyToGDL = function (body, materials)
 {
 	var gdlContent = '';
+
+	var writeMaterials = false;
+	if (materials !== undefined && materials !== null) {
+		gdlContent += JSM.ExportMaterialsToGDL (materials);
+		writeMaterials = true;
+	}
+
+	gdlContent += JSM.ExportBodyGeometryToGDL (body, writeMaterials);
+	return gdlContent;
+}
+
+JSM.ExportModelToGDL = function (model, materials)
+{
+	var gdlContent = '';
+	var writeMaterials = false;
+	if (materials !== undefined && materials !== null) {
+		gdlContent += JSM.ExportMaterialsToGDL (materials);
+		writeMaterials = true;
+	}
 	
 	var i, body;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		gdlContent += JSM.ExportBodyToGDL (body);
+		gdlContent += JSM.ExportBodyGeometryToGDL (body, writeMaterials);
 	}
 
 	return gdlContent;
@@ -289,14 +350,8 @@ JSM.ExportBodyToSVG = function (body, materials, settings, svgObject, orderedPol
 {
 	var HexColorToHTMLColor = function (hexColor)
 	{
-		var result = hexColor.toString (16);
-		while (result.length < 6) {
-			result = '0' + result;
-		}
-		var r = parseInt (result.substr (0, 2), 16);
-		var g = parseInt (result.substr (2, 2), 16);
-		var b = parseInt (result.substr (4, 2), 16);
-		result = 'rgb(' + r + ',' + g + ',' + b + ')';
+		var rgb = JSM.HexColorToRGBColor (hexColor);
+		var result = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
 		return result;
 	};
 
@@ -332,6 +387,10 @@ JSM.ExportBodyToSVG = function (body, materials, settings, svgObject, orderedPol
 		}
 	}
 
+	if (materials === undefined || materials === null) {
+		materials = new JSM.Materials ();
+	}
+	
 	var materialIndex, color;
 	for (i = 0; i < orderedPolygons.length; i++) {
 		points = '';
@@ -352,12 +411,8 @@ JSM.ExportBodyToSVG = function (body, materials, settings, svgObject, orderedPol
 		svgPolyon.setAttributeNS (null, 'points', points);
 		if (hiddenLine) {
 			materialIndex = polygon.GetMaterialIndex ();
-			if (materials !== undefined && materials !== null && materialIndex != -1) {
-				color = materials.GetMaterial (materialIndex).diffuse;
-				svgPolyon.setAttributeNS (null, 'fill', HexColorToHTMLColor (color));
-			} else {
-				svgPolyon.setAttributeNS (null, 'fill', 'white');
-			}
+			color = materials.GetMaterial (materialIndex).diffuse;
+			svgPolyon.setAttributeNS (null, 'fill', HexColorToHTMLColor (color));
 			svgPolyon.setAttributeNS (null, 'fill-opacity', '1.0');
 		} else {
 			svgPolyon.setAttributeNS (null, 'fill', 'none');

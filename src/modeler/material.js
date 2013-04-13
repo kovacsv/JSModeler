@@ -1,3 +1,15 @@
+JSM.HexColorToRGBColor = function (hexColor)
+{
+	var hexString = hexColor.toString (16);
+	while (hexString.length < 6) {
+		hexString = '0' + hexString;
+	}
+	var r = parseInt (hexString.substr (0, 2), 16);
+	var g = parseInt (hexString.substr (2, 2), 16);
+	var b = parseInt (hexString.substr (4, 2), 16);
+	return [r, g, b];
+};
+
 JSM.Material = function (ambient, diffuse, opacity, texture, textureWidth, textureHeight)
 {
 	this.ambient = 0x00cc00;
@@ -23,6 +35,7 @@ JSM.Material.prototype =
 JSM.Materials = function ()
 {
 	this.materials = [];
+	this.defaultMaterial = new JSM.Material ();
 };
 
 JSM.Materials.prototype =
@@ -34,7 +47,15 @@ JSM.Materials.prototype =
 	
 	GetMaterial : function (index)
 	{
+		if (index < 0 || index >= this.materials.length) {
+			return this.defaultMaterial;
+		}
 		return this.materials[index];
+	},
+	
+	GetDefaultMaterial : function (index)
+	{
+		return this.defaultMaterial;
 	},
 	
 	Count : function ()

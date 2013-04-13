@@ -54,9 +54,8 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 	
 	var CalculatePolygonValues = function ()
 	{
-		var cameraPlane = new JSM.Plane ();
 		var viewDirection = JSM.VectorNormalize (JSM.CoordSub (center, eye));
-		cameraPlane.SetFromCoordAndDirection (eye, viewDirection);
+		var cameraPlane = JSM.GetPlaneFromCoordAndDirection (eye, viewDirection);
 		
 		var i, j, polygon, coord, distance, minDistance, maxDistance;
 		var polygonCenter, polygonCenterDistance, projectedPolygon, xyBoundingBox;
@@ -96,8 +95,7 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 				polygonNormal = JSM.VectorMultiply (polygonNormal, -1);
 			}
 
-			polygonPlane = new JSM.Plane ();
-			polygonPlane.SetFromCoordAndDirection (polygonCenter, polygonNormal);
+			polygonPlane = JSM.GetPlaneFromCoordAndDirection (polygonCenter, polygonNormal)
 			polygonPlanes.push (polygonPlane);
 		}
 	};

@@ -120,7 +120,7 @@ JSM.Test.prototype =
 		var result = '';
 		
 		result += '<div style=\"' + this.testCaseStyle + '\">';
-		result += this.testCaseResult;
+		result += this.testCaseResult + ' (' + (this.currentAssert - 1) + ')';
 		if (!this.allAssertPassed) {
 			result += ': ' + this.testCaseAsserts;
 		}

@@ -14,8 +14,13 @@ JSM.Body = function ()
 {
 	this.vertices = [];
 	this.polygons = [];
-	this.projection = null;
-	this.coords = null;
+	this.projection = 'Cubic';
+	this.coords = new JSM.CoordSystem (
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (1.0, 0.0, 0.0),
+		new JSM.Coord (0.0, 1.0, 0.0),
+		new JSM.Coord (0.0, 0.0, 1.0)
+	);
 };
 
 JSM.BodyVertex.prototype =

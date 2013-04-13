@@ -12,7 +12,7 @@
 
 	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="solids.css">
+	<link rel="stylesheet" type="text/css" href="simple.css">
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
 	<title>JSModeler Solids Example</title>
 
@@ -43,8 +43,9 @@
 			viewer.RemoveBodies ();
 			body = JSM.GenerateSolidWithRadius (name, 1.0);
 			
+			var materials;
 			if (coloredFaces) {
-				var materials = new JSM.Materials ();
+				materials = new JSM.Materials ();
 				materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
 				materials.AddMaterial (new JSM.Material (0x279b61, 0x279b61));
 				materials.AddMaterial (new JSM.Material (0xcc3333, 0xcc3333));
@@ -62,10 +63,14 @@
 					}
 					polygon.SetMaterialIndex (vertexCountToColor[vertexCount]);
 				}
+			} else {
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff));
+				body.SetPolygonsMaterialIndex (0);
 			}
 			
 			viewer.AddBody (body, materials);
-			viewer.Draw ();		
+			viewer.Draw ();
 		}
 	
 		function ShowHide (index, count)
@@ -105,7 +110,7 @@
 		{
 			var svg = document.getElementById ('example');
 			var serializer = new XMLSerializer ();
-			var xml = serializer.serializeToString(svg);
+			var xml = serializer.serializeToString (svg);
 			window.open ("data:image/svg+xml," + xml);
 		}
 

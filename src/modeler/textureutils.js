@@ -4,19 +4,15 @@ JSM.CalculatePlanarTextureCoord = function (coord, system)
 
 	var e1 = JSM.VectorNormalize (system.e1);
 	var e2 = JSM.VectorNormalize (system.e2);
-	var e3 = JSM.VectorNormalize (system.e3);
+	var e3 = JSM.VectorCross (system.e1, system.e2);
 
-	var xyPlane = new JSM.Plane ();
-	var xzPlane = new JSM.Plane ();
-	var yzPlane = new JSM.Plane ();
-
-	xyPlane.SetFromCoordAndDirection (system.origo, e3);
-	xzPlane.SetFromCoordAndDirection (system.origo, e2);
-	yzPlane.SetFromCoordAndDirection (system.origo, e1);
+	var xyPlane = JSM.GetPlaneFromCoordAndDirection (system.origo, e3);
+	var xzPlane = JSM.GetPlaneFromCoordAndDirection (system.origo, e2);
+	var yzPlane = JSM.GetPlaneFromCoordAndDirection (system.origo, e1);
 	
 	var projected = JSM.ProjectCoordToPlane (coord, xyPlane);
-	result.x = JSM.CoordPlaneSignedDistance (projected, xzPlane);
-	result.y = JSM.CoordPlaneSignedDistance (projected, yzPlane);
+	result.x = JSM.CoordPlaneSignedDistance (projected, yzPlane);
+	result.y = JSM.CoordPlaneSignedDistance (projected, xzPlane);
 
 	return result;
 }
@@ -72,23 +68,23 @@ JSM.CalculateCubicTextureCoord = function (coord, normal, system)
 	if (correctPlane === 0) {
 		planeSystem = new JSM.CoordSystem (
 			system.origo,
-			e3,
 			e2,
-			JSM.VectorMultiply (e1, -1)
+			e3,
+			null
 		);
 	} else if (correctPlane === 1) {
 		planeSystem = new JSM.CoordSystem (
 			system.origo,
-			e3,
 			e1,
-			e2
+			e3,
+			null
 		);
 	} else if (correctPlane === 2) {
 		planeSystem = new JSM.CoordSystem (
 			system.origo,
-			e2,
 			e1,
-			JSM.VectorMultiply (e3, -1)
+			e2,
+			null
 		);
 	}
 	
@@ -189,8 +185,6 @@ JSM.CalculatePolygonTextureCoords = function (body, polygonNormals, index)
 {
 	var result = [];
 	var projection = body.GetTextureProjectionType ();
-	var system = body.GetTextureProjectionCoords ();
-	var polygon = body.GetPolygon (index);
 	var normal = polygonNormals[index];
 
 	if (projection === 'Planar') {
@@ -207,7 +201,6 @@ JSM.CalculatePolygonTextureCoords = function (body, polygonNormals, index)
 JSM.CalculateBodyTextureCoords = function (body)
 {
 	var result = [];
-	var system = body.GetTextureProjectionCoords ();
 	var polygonNormals = JSM.CalculateBodyPolygonNormals (body);
 	
 	var i, j, polygon, coord;
