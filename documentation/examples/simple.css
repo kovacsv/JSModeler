@@ -99,6 +99,16 @@ div.boxcontent
 	margin-bottom : 15px;
 }
 
+div.text
+{
+	margin-top : 5px;
+}
+
+div.button
+{
+	margin-top : 10px;
+}
+
 div.projectlink
 {
 	text-align : center;
