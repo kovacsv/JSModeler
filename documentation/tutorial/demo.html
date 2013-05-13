@@ -168,7 +168,7 @@
 		{
 			var body1 = new JSM.GenerateCuboid (1.0, 1.0, 1.0);
 			var body2 = new JSM.GenerateCuboid (1.0, 1.0, 1.0);
-			var transformation = JSM.AdditionTransformation (new JSM.Coord (1.5, 0.0, 0.0));
+			var transformation = JSM.TranslationTransformation (new JSM.Coord (1.5, 0.0, 0.0));
 			body2.Transform (transformation);
 
 			ClearBodiesFromViewer ();
@@ -181,7 +181,7 @@
 			var body1 = new JSM.GenerateCuboid (1.0, 1.0, 1.0);
 			var body2 = new JSM.GenerateCuboid (1.0, 1.0, 1.0);
 			var transformation = new JSM.Transformation ();
-			var addition = JSM.AdditionTransformation (new JSM.Coord (1.5, 0.0, 0.0));
+			var addition = JSM.TranslationTransformation (new JSM.Coord (1.5, 0.0, 0.0));
 			var rotation = JSM.RotationXTransformation (45.0 * JSM.DegRad);
 			transformation.Append (addition);
 			transformation.Append (rotation);

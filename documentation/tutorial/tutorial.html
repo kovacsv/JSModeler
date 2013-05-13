@@ -29,7 +29,7 @@
 					<li>We can define our model with adding vertices and polygons manually.</li>
 					<li>We can use built-in generator functions to create basic shapes (cuboid, sphere, cylinder, cone, torus, polygonal torus, prism, prism shell, line shell, ruled surface, revolved surface, platonic and archimedean solids, function surface).</li>
 				</ul>
-				<li>Built-in Three.js based model viewer with rotation, zoom, and pan functionality.</li>
+				<li>Built-in Three.js based model viewer with rotation and zoom functionality.</li>
 				<li>Automatic conversion to Three.js geometry format.</li>
 				<ul>
 					<li>Convex and concave polygons are automatically triangulated during the conversion.</li>
@@ -207,7 +207,7 @@ var body = new JSM.GenerateCuboid (1.0, 1.0, 1.0);
 var body1 = new JSM.GenerateCuboid (1.0, 1.0, 1.0);
 var body2 = new JSM.GenerateCuboid (1.0, 1.0, 1.0);
 
-var transformation = JSM.AdditionTransformation (new JSM.Coord (1.5, 0.0, 0.0));
+var transformation = JSM.TranslationTransformation (new JSM.Coord (1.5, 0.0, 0.0));
 body2.Transform (transformation);
 </pre>
 			<div class="demo">
@@ -219,7 +219,7 @@ body2.Transform (transformation);
 var body1 = new JSM.GenerateCuboid (1.0, 1.0, 1.0);
 var body2 = new JSM.GenerateCuboid (1.0, 1.0, 1.0);
 
-var addition = JSM.AdditionTransformation (new JSM.Coord (1.5, 0.0, 0.0));
+var addition = JSM.TranslationTransformation (new JSM.Coord (1.5, 0.0, 0.0));
 var rotation = JSM.RotationXTransformation (45.0 * JSM.DegRad);
 
 var transformation = new JSM.Transformation ();
