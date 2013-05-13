@@ -51,6 +51,26 @@ html, body
 	margin-left : 10px;
 }
 
+#titlelinks
+{
+	color : #888888;
+	background : transparent;
+	font-size : 12px;
+	margin-left : 50px;
+}
+
+#titlelinks a
+{
+	color : #888888;
+	background : transparent;
+	text-decoration : none;
+}
+
+#titlelinks a:hover
+{
+	text-decoration : underline;
+}
+
 #menu
 {
 	padding : 20px;
