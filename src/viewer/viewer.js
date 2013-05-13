@@ -66,18 +66,22 @@ JSM.Viewer.prototype =
 			'cameraEyePosition' : [1.0, 1.0, 1.0],
 			'cameraCenterPosition' : [0.0, 0.0, 0.0],
 			'cameraUpVector' : [0.0, 0.0, 1.0],
+			'cameraMode' : 'FreeRotateAroundCenter',
+			'disableZoom' : false,
 			'fieldOfView' : 45.0,
 			'nearClippingPlane' : 0.1,
 			'farClippingPlane' : 1000.0,
 			'lightAmbientColor' : [0.5, 0.5, 0.5],
 			'lightDiffuseColor' :[1.0, 1.0, 1.0],
-			'fixLightDirection' : null
+			'fixLightDirection' : null,
 		};
 	
 		if (settings != undefined) {
 			if (settings['cameraEyePosition'] !== undefined) this.settings['cameraEyePosition'] = settings['cameraEyePosition'];
 			if (settings['cameraCenterPosition'] !== undefined) this.settings['cameraCenterPosition'] = settings['cameraCenterPosition'];
 			if (settings['cameraUpVector'] !== undefined) this.settings['cameraUpVector'] = settings['cameraUpVector'];
+			if (settings['cameraMode'] !== undefined) this.settings['cameraMode'] = settings['cameraMode'];
+			if (settings['disableZoom'] !== undefined) this.settings['disableZoom'] = settings['disableZoom'];
 			if (settings['fieldOfView'] !== undefined) this.settings['fieldOfView'] = settings['fieldOfView'];
 			if (settings['nearClippingPlane'] !== undefined) this.settings['nearClippingPlane'] = settings['nearClippingPlane'];
 			if (settings['farClippingPlane'] !== undefined) this.settings['farClippingPlane'] = settings['farClippingPlane'];
@@ -126,12 +130,13 @@ JSM.Viewer.prototype =
 			return false;
 		}
 
-		this.cameraMove = new JSM.Camera ();
+		this.cameraMove = new JSM.Camera (this.settings['cameraEyePosition'], this.settings['cameraCenterPosition'], this.settings['cameraUpVector']);
+		this.cameraMove.SetMode (this.settings['cameraMode']);
+		this.cameraMove.SetZoomEnabled (!this.settings['disableZoom']);
 		if (!this.cameraMove) {
 			return false;
 		}
 		
-		this.cameraMove.Init (this.settings['cameraEyePosition'], this.settings['cameraCenterPosition'], this.settings['cameraUpVector']);
         this.camera = new THREE.PerspectiveCamera (this.settings['fieldOfView'], this.canvas.width / this.canvas.height, this.settings['nearClippingPlane'], this.settings['farClippingPlane']);
         if (!this.camera) {
 			return false;
@@ -276,13 +281,13 @@ JSM.Viewer.prototype =
 		var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
 		var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
 		
-		var i, j, current, geometry, coord;
-		for (i = 0; i < this.scene.__objects.length; i++) {
-			current = this.scene.__objects[i];
+		var current, geometry, coord;
+		this.scene.traverse (function (current) {
 			if (current instanceof THREE.Mesh) {
 				geometry = current.geometry;
 				for (j = 0; j < geometry.vertices.length; j++) {
-					coord = geometry.vertices[j];
+					coord = geometry.vertices[j].clone ();
+					coord.add (current.position);
 					min.x = JSM.Minimum (min.x, coord.x);
 					min.y = JSM.Minimum (min.y, coord.y);
 					min.z = JSM.Minimum (min.z, coord.z);
@@ -291,7 +296,7 @@ JSM.Viewer.prototype =
 					max.z = JSM.Maximum (max.z, coord.z);
 				}
 			}
-		}
+		});
 
 		return [min, max];
 	},
@@ -301,19 +306,20 @@ JSM.Viewer.prototype =
 		var center = this.GetCenter ();
 		var radius = 0.0;
 		
-		var i, j, current;
-		for (i = 0; i < this.scene.__objects.length; i++) {
-			current = this.scene.__objects[i];
+		var current, geometry, coord, distance;
+		this.scene.traverse (function (current) {
 			if (current instanceof THREE.Mesh) {
 				geometry = current.geometry;
 				for (j = 0; j < geometry.vertices.length; j++) {
-					current = JSM.CoordDistance (center, geometry.vertices[j]);
-					if (JSM.IsGreater (current, radius)) {
-						radius = current;
+					coord = geometry.vertices[j].clone ();
+					coord.add (current.position);
+					distance = JSM.CoordDistance (center, new JSM.Coord (coord.x, coord.y, coord.z));
+					if (JSM.IsGreater (distance, radius)) {
+						radius = distance;
 					}
 				}
 			}
-		}
+		});
 
 		return radius;
 	},
@@ -386,14 +392,8 @@ JSM.Viewer.prototype =
 			return;
 		}
 		
-		var ratio = 1.0;
-		if (this.mouse.shift) {
-			ratio = 0.01;
-			this.cameraMove.Pan (-this.mouse.diffX * ratio, this.mouse.diffY * ratio);
-		} else {
-			ratio = -0.5;
-			this.cameraMove.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
-		}
+		var ratio = -0.5;
+		this.cameraMove.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 		
 		this.Draw ();
 	},

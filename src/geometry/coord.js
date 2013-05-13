@@ -1,15 +1,15 @@
 JSM.Coord2D = function (x, y)
 {
-	this.x = x || 0.0;
-	this.y = y || 0.0;
+	this.x = JSM.ValueOrDefault (x, 0.0);
+	this.y = JSM.ValueOrDefault (y, 0.0);
 };
 
 JSM.Coord2D.prototype =
 {
 	Set : function (x, y)
 	{
-		this.x = x || 0.0;
-		this.y = y || 0.0;
+		this.x = JSM.ValueOrDefault (x, 0.0);
+		this.y = JSM.ValueOrDefault (y, 0.0);
 	},
 	
 	ToString : function ()
@@ -25,16 +25,16 @@ JSM.Coord2D.prototype =
 
 JSM.PolarCoord = function (radius, angle)
 {
-	this.radius = radius || 1.0;
-	this.angle = angle || 0.0;
+	this.radius = JSM.ValueOrDefault (radius, 1.0);
+	this.angle = JSM.ValueOrDefault (angle, 0.0);
 };
 
 JSM.PolarCoord.prototype =
 {
 	Set : function (radius, angle)
 	{
-		this.radius = radius || 1.0;
-		this.angle = angle || 0.0;
+		this.radius = JSM.ValueOrDefault (radius, 1.0);
+		this.angle = JSM.ValueOrDefault (angle, 0.0);
 	},
 	
 	ToString : function ()
@@ -50,18 +50,18 @@ JSM.PolarCoord.prototype =
 
 JSM.Coord = function (x, y, z)
 {
-	this.x = x || 0.0;
-	this.y = y || 0.0;
-	this.z = z || 0.0;
+	this.x = JSM.ValueOrDefault (x, 0.0);
+	this.y = JSM.ValueOrDefault (y, 0.0);
+	this.z = JSM.ValueOrDefault (z, 0.0);
 };
 
 JSM.Coord.prototype =
 {
 	Set : function (x, y, z)
 	{
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.x = JSM.ValueOrDefault (x, 0.0);
+		this.y = JSM.ValueOrDefault (y, 0.0);
+		this.z = JSM.ValueOrDefault (z, 0.0);
 	},
 	
 	ToString : function ()

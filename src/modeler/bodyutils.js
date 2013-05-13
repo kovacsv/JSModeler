@@ -106,6 +106,20 @@ JSM.CalculateBodyVertexNormals = function (body)
 	return result;
 };
 
+JSM.MakeBodyInsideOut = function (body)
+{
+	var i, j, polygon, count, vertices;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		polygon = body.GetPolygon (i);
+		vertices = polygon.vertices.slice (0);
+		count = vertices.length;
+		polygon.vertices = [];
+		for (j = 0; j < count; j++) {
+			polygon.vertices.push (vertices[count - j - 1]);
+		}
+	}
+};
+
 JSM.GetGaussianParameterToReachEpsilonAtValue = function (x, a, b, epsilon)
 {
 	return Math.sqrt (-(Math.pow (x - b, 2.0) / (2.0 * Math.log (epsilon / Math.abs (a)))));

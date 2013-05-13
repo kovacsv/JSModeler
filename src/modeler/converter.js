@@ -1,7 +1,8 @@
-JSM.ConversionData = function (textureLoadedCallback, hasConvexPolygons)
+JSM.ConversionData = function (textureLoadedCallback, hasConvexPolygons, doubleSided)
 {
-	this.textureLoadedCallback = textureLoadedCallback;
-	this.hasConvexPolygons = hasConvexPolygons;
+	this.textureLoadedCallback = JSM.ValueOrDefault (textureLoadedCallback, null);
+	this.hasConvexPolygons = JSM.ValueOrDefault (hasConvexPolygons, false);
+	this.doubleSided = JSM.ValueOrDefault (doubleSided, true);
 };
 
 JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, textureCoords, conversionData)
@@ -81,7 +82,7 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 			var i;
 		
 			var useTriangulation = false;
-			if (conversionData === undefined || conversionData.hasConvexPolygons === undefined || !conversionData.hasConvexPolygons) {
+			if (!conversionData.hasConvexPolygons) {
 				useTriangulation = true;
 			}
 			if (useTriangulation) {
@@ -186,9 +187,13 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		var material = null;		
 		material = new THREE.MeshLambertMaterial ({
 			ambient : modelerMaterial.ambient,
-			color : modelerMaterial.diffuse,
-			side : THREE.DoubleSide
+			color : modelerMaterial.diffuse
 		});
+		
+		if (conversionData.doubleSided) {
+			material.side = THREE.DoubleSide;
+		}
+		
 		if (hasOpacity) {
 			material.opacity = modelerMaterial.opacity;
 			material.transparent = true;
@@ -196,7 +201,7 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		if (hasTexture) {
 			var textureName = modelerMaterial.texture;
 			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (image) {
-				if (conversionData !== undefined && conversionData.textureLoadedCallback !== undefined) {
+				if (conversionData.textureLoadedCallback !== null) {
 					conversionData.textureLoadedCallback ();
 				}
 			});
@@ -257,6 +262,10 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 
 JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 {
+	if (conversionData === undefined) {
+		conversionData = new JSM.ConversionData ();
+	}
+
 	var vertexNormals = JSM.CalculateBodyVertexNormals (body);
 
 	var hasTextures = false;

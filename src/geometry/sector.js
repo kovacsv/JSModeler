@@ -1,15 +1,15 @@
 JSM.Sector2D = function (beg, end)
 {
-	this.beg = beg || new JSM.Coord2D ();
-	this.end = end || new JSM.Coord2D ();
+	this.beg = JSM.ValueOrDefault (beg, new JSM.Coord2D ());
+	this.end = JSM.ValueOrDefault (end, new JSM.Coord2D ());
 };
 
 JSM.Sector2D.prototype =
 {
 	Set : function (beg, end)
 	{
-		this.beg = beg || new JSM.Coord2D ();
-		this.end = end || new JSM.Coord2D ();
+		this.beg = JSM.ValueOrDefault (beg, new JSM.Coord2D ());
+		this.end = JSM.ValueOrDefault (end, new JSM.Coord2D ());
 	},
 	
 	Clone : function ()
@@ -20,16 +20,16 @@ JSM.Sector2D.prototype =
 
 JSM.Sector = function (beg, end)
 {
-	this.beg = beg || new JSM.Coord ();
-	this.end = end || new JSM.Coord ();
+	this.beg = JSM.ValueOrDefault (beg, new JSM.Coord ());
+	this.end = JSM.ValueOrDefault (end, new JSM.Coord ());
 };
 
 JSM.Sector.prototype =
 {
 	Set : function (beg, end)
 	{
-		this.beg = beg || 0.0;
-		this.end = end || 0.0;
+		this.beg = JSM.ValueOrDefault (beg, new JSM.Coord ());
+		this.end = JSM.ValueOrDefault (end, new JSM.Coord ());
 	},
 	
 	Clone : function ()

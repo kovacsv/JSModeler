@@ -155,6 +155,28 @@ JSMDemo.prototype =
 		this.EnableSubdivision (true);
 	},
 
+	GeneratePieUI : function ()
+	{
+		this.ClearUI ();
+
+		this.GenerateUITitleElement ('Cylinder parameters');
+		this.GenerateUITextElement ('radius:');
+		this.GenerateUIInputElement ('1.0');
+		this.GenerateUITextElement ('height:');
+		this.GenerateUIInputElement ('0.1');
+		this.GenerateUITextElement ('angle:');
+		this.GenerateUIInputElement ('275.0');
+		this.GenerateUITextElement ('segmentation:');
+		this.GenerateUIInputElement ('50');
+		this.GenerateUITextElement ('other:');
+		this.GenerateUICheckBoxElement ('with top and bottom', true);
+		this.GenerateUICheckBoxElement ('smooth surface', true);
+	
+		var myThis = this;
+		this.GenerateUIButtonElement ('generate', function () {myThis.GeneratePie ();});
+		this.EnableSubdivision (true);
+	},
+
 	GenerateCylinder : function ()
 	{
 		var inputs = document.getElementsByTagName ('input');
@@ -171,6 +193,26 @@ JSMDemo.prototype =
 		}
 
 		this.body = JSM.GenerateCylinder (radius, height, segmentation, withTopAndBottom, curved);
+		this.AddBodyToViewer (this.body);
+	},
+
+	GeneratePie : function ()
+	{
+		var inputs = document.getElementsByTagName ('input');
+		var radius = parseFloat (inputs[0].value);
+		var height = parseFloat (inputs[1].value);
+		var angle = parseFloat (inputs[2].value) * JSM.DegRad;
+		var segmentation = parseInt (inputs[3].value);
+		var withTopAndBottom = inputs[4].checked;
+		var curved = inputs[5].checked;
+		
+		this.body = new JSM.Body ();
+		if (radius <= 0.0 || height <= 0.0 || angle < 0.0 || angle > 2.0 * Math.PI || segmentation <= 2) {
+			this.AddBodyToViewer (this.body);
+			return;
+		}
+
+		this.body = JSM.GeneratePie (radius, height, angle, segmentation, withTopAndBottom, curved);
 		this.AddBodyToViewer (this.body);
 	},
 

@@ -69,12 +69,11 @@ JSM.SVGViewer.prototype =
 
 	InitCamera : function (canvasName)
 	{
-		this.cameraMove = new JSM.Camera ();
+		this.cameraMove = new JSM.Camera (this.settings['cameraEyePosition'], this.settings['cameraCenterPosition'], this.settings['cameraUpVector']);
 		if (!this.cameraMove) {
 			return false;
 		}
-		
-		this.cameraMove.Init (this.settings['cameraEyePosition'], this.settings['cameraCenterPosition'], this.settings['cameraUpVector']);
+
 		return true;
 	},
 
@@ -154,14 +153,8 @@ JSM.SVGViewer.prototype =
 			return;
 		}
 		
-		var ratio = 1.0;
-		if (this.mouse.shift) {
-			ratio = 0.01;
-			this.cameraMove.Pan (-this.mouse.diffX * ratio, this.mouse.diffY * ratio);
-		} else {
-			ratio = -0.5;
-			this.cameraMove.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
-		}
+		var ratio = -0.5;
+		this.cameraMove.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 		
 		this.Draw ();
 	},

@@ -284,6 +284,59 @@ JSM.GenerateCylinder = function (radius, height, segmentation, withTopAndBottom,
 	return result;
 };
 
+JSM.GeneratePie = function (radius, height, angle, segmentation, withTopAndBottom, isCurved)
+{
+	var result = new JSM.Body ();
+	var segments = segmentation;
+
+	var theta = angle;
+	var step = angle / (segments - 1);
+	
+	var i;
+	result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (0.0, height / 2.0, 0.0)));
+	result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (0.0, -height / 2.0, 0.0)));
+	for (i = 0; i < segments; i++) {
+		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (radius, height / 2.0, theta)));
+		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (radius, -height / 2.0, theta)));
+		theta -= step;
+	}
+
+	var current, next, polygon;
+	for (i = 0; i <= segments; i++) {
+		current = 2 * i;
+		next = current + 2;
+		if (i === segments) {
+			next = 0;
+		}
+		polygon = new JSM.BodyPolygon ([current, next, next + 1, current + 1]);
+		if (isCurved && i > 0 && i < segments) {
+			polygon.SetCurveGroup (0);
+		}
+		result.AddPolygon (polygon);
+	}
+
+	if (withTopAndBottom) {
+		var topPolygon = new JSM.BodyPolygon ();
+		var bottomPolygon = new JSM.BodyPolygon ();
+		for (i = 0; i <= segments; i++) {
+			topPolygon.AddVertexIndex (2 * (segments - i));
+			bottomPolygon.AddVertexIndex (2 * i + 1);
+		}
+		result.AddPolygon (topPolygon);
+		result.AddPolygon (bottomPolygon);
+	}
+
+	result.SetTextureProjectionType ('Cylindrical');
+	result.SetTextureProjectionCoords (new JSM.CoordSystem (
+		new JSM.Coord (0.0, 0.0, -(height / 2.0)),
+		new JSM.Coord (radius, 0.0, 0.0),
+		new JSM.Coord (0.0, radius, 0.0),
+		new JSM.Coord (0.0, 0.0, 1.0)
+	));
+
+	return result;
+};
+
 JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, withTopAndBottom, isCurved)
 {
 	var result = new JSM.Body ();

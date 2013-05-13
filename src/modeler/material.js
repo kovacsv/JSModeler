@@ -12,19 +12,12 @@ JSM.HexColorToRGBColor = function (hexColor)
 
 JSM.Material = function (ambient, diffuse, opacity, texture, textureWidth, textureHeight)
 {
-	this.ambient = 0x00cc00;
-	this.diffuse = 0x00cc00;
-	this.opacity = 1.0;
-	this.texture = null;
-	this.textureWidth = 1.0;
-	this.textureHeight = 1.0;
-
-	if (ambient !== undefined)			this.ambient = ambient;
-	if (diffuse !== undefined)			this.diffuse = diffuse;
-	if (opacity !== undefined)			this.opacity = opacity;
-	if (texture !== undefined)			this.texture = texture;
-	if (textureWidth !== undefined)		this.textureWidth = textureWidth;
-	if (textureHeight !== undefined)	this.textureHeight = textureHeight;
+	this.ambient = JSM.ValueOrDefault (ambient, 0x00cc00);
+	this.diffuse = JSM.ValueOrDefault (diffuse, 0x00cc00);
+	this.opacity = JSM.ValueOrDefault (opacity, 1.0);
+	this.texture = JSM.ValueOrDefault (texture, null);
+	this.textureWidth = JSM.ValueOrDefault (textureWidth, 1.0);
+	this.textureHeight = JSM.ValueOrDefault (textureHeight, 1.0);
 };
 
 JSM.Material.prototype =

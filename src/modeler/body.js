@@ -1,11 +1,11 @@
 JSM.BodyVertex = function (position)
 {
-	this.position = position || new JSM.Coord ();
+	this.position = JSM.ValueOrDefault (position, new JSM.Coord ());
 };
 
 JSM.BodyPolygon = function (vertices)
 {
-	this.vertices = vertices || [];
+	this.vertices = JSM.ValueOrDefault (vertices, []);
 	this.material = -1;
 	this.curved = -1;
 };

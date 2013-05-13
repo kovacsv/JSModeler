@@ -1,0 +1,219 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	
+	<script type="text/javascript" src="../../../build/Three.js"></script>
+	<script type="text/javascript" src="../../../build/jsmodeler.js"></script>
+	<script type="text/javascript" src="robot.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="robot.css">
+
+	<title>Example</title>
+	
+	<style>
+		span.button
+		{
+			border : 1px solid black;
+			margin : 5px;
+			padding : 5px;
+		}
+	</style>
+
+	<script type="text/javascript">
+		var viewer = null;
+		var robot = null;
+		var button = null;
+
+		function ExportRobotToStl ()
+		{
+			var exporter = new THREE.STLExporter ();
+			document.getElementById ('log').value = exporter.exportScene (viewer.scene);
+		}
+		
+		function RotateModule (index, angle)
+		{
+			robot.RotateModule (index, angle);
+			viewer.Draw ();
+		}
+		
+		function Update ()
+		{
+			if (button == null) {
+				return;
+			}
+
+			splitted = button.split ('_');
+			if (splitted[0] == 'left') {
+				RotateModule (splitted[1], -1);
+			} else if (splitted[0] == 'right') {
+				RotateModule (splitted[1], 1);
+			}
+			requestAnimationFrame (Update);
+		}
+		
+		function ButtonDown (event)
+		{
+			button = event.target.id;
+			Update ();
+		}
+		
+		function ButtonUp ()
+		{
+			button = null;
+		}
+
+		function InitButtons (parentDivName)
+		{
+			var i, name, holder, button, image;
+			parentDiv = document.getElementById (parentDivName);
+			
+			var count = this.robot.ModuleCount ();
+			for (i = count - 1; i >= 0; i--) {
+				holder = document.createElement ('div');			
+			
+				name = 'left_' + i;
+				button = document.createElement ('img');
+				button.src = 'left.jpg';
+				button.id = name;
+				button.innerHTML = 'left';
+				button.className = 'button';
+				holder.appendChild (button);
+				
+				image = document.createElement ('img');
+				image.src = 'robot' + i + '.jpg';
+				holder.appendChild (image);
+
+				name = 'right_' + i;
+				button = document.createElement ('img');
+				button.src = 'right.jpg';
+				button.id = name;
+				button.innerHTML = 'right';
+				button.className = 'button';
+				holder.appendChild (button);
+				
+				parentDiv.appendChild (holder);
+			}			
+
+			for (i = 0; i < this.robot.ModuleCount (); i++) {
+				name = 'left_' + i;
+				button = document.getElementById (name);
+				button.addEventListener ('mousedown', function (event) {ButtonDown (event);}, false);
+				button.addEventListener ('mouseout', function (event) {ButtonUp (event);}, false);
+				name = 'right_' + i;
+				button = document.getElementById (name);
+				button.addEventListener ('mousedown', function (event) {ButtonDown (event);}, false);
+				button.addEventListener ('mouseout', function (event) {ButtonUp (event);}, false);
+			}
+			
+			document.addEventListener ('mouseup', function (event) {ButtonUp ();}, false);
+		}
+
+		function AddExternalMeshes ()
+		{
+			function TextureLoaded () {
+				viewer.Draw ();
+			}		
+		
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'wall.jpg', 10.0, 10.0));
+			var conversionData = new JSM.ConversionData (TextureLoaded, true, false);
+			var cube = JSM.GenerateCuboid (8.0, 8.0, 8.0);
+			cube.SetPolygonsMaterialIndex (0);
+			cube.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 4.0)));
+			JSM.MakeBodyInsideOut (cube);
+			var externalMeshes = JSM.ConvertBodyToThreeMeshes (cube, materials, conversionData);
+			for (var i = 0; i < externalMeshes.length; i++) {
+				viewer.AddMesh (externalMeshes[i]);
+			}		
+		}
+		
+		function Resize ()
+		{
+			var margin = 10;
+			var left = document.getElementById ('left');
+			var canvas = document.getElementById ('example');
+			canvas.width = window.innerWidth - left.clientWidth - 3 * margin;
+			canvas.height = window.innerHeight - 3 * margin;
+
+			if (viewer != null) {
+				viewer.Resize ();
+			}
+		}
+
+		function Load ()
+		{
+			function TextureLoaded () {
+				viewer.Draw ();
+			}
+	
+			var viewerSettings = {
+				'cameraEyePosition' : [-4, -4, 4],
+				'cameraCenterPosition' : [0.0, 0.0, 1.5],
+				'cameraUpVector' : [0.0, 0.0, 1.0],
+				'cameraMode' : 'FreeRotateAroundCenterWithFixUp',
+				'disableZoom' : true,
+				'fieldOfView' : 45.0,
+				'nearClippingPlane' : 0.1,
+				'farClippingPlane' : 1000.0,
+				'lightAmbientColor' : [0.5, 0.5, 0.5],
+				'lightDiffuseColor' :	[0.5, 0.5, 0.5]
+			};
+
+			viewer = new JSM.Viewer ();
+			if (!viewer.Start ('example', viewerSettings)) {
+				alert ('Viewer initialization failed.');
+				return;
+			}
+
+			robot = new JSM.Robot ();
+			var meshes = robot.CreateMeshes ();
+			for (var i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}
+
+			robot.RotateModule (1, 45);
+			robot.RotateModule (2, -45);
+			robot.RotateModule (4, -45);
+			
+			//ExportRobotToStl ();
+
+			AddExternalMeshes ();
+			InitButtons ('controls');
+
+			viewer.Draw ();
+		}
+		
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="centered">
+		<div id="title">
+			<span id="titlemain">robot</span>
+			<span id="titleversion">1.0</span>
+		</div>
+		<div id="left">
+			<canvas id="example" width="940" height="620"></canvas>
+		</div>
+		<div id="right">
+			<div id="controls"></div>
+		</div>
+	</div>
+</body>
+
+</html>

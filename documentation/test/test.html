@@ -44,12 +44,18 @@
 	<script type="text/javascript" src="../../src/modeler/solidgenerator.js"></script>
 	<script type="text/javascript" src="../../src/modeler/painter.js"></script>
 	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/shapes.js"></script>
 	<script type="text/javascript" src="../../src/test/test.js"></script>
 	<title>JSModeler Test</title>
 
 	<script type="text/javascript">
 		function CoreTest (test)
 		{
+			var GetAValue = function (val)
+			{
+				return JSM.ValueOrDefault (val, 2);
+			};
+
 			var a = 0.0000001;
 			var b = 0.0000002;
 			var c = 0.000000001;
@@ -84,6 +90,14 @@
 
 			test.Assert (JSM.IsEqual (90.0 * JSM.DegRad, Math.PI / 2.0));
 			test.Assert (JSM.IsEqual (Math.PI / 2.0 * JSM.RadDeg, 90.0));
+
+			test.Assert (JSM.ValueOrDefault (1, 2) == 1);
+			test.Assert (JSM.ValueOrDefault (undefined, 2) == 2);
+			test.Assert (JSM.ValueOrDefault (null, 2) == 2);
+			test.Assert (GetAValue (1) == 1);
+			test.Assert (GetAValue (undefined) == 2);
+			test.Assert (GetAValue (null) == 2);
+			test.Assert (GetAValue () == 2);
 		}
 
 		function VectorTest (test)
@@ -350,14 +364,16 @@
 			var direction = new JSM.Vector (1.0, 0.0, 0.0);
 			test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (1.0, 1.0, 1.0)));
 
-			transformation = JSM.TranslationTransformation (direction, 1.0);
+			transformation = JSM.OffsetTransformation (direction, 1.0);
 			test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (2.0, 1.0, 1.0)));
+
+			transformation = JSM.TranslationTransformation (new JSM.Coord (1.0, 2.0, 3.0));
+			test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (2.0, 3.0, 4.0)));
 
 			var axis = new JSM.Vector (0.0, 0.0, 1.0);
 			var angle = 90.0 * JSM.DegRad;
 			transformation = JSM.RotationTransformation (axis, angle);
 			test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (-1.0, 1.0, 1.0)));
-			
 			
 			var trX = new JSM.RotationXTransformation (angle);
 			var trY = new JSM.RotationYTransformation (angle);
@@ -384,6 +400,25 @@
 			test.Assert (JSM.CoordIsEqual (trY.Apply (coord), trRotY.Apply (coord)));
 			test.Assert (JSM.CoordIsEqual (trZ.Apply (coord), trRotZ.Apply (coord)));
 
+			var origo = new JSM.Coord (1.0, 2.0, 3.0);
+			var trXOrigo = new JSM.RotationXTransformation (angle, origo);
+			var trYOrigo = new JSM.RotationYTransformation (angle, origo);
+			var trZOrigo = new JSM.RotationZTransformation (angle, origo);
+
+			var trRotXOrigo = new JSM.RotationTransformation (axisX, angle, origo);
+			var trRotYOrigo = new JSM.RotationTransformation (axisY, angle, origo);
+			var trRotZOrigo = new JSM.RotationTransformation (axisZ, angle, origo);
+
+			test.Assert (JSM.CoordIsEqual (trXOrigo.Apply (coord), trRotXOrigo.Apply (coord)));
+			test.Assert (JSM.CoordIsEqual (trYOrigo.Apply (coord), trRotYOrigo.Apply (coord)));
+			test.Assert (JSM.CoordIsEqual (trZOrigo.Apply (coord), trRotZOrigo.Apply (coord)));
+
+			var coord = new JSM.Coord (2.0, 0.0, 0.0);
+			transformation = new JSM.RotationZTransformation (90.0 * JSM.DegRad, new JSM.Coord (0.0, 0.0, 0.0));
+			test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (0.0, 2.0, 0.0)));
+			transformation = new JSM.RotationZTransformation (90.0 * JSM.DegRad, new JSM.Coord (1.0, 0.0, 0.0));
+			test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (1.0, 1.0, 0.0)));
+
 			var coord = new JSM.Coord (1.0, 2.0, 3.0);
 			var axis = new JSM.Vector (4.0, 5.0, 6.0);
 			var angle = 7.0 * JSM.DegRad;
@@ -400,7 +435,7 @@
 			result1 = JSM.CoordOffset (result1, direction, 11.0);
 			result1 = JSM.CoordRotate (result1, axis, angle, origo);
 			
-			var offsetTransformation = new JSM.TranslationTransformation (direction, 11.0);
+			var offsetTransformation = new JSM.OffsetTransformation (direction, 11.0);
 			var rotateTransformation = new JSM.RotationTransformation (axis, angle, origo);
 			
 			var transformation = new JSM.Transformation ();
@@ -1482,6 +1517,20 @@
 			test.Assert (cylinder3.VertexCount () == 50 && cylinder3.PolygonCount () == 25);
 			test.Assert (!JSM.IsSolidBody (cylinder3));
 			test.Assert (!JSM.CheckSolidBody (cylinder3));
+		}
+
+		function GeneratePieTest (test)
+		{
+			var pie = JSM.GeneratePie (1.0, 2.0, 90.0 * JSM.DegRad, 25, true, true);
+			test.Assert (pie.VertexCount () == 52 && pie.PolygonCount () == 28);
+			test.Assert (JSM.CheckSolidBody (pie));
+			test.Assert (pie.GetPolygon (0).VertexIndexCount () == 4);
+			test.Assert (!pie.GetPolygon (0).HasCurveGroup ());
+			test.Assert (pie.GetPolygon (1).HasCurveGroup ());
+			test.Assert (pie.GetPolygon (25).VertexIndexCount () == 4);
+			test.Assert (!pie.GetPolygon (25).HasCurveGroup ());
+			test.Assert (pie.GetPolygon (26).VertexIndexCount () == 26);
+			test.Assert (pie.GetPolygon (27).VertexIndexCount () == 26);
 		}
 
 		function GenerateConeTest (test)
@@ -2725,6 +2774,11 @@
 			test.Assert (result.toString () == '3,8,14,8,0,14,0,12,14,1,9,14,12,1,14,9,5,14,2,10,15,13,2,15,10,6,15,7,11,15,11,4,15,4,13,15,10,2,16,0,8,16,8,10,16,6,10,17,8,3,17,10,8,17,4,11,18,9,1,18,11,9,18,1,12,18,12,0,18,0,16,18,2,13,18,16,2,18,13,4,18,11,7,19,5,9,19,9,11,19,3,14,19,17,3,19,14,5,19,7,15,19,15,6,19,6,17,19');
 		}
 		
+		function ShapesTest (test)
+		{
+
+		}
+
 		function Load ()
 		{
 			var test = new JSM.Test ('result');
@@ -2756,6 +2810,7 @@
 			test.AddTestCase (GenerateCuboidTest, 'GenerateCuboidTest');
 			test.AddTestCase (GenerateSphereTest, 'GenerateSphereTest');
 			test.AddTestCase (GenerateCylinderTest, 'GenerateCylinderTest');
+			test.AddTestCase (GeneratePieTest, 'GeneratePieTest');
 			test.AddTestCase (GenerateConeTest, 'GenerateConeTest');
 			test.AddTestCase (GeneratePrismTest, 'GeneratePrismTest');
 			test.AddTestCase (GeneratePrismShellTest, 'GeneratePrismShellTest');
@@ -2775,6 +2830,7 @@
 			test.AddTestCase (CheckSolidBodyTest, 'CheckSolidBodyTest');
 			test.AddTestCase (PainterTest, 'PainterTest');
 			test.AddTestCase (ConvexHullTest, 'ConvexHullTest');
+			test.AddTestCase (ShapesTest, 'ShapesTest');
 			test.Run ();
 		}
 		

@@ -9,22 +9,22 @@ JSM.IdentityTransformation = function ()
 	return transformation;
 };
 
-JSM.AdditionTransformation = function (offset)
+JSM.TranslationTransformation = function (translation)
 {
 	var transformation = new JSM.Transformation ();
 	transformation.matrix = [
-		1.0, 0.0, 0.0, offset.x,
-		0.0, 1.0, 0.0, offset.y,
-		0.0, 0.0, 1.0, offset.z
+		1.0, 0.0, 0.0, translation.x,
+		0.0, 1.0, 0.0, translation.y,
+		0.0, 0.0, 1.0, translation.z
 	];
 	return transformation;
 };
 
-JSM.TranslationTransformation = function (direction, distance)
+JSM.OffsetTransformation = function (direction, distance)
 {
 	var normal = JSM.VectorNormalize (direction);
-	var offset = JSM.VectorMultiply (normal, distance);
-	return JSM.AdditionTransformation (offset);
+	var translation = JSM.VectorMultiply (normal, distance);
+	return JSM.TranslationTransformation (translation);
 };
 
 JSM.RotationTransformation = function (axis, angle, origo)
@@ -65,51 +65,63 @@ JSM.RotationTransformation = function (axis, angle, origo)
 	return transformation;
 };
 
-JSM.RotationXTransformation = function (angle)
+JSM.RotationXTransformation = function (angle, origo)
 {
 	var transformation = new JSM.Transformation ();
+	if (origo === undefined) {
+		var si = Math.sin (angle);
+		var co = Math.cos (angle);
 
-	var si = Math.sin (angle);
-	var co = Math.cos (angle);
+		transformation.matrix = [
+			1.0, 0.0, 0.0, 0.0,
+			0.0, co, -si, 0.0,
+			0.0, si, co, 0.0
+		];
+	} else {
+		transformation.Append (JSM.TranslationTransformation (new JSM.Vector (-origo.x, -origo.y, -origo.z)));
+		transformation.Append (JSM.RotationXTransformation (angle));
+		transformation.Append (JSM.TranslationTransformation (new JSM.Vector (origo.x, origo.y, origo.z)));
+	}
+	return transformation;	
+};
 
-	transformation.matrix = [
-		1.0, 0.0, 0.0, 0.0,
-		0.0, co, -si, 0.0,
-		0.0, si, co, 0.0
-	];
-	
+JSM.RotationYTransformation = function (angle, origo)
+{
+	var transformation = new JSM.Transformation ();
+	if (origo === undefined) {
+		var si = Math.sin (angle);
+		var co = Math.cos (angle);
+
+		transformation.matrix = [
+			co, 0.0, si, 0.0,
+			0.0, 1.0, 0.0, 0.0,
+			-si, 0.0, co, 0.0
+		];
+	} else {
+		transformation.Append (JSM.TranslationTransformation (new JSM.Vector (-origo.x, -origo.y, -origo.z)));
+		transformation.Append (JSM.RotationYTransformation (angle));
+		transformation.Append (JSM.TranslationTransformation (new JSM.Vector (origo.x, origo.y, origo.z)));
+	}
 	return transformation;
 };
 
-JSM.RotationYTransformation = function (angle)
+JSM.RotationZTransformation = function (angle, origo)
 {
 	var transformation = new JSM.Transformation ();
+	if (origo === undefined) {
+		var si = Math.sin (angle);
+		var co = Math.cos (angle);
 
-	var si = Math.sin (angle);
-	var co = Math.cos (angle);
-
-	transformation.matrix = [
-		co, 0.0, si, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		-si, 0.0, co, 0.0
-	];
-	
-	return transformation;
-};
-
-JSM.RotationZTransformation = function (angle)
-{
-	var transformation = new JSM.Transformation ();
-
-	var si = Math.sin (angle);
-	var co = Math.cos (angle);
-
-	transformation.matrix = [
-		co, -si, 0.0, 0.0,
-		si, co, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0
-	];
-	
+		transformation.matrix = [
+			co, -si, 0.0, 0.0,
+			si, co, 0.0, 0.0,
+			0.0, 0.0, 1.0, 0.0
+		];
+	} else {
+		transformation.Append (JSM.TranslationTransformation (new JSM.Vector (-origo.x, -origo.y, -origo.z)));
+		transformation.Append (JSM.RotationZTransformation (angle));
+		transformation.Append (JSM.TranslationTransformation (new JSM.Vector (origo.x, origo.y, origo.z)));
+	}
 	return transformation;
 };
 
