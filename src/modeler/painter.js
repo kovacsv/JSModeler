@@ -41,6 +41,7 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 	{
 		var min = new JSM.Coord2D (JSM.Inf, JSM.Inf);
 		var max = new JSM.Coord2D (-JSM.Inf, -JSM.Inf);
+		var i, coord;
 		for (i = 0; i < projectedPolygon.length; i++) {
 			coord = projectedPolygon[i];
 			min.x = JSM.Minimum (min.x, coord.x);

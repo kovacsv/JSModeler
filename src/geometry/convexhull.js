@@ -58,12 +58,12 @@ JSM.ConvexHull2D = function (coords)
 
 JSM.ConvexHull3D = function (coords)
 {
-	Vertex = function ()
+	var Vertex = function ()
 	{
 		this.position = null;
 	};
 	
-	Edge = function ()
+	var Edge = function ()
 	{
 		this.vert1 = null;
 		this.vert2 = null;
@@ -71,14 +71,14 @@ JSM.ConvexHull3D = function (coords)
 		this.tri2 = null;
 	};
 
-	Triangle = function ()
+	var Triangle = function ()
 	{
 		this.vertices = null;
 		this.edges = null;
 		this.valid = null;
 	};
 
-	Body = function ()
+	var Body = function ()
 	{
 		this.vertices = [];
 		this.edges = [];

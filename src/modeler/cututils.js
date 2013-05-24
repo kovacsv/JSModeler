@@ -76,8 +76,8 @@ JSM.CutPolygonByPlane = function (polygon, plane, indexTable)
 	var lastVertex;
 	var lastIndex;
 	for (i = 0; i < rawResult.length; i++) {
-		var currentVertex = rawResult[i];
-		var lastVertex = result[result.length - 1];
+		currentVertex = rawResult[i];
+		lastVertex = result[result.length - 1];
 		if (i == 0 || !JSM.CoordIsEqual (lastVertex, currentVertex)) {
 			result.push (new JSM.Coord (currentVertex.x, currentVertex.y, currentVertex.z));
 			if (hasIndexTable) {

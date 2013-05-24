@@ -182,6 +182,7 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 	var iteration, oldVertexCoord, oldBody, adjacencyList;
 	var currentEdge, edgeVertexIndices;
 	var currentPgon, polygonVertexIndices;
+	var midCoord, edgeCoord, currentPolyEdge;
 	for (iteration = 0; iteration < iterations; iteration++) {
 		oldBody = result;
 		
@@ -195,8 +196,8 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 		edgeVertexIndices = [];
 		for (i = 0; i < adjacencyList.edges.length; i++) {
 			currentEdge = adjacencyList.edges[i];
-			midcoord = JSM.MidCoord (oldBody.GetVertexPosition (currentEdge.vert1), oldBody.GetVertexPosition (currentEdge.vert2));
-			edgeCoord = JSM.VectorMultiply (JSM.VectorNormalize (midcoord), radius);
+			midCoord = JSM.MidCoord (oldBody.GetVertexPosition (currentEdge.vert1), oldBody.GetVertexPosition (currentEdge.vert2));
+			edgeCoord = JSM.VectorMultiply (JSM.VectorNormalize (midCoord), radius);
 			edgeVertexIndices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));		
 		}
 
@@ -740,7 +741,7 @@ JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, inner
 		}
 	}
 
-	var polygon, current, top, next, ntop, polygon;
+	var polygon, current, top, next, ntop;
 	for (i = 0; i < outerSegmentation; i++) {
 		polygon = new JSM.BodyPolygon ();
 		for (j = 0; j < innerSegmentation; j++) {
@@ -811,7 +812,7 @@ JSM.GeneratePolyTorus = function (basePolygon, outerRadius, outerSegmentation, i
 		}
 	}
 
-	var polygon, current, top, next, ntop, polygon;
+	var polygon, current, top, next, ntop;
 	for (i = 0; i < outerSegmentation; i++) {
 		polygon = new JSM.BodyPolygon ();
 		for (j = 0; j < innerSegmentation; j++) {
@@ -924,7 +925,7 @@ JSM.GenerateRuledFromSectors = function (aSector, bSector, lineSegmentation, mes
 		result.AddVertex (new JSM.BodyVertex (vertices[i]));
 	}
 
-	var polygon;
+	var polygon, polygonVertexIndices;
 	for (i = 0; i < polygons.length; i++) {
 		polygonVertexIndices = polygons[i];
 		polygon = new JSM.BodyPolygon (polygonVertexIndices);
@@ -975,7 +976,7 @@ JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegment
 		result.AddVertex (new JSM.BodyVertex (vertices[i]));
 	}
 
-	var polygon;
+	var polygon, polygonVertexIndices;
 	for (i = 0; i < polygons.length; i++) {
 		polygonVertexIndices = polygons[i];
 		polygon = new JSM.BodyPolygon (polygonVertexIndices);
@@ -987,7 +988,7 @@ JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegment
 	
 	var topVertexCount = result.VertexCount ();
 
-	var newVertex;
+	var newVertex, vertex;
 	for (i = 0; i < vertices.length; i++) {
 		vertex = vertices[i];
 		newVertex = new JSM.Coord (vertex.x, vertex.y, vertex.z);
@@ -1167,8 +1168,8 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 	var origo = new JSM.Coord (axis.beg.x, axis.beg.y, axis.beg.z);
 	var e3 = JSM.VectorNormalize (axisDir);
 	var baseLine = new JSM.Line (origo, axisDir);
-	var projected = JSM.ProjectCoordToLine (polyLine[0], baseLine);
-	var e1 = JSM.VectorSetLength (JSM.CoordSub (polyLine[0], projected), avgRadius);
+	var projectedToBaseLine = JSM.ProjectCoordToLine (polyLine[0], baseLine);
+	var e1 = JSM.VectorSetLength (JSM.CoordSub (polyLine[0], projectedToBaseLine), avgRadius);
 	var e2 = JSM.VectorSetLength (JSM.VectorCross (e3, e1), avgRadius);
 	
 	result.SetTextureProjectionType ('Cylindrical');

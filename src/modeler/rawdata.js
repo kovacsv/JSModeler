@@ -45,7 +45,7 @@ JSM.ConvertRawDataToThreeMeshes = function (rawData, textureLoadedCallback)
 			}
 			
 			if (textureName !== undefined) {
-				texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (image) {
+				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (image) {
 					if (textureLoadedCallback !== undefined) {
 						textureLoadedCallback ();
 					}
@@ -60,6 +60,7 @@ JSM.ConvertRawDataToThreeMeshes = function (rawData, textureLoadedCallback)
 
 			var v1, v2, v3, n1, n2, n3, u1, u2, u3;
 			var lastVertex, lastFace, vertexNormals, textureUVs;
+			var j;
 			for (j = 0; j < parameters.length; j += 9) {
 				v1 = 3 * parameters[j + 0];
 				v2 = 3 * parameters[j + 1];

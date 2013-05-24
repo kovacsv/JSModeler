@@ -69,7 +69,7 @@ JSM.CalculateCentroid = function (coords)
 	var centroid = new JSM.Coord (0.0, 0.0, 0.0);
 	if (count >= 1) {
 		var i;
-		for (var i = 0; i < count; i++) {
+		for (i = 0; i < count; i++) {
 			centroid = JSM.CoordAdd (centroid, coords[i]);
 		}
 		centroid = JSM.VectorMultiply (centroid, 1.0 / count);

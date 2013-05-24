@@ -394,6 +394,8 @@ JSM.OffsetPolygonContour = function (polygon, width)
 	var distance, offsetedCoord;
 	
 	var result = new JSM.Polygon ();
+	
+	var i, angle;
 	for (i = 0; i < count; i++) {
 		prev = (i === 0 ? count - 1 : i - 1);
 		curr = i;
