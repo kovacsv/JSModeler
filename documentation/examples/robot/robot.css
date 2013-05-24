@@ -13,12 +13,12 @@ html, body
 #centered
 {
 	width : 1200px;
-	height : 800px;
+	height : 620px;
 	position : absolute;
 	top : 50%;
 	left : 50%;
 	margin-left : -600px;
-	margin-top : -400px;
+	margin-top : -310px;
 }
 
 #left
