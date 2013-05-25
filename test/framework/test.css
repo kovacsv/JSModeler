@@ -18,28 +18,38 @@ table.testtable  td
 	border : 1px solid #cccccc;
 }
 
-tr.tableheader 
+table.testtable tr.tableheader
 {
 	color : #000000;
 	background : #efefef;
+	text-align : center;
 }
 
-span.assertsucceededspan
+table.testtable tr.tablecontent
 {
-	color : #00aa00;
+
+}
+
+span.passedspan
+{
+	color : #008800;
 	background : transparent;
 }
 
-span.assertfailedspan
+span.failedspan
 {
-	color : #aa0000;
+	color : #880000;
 	background : transparent;
 }
 
-img.resultimg
+a
 {
-	padding : 0px;
-	margin : 0px;
-	border : 0px;
-	float : left;
+	color : #000000;
+	background : transparent;
+	text-decoration : none;
+}
+
+a:hover
+{
+	text-decoration : underline;
 }
