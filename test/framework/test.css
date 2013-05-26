@@ -1,0 +1,55 @@
+html, body
+{
+	color : #000000;
+	background : #ffffff;
+	font-size : 12px;
+	font-family : Arial, cursive;
+}
+
+table.testtable
+{
+	margin : 10px;
+	border-collapse : collapse;
+}
+
+table.testtable  td
+{
+	padding : 5px;
+	border : 1px solid #cccccc;
+}
+
+table.testtable tr.tableheader
+{
+	color : #000000;
+	background : #efefef;
+	text-align : center;
+}
+
+table.testtable tr.tablecontent
+{
+
+}
+
+span.passedspan
+{
+	color : #008800;
+	background : transparent;
+}
+
+span.failedspan
+{
+	color : #880000;
+	background : transparent;
+}
+
+a
+{
+	color : #000000;
+	background : transparent;
+	text-decoration : none;
+}
+
+a:hover
+{
+	text-decoration : underline;
+}

@@ -125,7 +125,7 @@ JSM.SVGViewer.prototype =
 
 	Draw : function ()
 	{
-		var i, bodies;
+		var i, body, bodies;
 		var svgSettings = new JSM.SVGSettings (this.cameraMove, this.settings['fieldOfView'], this.settings['nearClippingPlane'], this.settings['farClippingPlane'], this.hiddenLine);
 		
 		svgSettings.clear = false;

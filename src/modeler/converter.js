@@ -268,8 +268,9 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 
 	var vertexNormals = JSM.CalculateBodyVertexNormals (body);
 
+	var i, j;
 	var hasTextures = false;
-	if (materials !== undefined && materials !== null && projection !== null && coords !== null) {
+	if (materials !== undefined && materials !== null) {
 		var projection = body.GetTextureProjectionType ();
 		var coords = body.GetTextureProjectionCoords ();
 		for (i = 0; i < materials.Count (); i++) {
@@ -280,7 +281,7 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		}
 	}
 
-	var textureCoords;
+	var textureCoords, polygon, material;
 	if (hasTextures) {
 		textureCoords = JSM.CalculateBodyTextureCoords (body);
 		for (i = 0; i < textureCoords.length; i++) {

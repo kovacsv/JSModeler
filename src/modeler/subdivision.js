@@ -11,7 +11,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 
 	var AddPolygonVertices = function ()
 	{
-		var i, j, pgon, pgonCoord;
+		var i, j, pgon, vertCoord, pgonCoord;
 		for (i = 0; i < al.pgons.length; i++) {
 			pgon = al.pgons[i];
 			pgonCoord = new JSM.Coord (0.0, 0.0, 0.0);
@@ -28,7 +28,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 	var AddEdgeVertices = function ()
 	{
 		var edgeVertexWeight = 1.0 / 4.0;
-		var i, j, edge, edgeCoord, pgonIndex;
+		var i, j, edge, edgeCoord, pgonIndex, pgonCoord;
 		for (i = 0; i < al.edges.length; i++) {
 			edge = al.edges[i];
 			edgeCoord = new JSM.Coord (0.0, 0.0, 0.0);
@@ -60,6 +60,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 		var edgeMidCoords = [];
 		
 		var edge, edgeCoord;
+		var i, j;
 		for (i = 0; i < al.edges.length; i++) {
 			edge = al.edges[i];
 			edgeCoord = JSM.MidCoord (body.GetVertex (edge.vert1).position, body.GetVertex (edge.vert2).position);
@@ -68,7 +69,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 	
 		var vert, vertCoord, currentVertCoord;
 		var pgonVertexWeight, edgeMidCoordWeight;
-		var i, j, f, r, n;
+		var f, r, n;
 		for (i = 0; i < al.verts.length; i++) {
 			vert = al.verts[i];
 			f = new JSM.Coord (0.0, 0.0, 0.0);
@@ -97,6 +98,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 		var edgeCount, currentEdge, nextEdge;
 		var centroid, currentEdgeVertex, originalVertex, nextEdgeVertex;
 		var polygon, oldPolygon;
+		var i, j, pgon;
 		for (i = 0; i < al.pgons.length; i++) {
 			pgon = al.pgons[i];
 			edgeCount = pgon.verts.length;

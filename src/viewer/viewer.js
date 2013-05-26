@@ -285,6 +285,7 @@ JSM.Viewer.prototype =
 		this.scene.traverse (function (current) {
 			if (current instanceof THREE.Mesh) {
 				geometry = current.geometry;
+				var j;
 				for (j = 0; j < geometry.vertices.length; j++) {
 					coord = geometry.vertices[j].clone ();
 					coord.add (current.position);
@@ -310,6 +311,7 @@ JSM.Viewer.prototype =
 		this.scene.traverse (function (current) {
 			if (current instanceof THREE.Mesh) {
 				geometry = current.geometry;
+				var j;
 				for (j = 0; j < geometry.vertices.length; j++) {
 					coord = geometry.vertices[j].clone ();
 					coord.add (current.position);

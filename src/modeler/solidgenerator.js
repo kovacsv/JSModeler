@@ -1577,12 +1577,12 @@ JSM.AddCumulatedPolygonToBody = function (body, vertices, height)
 	CalculatePolygonCentroidAndNormal (vertices, centroidCoord, normalVector);
 	centroidCoord = JSM.CoordOffset (centroidCoord, normalVector, height);
 	
-	centroid = body.VertexCount ();
+	var centroid = body.VertexCount ();
 	JSM.AddVertexToBody (body, centroidCoord.x, centroidCoord.y, centroidCoord.z);
 
 	var count = vertices.length;
 
-	var i, curr, next, centroid;
+	var i, curr, next;
 	for (i = 0; i < count; i++) {
 		curr = vertices[i];
 		next = vertices [i < count - 1 ? i + 1 : 0];

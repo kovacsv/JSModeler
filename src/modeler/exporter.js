@@ -288,6 +288,7 @@ JSM.ExportBodyGeometryToGDL = function (body, writeMaterials)
 	AddLineToContent ('base');
 	var al = JSM.CalculateAdjacencyList (body);
 	
+	var i;
 	for (i = 0; i < al.verts.length; i++) {
 		AddVertex (i);
 	}
@@ -346,7 +347,7 @@ JSM.SVGSettings = function (camera, fieldOfView, nearPlane, farPlane, hiddenLine
 	this.clear = true;
 };
 
-JSM.ExportBodyToSVG = function (body, materials, settings, svgObject, orderedPolygons, solidPolygons)
+JSM.ExportBodyToSVG = function (body, materials, settings, svgObject)
 {
 	var HexColorToHTMLColor = function (hexColor)
 	{

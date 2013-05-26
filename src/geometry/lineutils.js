@@ -122,7 +122,7 @@ JSM.LineLineClosestPoint = function (aLine, bLine, aClosestPoint, bClosestPoint)
 	var mub = (d0232 + mua * d3210) / d3232;
 
 	if (aClosestPoint !== undefined) {
-		var aDir = JSM.VectorNormalize (JSM.CoordSub (aEnd, aStart));
+		aDir = JSM.VectorNormalize (JSM.CoordSub (aEnd, aStart));
 		var aClosest = JSM.CoordAdd (aStart, JSM.VectorMultiply (aDir, mua));
 		aClosestPoint.Set (aClosest.x, aClosest.y, aClosest.z);
 	}
