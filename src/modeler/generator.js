@@ -33,6 +33,183 @@ JSM.GenerateCuboid = function (xSize, ySize, zSize)
 	return result;
 };
 
+JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
+{
+	function GetLevelOffset (level)
+	{
+		var offset = 0;
+		if (level > 0 && level <= segmentation) {
+			offset = (segmentation + 1) * (segmentation + 1) + (level - 1) * (segmentation * 4);
+		}
+		return offset;
+	};
+
+	function GetLevelSideVertices (level)
+	{
+		var i, j;
+		
+		var vertices = [];
+		var offset = GetLevelOffset (level);
+		if (level == 0 || level == segmentation) {
+			for (i = 0; i <= segmentation; i++) {
+				vertices.push (offset + i);
+			}
+			for (i = 1; i <= segmentation; i++) {
+				vertices.push (offset + (i + 1) * segmentation + i);
+			}
+			for (i = segmentation - 1; i >= 0; i--) {
+				vertices.push (offset + (segmentation + 1) * segmentation + i);
+			}
+			for (i = segmentation - 1; i > 0; i--) {
+				vertices.push (offset + i * (segmentation + 1));
+			}
+		} else if (level > 0 && level < segmentation) {
+			for (i = 0; i <= segmentation; i++) {
+				vertices.push (offset + i);
+			}
+			for (i = 1; i < segmentation; i++) {
+				vertices.push (offset + segmentation + 2 * i);
+			}
+			for (i = segmentation; i >= 0; i--) {
+				vertices.push (offset + (3 * segmentation) + i - 1);
+			}
+			for (i = segmentation - 1; i > 0; i--) {
+				vertices.push (offset + segmentation + 2 * i - 1);
+			}
+		}
+		
+		return vertices;
+	};
+
+	function AddVertices (level)
+	{
+		var i, j, coord;
+
+		var zCoord = level * zSegment;
+		if (level == 0 || level == segmentation) {
+			for (i = 0; i <= segmentation; i++) {	
+				for (j = 0; j <= segmentation; j++) {
+					coord = new JSM.Coord (j * xSegment, i * ySegment, zCoord);
+					result.AddVertex (new JSM.BodyVertex (coord));
+				}
+			}
+		} else if (level > 0 && level < segmentation) {
+			for (i = 0; i <= segmentation; i++) {
+				for (j = 0; j <= segmentation; j++) {
+					if (i == 0 || i == segmentation || j == 0 || j == segmentation) {
+						coord = new JSM.Coord (j * xSegment, i * ySegment, zCoord);
+						result.AddVertex (new JSM.BodyVertex (coord));
+					}
+				}
+			}
+		}
+	};
+
+	function AddPolygons (level)
+	{
+		var i, j;
+		var current, next, top, ntop;
+		
+		if (level == 0 || level == segmentation) {
+			var offset = GetLevelOffset (level);
+			for (i = 0; i < segmentation; i++) {
+				for (j = 0; j < segmentation; j++) {
+					current = offset + i * (segmentation + 1) + j;
+					next = current + 1;
+					top = current + segmentation + 1;
+					ntop = top + 1;
+					if (level == 0) {
+						result.AddPolygon (new JSM.BodyPolygon ([current, top, ntop, next]));
+					} else {
+						result.AddPolygon (new JSM.BodyPolygon ([current, next, ntop, top]));
+					}
+				}
+			}
+		}
+		
+		if (level > 0 && level <= segmentation) {
+			var prevSideVertices = levelSideVertices [level - 1];
+			var currSideVertices = levelSideVertices [level];
+			for (i = 0; i < segmentation * 4; i++) {
+				current = prevSideVertices[i];
+				top = currSideVertices[i];
+				if (i < segmentation * 4 - 1) {
+					next = prevSideVertices[i + 1];
+					ntop = currSideVertices[i + 1];
+				} else {
+					next = prevSideVertices[0];
+					ntop = currSideVertices[0];
+				}
+				result.AddPolygon (new JSM.BodyPolygon ([current, next, ntop, top]));
+			}
+		}
+	};
+
+	var result = new JSM.Body ();
+	
+	var xSegment = xSize / segmentation;
+	var ySegment = ySize / segmentation;
+	var zSegment = zSize / segmentation;
+	
+	var i;
+	for (i = 0; i <= segmentation; i++) {
+		AddVertices (i);
+	}
+	
+	var levelSideVertices = [];
+	for (i = 0; i <= segmentation; i++) {
+		levelSideVertices.push (GetLevelSideVertices (i));
+	}
+
+	for (i = 0; i <= segmentation; i++) {
+		AddPolygons (i);
+	}
+
+	return result;
+};
+
+JSM.GenerateSegmentedPlane = function (xSize, ySize, segmentation)
+{
+	function AddVertices ()
+	{
+		var i, j, coord;
+
+		var zCoord = 0.0;
+		for (i = 0; i <= segmentation; i++) {	
+			for (j = 0; j <= segmentation; j++) {
+				coord = new JSM.Coord (j * xSegment, i * ySegment, zCoord);
+				result.AddVertex (new JSM.BodyVertex (coord));
+			}
+		}
+	};
+
+	function AddPolygons ()
+	{
+		var i, j;
+		var current, next, top, ntop;
+		
+		for (i = 0; i < segmentation; i++) {
+			for (j = 0; j < segmentation; j++) {
+				current = i * (segmentation + 1) + j;
+				next = current + 1;
+				top = current + segmentation + 1;
+				ntop = top + 1;
+				result.AddPolygon (new JSM.BodyPolygon ([current, next, ntop, top]));
+			}
+		}
+	};
+
+	var result = new JSM.Body ();
+	
+	var xSegment = xSize / segmentation;
+	var ySegment = ySize / segmentation;
+	
+	AddVertices (0);
+	AddPolygons (0);
+
+	return result;
+};
+
 JSM.GenerateSphere = function (radius, segmentation, isCurved)
 {
 	var result = new JSM.Body ();
@@ -901,6 +1078,11 @@ JSM.GetRuledMesh = function (aCoords, bCoords, segmentation, vertices, polygons)
 			next = current + 1;
 			ntop = top + 1;
 
+			current = i * (meshSegmentation + 1) + j;
+			top = current + 1;
+			next = current + meshSegmentation + 1;
+			ntop = next + 1;
+
 			polygon = [current, next, ntop, top];
 			polygons.push (polygon);
 		}
@@ -1185,8 +1367,8 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 
 JSM.GenerateFunctionSurface = function (function3D, intervalMin, intervalMax, segmentation, isCurved)
 {
-	var aSector = new JSM.Sector (new JSM.Coord (intervalMax.x, intervalMin.y, 0.0), new JSM.Coord (intervalMin.x, intervalMin.y, 0.0));
-	var bSector = new JSM.Sector (new JSM.Coord (intervalMax.x, intervalMax.y, 0.0), new JSM.Coord (intervalMin.x, intervalMax.y, 0.0));
+	var aSector = new JSM.Sector (new JSM.Coord (intervalMin.x, intervalMin.y, 0.0), new JSM.Coord (intervalMax.x, intervalMin.y, 0.0));
+	var bSector = new JSM.Sector (new JSM.Coord (intervalMin.x, intervalMax.y, 0.0), new JSM.Coord (intervalMax.x, intervalMax.y, 0.0));
 	var result = JSM.GenerateRuledFromSectors (aSector, bSector, segmentation, segmentation, isCurved);
 
 	var i, coord, functionValue;

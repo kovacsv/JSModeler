@@ -5,6 +5,7 @@ JSM.Camera = function (eye, center, up)
 	this.center = new JSM.Coord (center[0], center[1], center[2]);
 	this.up = new JSM.Coord (up[0], up[1], up[2]);
 	this.mode = 'FreeRotateAroundCenter';
+	this.orbit = true;
 	this.zoom = true;
 };
 
@@ -13,6 +14,11 @@ JSM.Camera.prototype =
 	SetMode : function (mode)
 	{
 		this.mode = mode;
+	},
+
+	SetOrbitEnabled : function (orbit)
+	{
+		this.orbit = orbit;
 	},
 	
 	SetZoomEnabled : function (zoom)
@@ -42,6 +48,10 @@ JSM.Camera.prototype =
 
 	Orbit : function (angleX, angleY)
 	{
+		if (!this.orbit) {
+			return;
+		}
+	
 		var radAngleX = angleX * JSM.DegRad;
 		var radAngleY = angleY * JSM.DegRad;
 	
@@ -79,6 +89,9 @@ JSM.Camera.prototype =
 		result.eye = this.eye;
 		result.center = this.center;
 		result.up = this.up;
+		result.mode = this.mode;
+		result.orbit = this.orbit;
+		result.zoom = this.zoom;
 		return result;
 	}
 };

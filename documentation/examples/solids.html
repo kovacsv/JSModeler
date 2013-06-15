@@ -90,7 +90,7 @@
 		{
 			var floating = document.getElementById ('floating');
 			var exporttext = document.getElementById ('exporttext');
-			var stlContent = JSM.ExportBodyToStl (body[0], 'JSModelerModel');
+			var stlContent = JSM.ExportBodyToStl (body, 'JSModelerModel');
 			exporttext.value = stlContent;
 			exporttext.style.display = 'block';
 			floating.style.display = 'block';
@@ -100,7 +100,7 @@
 		{
 			var floating = document.getElementById ('floating');
 			var exporttext = document.getElementById ('exporttext');
-			var stlContent = JSM.ExportBodyToObj (body[0]);
+			var stlContent = JSM.ExportBodyToObj (body);
 			exporttext.value = stlContent;
 			exporttext.style.display = 'block';
 			floating.style.display = 'block';

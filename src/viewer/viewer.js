@@ -67,6 +67,7 @@ JSM.Viewer.prototype =
 			'cameraCenterPosition' : [0.0, 0.0, 0.0],
 			'cameraUpVector' : [0.0, 0.0, 1.0],
 			'cameraMode' : 'FreeRotateAroundCenter',
+			'disableOrbit' : false,
 			'disableZoom' : false,
 			'fieldOfView' : 45.0,
 			'nearClippingPlane' : 0.1,
@@ -81,6 +82,7 @@ JSM.Viewer.prototype =
 			if (settings['cameraCenterPosition'] !== undefined) this.settings['cameraCenterPosition'] = settings['cameraCenterPosition'];
 			if (settings['cameraUpVector'] !== undefined) this.settings['cameraUpVector'] = settings['cameraUpVector'];
 			if (settings['cameraMode'] !== undefined) this.settings['cameraMode'] = settings['cameraMode'];
+			if (settings['disableOrbit'] !== undefined) this.settings['disableOrbit'] = settings['disableOrbit'];
 			if (settings['disableZoom'] !== undefined) this.settings['disableZoom'] = settings['disableZoom'];
 			if (settings['fieldOfView'] !== undefined) this.settings['fieldOfView'] = settings['fieldOfView'];
 			if (settings['nearClippingPlane'] !== undefined) this.settings['nearClippingPlane'] = settings['nearClippingPlane'];
@@ -132,6 +134,7 @@ JSM.Viewer.prototype =
 
 		this.cameraMove = new JSM.Camera (this.settings['cameraEyePosition'], this.settings['cameraCenterPosition'], this.settings['cameraUpVector']);
 		this.cameraMove.SetMode (this.settings['cameraMode']);
+		this.cameraMove.SetOrbitEnabled (!this.settings['disableOrbit']);
 		this.cameraMove.SetZoomEnabled (!this.settings['disableZoom']);
 		if (!this.cameraMove) {
 			return false;
@@ -203,45 +206,54 @@ JSM.Viewer.prototype =
 	
 	GetMesh : function (index)
 	{
-		var currentIndex = 0;
-		var i, current;
-		for (i = 0; i < this.scene.__objects.length; i++) {
-			current = this.scene.__objects[i];
+		var i = 0;
+		var found = null;
+		
+		var current;
+		this.scene.traverse (function (current) {
 			if (current instanceof THREE.Mesh) {
-				if (currentIndex == index) {
-					return current;
+				if (i == index) {
+					found = current;
+					return;
 				}
-				currentIndex++;
+				i = i + 1;
 			}
-		}
-		alert ('not found');
-		return new THREE.Mesh ();
+		});
+		
+		return found;
 	},
 	
 	RemoveMeshes : function ()
 	{
-		var i, current;
-		for (i = 0; i < this.scene.__objects.length; i++) {
-			current = this.scene.__objects[i];
+		var current;
+		var i;
+		for (i = 0; i < this.scene.children.length; i++) {
+			current = this.scene.children[i];
 			if (current instanceof THREE.Mesh) {
 				this.scene.remove (current);
 				i--;
 			}
 		}
+		
 		this.Draw ();
     },
 
 	RemoveLastMesh : function ()
 	{
-		var i, current;
-		for (i = this.scene.__objects.length; i >= 0; i--) {
-			current = this.scene.__objects[i];
+		var found = null;
+		
+		var current;
+		this.scene.traverse (function (current) {
 			if (current instanceof THREE.Mesh) {
-				this.scene.remove (current);
-				this.Draw ();
-				return;
+				found = current;
 			}
+		});
+		
+		if (found != null) {
+			this.scene.remove (found);
 		}
+		
+		this.Draw ();
     },
 
 	FitInWindow : function ()
@@ -328,15 +340,17 @@ JSM.Viewer.prototype =
 	
 	GetObjectsUnderMouse : function ()
 	{
-		var projector = new THREE.Projector ();
 		var mouseX = (this.mouse.currX / this.canvas.width) * 2 - 1;
 		var mouseY = -(this.mouse.currY / this.canvas.height) * 2 + 1;
 		
+		var projector = new THREE.Projector ();
 		var cameraPosition = this.camera.position;
 		var vector = new THREE.Vector3 (mouseX, mouseY, 0.5);
 		projector.unprojectVector (vector, this.camera);
+		vector.sub (cameraPosition);
+		vector.normalize ();
 
-		var ray = new THREE.Ray (cameraPosition, vector.subSelf (cameraPosition).normalize ());
+		var ray = new THREE.Raycaster (cameraPosition, vector);
 		return ray.intersectObjects (this.scene.children);
 	},
 	
@@ -376,7 +390,7 @@ JSM.Viewer.prototype =
 		this.camera.up = this.cameraMove.up;
 		this.camera.lookAt (this.cameraMove.center);
 		if (this.settings['fixLightDirection'] === null) {
-			this.directionalLight.position = new THREE.Vector3 ().sub (this.cameraMove.eye, this.cameraMove.center);
+			this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
 		}
 		this.renderer.render (this.scene, this.camera);
 		return true;
@@ -391,6 +405,10 @@ JSM.Viewer.prototype =
 	{
 		this.mouse.Move (event, this.canvas);
 		if (!this.mouse.down) {
+			return;
+		}
+		
+		if (this.settings['disableOrbit']) {
 			return;
 		}
 		
@@ -415,6 +433,10 @@ JSM.Viewer.prototype =
 		var eventParameters = event;
 		if (eventParameters === null) {
 			eventParameters = window.event;
+		}
+		
+		if (this.settings['disableZoom']) {
+			return;
 		}
 		
 		var delta = 0;

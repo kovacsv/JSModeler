@@ -650,7 +650,7 @@ JSMDemo.prototype =
 		
 		var inputs = document.getElementsByTagName ('input');
 		var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
-		var angle = parseFloat (inputs[0].value) * JSM.DegRad;
+		var angle = -parseFloat (inputs[0].value) * JSM.DegRad;
 		var segmentation = parseInt (inputs[1].value);
 		var withTopAndBottom = inputs[2].checked;
 		var curved = inputs[3].checked;

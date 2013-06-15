@@ -504,6 +504,39 @@ AddTest ('GenerateCuboidTest', function (test)
 	test.Assert (JSM.CoordIsEqual (vertexNormals[5][3], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
 });
 
+AddTest ('GenerateSegmentedCuboidTest', function (test)
+{
+	var cuboid = JSM.GenerateSegmentedCuboid (1, 2, 3, 1);
+	test.Assert (cuboid.VertexCount () == 8 && cuboid.PolygonCount () == 6);
+	test.Assert (JSM.CheckSolidBody (cuboid));
+	
+	var cuboid = JSM.GenerateSegmentedCuboid (1, 2, 3, 2);
+	test.Assert (cuboid.VertexCount () == 2 * 9 + 8 && cuboid.PolygonCount () == 24);
+	test.Assert (JSM.CheckSolidBody (cuboid));
+
+	var cuboid = JSM.GenerateSegmentedCuboid (1, 2, 3, 3);
+	test.Assert (cuboid.VertexCount () == 2 * 16 + 2 * 12 && cuboid.PolygonCount () == 54);
+	test.Assert (JSM.CheckSolidBody (cuboid));
+});
+
+AddTest ('GenerateSegmentedPlaneTest', function (test)
+{
+	var plane = JSM.GenerateSegmentedPlane (1, 2, 1);
+	test.Assert (plane.VertexCount () == 4 && plane.PolygonCount () == 1);
+	
+	var plane = JSM.GenerateSegmentedPlane (1, 2, 2);
+	test.Assert (plane.VertexCount () == 9 && plane.PolygonCount () == 4);
+	var polygonNormals = JSM.CalculateBodyPolygonNormals (plane);
+	test.Assert (polygonNormals.length == 4);
+	test.Assert (JSM.CoordIsEqual (polygonNormals[0], new JSM.Vector (0, 0, 1)));
+	test.Assert (JSM.CoordIsEqual (polygonNormals[1], new JSM.Vector (0, 0, 1)));
+	test.Assert (JSM.CoordIsEqual (polygonNormals[2], new JSM.Vector (0, 0, 1)));
+	test.Assert (JSM.CoordIsEqual (polygonNormals[3], new JSM.Vector (0, 0, 1)));
+
+	var plane = JSM.GenerateSegmentedPlane (1, 2, 3);
+	test.Assert (plane.VertexCount () == 16 && plane.PolygonCount () == 9);
+});
+
 AddTest ('GenerateSphereTest', function (test)
 {
 	function VertexCountFromSegmentation (segmentation)
@@ -752,6 +785,13 @@ AddTest ('GenerateRuledTest', function (test)
 	test.Assert (ruledFromSectors.PolygonCount () == 4);
 	test.Assert (JSM.CoordIsEqual (ruledFromSectors.GetVertex (4).position, new JSM.Vector (1.0, 1.0, 0.0)));
 
+	var polygonNormals = JSM.CalculateBodyPolygonNormals (ruledFromSectors);
+	test.Assert (polygonNormals.length == 4);
+	test.Assert (JSM.CoordIsEqual (polygonNormals[0], new JSM.Vector (0, 0, 1)));
+	test.Assert (JSM.CoordIsEqual (polygonNormals[1], new JSM.Vector (0, 0, 1)));
+	test.Assert (JSM.CoordIsEqual (polygonNormals[2], new JSM.Vector (0, 0, 1)));
+	test.Assert (JSM.CoordIsEqual (polygonNormals[3], new JSM.Vector (0, 0, 1)));
+	
 	var ruledFromSectors2 = JSM.GenerateRuledFromSectors (sector1, sector2, 10, 10, false);
 	test.Assert (ruledFromSectors2.VertexCount () == 121);
 	test.Assert (ruledFromSectors2.PolygonCount () == 100);

@@ -293,7 +293,12 @@ TestRunner.prototype =
 		this.runOnlySuite = null;
 		this.runOnlyTest = null;
 
-		var hash = window.location.hash.substr (1);
+		var fullHash = window.location.hash;
+		if (fullHash.length == 0) {
+			return;
+		}
+		
+		var hash = fullHash.substr (1);
 		if (hash.length == 0) {
 			return;
 		}

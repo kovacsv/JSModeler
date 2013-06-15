@@ -1,4 +1,5 @@
 ../src/core/jsm.js
+../src/core/timer.js
 ../src/geometry/determinant.js
 ../src/geometry/matrix.js
 ../src/geometry/coord.js
@@ -29,12 +30,11 @@
 ../src/modeler/generator.js
 ../src/modeler/solidgenerator.js
 ../src/modeler/painter.js
-../src/modeler/converter.js
 ../src/modeler/exporter.js
-../src/modeler/rawdata.js
 ../src/modeler/camera.js
 ../src/modeler/shapes.js
 ../src/viewer/mouse.js
 ../src/viewer/touch.js
+../src/viewer/converter.js
 ../src/viewer/viewer.js
 ../src/viewer/svgviewer.js
