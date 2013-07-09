@@ -1,14 +1,6 @@
-JSM.Polygon2D = function (source)
+JSM.Polygon2D = function ()
 {
-	if (source === undefined) {
-		this.vertices = [];
-	} else {
-		if (source instanceof JSM.Polygon2D) {
-			this.vertices = source.vertices;
-		} else if (source instanceof Array) {
-			this.vertices = source;
-		}
-	}
+	this.vertices = [];
 };
 
 JSM.Polygon2D.prototype =
@@ -28,7 +20,7 @@ JSM.Polygon2D.prototype =
 		this.vertices[index].Set (x, y);
 	},
 	
-	Count : function ()
+	VertexCount : function ()
 	{
 		return this.vertices.length;
 	},
@@ -48,7 +40,6 @@ JSM.Polygon2D.prototype =
 		return result;
 	}
 };
-
 
 JSM.Polygon = function (source)
 {
@@ -80,7 +71,7 @@ JSM.Polygon.prototype =
 		this.vertices[index].Set (x, y, z);
 	},
 	
-	Count : function ()
+	VertexCount : function ()
 	{
 		return this.vertices.length;
 	},

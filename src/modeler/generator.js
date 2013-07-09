@@ -411,6 +411,37 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 	return result;
 };
 
+JSM.GenerateCircle = function (radius, segmentation)
+{
+	var result = new JSM.Body ();
+	var segments = segmentation;
+
+	var theta = 2.0 * Math.PI;
+	var step = 2.0 * Math.PI / segments;
+	
+	var i;
+	for (i = 0; i < segments; i++) {
+		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (radius, 0.0, theta)));
+		theta -= step;
+	}
+
+	var topPolygon = new JSM.BodyPolygon ();
+	for (i = 0; i < segments; i++) {
+		topPolygon.AddVertexIndex (segments - i - 1);
+	}
+	result.AddPolygon (topPolygon);
+
+	result.SetTextureProjectionType ('Cylindrical');
+	result.SetTextureProjectionCoords (new JSM.CoordSystem (
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (radius, 0.0, 0.0),
+		new JSM.Coord (0.0, radius, 0.0),
+		new JSM.Coord (0.0, 0.0, 1.0)
+	));
+
+	return result;
+}
+
 JSM.GenerateCylinder = function (radius, height, segmentation, withTopAndBottom, isCurved)
 {
 	var result = new JSM.Body ();
@@ -650,6 +681,127 @@ JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
 		}
 		result.AddPolygon (topPolygon);
 		result.AddPolygon (bottomPolygon);
+	}
+
+	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolygon[1], basePolygon[0]));
+	var origo = new JSM.Coord (basePolygon[0].x, basePolygon[0].y, basePolygon[0].z);
+	var e3 = JSM.VectorNormalize (direction);
+	var e2 = JSM.VectorCross (e3, firstDirection);
+	var e1 = JSM.VectorCross (e2, e3);
+
+	result.SetTextureProjectionType ('Cubic');
+	result.SetTextureProjectionCoords (new JSM.CoordSystem (
+		origo,
+		e1,
+		e2,
+		e3
+	));
+
+	return result;
+};
+
+JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAndBottom)
+{
+	function AddVertices ()
+	{
+		var i;
+		for (i = 0; i < basePolygon.length; i++) {
+			if (basePolygon[i] !== null) {
+				result.AddVertex (new JSM.BodyVertex (basePolygon[i]));
+				result.AddVertex (new JSM.BodyVertex (JSM.CoordOffset (basePolygon[i], direction, height)));
+			}
+		}			
+	}
+
+	function GetContourEnds (contourIndex)
+	{
+		var contourCount = 0;
+		var contourEnds = [];
+		contourEnds.push (0);
+	
+		var i;
+		for (i = 0; i < basePolygon.length; i++) {
+			if (basePolygon[i] === null) {
+				contourEnds.push (i - contourCount);
+				contourCount = contourCount + 1;
+			}
+		}
+		contourEnds.push (i - contourCount);
+		return contourEnds;
+	};
+
+	function AddContourPolygons (contourIndex, contourEnds)
+	{
+		var i, current, next;
+		var from = contourEnds[contourIndex];
+		var to = contourEnds[contourIndex + 1];
+		for (i = from; i < to; i++) {
+			current = 2 * i;
+			next = current + 2;
+			if (i === to - 1) {
+				next = 2 * from;
+			}
+			result.AddPolygon (new JSM.BodyPolygon ([current, next, next + 1, current + 1]));
+		}
+	};
+
+	function AddContours ()
+	{
+		var contourEnds = GetContourEnds ();
+		var i;
+		for (i = 0; i < contourEnds.length - 1; i++) {
+			AddContourPolygons (i, contourEnds);
+		}	
+	};
+	
+	function GetVertexMap ()
+	{
+		var contourCount = 0;
+		var vertexMap = [];
+	
+		var i;
+		for (i = 0; i < basePolygon.length; i++) {
+			if (basePolygon[i] === null) {
+				contourCount = contourCount + 1;
+			}
+			vertexMap.push (i - contourCount);
+		}
+		return vertexMap;
+	};
+
+	function AddTopBottomPolygons ()
+	{
+		var vertexMap = GetVertexMap ();
+
+		var polygonIndices = JSM.CreatePolygonWithHole (basePolygon);
+		var polygon = new JSM.Polygon ();
+		var i, j, vertex;
+		for (i = 0; i < polygonIndices.length; i++) {
+			vertex = basePolygon[polygonIndices[i]];
+			polygon.AddVertex (vertex.x, vertex.y, vertex.z);
+		}
+		var triangles = JSM.PolygonTriangulate (polygon);
+
+		var triangle, topTriangle, bottomTriangle;
+		for (i = 0; i < triangles.length; i++) {
+			triangle = triangles[i];
+			topTriangle = new JSM.BodyPolygon ();
+			bottomTriangle = new JSM.BodyPolygon ();
+			for (j = 0; j < 3; j++) {
+				topTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[j]]] + 1);
+				bottomTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[3 - j - 1]]]);
+			}
+			result.AddPolygon (topTriangle);
+			result.AddPolygon (bottomTriangle);
+		}
+	};
+
+	var result = new JSM.Body ();
+	AddVertices ();
+	AddContours ();
+
+	if (withTopAndBottom) {
+		AddTopBottomPolygons ();
 	}
 
 	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolygon[1], basePolygon[0]));

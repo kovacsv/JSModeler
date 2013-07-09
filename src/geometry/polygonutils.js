@@ -1,6 +1,6 @@
 JSM.PolygonSignedArea2D = function (polygon)
 {
-	var count = polygon.Count ();
+	var count = polygon.VertexCount ();
 	var area = 0.0;
 	
 	var i, current, next;
@@ -36,7 +36,7 @@ JSM.PolygonComplexity2D = function (polygon)
 	var hasCounterClockwiseVertex = false;
 	var hasClockWiseVertex = false;
 
-	var count = polygon.Count ();
+	var count = polygon.VertexCount ();
 	
 	var i, prevIndex, currIndex, nextIndex;
 	var prev, curr, next, turnType;
@@ -70,7 +70,7 @@ JSM.PolygonComplexity2D = function (polygon)
 
 JSM.CoordPolygonPosition2D = function (coord, polygon)
 {
-	var count = polygon.Count ();
+	var count = polygon.VertexCount ();
 	
 	var i, current, next, sector;
 	for (i = 0; i < count; i++) {
@@ -128,46 +128,168 @@ JSM.CoordPolygonPosition2D = function (coord, polygon)
 	return 'CoordInsideOfPolygon';
 };
 
+JSM.SectorIntersectsPolygon2D = function (polygon, sector, from, to)
+{
+	var count = polygon.VertexCount ();
+	
+	var i, sectorBeg, sectorEnd, currentSector, position;
+	for (i = 0; i < count; i++) {
+		sectorBeg = i;
+		sectorEnd = (i + 1) % count;
+		if (sectorBeg == from || sectorEnd == from || sectorBeg == to || sectorEnd == to) {
+			continue;
+		}
+		
+		currentSector = new JSM.Sector2D (polygon.GetVertex (sectorBeg), polygon.GetVertex (sectorEnd));
+		position = JSM.SectorSectorPosition2D (sector, currentSector);
+		if (position !== 'SectorsDontIntersects') {
+			return true;
+		}
+	}
+	
+	return false;
+}
+
 JSM.IsPolygonVertexVisible2D = function (polygon, from, to)
 {
 	if (from === to) {
 		return false;
 	}
 
-	var count = polygon.Count ();
+	var count = polygon.VertexCount ();
 	var prev = (from > 0 ? from - 1 : count - 1);
 	var next = (from < count - 1 ? from + 1 : 0);
 	if (to === prev || to === next) {
 		return false;
 	}
 
-	var endPointIntersectionCount = 0;
 	var diagonalSector = new JSM.Sector2D (polygon.GetVertex (from), polygon.GetVertex (to));
-	
-	var i, currentSector, position;
-	for (i = 0; i < count; i++) {
-		if (i === prev || i === from) {
-			continue;
-		}
-
-		currentSector = new JSM.Sector2D (polygon.GetVertex (i), polygon.GetVertex ((i + 1) % count));
-		position = JSM.SectorSectorPosition2D (diagonalSector, currentSector);
-		if (position === 'SectorsIntersectsOnePoint' || position === 'SectorsIntersectsCoincident') {
-			return false;
-		} else if (position === 'SectorsIntersectsEndPoint') {
-			endPointIntersectionCount++;
-			if (endPointIntersectionCount > 2) {
-				return false;
-			}
-		}
+	if (JSM.SectorIntersectsPolygon2D (polygon, diagonalSector, from, to)) {
+		return false;
 	}
 
 	var midCoord = JSM.MidCoord2D (diagonalSector.beg, diagonalSector.end);
-	if (JSM.CoordPolygonPosition2D (midCoord, polygon) === 'CoordOutsideOfPolygon') {
+	if (JSM.CoordPolygonPosition2D (midCoord, polygon) !== 'CoordInsideOfPolygon') {
 		return false;
 	}
 
 	return true;
+};
+
+JSM.CreatePolygonWithHole2D = function (vertices)
+{
+	function FindHoleEntryPoint (contourIndex)
+	{
+		var from = contourEnds[contourIndex] + 1;
+		var to = contourEnds[contourIndex + 1];
+
+		var count = polygon.VertexCount ();
+		var entryPoint = null;
+
+		var i, j, sector, res;
+		for (i = 0; i < count; i++) {
+			res = result[i];
+			for (j = from; j < to; j++) {
+				sector = new JSM.Sector (vertices[res], vertices[j]);
+				if (!JSM.SectorIntersectsPolygon2D (polygon, sector, i, -1)) {
+					entryPoint = [res, j];
+					break;
+				}
+			}
+			if (entryPoint !== null) {
+				break;
+			}
+		}
+		
+		return entryPoint;
+	}
+
+	function AddHoleContour (contourIndex)
+	{
+		var entryPoint = FindHoleEntryPoint (contourIndex);
+		var from = contourEnds[contourIndex] + 1;
+		var to = contourEnds[contourIndex + 1];
+
+		var i, j;
+
+		var oldResult = [];
+		for (i = 0; i < result.length; i++) {
+			oldResult[i] = result[i];
+		}
+		result = [];
+		var first, finished;
+		for (i = 0; i < oldResult.length; i++) {
+			result.push (oldResult[i]);
+			if (oldResult[i] == entryPoint[0]) {
+				j = entryPoint[1];
+				first = true;
+				finished = false;
+				while (!finished) {
+					result.push (j);
+					if (!first && j == entryPoint[1]) {
+						finished = true;
+					}
+					if (first) {
+						first = false;
+					}
+					if (j < to - 1) {
+						j = j + 1;
+					} else {
+						j = from;
+					}
+				}
+				result.push (oldResult[i]);
+			}
+		}
+		
+		polygon.Clear ();
+		var vertex;
+		for (i = 0; i < result.length; i++) {
+			vertex = vertices[result[i]];
+			polygon.AddVertex (vertex.x, vertex.y);
+		}
+	}
+
+	function AddContour (contourIndex)
+	{
+		var from = contourEnds[contourIndex] + 1;
+		var to = contourEnds[contourIndex + 1];
+		
+		if (contourIndex === 0) {
+			var i;
+			for (i = from; i < to; i++) {
+				polygon.AddVertex (vertices[i].x, vertices[i].y);
+				result.push (i);
+			}
+		} else {
+			AddHoleContour (contourIndex);
+		}
+	}
+
+	var result = [];
+	var count = vertices.length;
+	var polygon = new JSM.Polygon2D ();
+	
+	var contourEnds = [];
+	var contourCount = 0;
+	
+	var i;
+	contourEnds.push (-1);
+	for (i = 0; i < vertices.length; i++) {
+		if (vertices[i] === null) {
+			contourEnds.push (i);
+			contourCount = contourCount + 1;
+			continue;
+		}
+	}
+	contourEnds.push (i);
+	contourCount = contourCount + 1;
+
+	for (i = 0; i < contourCount; i++) {
+		AddContour (i);
+	}
+	
+	return result;
 };
 
 JSM.PolygonTriangulate2D = function (polygon)
@@ -220,7 +342,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 			return false;
 		}
 	
-		var currentVertexCount = currentPolygon2D.Count ();
+		var currentVertexCount = currentPolygon2D.VertexCount ();
 		if (Increase (vertex1, currentVertexCount) === vertex2 || Decrease (vertex1, currentVertexCount) === vertex2) {
 			return false;
 		}
@@ -259,7 +381,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 	};
 
 	var poly = polygon.Clone ();
-	var count = poly.Count ();
+	var count = poly.VertexCount ();
 	if (count < 3) {
 		return [];
 	}
@@ -367,13 +489,41 @@ JSM.CheckTriangulation2D = function (polygon, triangles)
 	return true;
 };
 
+JSM.CreatePolygonWithHole = function (vertices)
+{
+	var noNullVertices = [];
+	var i;
+	for (i = 0; i < vertices.length; i++) {
+		if (vertices[i] !== null) {
+			noNullVertices.push (vertices[i]);
+		}
+	}
+
+	var normal = JSM.CalculateNormal (noNullVertices);
+
+	var origo = new JSM.Coord (0.0, 0.0, 0.0);
+	var vertices2D = [];
+
+	var vertex;
+	for (i = 0; i < vertices.length; i++) {
+		if (vertices[i] !== null) {
+			vertex = JSM.GetCoord2DFromCoord (vertices[i], origo, normal);
+			vertices2D.push (vertex);
+		} else {
+			vertices2D.push (null);
+		}
+	}
+	
+	return JSM.CreatePolygonWithHole2D (vertices2D);
+};
+
 JSM.PolygonTriangulate = function (polygon)
 {
 	var polygon2D = new JSM.Polygon2D ();
 	var normal = JSM.CalculateNormal (polygon.vertices);
 
 	var origo = new JSM.Coord (0.0, 0.0, 0.0);
-	var vertexCount = polygon.Count ();
+	var vertexCount = polygon.VertexCount ();
 	var i, vertex;
 	for (i = 0; i < vertexCount; i++) {
 		vertex = JSM.GetCoord2DFromCoord (polygon.GetVertex (i), origo, normal);
@@ -385,7 +535,7 @@ JSM.PolygonTriangulate = function (polygon)
 
 JSM.OffsetPolygonContour = function (polygon, width)
 {
-	var count = polygon.Count ();
+	var count = polygon.VertexCount ();
 	var normal = JSM.CalculateNormal (polygon.vertices);
 
 	var prev, curr, next;

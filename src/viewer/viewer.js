@@ -222,6 +222,12 @@ JSM.Viewer.prototype =
 		
 		return found;
 	},
+
+	RemoveMesh : function (mesh)
+	{
+		this.scene.remove (mesh);
+		this.Draw ();
+    },
 	
 	RemoveMeshes : function ()
 	{
@@ -256,6 +262,14 @@ JSM.Viewer.prototype =
 		this.Draw ();
     },
 
+	Resize : function ()
+	{
+		this.camera.aspect = this.canvas.width / this.canvas.height;
+		this.camera.updateProjectionMatrix (); 
+		this.renderer.setSize (this.canvas.width, this.canvas.height);
+		this.Draw ();
+	}, 	
+	
 	FitInWindow : function ()
 	{
 		var center = this.GetCenter ();

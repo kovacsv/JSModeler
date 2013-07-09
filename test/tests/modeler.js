@@ -558,6 +558,16 @@ AddTest ('GenerateSphereTest', function (test)
 	test.Assert (JSM.CheckSolidBody (sphere));
 });
 
+AddTest ('GenerateCircleTest', function (test)
+{
+	var circle = JSM.GenerateCircle (1.0, 25);
+	test.Assert (circle.VertexCount () == 25 && circle.PolygonCount () == 1);
+
+	var polygonNormals = JSM.CalculateBodyPolygonNormals (circle);
+	test.Assert (polygonNormals.length == 1);
+	test.Assert (JSM.CoordIsEqual (polygonNormals[0], new JSM.Vector (0, 0, 1)));
+});
+
 AddTest ('GenerateCylinderTest', function (test)
 {
 	var cylinder = JSM.GenerateCylinder (1.0, 2.0, 25, true, true);
@@ -702,6 +712,115 @@ AddTest ('GeneratePrismTest', function (test)
 	test.Assert (JSM.CoordIsEqual (vertexNormals[6][2], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
 	test.Assert (JSM.CoordIsEqual (vertexNormals[6][3], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
 	test.Assert (JSM.CoordIsEqual (vertexNormals[6][4], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
+});
+
+AddTest ('GeneratePrismWithHoleTest', function (test)
+{
+	var basePoints = [
+		new JSM.Coord (0, 0, 0),
+		new JSM.Coord (7, 0, 0),
+		new JSM.Coord (7, 3, 0),
+		new JSM.Coord (0, 3, 0),
+	];
+	
+	var direction = new JSM.Vector (0.0, 0.0, 1.0);
+	var prism = JSM.GeneratePrismWithHole (basePoints, direction, 0.3, true);
+
+	test.Assert (prism.VertexCount () == 8 && prism.PolygonCount () == 8);
+	test.Assert (JSM.CheckSolidBody (prism));
+	
+	var quads = 0;
+	var tris = 0;
+	
+	var i, vertexCount;
+	for (i = 0; i < prism.PolygonCount (); i++) {
+		vertexCount = prism.GetPolygon (i).VertexIndexCount ();
+		if (vertexCount == 3) {
+			tris++;
+		} else if (vertexCount == 4) {
+			quads++;
+		}
+	}
+
+	test.Assert (quads == 4);
+	test.Assert (tris == 4);
+
+	var basePoints = [
+		new JSM.Coord (0, 0, 0),
+		new JSM.Coord (7, 0, 0),
+		new JSM.Coord (7, 3, 0),
+		new JSM.Coord (0, 3, 0),
+		null,
+		new JSM.Coord (1, 1, 0),
+		new JSM.Coord (1, 2, 0),
+		new JSM.Coord (2, 2, 0)		
+	];
+	
+	var direction = new JSM.Vector (0.0, 0.0, 1.0);
+	var prism = JSM.GeneratePrismWithHole (basePoints, direction, 0.3, true);
+
+	test.Assert (prism.VertexCount () == 14 && prism.PolygonCount () == 21);
+	test.Assert (JSM.CheckSolidBody (prism));
+	
+	var quads = 0;
+	var tris = 0;
+	
+	var i, vertexCount;
+	for (i = 0; i < prism.PolygonCount (); i++) {
+		vertexCount = prism.GetPolygon (i).VertexIndexCount ();
+		if (vertexCount == 3) {
+			tris++;
+		} else if (vertexCount == 4) {
+			quads++;
+		}
+	}
+
+	test.Assert (quads == 7);
+	test.Assert (tris == 14);
+
+	var basePoints = [
+		new JSM.Coord (0, 0, 0),
+		new JSM.Coord (7, 0, 0),
+		new JSM.Coord (7, 3, 0),
+		new JSM.Coord (0, 3, 0),
+		null,
+		new JSM.Coord (1, 1, 0),
+		new JSM.Coord (1, 2, 0),
+		new JSM.Coord (2, 2, 0),
+		null,
+		new JSM.Coord (3, 1, 0),
+		new JSM.Coord (3, 2, 0),
+		new JSM.Coord (4, 2, 0),
+		new JSM.Coord (4, 1, 0),
+		null,
+		new JSM.Coord (5, 1, 0),
+		new JSM.Coord (5, 2, 0),
+		new JSM.Coord (6, 2, 0),
+		new JSM.Coord (6, 1, 0),
+		new JSM.Coord (5.5, 1.5, 0)
+	];
+	
+	var direction = new JSM.Vector (0.0, 0.0, 1.0);
+	var prism = JSM.GeneratePrismWithHole (basePoints, direction, 0.3, true);
+	
+	test.Assert (prism.VertexCount () == 32 && prism.PolygonCount () == 56);
+	test.Assert (JSM.CheckSolidBody (prism));
+	
+	var quads = 0;
+	var tris = 0;
+	
+	var i, vertexCount;
+	for (i = 0; i < prism.PolygonCount (); i++) {
+		vertexCount = prism.GetPolygon (i).VertexIndexCount ();
+		if (vertexCount == 3) {
+			tris++;
+		} else if (vertexCount == 4) {
+			quads++;
+		}
+	}
+
+	test.Assert (quads == 16);
+	test.Assert (tris == 40);
 });
 
 AddTest ('GeneratePrismShellTest', function (test)

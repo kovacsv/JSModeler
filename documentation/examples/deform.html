@@ -150,6 +150,10 @@
 			var canvas = document.getElementById ('example');
 			canvas.setAttribute ('width', window.innerWidth - left.clientWidth - 3 * margin);
 			canvas.setAttribute ('height', window.innerHeight - 3 * margin);
+
+			if (viewer != null) {
+				viewer.Resize ();
+			}
 		}
 		
 		function Load ()
@@ -220,7 +224,7 @@
 				<input id="radius" type="text" value="100">
 			</div>
 			<div class="box">
-				<a href="https://github.com/kovacsv/JSModeler">go to project home page</a>
+				<a href="https://github.com/kovacsv/JSModeler">go to jsmodeler home page</a>
 			</div>
 		</div>
 	</div>
