@@ -1,0 +1,91 @@
+html, body
+{
+	color : #000000;
+	background : #ffffff;
+	font-size : 12px;
+	font-family : Arial, cursive;
+	margin : 0px;
+	padding : 0px;
+	width : 100%;
+	height : 100%;
+}
+
+#controls
+{
+	text-align : center;
+	padding : 20px;
+}
+
+#floating
+{
+	color : #000000;
+	background : #efefef;
+	width : 400px;
+	height : 140px;
+	margin-top : -160px;
+	margin-left : -210px;
+	left : 50%;
+	top : 50%;
+	border : 1px solid #aaaaaa;
+	border-radius : 10px;
+	padding : 20px;
+	position : absolute;
+	display : none;
+	opacity : 0.9;
+}
+
+#floatingtext
+{
+	color : #000000;
+	background : transparent;
+	font-size: 30px;
+	text-align : center;
+	padding	: 20px;
+	margin-bottom : 20px;
+}
+
+#floatingbutton
+{
+	text-align : center;
+}
+
+#floatingbutton a
+{
+	color : #ffffff;
+	background : #279b61;
+	text-align : center;
+	padding : 10px 20px;
+	border-radius : 5px;
+}
+
+canvas
+{
+	display:block;
+}
+
+a.large
+{
+	color : #999999;
+	background : transparent;
+	font-size: 30px;
+	display : block;
+}
+
+a.small
+{
+	color : #aaaaaa;
+	background : transparent;
+	font-size: 12px;
+	display : block;
+}
+
+a
+{
+	text-decoration : none;
+	padding : 5px;
+}
+
+a:hover
+{
+	text-decoration : underline;
+}
