@@ -181,31 +181,51 @@ JSM.CalculatePolygonCylindricalTextureCoords = function (body, index, normal)
 	return result;
 }
 
-JSM.CalculatePolygonTextureCoords = function (body, polygonNormals, index)
+JSM.CalculateBodyPlanarTextureCoords = function (body)
 {
 	var result = [];
-	var projection = body.GetTextureProjectionType ();
-	var normal = polygonNormals[index];
-
-	if (projection === 'Planar') {
-		result = JSM.CalculatePolygonPlanarTextureCoords (body, index);
-	} else if (projection === 'Cubic') {
-		result = JSM.CalculatePolygonCubicTextureCoords (body, index, normal);
-	} else if (projection === 'Cylindrical') {
-		result = JSM.CalculatePolygonCylindricalTextureCoords (body, index, normal);
+	var i;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		result.push (JSM.CalculatePolygonPlanarTextureCoords (body, i));
 	}
+	return result;
+}
 
+JSM.CalculateBodyCubicTextureCoords = function (body)
+{
+	var result = [];
+	var polygonNormals = JSM.CalculateBodyPolygonNormals (body);
+	var i, normal;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		normal = polygonNormals[i];
+		result.push (JSM.CalculatePolygonCubicTextureCoords (body, i, normal));
+	}
+	return result;
+}
+
+JSM.CalculateBodyCylindricalTextureCoords = function (body)
+{
+	var result = [];
+	var polygonNormals = JSM.CalculateBodyPolygonNormals (body);
+	var i, normal;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		normal = polygonNormals[i];
+		result.push (JSM.CalculatePolygonCylindricalTextureCoords (body, i, normal));
+	}
 	return result;
 }
 
 JSM.CalculateBodyTextureCoords = function (body)
 {
 	var result = [];
-	var polygonNormals = JSM.CalculateBodyPolygonNormals (body);
-	
-	var i, j, polygon, coord;
-	for (i = 0; i < body.PolygonCount (); i++) {
-		result[i] = JSM.CalculatePolygonTextureCoords (body, polygonNormals, i);
+	var projection = body.GetTextureProjectionType ();
+	if (projection === 'Planar') {
+		result = JSM.CalculateBodyPlanarTextureCoords (body);
+	} else if (projection === 'Cubic') {
+		result = JSM.CalculateBodyCubicTextureCoords (body);
+	} else if (projection === 'Cylindrical') {
+		result = JSM.CalculateBodyCylindricalTextureCoords (body);
 	}
+
 	return result;
 };

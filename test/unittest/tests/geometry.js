@@ -339,6 +339,18 @@ AddTest ('TransformationTest', function (test) {
 	
 	var result2 = transformation.Apply (coord);
 	test.Assert (JSM.CoordIsEqual (result1, result2));
+
+	var trX = new JSM.RotationXTransformation (10 * JSM.DegRad);
+	var trY = new JSM.RotationYTransformation (20 * JSM.DegRad);
+	var trZ = new JSM.RotationZTransformation (30 * JSM.DegRad);
+	var trXYZ = new JSM.RotationXYZTransformation (10 * JSM.DegRad, 20 * JSM.DegRad, 30 * JSM.DegRad);
+	
+	var coord = new JSM.Coord (1.0, 2.0, 3.0);
+	coord = trX.Apply (coord);
+	coord = trY.Apply (coord);
+	coord = trZ.Apply (coord);
+	
+	test.Assert (JSM.CoordIsEqual (trXYZ.Apply (new JSM.Coord (1.0, 2.0, 3.0)), coord));		
 });
 
 AddTest ('SystemConversionTest', function (test) {

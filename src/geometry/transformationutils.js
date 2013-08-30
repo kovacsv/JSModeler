@@ -125,6 +125,15 @@ JSM.RotationZTransformation = function (angle, origo)
 	return transformation;
 };
 
+JSM.RotationXYZTransformation = function (xAngle, yAngle, zAngle, origo)
+{
+	var transformation = new JSM.Transformation ();
+	transformation.Append (JSM.RotationXTransformation (xAngle, origo));
+	transformation.Append (JSM.RotationYTransformation (yAngle, origo));
+	transformation.Append (JSM.RotationZTransformation (zAngle, origo));
+	return transformation;
+};
+
 JSM.SystemConversionTransformation = function (fromE1, fromE2, fromE3, toE1, toE2, toE3)
 {
 	var transformation = new JSM.Transformation ();

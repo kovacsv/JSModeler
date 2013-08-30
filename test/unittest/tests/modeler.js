@@ -1309,7 +1309,7 @@ AddTest ('BodyCubicTextureCoordTest', function (test)
 
 AddTest ('BodyCylindricalTextureCoordTest', function (test)
 {
-	var body = new JSM.GenerateCylinder (1.0, 1.0, 6.0, true, false);
+	var body = new JSM.GenerateCylinder (1.0, 1.0, 6, true, false);
 	test.Assert (body.VertexCount () == 12);
 	test.Assert (body.PolygonCount () == 8);
 	

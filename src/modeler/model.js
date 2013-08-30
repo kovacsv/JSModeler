@@ -19,5 +19,25 @@ JSM.Model.prototype =
 	BodyCount : function ()
 	{
 		return this.bodies.length;
+	},
+
+	VertexCount : function ()
+	{
+		var count = 0;
+		var i;
+		for (i = 0; i < this.bodies.length; i++) {
+			count += this.bodies[i].VertexCount ();
+		}
+		return count;
+	},
+
+	PolygonCount : function ()
+	{
+		var count = 0;
+		var i;
+		for (i = 0; i < this.bodies.length; i++) {
+			count += this.bodies[i].PolygonCount ();
+		}
+		return count;
 	}
 };

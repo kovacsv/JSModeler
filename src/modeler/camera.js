@@ -4,16 +4,16 @@ JSM.Camera = function (eye, center, up)
 	this.eye = new JSM.Coord (eye[0], eye[1], eye[2]);
 	this.center = new JSM.Coord (center[0], center[1], center[2]);
 	this.up = new JSM.Coord (up[0], up[1], up[2]);
-	this.mode = 'FreeRotateAroundCenter';
+	this.fixUp = true;
 	this.orbit = true;
 	this.zoom = true;
 };
 
 JSM.Camera.prototype = 
 {
-	SetMode : function (mode)
+	SetFixUp : function (fixUp)
 	{
-		this.mode = mode;
+		this.fixUp = fixUp;
 	},
 
 	SetOrbitEnabled : function (orbit)
@@ -58,8 +58,8 @@ JSM.Camera.prototype =
 		var viewDirection = JSM.VectorNormalize (JSM.CoordSub (this.center, this.eye));
 		var horizontalDirection = JSM.VectorNormalize (JSM.VectorCross (viewDirection, this.up));
 		var verticalDirection = JSM.VectorNormalize (JSM.VectorCross (horizontalDirection, viewDirection));
-
-		if (this.mode == 'FreeRotateAroundCenterWithFixUp') {
+		
+		if (this.fixUp) {
 			var originalAngle = JSM.GetVectorsAngle (viewDirection, this.up);
 			var angleLimit = 5.0 * JSM.DegRad;
 			if ((originalAngle > Math.PI - angleLimit && radAngleY < 0) ||
@@ -76,8 +76,7 @@ JSM.Camera.prototype =
 		
 		this.eye = JSM.CoordRotate (this.eye, horizontalDirection, radAngleY, this.origo);
 		this.center = JSM.CoordRotate (this.center, horizontalDirection, radAngleY, this.origo);
-
-		if (this.mode == 'FreeRotateAroundCenter') {
+		if (!this.fixUp) {
 			this.up = verticalDirection;
 		}
 	},
@@ -89,7 +88,6 @@ JSM.Camera.prototype =
 		result.eye = this.eye;
 		result.center = this.center;
 		result.up = this.up;
-		result.mode = this.mode;
 		result.orbit = this.orbit;
 		result.zoom = this.zoom;
 		return result;
