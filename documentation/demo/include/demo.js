@@ -13,12 +13,7 @@ JSMDemo.prototype =
 		var viewerSettings = {
 			'cameraEyePosition' : [-3.0, -2.5, 2.0],
 			'cameraCenterPosition' : [0.0, 0.0, 0.0],
-			'cameraUpVector' : [0.0, 0.0, 1.0],
-			'fieldOfView' : 45.0,
-			'nearClippingPlane' : 0.1,
-			'farClippingPlane' : 1000.0,
-			'lightAmbientColor' : [0.5, 0.5, 0.5],
-			'lightDiffuseColor' :	[0.8, 0.8, 0.8]
+			'cameraUpVector' : [0.0, 0.0, 1.0]
 		};
 
 		this.viewer = new JSM.Viewer ();

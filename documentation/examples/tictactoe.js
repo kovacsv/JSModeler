@@ -118,7 +118,11 @@ TicTacToe.prototype =
 			}
 		}
 
-		var selected = JSM.RandomInt (0, maxItems.length - 1);
+		var hash = window.location.hash.substr (1);
+		var selected = 0;
+		if (hash != 'norandom') {
+			selected = JSM.RandomInt (0, maxItems.length - 1);
+		}
 		return this.DimensionsToIndex (maxItems[selected]);
 	},
 	

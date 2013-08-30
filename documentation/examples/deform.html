@@ -13,7 +13,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="simple.css">
-	<script type="text/javascript" src="../../build/Three.js"></script>
+	<script type="text/javascript" src="../../build/three.min.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
 	<title>JSModeler Deform Example</title>
 
@@ -119,7 +119,7 @@
 				}
 				vmd.vertexData = GetSoftMoveVertexData (meshes[0], faceAndVertex[1], vmd.radius);
 				vmd.originalPos = [viewer.mouse.currX, viewer.mouse.currY];
-				viewer.settings['disableOrbit'] = true;
+				viewer.settings['cameraDisableOrbit'] = true;
 			}
 		}
 		
@@ -140,7 +140,7 @@
 		function OnMouseUp ()
 		{
 			vmd = null;
-			viewer.settings['disableOrbit'] = false;
+			viewer.settings['cameraDisableOrbit'] = false;
 		}
 
 		function Resize ()
@@ -168,13 +168,7 @@
 			var viewerSettings = {
 				'cameraEyePosition' : [-5.0, -5.0, 5.0],
 				'cameraCenterPosition' : [0.0, 0.0, 0.0],
-				'cameraUpVector' : [0.0, 0.0, 1.0],
-				'cameraMode' : 'FreeRotateAroundCenterWithFixUp',
-				'fieldOfView' : 45.0,
-				'nearClippingPlane' : 0.1,
-				'farClippingPlane' : 1000.0,
-				'lightAmbientColor' : [0.5, 0.5, 0.5],
-				'lightDiffuseColor' :	[0.5, 0.5, 0.5]
+				'cameraUpVector' : [0.0, 0.0, 1.0]
 			};
 
 			viewer = new JSM.Viewer ();
