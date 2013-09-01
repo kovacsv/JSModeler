@@ -52,7 +52,7 @@ JSM.RobotModule.prototype =
 		var i;
 		for (i = 0; i < this.meshes.length; i++) {
 			this.meshes[i].matrix = matrix;
-			this.meshes[i].rotation.setEulerFromRotationMatrix (matrix);
+			this.meshes[i].rotation.setFromRotationMatrix (matrix);
 		}
 	},
 

@@ -43,7 +43,10 @@ JSM.Viewer.prototype =
 			return false;
 		}
 
-		this.Draw ();
+		this.DrawIfNeeded ();
+		if (this.settings.autoUpdate) {
+			this.AutoUpdate ();
+		}
 		return true;
 	},
 
@@ -63,33 +66,33 @@ JSM.Viewer.prototype =
 	InitSettings : function (settings)
 	{
 		this.settings = {
-			'cameraEyePosition' : [1.0, 1.0, 1.0],
-			'cameraCenterPosition' : [0.0, 0.0, 0.0],
-			'cameraUpVector' : [0.0, 0.0, 1.0],
-			'cameraFixUp' : true,
-			'cameraDisableOrbit' : false,
-			'cameraDisableZoom' : false,
-			'fieldOfView' : 45.0,
-			'nearClippingPlane' : 0.1,
-			'farClippingPlane' : 1000.0,
-			'lightAmbientColor' : [0.5, 0.5, 0.5],
-			'lightDiffuseColor' :[0.5, 0.5, 0.5],
-			'fixLightDirection' : null
+			cameraEyePosition : [1.0, 1.0, 1.0],
+			cameraCenterPosition : [0.0, 0.0, 0.0],
+			cameraUpVector : [0.0, 0.0, 1.0],
+			cameraFixUp : true,
+			cameraDisableOrbit : false,
+			cameraDisableZoom : false,
+			fieldOfView : 45.0,
+			nearClippingPlane : 0.1,
+			farClippingPlane : 1000.0,
+			lightAmbientColor : [0.5, 0.5, 0.5],
+			lightDiffuseColor : [0.5, 0.5, 0.5],
+			autoUpdate : true
 		};
 	
 		if (settings != undefined) {
-			if (settings['cameraEyePosition'] !== undefined) this.settings['cameraEyePosition'] = settings['cameraEyePosition'];
-			if (settings['cameraCenterPosition'] !== undefined) this.settings['cameraCenterPosition'] = settings['cameraCenterPosition'];
-			if (settings['cameraUpVector'] !== undefined) this.settings['cameraUpVector'] = settings['cameraUpVector'];
-			if (settings['cameraFixUp'] !== undefined) this.settings['cameraFixUp'] = settings['cameraFixUp'];
-			if (settings['cameraDisableOrbit'] !== undefined) this.settings['cameraDisableOrbit'] = settings['cameraDisableOrbit'];
-			if (settings['cameraDisableZoom'] !== undefined) this.settings['cameraDisableZoom'] = settings['cameraDisableZoom'];
-			if (settings['fieldOfView'] !== undefined) this.settings['fieldOfView'] = settings['fieldOfView'];
-			if (settings['nearClippingPlane'] !== undefined) this.settings['nearClippingPlane'] = settings['nearClippingPlane'];
-			if (settings['farClippingPlane'] !== undefined) this.settings['farClippingPlane'] = settings['farClippingPlane'];
-			if (settings['lightAmbientColor'] !== undefined) this.settings['lightAmbientColor'] = settings['lightAmbientColor'];
-			if (settings['lightDiffuseColor'] !== undefined) this.settings['lightDiffuseColor'] = settings['lightDiffuseColor'];
-			if (settings['fixLightDirection'] !== undefined) this.settings['fixLightDirection'] = settings['fixLightDirection'];
+			if (settings['cameraEyePosition'] !== undefined) this.settings.cameraEyePosition = settings['cameraEyePosition'];
+			if (settings['cameraCenterPosition'] !== undefined) this.settings.cameraCenterPosition = settings['cameraCenterPosition'];
+			if (settings['cameraUpVector'] !== undefined) this.settings.cameraUpVector = settings['cameraUpVector'];
+			if (settings['cameraFixUp'] !== undefined) this.settings.cameraFixUp = settings['cameraFixUp'];
+			if (settings['cameraDisableOrbit'] !== undefined) this.settings.cameraDisableOrbit = settings['cameraDisableOrbit'];
+			if (settings['cameraDisableZoom'] !== undefined) this.settings.cameraDisableZoom = settings['cameraDisableZoom'];
+			if (settings['fieldOfView'] !== undefined) this.settings.fieldOfView = settings['fieldOfView'];
+			if (settings['nearClippingPlane'] !== undefined) this.settings.nearClippingPlane = settings['nearClippingPlane'];
+			if (settings['farClippingPlane'] !== undefined) this.settings.farClippingPlane = settings['farClippingPlane'];
+			if (settings['lightAmbientColor'] !== undefined) this.settings.lightAmbientColor = settings['lightAmbientColor'];
+			if (settings['lightDiffuseColor'] !== undefined) this.settings.lightDiffuseColor = settings['lightDiffuseColor'];
+			if (settings['autoUpdate'] !== undefined) this.settings.autoUpdate = settings['autoUpdate'];
 		}
 
 		return true;
@@ -132,15 +135,15 @@ JSM.Viewer.prototype =
 			return false;
 		}
 
-		this.cameraMove = new JSM.Camera (this.settings['cameraEyePosition'], this.settings['cameraCenterPosition'], this.settings['cameraUpVector']);
-		this.cameraMove.SetFixUp (this.settings['cameraFixUp']);
-		this.cameraMove.SetOrbitEnabled (!this.settings['cameraDisableOrbit']);
-		this.cameraMove.SetZoomEnabled (!this.settings['cameraDisableZoom']);
+		this.cameraMove = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
+		this.cameraMove.SetFixUp (this.settings.cameraFixUp);
+		this.cameraMove.SetOrbitEnabled (!this.settings.cameraDisableOrbit);
+		this.cameraMove.SetZoomEnabled (!this.settings.cameraDisableZoom);
 		if (!this.cameraMove) {
 			return false;
 		}
 		
-        this.camera = new THREE.PerspectiveCamera (this.settings['fieldOfView'], this.canvas.width / this.canvas.height, this.settings['nearClippingPlane'], this.settings['farClippingPlane']);
+        this.camera = new THREE.PerspectiveCamera (this.settings.fieldOfView, this.canvas.width / this.canvas.height, this.settings.nearClippingPlane, this.settings.farClippingPlane);
         if (!this.camera) {
 			return false;
 		}
@@ -153,8 +156,8 @@ JSM.Viewer.prototype =
 	{
 		var ambientColor = new THREE.Color ();
 		var diffuseColor = new THREE.Color ();
-		ambientColor.setRGB (this.settings['lightAmbientColor'][0], this.settings['lightAmbientColor'][1], this.settings['lightAmbientColor'][2]);
-		diffuseColor.setRGB (this.settings['lightDiffuseColor'][0], this.settings['lightDiffuseColor'][1], this.settings['lightDiffuseColor'][2]);
+		ambientColor.setRGB (this.settings.lightAmbientColor[0], this.settings.lightAmbientColor[1], this.settings.lightAmbientColor[2]);
+		diffuseColor.setRGB (this.settings.lightDiffuseColor[0], this.settings.lightDiffuseColor[1], this.settings.lightDiffuseColor[2]);
 	
         this.ambientLight = new THREE.AmbientLight (ambientColor.getHex ());
         if (!this.ambientLight) {
@@ -168,11 +171,7 @@ JSM.Viewer.prototype =
 			return false;
 		}
 		
-		if (this.settings['fixLightDirection'] !== null) {
-			this.directionalLight.position.set (this.settings['fixLightDirection'][0], this.settings['fixLightDirection'][1], this.settings['fixLightDirection'][2]).normalize ();
-		} else {
-			this.directionalLight.position.set (0.0, 0.0, 1.0).normalize ();
-		}
+		this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
 		this.scene.add (this.directionalLight);
 		return true;
 	},
@@ -200,8 +199,8 @@ JSM.Viewer.prototype =
 
 	AddMesh : function (mesh)
 	{
-        this.scene.add (mesh);
-        this.Draw ();
+		this.scene.add (mesh);
+        this.DrawIfNeeded ();
 	},
 	
 	AddMeshes : function (meshes)
@@ -210,7 +209,7 @@ JSM.Viewer.prototype =
 		for (i = 0; i < meshes.length; i++) {
 			this.scene.add (meshes[i]);
 		}
-        this.Draw ();
+        this.DrawIfNeeded ();
 	},
 
 	MeshCount : function ()
@@ -277,7 +276,7 @@ JSM.Viewer.prototype =
 	RemoveMesh : function (mesh)
 	{
 		this.scene.remove (mesh);
-		this.Draw ();
+		this.DrawIfNeeded ();
     },
 	
 	RemoveMeshes : function ()
@@ -292,7 +291,7 @@ JSM.Viewer.prototype =
 			}
 		}
 		
-		this.Draw ();
+		this.DrawIfNeeded ();
     },
 
 	RemoveLastMesh : function ()
@@ -310,7 +309,7 @@ JSM.Viewer.prototype =
 			this.scene.remove (found);
 		}
 		
-		this.Draw ();
+		this.DrawIfNeeded ();
     },
 
 	Resize : function ()
@@ -318,7 +317,7 @@ JSM.Viewer.prototype =
 		this.camera.aspect = this.canvas.width / this.canvas.height;
 		this.camera.updateProjectionMatrix (); 
 		this.renderer.setSize (this.canvas.width, this.canvas.height);
-		this.Draw ();
+		this.DrawIfNeeded ();
 	}, 	
 	
 	FitInWindow : function ()
@@ -336,14 +335,15 @@ JSM.Viewer.prototype =
 		this.cameraMove.eye = JSM.CoordSub (this.cameraMove.eye, offsetToOrigo);
 		
 		var centerEyeDirection = JSM.VectorNormalize (JSM.CoordSub (this.cameraMove.eye, this.cameraMove.center));
-		var fieldOfView = this.settings['fieldOfView'] / 2.0;
+		var fieldOfView = this.settings.fieldOfView / 2.0;
 		if (this.canvas.width < this.canvas.height) {
 			fieldOfView = fieldOfView * this.canvas.width / this.canvas.height;
 		}
 		var distance = radius / Math.sin (fieldOfView * JSM.DegRad);
 		
 		this.cameraMove.eye = JSM.CoordOffset (this.cameraMove.center, centerEyeDirection, distance);
-		this.Draw ();
+		this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+		this.DrawIfNeeded ();
 	},
 
 	GetCenter : function ()
@@ -454,13 +454,23 @@ JSM.Viewer.prototype =
 		this.camera.position = new THREE.Vector3 (this.cameraMove.eye.x, this.cameraMove.eye.y, this.cameraMove.eye.z);
 		this.camera.up = new THREE.Vector3 (this.cameraMove.up.x, this.cameraMove.up.y, this.cameraMove.up.z);
 		this.camera.lookAt (new THREE.Vector3 (this.cameraMove.center.x, this.cameraMove.center.y, this.cameraMove.center.z));
-		if (this.settings['fixLightDirection'] === null) {
-			this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
-		}
 		this.renderer.render (this.scene, this.camera);
 		return true;
 	},
 
+	DrawIfNeeded : function ()
+	{
+		if (!this.settings.autoUpdate) {
+			this.Draw ();
+		}
+	},
+	
+	AutoUpdate : function ()
+	{
+		this.Draw ();
+		requestAnimationFrame (this.AutoUpdate.bind (this));
+	},
+	
 	OnMouseDown : function (event)
 	{
 		this.mouse.Down (event, this.canvas);
@@ -473,14 +483,15 @@ JSM.Viewer.prototype =
 			return;
 		}
 		
-		if (this.settings['cameraDisableOrbit']) {
+		if (this.settings.cameraDisableOrbit) {
 			return;
 		}
 		
 		var ratio = -0.5;
 		this.cameraMove.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 		
-		this.Draw ();
+		this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+		this.DrawIfNeeded ();
 	},
 	
 	OnMouseUp : function (event)
@@ -500,7 +511,7 @@ JSM.Viewer.prototype =
 			eventParameters = window.event;
 		}
 		
-		if (this.settings['cameraDisableZoom']) {
+		if (this.settings.cameraDisableZoom) {
 			return;
 		}
 		
@@ -513,7 +524,8 @@ JSM.Viewer.prototype =
 	
 		var zoomIn = delta > 0;
 		this.cameraMove.Zoom (zoomIn);
-		this.Draw ();
+		this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+		this.DrawIfNeeded ();
 	},
 	
 	OnTouchStart : function (event)
@@ -531,7 +543,8 @@ JSM.Viewer.prototype =
 		var ratio = -0.5;
 		this.cameraMove.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
 		
-		this.Draw ();
+		this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+		this.DrawIfNeeded ();
 	},
 
 	OnTouchEnd : function (event)

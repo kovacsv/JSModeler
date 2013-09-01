@@ -33,7 +33,8 @@
 	
 	<script type="text/javascript">
 		var viewer = null;
-	
+		var fixTime = false;
+		
 		function Update ()
 		{
 			var time = new Date ();
@@ -42,6 +43,13 @@
 			var currentMinutes = time.getMinutes ();
 			var currentSeconds = time.getSeconds ();
 			var currentMilliseconds = time.getMilliseconds ();
+			if (fixTime) {
+				var currentHours = 1 % 12;
+				var currentMinutes = 42;
+				var currentSeconds = 27;
+				var currentMilliseconds = 0;
+			}
+			
 			var currentHoursInMinutes = currentHours * 60 + currentMinutes;
 			var currentMinutesInSeconds = currentMinutes * 60 + currentSeconds;
 			var currentSecondsInMilliseconds = currentSeconds * 1000 + currentMilliseconds;
@@ -96,6 +104,11 @@
 				viewer.AddMesh (meshes[i]);
 			}
 
+			var hash = window.location.hash.substr (1);
+			if (hash == 'fixtime') {
+				fixTime = true;
+			}			
+			
 			Update ();
 		};
 	
