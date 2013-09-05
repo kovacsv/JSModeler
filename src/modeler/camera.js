@@ -67,10 +67,8 @@ JSM.Camera.prototype =
 		if (this.fixUp) {
 			var originalAngle = JSM.GetVectorsAngle (viewDirection, this.up);
 			var angleLimit = 5.0 * JSM.DegRad;
-			var skipDown = (radAngleY < 0 && originalAngle > Math.PI - angleLimit);
-			var skipUp = (radAngleY > 0 && originalAngle < angleLimit);
-
-			if (!skipDown && !skipUp) {
+			var skipVertical = (radAngleY < 0 && originalAngle > Math.PI - angleLimit) || (radAngleY > 0 && originalAngle < angleLimit);
+			if (!skipVertical) {
 				this.eye = JSM.CoordRotate (this.eye, horizontalDirection, radAngleY, this.center);
 			}
 			this.eye = JSM.CoordRotate (this.eye, this.up, radAngleX, this.center);

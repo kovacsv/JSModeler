@@ -306,6 +306,15 @@ JSM.CartesianToSphericalWithOrigo = function (cartesian, origo)
 	return spherical;
 };
 
+JSM.MoveCoordOnSphere = function (coord, origo, thetaAngle, phiAngle)
+{
+	var spherical = JSM.CartesianToSphericalWithOrigo (coord, origo);
+	spherical.theta += thetaAngle;
+	spherical.phi += phiAngle;
+	var cartesian = JSM.SphericalToCartesianWithOrigo (spherical, origo);
+	return cartesian;
+};
+
 JSM.CylindricalToCartesian = function (radius, height, theta)
 {
 	var result = new JSM.Coord ();
