@@ -271,12 +271,12 @@ JSM.CalculateNormal = function (coords)
 	return normalized;
 };
 
-JSM.SphericalToCartesian = function (radius, phi, theta)
+JSM.SphericalToCartesian = function (radius, theta, phi)
 {
 	var result = new JSM.Coord ();
-	result.x = radius * Math.sin (phi) * Math.cos (theta);
-	result.y = radius * Math.sin (phi) * Math.sin (theta);
-	result.z = radius * Math.cos (phi);
+	result.x = radius * Math.sin (theta) * Math.cos (phi);
+	result.y = radius * Math.sin (theta) * Math.sin (phi);
+	result.z = radius * Math.cos (theta);
 	return result;
 };
 
@@ -287,14 +287,14 @@ JSM.CartesianToSpherical = function (x, y, z)
 	if (JSM.IsZero (result.radius)) {
 		return result;
 	}
-	result.phi = Math.acos (z / result.radius);
-	result.theta = Math.atan2 (y, x);
+	result.theta = Math.acos (z / result.radius);
+	result.phi = Math.atan2 (y, x);
 	return result;
 };
 
 JSM.SphericalToCartesianWithOrigo = function (spherical, origo)
 {
-	var cartesian = JSM.SphericalToCartesian (spherical.radius, spherical.phi, spherical.theta);
+	var cartesian = JSM.SphericalToCartesian (spherical.radius, spherical.theta, spherical.phi);
 	var offseted = JSM.CoordAdd (cartesian, origo);
 	return offseted;
 };

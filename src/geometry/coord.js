@@ -75,30 +75,30 @@ JSM.Coord.prototype =
 	}
 };
 
-JSM.SphericalCoord = function (radius, phi, theta)
+JSM.SphericalCoord = function (radius, theta, phi)
 {
 	this.radius = JSM.ValueOrDefault (radius, 0.0);
-	this.phi = JSM.ValueOrDefault (phi, 0.0);
 	this.theta = JSM.ValueOrDefault (theta, 0.0);
+	this.phi = JSM.ValueOrDefault (phi, 0.0);
 };
 
 JSM.SphericalCoord.prototype =
 {
-	Set : function (radius, phi, theta)
+	Set : function (radius, theta, phi)
 	{
 		this.radius = JSM.ValueOrDefault (radius, 0.0);
-		this.phi = JSM.ValueOrDefault (phi, 0.0);
 		this.theta = JSM.ValueOrDefault (theta, 0.0);
+		this.phi = JSM.ValueOrDefault (phi, 0.0);
 	},
 	
 	ToString : function ()
 	{
-		return ('(' + this.radius + ', ' + this.phi + ', ' + this.theta + ')');
+		return ('(' + this.radius + ', ' + this.theta + ', ' + this.phi + ')');
 	},
 	
 	Clone : function ()
 	{
-		return new JSM.SphericalCoord (this.radius, this.phi, this.theta);
+		return new JSM.SphericalCoord (this.radius, this.theta, this.phi);
 	}
 };
 

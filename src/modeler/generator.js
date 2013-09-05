@@ -279,16 +279,16 @@ JSM.GenerateSphere = function (radius, segmentation, isCurved)
 
 	var topIndex = result.AddVertex (new JSM.BodyVertex (JSM.SphericalToCartesian (radius, 0.0, 0.0)));
 	var step = Math.PI / segments;
-	var phi = step;
+	var theta = step;
 	
-	var i, j, theta;
+	var i, j, phi;
 	for (i = 1; i < segments; i++) {
-		theta = 0;
+		phi = 0;
 		for (j = 0; j < circle; j++) {
-			result.AddVertex (new JSM.BodyVertex (JSM.SphericalToCartesian (radius, phi, theta)));
-			theta += step;
+			result.AddVertex (new JSM.BodyVertex (JSM.SphericalToCartesian (radius, theta, phi)));
+			phi += step;
 		}
-		phi += step;
+		theta += step;
 	}
 	var bottomIndex = result.AddVertex (new JSM.BodyVertex (JSM.SphericalToCartesian (-radius, 0.0, 0.0)));
 

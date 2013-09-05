@@ -151,7 +151,7 @@ AddTest ('SphericalTest', function (test) {
 		var original = new JSM.Coord (x, y, z);
 		
 		var spherical = JSM.CartesianToSpherical (original.x, original.y, original.z);
-		var cartesian = JSM.SphericalToCartesian (spherical.radius, spherical.phi, spherical.theta);
+		var cartesian = JSM.SphericalToCartesian (spherical.radius, spherical.theta, spherical.phi);
 		test.Assert (JSM.CoordIsEqual (original, cartesian));
 		
 		var origo = new JSM.Coord (1.0, 2.0, 3.0);
