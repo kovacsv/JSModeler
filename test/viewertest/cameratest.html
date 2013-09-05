@@ -11,10 +11,8 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="framework/test.css">
+	<link rel="stylesheet" type="text/css" href="include/viewertest.css">
 
-	<script type="text/javascript" src="framework/test.js"></script>
-	
 	<script type="text/javascript" src="../../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
 	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
@@ -53,15 +51,124 @@
 	<script type="text/javascript" src="../../src/viewer/converter.js"></script>
 	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
-	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
-	
-	<script type="text/javascript" src="tests/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>	
 
-	<title>JSModeler Test</title>
+	<script type="text/javascript" src="include/stephandler.js"></script>
+	<script type="text/javascript" src="include/teststeps.js"></script>
+	<title>JSModeler Camera Test</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+
+		function Resize ()
+		{
+			var header = document.getElementById ('header');
+			var canvas = document.getElementById ('test');
+			
+			canvas.width = document.body.clientWidth;
+			canvas.height = document.body.clientHeight - header.clientHeight - 1;
+			if (viewer != null) {
+				viewer.Resize ();
+			}
+		}
+
+		function WriteCameraInfo ()
+		{
+			var info = document.getElementById ('info');
+			info.innerHTML = '';
+			info.innerHTML += 'fixUp: ' + viewer.cameraMove.fixUp + ', ';
+			info.innerHTML += 'orbit: ' + viewer.cameraMove.orbit + ', ';
+			info.innerHTML += 'zoom: ' + viewer.cameraMove.zoom;
+		}
+		
+		function Reset1 ()
+		{
+			viewer.SetCamera ([-7.5, -5.0, 4.0], [-1.5, 0.0, 0.0], [0.0, 0.0, 1.0]);
+			viewer.Draw ();
+		}
+		
+		function Reset2 ()
+		{
+			viewer.SetCamera ([-6.0, -5.0, 4.0], [0.0, 0.0, 0.0], [0.0, 0.0, 1.0]);
+			viewer.Draw ();
+		}
+
+		function Reset3 ()
+		{
+			viewer.SetCamera ([-4.5, -5.0, 4.0], [1.5, 0.0, 0.0], [0.0, 0.0, 1.0]);
+			viewer.Draw ();
+		}
+
+		function SwitchFixUp ()
+		{
+			viewer.EnableCameraFixUp (!viewer.cameraMove.fixUp);
+			WriteCameraInfo ();
+		}
+		
+		function SwitchOrbit ()
+		{
+			viewer.EnableCameraOrbit (!viewer.cameraMove.orbit);
+			WriteCameraInfo ();
+		}
+
+		function SwitchZoom ()
+		{
+			viewer.EnableCameraZoom (!viewer.cameraMove.zoom);
+			WriteCameraInfo ();
+		}
+
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+
+			var viewerSettings = {
+				'cameraEyePosition' : [-6.0, -5.0, 4.0],
+				'cameraCenterPosition' : [0.0, 0.0, 0.0],
+				'cameraUpVector' : [0.0, 0.0, 1.0]
+			};
+
+			viewer = new JSM.Viewer ();
+			if (!viewer.Start ('test', viewerSettings)) {
+				return;
+			}
+
+			var body1 = JSM.GenerateCuboid (1, 1, 1);
+			viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body1));
+			
+			var body2 = JSM.GenerateCuboid (1, 1, 1);
+			body2.Transform (new JSM.TranslationTransformation (new JSM.Coord (1.5, 0.0, 0.0)));
+			viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body2));
+
+			var body3 = JSM.GenerateCuboid (1, 1, 1);
+			body3.Transform (new JSM.TranslationTransformation (new JSM.Coord (-1.5, 0.0, 0.0)));
+			viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body3));
+
+			WriteCameraInfo ();
+			viewer.Draw ();
+		}
+
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
 
 </head>
 
 <body>
+	<div id="header">
+		<div id="buttons">
+			<a class="button" href="javascript:Reset1 ()">reset 1</a>
+			<a class="button" href="javascript:Reset2 ()">reset 2</a>
+			<a class="button" href="javascript:Reset3 ()">reset 3</a>
+			<a class="button" href="javascript:SwitchFixUp ()">fix up</a>
+			<a class="button" href="javascript:SwitchOrbit ()">orbit</a>
+			<a class="button" href="javascript:SwitchZoom ()">zoom</a>
+		</div>
+		<div id="info"></div>
+	</div>
+	<canvas id="test" width="800" height="500"></canvas>
 </body>
 
 </html>

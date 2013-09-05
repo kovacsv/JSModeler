@@ -146,6 +146,30 @@ AddTest ('VectorTest', function (test) {
 	test.Assert (JSM.IsEqual (JSM.CoordSignedDistance (coord1, coord3, JSM.CoordSub (coord1, coord3)), -1.0));
 });
 
+AddTest ('SphericalTest', function (test) {
+	function TestConversion (x, y, z) {
+		var original = new JSM.Coord (x, y, z);
+		
+		var spherical = JSM.CartesianToSpherical (original.x, original.y, original.z);
+		var cartesian = JSM.SphericalToCartesian (spherical.radius, spherical.phi, spherical.theta);
+		test.Assert (JSM.CoordIsEqual (original, cartesian));
+		
+		var origo = new JSM.Coord (1.0, 2.0, 3.0);
+		var spherical = JSM.CartesianToSphericalWithOrigo (original, origo);
+		var cartesian = JSM.SphericalToCartesianWithOrigo (spherical, origo);
+		test.Assert (JSM.CoordIsEqual (original, cartesian));
+	}
+
+	var x, y, z;
+	for (x = -1.0; x <= 1.0; x = x + 1.0) {
+		for (y = -1.0; y <= 1.0; y = y + 1.0) {
+			for (z = -1.0; z <= 1.0; z = z + 1.0) {
+				TestConversion (x, y, z);
+			}
+		}
+	}
+});
+
 AddTest ('CircleTest', function (test) {
 	test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 0.0 * JSM.DegRad), new JSM.Coord2D (1.0, 0.0)));
 	test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 90.0 * JSM.DegRad), new JSM.Coord2D (0.0, 1.0)));

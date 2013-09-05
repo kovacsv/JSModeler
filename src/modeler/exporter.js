@@ -118,7 +118,7 @@ JSM.ExportModelToStl = function (model, name, hasConvexPolygons)
 	return stlContent;
 };
 
-JSM.ExportBodyToObjInternal = function (body, vertexOffset, normalOffset)
+JSM.ExportBodyContentToObj = function (body, vertexOffset, normalOffset)
 {
 	var AddToContent = function (line)
 	{
@@ -176,7 +176,7 @@ JSM.ExportBodyToObjInternal = function (body, vertexOffset, normalOffset)
 
 JSM.ExportBodyToObj = function (body)
 {
-	return JSM.ExportBodyToObjInternal (body, 0, 0);
+	return JSM.ExportBodyContentToObj (body, 0, 0);
 };
 
 JSM.ExportModelToObj = function (model, name, hasConvexPolygons)
@@ -189,7 +189,7 @@ JSM.ExportModelToObj = function (model, name, hasConvexPolygons)
 	var i, body;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		objContent += JSM.ExportBodyToObjInternal (body, vertexOffset, normalOffset);
+		objContent += JSM.ExportBodyContentToObj (body, vertexOffset, normalOffset);
 		vertexOffset += body.VertexCount ();
 		normalOffset += body.PolygonCount ();
 	}

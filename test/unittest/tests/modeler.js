@@ -486,6 +486,18 @@ AddTest ('PainterTest', function (test)
 
 AddTestSuite ('Modeler - Generator');
 
+AddTest ('GenerateRectangleTest', function (test)
+{
+	var rectangle = JSM.GenerateRectangle (1, 2);
+	test.Assert (rectangle.VertexCount () == 4 && rectangle.PolygonCount () == 1);
+	
+	var vertexNormals = JSM.CalculateBodyVertexNormals (rectangle);
+	test.Assert (JSM.CoordIsEqual (vertexNormals[0][0], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
+	test.Assert (JSM.CoordIsEqual (vertexNormals[0][1], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
+	test.Assert (JSM.CoordIsEqual (vertexNormals[0][2], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
+	test.Assert (JSM.CoordIsEqual (vertexNormals[0][3], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
+});
+
 AddTest ('GenerateCuboidTest', function (test)
 {
 	var cuboid = JSM.GenerateCuboid (1, 2, 3);

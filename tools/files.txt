@@ -4,7 +4,6 @@
 ../src/geometry/matrix.js
 ../src/geometry/coord.js
 ../src/geometry/coordutils.js
-../src/geometry/coordutilsext.js
 ../src/geometry/coordsystem.js
 ../src/geometry/coordsystemutils.js
 ../src/geometry/sector.js

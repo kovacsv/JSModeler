@@ -1,3 +1,28 @@
+JSM.GenerateRectangle = function (xSize, ySize)
+{
+	var result = new JSM.Body ();
+
+	var x = xSize / 2.0;
+	var y = ySize / 2.0;
+	
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (-x, -y, 0.0)));
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (x, -y, 0.0)));
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (x, y, 0.0)));
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (-x, y, 0.0)));
+
+	result.AddPolygon (new JSM.BodyPolygon ([0, 1, 2, 3]));
+
+	result.SetTextureProjectionType ('Cubic');
+	result.SetTextureProjectionCoords (new JSM.CoordSystem (
+		new JSM.Coord (-x, -y, 0.0),
+		new JSM.Coord (1.0, 0.0, 0.0),
+		new JSM.Coord (0.0, 1.0, 0.0),
+		new JSM.Coord (0.0, 0.0, 1.0)
+	));
+
+	return result;
+};
+
 JSM.GenerateCuboid = function (xSize, ySize, zSize)
 {
 	var result = new JSM.Body ();
@@ -21,6 +46,41 @@ JSM.GenerateCuboid = function (xSize, ySize, zSize)
 	result.AddPolygon (new JSM.BodyPolygon ([4, 0, 3, 7]));
 	result.AddPolygon (new JSM.BodyPolygon ([0, 4, 5, 1]));
 	result.AddPolygon (new JSM.BodyPolygon ([3, 2, 6, 7]));
+
+	result.SetTextureProjectionType ('Cubic');
+	result.SetTextureProjectionCoords (new JSM.CoordSystem (
+		new JSM.Coord (-x, -y, -z),
+		new JSM.Coord (1.0, 0.0, 0.0),
+		new JSM.Coord (0.0, 1.0, 0.0),
+		new JSM.Coord (0.0, 0.0, 1.0)
+	));
+
+	return result;
+};
+
+JSM.GenerateCuboidSides = function (xSize, ySize, zSize, sides)
+{
+	var result = new JSM.Body ();
+
+	var x = xSize / 2.0;
+	var y = ySize / 2.0;
+	var z = zSize / 2.0;
+	
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (-x, -y, -z)));
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (x, -y, -z)));
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (x, -y, z)));
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (-x, -y, z)));
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (-x, y, -z)));
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (x, y, -z)));
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (x, y, z)));
+	result.AddVertex (new JSM.BodyVertex (new JSM.Coord (-x, y, z)));
+
+	if (sides[0]) { result.AddPolygon (new JSM.BodyPolygon ([0, 1, 2, 3])); }
+	if (sides[1]) { result.AddPolygon (new JSM.BodyPolygon ([1, 5, 6, 2])); }
+	if (sides[2]) { result.AddPolygon (new JSM.BodyPolygon ([5, 4, 7, 6])); }
+	if (sides[3]) { result.AddPolygon (new JSM.BodyPolygon ([4, 0, 3, 7])); }
+	if (sides[4]) { result.AddPolygon (new JSM.BodyPolygon ([0, 4, 5, 1])); }
+	if (sides[5]) { result.AddPolygon (new JSM.BodyPolygon ([3, 2, 6, 7])); }
 
 	result.SetTextureProjectionType ('Cubic');
 	result.SetTextureProjectionCoords (new JSM.CoordSystem (
@@ -1570,7 +1630,6 @@ JSM.GenerateSuperShape = function (a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
 {
 	var CartesianToSpherical = function (coord)
 	{
-		var result = new JSM.Coord ();
 		var radius = Math.sqrt (coord.x * coord.x + coord.y * coord.y + coord.z * coord.z);
 		var phi = Math.asin (coord.z / radius);
 		var theta = Math.atan2 (coord.y, coord.x);
