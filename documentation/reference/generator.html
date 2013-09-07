@@ -1,0 +1,361 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/reference.css">
+	<title>JSModeler Generator Documentation</title>
+
+</head>
+
+<body>
+	<div class="frame">
+		<div class="title1">JSModeler Generator Documentation</div>
+		
+		<div class="title2">JSM.GenerateRectangle</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a rectangle. The center of the rectangle will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">xSize</td>
+						<td class="type">number</td>
+						<td>x size of the rectangle</td>
+					</tr>
+					<tr>
+						<td class="name">ySize</td>
+						<td class="type">number</td>
+						<td>y size of the rectangle</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateRectangle (1.0, 1.0);
+</pre>
+				<img src="images/rectangle.svg">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateCuboid</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a cuboid. The center of the cuboid will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">xSize</td>
+						<td class="type">number</td>
+						<td>x size of the cuboid</td>
+					</tr>
+					<tr>
+						<td class="name">ySize</td>
+						<td class="type">number</td>
+						<td>y size of the cuboid</td>
+					</tr>
+					<tr>
+						<td class="name">zSize</td>
+						<td class="type">number</td>
+						<td>z size of the cuboid</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
+</pre>
+				<img src="images/cuboid.svg">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateSegmentedRectangle</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a rectangle with segmented side. The center of the rectangle will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">xSize</td>
+						<td class="type">number</td>
+						<td>x size of the rectangle</td>
+					</tr>
+					<tr>
+						<td class="name">ySize</td>
+						<td class="type">number</td>
+						<td>y size of the rectangle</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>segmentation number</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateSegmentedRectangle (1, 1, 4);
+</pre>
+				<img src="images/segmentedrectangle.svg">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateSegmentedCuboid</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a cuboid with segmented sides. The center of the cuboid will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">xSize</td>
+						<td class="type">number</td>
+						<td>x size of the cuboid</td>
+					</tr>
+					<tr>
+						<td class="name">ySize</td>
+						<td class="type">number</td>
+						<td>y size of the cuboid</td>
+					</tr>
+					<tr>
+						<td class="name">zSize</td>
+						<td class="type">number</td>
+						<td>z size of the cuboid</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>segmentation number</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateSegmentedCuboid (1, 1, 1, 4);
+</pre>
+				<img src="images/segmentedcuboid.svg">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateCircle</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a circle. The center of the circle will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">radius</td>
+						<td class="type">number</td>
+						<td>radius of the circle</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>segmentation of the circle</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateCircle (1.0, 25);
+</pre>
+				<img src="images/circle.svg">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateSphere</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a sphere. The center of the sphere will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">radius</td>
+						<td class="type">number</td>
+						<td>radius of the sphere</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>segmentation of the sphere</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>generate sphere with smooth surface</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateSphere (1, 10, false);
+</pre>
+				<img src="images/sphere.svg">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateTriangulatedSphere</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a sphere from triangles. The center of the sphere will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">radius</td>
+						<td class="type">number</td>
+						<td>radius of the sphere</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>segmentation of the sphere</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>generate sphere with smooth surface</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateTriangulatedSphere (1, 2, false);
+</pre>
+				<img src="images/triangulatedsphere.svg">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateCylinder</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a cylinder. The center of the cylinder will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">radius</td>
+						<td class="type">number</td>
+						<td>radius of the cylinder</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>height of the cylinder</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>segmentation of the cylinder</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>generate cylinder with top and bottom surface</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>generate cylinder with smooth surface</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateCylinder (0.5, 1.0, 15, true, false);
+</pre>
+				<img src="images/cylinder.svg">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GeneratePie</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a pie. The center of the pie will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">radius</td>
+						<td class="type">number</td>
+						<td>radius of the pie</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>height of the pie</td>
+					</tr>
+					<tr>
+						<td class="name">angle</td>
+						<td class="type">number</td>
+						<td>angle of the pie</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>segmentation of the pie</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>generate pie with top and bottom surface</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>generate pie with smooth surface</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GeneratePie (1.0, 0.2, 270 * JSM.DegRad, 25, true, false);
+</pre>
+				<img src="images/pie.svg">
+			</div>
+		</div>
+		
+	</div>
+</body>
+
+</html>

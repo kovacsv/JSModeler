@@ -715,7 +715,7 @@ function TestStep (viewer, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 	
-		var body = JSM.GenerateSegmentedPlane (1, 1, 50)
+		var body = JSM.GenerateSegmentedRectangle (1, 1, 50)
 		JSM.SoftMoveBodyVertex (body, 1000, 1.0, new JSM.Vector (0.0, 0.0, 1.0), 0.2);
 		JSM.SoftMoveBodyVertex (body, 1800, 0.5, new JSM.Vector (0.0, 0.0, -1.0), 0.1);
 

@@ -93,6 +93,49 @@ JSM.GenerateCuboidSides = function (xSize, ySize, zSize, sides)
 	return result;
 };
 
+JSM.GenerateSegmentedRectangle = function (xSize, ySize, segmentation)
+{
+	function AddVertices ()
+	{
+		var i, j, coord;
+
+		for (i = 0; i <= segmentation; i++) {	
+			for (j = 0; j <= segmentation; j++) {
+				coord = new JSM.Coord (j * xSegment - xStart, i * ySegment - yStart, 0.0);
+				result.AddVertex (new JSM.BodyVertex (coord));
+			}
+		}
+	};
+
+	function AddPolygons ()
+	{
+		var i, j;
+		var current, next, top, ntop;
+		
+		for (i = 0; i < segmentation; i++) {
+			for (j = 0; j < segmentation; j++) {
+				current = i * (segmentation + 1) + j;
+				next = current + 1;
+				top = current + segmentation + 1;
+				ntop = top + 1;
+				result.AddPolygon (new JSM.BodyPolygon ([current, next, ntop, top]));
+			}
+		}
+	};
+
+	var result = new JSM.Body ();
+	
+	var xStart = xSize / 2.0;
+	var yStart = ySize / 2.0;
+	var xSegment = xSize / segmentation;
+	var ySegment = ySize / segmentation;
+	
+	AddVertices (0);
+	AddPolygons (0);
+
+	return result;
+};
+
 JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 {
 	function GetLevelOffset (level)
@@ -149,7 +192,7 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 		if (level == 0 || level == segmentation) {
 			for (i = 0; i <= segmentation; i++) {	
 				for (j = 0; j <= segmentation; j++) {
-					coord = new JSM.Coord (j * xSegment, i * ySegment, zCoord);
+					coord = new JSM.Coord (j * xSegment - xStart, i * ySegment - yStart, zCoord - zStart);
 					result.AddVertex (new JSM.BodyVertex (coord));
 				}
 			}
@@ -157,7 +200,7 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 			for (i = 0; i <= segmentation; i++) {
 				for (j = 0; j <= segmentation; j++) {
 					if (i == 0 || i == segmentation || j == 0 || j == segmentation) {
-						coord = new JSM.Coord (j * xSegment, i * ySegment, zCoord);
+						coord = new JSM.Coord (j * xSegment - xStart, i * ySegment - yStart, zCoord - zStart);
 						result.AddVertex (new JSM.BodyVertex (coord));
 					}
 				}
@@ -206,6 +249,10 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 	};
 
 	var result = new JSM.Body ();
+
+	var xStart = xSize / 2.0;
+	var yStart = ySize / 2.0;
+	var zStart = zSize / 2.0;
 	
 	var xSegment = xSize / segmentation;
 	var ySegment = ySize / segmentation;
@@ -228,47 +275,36 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 	return result;
 };
 
-JSM.GenerateSegmentedPlane = function (xSize, ySize, segmentation)
+JSM.GenerateCircle = function (radius, segmentation)
 {
-	function AddVertices ()
-	{
-		var i, j, coord;
-
-		var zCoord = 0.0;
-		for (i = 0; i <= segmentation; i++) {	
-			for (j = 0; j <= segmentation; j++) {
-				coord = new JSM.Coord (j * xSegment, i * ySegment, zCoord);
-				result.AddVertex (new JSM.BodyVertex (coord));
-			}
-		}
-	};
-
-	function AddPolygons ()
-	{
-		var i, j;
-		var current, next, top, ntop;
-		
-		for (i = 0; i < segmentation; i++) {
-			for (j = 0; j < segmentation; j++) {
-				current = i * (segmentation + 1) + j;
-				next = current + 1;
-				top = current + segmentation + 1;
-				ntop = top + 1;
-				result.AddPolygon (new JSM.BodyPolygon ([current, next, ntop, top]));
-			}
-		}
-	};
-
 	var result = new JSM.Body ();
+	var segments = segmentation;
+
+	var theta = 2.0 * Math.PI;
+	var step = 2.0 * Math.PI / segments;
 	
-	var xSegment = xSize / segmentation;
-	var ySegment = ySize / segmentation;
-	
-	AddVertices (0);
-	AddPolygons (0);
+	var i;
+	for (i = 0; i < segments; i++) {
+		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (radius, 0.0, theta)));
+		theta -= step;
+	}
+
+	var topPolygon = new JSM.BodyPolygon ();
+	for (i = 0; i < segments; i++) {
+		topPolygon.AddVertexIndex (segments - i - 1);
+	}
+	result.AddPolygon (topPolygon);
+
+	result.SetTextureProjectionType ('Cylindrical');
+	result.SetTextureProjectionCoords (new JSM.CoordSystem (
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (radius, 0.0, 0.0),
+		new JSM.Coord (0.0, radius, 0.0),
+		new JSM.Coord (0.0, 0.0, 1.0)
+	));
 
 	return result;
-};
+}
 
 JSM.GenerateSphere = function (radius, segmentation, isCurved)
 {
@@ -470,37 +506,6 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 
 	return result;
 };
-
-JSM.GenerateCircle = function (radius, segmentation)
-{
-	var result = new JSM.Body ();
-	var segments = segmentation;
-
-	var theta = 2.0 * Math.PI;
-	var step = 2.0 * Math.PI / segments;
-	
-	var i;
-	for (i = 0; i < segments; i++) {
-		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (radius, 0.0, theta)));
-		theta -= step;
-	}
-
-	var topPolygon = new JSM.BodyPolygon ();
-	for (i = 0; i < segments; i++) {
-		topPolygon.AddVertexIndex (segments - i - 1);
-	}
-	result.AddPolygon (topPolygon);
-
-	result.SetTextureProjectionType ('Cylindrical');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (radius, 0.0, 0.0),
-		new JSM.Coord (0.0, radius, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
-	return result;
-}
 
 JSM.GenerateCylinder = function (radius, height, segmentation, withTopAndBottom, isCurved)
 {

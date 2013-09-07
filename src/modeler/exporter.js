@@ -412,7 +412,7 @@ JSM.ExportBodyToSVG = function (body, materials, settings, svgObject)
 			svgObject.appendChild (svgPolyon);
 		}
 	} else {
-		var i, j, polygon, currentCoord, currentVertex, vertex, coord, projected;
+		var i, j, polygon, vertexCount, currentCoord, currentVertex, vertex, coord, projected;
 		var svgLine;
 		
 		var drawedLines = [];
@@ -420,8 +420,9 @@ JSM.ExportBodyToSVG = function (body, materials, settings, svgObject)
 			currentCoord = null;
 			currentVertex = null;
 			polygon = body.GetPolygon (i);
-			for (j = 0; j < polygon.VertexIndexCount (); j++) {
-				vertex = polygon.GetVertexIndex (j);
+			vertexCount = polygon.VertexIndexCount ();
+			for (j = 0; j <= vertexCount; j++) {
+				vertex = polygon.GetVertexIndex (j % vertexCount);
 				coord = body.GetVertexPosition (vertex);
 				projected = JSM.Project (coord, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
 				if (currentCoord != null && currentVertex != null && drawedLines[[currentVertex, vertex]] == undefined) {
