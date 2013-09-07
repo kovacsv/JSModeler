@@ -58,7 +58,7 @@ JSM.CalculateProjectionMatrix = function (fieldOfView, aspectRatio, nearPlane, f
 	return result;
 };
 
-JSM.ProjectWithMatrices = function (coord, modelView, projection, viewPort, projected)
+JSM.ProjectWithMatrices = function (coord, modelView, projection, viewPort)
 {
 	var result = new JSM.Coord ();
 	
@@ -73,7 +73,7 @@ JSM.ProjectWithMatrices = function (coord, modelView, projection, viewPort, proj
 	output = JSM.VectorMatrixMultiply4x4 (JSM.VectorMatrixMultiply4x4 (input, modelView), projection);
 	var denom = output[3];
 	if (JSM.IsZero (denom)) {
-		return false;
+		return null;
 	}
 
 	output[0] = output[0] / denom * 0.5 + 0.5;
@@ -86,17 +86,12 @@ JSM.ProjectWithMatrices = function (coord, modelView, projection, viewPort, proj
 	result.x = output[0];
 	result.y = output[1];
 	result.z = output[2];
-	
-	if (projected !== undefined) {
-		projected.Set (result.x, result.y, result.z);
-	}
-	
-	return true;
+	return result;
 };
 
-JSM.Project = function (coord, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort, projected)
+JSM.Project = function (coord, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort)
 {
 	var modelView = JSM.CalculateModelViewMatrix (eye, center, up);
 	var projection = JSM.CalculateProjectionMatrix (fieldOfView, aspectRatio, nearPlane, farPlane);
-	return JSM.ProjectWithMatrices (coord, modelView, projection, viewPort, projected);
+	return JSM.ProjectWithMatrices (coord, modelView, projection, viewPort);
 };
