@@ -73,11 +73,23 @@
 			};
 
 			viewer = new JSM.SVGViewer ();
-			var success = viewer.Start ('example', viewerSettings, false);
+			var success = viewer.Start ('example', viewerSettings, true);
 
-			var body = JSM.GeneratePie (1.0, 0.2, 270 * JSM.DegRad, 25, true, false);
+var basePolyLine = [
+	new JSM.Coord (-1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 0.0, 0.0),
+	new JSM.Coord (-1.0, 0.0, 0.0)
+];
+var direction = new JSM.Vector (0.0, 0.0, 1.0);
+var body = JSM.GenerateLineShell (basePolyLine, direction, 1.0, 0.2, true, true);
 			
-			viewer.AddBody (body);
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff));
+			body.SetPolygonsMaterialIndex (0);
+			viewer.AddBody (body, materials);
 			viewer.Draw ();
 		}
 		

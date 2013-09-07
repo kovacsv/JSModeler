@@ -42,6 +42,7 @@ div.indented
 
 table.parameters td
 {
+	vertical-align : top;
 	padding-right : 20px;
 }
 
