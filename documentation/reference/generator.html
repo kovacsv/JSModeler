@@ -669,6 +669,204 @@ var body = JSM.GenerateLineShell (basePolyLine, direction, 1.0, 0.2, true, true)
 			</div>
 		</div>
 		
+		<div class="title2">JSM.GenerateTorus</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a torus. The center of the torus will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">outerRadius</td>
+						<td class="type">number</td>
+						<td>Outer radius of the torus.</td>
+					</tr>
+					<tr>
+						<td class="name">innerRadius</td>
+						<td class="type">number</td>
+						<td>Inner (cross section) radius of the torus.</td>
+					</tr>
+					<tr>
+						<td class="name">outerSegmentation</td>
+						<td class="type">integer</td>
+						<td>Outer segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">innerSegmentation</td>
+						<td class="type">integer</td>
+						<td>Inner (cross section) segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateTorus (1.0, 0.5, 20, 20, false);
+</pre>
+				<img src="images/torus.svg">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GeneratePolyTorus</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a torus with a polygon cross section. The center of the torus will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">basePolygon</td>
+						<td class="type">[coordinate]</td>
+						<td>The base polygon of the torus cross section.</td>
+					</tr>
+					<tr>
+						<td class="name">outerRadius</td>
+						<td class="type">number</td>
+						<td>Outer radius of the torus.</td>
+					</tr>
+					<tr>
+						<td class="name">outerSegmentation</td>
+						<td class="type">integer</td>
+						<td>Outer segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var basePolygon = [
+	new JSM.Coord (-1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 0.0, 0.0),
+	new JSM.Coord (-1.0, 0.0, 0.0)
+];
+var direction = new JSM.Vector (0.0, 0.0, 1.0);
+var body = JSM.GeneratePolyTorus (basePolygon, 2.0, 20, false);
+</pre>
+				<img src="images/polytorus.svg">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateRuledFromSectors</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates ruled surface between two sectors.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">aSector</td>
+						<td class="type">sector</td>
+						<td>The first sector.</td>
+					</tr>
+					<tr>
+						<td class="name">bSector</td>
+						<td class="type">sector</td>
+						<td>The second sector.</td>
+					</tr>
+					<tr>
+						<td class="name">lineSegmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation along sectors.</td>
+					</tr>
+					<tr>
+						<td class="name">meshSegmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation along surface.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var aSector = new JSM.Sector (new JSM.Coord (-1.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
+var bSector = new JSM.Sector (new JSM.Coord (0.0, 1.0, -1.0), new JSM.Coord (0.0, 1.0, 1.0));
+var body = JSM.GenerateRuledFromSectors (aSector, bSector, 10, 10, false);
+</pre>
+				<img src="images/ruledfromsectors.svg">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateRevolved</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates revolved surface of a polyline around an axis.
+			</div>
+			(polyLine, axis, angle, segmentation, withTopAndBottom, isCurved)
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">polyLine</td>
+						<td class="type">[coordinate]</td>
+						<td>The polyline to revolve.</td>
+					</tr>
+					<tr>
+						<td class="name">axis</td>
+						<td class="type">sector</td>
+						<td>The axis of the revolve.</td>
+					</tr>
+					<tr>
+						<td class="name">angle</td>
+						<td class="type">number</td>
+						<td>The angle of the revolve. Top and bottom surfaces generated only if this angle is 360 degree.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>Top and bottom surfaces.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var polyLine = [
+	new JSM.Coord (0.0, -1.0, -1.0),
+	new JSM.Coord (0.0, -0.5, 0.0),
+	new JSM.Coord (0.0, -1.0, 1.0)
+];
+var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
+var body = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 20, true, false);
+</pre>
+				<img src="images/revolved.svg">
+			</div>
+		</div>
+
 	</div>
 </body>
 
