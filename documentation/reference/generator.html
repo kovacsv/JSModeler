@@ -46,6 +46,7 @@
 <pre>
 var body = JSM.GenerateRectangle (1.0, 1.0);
 </pre>
+<img src="images/rectangle.png">
 			</div>
 		</div>
 
@@ -80,6 +81,7 @@ var body = JSM.GenerateRectangle (1.0, 1.0);
 <pre>
 var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 </pre>
+<img src="images/cuboid.png">
 			</div>
 		</div>
 
@@ -114,6 +116,7 @@ var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 <pre>
 var body = JSM.GenerateSegmentedRectangle (1, 1, 4);
 </pre>
+<img src="images/segmentedrectangle.png">
 			</div>
 		</div>
 		
@@ -153,6 +156,7 @@ var body = JSM.GenerateSegmentedRectangle (1, 1, 4);
 <pre>
 var body = JSM.GenerateSegmentedCuboid (1, 1, 1, 4);
 </pre>
+<img src="images/segmentedcuboid.png">
 			</div>
 		</div>
 		
@@ -180,8 +184,9 @@ var body = JSM.GenerateSegmentedCuboid (1, 1, 1, 4);
 			<div class="title3">Example</div>
 			<div class="indented">
 <pre>
-var body = JSM.GenerateCircle (1.0, 25);
+var body = JSM.GenerateCircle (1.0, 50);
 </pre>
+<img src="images/circle.png">
 			</div>
 		</div>
 
@@ -214,8 +219,9 @@ var body = JSM.GenerateCircle (1.0, 25);
 			<div class="title3">Example</div>
 			<div class="indented">
 <pre>
-var body = JSM.GenerateSphere (1, 10, false);
+var body = JSM.GenerateSphere (1, 50, true);
 </pre>
+<img src="images/sphere.png">
 			</div>
 		</div>
 
@@ -248,8 +254,9 @@ var body = JSM.GenerateSphere (1, 10, false);
 			<div class="title3">Example</div>
 			<div class="indented">
 <pre>
-var body = JSM.GenerateTriangulatedSphere (1, 3, false);
+var body = JSM.GenerateTriangulatedSphere (1, 3, true);
 </pre>
+<img src="images/triangulatedsphere.png">
 			</div>
 		</div>
 		
@@ -292,8 +299,9 @@ var body = JSM.GenerateTriangulatedSphere (1, 3, false);
 			<div class="title3">Example</div>
 			<div class="indented">
 <pre>
-var body = JSM.GenerateCylinder (0.5, 1.0, 25, true, false);
+var body = JSM.GenerateCylinder (0.5, 1.0, 50, true, true);
 </pre>
+<img src="images/cylinder.png">
 			</div>
 		</div>
 
@@ -341,8 +349,9 @@ var body = JSM.GenerateCylinder (0.5, 1.0, 25, true, false);
 			<div class="title3">Example</div>
 			<div class="indented">
 <pre>
-var body = JSM.GeneratePie (1.0, 0.2, 270 * JSM.DegRad, 25, true, false);
+var body = JSM.GeneratePie (1.0, 0.2, 270 * JSM.DegRad, 50, true, true);
 </pre>
+<img src="images/pie.png">
 			</div>
 		</div>
 		
@@ -390,8 +399,9 @@ var body = JSM.GeneratePie (1.0, 0.2, 270 * JSM.DegRad, 25, true, false);
 			<div class="title3">Example</div>
 			<div class="indented">
 <pre>
-var body = JSM.GenerateCone (0.2, 0.6, 1.0, 25, true, false);
+var body = JSM.GenerateCone (0.2, 0.6, 1.0, 50, true, true);
 </pre>
+<img src="images/cone.png">
 			</div>
 		</div>
 
@@ -440,6 +450,7 @@ var basePolygon = [
 var direction = new JSM.Vector (0.0, 0.0, 1.0);
 var body = JSM.GeneratePrism (basePolygon, direction, 1.0, true);
 </pre>
+<img src="images/prism.png">
 			</div>
 		</div>
 
@@ -491,6 +502,7 @@ var basePolygon = [
 var direction = new JSM.Vector (0.0, 0.0, 1.0);
 var body = JSM.GeneratePrismWithHole (basePolygon, direction, 1.0, true);
 </pre>
+<img src="images/prismwithhole.png">
 			</div>
 		</div>
 
@@ -544,6 +556,7 @@ var basePolygon = [
 var direction = new JSM.Vector (0.0, 0.0, 1.0);
 var body = JSM.GeneratePrismShell (basePolygon, direction, 1.0, 0.2, true);
 </pre>
+<img src="images/prismshell.png">
 			</div>
 		</div>
 
@@ -591,8 +604,9 @@ var body = JSM.GeneratePrismShell (basePolygon, direction, 1.0, 0.2, true);
 			<div class="title3">Example</div>
 			<div class="indented">
 <pre>
-var body = JSM.GenerateCylinderShell (0.5, 1.0, 0.2, 20, true, false);
+var body = JSM.GenerateCylinderShell (0.5, 1.0, 0.1, 50, true, true);
 </pre>
+<img src="images/cylindershell.png">
 			</div>
 		</div>
 
@@ -651,6 +665,7 @@ var basePolyLine = [
 var direction = new JSM.Vector (0.0, 0.0, 1.0);
 var body = JSM.GenerateLineShell (basePolyLine, direction, 1.0, 0.2, true, true);
 </pre>
+<img src="images/lineshell.png">
 			</div>
 		</div>
 		
@@ -693,8 +708,9 @@ var body = JSM.GenerateLineShell (basePolyLine, direction, 1.0, 0.2, true, true)
 			<div class="title3">Example</div>
 			<div class="indented">
 <pre>
-var body = JSM.GenerateTorus (1.0, 0.5, 20, 20, false);
+var body = JSM.GenerateTorus (1.0, 0.5, 50, 50, true);
 </pre>
+<img src="images/torus.png">
 			</div>
 		</div>
 
@@ -741,8 +757,9 @@ var basePolygon = [
 	new JSM.Coord (-1.0, 0.0, 0.0)
 ];
 var direction = new JSM.Vector (0.0, 0.0, 1.0);
-var body = JSM.GeneratePolyTorus (basePolygon, 2.0, 20, false);
+var body = JSM.GeneratePolyTorus (basePolygon, 2.0, 50, true);
 </pre>
+<img src="images/polytorus.png">
 			</div>
 		</div>
 
@@ -787,8 +804,66 @@ var body = JSM.GeneratePolyTorus (basePolygon, 2.0, 20, false);
 <pre>
 var aSector = new JSM.Sector (new JSM.Coord (-1.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
 var bSector = new JSM.Sector (new JSM.Coord (0.0, 1.0, -1.0), new JSM.Coord (0.0, 1.0, 1.0));
-var body = JSM.GenerateRuledFromSectors (aSector, bSector, 10, 10, false);
+var body = JSM.GenerateRuledFromSectors (aSector, bSector, 50, 50, true);
 </pre>
+<img src="images/ruledfromsectors.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateRuledFromSectorsWithHeight</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates ruled surface between two sectors, and generates a height for it.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">aSector</td>
+						<td class="type">sector</td>
+						<td>The first sector.</td>
+					</tr>
+					<tr>
+						<td class="name">bSector</td>
+						<td class="type">sector</td>
+						<td>The second sector.</td>
+					</tr>
+					<tr>
+						<td class="name">lineSegmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation along sectors.</td>
+					</tr>
+					<tr>
+						<td class="name">meshSegmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation along surface.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>Height.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var aSector = new JSM.Sector (new JSM.Coord (-1.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
+var bSector = new JSM.Sector (new JSM.Coord (0.0, 1.0, -1.0), new JSM.Coord (0.0, 1.0, 1.0));
+var body = JSM.GenerateRuledFromSectorsWithHeight (aSector, bSector, 50, 50, true, 0.2);
+</pre>
+<img src="images/ruledfromsectorswithheight.png">
 			</div>
 		</div>
 
@@ -843,8 +918,9 @@ var polyLine = [
 	new JSM.Coord (0.0, -1.0, 1.0)
 ];
 var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
-var body = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 20, true, false);
+var body = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 50, true, true);
 </pre>
+<img src="images/revolved.png">
 			</div>
 		</div>
 
