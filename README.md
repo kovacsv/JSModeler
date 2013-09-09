@@ -1,8 +1,9 @@
 JSModeler
 =========
 
-JSModeler is a JavaScript framework to create and visualize 3D models. Useful links:
+JSModeler is a JavaScript framework to create and visualize 3D models.
 
+Useful links:
 <ul>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/tutorial/tutorial.html">JSModeler tutorial</a> shows instructions and examples on how to use the framework.</li>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/tutorial/minimal.html">JSModeler minimal</a> is a minimalist example on using the framework.</li>
@@ -17,4 +18,26 @@ JSModeler is a JavaScript framework to create and visualize 3D models. Useful li
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/solids.html">Solid Body Viewer</a> is an example of using the SVG viewer.</li>
 		</ul>
 	</li>
+</ul>
+
+Main capabilities:
+<ul>
+	<li>Simple 3D model building manually or with generator functions.</li>
+	<ul>
+		<li>We can define our model with adding vertices and polygons manually.</li>
+		<li>We can use built-in generator functions to create basic shapes.</li>
+	</ul>
+	<li>Built-in Three.js based model viewer with rotation and zoom functionality.</li>
+	<li>Automatic conversion to Three.js geometry format.</li>
+	<ul>
+		<li>Convex and concave polygons are automatically triangulated during the conversion.</li>
+		<li>Vertex normals automatically calculated for the curved polygons.</li>
+	</ul>
+	<li>Automatic exportation to STL and OBJ file format.</li>
+	<li>Miscellaneous 2D and 3D geometry functions.</li>
+	<ul>
+		<li>Polygon triangulation for 2D and 3D polygons.</li>
+		<li>Catmull-Clarke subdivision for 3D bodies.</li>
+		<li>Convex hull calculation for 2D and 3D point sets.</li>
+	</ul>
 </ul>
