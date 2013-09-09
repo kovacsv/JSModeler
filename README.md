@@ -37,7 +37,7 @@ Main capabilities:
 	<li>Miscellaneous 2D and 3D geometry functions.</li>
 	<ul>
 		<li>Polygon triangulation for 2D and 3D polygons.</li>
-		<li>Catmull-Clarke subdivision for 3D bodies.</li>
+		<li>Catmull-Clark subdivision for 3D bodies.</li>
 		<li>Convex hull calculation for 2D and 3D point sets.</li>
 	</ul>
 </ul>
