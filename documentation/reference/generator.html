@@ -1,0 +1,1088 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/reference.css">
+	<title>JSModeler Generator Documentation</title>
+
+</head>
+
+<body>
+	<div class="frame">
+		<div class="title1">JSModeler Generator Documentation</div>
+		
+		<div class="title2">JSM.GenerateRectangle</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a rectangle. The center of the rectangle will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">xSize</td>
+						<td class="type">number</td>
+						<td>X size of the rectangle.</td>
+					</tr>
+					<tr>
+						<td class="name">ySize</td>
+						<td class="type">number</td>
+						<td>Y size of the rectangle.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateRectangle (1.0, 1.0);
+</pre>
+<img src="images/rectangle.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateCuboid</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a cuboid. The center of the cuboid will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">xSize</td>
+						<td class="type">number</td>
+						<td>X size of the cuboid.</td>
+					</tr>
+					<tr>
+						<td class="name">ySize</td>
+						<td class="type">number</td>
+						<td>Y size of the cuboid.</td>
+					</tr>
+					<tr>
+						<td class="name">zSize</td>
+						<td class="type">number</td>
+						<td>Z size of the cuboid.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
+</pre>
+<img src="images/cuboid.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateSegmentedRectangle</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a rectangle with segmented side. The center of the rectangle will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">xSize</td>
+						<td class="type">number</td>
+						<td>X size of the rectangle.</td>
+					</tr>
+					<tr>
+						<td class="name">ySize</td>
+						<td class="type">number</td>
+						<td>Y size of the rectangle.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateSegmentedRectangle (1, 1, 4);
+</pre>
+<img src="images/segmentedrectangle.png">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateSegmentedCuboid</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a cuboid with segmented sides. The center of the cuboid will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">xSize</td>
+						<td class="type">number</td>
+						<td>X size of the cuboid.</td>
+					</tr>
+					<tr>
+						<td class="name">ySize</td>
+						<td class="type">number</td>
+						<td>Y size of the cuboid.</td>
+					</tr>
+					<tr>
+						<td class="name">zSize</td>
+						<td class="type">number</td>
+						<td>Z size of the cuboid.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateSegmentedCuboid (1, 1, 1, 4);
+</pre>
+<img src="images/segmentedcuboid.png">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateCircle</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a circle. The center of the circle will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">radius</td>
+						<td class="type">number</td>
+						<td>Radius of the circle.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateCircle (1.0, 50);
+</pre>
+<img src="images/circle.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateSphere</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a sphere. The center of the sphere will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">radius</td>
+						<td class="type">number</td>
+						<td>Radius of the sphere.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateSphere (1, 50, true);
+</pre>
+<img src="images/sphere.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateTriangulatedSphere</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a sphere from triangles. The center of the sphere will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">radius</td>
+						<td class="type">number</td>
+						<td>Radius of the sphere.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateTriangulatedSphere (1, 3, true);
+</pre>
+<img src="images/triangulatedsphere.png">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateCylinder</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a cylinder. The center of the cylinder will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">radius</td>
+						<td class="type">number</td>
+						<td>Radius of the cylinder.</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>Height of the cylinder.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>Top and bottom surfaces.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateCylinder (0.5, 1.0, 50, true, true);
+</pre>
+<img src="images/cylinder.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GeneratePie</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a pie. The center of the pie will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">radius</td>
+						<td class="type">number</td>
+						<td>Radius of the pie.</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>Height of the pie.</td>
+					</tr>
+					<tr>
+						<td class="name">angle</td>
+						<td class="type">number</td>
+						<td>Angle of the pie.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>Top and bottom surfaces.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GeneratePie (1.0, 0.2, 270 * JSM.DegRad, 50, true, true);
+</pre>
+<img src="images/pie.png">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateCone</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a cone. The center of the cone will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">topRadius</td>
+						<td class="type">number</td>
+						<td>Top radius of the cone (can be 0.0).</td>
+					</tr>
+					<tr>
+						<td class="name">bottomRadius</td>
+						<td class="type">number</td>
+						<td>Bottom radius of the cone (can be 0.0).</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>Height of the the cone.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>Top and bottom surfaces.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateCone (0.2, 0.6, 1.0, 50, true, true);
+</pre>
+<img src="images/cone.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GeneratePrism</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a prism.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">basePolygon</td>
+						<td class="type">[coordinate]</td>
+						<td>The base polygon of the prism defined by its coordinates.</td>
+					</tr>
+					<tr>
+						<td class="name">direction</td>
+						<td class="type">vector</td>
+						<td>Base polygon offset direction.</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>Height of the prism.</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>Top and bottom surfaces.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var basePolygon = [
+	new JSM.Coord (-1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 0.0, 0.0),
+	new JSM.Coord (-1.0, 0.0, 0.0)
+];
+var direction = new JSM.Vector (0.0, 0.0, 1.0);
+var body = JSM.GeneratePrism (basePolygon, direction, 1.0, true);
+</pre>
+<img src="images/prism.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GeneratePrismWithHole</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a prism. The base polygon can contain holes. The top and bottom polygons are triangulated.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">basePolygon</td>
+						<td class="type">[coordinate]</td>
+						<td>The base polygon of the prism defined by its coordinates. Hole definitions must be started with a null element, and must be in reversed orientation.</td>
+					</tr>
+					<tr>
+						<td class="name">direction</td>
+						<td class="type">vector</td>
+						<td>Base polygon offset direction.</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>Height of the prism.</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>Top and bottom surfaces.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var basePolygon = [
+	new JSM.Coord (-1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, 1.0, 0.0),
+	new JSM.Coord (-1.0, 1.0, 0.0),
+	null,
+	new JSM.Coord (-0.5, 0.5, 0.0),
+	new JSM.Coord (0.5, 0.5, 0.0),
+	new JSM.Coord (0.5, -0.5, 0.0),
+	new JSM.Coord (-0.5, -0.5, 0.0)
+];
+var direction = new JSM.Vector (0.0, 0.0, 1.0);
+var body = JSM.GeneratePrismWithHole (basePolygon, direction, 1.0, true);
+</pre>
+<img src="images/prismwithhole.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GeneratePrismShell</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a prism shell.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">basePolygon</td>
+						<td class="type">[coordinate]</td>
+						<td>The base polygon of the prism defined by its coordinates.</td>
+					</tr>
+					<tr>
+						<td class="name">direction</td>
+						<td class="type">vector</td>
+						<td>Base polygon offset direction.</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>Height of the prism.</td>
+					</tr>
+					<tr>
+						<td class="name">width</td>
+						<td class="type">number</td>
+						<td>Width of the shell.</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>Top and bottom surfaces.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var basePolygon = [
+	new JSM.Coord (-1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 0.0, 0.0),
+	new JSM.Coord (-1.0, 0.0, 0.0)
+];
+var direction = new JSM.Vector (0.0, 0.0, 1.0);
+var body = JSM.GeneratePrismShell (basePolygon, direction, 1.0, 0.2, true);
+</pre>
+<img src="images/prismshell.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateCylinderShell</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a cylinder shell. The center of the cylinder will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">radius</td>
+						<td class="type">number</td>
+						<td>Radius of the cylinder.</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>Height of the cylinder.</td>
+					</tr>
+					<tr>
+						<td class="name">width</td>
+						<td class="type">number</td>
+						<td>Width of the shell.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>Top and bottom surfaces.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateCylinderShell (0.5, 1.0, 0.1, 50, true, true);
+</pre>
+<img src="images/cylindershell.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateLineShell</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a polyline shell.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">basePolyLine</td>
+						<td class="type">[coordinate]</td>
+						<td>The base polyline of the prism defined by its coordinates.</td>
+					</tr>
+					<tr>
+						<td class="name">direction</td>
+						<td class="type">vector</td>
+						<td>Base polyline offset direction.</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>Height of the prism.</td>
+					</tr>
+					<tr>
+						<td class="name">width</td>
+						<td class="type">number</td>
+						<td>Width of the shell.</td>
+					</tr>
+					<tr>
+						<td class="name">withStartAndEnd</td>
+						<td class="type">boolean</td>
+						<td>Start and end surfaces.</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>Top and bottom surfaces.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var basePolyLine = [
+	new JSM.Coord (-1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 0.0, 0.0),
+	new JSM.Coord (-1.0, 0.0, 0.0)
+];
+var direction = new JSM.Vector (0.0, 0.0, 1.0);
+var body = JSM.GenerateLineShell (basePolyLine, direction, 1.0, 0.2, true, true);
+</pre>
+<img src="images/lineshell.png">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateTorus</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a torus. The center of the torus will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">outerRadius</td>
+						<td class="type">number</td>
+						<td>Outer radius of the torus.</td>
+					</tr>
+					<tr>
+						<td class="name">innerRadius</td>
+						<td class="type">number</td>
+						<td>Inner (cross section) radius of the torus.</td>
+					</tr>
+					<tr>
+						<td class="name">outerSegmentation</td>
+						<td class="type">integer</td>
+						<td>Outer segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">innerSegmentation</td>
+						<td class="type">integer</td>
+						<td>Inner (cross section) segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateTorus (1.0, 0.5, 50, 50, true);
+</pre>
+<img src="images/torus.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GeneratePolyTorus</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a torus with a polygon cross section. The center of the torus will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">basePolygon</td>
+						<td class="type">[coordinate]</td>
+						<td>The base polygon of the torus cross section.</td>
+					</tr>
+					<tr>
+						<td class="name">outerRadius</td>
+						<td class="type">number</td>
+						<td>Outer radius of the torus.</td>
+					</tr>
+					<tr>
+						<td class="name">outerSegmentation</td>
+						<td class="type">integer</td>
+						<td>Outer segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var basePolygon = [
+	new JSM.Coord (-1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, -1.0, 0.0),
+	new JSM.Coord (1.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 1.0, 0.0),
+	new JSM.Coord (0.0, 0.0, 0.0),
+	new JSM.Coord (-1.0, 0.0, 0.0)
+];
+var direction = new JSM.Vector (0.0, 0.0, 1.0);
+var body = JSM.GeneratePolyTorus (basePolygon, 2.0, 50, true);
+</pre>
+<img src="images/polytorus.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateRuledFromSectors</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates ruled surface between two sectors.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">aSector</td>
+						<td class="type">sector</td>
+						<td>The first sector.</td>
+					</tr>
+					<tr>
+						<td class="name">bSector</td>
+						<td class="type">sector</td>
+						<td>The second sector.</td>
+					</tr>
+					<tr>
+						<td class="name">lineSegmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation along sectors.</td>
+					</tr>
+					<tr>
+						<td class="name">meshSegmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation along surface.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var aSector = new JSM.Sector (new JSM.Coord (-1.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
+var bSector = new JSM.Sector (new JSM.Coord (0.0, 1.0, -1.0), new JSM.Coord (0.0, 1.0, 1.0));
+var body = JSM.GenerateRuledFromSectors (aSector, bSector, 50, 50, true);
+</pre>
+<img src="images/ruledfromsectors.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateRuledFromSectorsWithHeight</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates ruled surface between two sectors, and generates a height for it.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">aSector</td>
+						<td class="type">sector</td>
+						<td>The first sector.</td>
+					</tr>
+					<tr>
+						<td class="name">bSector</td>
+						<td class="type">sector</td>
+						<td>The second sector.</td>
+					</tr>
+					<tr>
+						<td class="name">lineSegmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation along sectors.</td>
+					</tr>
+					<tr>
+						<td class="name">meshSegmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation along surface.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+					<tr>
+						<td class="name">height</td>
+						<td class="type">number</td>
+						<td>Height.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var aSector = new JSM.Sector (new JSM.Coord (-1.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
+var bSector = new JSM.Sector (new JSM.Coord (0.0, 1.0, -1.0), new JSM.Coord (0.0, 1.0, 1.0));
+var body = JSM.GenerateRuledFromSectorsWithHeight (aSector, bSector, 50, 50, true, 0.2);
+</pre>
+<img src="images/ruledfromsectorswithheight.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateRuledFromCoords</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates ruled surface between two coordinate array. The arrays have to contain the same number of coordinates.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">aCoords</td>
+						<td class="type">[coordinate]</td>
+						<td>The first array of coords.</td>
+					</tr>
+					<tr>
+						<td class="name">bCoords</td>
+						<td class="type">[coordinate]</td>
+						<td>The second array of coords.</td>
+					</tr>
+					<tr>
+						<td class="name">meshSegmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation along surface.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var aCoords = [
+	new JSM.Coord (0.0, 0.0, 0.0),
+	new JSM.Coord (0.0, 1.0, 1.0),
+	new JSM.Coord (0.0, 2.0, 0.0),
+	new JSM.Coord (0.0, 3.0, 1.0),
+	new JSM.Coord (0.0, 4.0, 0.0)
+];
+var bCoords = [
+	new JSM.Coord (2.0, 0.0, 1.0),
+	new JSM.Coord (2.0, 1.0, 0.0),
+	new JSM.Coord (2.0, 2.0, 1.0),
+	new JSM.Coord (2.0, 3.0, 0.0),
+	new JSM.Coord (2.0, 4.0, 1.0)
+];
+var body = JSM.GenerateRuledFromCoords (aCoords, bCoords, 50, true);
+</pre>
+<img src="images/ruledfromcoords.png">
+			</div>
+		</div>
+
+		<div class="title2">JSM.GenerateRevolved</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates revolved surface of a polyline around an axis.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">polyLine</td>
+						<td class="type">[coordinate]</td>
+						<td>The polyline to revolve.</td>
+					</tr>
+					<tr>
+						<td class="name">axis</td>
+						<td class="type">sector</td>
+						<td>The axis of the revolve.</td>
+					</tr>
+					<tr>
+						<td class="name">angle</td>
+						<td class="type">number</td>
+						<td>The angle of the revolve. Top and bottom surfaces generated only if this angle is 360 degree.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">withTopAndBottom</td>
+						<td class="type">boolean</td>
+						<td>Top and bottom surfaces.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var polyLine = [
+	new JSM.Coord (0.0, -1.0, -1.0),
+	new JSM.Coord (0.0, -0.5, 0.0),
+	new JSM.Coord (0.0, -1.0, 1.0)
+];
+var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
+var body = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 50, true, true);
+</pre>
+<img src="images/revolved.png">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateFunctionSurface</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates the surface of a 3D function.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">function3D</td>
+						<td class="type">function</td>
+						<td>The function.</td>
+					</tr>
+					<tr>
+						<td class="name">intervalMin</td>
+						<td class="type">coordinate</td>
+						<td>The interval minimum of the surface.</td>
+					</tr>
+					<tr>
+						<td class="name">intervalMax</td>
+						<td class="type">coordinate</td>
+						<td>The interval maximum of the surface.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+function TheFunction (x, y) {
+	return x * x - y * y;
+}
+var min = new JSM.Coord2D (-0.5, -0.5);
+var max = new JSM.Coord2D (0.5, 0.5);
+var body = JSM.GenerateFunctionSurface (TheFunction, min, max, 50, true);
+</pre>
+<img src="images/functionsurface.png">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateFunctionSurfaceSolid</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a cuboid with the surface of a 3D function on the top.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">function3D</td>
+						<td class="type">function</td>
+						<td>The function.</td>
+					</tr>
+					<tr>
+						<td class="name">intervalMin</td>
+						<td class="type">coordinate</td>
+						<td>The interval minimum of the surface.</td>
+					</tr>
+					<tr>
+						<td class="name">intervalMax</td>
+						<td class="type">coordinate</td>
+						<td>The interval maximum of the surface.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+					<tr>
+						<td class="name">bottomZ</td>
+						<td class="type">number</td>
+						<td>The bottom coordinate of the surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+function TheFunction (x, y) {
+	return x * x - y * y;
+}
+var min = new JSM.Coord2D (-0.5, -0.5);
+var max = new JSM.Coord2D (0.5, 0.5);
+var body = JSM.GenerateFunctionSurfaceSolid (TheFunction, min, max, 50, true, 0.5);
+</pre>
+<img src="images/functionsurfacesolid.png">
+			</div>
+		</div>
+
+	</div>
+</body>
+
+</html>
