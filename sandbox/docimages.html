@@ -192,6 +192,23 @@
 				var body = JSM.GenerateRuledFromSectorsWithHeight (aSector, bSector, 50, 50, true, 0.2);
 				InitViewer (body);
 			} else if (current == 19) {
+				var aCoords = [
+					new JSM.Coord (0.0, 0.0, 0.0),
+					new JSM.Coord (0.0, 1.0, 1.0),
+					new JSM.Coord (0.0, 2.0, 0.0),
+					new JSM.Coord (0.0, 3.0, 1.0),
+					new JSM.Coord (0.0, 4.0, 0.0)
+				];
+				var bCoords = [
+					new JSM.Coord (2.0, 0.0, 1.0),
+					new JSM.Coord (2.0, 1.0, 0.0),
+					new JSM.Coord (2.0, 2.0, 1.0),
+					new JSM.Coord (2.0, 3.0, 0.0),
+					new JSM.Coord (2.0, 4.0, 1.0)
+				];
+				var body = JSM.GenerateRuledFromCoords (aCoords, bCoords, 50, true);
+				InitViewer (body);
+			} else if (current == 20) {
 				var polyLine = [
 					new JSM.Coord (0.0, -1.0, -1.0),
 					new JSM.Coord (0.0, -0.5, 0.0),
@@ -199,6 +216,22 @@
 				];
 				var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 				var body = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 50, true, true);
+				InitViewer (body);
+			} else if (current == 21) {
+				function TheFunction (x, y) {
+					return x * x - y * y;
+				}
+				var min = new JSM.Coord2D (-0.5, -0.5);
+				var max = new JSM.Coord2D (0.5, 0.5);
+				var body = JSM.GenerateFunctionSurface (TheFunction, min, max, 50, true);	
+				InitViewer (body);
+			} else if (current == 22) {
+				function TheFunction (x, y) {
+					return x * x - y * y;
+				}
+				var min = new JSM.Coord2D (-0.5, -0.5);
+				var max = new JSM.Coord2D (0.5, 0.5);
+				var body = JSM.GenerateFunctionSurfaceSolid (TheFunction, min, max, 50, true, 0.5);
 				InitViewer (body);
 			}
 		}

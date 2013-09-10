@@ -1461,10 +1461,6 @@ JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegment
 JSM.GenerateRuledFromCoords = function (aCoords, bCoords, meshSegmentation, isCurved)
 {
 	var result = new JSM.Body ();
-	if (aCoords.length !== bCoords.length) {
-		return;
-	}
-
 	var vertices = [];
 	var polygons = [];
 

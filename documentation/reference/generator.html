@@ -867,13 +867,66 @@ var body = JSM.GenerateRuledFromSectorsWithHeight (aSector, bSector, 50, 50, tru
 			</div>
 		</div>
 
+		<div class="title2">JSM.GenerateRuledFromCoords</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates ruled surface between two coordinate array. The arrays have to contain the same number of coordinates.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">aCoords</td>
+						<td class="type">[coordinate]</td>
+						<td>The first array of coords.</td>
+					</tr>
+					<tr>
+						<td class="name">bCoords</td>
+						<td class="type">[coordinate]</td>
+						<td>The second array of coords.</td>
+					</tr>
+					<tr>
+						<td class="name">meshSegmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation along surface.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var aCoords = [
+	new JSM.Coord (0.0, 0.0, 0.0),
+	new JSM.Coord (0.0, 1.0, 1.0),
+	new JSM.Coord (0.0, 2.0, 0.0),
+	new JSM.Coord (0.0, 3.0, 1.0),
+	new JSM.Coord (0.0, 4.0, 0.0)
+];
+var bCoords = [
+	new JSM.Coord (2.0, 0.0, 1.0),
+	new JSM.Coord (2.0, 1.0, 0.0),
+	new JSM.Coord (2.0, 2.0, 1.0),
+	new JSM.Coord (2.0, 3.0, 0.0),
+	new JSM.Coord (2.0, 4.0, 1.0)
+];
+var body = JSM.GenerateRuledFromCoords (aCoords, bCoords, 50, true);
+</pre>
+<img src="images/ruledfromcoords.png">
+			</div>
+		</div>
+
 		<div class="title2">JSM.GenerateRevolved</div>
 		<div class="indented">
 			<div class="title3">Description</div>
 			<div class="indented">
 				Generates revolved surface of a polyline around an axis.
 			</div>
-			(polyLine, axis, angle, segmentation, withTopAndBottom, isCurved)
 			<div class="title3">Parameters</div>
 			<div class="indented">
 				<table class="parameters">
@@ -921,6 +974,111 @@ var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.
 var body = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 50, true, true);
 </pre>
 <img src="images/revolved.png">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateFunctionSurface</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates the surface of a 3D function.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">function3D</td>
+						<td class="type">function</td>
+						<td>The function.</td>
+					</tr>
+					<tr>
+						<td class="name">intervalMin</td>
+						<td class="type">coordinate</td>
+						<td>The interval minimum of the surface.</td>
+					</tr>
+					<tr>
+						<td class="name">intervalMax</td>
+						<td class="type">coordinate</td>
+						<td>The interval maximum of the surface.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+function TheFunction (x, y) {
+	return x * x - y * y;
+}
+var min = new JSM.Coord2D (-0.5, -0.5);
+var max = new JSM.Coord2D (0.5, 0.5);
+var body = JSM.GenerateFunctionSurface (TheFunction, min, max, 50, true);
+</pre>
+<img src="images/functionsurface.png">
+			</div>
+		</div>
+		
+		<div class="title2">JSM.GenerateFunctionSurfaceSolid</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates a cuboid with the surface of a 3D function on the top.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">function3D</td>
+						<td class="type">function</td>
+						<td>The function.</td>
+					</tr>
+					<tr>
+						<td class="name">intervalMin</td>
+						<td class="type">coordinate</td>
+						<td>The interval minimum of the surface.</td>
+					</tr>
+					<tr>
+						<td class="name">intervalMax</td>
+						<td class="type">coordinate</td>
+						<td>The interval maximum of the surface.</td>
+					</tr>
+					<tr>
+						<td class="name">segmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number.</td>
+					</tr>
+					<tr>
+						<td class="name">isCurved</td>
+						<td class="type">boolean</td>
+						<td>Smooth surface.</td>
+					</tr>
+					<tr>
+						<td class="name">bottomZ</td>
+						<td class="type">number</td>
+						<td>The bottom coordinate of the surface.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+function TheFunction (x, y) {
+	return x * x - y * y;
+}
+var min = new JSM.Coord2D (-0.5, -0.5);
+var max = new JSM.Coord2D (0.5, 0.5);
+var body = JSM.GenerateFunctionSurfaceSolid (TheFunction, min, max, 50, true, 0.5);
+</pre>
+<img src="images/functionsurfacesolid.png">
 			</div>
 		</div>
 
