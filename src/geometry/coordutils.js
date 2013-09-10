@@ -3,6 +3,11 @@ JSM.CoordIsEqual2D = function (a, b)
 	return JSM.IsEqual (a.x, b.x) && JSM.IsEqual (a.y, b.y);
 };
 
+JSM.CoordIsEqual2DWithEps = function (a, b, eps)
+{
+	return JSM.IsEqualWithEps (a.x, b.x, eps) && JSM.IsEqualWithEps (a.y, b.y, eps);
+};
+
 JSM.CoordDistance2D = function (a, b)
 {
 	var x1 = a.x;
@@ -21,6 +26,11 @@ JSM.MidCoord2D = function (a, b)
 JSM.CoordIsEqual = function (a, b)
 {
 	return JSM.IsEqual (a.x, b.x) && JSM.IsEqual (a.y, b.y) && JSM.IsEqual (a.z, b.z);
+};
+
+JSM.CoordIsEqualWithEps = function (a, b, eps)
+{
+	return JSM.IsEqualWithEps (a.x, b.x, eps) && JSM.IsEqualWithEps (a.y, b.y, eps) && JSM.IsEqualWithEps (a.z, b.z, eps);
 };
 
 JSM.SphericalCoordIsEqual = function (a, b)

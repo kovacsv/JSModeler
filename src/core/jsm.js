@@ -43,6 +43,11 @@ JSM.IsEqual = function (a, b)
 	return Math.abs (b - a) < JSM.Eps;
 };
 
+JSM.IsEqualWithEps = function (a, b, eps)
+{
+	return Math.abs (b - a) < eps;
+};
+
 JSM.IsLowerOrEqual = function (a, b)
 {
 	return JSM.IsLower (a, b) || JSM.IsEqual (a, b);
