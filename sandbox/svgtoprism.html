@@ -1,0 +1,389 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<script type="text/javascript" src="../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../src/core/timer.js"></script>
+	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../src/modeler/subdivision.js"></script>
+	<script type="text/javascript" src="../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../src/modeler/solidgenerator.js"></script>
+	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../src/modeler/shapes.js"></script>
+	<script type="text/javascript" src="../build/three.min.js"></script>
+	<script type="text/javascript" src="../src/viewer/converter.js"></script>
+	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../src/viewer/viewer.js"></script>
+	<title>Example</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+		
+		function SvgToPrism (svgObject)
+		{
+			ContourPolygon2D = function ()
+			{
+				this.contours = [];
+			};
+		
+			ContourPolygon2D.prototype =
+			{
+				AddVertex : function (contour, x, y)
+				{
+					if (this.contours[contour] == undefined) {
+						this.contours[contour] = [];
+					}
+					this.contours[contour].push (new JSM.Coord2D (x, y));
+				},
+				
+				VertexCount : function (contour)
+				{
+					if (this.contours[contour] == undefined) {
+						return 0;
+					}
+					return this.contours[contour].length;
+				},
+
+				GetVertex : function (contour, index)
+				{
+					return this.contours[contour][index];
+				},
+
+				AddContour : function ()
+				{
+					this.contours.push ([]);
+				},
+
+				ContourCount : function ()
+				{
+					return this.contours.length;
+				},
+				
+				GetContour : function (contour)
+				{
+					return this.contours[contour];
+				}
+			};
+
+			function SegmentPath (path)
+			{
+				function GetLastVertexFromContour (polygon, contour)
+				{
+					var vertexCount = polygon.VertexCount (contour);
+					if (vertexCount == 0) {
+						return new JSM.Coord2D (0.0, 0.0);
+					}
+					return polygon.GetVertex (contour, vertexCount - 1);
+				}
+			
+				function SegmentCurve (items, result, currentContour)
+				{
+					function CreatePath (items, result, currentContour)
+					{
+						function GenerateMoveCommand (x, y)
+						{
+							return 'M ' + x + ' ' + y;
+						}
+					
+						var svgNameSpace = "http://www.w3.org/2000/svg";
+						var path = document.createElementNS (svgNameSpace, 'path');
+
+						var lastCoord = GetLastVertexFromContour (result, currentContour);
+						var commandString = GenerateMoveCommand (lastCoord.x, lastCoord.y);
+						
+						var i, item, command, largeArcFlag, sweepFlag;
+						for (i = 0; i < items.length; i++) {
+							item = items[i]
+							if (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS ||
+								item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL) {
+								command = (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS ? 'C' : 'c');
+								commandString += command + ' ' + item.x1 + ' ' + item.y1 + ' ' + item.x2 + ' ' + item.y2 + ' ' + item.x + ' ' + item.y + ' ';
+							} else if (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS ||
+									   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL){
+								command = (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS ? 'Q' : 'q');
+								commandString +=  command + ' ' + item.x1 + ' ' + item.y1 + ' ' + item.x + ' ' + item.y; + ' ';
+							} else if (item.pathSegType == SVGPathSeg.PATHSEG_ARC_ABS ||
+									   item.pathSegType == SVGPathSeg.PATHSEG_ARC_ABS){
+								command = (item.pathSegType == SVGPathSeg.PATHSEG_ARC_ABS ? 'A' : 'a');
+								largeArcFlag = (item.largeArcFlag ? 1 : 0);
+								sweepFlag = (item.sweepFlag ? 1 : 0);
+								commandString +=  command + ' ' + item.r1 + ' ' + item.r2 + ' ' + item.angle + ' ' + largeArcFlag + ' ' + sweepFlag + ' ' + item.x + ' ' + item.y + ' ';
+							} else if (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS ||
+									   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL){
+								command = (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS ? 'S' : 's');
+								commandString +=  command + ' ' + item.x2 + ' ' + item.y2 + ' ' + item.x + ' ' + item.y + ' ';
+							} else {
+								alert ('SegmentCurve unknown segment type: ' + item.pathSegType);
+							}
+						}
+						
+						path.setAttributeNS (null, 'd', commandString);
+						return path;
+					}
+				
+					var path = CreatePath (items, result, currentContour);
+					var segmentation = 100;
+					var step = path.getTotalLength () / segmentation;
+					
+					var i, point;
+					for (i = 1; i <= segmentation; i++) {
+						point = path.getPointAtLength (i * step);
+						result.AddVertex (currentContour, point.x, point.y);
+					}
+				}
+				
+				function IsCurvedItem (item)
+				{
+					return item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS ||
+						   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL ||
+						   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS ||
+						   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL ||
+						   item.pathSegType == SVGPathSeg.PATHSEG_ARC_ABS ||
+						   item.pathSegType == SVGPathSeg.PATHSEG_ARC_REL ||
+						   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS ||
+						   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL;
+				}
+				
+				function RemoveEqualEndVertices (polygon, contour)
+				{
+					var vertexCount = polygon.VertexCount (contour);
+					if (vertexCount == 0) {
+						return;
+					}
+					
+					var firstCoord = polygon.GetVertex (contour, 0);
+					var lastCoord = polygon.GetVertex (contour, vertexCount - 1);
+					if (JSM.CoordIsEqual2DWithEps (firstCoord, lastCoord, 0.1)) {
+						polygon.GetContour (contour).pop ();
+					}
+				}				
+			
+				function StartNewContour (result, contour)
+				{
+					if (result.VertexCount (contour) > 0) {
+						RemoveEqualEndVertices (result, contour);
+						result.AddContour ();
+						return contour + 1;
+					}
+					return contour;
+				}
+			
+				var result = new ContourPolygon2D ();
+				var lastCoord = GetLastVertexFromContour (result, 0);
+				
+				var i, j, item, items, currentItem, length, point;
+				var currentContour = 0;
+				for (i = 0; i < path.pathSegList.numberOfItems; i++) {
+					item = path.pathSegList.getItem (i);
+					if (item.pathSegType == SVGPathSeg.PATHSEG_CLOSEPATH) {
+						// do nothing
+					} else if (item.pathSegType == SVGPathSeg.PATHSEG_MOVETO_ABS) {
+						currentContour = StartNewContour (result, currentContour);
+						result.AddVertex (currentContour, item.x, item.y);
+					} else if (item.pathSegType == SVGPathSeg.PATHSEG_MOVETO_REL) {
+						currentContour = StartNewContour (result, currentContour);
+						result.AddVertex (currentContour, lastCoord.x + item.x, lastCoord.y + item.y);
+					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_ABS) {
+						result.AddVertex (currentContour, item.x, item.y);
+					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_REL) {
+						result.AddVertex (currentContour, lastCoord.x + item.x, lastCoord.y + item.y);
+					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS) {
+						result.AddVertex (currentContour, item.x, lastCoord.y);
+					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS) {
+						result.AddVertex (currentContour, lastCoord.x, item.y);
+					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL) {
+						result.AddVertex (currentContour, lastCoord.x + item.x, lastCoord.y);
+					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL) {
+						result.AddVertex (currentContour, lastCoord.x, lastCoord.y + item.y);
+					} else if (IsCurvedItem (item)) {
+						items = [];
+						for (j = i; j < path.pathSegList.numberOfItems; j++) {
+							currentItem = path.pathSegList.getItem (j);
+							if (!IsCurvedItem (currentItem)) {
+								break;
+							}
+							items.push (currentItem);
+						}
+						i = j - 1;
+						SegmentCurve (items, result, currentContour);
+					} else {
+						alert ('unknown segment type: ' + item.pathSegType);
+					}
+					lastCoord = GetLastVertexFromContour (result, currentContour);
+				}
+				
+				RemoveEqualEndVertices (result, currentContour);
+				return result;
+			}
+			
+			function SegmentPaths (svgObject)
+			{
+				var result = [];
+				var paths = svgObject.getElementsByTagName ('path');
+				
+				var i, current;
+				for (i = 0; i < paths.length; i++) {
+					current = SegmentPath (paths[i]);
+					result.push (current);
+				}
+				
+				return result;
+			}
+			
+			function ContourPolygonToPrisms (polygon)
+			{
+				var prisms = [];
+				var direction = new JSM.Vector (0.0, 1.0, 0.0);
+				
+				var i, j, coord;
+				var basePolygon, prism;
+				for (i = 0; i < polygon.ContourCount (); i++) {
+					basePolygon = [];
+					for (j = 0; j < polygon.VertexCount (i); j++) {
+						coord = polygon.GetVertex (i, j);
+						basePolygon.push (new JSM.Coord (coord.x, 0.0, -coord.y));
+					}
+					prism = JSM.GeneratePrism (basePolygon, direction, 10.0, true);
+					prisms.push (prism);
+				}
+				
+				return prisms;
+			}
+			
+			var model = new JSM.Model ();
+			var polygons = SegmentPaths (svgObject);
+			
+			var i, j, prisms;
+			for (i = 0; i < polygons.length; i++) {
+				prisms = ContourPolygonToPrisms (polygons[i]);
+				for (j = 0; j < prisms.length; j++) {
+					model.AddBody (prisms[j]);
+				}
+			}
+
+			return model;
+		}
+		
+		window.onload = function ()
+		{
+			var viewerSettings = {
+				'cameraEyePosition' : [-2.0, -1.5, 1.0],
+				'cameraCenterPosition' : [0.0, 0.0, 0.0],
+				'cameraUpVector' : [0.0, 0.0, 1.0],
+				'nearClippingPlane' : 1.0,
+				'farClippingPlane' : 100000.0
+			};
+
+			viewer = new JSM.Viewer ();
+			viewer.Start ('example', viewerSettings);
+
+			viewer.RemoveMeshes ();
+			
+			var svgObject = document.getElementById ('exampleSvg');
+			var model = SvgToPrism (svgObject);
+
+			var meshes = JSM.ConvertModelToThreeMeshes (model);
+			viewer.AddMeshes (meshes);
+			
+			viewer.FitInWindow ();
+			viewer.Draw ();	
+		}
+	</script>
+
+</head>
+
+<body>
+</body>
+<svg id="exampleSvg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="400" height="600">
+  <path d="
+	M 10 0 L 0 30 L 20 30 Z
+	" />
+
+  <path d="
+	M 10 100 l -10 30 l 20 0 Z
+	" />
+
+  <path d="
+	M 10 200 l -10 30 l 20 0 m 200 0 l -10 30 l 20 0 Z
+	" />
+
+  <path d="
+	M 10 300 l 20 0 l -10 30 Z
+	" />
+
+  <path d="
+	M 50 0 L 40 30 S 50 80 60 30 Z
+	" />
+
+  <path d="
+	M 50 100 l -10 30 s 10 60 20 0 Z
+	" />
+
+  <path d="
+	M 40 200
+	l 0, 100
+	s 50 -25 20 -50
+	s 0 -25 0 -50
+	" />
+	
+  <path d="
+	M 90 0 L 80 30 C 70 80 110 80 100 30 Z
+	" />
+  <path d="
+	M 130 0 L 120 30 V 50 H 140 L 140 30 Z
+	" />
+  <path d="
+	M 170 0 L 160 30 Q 170 50 180 30 Z
+	" />
+  <path d="
+	M 210 0 L 200 30 L 220 30 A 20 20 100 1 0 260 30 Z
+	" />
+
+  <path d="
+	M 10 100 l -10 30 l 20 0 Z
+	" />
+
+<!--
+    <path d="M 189.02218,124.20633 C 172.69178,132.29681 158.45146,143.04328 146.5673,155.66847 C 152.48762,155.78249 158.44225,155.51722 164.40102,154.84751 C 171.27983,143.7634 179.5207,133.45773 189.02218,124.20633 z M 203.09865,118.10031 C 215.78116,117.50212 228.38578,118.36609 240.66396,120.67652 C 244.90072,116.87945 248.85655,112.81889 252.54754,108.57279 C 236.02594,108.90998 219.33784,112.00274 203.09865,118.10031 z M 195.30933,131.86845 C 188.75688,138.31296 182.86378,145.29993 177.64553,152.71309 C 185.56284,151.02077 193.43615,148.58105 201.17907,145.40021 L 195.30933,131.86845 z M 204.49584,127.91763 L 210.3034,141.30605 C 217.43047,137.76184 224.11036,133.64091 230.3398,129.07217 C 221.83028,127.96488 213.18331,127.55909 204.49584,127.91763 z M 265.2405,108.85767 C 261.30615,113.93462 257.0281,118.78774 252.4154,123.34549 C 275.03568,129.36443 296.20164,140.2413 314.27436,155.30599 C 320.97945,147.19168 327.04254,138.61814 332.45059,129.67457 C 312.09925,117.58338 289.02987,110.39965 265.2405,108.85767 z M 138.23449,165.27819 C 123.4445,183.94447 113.32569,205.85153 108.64602,229.07174 C 119.01741,231.07621 129.5647,232.33792 140.2008,232.79044 C 141.25548,209.22554 147.55615,186.20961 158.39497,165.42362 C 151.64603,165.84353 144.90502,165.78424 138.23449,165.27819 z M 243.56684,131.37357 C 234.76217,138.75166 224.97369,145.1729 214.27045,150.45146 L 241.06981,212.23313 C 267.04988,199.91753 289.47402,182.96707 307.76251,162.83141 C 289.1782,147.3423 267.09353,136.57903 243.56684,131.37357 z M 170.31795,164.16901 C 158.22474,185.09544 151.22232,208.71027 150.12768,232.98077 C 177.45958,232.86733 205.20642,227.49869 231.93304,216.29863 L 205.15856,154.57429 C 193.73425,159.2839 182.04446,162.46453 170.31795,164.16901 z M 340.86162,135.08694 C 335.18006,144.46232 328.793,153.43941 321.75108,161.94115 C 336.89228,176.26891 349.43237,193.7952 358.22897,214.07438 C 360.04665,218.26476 361.67856,222.48749 363.11011,226.74057 C 373.22059,216.33531 382.50574,205.27385 390.91693,193.62749 C 379.2474,169.28369 361.765,149.46657 340.86162,135.08694 z M 106.99044,238.91887 C 103.64369,264.03131 106.61894,290.27984 116.85771,315.30076 C 131.11683,316.8666 145.54592,317.43131 160.03217,316.90859 C 157.55148,312.43139 155.2663,307.80629 153.18835,303.0159 C 144.67721,283.39481 140.44738,262.97653 140.07645,242.79089 C 128.92629,242.32659 117.8652,241.01281 106.99044,238.91887 z M 315.19813,169.45034 C 295.97565,190.65685 272.39052,208.49272 245.04929,221.40721 L 274.54723,289.41006 C 305.03416,275.31044 332.04211,256.69196 355.1351,234.66223 C 353.45684,229.07558 351.43286,223.53589 349.05489,218.05386 C 340.86389,199.17081 329.2315,182.83438 315.19813,169.45034 z M 149.99089,242.95255 C 150.40291,261.74874 154.40179,280.76294 162.33376,299.04885 C 164.94267,305.06328 167.90482,310.81276 171.17834,316.29752 C 202.82296,313.96005 234.60616,306.51094 265.41047,293.47555 L 235.91252,225.4727 C 207.85924,237.24566 178.705,242.871 149.99089,242.95255 z M 395.48091,204.14901 C 386.62683,215.93663 376.90655,227.14084 366.33803,237.63725 C 373.24424,264.33449 372.86354,291.70844 366.21189,317.3662 C 379.21475,307.95806 391.49951,297.80691 402.99648,286.96709 C 408.22641,260.025 406.10703,231.40302 395.48091,204.14901 z M 121.61857,325.805 C 134.68569,351.9078 154.52826,372.66105 178.04515,386.86168 C 193.5249,385.62177 209.01562,383.3987 224.45759,380.15009 C 201.16358,367.74577 180.84679,349.59637 165.88521,326.6325 C 151.04839,327.42981 136.25513,327.13485 121.61857,325.805 z M 357.99412,245.65081 C 334.9786,266.84267 308.37138,284.8423 278.53916,298.6128 L 302.7021,354.31665 C 320.4841,346.19378 337.33602,336.8819 353.17832,326.42617 C 353.18315,326.41217 353.18972,326.39906 353.19455,326.38507 C 361.99428,300.8602 363.97806,272.97809 357.99412,245.65081 z M 177.35053,325.81486 C 193.36707,348.52178 215.1267,365.82034 239.7393,376.58697 C 257.85453,371.96525 275.82768,365.89093 293.55289,358.35348 L 269.38995,302.64963 C 239.30284,315.39106 208.28817,322.98465 177.35053,325.81486 z M 398.47352,304.49599 C 386.7902,314.65669 374.41959,324.17707 361.36037,332.95976 C 353.06628,355.36308 339.78643,375.95219 322.2929,392.96236 C 359.8382,374.39993 386.42134,341.89057 398.47352,304.49599 z M 193.97837,395.2447 C 229.03839,411.0607 270.03064,413.42189 308.41711,398.98133 C 284.47041,400.12127 260.8019,395.93363 239.08751,387.02058 C 224.10499,390.7056 209.04384,393.42887 193.97837,395.2447 z M 346.61322,342.38835 C 333.8803,350.12408 320.5669,357.1901 306.69402,363.5194 L 316.09556,385.19315 C 328.80636,372.68441 339.07662,358.16113 346.61322,342.38835 z M 255.74809,382.55277 C 272.14023,387.62235 289.44731,389.92552 306.93392,389.20131 L 297.53238,367.52755 C 283.73583,373.39724 269.79744,378.41311 255.74809,382.55277 z " style="fill:#396;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path2862"/>
+    <path d="M 255.71875,33.5625 C 178.93962,33.5625 111.10867,72.086118 70.5,130.84375 L 114,155.96875 C 145.8111,112.11504 197.43839,83.5625 255.71875,83.5625 C 313.99911,83.562502 365.6264,112.11504 397.4375,155.96875 L 440.9375,130.84375 C 400.32883,72.086118 332.49788,33.5625 255.71875,33.5625 z " style="opacity:1;fill:#900;fill-opacity:1;stroke:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path4005"/>
+    <path d="M 46.8125,174.9375 C 36.442946,200.79582 30.71875,229.01254 30.71875,258.5625 C 30.71875,374.31432 118.2675,469.74106 230.71875,482.1875 L 230.71875,431.75 C 145.95412,419.60155 80.71875,346.67019 80.71875,258.5625 C 80.718751,238.11672 84.234053,218.49436 90.6875,200.25 L 46.8125,174.9375 z " style="opacity:1;fill:#069;fill-opacity:1;stroke:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path4003"/>
+    <path d="M 464.625,174.9375 L 420.75,200.25 C 427.20345,218.49436 430.71875,238.11672 430.71875,258.5625 C 430.71875,346.67018 365.48339,419.60155 280.71875,431.75 L 280.71875,482.1875 C 393.16999,469.74106 480.71874,374.31432 480.71875,258.5625 C 480.71875,229.01254 474.99455,200.79582 464.625,174.9375 z " style="opacity:1;fill:#069;fill-opacity:1;stroke:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path3918"/>
+-->
+</svg> 
+
+	<canvas id="example" width="800" height="600" style="border : 1px solid #000000; background : #ffffff;"></canvas>
+</html>
