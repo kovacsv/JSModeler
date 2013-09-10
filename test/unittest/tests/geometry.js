@@ -144,6 +144,109 @@ AddTest ('VectorTest', function (test) {
 	var coord3 = new JSM.Vector (-1.0, 0.0, 0.0);
 	test.Assert (JSM.IsEqual (JSM.CoordSignedDistance (coord1, coord2, JSM.CoordSub (coord2, coord1)), 1.0));
 	test.Assert (JSM.IsEqual (JSM.CoordSignedDistance (coord1, coord3, JSM.CoordSub (coord1, coord3)), -1.0));
+	
+	var coord = new JSM.Coord2D (1.0, 2.0);
+	test.Assert (!JSM.CoordIsEqual2DWithEps (coord, new JSM.Coord2D (1.0, 3.0), 0.1));
+	test.Assert (!JSM.CoordIsEqual2DWithEps (coord, new JSM.Coord2D (2.0, 2.0), 0.1));
+	test.Assert (JSM.CoordIsEqual2DWithEps (coord, new JSM.Coord2D (1.0, 3.0), 1.1));
+	test.Assert (JSM.CoordIsEqual2DWithEps (coord, new JSM.Coord2D (2.0, 2.0), 1.1));
+
+	var coord = new JSM.Coord (1.0, 2.0, 3.0);
+	test.Assert (!JSM.CoordIsEqualWithEps (coord, new JSM.Coord (1.0, 2.0, 4.0), 0.1));
+	test.Assert (!JSM.CoordIsEqualWithEps (coord, new JSM.Coord (1.0, 3.0, 3.0), 0.1));
+	test.Assert (!JSM.CoordIsEqualWithEps (coord, new JSM.Coord (2.0, 2.0, 3.0), 0.1));
+	test.Assert (JSM.CoordIsEqualWithEps (coord, new JSM.Coord (1.0, 2.0, 4.0), 1.1));
+	test.Assert (JSM.CoordIsEqualWithEps (coord, new JSM.Coord (1.0, 3.0, 3.0), 1.1));
+	test.Assert (JSM.CoordIsEqualWithEps (coord, new JSM.Coord (2.0, 2.0, 3.0), 1.1));
+});
+
+AddTest ('SphericalTest', function (test) {
+	function TestConversion (x, y, z) {
+		var original = new JSM.Coord (x, y, z);
+		
+		var spherical = JSM.CartesianToSpherical (original.x, original.y, original.z);
+		var cartesian = JSM.SphericalToCartesian (spherical.radius, spherical.theta, spherical.phi);
+		test.Assert (JSM.CoordIsEqual (original, cartesian));
+		
+		var origo = new JSM.Coord (1.0, 2.0, 3.0);
+		var spherical = JSM.CartesianToSphericalWithOrigo (original, origo);
+		var cartesian = JSM.SphericalToCartesianWithOrigo (spherical, origo);
+		test.Assert (JSM.CoordIsEqual (original, cartesian));
+	}
+
+	var x, y, z;
+	for (x = -1.0; x <= 1.0; x = x + 1.0) {
+		for (y = -1.0; y <= 1.0; y = y + 1.0) {
+			for (z = -1.0; z <= 1.0; z = z + 1.0) {
+				TestConversion (x, y, z);
+			}
+		}
+	}
+	
+	var coord = new JSM.Coord (1.0, 0.0, 0.0);
+	var origo = new JSM.Coord (0.0, 0.0, 0.0);
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0)));
+	
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 45.0 * JSM.DegRad), new JSM.Coord (0.7071067811865569, 0.7071067811865381, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 90.0 * JSM.DegRad), new JSM.Coord (0.0, 1.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 180.0 * JSM.DegRad), new JSM.Coord (-1.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 270.0 * JSM.DegRad), new JSM.Coord (0.0, -1.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 360.0 * JSM.DegRad), new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 450.0 * JSM.DegRad), new JSM.Coord (0.0, 1.0, 0.0)));
+	
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, -45.0 * JSM.DegRad), new JSM.Coord (0.7071067811865569, -0.7071067811865381, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, -90.0 * JSM.DegRad), new JSM.Coord (0.0, -1.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, -180.0 * JSM.DegRad), new JSM.Coord (-1.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, -270.0 * JSM.DegRad), new JSM.Coord (0.0, 1.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, -360.0 * JSM.DegRad), new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, -450.0 * JSM.DegRad), new JSM.Coord (0.0, -1.0, 0.0)));
+
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 90.0 * JSM.DegRad, 0.0), new JSM.Coord (0.0, 0.0, -1.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 180.0 * JSM.DegRad, 0.0), new JSM.Coord (-1.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 270.0 * JSM.DegRad, 0.0), new JSM.Coord (0.0, 0.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 360.0 * JSM.DegRad, 0.0), new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 450.0 * JSM.DegRad, 0.0), new JSM.Coord (0.0, 0.0, -1.0)));
+
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, -90.0 * JSM.DegRad, 0.0), new JSM.Coord (0.0, 0.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, -180.0 * JSM.DegRad, 0.0), new JSM.Coord (-1.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, -270.0 * JSM.DegRad, 0.0), new JSM.Coord (0.0, 0.0, -1.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, -360.0 * JSM.DegRad, 0.0), new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, -450.0 * JSM.DegRad, 0.0), new JSM.Coord (0.0, 0.0, 1.0)));
+	
+	var coord = new JSM.Coord (2.0, 0.0, 0.0);
+	var origo = new JSM.Coord (1.0, 0.0, 0.0);
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 0.0), new JSM.Coord (2.0, 0.0, 0.0)));
+
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 45.0 * JSM.DegRad), new JSM.Coord (1.7071067811865569, 0.7071067811865381, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 90.0 * JSM.DegRad), new JSM.Coord (1.0, 1.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 180.0 * JSM.DegRad), new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 270.0 * JSM.DegRad), new JSM.Coord (1.0, -1.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 360.0 * JSM.DegRad), new JSM.Coord (2.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 0.0, 450.0 * JSM.DegRad), new JSM.Coord (1.0, 1.0, 0.0)));
+
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 90.0 * JSM.DegRad, 0.0), new JSM.Coord (1.0, 0.0, -1.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 180.0 * JSM.DegRad, 0.0), new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 270.0 * JSM.DegRad, 0.0), new JSM.Coord (1.0, 0.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 360.0 * JSM.DegRad, 0.0), new JSM.Coord (2.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.MoveCoordOnSphere (coord, origo, 450.0 * JSM.DegRad, 0.0), new JSM.Coord (1.0, 0.0, -1.0)));
+
+	var current = new JSM.Coord (1.0, 0.0, 0.0);
+	var origo = new JSM.Coord (0.0, 0.0, 0.0);
+	current = JSM.MoveCoordOnSphere (current, origo, 0.0, 45.0 * JSM.DegRad);
+	current = JSM.MoveCoordOnSphere (current, origo, 0.0, 45.0 * JSM.DegRad);
+	test.Assert (JSM.CoordIsEqual (current, new JSM.Coord (0.0, 1.0, 0.0)));
+	current = JSM.MoveCoordOnSphere (current, origo, 0.0, 45.0 * JSM.DegRad);
+	current = JSM.MoveCoordOnSphere (current, origo, 0.0, 45.0 * JSM.DegRad);
+	test.Assert (JSM.CoordIsEqual (current, new JSM.Coord (-1.0, 0.0, 0.0)));
+	current = JSM.MoveCoordOnSphere (current, origo, 0.0, 45.0 * JSM.DegRad);
+	current = JSM.MoveCoordOnSphere (current, origo, 0.0, 45.0 * JSM.DegRad);
+	test.Assert (JSM.CoordIsEqual (current, new JSM.Coord (0.0, -1.0, 0.0)));
+	current = JSM.MoveCoordOnSphere (current, origo, 0.0, 45.0 * JSM.DegRad);
+	current = JSM.MoveCoordOnSphere (current, origo, 0.0, 45.0 * JSM.DegRad);
+	test.Assert (JSM.CoordIsEqual (current, new JSM.Coord (1.0, 0.0, 0.0)));
+	current = JSM.MoveCoordOnSphere (current, origo, 0.0, 45.0 * JSM.DegRad);
+	current = JSM.MoveCoordOnSphere (current, origo, 0.0, 45.0 * JSM.DegRad);
+	test.Assert (JSM.CoordIsEqual (current, new JSM.Coord (0.0, 1.0, 0.0)));
 });
 
 AddTest ('CircleTest', function (test) {
@@ -1005,41 +1108,40 @@ AddTest ('ProjectionTest', function (test)
 	var viewPort = [0, 0, width, height];
 
 	var projected = new JSM.Coord ();
-	var succeeded = false;
 
-	succeeded = JSM.Project (new JSM.Coord (0, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort, projected);
-	test.Assert (succeeded == true);
+	projected = JSM.Project (new JSM.Coord (0, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 50));
 
-	succeeded = JSM.Project (new JSM.Coord (0.5, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort, projected);
-	test.Assert (succeeded == true);
+	projected = JSM.Project (new JSM.Coord (0.5, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 50));
 
-	succeeded = JSM.Project (new JSM.Coord (1.5, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort, projected);
-	test.Assert (succeeded == true);
+	projected = JSM.Project (new JSM.Coord (1.5, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 50));
 
-	succeeded = JSM.Project (new JSM.Coord (100, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort, projected);
-	test.Assert (succeeded == true);
+	projected = JSM.Project (new JSM.Coord (100, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 50));
 
-	succeeded = JSM.Project (new JSM.Coord (-100, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort, projected);
-	test.Assert (succeeded == true);
+	projected = JSM.Project (new JSM.Coord (-100, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 50));
 
-	succeeded = JSM.Project (new JSM.Coord (1, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort, projected);
-	test.Assert (succeeded == false);
+	projected = JSM.Project (new JSM.Coord (1, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	test.Assert (projected == null);
 
-	succeeded = JSM.Project (new JSM.Coord (0, 0.5, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort, projected);
-	test.Assert (succeeded == true);
+	projected = JSM.Project (new JSM.Coord (0, 0.5, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 189.62954934596522) && JSM.IsEqual (projected.y, 50));
 
-	succeeded = JSM.Project (new JSM.Coord (0, 0, 0.5), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort, projected);
-	test.Assert (succeeded == true);
+	projected = JSM.Project (new JSM.Coord (0, 0, 0.5), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 139.62954934596522));
 
-	succeeded = JSM.Project (new JSM.Coord (0, 0.5, 0.5), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort, projected);
-	test.Assert (succeeded == true);
+	projected = JSM.Project (new JSM.Coord (0, 0.5, 0.5), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 189.62954934596522) && JSM.IsEqual (projected.y, 139.62954934596522));
 });
 

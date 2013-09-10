@@ -118,7 +118,7 @@ JSM.ExportModelToStl = function (model, name, hasConvexPolygons)
 	return stlContent;
 };
 
-JSM.ExportBodyToObjInternal = function (body, vertexOffset, normalOffset)
+JSM.ExportBodyContentToObj = function (body, vertexOffset, normalOffset)
 {
 	var AddToContent = function (line)
 	{
@@ -176,7 +176,7 @@ JSM.ExportBodyToObjInternal = function (body, vertexOffset, normalOffset)
 
 JSM.ExportBodyToObj = function (body)
 {
-	return JSM.ExportBodyToObjInternal (body, 0, 0);
+	return JSM.ExportBodyContentToObj (body, 0, 0);
 };
 
 JSM.ExportModelToObj = function (model, name, hasConvexPolygons)
@@ -189,7 +189,7 @@ JSM.ExportModelToObj = function (model, name, hasConvexPolygons)
 	var i, body;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		objContent += JSM.ExportBodyToObjInternal (body, vertexOffset, normalOffset);
+		objContent += JSM.ExportBodyContentToObj (body, vertexOffset, normalOffset);
 		vertexOffset += body.VertexCount ();
 		normalOffset += body.PolygonCount ();
 	}
@@ -376,50 +376,70 @@ JSM.ExportBodyToSVG = function (body, materials, settings, svgObject)
 	var viewPort = [0, 0, width, height];
 	var hiddenLine = settings.hiddenLine;
 
-	var i, j;
-	var polygon, points, coord, projected, x, y, svgPolyon;
-
-	var orderedPolygons = [];
 	if (hiddenLine) {
-		orderedPolygons = JSM.OrderPolygons (body, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
-	} else {
-		for (i = 0; i < body.PolygonCount (); i++) {
-			orderedPolygons.push (i);
+		var orderedPolygons = JSM.OrderPolygons (body, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+		if (materials === undefined || materials === null) {
+			materials = new JSM.Materials ();
 		}
-	}
+		
+		var i, j, polygon, points, coord, projected, x, y;
+		var svgPolyon, materialIndex, color;
+		for (i = 0; i < orderedPolygons.length; i++) {
+			points = '';
+			polygon = body.GetPolygon (orderedPolygons[i]);
+			for (j = 0; j < polygon.VertexIndexCount (); j++) {
+				coord = body.GetVertexPosition (polygon.GetVertexIndex (j));
+				projected = JSM.Project (coord, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+				x = projected.x;
+				y = height - projected.y;
+				points = points + x + ', ' + y;
+				if (j < polygon.VertexIndexCount () - 1) {
+					points = points + ', ';
+				}
+			}
 
-	if (materials === undefined || materials === null) {
-		materials = new JSM.Materials ();
-	}
-	
-	var materialIndex, color;
-	for (i = 0; i < orderedPolygons.length; i++) {
-		points = '';
-		polygon = body.GetPolygon (orderedPolygons[i]);
-		for (j = 0; j < polygon.VertexIndexCount (); j++) {
-			coord = body.GetVertexPosition (polygon.GetVertexIndex (j));
-			projected = new JSM.Coord ();
-			JSM.Project (coord, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort, projected);
-			x = projected.x;
-			y = height - projected.y;
-			points = points + x + ', ' + y;
-			if (j < polygon.VertexIndexCount () - 1) {
-				points = points + ', ';
+			svgPolyon = document.createElementNS (svgNameSpace, 'polygon');
+			svgPolyon.setAttributeNS (null, 'points', points);
+			if (hiddenLine) {
+				materialIndex = polygon.GetMaterialIndex ();
+				color = materials.GetMaterial (materialIndex).diffuse;
+				svgPolyon.setAttributeNS (null, 'fill', HexColorToHTMLColor (color));
+				svgPolyon.setAttributeNS (null, 'fill-opacity', '1.0');
+			} else {
+				svgPolyon.setAttributeNS (null, 'fill', 'none');
+			}
+			svgPolyon.setAttributeNS (null, 'stroke', 'black');
+			svgObject.appendChild (svgPolyon);
+		}
+	} else {
+		var i, j, polygon, vertexCount, currentCoord, currentVertex, vertex, coord, projected;
+		var svgLine;
+		
+		var drawedLines = [];
+		for (i = 0; i < body.PolygonCount (); i++) {
+			currentCoord = null;
+			currentVertex = null;
+			polygon = body.GetPolygon (i);
+			vertexCount = polygon.VertexIndexCount ();
+			for (j = 0; j <= vertexCount; j++) {
+				vertex = polygon.GetVertexIndex (j % vertexCount);
+				coord = body.GetVertexPosition (vertex);
+				projected = JSM.Project (coord, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+				if (currentCoord != null && currentVertex != null && drawedLines[[currentVertex, vertex]] == undefined) {
+					svgLine = document.createElementNS (svgNameSpace, 'line');
+					svgLine.setAttributeNS (null, 'stroke', 'black');
+					svgLine.setAttributeNS (null, 'x1', currentCoord.x);
+					svgLine.setAttributeNS (null, 'y1', height - currentCoord.y);
+					svgLine.setAttributeNS (null, 'x2', projected.x);
+					svgLine.setAttributeNS (null, 'y2', height - projected.y);
+					drawedLines[[currentVertex, vertex]] = true;
+					drawedLines[[vertex, currentVertex]] = true;
+					svgObject.appendChild (svgLine);
+				}
+				currentVertex = vertex;
+				currentCoord = projected;
 			}
 		}
-
-		svgPolyon = document.createElementNS (svgNameSpace, 'polygon');
-		svgPolyon.setAttributeNS (null, 'points', points);
-		if (hiddenLine) {
-			materialIndex = polygon.GetMaterialIndex ();
-			color = materials.GetMaterial (materialIndex).diffuse;
-			svgPolyon.setAttributeNS (null, 'fill', HexColorToHTMLColor (color));
-			svgPolyon.setAttributeNS (null, 'fill-opacity', '1.0');
-		} else {
-			svgPolyon.setAttributeNS (null, 'fill', 'none');
-		}
-		svgPolyon.setAttributeNS (null, 'stroke', 'black');
-		svgObject.appendChild (svgPolyon);
 	}
 
 	return true;

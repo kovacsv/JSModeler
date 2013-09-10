@@ -5,7 +5,7 @@
 
 var JSM = {
 	mainVersion : 0,
-	subVersion : 14
+	subVersion : 15
 };
 
 JSM.Eps = 0.00000001;
@@ -41,6 +41,11 @@ JSM.IsGreater = function (a, b)
 JSM.IsEqual = function (a, b)
 {
 	return Math.abs (b - a) < JSM.Eps;
+};
+
+JSM.IsEqualWithEps = function (a, b, eps)
+{
+	return Math.abs (b - a) < eps;
 };
 
 JSM.IsLowerOrEqual = function (a, b)

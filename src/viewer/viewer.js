@@ -312,6 +312,28 @@ JSM.Viewer.prototype =
 		this.DrawIfNeeded ();
     },
 
+	SetCamera : function (eye, center, up)
+	{
+		this.cameraMove.Set (eye, center, up);
+		this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+		this.DrawIfNeeded ();
+	},
+	
+	EnableCameraFixUp : function (enable)
+	{
+		this.cameraMove.SetFixUp (enable);
+	},
+	
+	EnableCameraOrbit : function (enable)
+	{
+		this.cameraMove.SetOrbitEnabled (enable);
+	},
+
+	EnableCameraZoom : function (enable)
+	{
+		this.cameraMove.SetZoomEnabled (enable);
+	},
+
 	Resize : function ()
 	{
 		this.camera.aspect = this.canvas.width / this.canvas.height;

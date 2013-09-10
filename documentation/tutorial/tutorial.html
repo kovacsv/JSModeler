@@ -12,43 +12,15 @@
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="include/tutorial.css">
-	<title>JSModeler tutorial</title>
+	<title>JSModeler Tutorial</title>
 
 </head>
 
 <body>
 	<div id="frame">
-		<div class="title1">JSModeler tutorial</div>
+		<div class="title1">JSModeler Tutorial</div>
 		
-		<div class="title2">1. Introduction</div>
-		<p>
-			JSModeler is a JavaScript framework for create and visualize 3D models. The main capabilites of the framework are the followings:
-			<ul>
-				<li>Simple 3D model building manually or with generator functions.</li>
-				<ul>
-					<li>We can define our model with adding vertices and polygons manually.</li>
-					<li>We can use built-in generator functions to create basic shapes (cuboid, sphere, cylinder, cone, torus, polygonal torus, prism, prism shell, line shell, ruled surface, revolved surface, platonic and archimedean solids, function surface).</li>
-				</ul>
-				<li>Built-in Three.js based model viewer with rotation and zoom functionality.</li>
-				<li>Automatic conversion to Three.js geometry format.</li>
-				<ul>
-					<li>Convex and concave polygons are automatically triangulated during the conversion.</li>
-					<li>Vertex normals automatically calculated for the curved polygons.</li>
-				</ul>
-				<li>Polygon triangulation for 2D and 3D polygons.</li>
-				<li>Lot of 2D and 3D geometry functions.</li>
-				<li>Automatic exportation to STL file format.</li>
-			</ul>
-			You can find useful things in the below sites:
-			<ul>
-					<li><a href="../demo/demonstration.html">JSModeler demonstration</a> is a page which contains examples for generator functions.</li>
-					<li><a href="tutorial.html">JSModeler tutorial</a> shows instructions and examples on how to use the framework.</li>
-					<li><a href="minimal.html">JSModeler minimal</a> is a minimalist example on using the framework.</li>
-					<li><a href="https://github.com/kovacsv/JSModeler">JSModeler source</a> to browse functionality.</li>
-			</ul>
-		</p>
-		
-		<div class="title2">2. First steps</div>
+		<div class="title2">1. First steps</div>
 		<p>
 			To use JSModeler we need to include the following files in our HTML documents.
 			<ul>
@@ -61,7 +33,7 @@
 </pre>
 		</p>
 
-		<div class="title2">3. Initialize viewer</div>
+		<div class="title2">2. Initialize viewer</div>
 		<p>
 			JSModeler contains a built-in viewer to show models. The viewer needs the THREE.js framework, and we can initialize it for an existing canvas in the onload event of the page. If we have a canvas with an id "example", we can use the following code to initialize the viewer.
 <pre>
@@ -77,7 +49,7 @@ viewer.Draw ();
 </pre>
 		</p>
 
-		<div class="title2">4. Create the first model</div>
+		<div class="title2">3. Create the first model</div>
 		<p>
 			The below example shows how to create a Body object and add some vertices and polygons manually.
 <pre>
@@ -107,7 +79,7 @@ for (var i = 0; i < meshes.length; i++) {
 </pre>
 		</p>
 		
-		<div class="title2">5. Using materials</div>
+		<div class="title2">4. Using materials</div>
 		<p>
 			The above body converted with the default material color. In JSModeler we can define materials, and use them in the Body. For example, create a body with two polygons.
 <pre>
@@ -148,7 +120,7 @@ var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
 			</div>
 		</p>
 		
-		<div class="title2">6. Using smooth surfaces</div>
+		<div class="title2">5. Using smooth surfaces</div>
 		<p>
 			If we would like to use smooth surfaces, we need to set curve groups. The body does not set curve groups by default, so during the conversion every polygon has its own normal vector. For example, create a body with two polygons next to each other.
 			<div class="demo">
@@ -166,7 +138,7 @@ body.GetPolygon (1).SetCurveGroup (0);
 			</div>
 		</p>
 
-		<div class="title2">7. Using generator functions</div>
+		<div class="title2">6. Using generator functions</div>
 		<p>
 			JSModeler contains fenerator functions, which can generate complex models from a few parameters. All of the generator functions return a Body with the default material. For example, generate a cuboid with unit edge length. Most of the generators generate the body in the origo.
 <pre>
@@ -176,26 +148,9 @@ var body = new JSM.GenerateCuboid (1.0, 1.0, 1.0);
 				<img src="images/demo06.png">
 				<a href="demo.html#6">Live Demo</a>
 			</div>
-			We can use the below generator functions:
-			<ul>
-				<li>GenerateCuboid: Generates a cuboid.</li>
-				<li>GenerateSphere: Generates a sphere.</li>
-				<li>GenerateCylinder: Generates a cylinder.</li>
-				<li>GenerateCone: Generates a cone or truncated cone.</li>
-				<li>GeneratePrism: Generates a prism with a given polygon.</li>
-				<li>GeneratePrismShell: Generates a prism shell with the given polygon and width.</li>
-				<li>GenerateLineShell: Generates a line shell with the given polyline and width.</li>
-				<li>GenerateTorus: Generates a torus.</li>
-				<li>GeneratePolyTorus: Generates a torus with the given cross section polygon.</li>
-				<li>GenerateRuledFromSectors: Generates a ruled surface between two sectors.</li>
-				<li>GenerateRuledFromCoords: Generates a ruled surface between two point sets.</li>
-				<li>GenerateRevolved: Generates a revolved surface from the given polyline and axis.</li>
-				<li>GenerateFunctionSurface: Generates a surface from the given function.</li>
-				<li>GenerateSolidWithRadius: Generates a platonic or an archimedean solid.</li>
-			</ul>
 		</p>
 
-		<div class="title2">8. Using transformations</div>
+		<div class="title2">7. Using transformations</div>
 		<p>
 			If we would like to transform the created body, we need to create a transformation object, and apply it to the body. For example, create two cuboid, and translate one of them.
 <pre>

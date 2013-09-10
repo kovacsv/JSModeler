@@ -75,5 +75,32 @@ JSM.Coord.prototype =
 	}
 };
 
+JSM.SphericalCoord = function (radius, theta, phi)
+{
+	this.radius = JSM.ValueOrDefault (radius, 0.0);
+	this.theta = JSM.ValueOrDefault (theta, 0.0);
+	this.phi = JSM.ValueOrDefault (phi, 0.0);
+};
+
+JSM.SphericalCoord.prototype =
+{
+	Set : function (radius, theta, phi)
+	{
+		this.radius = JSM.ValueOrDefault (radius, 0.0);
+		this.theta = JSM.ValueOrDefault (theta, 0.0);
+		this.phi = JSM.ValueOrDefault (phi, 0.0);
+	},
+	
+	ToString : function ()
+	{
+		return ('(' + this.radius + ', ' + this.theta + ', ' + this.phi + ')');
+	},
+	
+	Clone : function ()
+	{
+		return new JSM.SphericalCoord (this.radius, this.theta, this.phi);
+	}
+};
+
 JSM.Vector2D = JSM.Coord2D;
 JSM.Vector = JSM.Coord;

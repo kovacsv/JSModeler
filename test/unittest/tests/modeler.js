@@ -486,6 +486,18 @@ AddTest ('PainterTest', function (test)
 
 AddTestSuite ('Modeler - Generator');
 
+AddTest ('GenerateRectangleTest', function (test)
+{
+	var rectangle = JSM.GenerateRectangle (1, 2);
+	test.Assert (rectangle.VertexCount () == 4 && rectangle.PolygonCount () == 1);
+	
+	var vertexNormals = JSM.CalculateBodyVertexNormals (rectangle);
+	test.Assert (JSM.CoordIsEqual (vertexNormals[0][0], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
+	test.Assert (JSM.CoordIsEqual (vertexNormals[0][1], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
+	test.Assert (JSM.CoordIsEqual (vertexNormals[0][2], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
+	test.Assert (JSM.CoordIsEqual (vertexNormals[0][3], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
+});
+
 AddTest ('GenerateCuboidTest', function (test)
 {
 	var cuboid = JSM.GenerateCuboid (1, 2, 3);
@@ -519,12 +531,12 @@ AddTest ('GenerateSegmentedCuboidTest', function (test)
 	test.Assert (JSM.CheckSolidBody (cuboid));
 });
 
-AddTest ('GenerateSegmentedPlaneTest', function (test)
+AddTest ('GenerateSegmentedRectangleTest', function (test)
 {
-	var plane = JSM.GenerateSegmentedPlane (1, 2, 1);
+	var plane = JSM.GenerateSegmentedRectangle (1, 2, 1);
 	test.Assert (plane.VertexCount () == 4 && plane.PolygonCount () == 1);
 	
-	var plane = JSM.GenerateSegmentedPlane (1, 2, 2);
+	var plane = JSM.GenerateSegmentedRectangle (1, 2, 2);
 	test.Assert (plane.VertexCount () == 9 && plane.PolygonCount () == 4);
 	var polygonNormals = JSM.CalculateBodyPolygonNormals (plane);
 	test.Assert (polygonNormals.length == 4);
@@ -533,7 +545,7 @@ AddTest ('GenerateSegmentedPlaneTest', function (test)
 	test.Assert (JSM.CoordIsEqual (polygonNormals[2], new JSM.Vector (0, 0, 1)));
 	test.Assert (JSM.CoordIsEqual (polygonNormals[3], new JSM.Vector (0, 0, 1)));
 
-	var plane = JSM.GenerateSegmentedPlane (1, 2, 3);
+	var plane = JSM.GenerateSegmentedRectangle (1, 2, 3);
 	test.Assert (plane.VertexCount () == 16 && plane.PolygonCount () == 9);
 });
 
