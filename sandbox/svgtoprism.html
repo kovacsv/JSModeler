@@ -99,7 +99,7 @@
 				}
 			};
 
-			function SegmentPath (path)
+			function SegmentPath (svgObject, path)
 			{
 				function GetLastVertexFromContour (polygon, contour)
 				{
@@ -110,7 +110,23 @@
 					return polygon.GetVertex (contour, vertexCount - 1);
 				}
 			
-				function SegmentCurve (items, result, currentContour)
+				function GetTransformedPoint (svgObject, path, x, y)
+				{
+					var point = svgObject.createSVGPoint ();
+					point.x = x;
+					point.y = y;
+					var result = point.matrixTransform (path.getCTM ());
+					return result;
+				}
+			
+				function AddTransformedVertex (result, contour, svgObject, path, x, y)
+				{
+					var point = GetTransformedPoint (svgObject, path, x, y);
+					result.AddVertex (contour, point.x, point.y);
+					return new JSM.Coord2D (x, y);
+				}
+
+				function SegmentCurve (svgObject, originalPath, lastCoord, items, result, currentContour)
 				{
 					function CreatePath (items, result, currentContour)
 					{
@@ -122,7 +138,6 @@
 						var svgNameSpace = "http://www.w3.org/2000/svg";
 						var path = document.createElementNS (svgNameSpace, 'path');
 
-						var lastCoord = GetLastVertexFromContour (result, currentContour);
 						var commandString = GenerateMoveCommand (lastCoord.x, lastCoord.y);
 						
 						var i, item, command, largeArcFlag, sweepFlag;
@@ -162,7 +177,7 @@
 					var i, point;
 					for (i = 1; i <= segmentation; i++) {
 						point = path.getPointAtLength (i * step);
-						result.AddVertex (currentContour, point.x, point.y);
+						lastCoord = AddTransformedVertex (result, currentContour, svgObject, originalPath, point.x, point.y);
 					}
 				}
 				
@@ -213,22 +228,22 @@
 						// do nothing
 					} else if (item.pathSegType == SVGPathSeg.PATHSEG_MOVETO_ABS) {
 						currentContour = StartNewContour (result, currentContour);
-						result.AddVertex (currentContour, item.x, item.y);
+						lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, item.x, item.y);
 					} else if (item.pathSegType == SVGPathSeg.PATHSEG_MOVETO_REL) {
 						currentContour = StartNewContour (result, currentContour);
-						result.AddVertex (currentContour, lastCoord.x + item.x, lastCoord.y + item.y);
+						lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, lastCoord.x + item.x, lastCoord.y + item.y);
 					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_ABS) {
-						result.AddVertex (currentContour, item.x, item.y);
+						lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, item.x, item.y);
 					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_REL) {
-						result.AddVertex (currentContour, lastCoord.x + item.x, lastCoord.y + item.y);
+						lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, lastCoord.x + item.x, lastCoord.y + item.y);
 					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS) {
-						result.AddVertex (currentContour, item.x, lastCoord.y);
+						lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, item.x, lastCoord.y);
 					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS) {
-						result.AddVertex (currentContour, lastCoord.x, item.y);
+						lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, lastCoord.x, item.y);
 					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL) {
-						result.AddVertex (currentContour, lastCoord.x + item.x, lastCoord.y);
+						lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, lastCoord.x + item.x, lastCoord.y);
 					} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL) {
-						result.AddVertex (currentContour, lastCoord.x, lastCoord.y + item.y);
+						lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, lastCoord.x, lastCoord.y + item.y);
 					} else if (IsCurvedItem (item)) {
 						items = [];
 						for (j = i; j < path.pathSegList.numberOfItems; j++) {
@@ -239,11 +254,10 @@
 							items.push (currentItem);
 						}
 						i = j - 1;
-						SegmentCurve (items, result, currentContour);
+						SegmentCurve (svgObject, path, lastCoord, items, result, currentContour);
 					} else {
 						alert ('unknown segment type: ' + item.pathSegType);
 					}
-					lastCoord = GetLastVertexFromContour (result, currentContour);
 				}
 				
 				RemoveEqualEndVertices (result, currentContour);
@@ -257,7 +271,7 @@
 				
 				var i, current;
 				for (i = 0; i < paths.length; i++) {
-					current = SegmentPath (paths[i]);
+					current = SegmentPath (svgObject, paths[i]);
 					result.push (current);
 				}
 				
@@ -330,21 +344,47 @@
 </body>
 <svg id="exampleSvg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="600">
 
-  <path d="M 10 0 L 0 30 L 20 30 Z"/>
-  <path d="M 40 0 L 30 30 V 50 H 50 L 50 30 Z"/>
-  <path d="M 70 0 L 60 30 C 60 60 80 60 80 30 Z"/>
-  <path d="M 100 0 L 90 30 S 100 80 110 30 Z"/>
-  <path d="M 130 0 L 120 30 Q 130 80 140 30 Z"/>
-  <path d="M 160 0 L 150 30 A 10 10 60 1 0 170 30 Z"/>
-  <path d="M 190 0 L 180 30 S 190 80 200 40 S 190 40 190 0 Z"/>
+ 	<path d="M 10 0 L 0 30 L 20 30 Z"/>
+	<path d="M 40 0 L 30 30 V 50 H 50 L 50 30 Z"/>
+	<path d="M 70 0 L 60 30 C 60 60 80 60 80 30 Z"/>
+	<path d="M 100 0 L 90 30 S 100 80 110 30 Z"/>
+	<path d="M 130 0 L 120 30 Q 130 80 140 30 Z"/>
+	<path d="M 160 0 L 150 30 A 10 10 60 1 0 170 30 Z"/>
+	<path d="M 190 0 L 180 30 S 190 80 200 40 S 190 40 190 0 Z"/>
 
-  <path d="M 10 80 l -10 30 l 20 0 Z"/>
-  <path d="M 40 80 l -10 30 v 20 h 20 l 0 -20 Z"/>
-  <path d="M 70 80 l -10 30 c 0 30 20 30 20 0 Z"/>
-  <path d="M 100 80 l -10 30 s 10 50 20 0 Z"/>
-  <path d="M 130 80 l -10 30 q 10 50 20 0 Z"/>
-  <path d="M 160 80 l -10 30 a 10 10 60 1 0 20 0 Z"/>
-  <path d="M 190 80 l -10 30 s 10 50 20 10 s -10 0 -10 -40 Z"/>
+	<path d="M 10 80 l -10 30 l 20 0 Z"/>
+	<path d="M 40 80 l -10 30 v 20 h 20 l 0 -20 Z"/>
+	<path d="M 70 80 l -10 30 c 0 30 20 30 20 0 Z"/>
+	<path d="M 100 80 l -10 30 s 10 50 20 0 Z"/>
+	<path d="M 130 80 l -10 30 q 10 50 20 0 Z"/>
+	<path d="M 160 80 l -10 30 a 10 10 60 1 0 20 0 Z"/>
+	<path d="M 190 80 l -10 30 s 10 50 20 10 s -10 0 -10 -40 Z"/>
+
+	<path d="M 10 160 l -10 30 l 20 0 Z" transform="translate (10) rotate (20 20 175)"/>
+	<path d="M 10 160 l -10 30 v 20 h 20 l 0 -20 Z" transform="translate (40) rotate (20 20 175)"/>
+	<path d="M 10 160 l -10 30 c 0 30 20 30 20 0 Z" transform="translate (70) rotate (20 20 175)"/>
+	<path d="M 10 160 l -10 30 s 10 50 20 0 Z" transform="translate (100) rotate (20 20 175)"/>
+	<path d="M 10 160 l -10 30 q 10 50 20 0 Z" transform="translate (130) rotate (20 20 175)"/>
+	<path d="M 10 160 l -10 30 a 10 10 60 1 0 20 0 Z" transform="translate (160) rotate (20 20 175)"/>
+	<path d="M 10 160 l -10 30 s 10 50 20 10 s -10 0 -10 -40 Z" transform="translate (190) rotate (20 20 175)"/>
+
+	<g transform="translate (10) rotate (10 20 315)">
+		<path d="M 10 220 l -10 30 l 20 0 Z"/>
+		<path d="M 40 220 l -10 30 v 20 h 20 l 0 -20 Z"/>
+		<path d="M 70 220 l -10 30 c 0 30 20 30 20 0 Z"/>
+		<path d="M 100 220 l -10 30 s 10 50 20 0 Z"/>
+		<path d="M 130 220 l -10 30 q 10 50 20 0 Z"/>
+		<path d="M 160 220 l -10 30 a 10 10 60 1 0 20 0 Z"/>
+		<path d="M 190 220 l -10 30 s 10 50 20 10 s -10 0 -10 -40 Z"/>
+	</g>
+	
+	<path d="M 10 320 l -10 30 l 20 0 Z
+			 M 40 320 l -10 30 v 20 h 20 l 0 -20 Z
+			 M 70 320 l -10 30 c 0 30 20 30 20 0 Z
+			 M 100 320 l -10 30 s 10 50 20 0 Z
+			 M 130 320 l -10 30 q 10 50 20 0 Z
+			 M 160 320 l -10 30 a 10 10 60 1 0 20 0 Z
+			 M 190 320 l -10 30 s 10 50 20 10 s -10 0 -10 -40 Z"/>
 
 <!--
     <path d="M 189.02218,124.20633 C 172.69178,132.29681 158.45146,143.04328 146.5673,155.66847 C 152.48762,155.78249 158.44225,155.51722 164.40102,154.84751 C 171.27983,143.7634 179.5207,133.45773 189.02218,124.20633 z M 203.09865,118.10031 C 215.78116,117.50212 228.38578,118.36609 240.66396,120.67652 C 244.90072,116.87945 248.85655,112.81889 252.54754,108.57279 C 236.02594,108.90998 219.33784,112.00274 203.09865,118.10031 z M 195.30933,131.86845 C 188.75688,138.31296 182.86378,145.29993 177.64553,152.71309 C 185.56284,151.02077 193.43615,148.58105 201.17907,145.40021 L 195.30933,131.86845 z M 204.49584,127.91763 L 210.3034,141.30605 C 217.43047,137.76184 224.11036,133.64091 230.3398,129.07217 C 221.83028,127.96488 213.18331,127.55909 204.49584,127.91763 z M 265.2405,108.85767 C 261.30615,113.93462 257.0281,118.78774 252.4154,123.34549 C 275.03568,129.36443 296.20164,140.2413 314.27436,155.30599 C 320.97945,147.19168 327.04254,138.61814 332.45059,129.67457 C 312.09925,117.58338 289.02987,110.39965 265.2405,108.85767 z M 138.23449,165.27819 C 123.4445,183.94447 113.32569,205.85153 108.64602,229.07174 C 119.01741,231.07621 129.5647,232.33792 140.2008,232.79044 C 141.25548,209.22554 147.55615,186.20961 158.39497,165.42362 C 151.64603,165.84353 144.90502,165.78424 138.23449,165.27819 z M 243.56684,131.37357 C 234.76217,138.75166 224.97369,145.1729 214.27045,150.45146 L 241.06981,212.23313 C 267.04988,199.91753 289.47402,182.96707 307.76251,162.83141 C 289.1782,147.3423 267.09353,136.57903 243.56684,131.37357 z M 170.31795,164.16901 C 158.22474,185.09544 151.22232,208.71027 150.12768,232.98077 C 177.45958,232.86733 205.20642,227.49869 231.93304,216.29863 L 205.15856,154.57429 C 193.73425,159.2839 182.04446,162.46453 170.31795,164.16901 z M 340.86162,135.08694 C 335.18006,144.46232 328.793,153.43941 321.75108,161.94115 C 336.89228,176.26891 349.43237,193.7952 358.22897,214.07438 C 360.04665,218.26476 361.67856,222.48749 363.11011,226.74057 C 373.22059,216.33531 382.50574,205.27385 390.91693,193.62749 C 379.2474,169.28369 361.765,149.46657 340.86162,135.08694 z M 106.99044,238.91887 C 103.64369,264.03131 106.61894,290.27984 116.85771,315.30076 C 131.11683,316.8666 145.54592,317.43131 160.03217,316.90859 C 157.55148,312.43139 155.2663,307.80629 153.18835,303.0159 C 144.67721,283.39481 140.44738,262.97653 140.07645,242.79089 C 128.92629,242.32659 117.8652,241.01281 106.99044,238.91887 z M 315.19813,169.45034 C 295.97565,190.65685 272.39052,208.49272 245.04929,221.40721 L 274.54723,289.41006 C 305.03416,275.31044 332.04211,256.69196 355.1351,234.66223 C 353.45684,229.07558 351.43286,223.53589 349.05489,218.05386 C 340.86389,199.17081 329.2315,182.83438 315.19813,169.45034 z M 149.99089,242.95255 C 150.40291,261.74874 154.40179,280.76294 162.33376,299.04885 C 164.94267,305.06328 167.90482,310.81276 171.17834,316.29752 C 202.82296,313.96005 234.60616,306.51094 265.41047,293.47555 L 235.91252,225.4727 C 207.85924,237.24566 178.705,242.871 149.99089,242.95255 z M 395.48091,204.14901 C 386.62683,215.93663 376.90655,227.14084 366.33803,237.63725 C 373.24424,264.33449 372.86354,291.70844 366.21189,317.3662 C 379.21475,307.95806 391.49951,297.80691 402.99648,286.96709 C 408.22641,260.025 406.10703,231.40302 395.48091,204.14901 z M 121.61857,325.805 C 134.68569,351.9078 154.52826,372.66105 178.04515,386.86168 C 193.5249,385.62177 209.01562,383.3987 224.45759,380.15009 C 201.16358,367.74577 180.84679,349.59637 165.88521,326.6325 C 151.04839,327.42981 136.25513,327.13485 121.61857,325.805 z M 357.99412,245.65081 C 334.9786,266.84267 308.37138,284.8423 278.53916,298.6128 L 302.7021,354.31665 C 320.4841,346.19378 337.33602,336.8819 353.17832,326.42617 C 353.18315,326.41217 353.18972,326.39906 353.19455,326.38507 C 361.99428,300.8602 363.97806,272.97809 357.99412,245.65081 z M 177.35053,325.81486 C 193.36707,348.52178 215.1267,365.82034 239.7393,376.58697 C 257.85453,371.96525 275.82768,365.89093 293.55289,358.35348 L 269.38995,302.64963 C 239.30284,315.39106 208.28817,322.98465 177.35053,325.81486 z M 398.47352,304.49599 C 386.7902,314.65669 374.41959,324.17707 361.36037,332.95976 C 353.06628,355.36308 339.78643,375.95219 322.2929,392.96236 C 359.8382,374.39993 386.42134,341.89057 398.47352,304.49599 z M 193.97837,395.2447 C 229.03839,411.0607 270.03064,413.42189 308.41711,398.98133 C 284.47041,400.12127 260.8019,395.93363 239.08751,387.02058 C 224.10499,390.7056 209.04384,393.42887 193.97837,395.2447 z M 346.61322,342.38835 C 333.8803,350.12408 320.5669,357.1901 306.69402,363.5194 L 316.09556,385.19315 C 328.80636,372.68441 339.07662,358.16113 346.61322,342.38835 z M 255.74809,382.55277 C 272.14023,387.62235 289.44731,389.92552 306.93392,389.20131 L 297.53238,367.52755 C 283.73583,373.39724 269.79744,378.41311 255.74809,382.55277 z " style="fill:#396;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path2862"/>
