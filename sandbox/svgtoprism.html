@@ -115,12 +115,13 @@
 					var path = CreatePath (items, result, currentContour);
 					var segmentation = 100;
 					var step = path.getTotalLength () / segmentation;
-					
 					var i, point;
 					for (i = 1; i <= segmentation; i++) {
 						point = path.getPointAtLength (i * step);
 						lastCoord = AddTransformedVertex (result, currentContour, svgObject, originalPath, point.x, point.y);
 					}
+					
+					return lastCoord;
 				}
 				
 				function IsCurvedItem (item)
@@ -160,7 +161,7 @@
 				}
 			
 				var result = new JSM.ContourPolygon2D ();
-				var lastCoord = new JSM.Coord (0.0, 0.0);
+				var lastCoord = new JSM.Coord2D (0.0, 0.0);
 				
 				var i, j, item, items, currentItem;
 				var currentContour = 0;
@@ -196,7 +197,7 @@
 							items.push (currentItem);
 						}
 						i = j - 1;
-						SegmentCurve (svgObject, path, lastCoord, items, result, currentContour);
+						lastCoord = SegmentCurve (svgObject, path, lastCoord, items, result, currentContour);
 					} else {
 						alert ('unknown segment type: ' + item.pathSegType);
 					}
