@@ -55,74 +55,17 @@
 		
 		function SvgToPrism (svgObject)
 		{
-			ContourPolygon2D = function ()
-			{
-				this.contours = [];
-			};
-		
-			ContourPolygon2D.prototype =
-			{
-				AddVertex : function (contour, x, y)
-				{
-					if (this.contours[contour] == undefined) {
-						this.contours[contour] = [];
-					}
-					this.contours[contour].push (new JSM.Coord2D (x, y));
-				},
-				
-				VertexCount : function (contour)
-				{
-					if (this.contours[contour] == undefined) {
-						return 0;
-					}
-					return this.contours[contour].length;
-				},
-
-				GetVertex : function (contour, index)
-				{
-					return this.contours[contour][index];
-				},
-
-				AddContour : function ()
-				{
-					this.contours.push ([]);
-				},
-
-				ContourCount : function ()
-				{
-					return this.contours.length;
-				},
-				
-				GetContour : function (contour)
-				{
-					return this.contours[contour];
-				}
-			};
-
 			function SegmentPath (svgObject, path)
 			{
-				function GetLastVertexFromContour (polygon, contour)
-				{
-					var vertexCount = polygon.VertexCount (contour);
-					if (vertexCount == 0) {
-						return new JSM.Coord2D (0.0, 0.0);
-					}
-					return polygon.GetVertex (contour, vertexCount - 1);
-				}
-			
-				function GetTransformedPoint (svgObject, path, x, y)
+				function AddTransformedVertex (result, contour, svgObject, path, x, y)
 				{
 					var point = svgObject.createSVGPoint ();
 					point.x = x;
 					point.y = y;
-					var result = point.matrixTransform (path.getCTM ());
-					return result;
-				}
-			
-				function AddTransformedVertex (result, contour, svgObject, path, x, y)
-				{
-					var point = GetTransformedPoint (svgObject, path, x, y);
-					result.AddVertex (contour, point.x, point.y);
+					
+					var transformed = point.matrixTransform (path.getCTM ());
+					result.AddVertex (contour, transformed.x, transformed.y);
+					
 					return new JSM.Coord2D (x, y);
 				}
 
@@ -139,7 +82,6 @@
 						var path = document.createElementNS (svgNameSpace, 'path');
 
 						var commandString = GenerateMoveCommand (lastCoord.x, lastCoord.y);
-						
 						var i, item, command, largeArcFlag, sweepFlag;
 						for (i = 0; i < items.length; i++) {
 							item = items[i]
@@ -203,7 +145,7 @@
 					var firstCoord = polygon.GetVertex (contour, 0);
 					var lastCoord = polygon.GetVertex (contour, vertexCount - 1);
 					if (JSM.CoordIsEqual2DWithEps (firstCoord, lastCoord, 0.1)) {
-						polygon.GetContour (contour).pop ();
+						polygon.GetContour (contour).vertices.pop ();
 					}
 				}				
 			
@@ -217,10 +159,10 @@
 					return contour;
 				}
 			
-				var result = new ContourPolygon2D ();
-				var lastCoord = GetLastVertexFromContour (result, 0);
+				var result = new JSM.ContourPolygon2D ();
+				var lastCoord = new JSM.Coord (0.0, 0.0);
 				
-				var i, j, item, items, currentItem, length, point;
+				var i, j, item, items, currentItem;
 				var currentContour = 0;
 				for (i = 0; i < path.pathSegList.numberOfItems; i++) {
 					item = path.pathSegList.getItem (i);

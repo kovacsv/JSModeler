@@ -1376,6 +1376,65 @@ AddTest ('PolygonTest', function (test)
 	test.Assert (triangles[1].toString () == '0,2,3');
 });
 
+AddTest ('ContourPolygon2DTest', function (test)
+{
+	var polygon = new JSM.ContourPolygon2D ();
+	test.Assert (polygon.ContourCount () == 0);
+	test.Assert (polygon.VertexCount (0) == 0);
+	test.Assert (polygon.VertexCount (1) == 0);
+	test.Assert (polygon.VertexCount (2) == 0);
+	
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (0, 1, 0);
+	polygon.AddVertex (0, 1, 1);
+	test.Assert (polygon.ContourCount () == 1);
+	test.Assert (polygon.VertexCount (0) == 3);
+	test.Assert (polygon.VertexCount (1) == 0);
+	test.Assert (polygon.VertexCount (2) == 0);
+
+	polygon.AddVertex (1, 0, 0);
+	polygon.AddVertex (1, 2, 0);
+	polygon.AddVertex (1, 2, 2);
+	test.Assert (polygon.ContourCount () == 2);
+	test.Assert (polygon.VertexCount (0) == 3);
+	test.Assert (polygon.VertexCount (1) == 3);
+	test.Assert (polygon.VertexCount (2) == 0);
+
+	polygon.AddContour ();
+	test.Assert (polygon.ContourCount () == 3);
+	polygon.AddVertex (2, 0, 0);
+	polygon.AddVertex (2, 3, 0);
+	polygon.AddVertex (2, 3, 3);
+	test.Assert (polygon.ContourCount () == 3);
+	test.Assert (polygon.VertexCount (0) == 3);
+	test.Assert (polygon.VertexCount (1) == 3);
+	test.Assert (polygon.VertexCount (2) == 3);
+
+	test.Assert (JSM.CoordIsEqual2D (polygon.GetVertex (0, 1), new JSM.Coord2D (1, 0)));
+	test.Assert (JSM.CoordIsEqual2D (polygon.GetVertex (1, 1), new JSM.Coord2D (2, 0)));
+	test.Assert (JSM.CoordIsEqual2D (polygon.GetVertex (2, 1), new JSM.Coord2D (3, 0)));
+	
+	var cloned = polygon.Clone ();
+	test.Assert (cloned.ContourCount () == 3);
+	test.Assert (cloned.VertexCount (0) == 3);
+	test.Assert (cloned.VertexCount (1) == 3);
+	test.Assert (cloned.VertexCount (2) == 3);
+
+	test.Assert (JSM.CoordIsEqual2D (cloned.GetVertex (0, 1), new JSM.Coord2D (1, 0)));
+	test.Assert (JSM.CoordIsEqual2D (cloned.GetVertex (1, 1), new JSM.Coord2D (2, 0)));
+	test.Assert (JSM.CoordIsEqual2D (cloned.GetVertex (2, 1), new JSM.Coord2D (3, 0)));
+
+	cloned.SetVertex (1, 1, 5, 6);
+	test.Assert (JSM.CoordIsEqual2D (polygon.GetVertex (1, 1), new JSM.Coord2D (2, 0)));
+	test.Assert (JSM.CoordIsEqual2D (cloned.GetVertex (1, 1), new JSM.Coord2D (5, 6)));
+	
+	polygon.Clear ();
+	test.Assert (polygon.ContourCount () == 0);
+	test.Assert (polygon.VertexCount (0) == 0);
+	test.Assert (polygon.VertexCount (1) == 0);
+	test.Assert (polygon.VertexCount (2) == 0);
+});
+
 AddTest ('CoordPolygonPosition2DTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();
