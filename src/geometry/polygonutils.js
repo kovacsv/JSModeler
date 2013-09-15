@@ -180,13 +180,20 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 {
 	function FindHoleEntryPoint (contourIndex)
 	{
+		var polygon = new JSM.Polygon2D ();
+		var i, j, vertex;
+		for (i = 0; i < result.length; i++) {
+			vertex = vertices[result[i]];
+			polygon.AddVertex (vertex.x, vertex.y);
+		}	
+	
 		var from = contourEnds[contourIndex] + 1;
 		var to = contourEnds[contourIndex + 1];
 
 		var count = polygon.VertexCount ();
 		var entryPoint = null;
 
-		var i, j, sector, res;
+		var sector, res;
 		for (i = 0; i < count; i++) {
 			res = result[i];
 			for (j = from; j < to; j++) {
@@ -210,9 +217,8 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 		var from = contourEnds[contourIndex] + 1;
 		var to = contourEnds[contourIndex + 1];
 
-		var i, j;
-
 		var oldResult = [];
+		var i, j;
 		for (i = 0; i < result.length; i++) {
 			oldResult[i] = result[i];
 		}
@@ -241,13 +247,6 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 				result.push (oldResult[i]);
 			}
 		}
-		
-		polygon.Clear ();
-		var vertex;
-		for (i = 0; i < result.length; i++) {
-			vertex = vertices[result[i]];
-			polygon.AddVertex (vertex.x, vertex.y);
-		}
 	}
 
 	function AddContour (contourIndex)
@@ -258,7 +257,6 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 		if (contourIndex === 0) {
 			var i;
 			for (i = from; i < to; i++) {
-				polygon.AddVertex (vertices[i].x, vertices[i].y);
 				result.push (i);
 			}
 		} else {
@@ -268,7 +266,6 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 
 	var result = [];
 	var count = vertices.length;
-	var polygon = new JSM.Polygon2D ();
 	
 	var contourEnds = [];
 	var contourCount = 0;
