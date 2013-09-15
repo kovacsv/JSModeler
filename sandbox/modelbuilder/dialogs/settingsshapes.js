@@ -28,11 +28,11 @@ function TransformBody (body, rotation, offset)
 	body.Transform (transformation);	
 }
 
-Cube = function ()
+Cuboid = function ()
 {
 	this.meshes = null;
 	this.parameters = {
-		name : new JSM.Parameter ('name', 'text', 'Cube', 'left'),
+		name : new JSM.Parameter ('name', 'text', 'Cuboid', 'left'),
 		color : new JSM.Parameter ('color', 'color', '008ab8', 'left'),
 		xSize : new JSM.Parameter ('x size', 'text', 1, 'left'),
 		ySize : new JSM.Parameter ('y size', 'text', 1, 'left'),
@@ -42,7 +42,7 @@ Cube = function ()
 	};
 };
 
-Cube.prototype =
+Cuboid.prototype =
 {
 	Settings : function (existing)
 	{
@@ -52,7 +52,7 @@ Cube.prototype =
 			GenerateShape (myThis, existing);
 		};
 
-		settingsDialog.Open ('set cube parameters', this.parameters);
+		settingsDialog.Open ('set cuboid parameters', this.parameters);
 	},
 	
 	GetBodyAndMaterials : function ()

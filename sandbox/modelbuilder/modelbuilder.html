@@ -96,6 +96,20 @@
 		var viewer = null;
 		var model = null;
 
+		function DoubleClick (event)
+		{
+			var objects = viewer.GetObjectsUnderMouse ();
+			var i;
+			for (i = 0; i < objects.length; i++) {
+				if (objects[i].object instanceof THREE.Mesh) {
+					if (objects[i].object.shapeReference !== undefined) {
+						objects[i].object.shapeReference.Settings (true);
+						break;
+					}
+				}
+			}
+		}
+		
 		function AddShape (shape)
 		{
 			var index = model.ShapeCount () + 1;
@@ -137,6 +151,7 @@
 				var conversionData = new JSM.ConversionData (null, false);
 				shape.meshes = JSM.ConvertBodyToThreeMeshes (body[0], body[1], conversionData);
 				for (i = 0; i < shape.meshes.length; i++) {
+					shape.meshes[i].shapeReference = shape;
 					viewer.AddMesh (shape.meshes[i]);
 				}
 			}
@@ -250,6 +265,11 @@
 			viewer = new JSM.Viewer ();
 			viewer.Start ('example', viewerSettings);
 
+			if (viewer.canvas.addEventListener) {
+				viewer.canvas.addEventListener ('dblclick', function (event) {DoubleClick (event);}, false);
+			}
+			
+			
 			//var xGeometry = new THREE.Geometry();
 			//xGeometry.vertices.push (new THREE.Vector3 (-10, 0, 0));
 			//xGeometry.vertices.push (new THREE.Vector3 (10, 0, 0));
@@ -279,8 +299,6 @@
             //
 			//var zLine = new THREE.Line (zGeometry, zMaterial);
 			//viewer.scene.add (zLine);
-
-			viewer.Draw ();
 		}
 		
 	    window.onload = function ()
@@ -295,7 +313,7 @@
 	<div id ="left">
 		<div id="modellisttitle">shapes</div>
 		<div id="modellistcontrols">
-			<a href="javascript:AddShape (new Cube ())"><img alt="cube" title="cube" src="icons/cube.png"></a>
+			<a href="javascript:AddShape (new Cuboid ())"><img alt="cuboid" title="cuboid" src="icons/cuboid.png"></a>
 			<a href="javascript:AddShape (new Sphere ())"><img alt="sphere" title="sphere" src="icons/sphere.png"></a>
 			<a href="javascript:AddShape (new Cylinder ())"><img alt="cylinder" title="cylinder" src="icons/cylinder.png"></a>
 			<a href="javascript:AddShape (new Pie ())"><img alt="pie" title="pie" src="icons/pie.png"></a>
