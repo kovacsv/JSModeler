@@ -268,7 +268,7 @@ JSM.PolygonControl.prototype =
 			this.coords.push (this.GetEditorCoord (parameter.value[1][i]));
 		}
 		
-		this.mode = 'HasPolygon';
+		this.mode = 'Finished';
 		this.marker = -1;
 		this.moved = -1;
 		this.Draw ();
@@ -277,7 +277,7 @@ JSM.PolygonControl.prototype =
 	GetValue : function (parameter)
 	{
 		parameter.value = [this.scaleInput.value, []];
-		if (this.mode == 'HasPolygon') {
+		if (this.mode == 'Finished') {
 			for (i = 0; i < this.coords.length; i++) {
 				parameter.value[1].push (this.GetModelCoord (this.coords[i]));
 			}
@@ -311,7 +311,7 @@ JSM.PolygonControl.prototype =
 	{
 		var mouseCoord = this.GetMouseCoord (event);
 		this.SetCurrentCoord (mouseCoord);
-		if (this.mode == 'MoveCoord') {
+		if (this.mode == 'Move') {
 			this.MoveCoord (mouseCoord);
 		}
 		this.UpdateMarker (mouseCoord);
@@ -321,15 +321,15 @@ JSM.PolygonControl.prototype =
 	MouseDown : function (event)
 	{
 		var mouseCoord = this.GetMouseCoord (event);
-		if (this.mode == 'CreatePolygon') {
+		if (this.mode == 'Create') {
 			this.AddCoord (this.current);
-		} else if (this.mode == 'HasPolygon') {
+		} else if (this.mode == 'Finished') {
 			if (this.coords.length < 2 || this.marker == -1) {
 				this.coords = [];
-				this.mode = 'CreatePolygon';
+				this.mode = 'Create';
 				this.AddCoord (this.current);
 			} else if (this.marker != -1) {
-				this.mode = 'MoveCoord';
+				this.mode = 'Move';
 				this.moved = this.marker;
 			}
 		}
@@ -339,14 +339,14 @@ JSM.PolygonControl.prototype =
 	
 	MouseUp : function (event)
 	{
-		if (this.mode == 'MoveCoord') {
-			this.mode = 'HasPolygon';
+		if (this.mode == 'Move') {
+			this.mode = 'Finished';
 		}
 	},
 
 	AddCoord : function (mouseCoord)
 	{
-		if (this.mode == 'CreatePolygon') {
+		if (this.mode == 'Create') {
 			if (this.coords.length < 2 || this.marker == -1) {
 				var canAddCoord = false;
 				if (this.coords.length == 0) {
@@ -361,14 +361,14 @@ JSM.PolygonControl.prototype =
 					this.coords.push (mouseCoord);
 				}
 			} else {
-				this.mode = 'HasPolygon';
+				this.mode = 'Finished';
 			}
 		}
 	},
 	
 	MoveCoord : function (mouseCoord)
 	{
-		if (this.mode == 'MoveCoord') {
+		if (this.mode == 'Move') {
 			this.coords[this.moved] = mouseCoord;
 		}
 	},
@@ -380,11 +380,11 @@ JSM.PolygonControl.prototype =
 			return;
 		}
 		
-		if (this.mode == 'CreatePolygon') {
+		if (this.mode == 'Create') {
 			if (JSM.CoordDistance2D (mouseCoord, this.coords[0]) < this.settings.editor.gridStep) {
 				this.marker = 0;
 			}
-		} else if (this.mode == 'HasPolygon') {
+		} else if (this.mode == 'Finished') {
 			var i;
 			for (i = 0; i < this.coords.length; i++) {
 				if (JSM.CoordDistance2D (mouseCoord, this.coords[i]) < this.settings.editor.gridStep) {
@@ -398,6 +398,7 @@ JSM.PolygonControl.prototype =
 	SetCurrentCoord : function (mouseCoord)
 	{
 		this.current = mouseCoord;
+		
 		var modelCoord = this.GetModelCoord (this.current);
 		modelCoord.x = Math.round (modelCoord.x * 100) / 100;
 		modelCoord.y = Math.round (modelCoord.y * 100) / 100;
@@ -476,7 +477,7 @@ JSM.PolygonControl.prototype =
 			this.ContextLineTo (vertex);
 		}
 
-		if (this.mode == 'CreatePolygon') {
+		if (this.mode == 'Create') {
 			this.ContextLineTo (this.current);
 		} else {
 			this.ContextLineTo (firstCoord);

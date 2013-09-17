@@ -60,12 +60,12 @@
 	</style>
 	
 	<script type="text/javascript">
-		Model = function ()
+		ModelList = function ()
 		{
 			this.shapes = [];
 		};
 
-		Model.prototype =
+		ModelList.prototype =
 		{
 			AddShape : function (shape)
 			{
@@ -94,7 +94,7 @@
 		}
 
 		var viewer = null;
-		var model = null;
+		var modelList = null;
 
 		function DoubleClick (event)
 		{
@@ -112,14 +112,14 @@
 		
 		function AddShape (shape)
 		{
-			var index = model.ShapeCount () + 1;
+			var index = modelList.ShapeCount () + 1;
 			shape.parameters.name.value = index + '. ' + shape.parameters.name.value;
 			shape.Settings (false);
 		}
 
 		function RemoveShape (index)
 		{
-			var shapes = model.GetShapes ();
+			var shapes = modelList.GetShapes ();
 			var shape = shapes[index];
 			if (shape.meshes !== null) {
 				var i;
@@ -128,8 +128,8 @@
 				}
 			}
 
-			model.RemoveShape (index);
-			RebuildModelList (model);
+			modelList.RemoveShape (index);
+			RebuildModelList (modelList);
 		}
 		
 		function GenerateShape (shape, existing)
@@ -143,7 +143,7 @@
 			shape.meshes = null;
 
 			if (!existing) {
-				model.AddShape (shape);
+				modelList.AddShape (shape);
 			}
 			
 			var body = shape.GetBodyAndMaterials ();
@@ -156,11 +156,11 @@
 				}
 			}
 
-			RebuildModelList (model);
+			RebuildModelList (modelList);
 			viewer.Draw ();
 		}
 
-		function RebuildModelList (model)
+		function RebuildModelList (modelList)
 		{
 			function AddShape (index, shape)
 			{
@@ -220,7 +220,7 @@
 				div.removeChild (div.firstChild);
 			}
 			
-			var shapes = model.GetShapes ();
+			var shapes = modelList.GetShapes ();
 			var i, shape, item;
 			for (i = 0; i < shapes.length; i++) {
 				shape = shapes[i];
@@ -250,7 +250,7 @@
 
 		function Load ()
 		{
-			model = new Model ();
+			modelList = new ModelList ();
 
 			window.onresize = Resize;
 			Resize ();
