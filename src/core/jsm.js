@@ -1,8 +1,3 @@
-/*
-	Author:		Kovacs Viktor
-	Homepage:	http://www.kovacsv.hu
-*/
-
 var JSM = {
 	mainVersion : 0,
 	subVersion : 16
