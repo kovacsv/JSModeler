@@ -70,10 +70,11 @@
 			viewer.RemoveMeshes ();
 			
 			var svgObject = document.getElementById ('exampleSvg');
+			var height = 10;
 			var segmentation = 100;
-			var model = JSM.SvgToModel (svgObject, segmentation);
+			var modelAndMaterials = JSM.SvgToModel (svgObject, height, segmentation);
 
-			var meshes = JSM.ConvertModelToThreeMeshes (model);
+			var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1]);
 			viewer.AddMeshes (meshes);
 			
 			viewer.FitInWindow ();

@@ -1,0 +1,255 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/viewertest.css">
+
+	<script type="text/javascript" src="../../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/subdivision.js"></script>
+	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/solidgenerator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/modeler/painter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../../src/modeler/shapes.js"></script>
+	
+	<script type="text/javascript" src="../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../src/viewer/converter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>	
+
+	<script type="text/javascript" src="include/stephandler.js"></script>
+	<title>JSModeler Viewer Test</title>
+
+	<style>
+		svg
+		{
+			position:absolute;
+			left : -10000px;
+			top : -10000px;
+		}
+	</style>
+	
+	<script type="text/javascript">
+		var viewer = null;
+		var stepHandler = null;
+
+		function Previous ()
+		{
+			stepHandler.Previous ()
+		}
+		
+		function Next ()
+		{
+			stepHandler.Next ()
+		}
+
+		function TestStep (viewer, step)
+		{
+			viewer.RemoveMeshes ();
+			
+			var svgObjects = document.getElementsByTagName ('svg');
+			if (svgObjects.length <= step) {
+				return;
+			}
+
+			var modelAndMaterials = JSM.SvgToModel (svgObjects[step], 10, 20);
+			var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1]);
+			viewer.AddMeshes (meshes);
+			
+			viewer.FitInWindow ();
+			viewer.Draw ();	
+		}
+		
+		function Step ()
+		{
+			var step = stepHandler.GetStep ();
+			var info = document.getElementById ('info');
+			TestStep (viewer, step);
+		}
+		
+		function KeyDown (event)
+		{
+			var keyCode = event.which;
+			if (keyCode == 37) {
+				Previous ();
+			} else if (keyCode == 39) {
+				Next ();
+			}
+		}
+		
+		function Resize ()
+		{
+			var header = document.getElementById ('header');
+			var canvas = document.getElementById ('test');
+			
+			canvas.width = document.body.clientWidth;
+			canvas.height = document.body.clientHeight - header.clientHeight - 1;
+			if (viewer != null) {
+				viewer.Resize ();
+			}
+		}
+
+		function Load ()
+		{
+			window.onresize = Resize;
+			window.onhashchange = Step;
+			window.onkeydown = KeyDown;
+			Resize ();
+
+			var viewerSettings = {
+				'cameraEyePosition' : [-2.0, -4.0, 3.0],
+				'cameraCenterPosition' : [0.0, 0.0, 0.0],
+				'cameraUpVector' : [0.0, 0.0, 1.0],
+				'nearClippingPlane' : 1.0,
+				'farClippingPlane' : 100000.0
+			};
+
+			viewer = new JSM.Viewer ();
+			if (!viewer.Start ('test', viewerSettings)) {
+				return;
+			}
+
+			viewer.Draw ();
+			
+			stepHandler = new StepHandler ();
+			Step ();
+		}
+
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="header">
+		<div id="buttons">
+			<a class="button" href="javascript:Previous ()">previous</a>
+			<a class="button" href="javascript:Next ()">next</a>
+		</div>
+		<div id="info"></div>
+	</div>
+	<canvas id="test" width="800" height="500"></canvas>
+
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+		<path d="M 10 0 L 0 30 L 20 30 Z"/>
+		<path d="M 40 0 L 30 30 V 50 H 50 L 50 30 Z"/>
+		<path d="M 70 0 L 60 30 C 60 60 80 60 80 30 Z"/>
+		<path d="M 100 0 L 90 30 S 100 80 110 30 Z"/>
+		<path d="M 130 0 L 120 30 Q 130 80 140 30 Z"/>
+		<path d="M 160 0 L 150 30 A 10 10 60 1 0 170 30 Z"/>
+		<path d="M 190 0 L 180 30 S 190 80 200 40 S 190 40 190 0 Z"/>
+
+		<path d="M 10 80 l -10 30 l 20 0 Z"/>
+		<path d="M 40 80 l -10 30 v 20 h 20 l 0 -20 Z"/>
+		<path d="M 70 80 l -10 30 c 0 30 20 30 20 0 Z"/>
+		<path d="M 100 80 l -10 30 s 10 50 20 0 Z"/>
+		<path d="M 130 80 l -10 30 q 10 50 20 0 Z"/>
+		<path d="M 160 80 l -10 30 a 10 10 60 1 0 20 0 Z"/>
+		<path d="M 190 80 l -10 30 s 10 50 20 10 s -10 0 -10 -40 Z"/>
+
+		<path d="M 10 160 l -10 30 l 20 0 Z" transform="translate (10) rotate (20 20 175)"/>
+		<path d="M 10 160 l -10 30 v 20 h 20 l 0 -20 Z" transform="translate (40) rotate (20 20 175)"/>
+		<path d="M 10 160 l -10 30 c 0 30 20 30 20 0 Z" transform="translate (70) rotate (20 20 175)"/>
+		<path d="M 10 160 l -10 30 s 10 50 20 0 Z" transform="translate (100) rotate (20 20 175)"/>
+		<path d="M 10 160 l -10 30 q 10 50 20 0 Z" transform="translate (130) rotate (20 20 175)"/>
+		<path d="M 10 160 l -10 30 a 10 10 60 1 0 20 0 Z" transform="translate (160) rotate (20 20 175)"/>
+		<path d="M 10 160 l -10 30 s 10 50 20 10 s -10 0 -10 -40 Z" transform="translate (190) rotate (20 20 175)"/>
+
+		<g transform="translate (10) rotate (10 20 315)">
+			<path d="M 10 220 l -10 30 l 20 0 Z"/>
+			<path d="M 40 220 l -10 30 v 20 h 20 l 0 -20 Z"/>
+			<path d="M 70 220 l -10 30 c 0 30 20 30 20 0 Z"/>
+			<path d="M 100 220 l -10 30 s 10 50 20 0 Z"/>
+			<path d="M 130 220 l -10 30 q 10 50 20 0 Z"/>
+			<path d="M 160 220 l -10 30 a 10 10 60 1 0 20 0 Z"/>
+			<path d="M 190 220 l -10 30 s 10 50 20 10 s -10 0 -10 -40 Z" rotate (20 20 175)"/>
+		</g>
+		
+		<path d="M 10 320 l -10 30 l 20 0 Z
+				 M 40 320 l -10 30 v 20 h 20 l 0 -20 Z
+				 M 70 320 l -10 30 c 0 30 20 30 20 0 Z
+				 M 100 320 l -10 30 s 10 50 20 0 Z
+				 M 130 320 l -10 30 q 10 50 20 0 Z
+				 M 160 320 l -10 30 a 10 10 60 1 0 20 0 Z
+				 M 190 320 l -10 30 s 10 50 20 10 s -10 0 -10 -40 Z"/>
+				 
+		<path d="m 10 400 l -10 30 l 20 0 Z
+				 m 30 0 l -10 30 v 20 h 20 l 0 -20 Z
+				 m 30 0 l -10 30 c 0 30 20 30 20 0 Z
+				 m 30 0 l -10 30 s 10 50 20 0 Z
+				 m 30 0 l -10 30 q 10 50 20 0 Z
+				 m 30 0 l -10 30 a 10 10 60 1 0 20 0 Z
+				 m 30 0 l -10 30 s 10 50 20 10 s -10 0 -10 -40 Z"/>
+				 
+		<path d="M 10 480 l 0 80 l 190 0 l 0 -80 Z
+				 M 30 490 l 10 30 l -20 0
+				 M 60 490 l 10 30 v 20 h -20 l 0 -20
+				 M 90 490 l 10 30 c 0 30 -20 30 -20 0
+				 M 120 490 l 10 30 s -10 50 -20 0
+				 M 150 490 l 10 30 q -10 50 -20 0
+				 M 180 490 l 10 30 a 10 10 60 1 1 -20 0"/>
+	</svg>
+	
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+		<path d="M 48.571429,146.6479 C 50,71.647896 135,62.362182 135.71429,150.21932 c 0.71428,87.85715 70,89.28572 74.28571,0.71429 4.28571,-88.571428 65.71429,-89.285714 64.28571,10 -1.42857,99.28571 62.14286,112.85714 66.42858,32.85714 4.28571,-80 18.57142,-141.428568 52.85714,-57.85714 34.28571,83.57143 63.57143,181.42857 57.14286,64.28571 -6.42858,-117.142853 45.71428,-102.857138 60.71428,-32.14285 15,70.71428 7.85714,297.85714 -58.57143,192.14285 -66.42857,-105.71428 -80,-123.57142 -150,-57.85714 -70,65.71429 -99.28571,60.71429 -102.85714,2.85714 -3.57143,-57.85714 -16.42857,-90.71428 -50,-67.14285 -33.57143,23.57143 10.71429,67.85714 -42.14286,97.85714 -52.85714,30 -94.999997,6.42857 -84.999997,-22.14286 10,-28.57143 77.142857,-29.28571 71.428571,-80 C 88.571429,183.07647 65,175.21932 46.428571,188.79075 27.857143,202.36218 2.8571429,207.36218 12.142857,178.07647 21.428571,148.79075 48.571429,146.6479 48.571429,146.6479 z" />
+	</svg>
+
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+		<path d="M 242.8125 85.4375 C 227.56023 85.733392 212.07589 108.03571 210 150.9375 C 205.71429 239.50893 136.43303 238.0759 135.71875 150.21875 C 135.00446 62.361612 49.991071 71.656246 48.5625 146.65625 C 48.5625 146.65625 21.441964 148.77678 12.15625 178.0625 C 2.8705359 207.34821 27.866072 202.35268 46.4375 188.78125 C 65.008929 175.20982 88.566965 183.06697 94.28125 233.78125 C 99.995536 284.49554 32.84375 285.20982 22.84375 313.78125 C 12.84375 342.35268 54.98661 365.9375 107.84375 335.9375 C 160.7009 305.9375 116.42857 261.63393 150 238.0625 C 183.57143 214.49107 196.42857 247.36161 200 305.21875 C 203.57143 363.0759 232.84375 368.08929 302.84375 302.375 C 372.84375 236.66072 386.41518 254.50447 452.84375 360.21875 C 519.27232 465.93304 526.4375 238.77678 511.4375 168.0625 C 496.4375 97.348212 444.29017 83.075897 450.71875 200.21875 C 457.14732 317.36161 427.84821 219.50893 393.5625 135.9375 C 359.27678 52.366072 345.00446 113.78125 340.71875 193.78125 C 336.43303 273.78125 272.85268 260.22321 274.28125 160.9375 C 275.01786 109.7433 259.04879 85.122518 242.8125 85.4375 z M 89.28125 128.78125 C 89.28125 128.78125 90.01339 145.93304 107.15625 145.21875 C 124.2991 144.50447 132.14286 211.6384 130 233.78125 C 127.85714 255.92411 105.70536 264.50447 98.5625 260.21875 C 91.419643 255.93304 120.70983 203.78571 104.28125 179.5 C 87.852683 155.21428 46.424107 128.78125 89.28125 128.78125 z M 247.15625 199.5 C 247.15625 199.5 230.71875 224.50893 240.71875 245.9375 C 250.71875 267.36607 259.29464 240.22767 286.4375 266.65625 C 313.58036 293.08482 225 295.21875 225 295.21875 C 225 295.21875 217.12946 289.49554 222.84375 283.78125 C 228.55804 278.06697 238.5759 263.77678 220.71875 253.0625 C 202.86161 242.34821 185.0134 200.21428 247.15625 199.5 z M 370.71875 223.78125 C 370.71875 223.78125 420.70983 256.64733 469.28125 265.21875 C 517.85268 273.79018 471.4375 310.92411 451.4375 278.78125 C 431.4375 246.6384 365.00446 289.49554 370.71875 223.78125 z " />
+	</svg>
+
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+		<path d="M 242.8125 85.4375 C 227.56023 85.733392 212.07589 108.03571 210 150.9375 C 205.71429 239.50893 136.43303 238.0759 135.71875 150.21875 C 135.00446 62.361612 49.991071 71.656246 48.5625 146.65625 C 48.5625 146.65625 21.441964 148.77678 12.15625 178.0625 C 2.8705359 207.34821 27.866072 202.35268 46.4375 188.78125 C 65.008929 175.20982 88.566965 183.06697 94.28125 233.78125 C 99.995536 284.49554 32.84375 285.20982 22.84375 313.78125 C 12.84375 342.35268 54.98661 365.9375 107.84375 335.9375 C 160.7009 305.9375 116.42857 261.63393 150 238.0625 C 183.57143 214.49107 196.42857 247.36161 200 305.21875 C 203.57143 363.0759 232.84375 368.08929 302.84375 302.375 C 372.84375 236.66072 386.41518 254.50447 452.84375 360.21875 C 519.27232 465.93304 526.4375 238.77678 511.4375 168.0625 C 496.4375 97.348212 444.29017 83.075897 450.71875 200.21875 C 457.14732 317.36161 427.84821 219.50893 393.5625 135.9375 C 359.27678 52.366072 345.00446 113.78125 340.71875 193.78125 C 336.43303 273.78125 272.85268 260.22321 274.28125 160.9375 C 275.01786 109.7433 259.04879 85.122518 242.8125 85.4375 z M 89.28125 128.78125 C 89.28125 128.78125 90.01339 145.93304 107.15625 145.21875 C 124.2991 144.50447 132.14286 211.6384 130 233.78125 C 127.85714 255.92411 105.70536 264.50447 98.5625 260.21875 C 91.419643 255.93304 120.70983 203.78571 104.28125 179.5 C 87.852683 155.21428 46.424107 128.78125 89.28125 128.78125 z M 247.15625 199.5 C 247.15625 199.5 230.71875 224.50893 240.71875 245.9375 C 250.71875 267.36607 259.29464 240.22767 286.4375 266.65625 C 313.58036 293.08482 225 295.21875 225 295.21875 C 225 295.21875 217.12946 289.49554 222.84375 283.78125 C 228.55804 278.06697 238.5759 263.77678 220.71875 253.0625 C 202.86161 242.34821 185.0134 200.21428 247.15625 199.5 z M 370.71875 223.78125 C 370.71875 223.78125 420.70983 256.64733 469.28125 265.21875 C 517.85268 273.79018 471.4375 310.92411 451.4375 278.78125 C 431.4375 246.6384 365.00446 289.49554 370.71875 223.78125 z " />
+		<path d="m 140.71429,88.790753 30,79.999997 26.42857,-84.999997 z" />
+		<path d="m 290.71429,67.362182 c 36.42857,-47.857143 72.14285,-25 37.14285,34.285718 -35,59.28571 19.28572,47.14285 -2.85714,77.85714 -22.14286,30.71429 -51.42857,-18.57143 -40,-47.85714 11.42857,-29.28572 5.71429,-64.285718 5.71429,-64.285718 z" />
+		<path d="M 438.03125 58.53125 C 426.1103 58.564013 410.63839 63.25 392.15625 74.5 C 392.15625 74.5 414.28571 158.77678 450 118.0625 C 475.66965 88.799105 468.4959 58.447523 438.03125 58.53125 z M 443.75 76.625 C 457.14286 76.638951 464.11161 82.71875 450.71875 95.21875 C 429.29017 115.21875 415.71875 83.0625 415.71875 83.0625 C 425.3616 78.776786 435.71429 76.61663 443.75 76.625 z " />
+	</svg>
+
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+		<path d="M 377.15625 53.0625 L 60.71875 54.5 L 60.71875 232.375 L 377.15625 232.375 L 377.15625 53.0625 z M 158.65625 76.875 C 169.01054 76.803065 175.12054 86.299106 187.84375 108.0625 C 214.98661 154.49107 299.99107 160.92857 308.5625 114.5 C 317.13393 68.071428 360.00446 75.933031 355.71875 110.21875 C 351.43303 144.50446 334.99553 223.07589 274.28125 215.21875 C 213.56696 207.3616 233.57589 135.22322 180.71875 140.9375 C 127.8616 146.65179 138.57589 224.49107 100.71875 188.0625 C 62.861603 151.63393 91.4375 110.21875 91.4375 110.21875 C 129.76339 89.348212 146.92139 76.956526 158.65625 76.875 z " />
+		<path d="M 110.71429,163.79075 119.28571,111.6479 140,140.21932 z" />
+		<path d="m 241.42857,180.21932 c 49.28571,44.28572 85,-21.42857 85,-21.42857 0,0 -68.57143,-6.42857 -85,21.42857 z" />
+	</svg>
+	</body>
+
+</html>

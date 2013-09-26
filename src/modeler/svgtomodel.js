@@ -1,4 +1,4 @@
-JSM.SvgToModel = function (svgObject, segmentation)
+JSM.SvgToModel = function (svgObject, height, segmentation)
 {
 	function SegmentPath (svgObject, path, segmentation)
 	{
@@ -57,7 +57,7 @@ JSM.SvgToModel = function (svgObject, segmentation)
 						command = (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS ? 'S' : 's');
 						commandString +=  command + ' ' + item.x2 + ' ' + item.y2 + ' ' + item.x + ' ' + item.y + ' ';
 					} else {
-						alert ('SegmentCurve unknown segment type: ' + item.pathSegType);
+						// unknown segment type
 					}
 				}
 				
@@ -65,10 +65,11 @@ JSM.SvgToModel = function (svgObject, segmentation)
 				return path;
 			}
 		
+			var currentSegmentation = segmentation * items.length;
 			var path = CreatePath (items, result, currentContour);
-			var step = path.getTotalLength () / segmentation;
+			var step = path.getTotalLength () / currentSegmentation;
 			var i, point;
-			for (i = 1; i <= segmentation; i++) {
+			for (i = 1; i <= currentSegmentation; i++) {
 				point = path.getPointAtLength (i * step);
 				lastCoord = AddTransformedVertex (result, currentContour, svgObject, originalPath, point.x, point.y);
 			}
@@ -154,7 +155,7 @@ JSM.SvgToModel = function (svgObject, segmentation)
 				i = j - 1;
 				lastCoord = SegmentCurve (svgObject, path, segmentation, lastCoord, items, result, currentContour);
 			} else {
-				alert ('unknown segment type: ' + item.pathSegType);
+				// unknown segment type
 			}
 		}
 		
@@ -176,7 +177,7 @@ JSM.SvgToModel = function (svgObject, segmentation)
 		return result;
 	}
 	
-	function ContourPolygonToPrisms (polygon)
+	function ContourPolygonToPrisms (polygon, height)
 	{
 		function CreateBasePolygon (polygon)
 		{
@@ -230,10 +231,10 @@ JSM.SvgToModel = function (svgObject, segmentation)
 			}
 			
 			if (!hasHoles) {
-				prism = JSM.GeneratePrism (holeBasePolygon, direction, 10.0, true);
+				prism = JSM.GeneratePrism (holeBasePolygon, direction, height, true);
 				prisms.push (prism);
 			} else {
-				prism = JSM.GeneratePrismWithHole (holeBasePolygon, direction, 10.0, true);
+				prism = JSM.GeneratePrismWithHole (holeBasePolygon, direction, height, true);
 				prisms.push (prism);
 			}
 		}
@@ -242,15 +243,16 @@ JSM.SvgToModel = function (svgObject, segmentation)
 	}
 	
 	var model = new JSM.Model ();
+	var materials = new JSM.Materials ();
 	var polygons = SegmentPaths (svgObject, segmentation);
 	
 	var i, j, prisms;
 	for (i = 0; i < polygons.length; i++) {
-		prisms = ContourPolygonToPrisms (polygons[i]);
+		prisms = ContourPolygonToPrisms (polygons[i], height);
 		for (j = 0; j < prisms.length; j++) {
 			model.AddBody (prisms[j]);
 		}
 	}
 
-	return model;
+	return [model, materials];
 }
