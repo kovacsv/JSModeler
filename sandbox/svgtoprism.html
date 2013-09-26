@@ -64,9 +64,17 @@
 					point.y = y;
 					
 					var transformed = point.matrixTransform (path.getCTM ());
-					result.AddVertex (contour, transformed.x, transformed.y);
+					var transformedCoord = new JSM.Coord2D (x, y);
 					
-					return new JSM.Coord2D (x, y);
+					var contourVertexCount = result.VertexCount (contour);
+					if (contourVertexCount > 0) {
+						if (JSM.CoordIsEqual2DWithEps (result.GetVertex (contour, contourVertexCount - 1), transformedCoord, 0.1)) {
+							return transformedCoord;
+						}
+					}
+					
+					result.AddVertex (contour, transformed.x, transformed.y);
+					return transformedCoord;
 				}
 
 				function SegmentCurve (svgObject, originalPath, lastCoord, items, result, currentContour)
@@ -334,6 +342,7 @@
 <body>
 </body>
 <svg id="exampleSvg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="600">
+
  	<path d="M 10 0 L 0 30 L 20 30 Z"/>
 	<path d="M 40 0 L 30 30 V 50 H 50 L 50 30 Z"/>
 	<path d="M 70 0 L 60 30 C 60 60 80 60 80 30 Z"/>
