@@ -28,6 +28,7 @@
 ../src/modeler/material.js
 ../src/modeler/generator.js
 ../src/modeler/solidgenerator.js
+../src/modeler/svgtomodel.js
 ../src/modeler/painter.js
 ../src/modeler/exporter.js
 ../src/modeler/camera.js

@@ -1,1 +1,2 @@
 var THREE = {};
+var SVGPathSeg = {};
