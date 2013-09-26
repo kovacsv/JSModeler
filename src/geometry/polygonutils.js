@@ -180,27 +180,33 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 {
 	function FindHoleEntryPoint (contourIndex)
 	{
-		var polygon = new JSM.Polygon2D ();
-		var i, j, vertex;
+		var originalPolygon = new JSM.Polygon2D ();
+		var contourPolygon = new JSM.Polygon2D ();
+		var i, j, k, vertex;
 		for (i = 0; i < result.length; i++) {
 			vertex = vertices[result[i]];
-			polygon.AddVertex (vertex.x, vertex.y);
-		}	
+			originalPolygon.AddVertex (vertex.x, vertex.y);
+		}
 	
 		var from = contourEnds[contourIndex] + 1;
 		var to = contourEnds[contourIndex + 1];
+		for (i = from; i < to; i++) {
+			vertex = vertices[i];
+			contourPolygon.AddVertex (vertex.x, vertex.y);
+		}
 
-		var count = polygon.VertexCount ();
 		var entryPoint = null;
-
-		var sector, res;
-		for (i = 0; i < count; i++) {
-			res = result[i];
+		var originalSector, originalInd, contourInd;
+		for (i = 0; i < originalPolygon.VertexCount (); i++) {
+			originalInd = result[i];
 			for (j = from; j < to; j++) {
-				sector = new JSM.Sector (vertices[res], vertices[j]);
-				if (!JSM.SectorIntersectsPolygon2D (polygon, sector, i, -1)) {
-					entryPoint = [res, j];
-					break;
+				contourInd = j - from;
+				originalSector = new JSM.Sector (vertices[originalInd], vertices[j]);
+				if (!JSM.SectorIntersectsPolygon2D (originalPolygon, originalSector, i, -1)) {
+					if (!JSM.SectorIntersectsPolygon2D (contourPolygon, originalSector, -1, contourInd)) {
+						entryPoint = [originalInd, j];
+						break;
+					}
 				}
 			}
 			if (entryPoint !== null) {
