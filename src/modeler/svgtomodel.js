@@ -124,32 +124,42 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 				return result;
 			}
 		
-			var result = 0x000000;
 			var svgColor = '';
 			var target = path;
 			while (target !== null && svgColor.length == 0) {
 				svgColor = target.style.fill;
 				target = target.parentElement;
 			}
-			
-			var firstBracket = svgColor.indexOf ('(');
-			var secondBracket = svgColor.indexOf (')');
-			if (firstBracket == -1 || secondBracket == -1) {
+
+			var result = 0x000000;
+			if (svgColor.length == 0) {
 				return result;
 			}
 			
-			var numbers = svgColor.substring (firstBracket + 1, secondBracket);
-			var rgb = numbers.split (', ');
-			if (rgb.length != 3) {
-				return result;
+			if (svgColor[0] == '#') {
+				var hexString = '0x' + svgColor.substring (1);
+				result = parseInt (hexString, 16);
+			} else {
+				var firstBracket = svgColor.indexOf ('(');
+				var secondBracket = svgColor.indexOf (')');
+				if (firstBracket == -1 || secondBracket == -1) {
+					return result;
+				}
+				
+				var numbers = svgColor.substring (firstBracket + 1, secondBracket);
+				var rgb = numbers.split (', ');
+				if (rgb.length != 3) {
+					return result;
+				}
+				
+				var r = ToHexString (rgb[0]);
+				var g = ToHexString (rgb[1]);
+				var b = ToHexString (rgb[2]);
+				
+				var hexString = '0x' + r + g + b;
+				result = parseInt (hexString, 16);
 			}
 			
-			var r = ToHexString (rgb[0]);
-			var g = ToHexString (rgb[1]);
-			var b = ToHexString (rgb[2]);
-			
-			var hexString = '0x' + r + g + b;
-			result = parseInt (hexString, 16);
 			return result;
 		}
 	
