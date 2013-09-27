@@ -201,7 +201,7 @@ JSM.ExportMaterialsToGDL = function (materials)
 {
 	var HexColorToRGBColorString = function (hexColor)
 	{
-		var rgb = JSM.HexColorToRGBColor (hexColor);
+		var rgb = JSM.HexColorToRGBComponents (hexColor);
 		var result = rgb[0] / 255.0 + ',' + rgb[1] / 255.0 + ',' + rgb[2] / 255.0;
 		return result;
 	};
@@ -351,7 +351,7 @@ JSM.ExportBodyToSVG = function (body, materials, settings, svgObject)
 {
 	var HexColorToHTMLColor = function (hexColor)
 	{
-		var rgb = JSM.HexColorToRGBColor (hexColor);
+		var rgb = JSM.HexColorToRGBComponents (hexColor);
 		var result = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
 		return result;
 	};

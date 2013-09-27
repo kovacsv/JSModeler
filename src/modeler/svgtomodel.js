@@ -115,15 +115,6 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 	
 		function SVGColorToHex (path)
 		{
-			function ToHexString (intString)
-			{
-				var result = parseInt (intString).toString (16);
-				while (result.length < 2) {
-					result = '0' + result;
-				}
-				return result;
-			}
-		
 			var svgColor = '';
 			var target = path;
 			while (target !== null && svgColor.length == 0) {
@@ -137,8 +128,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 			}
 			
 			if (svgColor[0] == '#') {
-				var hexString = '0x' + svgColor.substring (1);
-				result = parseInt (hexString, 16);
+				result = JSM.HexColorToRGBColor (svgColor.substring (1));
 			} else {
 				var firstBracket = svgColor.indexOf ('(');
 				var secondBracket = svgColor.indexOf (')');
@@ -152,12 +142,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 					return result;
 				}
 				
-				var r = ToHexString (rgb[0]);
-				var g = ToHexString (rgb[1]);
-				var b = ToHexString (rgb[2]);
-				
-				var hexString = '0x' + r + g + b;
-				result = parseInt (hexString, 16);
+				result = JSM.RGBComponentsToRGBColor (rgb[0], rgb[1], rgb[2]);
 			}
 			
 			return result;
