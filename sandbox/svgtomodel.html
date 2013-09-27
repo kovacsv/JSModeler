@@ -71,7 +71,7 @@
 			
 			var svgObject = document.getElementById ('exampleSvg');
 			var height = 10;
-			var segmentation = 100;
+			var segmentation = 20;
 			var modelAndMaterials = JSM.SvgToModel (svgObject, height, segmentation);
 
 			var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1]);
@@ -85,8 +85,7 @@
 </head>
 
 <body>
-</body>
-<svg id="exampleSvg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="600">
+	<svg id="exampleSvg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="600">
 
  	<path style="fill : #3F5D7D;" d="M 10 0 L 0 30 L 20 30 Z"/>
 	<path style="fill : #279B61;" d="M 40 0 L 30 30 V 50 H 50 L 50 30 Z"/>
@@ -152,4 +151,7 @@
 	</svg> 
 
 	<canvas id="example" width="800" height="600" style="border : 1px solid #000000; background : #ffffff;"></canvas>
+
+</body>
+
 </html>

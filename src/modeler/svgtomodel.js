@@ -251,7 +251,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 		var contourCount = polygon.ContourCount ();
 		if (contourCount == 1) {
 			basePolygon = CreateBasePolygon (polygon.GetContour (0))
-			prism = JSM.GeneratePrism (basePolygon, direction, 10.0, true);
+			prism = JSM.GeneratePrism (basePolygon, direction, height, true);
 			prisms.push (prism);
 		} else if (contourCount > 1) {
 			var baseOrientation = JSM.PolygonOrientation2D (polygon.GetContour (0));
@@ -263,7 +263,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 				orientation = JSM.PolygonOrientation2D (polygon.GetContour (i));
 				if (orientation == baseOrientation) {
 					basePolygon = CreateBasePolygon (polygon.GetContour (i))
-					prism = JSM.GeneratePrism (basePolygon, direction, 10.0, true);
+					prism = JSM.GeneratePrism (basePolygon, direction, height, true);
 					prisms.push (prism);
 				} else {
 					AddHoleToBasePolygon (holeBasePolygon, polygon.GetContour (i));
