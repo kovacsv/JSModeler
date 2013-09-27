@@ -118,7 +118,10 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 			var svgColor = '';
 			var target = path;
 			while (target !== null && svgColor.length == 0) {
-				svgColor = target.style.fill;
+				svgColor = target.getAttribute ('fill');
+				if (svgColor == null) {
+					svgColor = target.style.fill;
+				}
 				target = target.parentElement;
 			}
 
