@@ -1,10 +1,10 @@
 JSM.SvgToModel = function (svgObject, height, segmentation)
 {
-	function SegmentPath (svgObject, path, segmentation)
+	function SegmentPath (path, segmentation)
 	{
-		function AddTransformedVertex (result, contour, svgObject, path, x, y)
+		function AddTransformedVertex (dummySVG, result, contour, path, x, y)
 		{
-			var point = svgObject.createSVGPoint ();
+			var point = dummySVG.createSVGPoint ();
 			point.x = x;
 			point.y = y;
 			
@@ -22,7 +22,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 			return transformedCoord;
 		}
 
-		function SegmentCurve (svgObject, originalPath, segmentation, lastCoord, items, result, currentContour)
+		function SegmentCurve (dummySVG, originalPath, segmentation, lastCoord, items, result, currentContour)
 		{
 			function CreatePath (items, result, currentContour)
 			{
@@ -71,7 +71,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 			var i, point;
 			for (i = 1; i <= currentSegmentation; i++) {
 				point = path.getPointAtLength (i * step);
-				lastCoord = AddTransformedVertex (result, currentContour, svgObject, originalPath, point.x, point.y);
+				lastCoord = AddTransformedVertex (dummySVG, result, currentContour, originalPath, point.x, point.y);
 			}
 			
 			return lastCoord;
@@ -151,6 +151,8 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 			return result;
 		}
 	
+		var dummySVG = document.createElementNS ('http://www.w3.org/2000/svg', 'svg');
+
 		var result = new JSM.ContourPolygon2D ();
 		var lastCoord = new JSM.Coord2D (0.0, 0.0);
 		var lastMoveCoord = new JSM.Coord2D (0.0, 0.0);
@@ -163,24 +165,24 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 				// do nothing
 			} else if (item.pathSegType == SVGPathSeg.PATHSEG_MOVETO_ABS) {
 				currentContour = StartNewContour (result, currentContour);
-				lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, item.x, item.y);
+				lastCoord = AddTransformedVertex (dummySVG, result, currentContour, path, item.x, item.y);
 				lastMoveCoord = lastCoord.Clone ();
 			} else if (item.pathSegType == SVGPathSeg.PATHSEG_MOVETO_REL) {
 				currentContour = StartNewContour (result, currentContour);
-				lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, lastMoveCoord.x + item.x, lastMoveCoord.y + item.y);
+				lastCoord = AddTransformedVertex (dummySVG, result, currentContour, path, lastMoveCoord.x + item.x, lastMoveCoord.y + item.y);
 				lastMoveCoord = lastCoord.Clone ();
 			} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_ABS) {
-				lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, item.x, item.y);
+				lastCoord = AddTransformedVertex (dummySVG, result, currentContour, path, item.x, item.y);
 			} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_REL) {
-				lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, lastCoord.x + item.x, lastCoord.y + item.y);
+				lastCoord = AddTransformedVertex (dummySVG, result, currentContour, path, lastCoord.x + item.x, lastCoord.y + item.y);
 			} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS) {
-				lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, item.x, lastCoord.y);
+				lastCoord = AddTransformedVertex (dummySVG, result, currentContour, path, item.x, lastCoord.y);
 			} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS) {
-				lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, lastCoord.x, item.y);
+				lastCoord = AddTransformedVertex (dummySVG, result, currentContour, path, lastCoord.x, item.y);
 			} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL) {
-				lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, lastCoord.x + item.x, lastCoord.y);
+				lastCoord = AddTransformedVertex (dummySVG, result, currentContour, path, lastCoord.x + item.x, lastCoord.y);
 			} else if (item.pathSegType == SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL) {
-				lastCoord = AddTransformedVertex (result, currentContour, svgObject, path, lastCoord.x, lastCoord.y + item.y);
+				lastCoord = AddTransformedVertex (dummySVG, result, currentContour, path, lastCoord.x, lastCoord.y + item.y);
 			} else if (IsCurvedItem (item)) {
 				items = [];
 				for (j = i; j < path.pathSegList.numberOfItems; j++) {
@@ -191,7 +193,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 					items.push (currentItem);
 				}
 				i = j - 1;
-				lastCoord = SegmentCurve (svgObject, path, segmentation, lastCoord, items, result, currentContour);
+				lastCoord = SegmentCurve (dummySVG, path, segmentation, lastCoord, items, result, currentContour);
 			} else {
 				// unknown segment type
 			}
@@ -209,7 +211,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 		
 		var i, current;
 		for (i = 0; i < paths.length; i++) {
-			current = SegmentPath (svgObject, paths[i], segmentation);
+			current = SegmentPath (paths[i], segmentation);
 			result.push (current);
 		}
 		
