@@ -113,6 +113,46 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 			return contour;
 		}
 	
+		function SVGColorToHex (path)
+		{
+			function ToHexString (intString)
+			{
+				var result = parseInt (intString).toString (16);
+				while (result.length < 2) {
+					result = '0' + result;
+				}
+				return result;
+			}
+		
+			var result = 0x000000;
+			var svgColor = '';
+			var target = path;
+			while (target !== null && svgColor.length == 0) {
+				svgColor = target.style.fill;
+				target = target.parentElement;
+			}
+			
+			var firstBracket = svgColor.indexOf ('(');
+			var secondBracket = svgColor.indexOf (')');
+			if (firstBracket == -1 || secondBracket == -1) {
+				return result;
+			}
+			
+			var numbers = svgColor.substring (firstBracket + 1, secondBracket);
+			var rgb = numbers.split (', ');
+			if (rgb.length != 3) {
+				return result;
+			}
+			
+			var r = ToHexString (rgb[0]);
+			var g = ToHexString (rgb[1]);
+			var b = ToHexString (rgb[2]);
+			
+			var hexString = '0x' + r + g + b;
+			result = parseInt (hexString, 16);
+			return result;
+		}
+	
 		var result = new JSM.ContourPolygon2D ();
 		var lastCoord = new JSM.Coord2D (0.0, 0.0);
 		var lastMoveCoord = new JSM.Coord2D (0.0, 0.0);
@@ -160,6 +200,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 		}
 		
 		RemoveEqualEndVertices (result, currentContour);
+		result.color = SVGColorToHex (path);
 		return result;
 	}
 	
@@ -239,18 +280,24 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 			}
 		}
 		
-		return prisms;
+		var material = new JSM.Material (polygon.color, polygon.color);
+		return [prisms, material];
 	}
 	
 	var model = new JSM.Model ();
 	var materials = new JSM.Materials ();
 	var polygons = SegmentPaths (svgObject, segmentation);
 	
-	var i, j, prisms;
+	var i, j, prismsAndMaterial, currentPrisms, currentPrism, currentMaterial;
 	for (i = 0; i < polygons.length; i++) {
-		prisms = ContourPolygonToPrisms (polygons[i], height);
-		for (j = 0; j < prisms.length; j++) {
-			model.AddBody (prisms[j]);
+		prismsAndMaterial = ContourPolygonToPrisms (polygons[i], height);
+		currentPrisms = prismsAndMaterial[0];
+		currentMaterial = prismsAndMaterial[1];
+		materials.AddMaterial (currentMaterial);
+		for (j = 0; j < currentPrisms.length; j++) {
+			currentPrism = currentPrisms[j];
+			currentPrism.SetPolygonsMaterialIndex (materials.Count () - 1);
+			model.AddBody (currentPrism);
 		}
 	}
 
