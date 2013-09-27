@@ -85,7 +85,7 @@
 </head>
 
 <body>
-	<svg id="exampleSvg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="600">
+	<svg id="exampleSvg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="800">
 
  	<path style="fill : #3F5D7D;" d="M 10 0 L 0 30 L 20 30 Z"/>
 	<path style="fill : #279B61;" d="M 40 0 L 30 30 V 50 H 50 L 50 30 Z"/>
@@ -147,10 +147,17 @@
 			 M 120 490 l 10 30 s -10 50 -20 0
 			 M 150 490 l 10 30 q -10 50 -20 0
 			 M 180 490 l 10 30 a 10 10 60 1 1 -20 0"/>
-
+	
+	<rect style="fill : #008AB8;" x="10" y="580" width="30" height="40" />
+	<rect style="fill : #279B61;" x="10" y="580" width="30" height="40" transform="translate (40)"/>
+	
+	<polygon style="fill : #008AB8;" points="90 580 120 580 105 620"/>
+	<polygon style="fill : #279B61;" points="90 580 120 580 105 620" transform="translate (40)"/>
+	<polygon style="fill : #993333;" points="90 580 120 580 100 600 120 620 90 620" transform="translate (80)"/>
+			 
 	</svg> 
 
-	<canvas id="example" width="800" height="600" style="border : 1px solid #000000; background : #ffffff;"></canvas>
+	<canvas id="example" width="800" height="800" style="border : 1px solid #000000; background : #ffffff;"></canvas>
 
 </body>
 
