@@ -2,7 +2,7 @@ JSM.GenerateSVGCircles = function (svgObject, greatRadius, smallRadius, controlR
 {
 	var HexColorToHTMLColor = function (hexColor)
 	{
-		var rgb = JSM.HexColorToRGBColor (hexColor);
+		var rgb = JSM.HexColorToRGBComponents (hexColor);
 		var result = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
 		return result;
 	};
