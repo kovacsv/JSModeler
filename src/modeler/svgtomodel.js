@@ -1,6 +1,6 @@
-JSM.SvgToModel = function (svgObject, height, segmentation)
+JSM.SvgToModel = function (svgObject, height, segmentLength)
 {
-	function SegmentElem (elem, segmentation)
+	function SegmentElem (elem, segmentLength)
 	{
 		function AddTransformedVertex (dummySVG, result, contour, elem, x, y)
 		{
@@ -23,7 +23,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 			return resultCoord;
 		}
 
-		function SegmentCurve (dummySVG, originalPath, segmentation, lastCoord, items, result, currentContour)
+		function SegmentCurve (dummySVG, originalPath, segmentLength, lastCoord, items, result, currentContour)
 		{
 			function CreatePath (items, result, currentContour)
 			{
@@ -66,11 +66,20 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 				return path;
 			}
 		
-			var currentSegmentation = segmentation * items.length;
 			var path = CreatePath (items, result, currentContour);
-			var step = path.getTotalLength () / currentSegmentation;
+			var pathLength = path.getTotalLength ();
+
+			var segmentation = 0;
+			if (segmentLength > 0) {
+				segmentation = parseInt (pathLength / segmentLength);
+			}
+			if (segmentation < 3) {
+				segmentation = 3;
+			}
+			
+			var step = pathLength / segmentation;
 			var i, point;
-			for (i = 1; i <= currentSegmentation; i++) {
+			for (i = 1; i <= segmentation; i++) {
 				point = path.getPointAtLength (i * step);
 				lastCoord = AddTransformedVertex (dummySVG, result, currentContour, originalPath, point.x, point.y);
 			}
@@ -161,7 +170,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 			var lastCoord = new JSM.Coord2D (0.0, 0.0);
 			var lastMoveCoord = new JSM.Coord2D (0.0, 0.0);
 
-			var i, j, item, items, currentItem;
+			var i, j, item, items, currentItem, currentSegmentLength;
 			var currentContour = 0;
 			for (i = 0; i < elem.pathSegList.numberOfItems; i++) {
 				item = elem.pathSegList.getItem (i);
@@ -197,7 +206,12 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 						items.push (currentItem);
 					}
 					i = j - 1;
-					lastCoord = SegmentCurve (dummySVG, elem, segmentation, lastCoord, items, result, currentContour);
+					
+					currentSegmentLength = segmentLength;
+					if (elem.hasAttribute ('segmentlength')) {
+						currentSegmentLength = parseFloat (elem.getAttribute ('segmentlength'));
+					}
+					lastCoord = SegmentCurve (dummySVG, elem, currentSegmentLength, lastCoord, items, result, currentContour);
 				} else {
 					// unknown segment type
 				}
@@ -220,7 +234,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 		return result;
 	}
 	
-	function SegmentPaths (svgObject, segmentation)
+	function SegmentPaths (svgObject, segmentLength)
 	{
 		function AddElemType (svgObject, elemType, result)
 		{
@@ -237,9 +251,14 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 		AddElemType (svgObject, 'rect', elems);
 		AddElemType (svgObject, 'polygon', elems);
 		
+		var currentSegmentLength = segmentLength;
+		if (svgObject.hasAttribute ('segmentlength')) {
+			currentSegmentLength = parseFloat (svgObject.getAttribute ('segmentlength'));
+		}
+
 		var i, current;
 		for (i = 0; i < elems.length; i++) {
-			current = SegmentElem (elems[i], segmentation);
+			current = SegmentElem (elems[i], currentSegmentLength);
 			result.push (current);
 		}
 		
@@ -314,7 +333,7 @@ JSM.SvgToModel = function (svgObject, height, segmentation)
 	
 	var model = new JSM.Model ();
 	var materials = new JSM.Materials ();
-	var polygons = SegmentPaths (svgObject, segmentation);
+	var polygons = SegmentPaths (svgObject, segmentLength);
 	
 	var i, j, prismsAndMaterial, currentPrisms, currentPrism, currentMaterial;
 	for (i = 0; i < polygons.length; i++) {

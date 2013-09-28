@@ -71,8 +71,8 @@
 			
 			var svgObject = document.getElementById ('exampleSvg');
 			var height = 10;
-			var segmentation = 20;
-			var modelAndMaterials = JSM.SvgToModel (svgObject, height, segmentation);
+			var segmentLength = 2;
+			var modelAndMaterials = JSM.SvgToModel (svgObject, height, segmentLength);
 
 			var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1]);
 			viewer.AddMeshes (meshes);
