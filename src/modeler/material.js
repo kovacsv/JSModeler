@@ -1,4 +1,4 @@
-JSM.HexColorToRGBColor = function (hexColor)
+JSM.HexColorToRGBComponents = function (hexColor)
 {
 	var hexString = hexColor.toString (16);
 	while (hexString.length < 6) {
@@ -8,6 +8,29 @@ JSM.HexColorToRGBColor = function (hexColor)
 	var g = parseInt (hexString.substr (2, 2), 16);
 	var b = parseInt (hexString.substr (4, 2), 16);
 	return [r, g, b];
+};
+
+JSM.HexColorToRGBColor = function (hexColor)
+{
+	var hexString = '0x' + hexColor;
+	return parseInt (hexString, 16);
+};
+
+JSM.RGBComponentsToRGBColor = function (red, green, blue)
+{
+	function IntegerToHex (intString)
+	{
+		var result = parseInt (intString).toString (16);
+		while (result.length < 2) {
+			result = '0' + result;
+		}
+		return result;
+	}
+	var r = IntegerToHex (red);
+	var g = IntegerToHex (green);
+	var b = IntegerToHex (blue);
+	var hexString = '0x' + r + g + b;
+	return parseInt (hexString, 16);
 };
 
 JSM.Material = function (ambient, diffuse, opacity, texture, textureWidth, textureHeight)

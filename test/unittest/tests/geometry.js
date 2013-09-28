@@ -1376,6 +1376,65 @@ AddTest ('PolygonTest', function (test)
 	test.Assert (triangles[1].toString () == '0,2,3');
 });
 
+AddTest ('ContourPolygon2DTest', function (test)
+{
+	var polygon = new JSM.ContourPolygon2D ();
+	test.Assert (polygon.ContourCount () == 0);
+	test.Assert (polygon.VertexCount (0) == 0);
+	test.Assert (polygon.VertexCount (1) == 0);
+	test.Assert (polygon.VertexCount (2) == 0);
+	
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (0, 1, 0);
+	polygon.AddVertex (0, 1, 1);
+	test.Assert (polygon.ContourCount () == 1);
+	test.Assert (polygon.VertexCount (0) == 3);
+	test.Assert (polygon.VertexCount (1) == 0);
+	test.Assert (polygon.VertexCount (2) == 0);
+
+	polygon.AddVertex (1, 0, 0);
+	polygon.AddVertex (1, 2, 0);
+	polygon.AddVertex (1, 2, 2);
+	test.Assert (polygon.ContourCount () == 2);
+	test.Assert (polygon.VertexCount (0) == 3);
+	test.Assert (polygon.VertexCount (1) == 3);
+	test.Assert (polygon.VertexCount (2) == 0);
+
+	polygon.AddContour ();
+	test.Assert (polygon.ContourCount () == 3);
+	polygon.AddVertex (2, 0, 0);
+	polygon.AddVertex (2, 3, 0);
+	polygon.AddVertex (2, 3, 3);
+	test.Assert (polygon.ContourCount () == 3);
+	test.Assert (polygon.VertexCount (0) == 3);
+	test.Assert (polygon.VertexCount (1) == 3);
+	test.Assert (polygon.VertexCount (2) == 3);
+
+	test.Assert (JSM.CoordIsEqual2D (polygon.GetVertex (0, 1), new JSM.Coord2D (1, 0)));
+	test.Assert (JSM.CoordIsEqual2D (polygon.GetVertex (1, 1), new JSM.Coord2D (2, 0)));
+	test.Assert (JSM.CoordIsEqual2D (polygon.GetVertex (2, 1), new JSM.Coord2D (3, 0)));
+	
+	var cloned = polygon.Clone ();
+	test.Assert (cloned.ContourCount () == 3);
+	test.Assert (cloned.VertexCount (0) == 3);
+	test.Assert (cloned.VertexCount (1) == 3);
+	test.Assert (cloned.VertexCount (2) == 3);
+
+	test.Assert (JSM.CoordIsEqual2D (cloned.GetVertex (0, 1), new JSM.Coord2D (1, 0)));
+	test.Assert (JSM.CoordIsEqual2D (cloned.GetVertex (1, 1), new JSM.Coord2D (2, 0)));
+	test.Assert (JSM.CoordIsEqual2D (cloned.GetVertex (2, 1), new JSM.Coord2D (3, 0)));
+
+	cloned.SetVertex (1, 1, 5, 6);
+	test.Assert (JSM.CoordIsEqual2D (polygon.GetVertex (1, 1), new JSM.Coord2D (2, 0)));
+	test.Assert (JSM.CoordIsEqual2D (cloned.GetVertex (1, 1), new JSM.Coord2D (5, 6)));
+	
+	polygon.Clear ();
+	test.Assert (polygon.ContourCount () == 0);
+	test.Assert (polygon.VertexCount (0) == 0);
+	test.Assert (polygon.VertexCount (1) == 0);
+	test.Assert (polygon.VertexCount (2) == 0);
+});
+
 AddTest ('CoordPolygonPosition2DTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();
@@ -1967,6 +2026,27 @@ AddTest ('CreatePolygonWithHole2DTest', function (test)
 	test.Assert (triangles[17].toString () == [18, 16, 17].toString ());
 	test.Assert (triangles[18].toString () == [14, 16, 18].toString ());
 	test.Assert (triangles[19].toString () == [16, 14, 15].toString ());
+
+	var vertices = [
+		new JSM.Coord2D (300.8485412597656, 319.4265441894531),
+		new JSM.Coord2D (338.24835205078125, 396.81103515625),
+		new JSM.Coord2D (421.9165954589844, 416.66839599609375),
+		new JSM.Coord2D (489.1433410644531, 362.9385986328125),
+		new JSM.Coord2D (489.543701171875, 276.95245361328125),
+		new JSM.Coord2D (422.18115234375, 223.48004150390625),
+		new JSM.Coord2D (337.93084716796875, 241.53892517089844),
+        null,
+		new JSM.Coord2D (400.6557922363281, 231.74929809570312),
+		new JSM.Coord2D (468.43548583984375, 264.9992980957031),
+		new JSM.Coord2D (484.7142639160156, 338.9593505859375),
+		new JSM.Coord2D (437.7185363769531, 398.06951904296875),
+		new JSM.Coord2D (362.0542297363281, 397.45257568359375),
+		new JSM.Coord2D (315.2279052734375, 338.1394348144531),
+		new JSM.Coord2D (332.49664306640625, 264.4938659667969)
+	];
+	
+	var indices = JSM.CreatePolygonWithHole2D (vertices);
+	test.Assert (indices.toString () == [0, 13, 14, 8, 9, 10, 11, 12, 13, 0, 1, 2, 3, 4, 5, 6].toString ());
 });
 
 AddTest ('CreatePolygonWithHoleTest', function (test)
