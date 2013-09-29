@@ -321,20 +321,20 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 	{
 		var AddTriangles = function (currentTriangles)
 		{
-			var materialIndex = currentTriangles['material'];
-			var parameters = currentTriangles['parameters'];
+			var materialIndex = currentTriangles.material;
+			var parameters = currentTriangles.parameters;
 			var materialData = materials[materialIndex];
 			
-			var textureName = materialData['texture'];
-			var textureOffset = materialData['offset'];
-			var textureScale = materialData['scale'];
+			var textureName = materialData.texture;
+			var textureOffset = materialData.offset;
+			var textureScale = materialData.scale;
 			
 			var ambientColor = new THREE.Color ();
 			var diffuseColor = new THREE.Color ();
 			var specularColor = new THREE.Color ();
-			ambientColor.setRGB (materialData['ambient'][0], materialData['ambient'][1], materialData['ambient'][2]);
-			diffuseColor.setRGB (materialData['diffuse'][0], materialData['diffuse'][1], materialData['diffuse'][2]);
-			specularColor.setRGB (materialData['specular'][0], materialData['specular'][1], materialData['specular'][2]);
+			ambientColor.setRGB (materialData.ambient[0], materialData.ambient[1], materialData.ambient[2]);
+			diffuseColor.setRGB (materialData.diffuse[0], materialData.diffuse[1], materialData.diffuse[2]);
+			specularColor.setRGB (materialData.specular[0], materialData.specular[1], materialData.specular[2]);
 
 			if (textureName !== undefined) {
 				ambientColor.setRGB (1.0, 1.0, 1.0);
@@ -356,8 +356,8 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 				}
 			);
 			
-			if (materialData['opacity'] !== 1.0) {
-				material.opacity = materialData['opacity'];
+			if (materialData.opacity !== 1.0) {
+				material.opacity = materialData.opacity;
 				material.transparent = true;
 			}
 			
@@ -416,22 +416,22 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 			result.push (mesh);
 		};
 
-		var vertices = mesh['vertices'];
+		var vertices = mesh.vertices;
 		if (vertices === undefined) {
 			return result;
 		}
 
-		var normals = mesh['normals'];
+		var normals = mesh.normals;
 		if (normals === undefined) {
 			return result;
 		}
 
-		var uvs = mesh['uvs'];
+		var uvs = mesh.uvs;
 		if (uvs === undefined) {
 			return result;
 		}
 	
-		var triangles = mesh['triangles'];
+		var triangles = mesh.triangles;
 		var i;
 		for (i = 0; i < triangles.length; i++) {
 			AddTriangles (triangles[i]);
@@ -440,12 +440,12 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 
 	var result = [];
 
-	var materials = jsonData['materials'];
+	var materials = jsonData.materials;
 	if (materials === undefined) {
 		return result;
 	}
 	
-	var meshes = jsonData['meshes'];
+	var meshes = jsonData.meshes;
 	if (meshes === undefined) {
 		return result;
 	}
