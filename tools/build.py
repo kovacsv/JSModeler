@@ -161,4 +161,6 @@ def Main ():
 		DeleteFile (tempFilePath)
 		return
 	
+	return
+	
 Main ()
