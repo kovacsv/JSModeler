@@ -20,7 +20,7 @@ JSM.RGBComponentsToRGBColor = function (red, green, blue)
 {
 	function IntegerToHex (intString)
 	{
-		var result = parseInt (intString).toString (16);
+		var result = parseInt (intString, 10).toString (16);
 		while (result.length < 2) {
 			result = '0' + result;
 		}

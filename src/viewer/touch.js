@@ -18,7 +18,7 @@ JSM.Touch.prototype =
 			eventParameters = window.event;
 		}
 		
-		if (event.touches.length == 0) {
+		if (event.touches.length === 0) {
 			return;
 		}
 		var touch = event.touches[0];
@@ -39,7 +39,7 @@ JSM.Touch.prototype =
 			eventParameters = window.event;
 		}
 		
-		if (event.touches.length == 0) {
+		if (event.touches.length === 0) {
 			return;
 		}
 		var touch = event.touches[0];

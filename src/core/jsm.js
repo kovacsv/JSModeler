@@ -66,7 +66,7 @@ JSM.Maximum = function (a, b)
 JSM.ArcSin = function (value)
 {
 	if (JSM.IsGreaterOrEqual (value, 1.0)) {
-		return Math.PI / 2.0;;
+		return Math.PI / 2.0;
 	} else if (JSM.IsLowerOrEqual (value, -1.0)) {
 		return - Math.PI / 2.0;
 	}

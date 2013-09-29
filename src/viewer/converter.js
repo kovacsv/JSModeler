@@ -476,14 +476,14 @@ JSM.JSONFileConverter.prototype =
 			if (request.readyState == 4) {
 				myThis.OnReady (request.responseText);
 			}
-		}
+		};
 		this.textureLoadedCallback = textureLoadedCallback;
-		request.send (null)				
+		request.send (null);			
 	},
 	
 	OnReady : function (responseText) 
 	{
-		if (this.onReady == null) {
+		if (this.onReady === null) {
 			return;
 		}
 		

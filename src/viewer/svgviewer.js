@@ -54,7 +54,7 @@ JSM.SVGViewer.prototype =
 		};
 		this.hiddenLine = false;
 	
-		if (settings != undefined) {
+		if (settings !== undefined) {
 			if (settings['cameraEyePosition'] !== undefined) this.settings['cameraEyePosition'] = settings['cameraEyePosition'];
 			if (settings['cameraCenterPosition'] !== undefined) this.settings['cameraCenterPosition'] = settings['cameraCenterPosition'];
 			if (settings['cameraUpVector'] !== undefined) this.settings['cameraUpVector'] = settings['cameraUpVector'];

@@ -116,7 +116,7 @@ Test.prototype =
 	{
 		this.resultValues.push (condition);
 	}
-}
+};
 
 var TestSuite = function (name)
 {
@@ -145,7 +145,7 @@ TestSuite.prototype =
 	{
 		return this.name;
 	}
-}
+};
 
 var TestRunner = function ()
 {
@@ -158,10 +158,10 @@ var TestRunner = function ()
 	
 	var myThis = this;
 	if (window.addEventListener) {
-		window.addEventListener ('load', function () {myThis.Run ()});
+		window.addEventListener ('load', function () {myThis.Run ();});
 		window.addEventListener ('hashchange', function () {window.location.reload ();});
 	} else if (window.attachEvent) {
-		window.attachEvent ('onload', function () {myThis.Run ()});
+		window.attachEvent ('onload', function () {myThis.Run ();});
 		window.attachEvent ('onhashchange', function () {window.location.reload ();});
 	}
 };
@@ -176,7 +176,7 @@ TestRunner.prototype =
 	AddTestToLastSuite : function (test)
 	{
 		var count = this.testSuites.length;
-		if (count == 0) {
+		if (count === 0) {
 			return;
 		}
 		this.testSuites[count - 1].AddTest (test);
@@ -207,7 +207,7 @@ TestRunner.prototype =
 	{
 		var testSuite = this.testSuites[index];
 		var testSuiteName = testSuite.GetName ();
-		if (this.runOnlySuite != null && this.runOnlySuite != testSuiteName) {	
+		if (this.runOnlySuite !== null && this.runOnlySuite !== testSuiteName) {	
 			return;
 		}
 		
@@ -224,7 +224,7 @@ TestRunner.prototype =
 		
 		var test = testSuite.GetTest (testIndex);
 		var testName = test.GetName ();
-		if (this.runOnlyTest != null && this.runOnlyTest != testName) {	
+		if (this.runOnlyTest !== null && this.runOnlyTest !== testName) {	
 			return;
 		}
 		
@@ -256,18 +256,19 @@ TestRunner.prototype =
 		}
 		
 		var resultSpan = document.createElement ('span');
+		var succeededSpan = null;
 		if (invalidTest) {
-			var succeededSpan = document.createElement ('span');
+			succeededSpan = document.createElement ('span');
 			succeededSpan.className = 'failedspan';
 			succeededSpan.innerHTML = 'invalid';
 			resultSpan.appendChild (succeededSpan);
 		} else if (allSucceeded) {
-			var succeededSpan = document.createElement ('span');
+			succeededSpan = document.createElement ('span');
 			succeededSpan.className = 'passedspan';
 			succeededSpan.innerHTML = 'passed';
 			resultSpan.appendChild (succeededSpan);
 		} else {
-			var succeededSpan = document.createElement ('span');
+			succeededSpan = document.createElement ('span');
 			succeededSpan.className = 'failedspan';
 			succeededSpan.innerHTML = 'failed - ';
 			resultSpan.appendChild (succeededSpan);
@@ -294,12 +295,12 @@ TestRunner.prototype =
 		this.runOnlyTest = null;
 
 		var fullHash = window.location.hash;
-		if (fullHash.length == 0) {
+		if (fullHash.length === 0) {
 			return;
 		}
 		
 		var hash = fullHash.substr (1);
-		if (hash.length == 0) {
+		if (hash.length === 0) {
 			return;
 		}
 		
@@ -319,7 +320,7 @@ TestRunner.prototype =
 		for (i = 0; i < texts.length; i++) {
 			column = new TableColumn ();
 			column.AddContentText (texts[i]);
-			row.AddColumn (column)
+			row.AddColumn (column);
 		}
 		return row;
 	},
@@ -331,7 +332,7 @@ TestRunner.prototype =
 		for (i = 0; i < elems.length; i++) {
 			column = new TableColumn ();
 			column.AddContentElem (elems[i]);
-			row.AddColumn (column)
+			row.AddColumn (column);
 		}
 		return row;
 	}
@@ -348,5 +349,5 @@ var AddTestSuite = function (name)
 var AddTest = function (name, callback)
 {
 	var test = new Test (name, callback);
-	testRunner.AddTestToLastSuite (test)
+	testRunner.AddTestToLastSuite (test);
 };

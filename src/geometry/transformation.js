@@ -38,7 +38,7 @@ JSM.Transformation.prototype =
 	
 	Clone : function ()
 	{
-		var result = new JSM.Transformation;
+		var result = new JSM.Transformation ();
 		result.matrix = [
 			this.matrix[0], this.matrix[1], this.matrix[2], this.matrix[3],
 			this.matrix[4], this.matrix[5], this.matrix[6], this.matrix[7],

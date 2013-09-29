@@ -148,7 +148,7 @@ JSM.SectorIntersectsPolygon2D = function (polygon, sector, from, to)
 	}
 	
 	return false;
-}
+};
 
 JSM.IsPolygonVertexVisible2D = function (polygon, from, to)
 {

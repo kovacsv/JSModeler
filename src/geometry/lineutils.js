@@ -13,7 +13,7 @@ JSM.CoordLinePosition2D = function (coord, line)
 	}
 
 	return 'CoordOnLine';
-}
+};
 
 JSM.CoordLinePosition = function (coord, line, projected)
 {
@@ -56,7 +56,7 @@ JSM.CoordLinePosition = function (coord, line, projected)
 	}
 
 	return 'CoordOutsideOfLine';
-}
+};
 
 JSM.ProjectCoordToLine = function (coord, line)
 {
@@ -87,7 +87,7 @@ JSM.ProjectCoordToLine = function (coord, line)
 
 	result.Set (c.x, c.y, c.z);
 	return result;
-}
+};
 
 JSM.LineLineClosestPoint = function (aLine, bLine, aClosestPoint, bClosestPoint)
 {
@@ -133,7 +133,7 @@ JSM.LineLineClosestPoint = function (aLine, bLine, aClosestPoint, bClosestPoint)
 	}
 	
 	return true;
-}
+};
 
 JSM.LineLinePosition = function (aLine, bLine, intersection)
 {
@@ -151,4 +151,4 @@ JSM.LineLinePosition = function (aLine, bLine, intersection)
 	}
 	
 	return 'LinesDontIntersects';
-}
+};

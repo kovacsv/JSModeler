@@ -50,7 +50,7 @@ JSM.ContourPolygon2D.prototype =
 {
 	AddVertex : function (contour, x, y)
 	{
-		if (this.polygons[contour] == undefined) {
+		if (this.polygons[contour] === undefined) {
 			this.polygons[contour] = new JSM.Polygon2D ();
 		}
 		this.polygons[contour].AddVertex (x, y);
@@ -58,7 +58,7 @@ JSM.ContourPolygon2D.prototype =
 	
 	VertexCount : function (contour)
 	{
-		if (this.polygons[contour] == undefined) {
+		if (this.polygons[contour] === undefined) {
 			return 0;
 		}
 		return this.polygons[contour].VertexCount ();

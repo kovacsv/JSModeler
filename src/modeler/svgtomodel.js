@@ -38,23 +38,23 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 				var commandString = GenerateMoveCommand (lastCoord.x, lastCoord.y);
 				var i, item, command, largeArcFlag, sweepFlag;
 				for (i = 0; i < items.length; i++) {
-					item = items[i]
+					item = items[i];
 					if (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS ||
 						item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL) {
 						command = (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS ? 'C' : 'c');
 						commandString += command + ' ' + item.x1 + ' ' + item.y1 + ' ' + item.x2 + ' ' + item.y2 + ' ' + item.x + ' ' + item.y + ' ';
-					} else if (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS ||
-							   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL){
+					} else if (	item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS ||
+								item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL){
 						command = (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS ? 'Q' : 'q');
 						commandString += command + ' ' + item.x1 + ' ' + item.y1 + ' ' + item.x + ' ' + item.y + ' ';
-					} else if (item.pathSegType == SVGPathSeg.PATHSEG_ARC_ABS ||
-							   item.pathSegType == SVGPathSeg.PATHSEG_ARC_REL){
+					} else if (	item.pathSegType == SVGPathSeg.PATHSEG_ARC_ABS ||
+								item.pathSegType == SVGPathSeg.PATHSEG_ARC_REL){
 						command = (item.pathSegType == SVGPathSeg.PATHSEG_ARC_ABS ? 'A' : 'a');
 						largeArcFlag = (item.largeArcFlag ? 1 : 0);
 						sweepFlag = (item.sweepFlag ? 1 : 0);
 						commandString +=  command + ' ' + item.r1 + ' ' + item.r2 + ' ' + item.angle + ' ' + largeArcFlag + ' ' + sweepFlag + ' ' + item.x + ' ' + item.y + ' ';
-					} else if (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS ||
-							   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL){
+					} else if (	item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS ||
+								item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL){
 						command = (item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS ? 'S' : 's');
 						commandString +=  command + ' ' + item.x2 + ' ' + item.y2 + ' ' + item.x + ' ' + item.y + ' ';
 					} else {
@@ -71,7 +71,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 
 			var segmentation = 0;
 			if (segmentLength > 0) {
-				segmentation = parseInt (pathLength / segmentLength);
+				segmentation = parseInt (pathLength / segmentLength, 10);
 			}
 			if (segmentation < 3) {
 				segmentation = 3;
@@ -89,20 +89,20 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 		
 		function IsCurvedItem (item)
 		{
-			return item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS ||
-				   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL ||
-				   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS ||
-				   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL ||
-				   item.pathSegType == SVGPathSeg.PATHSEG_ARC_ABS ||
-				   item.pathSegType == SVGPathSeg.PATHSEG_ARC_REL ||
-				   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS ||
-				   item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL;
+			return	item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS ||
+					item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL ||
+					item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS ||
+					item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL ||
+					item.pathSegType == SVGPathSeg.PATHSEG_ARC_ABS ||
+					item.pathSegType == SVGPathSeg.PATHSEG_ARC_REL ||
+					item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS ||
+					item.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL;
 		}
 		
 		function RemoveEqualEndVertices (polygon, contour)
 		{
 			var vertexCount = polygon.VertexCount (contour);
-			if (vertexCount == 0) {
+			if (vertexCount === 0) {
 				return;
 			}
 			
@@ -127,16 +127,16 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 		{
 			var svgColor = '';
 			var target = path;
-			while (target !== null && svgColor.length == 0) {
+			while (target !== null && svgColor.length === 0) {
 				svgColor = target.getAttribute ('fill');
-				if (svgColor == null) {
+				if (svgColor === null) {
 					svgColor = target.style.fill;
 				}
 				target = target.parentElement;
 			}
 
 			var result = 0x000000;
-			if (svgColor.length == 0) {
+			if (svgColor.length === 0) {
 				return result;
 			}
 			
@@ -166,11 +166,12 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 		var svgNameSpace = "http://www.w3.org/2000/svg";
 		var dummySVG = document.createElementNS ('http://www.w3.org/2000/svg', 'svg');
 
+		var i, j;
 		if (elem instanceof SVGPathElement) {
 			var lastCoord = new JSM.Coord2D (0.0, 0.0);
 			var lastMoveCoord = new JSM.Coord2D (0.0, 0.0);
 
-			var i, j, item, items, currentItem, currentSegmentLength;
+			var item, items, currentItem, currentSegmentLength;
 			var currentContour = 0;
 			for (i = 0; i < elem.pathSegList.numberOfItems; i++) {
 				item = elem.pathSegList.getItem (i);
@@ -224,7 +225,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			AddTransformedVertex (dummySVG, result, 0, elem, elem.x.baseVal.value + elem.width.baseVal.value, elem.y.baseVal.value + elem.height.baseVal.value);
 			AddTransformedVertex (dummySVG, result, 0, elem, elem.x.baseVal.value, elem.y.baseVal.value + elem.height.baseVal.value);
 		} else if (elem instanceof SVGPolygonElement) {
-			var i, point;
+			var point;
 			for (i = 0; i < elem.points.numberOfItems; i++) {
 				point = elem.points.getItem (i);
 				AddTransformedVertex (dummySVG, result, 0, elem, point.x, point.y);
@@ -297,7 +298,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 		var basePolygon, prism;
 		var contourCount = polygon.ContourCount ();
 		if (contourCount == 1) {
-			basePolygon = CreateBasePolygon (polygon.GetContour (0))
+			basePolygon = CreateBasePolygon (polygon.GetContour (0));
 			prism = JSM.GeneratePrism (basePolygon, direction, height, true);
 			prisms.push (prism);
 		} else if (contourCount > 1) {
@@ -309,7 +310,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			for (i = 1; i < polygon.ContourCount (); i++) {
 				orientation = JSM.PolygonOrientation2D (polygon.GetContour (i));
 				if (orientation == baseOrientation) {
-					basePolygon = CreateBasePolygon (polygon.GetContour (i))
+					basePolygon = CreateBasePolygon (polygon.GetContour (i));
 					prism = JSM.GeneratePrism (basePolygon, direction, height, true);
 					prisms.push (prism);
 				} else {
@@ -349,4 +350,4 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 	}
 
 	return [model, materials];
-}
+};

@@ -1,13 +1,13 @@
 JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort)
 {
-	var SwapArrayValues = function (array, from, to)
+	function SwapArrayValues (array, from, to)
 	{
 		var temp = array[from];
 		array[from] = array[to];
 		array[to] = temp;
-	};
+	}
 
-	var GetPolygonCenter = function (p)
+	function GetPolygonCenter (p)
 	{
 		var polygon = body.GetPolygon (p);
 		var result = new JSM.Coord ();
@@ -20,9 +20,9 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 		
 		result = JSM.VectorMultiply (result, 1.0 / polygon.VertexIndexCount ());
 		return result;	
-	};
+	}
 	
-	var CalculatePolygonValues = function ()
+	function CalculatePolygonValues ()
 	{
 		var viewDirection = JSM.VectorNormalize (JSM.CoordSub (center, eye));
 		var cameraPlane = JSM.GetPlaneFromCoordAndDirection (eye, viewDirection);
@@ -60,17 +60,17 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 				polygonNormal = JSM.VectorMultiply (polygonNormal, -1);
 			}
 
-			polygonPlane = JSM.GetPlaneFromCoordAndDirection (polygonCenter, polygonNormal)
+			polygonPlane = JSM.GetPlaneFromCoordAndDirection (polygonCenter, polygonNormal);
 			polygonPlanes.push (polygonPlane);
 		}
-	};
+	}
 	
-	var PolygonViewOverlap = function (s, p)
+	function PolygonViewOverlap (s, p)
 	{
 		return JSM.IsLowerOrEqual (minViewDistances[s], maxViewDistances[p]);
-	};
+	}
 
-	var PolygonIsFrontOfPlane = function (s, p)
+	function PolygonIsFrontOfPlane (s, p)
 	{
 		var sPlane = polygonPlanes[s];
 		var pPlane = polygonPlanes[p];
@@ -106,9 +106,9 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 		}
 		
 		return true;
-	};
+	}
 
-	var HasLowerDistance = function (s, p)
+	function HasLowerDistance (s, p)
 	{
 		if (JSM.IsLower (maxViewDistances[s], maxViewDistances[p])) {
 			return true;
@@ -119,9 +119,9 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 		}
 		
 		return false;
-	};
+	}
 	
-	var OrderPolygonsByMaxViewDistance = function ()
+	function OrderPolygonsByMaxViewDistance ()
 	{
 		var count = ordered.length;
 		
@@ -133,11 +133,11 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 				}
 			}
 		}
-	};
+	}
 
-	var NeedToChangeOrder = function (s, p)
+	function NeedToChangeOrder (s, p)
 	{
-		if (needToChangeOrderCache[s][p] != null) {
+		if (needToChangeOrderCache[s][p] !== null) {
 			return needToChangeOrderCache[s][p];
 		}
 
@@ -150,9 +150,9 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 
 		needToChangeOrderCache[s][p] = false;
 		return false;
-	};
+	}
 	
-	var ReorderPolygons = function ()
+	function ReorderPolygons ()
 	{
 		var count = ordered.length;
 

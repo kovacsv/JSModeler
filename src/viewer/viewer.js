@@ -80,7 +80,7 @@ JSM.Viewer.prototype =
 			autoUpdate : true
 		};
 	
-		if (settings != undefined) {
+		if (settings !== undefined) {
 			if (settings['cameraEyePosition'] !== undefined) this.settings.cameraEyePosition = settings['cameraEyePosition'];
 			if (settings['cameraCenterPosition'] !== undefined) this.settings.cameraCenterPosition = settings['cameraCenterPosition'];
 			if (settings['cameraUpVector'] !== undefined) this.settings.cameraUpVector = settings['cameraUpVector'];
@@ -305,7 +305,7 @@ JSM.Viewer.prototype =
 			}
 		});
 		
-		if (found != null) {
+		if (found !== null) {
 			this.scene.remove (found);
 		}
 		
@@ -340,7 +340,7 @@ JSM.Viewer.prototype =
 		this.camera.updateProjectionMatrix (); 
 		this.renderer.setSize (this.canvas.width, this.canvas.height);
 		this.DrawIfNeeded ();
-	}, 	
+	},
 	
 	FitInWindow : function ()
 	{
