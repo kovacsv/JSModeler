@@ -11,9 +11,9 @@ JSMDemo.prototype =
 	Initialize : function (canvasName, uiDivName)
 	{
 		var viewerSettings = {
-			'cameraEyePosition' : [-3.0, -2.5, 2.0],
-			'cameraCenterPosition' : [0.0, 0.0, 0.0],
-			'cameraUpVector' : [0.0, 0.0, 1.0]
+			cameraEyePosition : [-3.0, -2.5, 2.0],
+			cameraCenterPosition : [0.0, 0.0, 0.0],
+			cameraUpVector : [0.0, 0.0, 1.0]
 		};
 
 		this.viewer = new JSM.Viewer ();

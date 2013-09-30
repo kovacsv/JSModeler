@@ -50,7 +50,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 
 	var MoveOriginalVertices = function ()
 	{
-		var MoveVertex = function (f, r, n, vertCoord)
+		function MoveVertex (f, r, n, vertCoord)
 		{
 			vertCoord.x = (f.x + 2.0 * r.x + (n - 3) * vertCoord.x) / n;
 			vertCoord.y = (f.y + 2.0 * r.y + (n - 3) * vertCoord.y) / n;

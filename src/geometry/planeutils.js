@@ -8,7 +8,7 @@ JSM.GetPlaneFromCoordAndDirection = function (coord, direction)
 	var pd = -(pa * coord.x + pb * coord.y + pc * coord.z);
 	plane.Set (pa, pb, pc, pd);
 	return plane;
-}
+};
 
 JSM.GetPlaneFromThreeCoords = function (a, b, c)
 {
@@ -19,7 +19,7 @@ JSM.GetPlaneFromThreeCoords = function (a, b, c)
 	var pd = -(pa * a.x + pb * a.y + pc * a.z);
 	plane.Set (pa, pb, pc, pd);
 	return plane;
-}
+};
 
 JSM.CoordPlanePosition = function (coord, plane)
 {

@@ -105,7 +105,7 @@ JSM.GenerateSegmentedRectangle = function (xSize, ySize, segmentation)
 				result.AddVertex (new JSM.BodyVertex (coord));
 			}
 		}
-	};
+	}
 
 	function AddPolygons ()
 	{
@@ -121,7 +121,7 @@ JSM.GenerateSegmentedRectangle = function (xSize, ySize, segmentation)
 				result.AddPolygon (new JSM.BodyPolygon ([current, next, ntop, top]));
 			}
 		}
-	};
+	}
 
 	var result = new JSM.Body ();
 	
@@ -145,7 +145,7 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 			offset = (segmentation + 1) * (segmentation + 1) + (level - 1) * (segmentation * 4);
 		}
 		return offset;
-	};
+	}
 
 	function GetLevelSideVertices (level)
 	{
@@ -153,7 +153,7 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 		
 		var vertices = [];
 		var offset = GetLevelOffset (level);
-		if (level == 0 || level == segmentation) {
+		if (level === 0 || level === segmentation) {
 			for (i = 0; i <= segmentation; i++) {
 				vertices.push (offset + i);
 			}
@@ -182,14 +182,14 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 		}
 		
 		return vertices;
-	};
+	}
 
 	function AddVertices (level)
 	{
 		var i, j, coord;
 
 		var zCoord = level * zSegment;
-		if (level == 0 || level == segmentation) {
+		if (level === 0 || level === segmentation) {
 			for (i = 0; i <= segmentation; i++) {	
 				for (j = 0; j <= segmentation; j++) {
 					coord = new JSM.Coord (j * xSegment - xStart, i * ySegment - yStart, zCoord - zStart);
@@ -199,21 +199,21 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 		} else if (level > 0 && level < segmentation) {
 			for (i = 0; i <= segmentation; i++) {
 				for (j = 0; j <= segmentation; j++) {
-					if (i == 0 || i == segmentation || j == 0 || j == segmentation) {
+					if (i === 0 || i === segmentation || j === 0 || j === segmentation) {
 						coord = new JSM.Coord (j * xSegment - xStart, i * ySegment - yStart, zCoord - zStart);
 						result.AddVertex (new JSM.BodyVertex (coord));
 					}
 				}
 			}
 		}
-	};
+	}
 
 	function AddPolygons (level)
 	{
 		var i, j;
 		var current, next, top, ntop;
 		
-		if (level == 0 || level == segmentation) {
+		if (level === 0 || level === segmentation) {
 			var offset = GetLevelOffset (level);
 			for (i = 0; i < segmentation; i++) {
 				for (j = 0; j < segmentation; j++) {
@@ -221,7 +221,7 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 					next = current + 1;
 					top = current + segmentation + 1;
 					ntop = top + 1;
-					if (level == 0) {
+					if (level === 0) {
 						result.AddPolygon (new JSM.BodyPolygon ([current, top, ntop, next]));
 					} else {
 						result.AddPolygon (new JSM.BodyPolygon ([current, next, ntop, top]));
@@ -246,7 +246,7 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 				result.AddPolygon (new JSM.BodyPolygon ([current, next, ntop, top]));
 			}
 		}
-	};
+	}
 
 	var result = new JSM.Body ();
 
@@ -304,7 +304,7 @@ JSM.GenerateCircle = function (radius, segmentation)
 	));
 
 	return result;
-}
+};
 
 JSM.GenerateSphere = function (radius, segmentation, isCurved)
 {
@@ -395,7 +395,7 @@ JSM.GenerateSphere = function (radius, segmentation, isCurved)
 
 JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 {
-	var GenerateIcosahedron = function (radius) {
+	function GenerateIcosahedron (radius) {
 		var result = new JSM.Body ();
 
 		var a = 1.0;
@@ -793,7 +793,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 		}
 		contourEnds.push (i - contourCount);
 		return contourEnds;
-	};
+	}
 
 	function AddContourPolygons (contourIndex, contourEnds)
 	{
@@ -808,7 +808,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 			}
 			result.AddPolygon (new JSM.BodyPolygon ([current, next, next + 1, current + 1]));
 		}
-	};
+	}
 
 	function AddContours ()
 	{
@@ -817,7 +817,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 		for (i = 0; i < contourEnds.length - 1; i++) {
 			AddContourPolygons (i, contourEnds);
 		}	
-	};
+	}
 	
 	function GetVertexMap ()
 	{
@@ -832,7 +832,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 			vertexMap.push (i - contourCount);
 		}
 		return vertexMap;
-	};
+	}
 
 	function AddTopBottomPolygons ()
 	{
@@ -859,7 +859,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 			result.AddPolygon (topTriangle);
 			result.AddPolygon (bottomTriangle);
 		}
-	};
+	}
 
 	var result = new JSM.Body ();
 	AddVertices ();
@@ -968,7 +968,7 @@ JSM.GenerateCylinderShell = function (radius, height, width, segmentation, withT
 		var i = 0;
 		for (i = 0; i < segmentation; i++) {
 			theta = i * step;
-			cartesian = JSM.PolarToCartesian (radius, theta)
+			cartesian = JSM.PolarToCartesian (radius, theta);
 			result.push (new JSM.Coord (cartesian.x, cartesian.y, bottom));
 		}
 		return result;
@@ -1555,7 +1555,7 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 	var avgRadius = 0.0;
 	var projected;
 	for (i = 0; i < count; i++) {
-		projected = JSM.ProjectCoordToLine (polyLine[i], axisLine)
+		projected = JSM.ProjectCoordToLine (polyLine[i], axisLine);
 		avgRadius = avgRadius + JSM.CoordDistance (projected, polyLine[i]);
 	}
 	avgRadius = avgRadius / count;
@@ -1625,9 +1625,9 @@ JSM.GenerateFunctionSurfaceSolid = function (function3D, intervalMin, intervalMa
 	return result;
 };
 
-JSM.GenerateSuperShape = function (a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
-								   a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat,
-								   segmentation, isCurved)
+JSM.GenerateSuperShape = function (	a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
+									a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat,
+									segmentation, isCurved)
 {
 	var CartesianToSpherical = function (coord)
 	{

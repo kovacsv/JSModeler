@@ -263,7 +263,7 @@ JSM.Body.prototype =
 		var i, j;
 		for (i = 0; i < body.VertexCount (); i++) {
 			this.vertices.push (body.GetVertex (i).Clone ());
-		};
+		}
 		
 		var newPolygon;
 		for (i = 0; i < body.PolygonCount (); i++) {

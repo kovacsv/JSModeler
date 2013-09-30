@@ -80,19 +80,19 @@ JSM.Viewer.prototype =
 			autoUpdate : true
 		};
 	
-		if (settings != undefined) {
-			if (settings['cameraEyePosition'] !== undefined) this.settings.cameraEyePosition = settings['cameraEyePosition'];
-			if (settings['cameraCenterPosition'] !== undefined) this.settings.cameraCenterPosition = settings['cameraCenterPosition'];
-			if (settings['cameraUpVector'] !== undefined) this.settings.cameraUpVector = settings['cameraUpVector'];
-			if (settings['cameraFixUp'] !== undefined) this.settings.cameraFixUp = settings['cameraFixUp'];
-			if (settings['cameraDisableOrbit'] !== undefined) this.settings.cameraDisableOrbit = settings['cameraDisableOrbit'];
-			if (settings['cameraDisableZoom'] !== undefined) this.settings.cameraDisableZoom = settings['cameraDisableZoom'];
-			if (settings['fieldOfView'] !== undefined) this.settings.fieldOfView = settings['fieldOfView'];
-			if (settings['nearClippingPlane'] !== undefined) this.settings.nearClippingPlane = settings['nearClippingPlane'];
-			if (settings['farClippingPlane'] !== undefined) this.settings.farClippingPlane = settings['farClippingPlane'];
-			if (settings['lightAmbientColor'] !== undefined) this.settings.lightAmbientColor = settings['lightAmbientColor'];
-			if (settings['lightDiffuseColor'] !== undefined) this.settings.lightDiffuseColor = settings['lightDiffuseColor'];
-			if (settings['autoUpdate'] !== undefined) this.settings.autoUpdate = settings['autoUpdate'];
+		if (settings !== undefined) {
+			if (settings.cameraEyePosition !== undefined) this.settings.cameraEyePosition = settings.cameraEyePosition;
+			if (settings.cameraCenterPosition !== undefined) this.settings.cameraCenterPosition = settings.cameraCenterPosition;
+			if (settings.cameraUpVector !== undefined) this.settings.cameraUpVector = settings.cameraUpVector;
+			if (settings.cameraFixUp !== undefined) this.settings.cameraFixUp = settings.cameraFixUp;
+			if (settings.cameraDisableOrbit !== undefined) this.settings.cameraDisableOrbit = settings.cameraDisableOrbit;
+			if (settings.cameraDisableZoom !== undefined) this.settings.cameraDisableZoom = settings.cameraDisableZoom;
+			if (settings.fieldOfView !== undefined) this.settings.fieldOfView = settings.fieldOfView;
+			if (settings.nearClippingPlane !== undefined) this.settings.nearClippingPlane = settings.nearClippingPlane;
+			if (settings.farClippingPlane !== undefined) this.settings.farClippingPlane = settings.farClippingPlane;
+			if (settings.lightAmbientColor !== undefined) this.settings.lightAmbientColor = settings.lightAmbientColor;
+			if (settings.lightDiffuseColor !== undefined) this.settings.lightDiffuseColor = settings.lightDiffuseColor;
+			if (settings.autoUpdate !== undefined) this.settings.autoUpdate = settings.autoUpdate;
 		}
 
 		return true;
@@ -305,7 +305,7 @@ JSM.Viewer.prototype =
 			}
 		});
 		
-		if (found != null) {
+		if (found !== null) {
 			this.scene.remove (found);
 		}
 		
@@ -340,7 +340,7 @@ JSM.Viewer.prototype =
 		this.camera.updateProjectionMatrix (); 
 		this.renderer.setSize (this.canvas.width, this.canvas.height);
 		this.DrawIfNeeded ();
-	}, 	
+	},
 	
 	FitInWindow : function ()
 	{

@@ -1,12 +1,12 @@
 JSM.CutPolygonByPlane = function (polygon, plane, indexTable)
 {
-	var AddOriginalVertex = function (index)
+	function AddOriginalVertex (index)
 	{
 		rawResult.push (new JSM.Coord (vertex.x, vertex.y, vertex.z));
 		rawIndexTable.push (index);
 	}
 
-	var AddIntersectionVertex = function (from, to)
+	function AddIntersectionVertex (from, to)
 	{
 		direction = JSM.VectorNormalize (JSM.CoordSub (polygon[to], polygon[from]));
 		line = new JSM.Line (polygon[from], direction);
@@ -78,7 +78,7 @@ JSM.CutPolygonByPlane = function (polygon, plane, indexTable)
 	for (i = 0; i < rawResult.length; i++) {
 		currentVertex = rawResult[i];
 		lastVertex = result[result.length - 1];
-		if (i == 0 || !JSM.CoordIsEqual (lastVertex, currentVertex)) {
+		if (i === 0 || !JSM.CoordIsEqual (lastVertex, currentVertex)) {
 			result.push (new JSM.Coord (currentVertex.x, currentVertex.y, currentVertex.z));
 			if (hasIndexTable) {
 				currentIndex = rawIndexTable[i];
@@ -102,7 +102,7 @@ JSM.CutPolygonByPlane = function (polygon, plane, indexTable)
 
 JSM.CutBodyByPlane = function (body, plane)
 {
-	var GetInsertedVertexIndex = function (vertex)
+	function GetInsertedVertexIndex (vertex)
 	{
 		var index = -1;
 	
@@ -167,7 +167,7 @@ JSM.CutBodyByPlane = function (body, plane)
 		polygon = body.GetPolygon (i);
 		cuttedPolygon = cuttedPolygons[i];
 		indexTable = cuttedIndexTables[i];
-		if (indexTable.length == 0) {
+		if (indexTable.length === 0) {
 			continue;
 		}
 
@@ -187,4 +187,4 @@ JSM.CutBodyByPlane = function (body, plane)
 	}
 
 	return result;
-}
+};

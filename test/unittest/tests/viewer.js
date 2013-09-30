@@ -110,14 +110,14 @@ AddTest ('ViewerTest', function (test)
 	test.Assert (body.VertexCount () == 8 && body.PolygonCount () == 6);
 
 	var viewerSettings = {
-		'cameraEyePosition' : [3.0, -3.0, 3.0],
-		'cameraCenterPosition' : [0.0, 0.0, 0.0],
-		'cameraUpVector' : [0.0, 0.0, 1.0],
-		'fieldOfView' : 45.0,
-		'nearClippingPlane' : 0.1,
-		'farClippingPlane' : 1000.0,
-		'lightAmbientColor' : [0.5, 0.5, 0.5],
-		'lightDiffuseColor' :	[0.5, 0.5, 0.5]
+		cameraEyePosition : [3.0, -3.0, 3.0],
+		cameraCenterPosition : [0.0, 0.0, 0.0],
+		cameraUpVector : [0.0, 0.0, 1.0],
+		fieldOfView : 45.0,
+		nearClippingPlane : 0.1,
+		farClippingPlane : 1000.0,
+		lightAmbientColor : [0.5, 0.5, 0.5],
+		lightDiffuseColor :	[0.5, 0.5, 0.5]
 	};
 
 	var canvas = document.createElement ('canvas');

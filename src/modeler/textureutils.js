@@ -15,7 +15,7 @@ JSM.CalculatePlanarTextureCoord = function (coord, system)
 	result.y = JSM.CoordPlaneSignedDistance (projected, xzPlane);
 
 	return result;
-}
+};
 
 JSM.CalculatePolygonPlanarTextureCoords = function (body, index)
 {
@@ -30,7 +30,7 @@ JSM.CalculatePolygonPlanarTextureCoords = function (body, index)
 	}
 	
 	return result;
-}
+};
 
 JSM.CalculateCubicTextureCoord = function (coord, normal, system)
 {
@@ -93,7 +93,7 @@ JSM.CalculateCubicTextureCoord = function (coord, normal, system)
 	}
 
 	return JSM.CalculatePlanarTextureCoord (coord, planeSystem);
-}
+};
 
 JSM.CalculatePolygonCubicTextureCoords = function (body, index, normal)
 {
@@ -108,7 +108,7 @@ JSM.CalculatePolygonCubicTextureCoords = function (body, index, normal)
 	}
 	
 	return result;
-}
+};
 
 JSM.CalculateCylindricalTextureCoord = function (coord, normal, system)
 {
@@ -132,7 +132,7 @@ JSM.CalculateCylindricalTextureCoord = function (coord, normal, system)
 	result.x = angle * radius;
 	result.y = projectedDistance;
 	return [result, angle];
-}
+};
 
 JSM.CalculatePolygonCylindricalTextureCoords = function (body, index, normal)
 {
@@ -179,7 +179,7 @@ JSM.CalculatePolygonCylindricalTextureCoords = function (body, index, normal)
 	}
 	
 	return result;
-}
+};
 
 JSM.CalculateBodyPlanarTextureCoords = function (body)
 {
@@ -189,7 +189,7 @@ JSM.CalculateBodyPlanarTextureCoords = function (body)
 		result.push (JSM.CalculatePolygonPlanarTextureCoords (body, i));
 	}
 	return result;
-}
+};
 
 JSM.CalculateBodyCubicTextureCoords = function (body)
 {
@@ -201,7 +201,7 @@ JSM.CalculateBodyCubicTextureCoords = function (body)
 		result.push (JSM.CalculatePolygonCubicTextureCoords (body, i, normal));
 	}
 	return result;
-}
+};
 
 JSM.CalculateBodyCylindricalTextureCoords = function (body)
 {
@@ -213,7 +213,7 @@ JSM.CalculateBodyCylindricalTextureCoords = function (body)
 		result.push (JSM.CalculatePolygonCylindricalTextureCoords (body, i, normal));
 	}
 	return result;
-}
+};
 
 JSM.CalculateBodyTextureCoords = function (body)
 {

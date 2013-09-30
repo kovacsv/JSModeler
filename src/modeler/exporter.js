@@ -28,8 +28,9 @@ JSM.ExportBodyContentToStl = function (body, name, hasConvexPolygons)
 		var normal1, normal2, normal3;
 		var uv1, uv2, uv3;
 
+		var normal = null;
 		if (count === 3) {
-			var normal = JSM.CalculateBodyPolygonNormal (body, index);
+			normal = JSM.CalculateBodyPolygonNormal (body, index);
 			vertex1 = body.GetVertex (polygon.GetVertexIndex (0)).position;
 			vertex2 = body.GetVertex (polygon.GetVertexIndex (1)).position;
 			vertex3 = body.GetVertex (polygon.GetVertexIndex (2)).position;
@@ -41,7 +42,7 @@ JSM.ExportBodyContentToStl = function (body, name, hasConvexPolygons)
 			}
 		
 			var i;
-			var normal = JSM.CalculateBodyPolygonNormal (body, index);
+			normal = JSM.CalculateBodyPolygonNormal (body, index);
 			if (useTriangulation) {
 				var polygon3D = new JSM.Polygon ();
 				
@@ -317,7 +318,7 @@ JSM.ExportBodyToGDL = function (body, materials)
 
 	gdlContent += JSM.ExportBodyGeometryToGDL (body, writeMaterials);
 	return gdlContent;
-}
+};
 
 JSM.ExportModelToGDL = function (model, materials)
 {
@@ -376,13 +377,14 @@ JSM.ExportBodyToSVG = function (body, materials, settings, svgObject)
 	var viewPort = [0, 0, width, height];
 	var hiddenLine = settings.hiddenLine;
 
+	var i, j, polygon, coord, projected;
 	if (hiddenLine) {
 		var orderedPolygons = JSM.OrderPolygons (body, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
 		if (materials === undefined || materials === null) {
 			materials = new JSM.Materials ();
 		}
 		
-		var i, j, polygon, points, coord, projected, x, y;
+		var points, x, y;
 		var svgPolyon, materialIndex, color;
 		for (i = 0; i < orderedPolygons.length; i++) {
 			points = '';
@@ -412,7 +414,7 @@ JSM.ExportBodyToSVG = function (body, materials, settings, svgObject)
 			svgObject.appendChild (svgPolyon);
 		}
 	} else {
-		var i, j, polygon, vertexCount, currentCoord, currentVertex, vertex, coord, projected;
+		var vertexCount, currentCoord, currentVertex, vertex;
 		var svgLine;
 		
 		var drawedLines = [];
@@ -425,7 +427,7 @@ JSM.ExportBodyToSVG = function (body, materials, settings, svgObject)
 				vertex = polygon.GetVertexIndex (j % vertexCount);
 				coord = body.GetVertexPosition (vertex);
 				projected = JSM.Project (coord, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
-				if (currentCoord != null && currentVertex != null && drawedLines[[currentVertex, vertex]] == undefined) {
+				if (currentCoord !== null && currentVertex !== null && drawedLines[[currentVertex, vertex]] === undefined) {
 					svgLine = document.createElementNS (svgNameSpace, 'line');
 					svgLine.setAttributeNS (null, 'stroke', 'black');
 					svgLine.setAttributeNS (null, 'x1', currentCoord.x);

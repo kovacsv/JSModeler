@@ -45,22 +45,22 @@ JSM.SVGViewer.prototype =
 	InitSettings : function (settings, hiddenLine)
 	{
 		this.settings = {
-			'cameraEyePosition' : [1.0, 1.0, 1.0],
-			'cameraCenterPosition' : [0.0, 0.0, 0.0],
-			'cameraUpVector' : [0.0, 0.0, 1.0],
-			'fieldOfView' : 45.0,
-			'nearClippingPlane' : 0.1,
-			'farClippingPlane' : 1000.0
+			cameraEyePosition : [1.0, 1.0, 1.0],
+			cameraCenterPosition : [0.0, 0.0, 0.0],
+			cameraUpVector : [0.0, 0.0, 1.0],
+			fieldOfView : 45.0,
+			nearClippingPlane : 0.1,
+			farClippingPlane : 1000.0
 		};
 		this.hiddenLine = false;
 	
-		if (settings != undefined) {
-			if (settings['cameraEyePosition'] !== undefined) this.settings['cameraEyePosition'] = settings['cameraEyePosition'];
-			if (settings['cameraCenterPosition'] !== undefined) this.settings['cameraCenterPosition'] = settings['cameraCenterPosition'];
-			if (settings['cameraUpVector'] !== undefined) this.settings['cameraUpVector'] = settings['cameraUpVector'];
-			if (settings['fieldOfView'] !== undefined) this.settings['fieldOfView'] = settings['fieldOfView'];
-			if (settings['nearClippingPlane'] !== undefined) this.settings['nearClippingPlane'] = settings['nearClippingPlane'];
-			if (settings['farClippingPlane'] !== undefined) this.settings['farClippingPlane'] = settings['farClippingPlane'];
+		if (settings !== undefined) {
+			if (settings.cameraEyePosition !== undefined) this.settings.cameraEyePosition = settings.cameraEyePosition;
+			if (settings.cameraCenterPosition !== undefined) this.settings.cameraCenterPosition = settings.cameraCenterPosition;
+			if (settings.cameraUpVector !== undefined) this.settings.cameraUpVector = settings.cameraUpVector;
+			if (settings.fieldOfView !== undefined) this.settings.fieldOfView = settings.fieldOfView;
+			if (settings.nearClippingPlane !== undefined) this.settings.nearClippingPlane = settings.nearClippingPlane;
+			if (settings.farClippingPlane !== undefined) this.settings.farClippingPlane = settings.farClippingPlane;
 			if (hiddenLine !== undefined) this.hiddenLine = hiddenLine;
 		}
 		
@@ -69,7 +69,7 @@ JSM.SVGViewer.prototype =
 
 	InitCamera : function (canvasName)
 	{
-		this.cameraMove = new JSM.Camera (this.settings['cameraEyePosition'], this.settings['cameraCenterPosition'], this.settings['cameraUpVector']);
+		this.cameraMove = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
 		if (!this.cameraMove) {
 			return false;
 		}
@@ -126,7 +126,7 @@ JSM.SVGViewer.prototype =
 	Draw : function ()
 	{
 		var i, body, bodies;
-		var svgSettings = new JSM.SVGSettings (this.cameraMove, this.settings['fieldOfView'], this.settings['nearClippingPlane'], this.settings['farClippingPlane'], this.hiddenLine);
+		var svgSettings = new JSM.SVGSettings (this.cameraMove, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.hiddenLine);
 		
 		svgSettings.clear = false;
 		while (this.canvas.lastChild) {
