@@ -495,11 +495,13 @@ JSM.Viewer.prototype =
 	
 	OnMouseDown : function (event)
 	{
+		event.preventDefault ();
 		this.mouse.Down (event, this.canvas);
 	},
 
 	OnMouseMove : function (event)
 	{
+		event.preventDefault ();
 		this.mouse.Move (event, this.canvas);
 		if (!this.mouse.down) {
 			return;
@@ -518,16 +520,19 @@ JSM.Viewer.prototype =
 	
 	OnMouseUp : function (event)
 	{
+		event.preventDefault ();
 		this.mouse.Up (event, this.canvas);
 	},
 	
 	OnMouseOut : function (event)
 	{
+		event.preventDefault ();
 		this.mouse.Out (event, this.canvas);
 	},
 
 	OnMouseWheel : function (event)
 	{
+		event.preventDefault ();
 		var eventParameters = event;
 		if (eventParameters === null) {
 			eventParameters = window.event;
@@ -552,11 +557,13 @@ JSM.Viewer.prototype =
 	
 	OnTouchStart : function (event)
 	{
+		event.preventDefault ();
 		this.touch.Start (event, this.canvas);
 	},
 
 	OnTouchMove : function (event)
 	{
+		event.preventDefault ();
 		this.touch.Move (event, this.canvas);
 		if (!this.touch.down) {
 			return;
@@ -571,6 +578,7 @@ JSM.Viewer.prototype =
 
 	OnTouchEnd : function (event)
 	{
+		event.preventDefault ();
 		this.touch.End (event, this.canvas);
 	}
 };
