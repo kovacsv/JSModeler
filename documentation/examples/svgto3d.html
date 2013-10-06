@@ -22,6 +22,11 @@
 	
 		function OpenSVG (index)
 		{
+			if (viewer == null) {
+				alert ('Your browser does not support WebGL.');
+				return;
+			}
+		
 			var floating = document.getElementById ('floating');
 			floating.style.display = 'block';
 			Resize ();
@@ -40,7 +45,7 @@
 			viewer.FitInWindow ();
 			viewer.Draw ();
 		}
-	
+
 		function Load ()
 		{
 			var viewerSettings = {
@@ -52,7 +57,9 @@
 			};
 
 			viewer = new JSM.Viewer ();
-			viewer.Start ('svgcanvas', viewerSettings);
+			if (!viewer.Start ('svgcanvas', viewerSettings)) {
+				viewer = null;
+			}
 		}
 		
 		function DocumentClick (clickEvent)
