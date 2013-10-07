@@ -1556,7 +1556,7 @@ JSM.GenerateSnubDodecahedron = function ()
 
 JSM.AddCumulatedPolygonToBody = function (body, vertices, height)
 {
-	var CalculatePolygonCentroidAndNormal = function (vertices, centroidCoord, normalVector)
+	function CalculatePolygonCentroidAndNormal (vertices, centroidCoord, normalVector)
 	{
 		var vertexCoords = [];
 		
@@ -1570,7 +1570,7 @@ JSM.AddCumulatedPolygonToBody = function (body, vertices, height)
 
 		centroidCoord.Set (centroid.x, centroid.y, centroid.z);
 		normalVector.Set (normal.x, normal.y, normal.z);
-	};		
+	}	
 
 	var centroidCoord = new JSM.Coord ();
 	var normalVector = new JSM.Vector ();

@@ -960,7 +960,7 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 
 JSM.GenerateCylinderShell = function (radius, height, width, segmentation, withTopAndBottom, isCurved)
 {
-	var GenerateCircle = function (radius, segmentation, bottom)
+	function GenerateCircle (radius, segmentation, bottom)
 	{
 		var result = [];
 		var step = 2.0 * Math.PI / segmentation;
@@ -972,7 +972,7 @@ JSM.GenerateCylinderShell = function (radius, height, width, segmentation, withT
 			result.push (new JSM.Coord (cartesian.x, cartesian.y, bottom));
 		}
 		return result;
-	};
+	}
 
 	var normal = new JSM.Vector (0.0, 0.0, 1.0);
 	var circle = GenerateCircle (radius, segmentation, -height / 2.0);
@@ -1629,22 +1629,22 @@ JSM.GenerateSuperShape = function (	a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
 									a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat,
 									segmentation, isCurved)
 {
-	var CartesianToSpherical = function (coord)
+	function CartesianToSpherical (coord)
 	{
 		var radius = Math.sqrt (coord.x * coord.x + coord.y * coord.y + coord.z * coord.z);
 		var phi = Math.asin (coord.z / radius);
 		var theta = Math.atan2 (coord.y, coord.x);
 		return [radius, phi, theta];
-	};
+	}
 
-	var CalculateSuperFormula = function (p, a, b, m, n1, n2, n3)
+	function CalculateSuperFormula (p, a, b, m, n1, n2, n3)
 	{
 		var abs1 = Math.abs (Math.cos (m * p / 4.0) / a);
 		var abs2 = Math.abs (Math.sin (m * p / 4.0) / b);
 		return Math.pow (Math.pow (abs1, n2) + Math.pow (abs2, n3), -1.0 / n1);
-	};
+	}
 
-	var CalculateSuperFormulaCoordinate = function (phi, theta)
+	function CalculateSuperFormulaCoordinate (phi, theta)
 	{
 		var coord = new JSM.Coord ();
 		var rPhi = CalculateSuperFormula (phi, a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat);
@@ -1653,7 +1653,7 @@ JSM.GenerateSuperShape = function (	a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
 		coord.y = rTheta * Math.sin (theta) * rPhi * Math.cos (phi);
 		coord.z = rPhi * Math.sin (phi);
 		return coord;
-	};
+	}
 
 	var result = JSM.GenerateSphere (1.0, segmentation, isCurved);
 

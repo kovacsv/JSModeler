@@ -297,25 +297,25 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 
 JSM.PolygonTriangulate2D = function (polygon)
 {
-	var Increase = function (value, count)
+	function Increase (value, count)
 	{
 		if (value < count - 1) {
 			return value + 1;
 		} else {
 			return 0;
 		}
-	};
+	}
 	
-	var Decrease = function (value,  count)
+	function Decrease (value,  count)
 	{
 		if (value > 0) {
 			return value - 1;
 		} else {
 			return count - 1;
 		}
-	};
+	}
 
-	var GetResult = function ()
+	function GetResult ()
 	{
 		var result = [];
 		
@@ -337,9 +337,9 @@ JSM.PolygonTriangulate2D = function (polygon)
 			}
 		}
 		return result;
-	};
+	}
 
-	var IsVisibleVertex = function (currentPolygon2D, vertex1, vertex2)
+	function IsVisibleVertex (currentPolygon2D, vertex1, vertex2)
 	{
 		if (vertex1 === vertex2) {
 			return false;
@@ -351,9 +351,9 @@ JSM.PolygonTriangulate2D = function (polygon)
 		}
 	
 		return JSM.IsPolygonVertexVisible2D (currentPolygon2D, vertex1, vertex2);
-	};
+	}
 
-	var SplitPolygon = function (currentPolygon, vertex1, vertex2)
+	function SplitPolygon (currentPolygon, vertex1, vertex2)
 	{
 		var currentVertexCount = currentPolygon.length;
 		if (currentVertexCount <= 3) {
@@ -381,7 +381,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 		}
 	
 		return true;
-	};
+	}
 
 	var poly = polygon.Clone ();
 	var count = poly.VertexCount ();

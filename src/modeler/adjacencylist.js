@@ -109,7 +109,7 @@ JSM.CheckSolidBody = function (body)
 
 JSM.CalculateAdjacencyList = function (body)
 {
-	var AddEdge = function (from, to, polygon)
+	function AddEdge (from, to, polygon)
 	{
 		var pedge = new JSM.PolyEdge ();
 	
@@ -145,7 +145,7 @@ JSM.CalculateAdjacencyList = function (body)
 		}
 		
 		return pedge;
-	};
+	}
 
 	var adjacencyList = new JSM.AdjacencyList ();
 	
