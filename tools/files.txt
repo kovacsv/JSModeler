@@ -32,7 +32,6 @@
 ../src/modeler/painter.js
 ../src/modeler/exporter.js
 ../src/modeler/camera.js
-../src/modeler/shapes.js
 ../src/viewer/mouse.js
 ../src/viewer/touch.js
 ../src/viewer/converter.js
