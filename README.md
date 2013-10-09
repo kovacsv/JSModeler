@@ -15,6 +15,7 @@ Useful links:
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/legobuilder.html">Lego Builder</a> is an interactive lego builder application.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/tictactoe.html">3D Tic-Tac-Toe</a> is a Tic-Tac-Toe game with 3D interface.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/robot/robot.html">Robotic Arm</a> is a realtime robotic arm simulator.</li>
+			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/svgto3d.html">SVGTo3D</a> contains examples of using SVG to model converter.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/deform.html">Deform</a> is a realtime polygon soft selection tool.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/solids.html">Solid Body Viewer</a> is an example of using the SVG viewer.</li>
 		</ul>
@@ -28,17 +29,18 @@ Main capabilities:
 		<li>We can define our model with adding vertices and polygons manually.</li>
 		<li>We can use built-in generator functions to create basic shapes.</li>
 	</ul>
-	<li>Built-in Three.js based model viewer with rotation and zoom functionality.</li>
-	<li>Automatic conversion to Three.js geometry format.</li>
-	<ul>
-		<li>Convex and concave polygons are automatically triangulated during the conversion.</li>
-		<li>Vertex normals automatically calculated for the curved polygons.</li>
-	</ul>
 	<li>Automatic exportation to STL and OBJ file format.</li>
+	<li>Automatic conversion of SVG files to 3D models.</li>
 	<li>Miscellaneous 2D and 3D geometry functions.</li>
 	<ul>
 		<li>Polygon triangulation for 2D and 3D polygons.</li>
 		<li>Catmull-Clark subdivision for 3D bodies.</li>
 		<li>Convex hull calculation for 2D and 3D point sets.</li>
+	</ul>
+	<li>Built-in Three.js based model viewer with rotation and zoom functionality.</li>
+	<li>Automatic conversion to Three.js geometry format.</li>
+	<ul>
+		<li>Convex and concave polygons are automatically triangulated during the conversion.</li>
+		<li>Vertex normals automatically calculated for the curved polygons.</li>
 	</ul>
 </ul>

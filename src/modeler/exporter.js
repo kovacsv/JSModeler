@@ -1,11 +1,11 @@
 JSM.ExportBodyContentToStl = function (body, name, hasConvexPolygons)
 {
-	var AddLineToContent = function (line)
+	function AddLineToContent (line)
 	{
 		stlContent += line + '\n';
-	};
+	}
 
-	var AddTriangleToContent = function (normal, vertex1, vertex2, vertex3)
+	function AddTriangleToContent (normal, vertex1, vertex2, vertex3)
 	{
 		AddLineToContent ('\tfacet normal ' + normal.x + ' ' + normal.y + ' ' + normal.z);
 		AddLineToContent ('\t\touter loop');
@@ -14,9 +14,9 @@ JSM.ExportBodyContentToStl = function (body, name, hasConvexPolygons)
 		AddLineToContent ('\t\t\tvertex ' + vertex3.x + ' ' + vertex3.y + ' ' + vertex3.z);
 		AddLineToContent ('\t\tendloop');
 		AddLineToContent ('\tendfacet');
-	};
+	}
 	
-	var AddPolygon = function (index)
+	function AddPolygon (index)
 	{
 		var polygon = body.GetPolygon (index);
 		var count = polygon.VertexIndexCount ();
@@ -71,8 +71,8 @@ JSM.ExportBodyContentToStl = function (body, name, hasConvexPolygons)
 				}
 			}
 		}
-	};
-
+	}
+	
 	var stlContent = '';
 
 	var i;
@@ -85,10 +85,10 @@ JSM.ExportBodyContentToStl = function (body, name, hasConvexPolygons)
 
 JSM.ExportBodyToStl = function (body, name, hasConvexPolygons)
 {
-	var AddLineToContent = function (line)
+	function AddLineToContent (line)
 	{
 		stlContent += line + '\n';
-	};
+	}
 
 	var stlContent = '';
 	
@@ -101,10 +101,10 @@ JSM.ExportBodyToStl = function (body, name, hasConvexPolygons)
 
 JSM.ExportModelToStl = function (model, name, hasConvexPolygons)
 {
-	var AddLineToContent = function (line)
+	function AddLineToContent (line)
 	{
 		stlContent += line + '\n';
-	};
+	}
 
 	var stlContent = '';
 
@@ -121,29 +121,29 @@ JSM.ExportModelToStl = function (model, name, hasConvexPolygons)
 
 JSM.ExportBodyContentToObj = function (body, vertexOffset, normalOffset)
 {
-	var AddToContent = function (line)
+	function AddToContent (line)
 	{
 		objContent += line;
-	};
+	}
 
-	var AddLineToContent = function (line)
+	function AddLineToContent (line)
 	{
 		objContent += line + '\n';
-	};
+	}
 
-	var AddVertex = function (index)
+	function AddVertex (index)
 	{
 		var vertCoord = body.GetVertex (index).position;
 		AddLineToContent ('v ' + vertCoord.x + ' ' + vertCoord.y + ' ' + vertCoord.z);
-	};
+	}
 
-	var AddNormal = function (index)
+	function AddNormal (index)
 	{
 		var normalVector = JSM.CalculateBodyPolygonNormal (body, index);
 		AddLineToContent ('vn ' + normalVector.x + ' ' + normalVector.y + ' ' + normalVector.z);
-	};
+	}
 
-	var AddPolygon = function (index)
+	function AddPolygon (index)
 	{
 		var polygon = body.GetPolygon (index);
 	
@@ -155,7 +155,7 @@ JSM.ExportBodyContentToObj = function (body, vertexOffset, normalOffset)
 		}
 		
 		AddLineToContent ('');
-	};
+	}
 
 	var objContent = '';
 	
@@ -200,23 +200,23 @@ JSM.ExportModelToObj = function (model, name, hasConvexPolygons)
 
 JSM.ExportMaterialsToGDL = function (materials)
 {
-	var HexColorToRGBColorString = function (hexColor)
+	function HexColorToRGBColorString (hexColor)
 	{
 		var rgb = JSM.HexColorToRGBComponents (hexColor);
 		var result = rgb[0] / 255.0 + ',' + rgb[1] / 255.0 + ',' + rgb[2] / 255.0;
 		return result;
-	};
+	}
 
-	var AddLineToContent = function (line)
+	function AddLineToContent (line)
 	{
 		gdlContent += line + '\n';
-	};
+	}
 
-	var AddMaterial = function (material, index)
+	function AddMaterial (material, index)
 	{
 		var rgbString = HexColorToRGBColorString (material.diffuse);
 		AddLineToContent ('define material "material' + index + '" 2, ' + rgbString + ' ! ' + index);
-	};
+	}
 	
 	var gdlContent = '';
 	var writeMaterials = false;
@@ -237,29 +237,29 @@ JSM.ExportMaterialsToGDL = function (materials)
 
 JSM.ExportBodyGeometryToGDL = function (body, writeMaterials)
 {
-	var AddToContent = function (line)
+	function AddToContent (line)
 	{
 		gdlContent += line;
-	};
+	}
 
-	var AddLineToContent = function (line)
+	function AddLineToContent (line)
 	{
 		gdlContent += line + '\n';
-	};
+	}
 
-	var AddVertex = function (index)
+	function AddVertex (index)
 	{
 		var vertCoord = body.GetVertex (index).position;
 		AddLineToContent ('vert ' + vertCoord.x + ', ' + vertCoord.y + ', ' + vertCoord.z + ' ! ' + (index + 1));
-	};
+	}
 
-	var AddEdge = function (index)
+	function AddEdge (index)
 	{
 		var edge = al.edges[index];
 		AddLineToContent ('edge ' + (edge.vert1 + 1) + ', ' + (edge.vert2 + 1) + ', -1, -1, 0' + ' ! ' + (index + 1));
-	};
+	}
 
-	var AddPolygon = function (index)
+	function AddPolygon (index)
 	{
 		if (writeMaterials) {
 			var materialIndex = body.GetPolygon (index).GetMaterialIndex () + 2;
@@ -282,7 +282,7 @@ JSM.ExportBodyGeometryToGDL = function (body, writeMaterials)
 		}
 		AddToContent (' ! ' + (index + 1));
 		AddLineToContent ('');
-	};
+	}
 
 	var gdlContent = '';
 
@@ -350,12 +350,12 @@ JSM.SVGSettings = function (camera, fieldOfView, nearPlane, farPlane, hiddenLine
 
 JSM.ExportBodyToSVG = function (body, materials, settings, svgObject)
 {
-	var HexColorToHTMLColor = function (hexColor)
+	function HexColorToHTMLColor (hexColor)
 	{
 		var rgb = JSM.HexColorToRGBComponents (hexColor);
 		var result = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
 		return result;
-	};
+	}
 
 	if (settings.clear) {
 		while (svgObject.lastChild) {

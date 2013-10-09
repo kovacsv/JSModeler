@@ -960,4 +960,17 @@ function TestStep (viewer, step, info)
 		model.AddBody (body3);
 		AddModelToViewer (viewer, model, materials, info);
 	}
+
+	if (step == current++) {
+		var model = new JSM.Model ();
+
+		var body1 = JSM.GenerateLegoBrick (2, 3, true, true, true, 25, true);
+		var body2 = JSM.GenerateLegoBrick (3, 4, false, true, true, 15, false);
+		
+		OffsetTwoBodies (body1, body2, 1.4, 0.0, 0.0);
+
+		model.AddBody (body1);
+		model.AddBody (body2);
+		AddModelToViewer (viewer, model, null, info);
+	}
 }

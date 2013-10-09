@@ -127,7 +127,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 		{
 			var svgColor = '';
 			var target = path;
-			while (target !== null && svgColor.length === 0) {
+			while (target !== null && target !== undefined && svgColor.length === 0) {
 				svgColor = target.getAttribute ('fill');
 				if (svgColor === null) {
 					svgColor = target.style.fill;
@@ -335,10 +335,15 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 	var model = new JSM.Model ();
 	var materials = new JSM.Materials ();
 	var polygons = SegmentPaths (svgObject, segmentLength);
+
+	var currentHeight = height;
+	if (svgObject.hasAttribute ('modelheight')) {
+		currentHeight = parseFloat (svgObject.getAttribute ('modelheight'));
+	}
 	
 	var i, j, prismsAndMaterial, currentPrisms, currentPrism, currentMaterial;
 	for (i = 0; i < polygons.length; i++) {
-		prismsAndMaterial = ContourPolygonToPrisms (polygons[i], height);
+		prismsAndMaterial = ContourPolygonToPrisms (polygons[i], currentHeight);
 		currentPrisms = prismsAndMaterial[0];
 		currentMaterial = prismsAndMaterial[1];
 		materials.AddMaterial (currentMaterial);

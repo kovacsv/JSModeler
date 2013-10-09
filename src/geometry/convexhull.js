@@ -1,6 +1,6 @@
 JSM.ConvexHull2D = function (coords)
 {
-	var FindLeftMostCoord = function (coords)
+	function FindLeftMostCoord (coords)
 	{
 		var count = coords.length;
 		var minValue = JSM.Inf;
@@ -16,9 +16,9 @@ JSM.ConvexHull2D = function (coords)
 		}
 		
 		return minIndex;
-	};
+	}
 	
-	var FindNextCoord = function (coords, current)
+	function FindNextCoord (coords, current)
 	{
 		var count = coords.length;
 		var next = 0;
@@ -35,7 +35,7 @@ JSM.ConvexHull2D = function (coords)
 		}
 		
 		return next;
-	};
+	}
 
 	var result = [];
 	var count = coords.length;
@@ -58,42 +58,42 @@ JSM.ConvexHull2D = function (coords)
 
 JSM.ConvexHull3D = function (coords)
 {
-	var Vertex = function ()
+	function Vertex ()
 	{
 		this.position = null;
-	};
+	}
 	
-	var Edge = function ()
+	function Edge ()
 	{
 		this.vert1 = null;
 		this.vert2 = null;
 		this.tri1 = null;
 		this.tri2 = null;
-	};
+	}
 
-	var Triangle = function ()
+	function Triangle ()
 	{
 		this.vertices = null;
 		this.edges = null;
 		this.valid = null;
-	};
+	}
 
-	var Body = function ()
+	function Body ()
 	{
 		this.vertices = [];
 		this.edges = [];
 		this.triangles = [];
-	};
+	}
 
-	var AddVertex = function (body, coord)
+	function AddVertex (body, coord)
 	{
 		var vertex = new Vertex ();
 		vertex.position = coord;
 		body.vertices.push (vertex);
 		return body.vertices.length - 1;
-	};
+	}
 
-	var AddEdge = function (body, triangleIndex, a, b)
+	function AddEdge (body, triangleIndex, a, b)
 	{
 		var edgeIndex = -1;
 	
@@ -126,9 +126,9 @@ JSM.ConvexHull3D = function (coords)
 		}
 		
 		return edgeIndex;
-	};
+	}
 
-	var AddTriangle = function (body, a, b, c)
+	function AddTriangle (body, a, b, c)
 	{
 		var triangleIndex = body.triangles.length;
 		var edge1 = AddEdge (body, triangleIndex, a, b);
@@ -141,9 +141,9 @@ JSM.ConvexHull3D = function (coords)
 		triangle.valid = true;
 		body.triangles.push (triangle);
 		return body.triangles.length - 1;
-	};
+	}
 
-	var RemoveTriangleFromEdge = function (body, triangleIndex, edgeIndex)
+	function RemoveTriangleFromEdge (body, triangleIndex, edgeIndex)
 	{
 		var edge = body.edges[edgeIndex];
 		if (edge.tri1 == triangleIndex) {
@@ -151,9 +151,9 @@ JSM.ConvexHull3D = function (coords)
 		} else if (edge.tri2 == triangleIndex) {
 			edge.tri2 = -1;
 		}		
-	};
+	}
 
-	var RemoveTriangle = function (body, triangleIndex)
+	function RemoveTriangle (body, triangleIndex)
 	{
 		var triangle = body.triangles[triangleIndex];
 		if (!triangle.valid) {
@@ -164,9 +164,9 @@ JSM.ConvexHull3D = function (coords)
 		RemoveTriangleFromEdge (body, triangleIndex, triangle.edges[1]);
 		RemoveTriangleFromEdge (body, triangleIndex, triangle.edges[2]);
 		triangle.valid = false;
-	};
+	}
 
-	var GetTetrahedronVolume = function (body, a, b, c, d)
+	function GetTetrahedronVolume (body, a, b, c, d)
 	{
 		var aCoord = body.vertices[a].position;
 		var bCoord = body.vertices[b].position;
@@ -178,18 +178,18 @@ JSM.ConvexHull3D = function (coords)
 		var cdSub = JSM.CoordSub (cCoord, dCoord);
 		
 		return (JSM.VectorDot (adSub, JSM.VectorCross (bdSub, cdSub))) / 6.0;
-	};
+	}
 	
-	var CheckTetrahedronOrientation = function (body, a, b, c, d)
+	function CheckTetrahedronOrientation (body, a, b, c, d)
 	{
 		var plane = JSM.GetPlaneFromThreeCoords (body.vertices[a].position, body.vertices[b].position, body.vertices[c].position);
 		if (JSM.IsLower (GetTetrahedronVolume (body, a, b, c, d), 0.0)) {
 			return false;
 		}
 		return true;
-	};
+	}
 	
-	var AddInitialTetrahedron = function (body)
+	function AddInitialTetrahedron (body)
 	{
 		var triangleIndex = -1;
 		if (CheckTetrahedronOrientation (body, 0, 1, 2, 3)) {
@@ -202,9 +202,9 @@ JSM.ConvexHull3D = function (coords)
 		AddTriangle (body, triangle.vertices[0], triangle.vertices[2], 3);
 		AddTriangle (body, triangle.vertices[2], triangle.vertices[1], 3);
 		AddTriangle (body, triangle.vertices[1], triangle.vertices[0], 3);
-	};	
+	}
 
-	var AddCoordToHull = function (body, index)
+	function AddCoordToHull (body, index)
 	{
 		var visibleTriangles = [];
 		
@@ -274,7 +274,7 @@ JSM.ConvexHull3D = function (coords)
 			newTriangle = newTriangles[i];
 			AddTriangle (body, newTriangle[0], newTriangle[1], newTriangle[2]);
 		}
-	};
+	}
 	
 	var result = [];
 	var count = coords.length;

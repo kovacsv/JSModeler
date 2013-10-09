@@ -1,15 +1,15 @@
 JSM.CatmullClarkSubdivisionOneIteration = function (body)
 {
-	var AddOriginalVertices = function ()
+	function AddOriginalVertices ()
 	{
 		var i, vertCoord;
 		for (i = 0; i < al.verts.length; i++) {
 			vertCoord = body.GetVertex (i).position;
 			result.AddVertex (new JSM.BodyVertex (new JSM.Coord (vertCoord.x, vertCoord.y, vertCoord.z)));
 		}
-	};
+	}
 
-	var AddPolygonVertices = function ()
+	function AddPolygonVertices ()
 	{
 		var i, j, pgon, vertCoord, pgonCoord;
 		for (i = 0; i < al.pgons.length; i++) {
@@ -23,9 +23,9 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 			pgonCoord = JSM.VectorMultiply (pgonCoord, 1.0 / pgon.verts.length);
 			pgonVertices.push (result.AddVertex (new JSM.BodyVertex (pgonCoord)));
 		}
-	};
+	}
 	
-	var AddEdgeVertices = function ()
+	function AddEdgeVertices ()
 	{
 		var edgeVertexWeight = 1.0 / 4.0;
 		var i, j, edge, edgeCoord, pgonIndex, pgonCoord;
@@ -46,9 +46,9 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 
 			edgeVertices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));
 		}
-	};
+	}
 
-	var MoveOriginalVertices = function ()
+	function MoveOriginalVertices ()
 	{
 		function MoveVertex (f, r, n, vertCoord)
 		{
@@ -91,9 +91,9 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 			vertCoord = result.GetVertex (i).position;
 			MoveVertex (f, r, n, vertCoord);
 		}
-	};
+	}
 	
-	var AddNewPolygons = function ()
+	function AddNewPolygons ()
 	{
 		var edgeCount, currentEdge, nextEdge;
 		var centroid, currentEdgeVertex, originalVertex, nextEdgeVertex;
@@ -118,7 +118,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 				result.AddPolygon (polygon);
 			}
 		}
-	};
+	}
 
 	var result = new JSM.Body ();
 	var al = JSM.CalculateAdjacencyList (body);
