@@ -28,10 +28,10 @@
 ../src/modeler/material.js
 ../src/modeler/generator.js
 ../src/modeler/solidgenerator.js
-../src/modeler/svgtomodel.js
 ../src/modeler/painter.js
 ../src/modeler/exporter.js
 ../src/modeler/camera.js
+../src/extras/svgtomodel.js
 ../src/viewer/mouse.js
 ../src/viewer/touch.js
 ../src/viewer/converter.js
