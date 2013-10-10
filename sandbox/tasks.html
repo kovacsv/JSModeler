@@ -1,0 +1,177 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Example</title>
+
+	<script type="text/javascript">
+		TaskRunner = function ()
+		{
+			this.taskFunctions = []
+			this.timeout = null;
+			this.finish = null;
+			this.current = null;
+		};
+
+		TaskRunner.prototype =
+		{
+			AddTask : function (taskFunction, runCount)
+			{
+				var count = 1;
+				if (runCount !== undefined && runCount != null) {
+					count = runCount;
+				}
+				
+				var i;
+				for (i = 0; i < count; i++) {
+					this.taskFunctions.push (taskFunction);
+				}
+			},
+			
+			RunTasks : function (timeout, finish)
+			{
+				this.timeout = 0;
+				if (timeout !== undefined && timeout != null) {
+					this.timeout = timeout;
+				}
+				
+				this.finish = null;
+				if (finish !== undefined && finish != null) {
+					this.finish = finish;
+				}
+
+				this.current = 0;
+				this.RunTask ();
+			},
+			
+			RunTask : function ()
+			{
+				if (this.current < this.taskFunctions.length) {
+					var task = this.taskFunctions[this.current];
+					task (this.Finished.bind (this));
+				} else {
+					if (this.finish !== null) {
+						this.finish ();
+					}
+				}
+			},
+			
+			Finished : function ()
+			{
+				this.current = this.current + 1;
+				setTimeout (this.RunTask.bind (this), this.timeout);
+			}
+		};
+	
+		function AddToLog (text)
+		{
+			var log = document.getElementById ('log');
+			log.innerHTML += text + ' ';
+		}
+		
+		function All ()
+		{
+			function A (onFinish)
+			{
+				function A1 (onFinish)
+				{
+					globVar++;
+					AddToLog ('A1 (' + globVar + ')');
+					onFinish ();
+				}
+				
+				function A2 (onFinish)
+				{
+					globVar++;
+					AddToLog ('A2 (' + globVar + ')');
+					onFinish ();
+				}
+				
+				function A3 (onFinish)
+				{
+					globVar++;
+					AddToLog ('A3 (' + globVar + ')');
+					onFinish ();
+				}
+			
+				globVar++;
+				AddToLog ('A (' + globVar + ')');
+				var taskRunner = new TaskRunner ();
+				taskRunner.AddTask (A1, 5);
+				taskRunner.AddTask (A2);
+				taskRunner.AddTask (A3);
+				taskRunner.RunTasks (100, function () {onFinish ();});
+			}
+			
+			function B (onFinish)
+			{
+				globVar++;
+				AddToLog ('B (' + globVar + ')');
+				onFinish ();
+			}
+
+			function C (onFinish)
+			{
+				globVar++;
+				AddToLog ('C (' + globVar + ')');
+				onFinish ();
+			}
+
+			function D (onFinish)
+			{
+				globVar++;
+				AddToLog ('D (' + globVar + ')');
+				onFinish ();
+			}
+
+			function E (onFinish)
+			{
+				globVar++;
+				AddToLog ('E (' + globVar + ')');
+				onFinish ();
+			}
+
+			function F ()
+			{
+				globVar++;
+				AddToLog ('F (' + globVar + ')');
+			}
+			
+			var globVar = 0;
+			
+			var taskRunner = new TaskRunner ();
+			taskRunner.AddTask (A);
+			taskRunner.AddTask (B);
+			taskRunner.AddTask (C, 10);
+			taskRunner.AddTask (D);
+			taskRunner.AddTask (E);
+			taskRunner.RunTasks (300, F);
+		}
+		
+		function Load ()
+		{
+			All ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="log"></div>
+</body>
+
+</html>

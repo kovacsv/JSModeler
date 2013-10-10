@@ -68,9 +68,12 @@ TableColumn.prototype =
 		this.column.appendChild (elem);
 	},
 	
-	AddContentText : function (text)
+	AddContentText : function (text, className)
 	{
 		var span = document.createElement ('span');
+		if (className !== undefined && className !== null) {
+			span.className = className;
+		}
 		span.innerHTML = text;
 		this.AddContentElem (span);
 	},
@@ -155,6 +158,7 @@ var TestRunner = function ()
 	this.runOnlySuite = null;
 	this.runOnlyTest = null;
 	this.table = null;
+	this.summary = null;
 	
 	var myThis = this;
 	if (window.addEventListener) {
@@ -185,10 +189,17 @@ TestRunner.prototype =
 	Run : function ()
 	{
 		this.table = new Table ('testtable');
+		this.table.AddRow (this.GetSummaryHeader ('summary'));
+		this.table.AddRow (this.GetSummaryRow ());
 		this.table.AddRow (this.GetHeader (['index', 'suite', 'name', 'result']));
 		
 		this.index = 0;
-		this.RunTestSuites ();
+		var result = this.RunTestSuites ();
+		if (result) {
+			this.summary.AddContentText ('all tests passed', 'passedspan');
+		} else {
+			this.summary.AddContentText ('one or more tests failed', 'failedspan');
+		}
 		
 		this.table.Place (document.body);
 	},
@@ -197,10 +208,14 @@ TestRunner.prototype =
 	{
 		this.CalculateRunOnlyTest ();
 	
+		var result = true;
 		var i;
 		for (i = 0; i < this.testSuites.length; i++) {
-			this.RunTestSuite (i);
+			if (!this.RunTestSuite (i)) {
+				result = false;
+			}
 		}
+		return result;
 	},
 	
 	RunTestSuite : function (index)
@@ -208,13 +223,17 @@ TestRunner.prototype =
 		var testSuite = this.testSuites[index];
 		var testSuiteName = testSuite.GetName ();
 		if (this.runOnlySuite !== null && this.runOnlySuite !== testSuiteName) {	
-			return;
+			return true;
 		}
 		
+		var result = true;
 		var i;
 		for (i = 0; i < testSuite.TestCount (); i++) {
-			this.RunTest (index, i);
+			if (!this.RunTest (index, i)) {
+				result = false;
+			}
 		}
+		return result;
 	},
 
 	RunTest : function (suiteIndex, testIndex)
@@ -225,7 +244,7 @@ TestRunner.prototype =
 		var test = testSuite.GetTest (testIndex);
 		var testName = test.GetName ();
 		if (this.runOnlyTest !== null && this.runOnlyTest !== testName) {	
-			return;
+			return true;
 		}
 		
 		var indexSpan = document.createElement ('span');
@@ -245,16 +264,7 @@ TestRunner.prototype =
 			invalidTest = true;
 		}
 		
-		var i;
-		var allSucceeded = true;
-		var resultValues = test.GetResult ();
-		for (i = 0; i < resultValues.length; i++) {
-			if (!resultValues[i]) {
-				allSucceeded = false;
-				break;
-			}
-		}
-		
+		var result = true;
 		var resultSpan = document.createElement ('span');
 		var succeededSpan = null;
 		if (invalidTest) {
@@ -262,31 +272,47 @@ TestRunner.prototype =
 			succeededSpan.className = 'failedspan';
 			succeededSpan.innerHTML = 'invalid';
 			resultSpan.appendChild (succeededSpan);
-		} else if (allSucceeded) {
-			succeededSpan = document.createElement ('span');
-			succeededSpan.className = 'passedspan';
-			succeededSpan.innerHTML = 'passed';
-			resultSpan.appendChild (succeededSpan);
+			result = false;
 		} else {
-			succeededSpan = document.createElement ('span');
-			succeededSpan.className = 'failedspan';
-			succeededSpan.innerHTML = 'failed - ';
-			resultSpan.appendChild (succeededSpan);
-
-			var assertSpan = document.createElement ('span');
+			var i;
+			var allSucceeded = true;
+			var resultValues = test.GetResult ();
 			for (i = 0; i < resultValues.length; i++) {
-				if (resultValues[i]) {
-					assertSpan.innerHTML += '<span class="passedspan">' + (i + 1) + '</span> ';
-				} else {
-					assertSpan.innerHTML += '<span class="failedspan">' + (i + 1) + '</span> ';
+				if (!resultValues[i]) {
+					allSucceeded = false;
+					break;
 				}
-			}			
+			}
 			
-			resultSpan.appendChild (assertSpan);
+			if (allSucceeded) {
+				succeededSpan = document.createElement ('span');
+				succeededSpan.className = 'passedspan';
+				succeededSpan.innerHTML = 'passed';
+				resultSpan.appendChild (succeededSpan);
+			} else {
+				succeededSpan = document.createElement ('span');
+				succeededSpan.className = 'failedspan';
+				succeededSpan.innerHTML = 'failed - ';
+				resultSpan.appendChild (succeededSpan);
+
+				var assertSpan = document.createElement ('span');
+				for (i = 0; i < resultValues.length; i++) {
+					if (resultValues[i]) {
+						assertSpan.innerHTML += '<span class="passedspan">' + (i + 1) + '</span> ';
+					} else {
+						assertSpan.innerHTML += '<span class="failedspan">' + (i + 1) + '</span> ';
+					}
+				}			
+				
+				resultSpan.appendChild (assertSpan);
+			}
+			
+			result = allSucceeded;
 		}
 		
 		this.table.AddRow (this.GetRow ([indexSpan, suiteSpan, nameSpan, resultSpan]));
 		this.index = this.index + 1;
+		return result;
 	},	
 	
 	CalculateRunOnlyTest : function ()
@@ -312,7 +338,27 @@ TestRunner.prototype =
 			this.runOnlyTest = splitted[1];
 		}
 	},
+
+	GetSummaryHeader : function (text)
+	{
+		var row = new TableRow ('tableheader');
+		var column = new TableColumn ();
+		column.AddContentText (text);
+		column.SetColSpan (4);
+		row.AddColumn (column);
+		return row;
+	},
 	
+	GetSummaryRow : function ()
+	{
+		var row = new TableRow ('tablecontent');
+		var column = new TableColumn ();
+		this.summary = column;
+		column.SetColSpan (4);
+		row.AddColumn (column);
+		return row;
+	},
+
 	GetHeader : function (texts)
 	{
 		var row = new TableRow ('tableheader');
