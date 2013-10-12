@@ -239,12 +239,27 @@ JSM.ExportBodyGeometryToGDL = function (body, writeMaterials)
 {
 	function AddToContent (line)
 	{
-		gdlContent += line;
+		var lineLengthLimit = 200;
+		if (line.length > lineLengthLimit) {
+			var current = 0;
+			var i, character;
+			for (i = 0; i < line.length; i++) {
+				character = line[i];
+				gdlContent += character;
+				current++;
+				if (current > lineLengthLimit && character == ',') {
+					gdlContent += '\n';
+					current = 0;
+				}
+			}
+		} else {
+			gdlContent += line;
+		}
 	}
 
 	function AddLineToContent (line)
 	{
-		gdlContent += line + '\n';
+		AddToContent (line + '\n');
 	}
 
 	function AddVertex (index)
@@ -268,18 +283,20 @@ JSM.ExportBodyGeometryToGDL = function (body, writeMaterials)
 	
 		var pgon = al.pgons[index];
 		AddToContent ('pgon ' + pgon.pedges.length + ', 0, 0, ');
+		var pedgeList = '';
 		var i, pedge;
 		for (i = 0; i < pgon.pedges.length; i++) {
 			pedge = pgon.pedges[i];
 			if (!pedge.reverse) {
-				AddToContent ((pedge.index + 1));
+				pedgeList += (pedge.index + 1);
 			} else {
-				AddToContent (-(pedge.index + 1));
+				pedgeList += (-(pedge.index + 1));
 			}
 			if (i < pgon.pedges.length - 1) {
-				AddToContent (', ');
+				pedgeList += ', ';
 			}
 		}
+		AddToContent (pedgeList);
 		AddToContent (' ! ' + (index + 1));
 		AddLineToContent ('');
 	}
