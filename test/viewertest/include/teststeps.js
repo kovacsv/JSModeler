@@ -973,4 +973,82 @@ function TestStep (viewer, step, info)
 		model.AddBody (body2);
 		AddModelToViewer (viewer, model, null, info);
 	}
+	
+	if (step == current++) {
+		var model = new JSM.Model ();
+
+		var basePoints = [
+			new JSM.Coord (0, 0, 0),
+			new JSM.Coord (1, 0, 0),
+			new JSM.Coord (1.1, 0.4, 0),
+			new JSM.Coord (1.1, 0.6, 0),
+			new JSM.Coord (1, 1, 0),
+			new JSM.Coord (0, 1, 0),
+			new JSM.Coord (-0.1, 0.6, 0),
+			new JSM.Coord (-0.1, 0.4, 0)
+		];
+		
+		var curveGroups = [
+			-1,
+			0,
+			0,
+			0,
+			-1,
+			1,
+			1,
+			1
+		];
+		
+		var direction = new JSM.Vector (0.0, 0.0, 1.0);
+		var body1 = JSM.GenerateCurvedPrism (basePoints, curveGroups, direction, 0.3, true);
+		
+		var basePoints = [
+			new JSM.Coord (0, 0, 0),
+			new JSM.Coord (1, 0, 0),
+			new JSM.Coord (1.1, 0.4, 0),
+			new JSM.Coord (1.1, 0.6, 0),
+			new JSM.Coord (1, 1, 0),
+			new JSM.Coord (0, 1, 0),
+			new JSM.Coord (-0.1, 0.6, 0),
+			new JSM.Coord (-0.1, 0.4, 0),
+			null,
+			new JSM.Coord (0.2, 0.2, 0),
+			new JSM.Coord (0.1, 0.4, 0),
+			new JSM.Coord (0.1, 0.6, 0),
+			new JSM.Coord (0.2, 0.8, 0),
+			new JSM.Coord (0.8, 0.8, 0),
+			new JSM.Coord (0.9, 0.6, 0),
+			new JSM.Coord (0.9, 0.4, 0),
+			new JSM.Coord (0.8, 0.2, 0)
+		];
+		
+		var curveGroups = [
+			-1,
+			0,
+			0,
+			0,
+			-1,
+			1,
+			1,
+			1,
+			null,
+			0,
+			0,
+			0,
+			-1,
+			0,
+			0,
+			0,
+			-1
+		];
+		
+		var direction = new JSM.Vector (0.0, 0.0, 1.0);
+		var body2 = JSM.GenerateCurvedPrismWithHole (basePoints, curveGroups, direction, 0.3, true);
+
+		OffsetTwoBodies (body1, body2, 0.8, 0.0, 0.0);
+
+		model.AddBody (body1);
+		model.AddBody (body2);
+		AddModelToViewer (viewer, model, null, info);
+	}
 }

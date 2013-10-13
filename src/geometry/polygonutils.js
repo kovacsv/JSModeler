@@ -25,10 +25,22 @@ JSM.PolygonOrientation2D = function (polygon)
 	if (JSM.IsPositive (signedArea)) {
 		return 'CounterClockwise';
 	} else if (JSM.IsNegative (signedArea)) {
-		return 'ClockWise';
+		return 'Clockwise';
 	}
 	
 	return 'Invalid';
+};
+
+JSM.ChangePolygonOrientation2D = function (polygon)
+{
+	var oldPolygon = polygon.Clone ();
+	polygon.Clear ();
+	
+	var i, oldVertex;
+	for (i = oldPolygon.VertexCount () - 1; i >= 0; i--) {
+		oldVertex = oldPolygon.GetVertex (i);
+		polygon.AddVertex (oldVertex.x, oldVertex.y);
+	}
 };
 
 JSM.PolygonComplexity2D = function (polygon)

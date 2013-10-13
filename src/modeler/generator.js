@@ -765,6 +765,25 @@ JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
 	return result;
 };
 
+JSM.GenerateCurvedPrism = function (basePolygon, curveGroups, direction, height, withTopAndBottom)
+{
+	var result = JSM.GeneratePrism (basePolygon, direction, height, withTopAndBottom);
+	if (curveGroups === undefined || curveGroups === null) {
+		return result;
+	}
+	
+	if (basePolygon.length != curveGroups.length) {
+		return result;
+	}
+	
+	var i, current;
+	for (i = 0; i < basePolygon.length; i++) {
+		current = curveGroups[i];
+		result.GetPolygon (i).SetCurveGroup (current);
+	}
+	return result;
+};
+
 JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAndBottom)
 {
 	function AddVertices ()
@@ -883,6 +902,30 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 		e3
 	));
 
+	return result;
+};
+
+JSM.GenerateCurvedPrismWithHole = function (basePolygon, curveGroups, direction, height, withTopAndBottom)
+{
+	var result = JSM.GeneratePrismWithHole (basePolygon, direction, height, withTopAndBottom);
+	if (curveGroups === undefined || curveGroups === null) {
+		return result;
+	}
+	
+	if (basePolygon.length != curveGroups.length) {
+		return result;
+	}
+	
+	var index = 0;
+	var i, current;
+	for (i = 0; i < basePolygon.length; i++) {
+		current = curveGroups[i];
+		if (current === null) {
+			continue;
+		}
+		result.GetPolygon (index).SetCurveGroup (current);
+		index++;
+	}
 	return result;
 };
 

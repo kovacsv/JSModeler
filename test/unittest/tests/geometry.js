@@ -1351,7 +1351,13 @@ AddTest ('PolygonTest', function (test)
 	test.Assert (JSM.PolygonOrientation2D (polygon) == 'CounterClockwise');
 	test.Assert (JSM.PolygonComplexity2D (polygon) == 'Convex');
 	test.Assert (JSM.CoordPolygonPosition2D (new JSM.Coord2D (0.2, 0.2), polygon) == 'CoordInsideOfPolygon');
-
+	
+	JSM.ChangePolygonOrientation2D (polygon);
+	test.Assert (JSM.IsEqual (JSM.PolygonSignedArea2D (polygon), -0.5));
+	test.Assert (JSM.PolygonOrientation2D (polygon) == 'Clockwise');
+	test.Assert (JSM.PolygonComplexity2D (polygon) == 'Convex');
+	test.Assert (JSM.CoordPolygonPosition2D (new JSM.Coord2D (0.2, 0.2), polygon) == 'CoordInsideOfPolygon');
+	
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
 	polygon.AddVertex (1.0, 0.0);

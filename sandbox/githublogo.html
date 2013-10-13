@@ -1,0 +1,112 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<script type="text/javascript" src="../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../src/core/timer.js"></script>
+	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../src/modeler/subdivision.js"></script>
+	<script type="text/javascript" src="../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../src/modeler/solidgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../build/three.min.js"></script>
+	<script type="text/javascript" src="../src/viewer/converter.js"></script>
+	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../src/viewer/viewer.js"></script>
+	<title>Example</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+		var modelAndMaterials = null;
+		
+		function ExportToStl ()
+		{
+			var stlTextArea = document.getElementById ('stl');
+			stlTextArea.value = JSM.ExportModelToStl (modelAndMaterials[0]);
+		}
+		
+		function Load ()
+		{
+			var viewerSettings = {
+				cameraEyePosition : [-2.0, -1.5, 1.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0.0, 0.0, 1.0],
+				nearClippingPlane : 1.0,
+				farClippingPlane : 100000.0
+			};
+
+			viewer = new JSM.Viewer ();
+			viewer.Start ('example', viewerSettings);
+
+			viewer.RemoveMeshes ();
+			
+			var svgObject = document.getElementById ('exampleSvg');
+			var height = 10;
+			var segmentLength = 2;
+			modelAndMaterials = JSM.SvgToModel (svgObject, height, segmentLength);
+			
+			var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1]);
+			viewer.AddMeshes (meshes);
+			
+			viewer.FitInWindow ();
+			viewer.Draw ();			
+		}
+		
+		window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+
+</head>
+
+<body>
+	<svg id="exampleSvg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="180" height="180" segmentlength="2">
+		<path
+			d="M 89.995376,13.951995 C 45.822526,13.951995 10,49.768745 10,93.953945 c 0,35.344385 22.921074,65.328685 54.712576,75.908685 4.00203,0.7332 5.46212,-1.7361 5.46212,-3.8557 0,-1.8992 -0.0692,-6.9316 -0.10765,-13.6072 -22.2556,4.8339 -26.94963,-10.7239 -26.94963,-10.7239 -3.63716,-9.2413 -8.882211,-11.7022 -8.882211,-11.7022 -7.263042,-4.96319 0.54855,-4.86359 0.54855,-4.86359 8.028661,0.5663 12.254681,8.24539 12.254681,8.24539 7.1363,12.2242 18.72354,8.6941 23.28155,6.6476 0.72731,-5.1704 2.79343,-8.6961 5.07807,-10.6954 -17.76442,-2.01999 -36.43987,-8.88229 -36.43987,-39.537885 0,-8.7369 3.11953,-15.8727 8.23591,-21.4665 -0.8231,-2.0234 -3.5684,-10.1611 0.78432,-21.1718 0,0 6.71642,-2.1511 21.99826,8.2016 6.3805,-1.7779 13.22559,-2.6619 20.02797,-2.6962 6.7935,0.035 13.638124,0.9183 20.028444,2.6962 15.272,-10.3527 21.9791,-8.2016 21.9791,-8.2016 4.36204,11.0107 1.61721,19.1484 0.79607,21.1718 5.12574,5.5938 8.22216,12.7296 8.22216,21.4665 0,30.732695 -18.7044,37.494795 -36.52625,39.474485 2.87201,2.4713 5.43116,7.3535 5.43116,14.8159 0,10.6954 -0.0982,19.3223 -0.0982,21.9468 0,2.1388 1.44092,4.6272 5.50042,3.8463 31.76057,-10.5991 54.66247,-40.5648 54.66247,-75.899285 0,-44.1852 -35.82005,-80.00195 -80.004704,-80.00195"
+			inkscape:connector-curvature="0"
+			id="path22"
+			style="fill:#aaaaaa;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+	</svg> 
+	<canvas id="example" width="180" height="180"></canvas>
+	<br><a href="javascript:ExportToStl ()">export to stl</a><br>
+	<textarea rows="10" cols="60" id="stl"></textarea>
+</body>
+
+</html>
