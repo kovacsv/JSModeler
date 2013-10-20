@@ -2308,7 +2308,11 @@ AddTest ('CutPolygonTest', function (test)
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (3, 0, 0)));
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (3, 1, 0)));
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Coord (2, 1, 0)));
-
+	test.Assert (insidePolygons[0].GetVertex (0).originalIndex == 0);
+	test.Assert (insidePolygons[0].GetVertex (1).originalIndex == 1);
+	test.Assert (insidePolygons[0].GetVertex (2).originalIndex == 2);
+	test.Assert (insidePolygons[0].GetVertex (3).originalIndex == 3);
+	
 	// both sides, clean cut
 	var polygon = new JSM.Polygon ();
 	polygon.AddVertex (0, 0, 0);
@@ -2328,12 +2332,20 @@ AddTest ('CutPolygonTest', function (test)
 	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Coord (2, 3, 0)));
 	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (0, 3, 0)));
 	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (0, 0, 0)));
+	test.Assert (outsidePolygons[0].GetVertex (0).originalIndex == -1);
+	test.Assert (outsidePolygons[0].GetVertex (1).originalIndex == -1);
+	test.Assert (outsidePolygons[0].GetVertex (2).originalIndex == 3);
+	test.Assert (outsidePolygons[0].GetVertex (3).originalIndex == 0);
 
 	test.Assert (insidePolygons[0].VertexCount () == 4);
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (2, 3, 0)));
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (2, 0, 0)));
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (3, 0, 0)));
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Coord (3, 3, 0)));
+	test.Assert (insidePolygons[0].GetVertex (0).originalIndex == -1);
+	test.Assert (insidePolygons[0].GetVertex (1).originalIndex == -1);
+	test.Assert (insidePolygons[0].GetVertex (2).originalIndex == 1);
+	test.Assert (insidePolygons[0].GetVertex (3).originalIndex == 2);
 
 	// both sides, edge on the plane cut
 	var polygon = new JSM.Polygon ();
@@ -2357,7 +2369,7 @@ AddTest ('CutPolygonTest', function (test)
 	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (0, 2, 0)));
 	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (0, 0, 0)));
 	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (4), new JSM.Coord (2, 0, 0)));
-
+	
 	test.Assert (insidePolygons[0].VertexCount () == 4);
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (2, 2, 0)));
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (2, 1, 0)));
