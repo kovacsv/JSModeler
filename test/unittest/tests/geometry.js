@@ -2132,8 +2132,8 @@ AddTest ('OldCutPolygonTest', function (test)
 
 AddTest ('CutPolygonTest', function (test)
 {
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 1.0));
-	var revPlane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 1.0));
+	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
+	var revPlane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 
 	// two cut polygons in both sides
 	var polygon = new JSM.Polygon ();
@@ -2445,4 +2445,104 @@ AddTest ('CutPolygonTest', function (test)
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (2, 0.6666666666666666, 0)));
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (2, 0, 0)));
 	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (3, 0, 0)));
+
+	// cut triangles from polygon
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (10, 0, 0);
+	polygon.AddVertex (10, 3, 0);
+	polygon.AddVertex (9, 1, 0);
+	polygon.AddVertex (8, 3, 0);
+	polygon.AddVertex (7, 1, 0);
+	polygon.AddVertex (6, 3, 0);
+	polygon.AddVertex (5, 1, 0);
+	polygon.AddVertex (4, 3, 0);
+	polygon.AddVertex (3, 1, 0);
+	polygon.AddVertex (2, 3, 0);
+	polygon.AddVertex (1, 1, 0);
+	polygon.AddVertex (0, 3, 0);
+
+	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 2.0, 0.0), new JSM.Vector (0.0, 1.0, 0.0));
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 6);	
+
+	test.Assert (outsidePolygons[0].VertexCount () == 19);
+	test.Assert (insidePolygons[0].VertexCount () == 3);
+	test.Assert (insidePolygons[1].VertexCount () == 3);
+	test.Assert (insidePolygons[2].VertexCount () == 3);
+	test.Assert (insidePolygons[3].VertexCount () == 3);
+	test.Assert (insidePolygons[4].VertexCount () == 3);
+	test.Assert (insidePolygons[5].VertexCount () == 3);
+
+	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 2.0, 0.0), new JSM.Vector (0.0, -1.0, 0.0));
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 6);
+	test.Assert (insidePolygons.length == 1);	
+
+	test.Assert (insidePolygons[0].VertexCount () == 19);
+	test.Assert (outsidePolygons[0].VertexCount () == 3);
+	test.Assert (outsidePolygons[1].VertexCount () == 3);
+	test.Assert (outsidePolygons[2].VertexCount () == 3);
+	test.Assert (outsidePolygons[3].VertexCount () == 3);
+	test.Assert (outsidePolygons[4].VertexCount () == 3);
+	test.Assert (outsidePolygons[5].VertexCount () == 3);
+
+	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 1.0, 0.0), new JSM.Vector (0.0, 1.0, 0.0));
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);
+
+	test.Assert (outsidePolygons[0].VertexCount () == 4);
+	test.Assert (insidePolygons[0].VertexCount () == 13);
+
+	// cut through existing vertices
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (4, 0, 0);
+	polygon.AddVertex (3, 1, 0);
+	polygon.AddVertex (4, 2, 0);
+	polygon.AddVertex (0, 2, 0);
+	polygon.AddVertex (1, 1, 0);
+
+	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 1.0, 0.0), new JSM.Vector (0.0, 1.0, 0.0));
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);
+
+	test.Assert (outsidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Coord (3, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Coord (1, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (0, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (4, 0, 0)));
+
+	test.Assert (insidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (1, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (3, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (4, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Coord (0, 2, 0)));
+
+	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.0, 1.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);
 });
