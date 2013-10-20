@@ -97,3 +97,14 @@ JSM.ValueOrDefault = function (val, def)
 	}
 	return val;
 };
+
+JSM.Assert = function (condition, message)
+{
+	if (!condition) {
+		var alertText = 'Assertion failed.';
+		if (message !== undefined && message !== null) {
+			alertText += ' ' + message;
+		}
+		alert (alertText);
+	}
+};

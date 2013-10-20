@@ -1848,3 +1848,601 @@ AddTest ('CreatePolygonWithHoleTest', function (test)
 		test.Assert (triangles[19].toString () == [16, 14, 15].toString ());
 	}	
 });
+
+AddTest ('OldCutPolygonTest', function (test)
+{
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0.0, 0.0, 0.0);
+	polygon.AddVertex (1.0, 0.0, 0.0);
+	polygon.AddVertex (1.0, 1.0, 0.0);
+	polygon.AddVertex (0.0, 1.0, 0.0);
+	
+	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 0);
+	test.Assert (insidePolygons.length == 1);
+
+	test.Assert (
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Vector (0.0, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Vector (1.0, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Vector (1.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Vector (0.0, 1.0, 0.0))
+		);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (-1.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 0);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);
+
+	test.Assert (
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Vector (0.5, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Vector (0.5, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Vector (0.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Vector (0.0, 0.0, 0.0))
+		);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);
+
+	test.Assert (
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Vector (0.5, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Vector (0.5, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Vector (1.0, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Vector (1.0, 1.0, 0.0))
+		);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.8, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);
+
+	test.Assert (
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Vector (0.8, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Vector (0.8, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Vector (0.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Vector (0.0, 0.0, 0.0))
+		);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 0);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 1.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);
+
+	test.Assert (outsidePolygons[0].VertexCount () == 3);
+	test.Assert (insidePolygons[0].VertexCount () == 3);
+	test.Assert (
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Vector (0.0, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Vector (1.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Vector (0.0, 1.0, 0.0))
+		);
+	test.Assert (
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Vector (1.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Vector (0.0, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Vector (1.0, 0.0, 0.0))
+		);
+	
+	polygon = new JSM.Polygon ();
+	polygon.AddVertex (-1.0, -1.0, 0.0);
+	polygon.AddVertex (-1.0, 1.0, 0.0);
+	polygon.AddVertex (1.0, 1.0, 0.0);
+	polygon.AddVertex (1.0, -1.0, 0.0);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);
+
+	test.Assert (
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Vector (0.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Vector (0.0, -1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Vector (-1.0, -1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Vector (-1.0, 1.0, 0.0))
+		);
+	test.Assert (
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Vector (0.0, -1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Vector (0.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Vector (1.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Vector (1.0, -1.0, 0.0))
+		);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);
+	
+	test.Assert (
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Vector (0.0, -1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Vector (0.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Vector (1.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Vector (1.0, -1.0, 0.0))
+		);
+	test.Assert (
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Vector (0.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Vector (0.0, -1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Vector (-1.0, -1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Vector (-1.0, 1.0, 0.0))
+		);
+
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0.0, 0.0, 0.0);
+	polygon.AddVertex (2.0, 0.0, 0.0);
+	polygon.AddVertex (2.0, 1.0, 0.0);
+	polygon.AddVertex (1.0, 1.0, 0.0);
+	polygon.AddVertex (1.0, 2.0, 0.0);
+	polygon.AddVertex (2.0, 2.0, 0.0);
+	polygon.AddVertex (2.0, 3.0, 0.0);
+	polygon.AddVertex (0.0, 3.0, 0.0);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (3.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 0);
+	test.Assert (insidePolygons.length == 1);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 2);
+	test.Assert (insidePolygons.length == 1);
+
+	test.Assert (insidePolygons[0].VertexCount () == 8);
+	test.Assert (
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Vector (1.5, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Vector (1.5, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Vector (1.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Vector (1.0, 2.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (4), new JSM.Vector (1.5, 2.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (5), new JSM.Vector (1.5, 3.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (6), new JSM.Vector (0.0, 3.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (7), new JSM.Vector (0.0, 0.0, 0.0))
+		);
+
+	test.Assert (outsidePolygons[0].VertexCount () == 4);
+	test.Assert (
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Vector (1.5, 3.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Vector (1.5, 2.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Vector (2.0, 2.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Vector (2.0, 3.0, 0.0))
+		);
+
+	test.Assert (outsidePolygons[1].VertexCount () == 4);
+	test.Assert (
+		JSM.CoordIsEqual (outsidePolygons[1].GetVertex (0), new JSM.Vector (1.5, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[1].GetVertex (1), new JSM.Vector (1.5, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[1].GetVertex (2), new JSM.Vector (2.0, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[1].GetVertex (3), new JSM.Vector (2.0, 1.0, 0.0))
+		);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);
+	
+	test.Assert (insidePolygons[0].VertexCount () == 4);
+	test.Assert (
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Vector (0.5, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Vector (0.5, 3.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Vector (0.0, 3.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Vector (0.0, 0.0, 0.0))
+		);
+
+	test.Assert (outsidePolygons[0].VertexCount () == 8);
+	test.Assert (
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Vector (0.5, 3.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Vector (0.5, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Vector (2.0, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Vector (2.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (4), new JSM.Vector (1.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (5), new JSM.Vector (1.0, 2.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (6), new JSM.Vector (2.0, 2.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (7), new JSM.Vector (2.0, 3.0, 0.0))
+		);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);
+
+	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.5, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
+	outsidePolygons = [];
+	insidePolygons = [];
+	result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 2);
+
+	test.Assert (insidePolygons[0].VertexCount () == 4);
+	test.Assert (
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Vector (1.5, 3.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Vector (1.5, 2.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Vector (2.0, 2.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Vector (2.0, 3.0, 0.0))
+		);
+
+	test.Assert (insidePolygons[1].VertexCount () == 4);
+	test.Assert (
+		JSM.CoordIsEqual (insidePolygons[1].GetVertex (0), new JSM.Vector (1.5, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[1].GetVertex (1), new JSM.Vector (1.5, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[1].GetVertex (2), new JSM.Vector (2.0, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (insidePolygons[1].GetVertex (3), new JSM.Vector (2.0, 1.0, 0.0))
+		);
+
+	test.Assert (outsidePolygons[0].VertexCount () == 8);
+	test.Assert (
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Vector (1.5, 0.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Vector (1.5, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Vector (1.0, 1.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Vector (1.0, 2.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (4), new JSM.Vector (1.5, 2.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (5), new JSM.Vector (1.5, 3.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (6), new JSM.Vector (0.0, 3.0, 0.0)) &&
+		JSM.CoordIsEqual (outsidePolygons[0].GetVertex (7), new JSM.Vector (0.0, 0.0, 0.0))
+		);
+});
+
+AddTest ('CutPolygonTest', function (test)
+{
+	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 1.0));
+	var revPlane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 1.0));
+
+	// two cut polygons in both sides
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (3, 0, 0);
+	polygon.AddVertex (3, 1, 0);
+	polygon.AddVertex (1, 1, 0);
+	polygon.AddVertex (1, 2, 0);
+	polygon.AddVertex (4, 2, 0);
+	polygon.AddVertex (4, 5, 0);
+	polygon.AddVertex (0, 5, 0);
+	polygon.AddVertex (0, 4, 0);
+	polygon.AddVertex (3, 4, 0);
+	polygon.AddVertex (3, 3, 0);
+	polygon.AddVertex (0, 3, 0);
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 2);
+	test.Assert (insidePolygons.length == 2);
+
+	test.Assert (outsidePolygons[0].VertexCount () == 8);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Coord (2, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Coord (2, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (1, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (1, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (4), new JSM.Coord (2, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (5), new JSM.Coord (2, 3, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (6), new JSM.Coord (0, 3, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (7), new JSM.Coord (0, 0, 0)));
+
+	test.Assert (outsidePolygons[1].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[1].GetVertex (0), new JSM.Coord (2, 4, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[1].GetVertex (1), new JSM.Coord (2, 5, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[1].GetVertex (2), new JSM.Coord (0, 5, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[1].GetVertex (3), new JSM.Coord (0, 4, 0)));
+
+	test.Assert (insidePolygons[0].VertexCount () == 8);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (2, 5, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (2, 4, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (3, 4, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Coord (3, 3, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (4), new JSM.Coord (2, 3, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (5), new JSM.Coord (2, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (6), new JSM.Coord (4, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (7), new JSM.Coord (4, 5, 0)));
+
+	test.Assert (insidePolygons[1].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[1].GetVertex (0), new JSM.Coord (2, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[1].GetVertex (1), new JSM.Coord (2, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[1].GetVertex (2), new JSM.Coord (3, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[1].GetVertex (3), new JSM.Coord (3, 1, 0)));
+
+	// same with reversed plane
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, revPlane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 2);
+	test.Assert (insidePolygons.length == 2);
+
+	test.Assert (insidePolygons[0].VertexCount () == 8);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (2, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (2, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (1, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Coord (1, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (4), new JSM.Coord (2, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (5), new JSM.Coord (2, 3, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (6), new JSM.Coord (0, 3, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (7), new JSM.Coord (0, 0, 0)));
+
+	test.Assert (insidePolygons[1].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[1].GetVertex (0), new JSM.Coord (2, 4, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[1].GetVertex (1), new JSM.Coord (2, 5, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[1].GetVertex (2), new JSM.Coord (0, 5, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[1].GetVertex (3), new JSM.Coord (0, 4, 0)));
+
+	test.Assert (outsidePolygons[0].VertexCount () == 8);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Coord (2, 5, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Coord (2, 4, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (3, 4, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (3, 3, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (4), new JSM.Coord (2, 3, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (5), new JSM.Coord (2, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (6), new JSM.Coord (4, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (7), new JSM.Coord (4, 5, 0)));
+
+	test.Assert (outsidePolygons[1].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[1].GetVertex (0), new JSM.Coord (2, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[1].GetVertex (1), new JSM.Coord (2, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[1].GetVertex (2), new JSM.Coord (3, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[1].GetVertex (3), new JSM.Coord (3, 1, 0)));
+
+	// all outside
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (1, 0, 0);
+	polygon.AddVertex (1, 1, 0);
+	polygon.AddVertex (0, 1, 0);
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 0);	
+
+	test.Assert (outsidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Coord (0, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Coord (1, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (1, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (0, 1, 0)));
+
+	// all outside, some on the plane
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (2, 0, 0);
+	polygon.AddVertex (2, 2, 0);
+	polygon.AddVertex (0, 2, 0);
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 0);	
+
+	test.Assert (outsidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Coord (0, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Coord (2, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (2, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (0, 2, 0)));
+
+	// all inside
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (3, 0, 0);
+	polygon.AddVertex (4, 0, 0);
+	polygon.AddVertex (4, 1, 0);
+	polygon.AddVertex (3, 1, 0);
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 0);
+	test.Assert (insidePolygons.length == 1);	
+
+	test.Assert (insidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (3, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (4, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (4, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Coord (3, 1, 0)));
+
+	// all inside, some on the plane
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (2, 0, 0);
+	polygon.AddVertex (3, 0, 0);
+	polygon.AddVertex (3, 1, 0);
+	polygon.AddVertex (2, 1, 0);
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 0);
+	test.Assert (insidePolygons.length == 1);	
+
+	test.Assert (insidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (2, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (3, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (3, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Coord (2, 1, 0)));
+
+	// both sides, clean cut
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (3, 0, 0);
+	polygon.AddVertex (3, 3, 0);
+	polygon.AddVertex (0, 3, 0);
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);	
+
+	test.Assert (outsidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Coord (2, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Coord (2, 3, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (0, 3, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (0, 0, 0)));
+
+	test.Assert (insidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (2, 3, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (2, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (3, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Coord (3, 3, 0)));
+
+	// both sides, edge on the plane cut
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (2, 0, 0);
+	polygon.AddVertex (2, 1, 0);
+	polygon.AddVertex (3, 1, 0);
+	polygon.AddVertex (3, 2, 0);
+	polygon.AddVertex (0, 2, 0);
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);	
+
+	test.Assert (outsidePolygons[0].VertexCount () == 5);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Coord (2, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Coord (2, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (0, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (0, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (4), new JSM.Coord (2, 0, 0)));
+
+	test.Assert (insidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (2, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (2, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (3, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Coord (3, 2, 0)));
+
+	// both sides, edge on the plane cut
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (2, 0, 0);
+	polygon.AddVertex (2, 1, 0);
+	polygon.AddVertex (3, 1, 0);
+	polygon.AddVertex (3, 2, 0);
+	polygon.AddVertex (0, 2, 0);
+	polygon.AddVertex (0, 0, 0);
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);	
+
+	test.Assert (outsidePolygons[0].VertexCount () == 5);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Coord (2, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Coord (2, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (0, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (0, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (4), new JSM.Coord (2, 0, 0)));
+
+	test.Assert (insidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (2, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (2, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (3, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Coord (3, 2, 0)));
+
+	// both sides, edge on the plane cut
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (2, 1, 0);
+	polygon.AddVertex (3, 1, 0);
+	polygon.AddVertex (3, 2, 0);
+	polygon.AddVertex (0, 2, 0);
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (2, 0, 0);
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);	
+
+	test.Assert (outsidePolygons[0].VertexCount () == 5);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Coord (2, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Coord (2, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (0, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (0, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (4), new JSM.Coord (2, 0, 0)));
+
+	test.Assert (insidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (2, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (2, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (3, 1, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (3), new JSM.Coord (3, 2, 0)));
+	
+	// cut triangle
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (3, 0, 0);
+	polygon.AddVertex (0, 2, 0);
+
+	var outsidePolygons = [];
+	var insidePolygons = [];
+	var result = JSM.CutPolygonWithPlane (polygon, plane, outsidePolygons, insidePolygons);
+	test.Assert (result == true);
+	test.Assert (outsidePolygons.length == 1);
+	test.Assert (insidePolygons.length == 1);	
+
+	test.Assert (outsidePolygons[0].VertexCount () == 4);
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (0), new JSM.Coord (2, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (1), new JSM.Coord (2, 0.6666666666666666, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (2), new JSM.Coord (0, 2, 0)));
+	test.Assert (JSM.CoordIsEqual (outsidePolygons[0].GetVertex (3), new JSM.Coord (0, 0, 0)));
+
+	test.Assert (insidePolygons[0].VertexCount () == 3);
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (0), new JSM.Coord (2, 0.6666666666666666, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (1), new JSM.Coord (2, 0, 0)));
+	test.Assert (JSM.CoordIsEqual (insidePolygons[0].GetVertex (2), new JSM.Coord (3, 0, 0)));
+});
