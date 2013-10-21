@@ -81,7 +81,9 @@ function CalculateOffsetedPolygon (body, polygonIndex, polygonOffset)
 		basePolygon.push (body.GetVertexPosition (polygon.GetVertexIndex (i)));
 	}
 	
-	var offsetedPolygon = JSM.OffsetPolygonContour (new JSM.Polygon (basePolygon), polygonOffset);
+	var polygon = new JSM.Polygon ();
+	polygon.vertices = basePolygon;
+	var offsetedPolygon = JSM.OffsetPolygonContour (polygon, polygonOffset);
 	return offsetedPolygon.vertices;
 };
 

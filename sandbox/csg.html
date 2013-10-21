@@ -50,43 +50,11 @@
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
 	<script type="text/javascript" src="../src/viewer/viewer.js"></script>
-	<script type="text/javascript" src="legogenerator.js"></script>
 	<title>Example</title>
 
 	<script type="text/javascript">
 		var viewer = null;
 
-		function GenerateBodyFromHull ()
-		{
-			var coords = [];
-			var i, coord;
-			for (i = 0; i < 50; i++) {
-				coords.push (new JSM.Coord (10 * Math.random (), 10 * Math.random (), 10 * Math.random ()));
-			}
-			
-			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.jpg', 3.0, 3.0));
-			
-			var body = new JSM.Body ();
-			var hull = JSM.ConvexHull3D (coords);
-			
-			var i;
-			for (i = 0; i < coords.length; i++) {
-				body.AddVertex (new JSM.BodyVertex (coords[i]));
-			}
-			
-			for (i = 0; i < hull.length; i++) {
-				body.AddPolygon (new JSM.BodyPolygon (hull[i]));
-			}
-
-			body.SetPolygonsMaterialIndex (0);
-			if (!JSM.CheckSolidBody (body)) {
-				alert ('body is invalid');
-			}
-			
-			return [body, materials];
-		}
-		
 		function Load ()
 		{
 			var TextureLoaded = function () {
@@ -101,11 +69,22 @@
 
 			viewer = new JSM.Viewer ();
 			viewer.Start ('example', viewerSettings);
+
+			var aBody = new JSM.GenerateCuboid (1, 1, 1);
+			var bBody = new JSM.GenerateCuboid (1, 1, 1);
+			bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+
+			var body = JSM.Difference (aBody, bBody);
+			var materials = new JSM.Materials ();
 			
-			var bodyAndMaterials = GenerateBodyFromHull ();
-			//alert (JSM.ExportBodyToGDL (bodyAndMaterials[0]));
-			var conversionData = new JSM.ConversionData (TextureLoaded, true);
-			var meshes = JSM.ConvertBodyToThreeMeshes (bodyAndMaterials[0], bodyAndMaterials[1], conversionData);
+			var i, color;
+			for (i = 0; i < body.PolygonCount (); i++) {
+				color = JSM.RandomInt (0, 16777215);
+				materials.AddMaterial (new JSM.Material (color, color));
+				body.GetPolygon (i).SetMaterialIndex (i);
+			}
+			
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);
 			}

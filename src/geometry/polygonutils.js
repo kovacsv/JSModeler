@@ -592,15 +592,6 @@ JSM.CutPolygonWithPlane = function (polygon, plane, outsidePolygons, insidePolyg
 	{
 		function AddVertex (polygon, index, cutPolygon, vertexTypes)
 		{
-			function AddOriginalVertex (cutPolygon, vertexTypes, originalIndex, vertex, type)
-			{
-				cutPolygon.AddVertex (vertex.x, vertex.y, vertex.z);
-				vertexTypes.push (type);
-
-				var addedVertex = cutPolygon.GetVertex (cutPolygon.VertexCount () - 1);
-				addedVertex.originalIndex = originalIndex;
-			}
-
 			function AddIntersectionVertex (cutPolygon, vertexTypes, prevIndex, currIndex, currType)
 			{
 				if (vertexTypes.length > 0) {
@@ -610,9 +601,10 @@ JSM.CutPolygonWithPlane = function (polygon, plane, outsidePolygons, insidePolyg
 						var currVertex = polygon.GetVertex (currIndex);
 						var line = new JSM.Line (currVertex, JSM.CoordSub (currVertex, prevVertex));
 						var intersection = new JSM.Coord ();
-						var coordPlanePosition = JSM.LinePlanePosition (line, plane, intersection);
-						if (coordPlanePosition == 'LineIntersectsPlane') {
-							AddOriginalVertex (cutPolygon, vertexTypes, -1, intersection, 0);
+						var linePlanePosition = JSM.LinePlanePosition (line, plane, intersection);
+						if (linePlanePosition == 'LineIntersectsPlane') {
+							cutPolygon.AddVertex (intersection.x, intersection.y, intersection.z);
+							vertexTypes.push (0);
 						}
 					}
 				}
@@ -639,21 +631,17 @@ JSM.CutPolygonWithPlane = function (polygon, plane, outsidePolygons, insidePolyg
 				}
 				
 				AddIntersectionVertex (cutPolygon, vertexTypes, currIndex - 1, currIndex, currType);
-				AddOriginalVertex (cutPolygon, vertexTypes, currIndex, currVertex, currType);
+				cutPolygon.AddVertex (currVertex.x, currVertex.y, currVertex.z);
+				vertexTypes.push (currType);
 			}
 			
 			return currType;
 		}
 
-		var foundValid = false;
 		var i, currType;
 		for (i = 0; i <= polygon.VertexCount (); i++) {
 			currType = AddVertex (polygon, i, cutPolygon, vertexTypes);
-			if (!foundValid && currType !== 0) {
-				foundValid = true;
-			}
 		}
-		return foundValid;
 	}
 
 	function GetEntryVertices (vertexTypes, entryVertices)
@@ -723,14 +711,6 @@ JSM.CutPolygonWithPlane = function (polygon, plane, outsidePolygons, insidePolyg
 
 	function GetSimplePolygon (cutPolygon, vertexTypes, outsidePolygons, insidePolygons)
 	{
-		function AddVertex (polygon, vertex)
-		{
-			polygon.AddVertex (vertex.x, vertex.y, vertex.z);
-			
-			var addedVertex = polygon.GetVertex (polygon.VertexCount () - 1);
-			addedVertex.originalIndex = vertex.originalIndex;
-		}
-
 		var sideFound = false;
 		var polygonSide = 0;
 
@@ -746,15 +726,17 @@ JSM.CutPolygonWithPlane = function (polygon, plane, outsidePolygons, insidePolyg
 				}
 			}
 			currVertex = cutPolygon.GetVertex (i);
-			AddVertex (currPolygon, currVertex);
+			currPolygon.AddVertex (currVertex.x, currVertex.y, currVertex.z);
 		}
 
-		if (polygonSide == -1) {
+		if (polygonSide == 1) {
 			outsidePolygons.push (currPolygon);
-		} else {
+		} else if (polygonSide == -1) {
 			insidePolygons.push (currPolygon);
+		} else {
+			outsidePolygons.push (currPolygon);
 		}
-}
+	}
 
 	function GetCuttedPolygons (cutPolygon, entryVertices, vertexTypes, outsidePolygons, insidePolygons)
 	{
@@ -784,14 +766,6 @@ JSM.CutPolygonWithPlane = function (polygon, plane, outsidePolygons, insidePolyg
 				}
 			}
 
-			function AddVertex (polygon, vertex)
-			{
-				polygon.AddVertex (vertex.x, vertex.y, vertex.z);
-				
-				var addedVertex = polygon.GetVertex (polygon.VertexCount () - 1);
-				addedVertex.originalIndex = vertex.originalIndex;
-			}
-
 			var entryPairs = [];
 			CreateEntryPairsArray (cutPolygon, entryVertices, entryPairs);
 
@@ -807,7 +781,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, outsidePolygons, insidePolyg
 			var polygonSide = 0;
 
 			var currPolygon = new JSM.Polygon ();
-			var currVertex, addedVertex;
+			var currVertex;
 
 			while (true) {
 				if (!sideFound) {
@@ -818,9 +792,9 @@ JSM.CutPolygonWithPlane = function (polygon, plane, outsidePolygons, insidePolyg
 				}
 
 				if (currPolygon.VertexCount () > 0 && currVertexIndex == startVertexIndex) {
-					if (polygonSide == -1) {
+					if (polygonSide == 1) {
 						outsidePolygons.push (currPolygon);
-					} else {
+					} else if (polygonSide == -1) {
 						insidePolygons.push (currPolygon);
 					}
 
@@ -835,8 +809,8 @@ JSM.CutPolygonWithPlane = function (polygon, plane, outsidePolygons, insidePolyg
 				}
 
 				currVertex = cutPolygon.GetVertex (currVertexIndex);
-				AddVertex (currPolygon, currVertex);
-
+				currPolygon.AddVertex (currVertex.x, currVertex.y, currVertex.z);
+				
 				if (entryPairs[currVertexIndex] != -1) {
 					if (!reversed) {
 						currEntryVertex = currEntryVertex + 2;
@@ -862,8 +836,8 @@ JSM.CutPolygonWithPlane = function (polygon, plane, outsidePolygons, insidePolyg
 	var cutPolygon = new JSM.Polygon ();
 
 	var vertexTypes = [];
-	var foundValid = AddCutVerticesToPolygon (polygon, plane, cutPolygon, vertexTypes);
-	if (!foundValid || cutPolygon.VertexCount () != vertexTypes.length) {
+	AddCutVerticesToPolygon (polygon, plane, cutPolygon, vertexTypes);
+	if (cutPolygon.VertexCount () != vertexTypes.length) {
 		return false;
 	}
 
@@ -880,5 +854,141 @@ JSM.CutPolygonWithPlane = function (polygon, plane, outsidePolygons, insidePolyg
 		GetCuttedPolygons (cutPolygon, entryVertices, vertexTypes, outsidePolygons, insidePolygons);
 	}
 
+	if (outsidePolygons.length + insidePolygons.length === 0) {
+		return false;
+	}
+	return true;
+};
+
+JSM.CutTriangleWithPlane = function (triangle, plane, outsideTriangles, insideTriangles)
+{
+	function GetVertexTypes (triangle, plane, vertexTypes)
+	{
+		var foundInside = false;
+		var foundOutside = false;
+
+		var i, position, currVertex, currType;
+		for (i = 0; i < triangle.VertexCount (); i++) {
+			currVertex = triangle.GetVertex (i);
+			position = JSM.CoordPlanePosition (currVertex, plane);
+			if (position == 'CoordInFrontOfPlane') {
+				currType = 1;
+				foundOutside = true;
+			} else if (position == 'CoordAtBackOfPlane') {
+				currType = -1;
+				foundInside = true;
+			} else {
+				currType = 0;
+			}
+			vertexTypes.push (currType);
+		}
+		return [foundOutside, foundInside];
+	}
+
+	function AddTriangle (triangle, side, outsideTriangles, insideTriangles)
+	{
+		if (side == 1) {
+			outsideTriangles.push (triangle);
+		} else if (side == -1) {
+			insideTriangles.push (triangle);
+		} else {
+			outsideTriangles.push (triangle);
+		}
+	}
+	
+	function AddCuttedTriangles (triangle, vertexTypes, foundInside, foundOutside, outsideTriangles, insideTriangles)
+	{
+		function AddPolygon (polygon, side, outsideTriangles, insideTriangles)
+		{
+			if (polygon.VertexCount () == 3) {
+				AddTriangle (polygon, side, outsideTriangles, insideTriangles);
+			} else {
+				var triangle, triangleVertex;
+				var i, j;
+				for (i = 1; i < polygon.VertexCount () - 1; i++) {
+					triangle = new JSM.Polygon ();
+					triangleVertex = polygon.GetVertex (0);
+					triangle.AddVertex (triangleVertex.x, triangleVertex.y, triangleVertex.z);
+					for (j = i; j <= i + 1; j++) {
+						triangleVertex = polygon.GetVertex (j);
+						triangle.AddVertex (triangleVertex.x, triangleVertex.y, triangleVertex.z);
+					}
+					AddTriangle (triangle, side, outsideTriangles, insideTriangles);
+				}
+			}
+		}
+	
+		var inside = new JSM.Polygon ();
+		var outside = new JSM.Polygon ();
+		
+		var i, currIndex, nextIndex, currType, nextType, currVertex, nextVertex;
+		var line, intersection, linePlanePosition;
+		for (i = 0; i < vertexTypes.length; i++) {
+			currIndex = i;
+			nextIndex = i < vertexTypes.length - 1 ? i + 1 : 0;
+
+			currType = vertexTypes[currIndex];
+			currVertex = triangle.GetVertex (currIndex);
+			if (currType == -1) {
+				inside.AddVertex (currVertex.x, currVertex.y, currVertex.z);
+			} else if (currType == 1) {
+				outside.AddVertex (currVertex.x, currVertex.y, currVertex.z);
+			} else {
+				inside.AddVertex (currVertex.x, currVertex.y, currVertex.z);
+				outside.AddVertex (currVertex.x, currVertex.y, currVertex.z);
+			}
+			
+			nextType = vertexTypes[nextIndex];
+			if ((currType == -1 && nextType == 1) || (currType == 1 && nextType == -1)) {
+				nextVertex = triangle.GetVertex (nextIndex);
+				line = new JSM.Line (currVertex, JSM.CoordSub (nextVertex, currVertex));
+				intersection = new JSM.Coord ();
+				linePlanePosition = JSM.LinePlanePosition (line, plane, intersection);
+				if (linePlanePosition == 'LineIntersectsPlane') {
+					inside.AddVertex (intersection.x, intersection.y, intersection.z);
+					outside.AddVertex (intersection.x, intersection.y, intersection.z);
+				}
+			}
+		}
+		
+		AddPolygon (outside, 1, outsideTriangles, insideTriangles);
+		AddPolygon (inside, -1, outsideTriangles, insideTriangles);
+	}
+	
+	function AddSimpleTriangle (triangle, foundInside, foundOutside, outsideTriangles, insideTriangles)
+	{
+		var result = new JSM.Polygon ();
+		
+		var i, currVertex;
+		for (i = 0; i < triangle.VertexCount (); i++) {
+			currVertex = triangle.GetVertex (i);
+			result.AddVertex (currVertex.x, currVertex.y, currVertex.z);
+		}
+		
+		var side = 1;
+		if (foundInside) {
+			side = -1;
+		} else if (foundOutside) {
+			side = 1;
+		}
+		
+		AddTriangle (result, side, outsideTriangles, insideTriangles);
+	}
+	
+	if (triangle.VertexCount () != 3) {
+		return false;
+	}
+	
+	var vertexTypes = [];
+	var founds = GetVertexTypes (triangle, plane, vertexTypes);
+	var foundOutside = founds[0];
+	var foundInside = founds[1];
+	
+	if (foundInside && foundOutside) {
+		AddCuttedTriangles (triangle, vertexTypes, foundInside, foundOutside, outsideTriangles, insideTriangles);
+	} else {
+		AddSimpleTriangle (triangle, foundInside, foundOutside, outsideTriangles, insideTriangles);
+	}
+	
 	return true;
 };
