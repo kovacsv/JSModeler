@@ -35,15 +35,42 @@ JSM.Difference = function (aBody, bBody)
 		body.AddPolygon (bodyPolygon);
 	}
 
+	function AddAllOutside (bspTree, body, parentNode, userData)
+	{
+		bspTree.TraverseNode (parentNode.outside, function (node) {
+			if (node.userData == userData) {
+				AddPolygonToBody (node.polygon, body);
+			}
+		});
+	}
+	
+	function AddAllInside (bspTree, body, parentNode, userData)
+	{
+		bspTree.TraverseNode (parentNode.inside, function (node) {
+			if (node.userData == userData) {
+				AddPolygonToBody (node.polygon, body);
+			}
+		});
+	}
+	
 	var bspTree = new JSM.BSPTree ();
 	JSM.AddBodyToBSPTree (bBody, bspTree, 'b');
 	JSM.AddBodyToBSPTree (aBody, bspTree, 'a');
 	
-	var outsidePolygons = [];
-	
 	var result = new JSM.Body ();
 	bspTree.Traverse (function (node) {
-		AddPolygonToBody (node.polygon, result);
+		if (node.userData == 'b') {
+			AddAllOutside (bspTree, result, node, 'a');
+		}
+	});
+
+	var bspTree = new JSM.BSPTree ();
+	JSM.AddBodyToBSPTree (aBody, bspTree, 'a');
+	JSM.AddBodyToBSPTree (bBody, bspTree, 'b');
+	bspTree.Traverse (function (node) {
+		if (node.userData == 'a') {
+			//AddAllInside (bspTree, result, node, 'b');
+		}
 	});
 
 	return result;

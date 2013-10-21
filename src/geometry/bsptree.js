@@ -82,16 +82,16 @@ JSM.BSPTree.prototype =
 	
 	Traverse : function (nodeFound)
 	{
-		function TraverseNode (node, nodeFound)
-		{
-			if (node !== null) {
-				nodeFound (node);
-				TraverseNode (node.inside, nodeFound);
-				TraverseNode (node.outside, nodeFound);
-			}
-		}
+		this.TraverseNode (this.root, nodeFound);
+	},
 	
-		TraverseNode (this.root, nodeFound);
+	TraverseNode : function (node, nodeFound)
+	{
+		if (node !== null) {
+			nodeFound (node);
+			this.TraverseNode (node.inside, nodeFound);
+			this.TraverseNode (node.outside, nodeFound);
+		}
 	},
 	
 	NodeCount : function ()
