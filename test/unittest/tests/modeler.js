@@ -1382,7 +1382,7 @@ AddTest ('AddBodyToBSPTreeTest', function (test)
 	test.Assert (bspTree.NodeCount () == 6);
 	bspTree.Traverse (function (node) {
 		test.Assert (node.outside == null);
-		test.Assert (node.userData == 42);
+		test.Assert (node.userData.id == 42);
 	});
 
 	var body2 = new JSM.GenerateCuboid (1, 1, 1);
