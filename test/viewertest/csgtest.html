@@ -1,0 +1,292 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/viewertest.css">
+
+	<script type="text/javascript" src="../../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/subdivision.js"></script>
+	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/solidgenerator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/csg.js"></script>
+	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/modeler/painter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	
+	<script type="text/javascript" src="../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../src/viewer/converter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>	
+
+	<script type="text/javascript" src="include/stephandler.js"></script>
+	<title>JSModeler Viewer Test</title>
+	
+	<script type="text/javascript">
+		var viewer = null;
+		var stepHandler = null;
+
+		function Previous ()
+		{
+			stepHandler.Previous ()
+		}
+		
+		function Next ()
+		{
+			stepHandler.Next ()
+		}
+
+		function AddBodyToViewer (body)
+		{
+			var materials = new JSM.Materials ();
+			
+			var maxColor = 16777215;
+			var minColor = parseInt (maxColor / 2);
+			var i, color;
+			for (i = 0; i < body.PolygonCount (); i++) {
+				color = JSM.SeededRandomInt (minColor, maxColor, i + 1);
+				materials.AddMaterial (new JSM.Material (color, color));
+				body.GetPolygon (i).SetMaterialIndex (i);
+			}
+			
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			viewer.AddMeshes (meshes);
+			viewer.Draw ();	
+		}
+		
+		function TestStep (viewer, step)
+		{
+			var current = 0;
+			viewer.RemoveMeshes ();
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = JSM.BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = JSM.BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = JSM.BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = JSM.BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = JSM.BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = JSM.BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.4, 2, 30, true);
+				var result = JSM.BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.4, 2, 30, true);
+				var result = JSM.BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.4, 2, 30, true);
+				var result = JSM.BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				var bBody = new JSM.GenerateCylinder (0.5, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = JSM.BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+			
+			if (step == current++) {
+				var aBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				var bBody = new JSM.GenerateCylinder (0.5, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = JSM.BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+			
+			if (step == current++) {
+				var aBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				var bBody = new JSM.GenerateCylinder (0.5, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = JSM.BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateSphere (0.5, 12);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.3, 0.3, 0.3)));
+				var result = JSM.BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateSphere (0.5, 12);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.3, 0.3, 0.3)));
+				var result = JSM.BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateSphere (0.5, 12);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.3, 0.3, 0.3)));
+				var result = JSM.BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+		}
+		
+		function Step ()
+		{
+			var step = stepHandler.GetStep ();
+			var info = document.getElementById ('info');
+			TestStep (viewer, step);
+		}
+		
+		function KeyDown (event)
+		{
+			var keyCode = event.which;
+			if (keyCode == 37) {
+				Previous ();
+			} else if (keyCode == 39) {
+				Next ();
+			}
+		}
+		
+		function Resize ()
+		{
+			var header = document.getElementById ('header');
+			var canvas = document.getElementById ('test');
+			
+			canvas.width = document.body.clientWidth;
+			canvas.height = document.body.clientHeight - header.clientHeight - 1;
+			if (viewer != null) {
+				viewer.Resize ();
+			}
+		}
+
+		function Load ()
+		{
+			window.onresize = Resize;
+			window.onhashchange = Step;
+			window.onkeydown = KeyDown;
+			Resize ();
+
+			var viewerSettings = {
+				cameraEyePosition : [-2.0, 4.0, 2.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0.0, 0.0, 1.0],
+				nearClippingPlane : 1.0,
+				farClippingPlane : 100000.0
+			};
+
+			viewer = new JSM.Viewer ();
+			if (!viewer.Start ('test', viewerSettings)) {
+				return;
+			}
+
+			viewer.Draw ();
+			
+			stepHandler = new StepHandler ();
+			Step ();
+		}
+
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="header">
+		<div id="buttons">
+			<a class="button" href="javascript:Previous ()">previous</a>
+			<a class="button" href="javascript:Next ()">next</a>
+		</div>
+		<div id="info"></div>
+	</div>
+	<canvas id="test" width="800" height="500"></canvas>
+	</body>
+
+</html>
