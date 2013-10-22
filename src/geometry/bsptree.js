@@ -3,6 +3,7 @@ JSM.BSPNode = function ()
 	this.polygon = null;
 	this.userData = null;
 	this.plane = null;
+	this.parent = null;
 	this.inside = null;
 	this.outside = null;
 };
@@ -11,44 +12,62 @@ JSM.BSPNode.prototype =
 {
 	AddPolygon : function (polygon, userData)
 	{
+		function AddInsidePolygons (node, polygons, userData)
+		{
+			if (node.inside === null) {
+				node.inside = new JSM.BSPNode ();
+				node.inside.parent = node;
+			}
+			var i;
+			for (i = 0; i < polygons.length; i++) {
+				node.inside.AddPolygon (polygons[i], userData);
+			}		
+		}
+	
+		function AddOutsidePolygons (node, polygons, userData)
+		{
+			if (node.outside === null) {
+				node.outside = new JSM.BSPNode ();
+				node.outside.parent = node;
+			}
+			var i;
+			for (i = 0; i < polygons.length; i++) {
+				node.outside.AddPolygon (polygons[i], userData);
+			}		
+		}
+
 		if (polygon.VertexCount () < 3) {
 			return false;
 		}
 		
-		var normal = JSM.CalculateNormal (polygon.vertices);
-		var plane = JSM.GetPlaneFromCoordAndDirection (polygon.GetVertex (0), normal);
+		var normal;
 		if (this.polygon === null) {
+			normal = JSM.CalculateNormal (polygon.vertices);
+			var plane = JSM.GetPlaneFromCoordAndDirection (polygon.GetVertex (0), normal);
 			this.polygon = polygon;
 			if (userData !== undefined) {
 				this.userData = userData;
 			}
 			this.plane = plane;
 		} else {
-			// If a polygon being pushed through the tree is coplanar with a node plane,
-			// test the polygon normal so see if it matches the plane normal.
-			// If they match, push it down the inside. If they don't, push it down the outside. 
-		
-			var insidePolygons = [];
-			var outsidePolygons = [];
-			var cutSucceeded = JSM.CutPolygonWithPlane (polygon, this.plane, outsidePolygons, insidePolygons);
-			JSM.Assert (cutSucceeded, 'Cut not succeeded.');
-			
+			var backPolygons = [];
+			var frontPolygons = [];
+			var planePolygons = [];
+			var cutSucceeded = JSM.CutPolygonWithPlane (polygon, this.plane, frontPolygons, backPolygons, planePolygons);
 			if (cutSucceeded) {
 				var i;
-				if (insidePolygons.length > 0) {
-					if (this.inside === null) {
-						this.inside = new JSM.BSPNode ();
-					}
-					for (i = 0; i < insidePolygons.length; i++) {
-						this.inside.AddPolygon (insidePolygons[i], userData);
-					}
+				if (backPolygons.length > 0) {
+					AddInsidePolygons (this, backPolygons, userData);
 				}
-				if (outsidePolygons.length > 0) {
-					if (this.outside === null) {
-						this.outside = new JSM.BSPNode ();
-					}
-					for (i = 0; i < outsidePolygons.length; i++) {
-						this.outside.AddPolygon (outsidePolygons[i], userData);
+				if (frontPolygons.length > 0) {
+					AddOutsidePolygons (this, frontPolygons, userData);
+				}
+				if (planePolygons.length > 0) {
+					normal = JSM.CalculateNormal (polygon.vertices);
+					if (JSM.CoordIsEqual (normal, this.plane.GetNormal ())) {
+						AddInsidePolygons (this, planePolygons, userData);
+					} else {
+						AddOutsidePolygons (this, planePolygons, userData);
 					}
 				}
 			}

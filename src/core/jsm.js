@@ -90,6 +90,12 @@ JSM.RandomInt = function (from, to)
 	return Math.floor ((Math.random () * (to - from + 1)) + from); 
 };
 
+JSM.SeededRandomInt = function (from, to, seed)
+{
+    var random = ((seed * 9301 + 49297) % 233280) / 233280;
+	return Math.floor ((random * (to - from + 1)) + from); 
+};
+
 JSM.ValueOrDefault = function (val, def)
 {
 	if (val === undefined || val === null) {

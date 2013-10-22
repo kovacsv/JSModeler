@@ -19,57 +19,115 @@ JSM.AddBodyToBSPTree = function (body, bspTree, userData)
 	}
 };
 
-JSM.Difference = function (aBody, bBody)
+JSM.BooleanOperation = function (operation, aBody, bBody)
 {
-	function AddPolygonToBody (polygon, body)
+	function AddPolygonToBody (polygon, body, reversed)
 	{
 		var oldVertexCount = body.VertexCount ();
-		var bodyPolygon = new JSM.BodyPolygon ();
 		
 		var i;
-		for (i = 0; i < polygon.VertexCount (); i++) {
-			body.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i)));
-			bodyPolygon.AddVertexIndex (oldVertexCount + i);
+		if (!reversed) {
+			for (i = 0; i < polygon.VertexCount (); i++) {
+				body.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i)));
+			}
+		} else {
+			for (i = polygon.VertexCount () - 1; i >= 0; i--) {
+				body.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i)));
+			}
 		}
 		
+		var bodyPolygon = new JSM.BodyPolygon ();
+		for (i = 0; i < polygon.VertexCount (); i++) {
+			bodyPolygon.AddVertexIndex (oldVertexCount + i);
+		}
 		body.AddPolygon (bodyPolygon);
 	}
 
-	function AddAllOutside (bspTree, body, parentNode, userData)
+	function IsNodeInTheSideOf (node, side, userData)
 	{
-		bspTree.TraverseNode (parentNode.outside, function (node) {
-			if (node.userData == userData) {
-				AddPolygonToBody (node.polygon, body);
+		var current = node;
+		var parent = node.parent;
+		while (parent !== null) {
+			if (parent.userData == userData) {
+				if (side == -1) {
+					if (parent.inside == current) {
+						return false;
+					} else if (parent.outside == current) {
+						return true;
+					}
+				} else if (side == 1) {
+					if (parent.outside == current) {
+						return false;
+					} else if (parent.inside == current) {
+						return true;
+					}
+				}
 			}
-		});
+			current = parent;
+			parent = current.parent;
+		}
+		return false;	
 	}
 	
-	function AddAllInside (bspTree, body, parentNode, userData)
+	function IsNodeOutsideOf (node, userData)
 	{
-		bspTree.TraverseNode (parentNode.inside, function (node) {
-			if (node.userData == userData) {
-				AddPolygonToBody (node.polygon, body);
-			}
-		});
-	}
+		return IsNodeInTheSideOf (node, -1, userData);
+	}	
 	
-	var bspTree = new JSM.BSPTree ();
-	JSM.AddBodyToBSPTree (bBody, bspTree, 'b');
-	JSM.AddBodyToBSPTree (aBody, bspTree, 'a');
+	function IsNodeInsideOf (node, userData)
+	{
+		return IsNodeInTheSideOf (node, 1, userData);
+	}
 	
 	var result = new JSM.Body ();
-	bspTree.Traverse (function (node) {
-		if (node.userData == 'b') {
-			AddAllOutside (bspTree, result, node, 'a');
+
+	var bspTreeBToA = new JSM.BSPTree ();
+	JSM.AddBodyToBSPTree (bBody, bspTreeBToA, 'b');
+	JSM.AddBodyToBSPTree (aBody, bspTreeBToA, 'a');
+	bspTreeBToA.Traverse (function (node) {
+		if (operation == 'Union') {
+			if (node.userData == 'a') {
+				if (IsNodeOutsideOf (node, 'b')) {
+					AddPolygonToBody (node.polygon, result, false);
+				}
+			}
+		} else if (operation == 'Difference') {
+			if (node.userData == 'a') {
+				if (IsNodeOutsideOf (node, 'b')) {
+					AddPolygonToBody (node.polygon, result, false);
+				}
+			}
+		} else if (operation == 'Intersection') {
+			if (node.userData == 'a') {
+				if (IsNodeInsideOf (node, 'b')) {
+					AddPolygonToBody (node.polygon, result, false);
+				}
+			}
 		}
 	});
 
-	var bspTree = new JSM.BSPTree ();
-	JSM.AddBodyToBSPTree (aBody, bspTree, 'a');
-	JSM.AddBodyToBSPTree (bBody, bspTree, 'b');
-	bspTree.Traverse (function (node) {
-		if (node.userData == 'a') {
-			//AddAllInside (bspTree, result, node, 'b');
+	var bspTreeAToB = new JSM.BSPTree ();
+	JSM.AddBodyToBSPTree (aBody, bspTreeAToB, 'a');
+	JSM.AddBodyToBSPTree (bBody, bspTreeAToB, 'b');
+	bspTreeAToB.Traverse (function (node) {
+		if (operation == 'Union') {
+			if (node.userData == 'b') {
+				if (IsNodeOutsideOf (node, 'a')) {
+					AddPolygonToBody (node.polygon, result, false);
+				}
+			}
+		} else if (operation == 'Difference') {
+			if (node.userData == 'b') {
+				if (IsNodeInsideOf (node, 'a')) {
+					AddPolygonToBody (node.polygon, result, true);
+				}
+			}
+		} else if (operation == 'Intersection') {
+			if (node.userData == 'b') {
+				if (IsNodeInsideOf (node, 'a')) {
+					AddPolygonToBody (node.polygon, result, false);
+				}
+			}
 		}
 	});
 

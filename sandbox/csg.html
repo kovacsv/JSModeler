@@ -71,20 +71,24 @@
 			viewer.Start ('example', viewerSettings);
 
 			var aBody = new JSM.GenerateCuboid (1, 1, 1);
-			var bBody = new JSM.GenerateCuboid (1, 1, 1);
+			var bBody = new JSM.GenerateCylinder (0.5, 1, 25, true);
 			bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
 
-			var body = JSM.Difference (aBody, bBody);
+			var body = JSM.BooleanOperation ('Difference', aBody, bBody);
 			var materials = new JSM.Materials ();
 			
+			var maxColor = 16777215;
+			var minColor = parseInt (maxColor / 2);
 			var i, color;
 			for (i = 0; i < body.PolygonCount (); i++) {
-				color = JSM.RandomInt (0, 16777215);
+				color = JSM.SeededRandomInt (minColor, maxColor, i + 1);
 				materials.AddMaterial (new JSM.Material (color, color));
 				body.GetPolygon (i).SetMaterialIndex (i);
 			}
 			
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			var cd = new JSM.ConversionData ();
+			cd.doubleSided = false;
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, cd);
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);
 			}
