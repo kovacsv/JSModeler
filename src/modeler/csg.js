@@ -1,8 +1,15 @@
-JSM.AddBodyToBSPTree = function (body, bspTree, userData)
+JSM.BSPPolygonUserData = function ()
 {
-	function ConvertBodyPolygonToPolygon (body, index)
+	this.id = null;
+	this.material = null;
+};
+
+JSM.AddBodyToBSPTree = function (body, bspTree, id)
+{
+	function ConvertBodyPolygonToPolygon (body, index, userData)
 	{
 		var polygon = body.GetPolygon (index);
+		userData.material = polygon.GetMaterialIndex ();
 		var result = new JSM.Polygon ();
 		var i, coord;
 		for (i = 0; i < polygon.VertexIndexCount (); i++) {
@@ -12,43 +19,64 @@ JSM.AddBodyToBSPTree = function (body, bspTree, userData)
 		return result;
 	}
 
-	var i, polygon;
+	var i, polygon, userData;
 	for (i = 0; i < body.PolygonCount (); i++) {
-		polygon = ConvertBodyPolygonToPolygon (body, i);
+		userData = new JSM.BSPPolygonUserData (id, 0);
+		userData.id = id;
+		polygon = ConvertBodyPolygonToPolygon (body, i, userData);
 		bspTree.AddPolygon (polygon, userData);
 	}
 };
 
 JSM.BooleanOperation = function (operation, aBody, bBody)
 {
-	function AddPolygonToBody (polygon, body, reversed)
+	function AddPolygonToBody (node, body, reversed)
 	{
-		var oldVertexCount = body.VertexCount ();
-		
-		var i;
+		function AddBodyVertex (coord)
+		{
+			var merge = false;
+			if (merge) {
+				var i, current;
+				for (i = 0; i < body.VertexCount (); i++) {
+					current = body.GetVertexPosition (i);
+					if (JSM.CoordIsEqual (current, coord)) {
+						return i;
+					}
+				}
+			}
+
+			body.AddVertex (new JSM.BodyVertex (coord));
+			return body.VertexCount () - 1;
+		}
+
+		var polygon = node.polygon;
+		var bodyPolygon = new JSM.BodyPolygon ();
+
+		var i, vertexIndex;
 		if (!reversed) {
 			for (i = 0; i < polygon.VertexCount (); i++) {
-				body.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i)));
+				vertexIndex = AddBodyVertex (polygon.GetVertex (i));
+				bodyPolygon.AddVertexIndex (vertexIndex);
 			}
 		} else {
 			for (i = polygon.VertexCount () - 1; i >= 0; i--) {
-				body.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i)));
+				vertexIndex = AddBodyVertex (polygon.GetVertex (i));
+				bodyPolygon.AddVertexIndex (vertexIndex);
 			}
 		}
 		
-		var bodyPolygon = new JSM.BodyPolygon ();
-		for (i = 0; i < polygon.VertexCount (); i++) {
-			bodyPolygon.AddVertexIndex (oldVertexCount + i);
+		if (node.userData.material !== null) {
+			bodyPolygon.SetMaterialIndex (node.userData.material);
 		}
 		body.AddPolygon (bodyPolygon);
 	}
 
-	function IsNodeInTheSideOf (node, side, userData)
+	function IsNodeInTheSideOf (node, side, id)
 	{
 		var current = node;
 		var parent = node.parent;
 		while (parent !== null) {
-			if (parent.userData == userData) {
+			if (parent.userData.id == id) {
 				if (side == -1) {
 					if (parent.inside == current) {
 						return false;
@@ -69,14 +97,14 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 		return false;	
 	}
 	
-	function IsNodeOutsideOf (node, userData)
+	function IsNodeOutsideOf (node, id)
 	{
-		return IsNodeInTheSideOf (node, -1, userData);
+		return IsNodeInTheSideOf (node, -1, id);
 	}	
 	
-	function IsNodeInsideOf (node, userData)
+	function IsNodeInsideOf (node, id)
 	{
-		return IsNodeInTheSideOf (node, 1, userData);
+		return IsNodeInTheSideOf (node, 1, id);
 	}
 	
 	var result = new JSM.Body ();
@@ -86,21 +114,21 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 	JSM.AddBodyToBSPTree (aBody, bspTreeBToA, 'a');
 	bspTreeBToA.Traverse (function (node) {
 		if (operation == 'Union') {
-			if (node.userData == 'a') {
+			if (node.userData.id == 'a') {
 				if (IsNodeOutsideOf (node, 'b')) {
-					AddPolygonToBody (node.polygon, result, false);
+					AddPolygonToBody (node, result, false);
 				}
 			}
 		} else if (operation == 'Difference') {
-			if (node.userData == 'a') {
+			if (node.userData.id == 'a') {
 				if (IsNodeOutsideOf (node, 'b')) {
-					AddPolygonToBody (node.polygon, result, false);
+					AddPolygonToBody (node, result, false);
 				}
 			}
 		} else if (operation == 'Intersection') {
-			if (node.userData == 'a') {
+			if (node.userData.id == 'a') {
 				if (IsNodeInsideOf (node, 'b')) {
-					AddPolygonToBody (node.polygon, result, false);
+					AddPolygonToBody (node, result, false);
 				}
 			}
 		}
@@ -111,21 +139,21 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 	JSM.AddBodyToBSPTree (bBody, bspTreeAToB, 'b');
 	bspTreeAToB.Traverse (function (node) {
 		if (operation == 'Union') {
-			if (node.userData == 'b') {
+			if (node.userData.id == 'b') {
 				if (IsNodeOutsideOf (node, 'a')) {
-					AddPolygonToBody (node.polygon, result, false);
+					AddPolygonToBody (node, result, false);
 				}
 			}
 		} else if (operation == 'Difference') {
-			if (node.userData == 'b') {
+			if (node.userData.id == 'b') {
 				if (IsNodeInsideOf (node, 'a')) {
-					AddPolygonToBody (node.polygon, result, true);
+					AddPolygonToBody (node, result, true);
 				}
 			}
 		} else if (operation == 'Intersection') {
-			if (node.userData == 'b') {
+			if (node.userData.id == 'b') {
 				if (IsNodeInsideOf (node, 'a')) {
-					AddPolygonToBody (node.polygon, result, false);
+					AddPolygonToBody (node, result, false);
 				}
 			}
 		}
