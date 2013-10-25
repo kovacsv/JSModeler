@@ -76,7 +76,9 @@
 		function AddBodyToViewer (body)
 		{
 			var materials = new JSM.Materials ();
-			
+			materials.AddMaterial (new JSM.Material (0x279B61, 0x279B61));
+			materials.AddMaterial (new JSM.Material (0x008AB8, 0x008AB8));
+			/*
 			var maxColor = 16777215;
 			var minColor = parseInt (maxColor / 2);
 			var i, color;
@@ -85,10 +87,19 @@
 				materials.AddMaterial (new JSM.Material (color, color));
 				body.GetPolygon (i).SetMaterialIndex (i);
 			}
-			
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			*/
+			var cd = new JSM.ConversionData ();
+			cd.doubleSided = false;
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, cd);
 			viewer.AddMeshes (meshes);
 			viewer.Draw ();	
+		}
+		
+		function BooleanOperation (operation, aBody, bBody)
+		{
+			aBody.SetPolygonsMaterialIndex (0);
+			aBody.SetPolygonsMaterialIndex (1);
+			return JSM.BooleanOperation (operation, aBody, bBody);;
 		}
 		
 		function TestStep (viewer, step)
@@ -100,7 +111,7 @@
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateCuboid (1, 1, 1);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
-				var result = JSM.BooleanOperation ('Union', aBody, bBody);
+				var result = BooleanOperation ('Union', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
@@ -108,15 +119,119 @@
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateCuboid (1, 1, 1);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
-				var result = JSM.BooleanOperation ('Difference', aBody, bBody);
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}			
+			
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = BooleanOperation ('Intersection', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
 			if (step == current++) {
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateCuboid (1, 1, 1);
-				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
-				var result = JSM.BooleanOperation ('Intersection', aBody, bBody);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.0)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 1.0)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, -1.0)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.4, 0.0)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.1, 0.0)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 1.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, -1.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.4, 0.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.1, 0.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.0)));
+				var result = BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.4, 0.0)));
+				var result = BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.1, 0.0)));
+				var result = BooleanOperation ('Intersection', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
@@ -124,7 +239,7 @@
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
-				var result = JSM.BooleanOperation ('Union', aBody, bBody);
+				var result = BooleanOperation ('Union', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
@@ -132,7 +247,7 @@
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
-				var result = JSM.BooleanOperation ('Difference', aBody, bBody);
+				var result = BooleanOperation ('Difference', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
@@ -140,28 +255,28 @@
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
-				var result = JSM.BooleanOperation ('Intersection', aBody, bBody);
+				var result = BooleanOperation ('Intersection', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
 			if (step == current++) {
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateCylinder (0.4, 2, 30, true);
-				var result = JSM.BooleanOperation ('Union', aBody, bBody);
+				var result = BooleanOperation ('Union', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
 			if (step == current++) {
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateCylinder (0.4, 2, 30, true);
-				var result = JSM.BooleanOperation ('Difference', aBody, bBody);
+				var result = BooleanOperation ('Difference', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
 			if (step == current++) {
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateCylinder (0.4, 2, 30, true);
-				var result = JSM.BooleanOperation ('Intersection', aBody, bBody);
+				var result = BooleanOperation ('Intersection', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
@@ -169,7 +284,7 @@
 				var aBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
 				var bBody = new JSM.GenerateCylinder (0.5, 1, 30, true);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
-				var result = JSM.BooleanOperation ('Union', aBody, bBody);
+				var result = BooleanOperation ('Union', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 			
@@ -177,7 +292,7 @@
 				var aBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
 				var bBody = new JSM.GenerateCylinder (0.5, 1, 30, true);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
-				var result = JSM.BooleanOperation ('Difference', aBody, bBody);
+				var result = BooleanOperation ('Difference', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 			
@@ -185,7 +300,7 @@
 				var aBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
 				var bBody = new JSM.GenerateCylinder (0.5, 1, 30, true);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
-				var result = JSM.BooleanOperation ('Intersection', aBody, bBody);
+				var result = BooleanOperation ('Intersection', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
@@ -193,7 +308,7 @@
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateSphere (0.5, 12);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.3, 0.3, 0.3)));
-				var result = JSM.BooleanOperation ('Union', aBody, bBody);
+				var result = BooleanOperation ('Union', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
@@ -201,7 +316,7 @@
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateSphere (0.5, 12);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.3, 0.3, 0.3)));
-				var result = JSM.BooleanOperation ('Difference', aBody, bBody);
+				var result = BooleanOperation ('Difference', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
@@ -209,7 +324,7 @@
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateSphere (0.5, 12);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.3, 0.3, 0.3)));
-				var result = JSM.BooleanOperation ('Intersection', aBody, bBody);
+				var result = BooleanOperation ('Intersection', aBody, bBody);
 				AddBodyToViewer (result);
 			}
 
