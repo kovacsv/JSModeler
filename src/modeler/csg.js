@@ -30,7 +30,7 @@ JSM.AddBodyToBSPTree = function (body, bspTree, id)
 
 JSM.BooleanOperation = function (operation, aBody, bBody)
 {
-	function AddPolygonToBody (node, body, reversed)
+	function AddPolygonToBody (polygon, body, reversed)
 	{
 		function AddBodyVertex (coord)
 		{
@@ -49,7 +49,6 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 			return body.VertexCount () - 1;
 		}
 
-		var polygon = node.polygon;
 		var bodyPolygon = new JSM.BodyPolygon ();
 
 		var i, vertexIndex;
@@ -65,99 +64,71 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 			}
 		}
 		
-		if (node.userData.material !== null) {
-			bodyPolygon.SetMaterialIndex (node.userData.material);
+		if (polygon.userData !== undefined) {
+			bodyPolygon.SetMaterialIndex (polygon.userData.material);
 		}
 		body.AddPolygon (bodyPolygon);
 	}
 
-	function IsNodeInTheSideOf (node, side, id)
+	function AddPolygonsToBody (polygons, body, reversed)
 	{
-		var current = node;
-		var parent = node.parent;
-		while (parent !== null) {
-			if (parent.userData.id == id) {
-				if (side == -1) {
-					if (parent.inside == current) {
-						return false;
-					} else if (parent.outside == current) {
-						return true;
-					}
-				} else if (side == 1) {
-					if (parent.outside == current) {
-						return false;
-					} else if (parent.inside == current) {
-						return true;
-					}
-				}
-			}
-			current = parent;
-			parent = current.parent;
+		var i;
+		for (i = 0; i < polygons.length; i++) {
+			AddPolygonToBody (polygons[i], body, reversed);
 		}
-		return false;	
 	}
 	
-	function IsNodeOutsideOf (node, id)
+	function ClipNodePolygonsWithTree (nodes, tree, frontPolygons, backPolygons, planarFrontPolygons, planarBackPolygons)
 	{
-		return IsNodeInTheSideOf (node, -1, id);
-	}	
+		function SetPolygonsUserData (polygons, userData)
+		{
+			var i;
+			for (i = 0; i < polygons.length; i++) {
+				polygons[i].userData = userData;
+			}
+		}
 	
-	function IsNodeInsideOf (node, id)
-	{
-		return IsNodeInTheSideOf (node, 1, id);
+		var i, node;
+		for (i = 0; i < nodes.length; i++) {
+			node = nodes[i];
+			JSM.ClipPolygonWithBSPTree (node.polygon, tree, frontPolygons, backPolygons, planarFrontPolygons, planarBackPolygons);
+			SetPolygonsUserData (frontPolygons, node.userData);
+			SetPolygonsUserData (backPolygons, node.userData);
+			SetPolygonsUserData (planarFrontPolygons, node.userData);
+			SetPolygonsUserData (planarBackPolygons, node.userData);
+		}
 	}
-	
+
+	var aTree = new JSM.BSPTree ();
+	var bTree = new JSM.BSPTree ();
+	JSM.AddBodyToBSPTree (aBody, aTree, 'a');
+	JSM.AddBodyToBSPTree (bBody, bTree, 'b');
+
 	var result = new JSM.Body ();
+	
+	var aFrontPolygons = [];
+	var aBackPolygons = [];
+	var aPlanarFrontPolygons = [];
+	var aPlanarBackPolygons = [];	
+	ClipNodePolygonsWithTree (aTree.GetNodes (), bTree, aFrontPolygons, aBackPolygons, aPlanarFrontPolygons, aPlanarBackPolygons);
 
-	var bspTreeBToA = new JSM.BSPTree ();
-	JSM.AddBodyToBSPTree (bBody, bspTreeBToA, 'b');
-	JSM.AddBodyToBSPTree (aBody, bspTreeBToA, 'a');
-	bspTreeBToA.Traverse (function (node) {
-		if (operation == 'Union') {
-			if (node.userData.id == 'a') {
-				if (IsNodeOutsideOf (node, 'b')) {
-					AddPolygonToBody (node, result, false);
-				}
-			}
-		} else if (operation == 'Difference') {
-			if (node.userData.id == 'a') {
-				if (IsNodeOutsideOf (node, 'b')) {
-					AddPolygonToBody (node, result, false);
-				}
-			}
-		} else if (operation == 'Intersection') {
-			if (node.userData.id == 'a') {
-				if (IsNodeInsideOf (node, 'b')) {
-					AddPolygonToBody (node, result, false);
-				}
-			}
-		}
-	});
+	var bFrontPolygons = [];
+	var bBackPolygons = [];
+	var bPlanarFrontPolygons = [];
+	var bPlanarBackPolygons = [];	
+	ClipNodePolygonsWithTree (bTree.GetNodes (), aTree, bFrontPolygons, bBackPolygons, bPlanarFrontPolygons, bPlanarBackPolygons);
 
-	var bspTreeAToB = new JSM.BSPTree ();
-	JSM.AddBodyToBSPTree (aBody, bspTreeAToB, 'a');
-	JSM.AddBodyToBSPTree (bBody, bspTreeAToB, 'b');
-	bspTreeAToB.Traverse (function (node) {
-		if (operation == 'Union') {
-			if (node.userData.id == 'b') {
-				if (IsNodeOutsideOf (node, 'a')) {
-					AddPolygonToBody (node, result, false);
-				}
-			}
-		} else if (operation == 'Difference') {
-			if (node.userData.id == 'b') {
-				if (IsNodeInsideOf (node, 'a')) {
-					AddPolygonToBody (node, result, true);
-				}
-			}
-		} else if (operation == 'Intersection') {
-			if (node.userData.id == 'b') {
-				if (IsNodeInsideOf (node, 'a')) {
-					AddPolygonToBody (node, result, false);
-				}
-			}
-		}
-	});
+	if (operation == 'Union') {
+		AddPolygonsToBody (aFrontPolygons, result, false);
+		AddPolygonsToBody (bFrontPolygons, result, false);
+	} else if (operation == 'Difference') {
+		AddPolygonsToBody (aFrontPolygons, result, false);
+		AddPolygonsToBody (aPlanarFrontPolygons, result, true);
+		AddPolygonsToBody (bBackPolygons, result, true);
+	} else if (operation == 'Intersection') {
+		AddPolygonsToBody (aBackPolygons, result, false);
+		AddPolygonsToBody (bBackPolygons, result, false);
+	}
 
 	return result;
 };

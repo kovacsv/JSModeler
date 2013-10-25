@@ -70,15 +70,31 @@
 
 			viewer = new JSM.Viewer ();
 			viewer.Start ('example', viewerSettings);
+			
+			/*
+			var polygon = [
+				new JSM.Coord (0, 0, 0),
+				new JSM.Coord (3, 0, 0),
+				new JSM.Coord (3, 2, 0),
+				new JSM.Coord (2, 2, 0),
+				new JSM.Coord (2, 1, 0),
+				new JSM.Coord (1, 1, 0),
+				new JSM.Coord (1, 2, 0),
+				new JSM.Coord (0, 2, 0)
+			];
+			var aBody = JSM.GeneratePrism (polygon, new JSM.Vector (0, 0, 1), 1, true);
+			*/			
 
 			var aBody = new JSM.GenerateCuboid (1, 1, 1);
-			var bBody = new JSM.GenerateSphere (0.5, 20, true);
+			var bBody = new JSM.GenerateCuboid (1, 1, 1);
 			bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
 
 			var materials = new JSM.Materials ();
 			materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
 			materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
-
+			aBody.SetPolygonsMaterialIndex (0);
+			bBody.SetPolygonsMaterialIndex (1);
+			
 			var logDiv = document.getElementById ('log');
 			logDiv.innerHTML = '';
 
@@ -90,7 +106,6 @@
 			logDiv.innerHTML += 'Polygon count: '  + body.PolygonCount () + '<br>';
 			logDiv.innerHTML += 'Operation time: '  + timer.Result () + '<br>';
 
-			/*		
 			var maxColor = 16777215;
 			var minColor = parseInt (maxColor / 2);
 			var i, color;
@@ -99,15 +114,14 @@
 				materials.AddMaterial (new JSM.Material (color, color));
 				body.GetPolygon (i).SetMaterialIndex (i);
 			}
-			*/
-			
+
 			var cd = new JSM.ConversionData ();
 			cd.doubleSided = false;
 			timer.Start ();
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials/*, cd*/);
 			timer.Stop ();
 			logDiv.innerHTML += 'Conversion time: '  + timer.Result () + '<br>';
-
+			
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);
 			}
