@@ -222,6 +222,14 @@
 			if (step == current++) {
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.0, 0.0)));
+				var result = BooleanOperation ('Union', bBody, aBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.0)));
 				var result = BooleanOperation ('Intersection', aBody, bBody);
 				AddBodyToViewer (result);
