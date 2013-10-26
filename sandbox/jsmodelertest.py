@@ -1,5 +1,3 @@
-# requires JSVisualTester  (https://github.com/kovacsv/JSVisualTester)
-
 import os
 import sys
 import time
@@ -46,7 +44,7 @@ def TestCSG (browser, path):
 
 	browser.SetURL (os.path.join (path, 'test\\viewertest\\csgtest.html'))
 	index = 0
-	for i in range (0, 15): 
+	for i in range (0, 30): 
 		browser.Capture ('viewertest_' + str (index))
 		browser.KeyPress (39, 0)
 		index = index + 1
