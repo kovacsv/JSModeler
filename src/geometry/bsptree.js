@@ -161,7 +161,7 @@ JSM.ClipPolygonWithBSPTree = function (polygon, bspTree, frontPolygons, backPoly
 		}
 		if (cutPlanarPolygons.length > 0) {
 			var normal = JSM.CalculateNormal (polygon.vertices);
-			if (JSM.CoordIsEqual (normal, node.plane.GetNormal ())) {
+			if (JSM.VectorDot (normal, node.plane.GetNormal ()) > 0) {
 				AddInsidePolygons (node, cutPlanarPolygons, true);
 			} else {
 				AddOutsidePolygons (node, cutPlanarPolygons, true);

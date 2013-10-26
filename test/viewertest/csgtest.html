@@ -90,7 +90,7 @@
 			*/
 			var cd = new JSM.ConversionData ();
 			cd.doubleSided = false;
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials/*, cd*/);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, cd);
 			viewer.AddMeshes (meshes);
 			viewer.Draw ();	
 		}
