@@ -90,7 +90,7 @@
 			*/
 			var cd = new JSM.ConversionData ();
 			cd.doubleSided = false;
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, cd);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials/*, cd*/);
 			viewer.AddMeshes (meshes);
 			viewer.Draw ();	
 		}
@@ -98,7 +98,7 @@
 		function BooleanOperation (operation, aBody, bBody)
 		{
 			aBody.SetPolygonsMaterialIndex (0);
-			aBody.SetPolygonsMaterialIndex (1);
+			bBody.SetPolygonsMaterialIndex (1);
 			return JSM.BooleanOperation (operation, aBody, bBody);;
 		}
 		
@@ -207,6 +207,14 @@
 				var aBody = new JSM.GenerateCuboid (1, 1, 1);
 				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
 				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.1, 0.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.0, 0.0)));
 				var result = BooleanOperation ('Union', aBody, bBody);
 				AddBodyToViewer (result);
 			}

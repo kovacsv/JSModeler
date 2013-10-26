@@ -120,8 +120,10 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 
 	if (operation == 'Union') {
 		AddPolygonsToBody (aFrontPolygons, result, false);
+		AddPolygonsToBody (aPlanarFrontPolygons, result, false);
 		AddPolygonsToBody (bFrontPolygons, result, false);
 		AddPolygonsToBody (bPlanarBackPolygons, result, false);
+		AddPolygonsToBody (bPlanarFrontPolygons, result, false);
 	} else if (operation == 'Difference') {
 		AddPolygonsToBody (aFrontPolygons, result, false);
 		AddPolygonsToBody (aPlanarFrontPolygons, result, false);
