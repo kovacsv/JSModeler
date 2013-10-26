@@ -333,6 +333,22 @@
 			GenerateResult ();
 		}
 
+		function LeftKeyUp (event)
+		{
+			if (event.keyCode == 13) {
+				GenerateLeftBody ();
+			}
+
+		}
+
+		function RightKeyUp (event)
+		{
+			if (event.keyCode == 13) {
+				GenerateRightBody ();
+			}
+
+		}
+
 		function Resize ()
 		{
 			var left = document.getElementById ('left');
@@ -378,7 +394,7 @@
 <body>
 	<div id="left">
 		<div class="title">
-			<span class="titlemain">CSG</span>
+			<span class="titlemain">csg</span>
 			<span class="titlesub">1.0</span>
 		</div>
 		<div id="menu">
@@ -390,7 +406,7 @@
 					<a class="button" href="javascript:GenerateLeftBody ();">update</a>
 					<div class="clearer"></div>
 				</div>
-				<div class="boxmain" id="leftcontrols"></div>
+				<div class="boxmain" id="leftcontrols" onkeyup="javascript:LeftKeyUp (event);"></div>
 			</div>
 			<div class="box">
 				<div class="boxmenu" id="rightboxmenu">
@@ -400,7 +416,7 @@
 					<a class="button" href="javascript:GenerateRightBody ();">update</a>
 					<div class="clearer"></div>
 				</div>
-				<div class="boxmain" id="rightcontrols"></div>
+				<div class="boxmain" id="rightcontrols" onkeyup="javascript:RightKeyUp (event);"></div>
 			</div>
 			<div class="operationbox" id="operationboxmenu">
 				<a href="javascript:SwitchOperation ('union');">union</a>
