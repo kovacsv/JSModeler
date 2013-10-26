@@ -94,7 +94,7 @@ JSM.BSPTree.prototype =
 				}
 				if (planePolygons.length > 0) {
 					normal = JSM.CalculateNormal (polygon.vertices);
-					if (JSM.CoordIsEqual (normal, node.plane.GetNormal ())) {
+					if (JSM.VectorDot (normal, node.plane.GetNormal ()) > 0) {
 						this.AddInsidePolygonsToNode (node, planePolygons, userData);
 					} else {
 						this.AddOutsidePolygonsToNode (node, planePolygons, userData);
