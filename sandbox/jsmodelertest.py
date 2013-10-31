@@ -45,7 +45,7 @@ def TestCSG (browser, path):
 	browser.SetURL (os.path.join (path, 'test\\viewertest\\csgtest.html'))
 	index = 0
 	for i in range (0, 30): 
-		browser.Capture ('viewertest_' + str (index))
+		browser.Capture ('csgtest_' + str (index))
 		browser.KeyPress (39, 0)
 		index = index + 1
 		
@@ -257,6 +257,51 @@ def TestSVGTo3D (browser, path):
 		browser.Capture ('svgto3d');
 		browser.KeyPress (27, 0)
 
+def TestCSGApp (browser, path):
+	def WriteToField (browser, x, y, text):
+		browser.DragDrop (x, y, x - 50, y)
+		browser.TextWrite (text)		
+		
+	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
+		return
+
+	browser.SetURL (os.path.join (path, 'documentation\\examples\\csg.html'))
+	browser.Capture ('csg')
+	
+	WriteToField (browser, 215, 460, '0.0')
+	browser.KeyPress (13, 0)
+	browser.Capture ('csg')
+
+	WriteToField (browser, 140, 360, '0.3')
+	browser.KeyPress (13, 0)
+	browser.Capture ('csg')
+	
+	WriteToField (browser, 126, 460, '0.0')
+	browser.KeyPress (13, 0)
+	browser.Capture ('csg')
+
+	WriteToField (browser, 170, 460, '0.0')
+	browser.KeyPress (13, 0)
+	browser.Capture ('csg')
+
+	browser.Click (140, 310)
+	browser.Capture ('csg')
+
+	browser.Click (90, 528)
+	browser.Capture ('csg')
+
+	browser.Click (215, 528)
+	browser.Capture ('csg')
+
+	browser.Click (140, 528)
+	browser.Capture ('csg')
+
+	browser.Click (90, 116)
+	browser.Capture ('csg')
+	
+	browser.Click (40, 370)
+	browser.Capture ('csg')
+
 def Main (argv):
 	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
@@ -278,7 +323,6 @@ def Main (argv):
 		UnitTest (browser, path)
 		TestSVGToModel (browser, path)
 		TestCSG (browser, path)
-		#TestCamera (browser, path)
 		TestDemonstration (browser, path)
 		TestLegoBuilder (browser, path)
 		TestTicTacToe (browser, path)
@@ -287,6 +331,7 @@ def Main (argv):
 		TestRobot (browser, path)
 		TestClock (browser, path)
 		TestSVGTo3D (browser, path)
+		TestCSGApp (browser, path)
 		browser.Close ()
 	end = time.time ()
 	
