@@ -13,43 +13,25 @@ JSM.Touch.prototype =
 {
 	Start : function (event, div)
 	{
-		var eventParameters = event;
-		if (eventParameters === undefined) {
-			eventParameters = window.event;
-		}
-		
 		if (event.touches.length === 0) {
 			return;
 		}
 		var touch = event.touches[0];
 
 		this.down = true;
-		this.prevX = touch.pageX;
-		this.prevY = touch.pageY;
-		if (div !== undefined) {
-			this.prevX = touch.pageX - div.offsetLeft;
-			this.prevY = touch.pageY - div.offsetTop;
-		}
+		this.SetCurrent (touch, div);
+		this.prevX = this.currX;
+		this.prevY = this.currY;
 	},
 
 	Move : function (event, div)
 	{
-		var eventParameters = event;
-		if (eventParameters === undefined) {
-			eventParameters = window.event;
-		}
-		
 		if (event.touches.length === 0) {
 			return;
 		}
 		var touch = event.touches[0];
 
-		this.currX = touch.pageX;
-		this.currY = touch.pageY;
-		if (div !== undefined) {
-			this.currX = touch.pageX - div.offsetLeft;
-			this.currY = touch.pageY - div.offsetTop;
-		}
+		this.SetCurrent (touch, div);
 		this.diffX = this.currX - this.prevX;
 		this.diffY = this.currY - this.prevY;
 		this.prevX = this.currX;
@@ -58,11 +40,22 @@ JSM.Touch.prototype =
 	
 	End : function (event, div)
 	{
-		var eventParameters = event;
-		if (eventParameters === undefined) {
-			eventParameters = window.event;
+		if (event.touches.length === 0) {
+			return;
 		}
-		
+		var touch = event.touches[0];
+
 		this.down = false;
+		this.SetCurrent (touch, div);
+	},
+	
+	SetCurrent : function (touch, div)
+	{
+		this.currX = touch.pageX;
+		this.currY = touch.pageY;
+		if (div !== undefined) {
+			this.currX = touch.pageX - div.offsetLeft;
+			this.currY = touch.pageY - div.offsetTop;
+		}
 	}
 };
