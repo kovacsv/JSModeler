@@ -939,7 +939,9 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 		result.AddVertex (new JSM.BodyVertex (basePolygon[i]));
 	}
 
-	var innerBasePolygon = JSM.OffsetPolygonContour (new JSM.Polygon (basePolygon), width).vertices;
+	var polygon = new JSM.Polygon ();
+	polygon.vertices = basePolygon;
+	var innerBasePolygon = JSM.OffsetPolygonContour (polygon, width).vertices;
 	for (i = 0; i < count; i++) {
 		result.AddVertex (new JSM.BodyVertex (innerBasePolygon[i]));
 	}

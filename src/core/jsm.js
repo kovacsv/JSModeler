@@ -1,6 +1,6 @@
 var JSM = {
 	mainVersion : 0,
-	subVersion : 19
+	subVersion : 20
 };
 
 JSM.Eps = 0.00000001;
@@ -90,10 +90,27 @@ JSM.RandomInt = function (from, to)
 	return Math.floor ((Math.random () * (to - from + 1)) + from); 
 };
 
+JSM.SeededRandomInt = function (from, to, seed)
+{
+    var random = ((seed * 9301 + 49297) % 233280) / 233280;
+	return Math.floor ((random * (to - from + 1)) + from); 
+};
+
 JSM.ValueOrDefault = function (val, def)
 {
 	if (val === undefined || val === null) {
 		return def;
 	}
 	return val;
+};
+
+JSM.Assert = function (condition, message)
+{
+	if (!condition) {
+		var alertText = 'Assertion failed.';
+		if (message !== undefined && message !== null) {
+			alertText += ' ' + message;
+		}
+		alert (alertText);
+	}
 };

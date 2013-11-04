@@ -424,12 +424,12 @@ JSM.Viewer.prototype =
 
 		return radius;
 	},
-	
-	GetObjectsUnderMouse : function ()
+
+	GetObjectsUnderPosition : function (x, y)
 	{
-		var mouseX = (this.mouse.currX / this.canvas.width) * 2 - 1;
-		var mouseY = -(this.mouse.currY / this.canvas.height) * 2 + 1;
-		
+		var mouseX = (x / this.canvas.width) * 2 - 1;
+		var mouseY = -(y / this.canvas.height) * 2 + 1;
+
 		var projector = new THREE.Projector ();
 		var cameraPosition = this.camera.position;
 		var vector = new THREE.Vector3 (mouseX, mouseY, 0.5);
@@ -438,37 +438,17 @@ JSM.Viewer.prototype =
 		vector.normalize ();
 
 		var ray = new THREE.Raycaster (cameraPosition, vector);
-		return ray.intersectObjects (this.scene.children);
+		return ray.intersectObjects (this.scene.children);		
 	},
 	
-	GetFaceUnderMouse : function ()
+	GetObjectsUnderMouse : function ()
 	{
-		var intersects = this.GetObjectsUnderMouse ();
-		var face = null;
-		if (intersects.length > 0) {
-			face = intersects[0].face;
-		}
-		return face;
-	},
-
-	GetFaceIndexUnderMouse : function ()
-	{
-		var intersects = this.GetObjectsUnderMouse ();
-		var faceIndex = -1;
-		if (intersects.length > 0) {
-			faceIndex = intersects[0].faceIndex;
-		}
-		return faceIndex;
+		return this.GetObjectsUnderPosition (this.mouse.currX, this.mouse.currY);
 	},
 	
-	GetPointUnderMouse : function ()
+	GetObjectsUnderTouch : function ()
 	{
-		var intersects = this.GetObjectsUnderMouse ();
-		var point = null;
-		if (intersects.length > 0) {
-			point = intersects[0].point;
-		}
-		return point;
+		return this.GetObjectsUnderPosition (this.touch.currX, this.touch.currY);
 	},
 
 	Draw : function ()
@@ -569,6 +549,10 @@ JSM.Viewer.prototype =
 			return;
 		}
 		
+		if (this.settings.cameraDisableOrbit) {
+			return;
+		}
+
 		var ratio = -0.5;
 		this.cameraMove.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
 		

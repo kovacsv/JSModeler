@@ -105,17 +105,9 @@ JSM.ContourPolygon2D.prototype =
 	}
 };
 
-JSM.Polygon = function (source)
+JSM.Polygon = function ()
 {
-	if (source === undefined) {
-		this.vertices = [];
-	} else {
-		if (source instanceof JSM.Polygon) {
-			this.vertices = source.vertices;
-		} else if (source instanceof Array) {
-			this.vertices = source;
-		}
-	}
+	this.vertices = [];
 };
 
 JSM.Polygon.prototype =

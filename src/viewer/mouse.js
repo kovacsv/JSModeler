@@ -27,12 +27,10 @@ JSM.Mouse.prototype =
 		this.shift = event.shiftKey;
 		this.ctrl = event.ctrlKey;
 		this.alt = event.altKey;
-		this.prevX = eventParameters.clientX;
-		this.prevY = eventParameters.clientY;
-		if (div !== undefined) {
-			this.prevX = this.prevX - div.offsetLeft;
-			this.prevY = this.prevY - div.offsetTop;		
-		}
+		
+		this.SetCurrent (eventParameters, div);
+		this.prevX = this.currX;
+		this.prevY = this.currY;
 	},
 	
 	Move : function (event, div)
@@ -45,12 +43,8 @@ JSM.Mouse.prototype =
 		this.shift = event.shiftKey;
 		this.ctrl = event.ctrlKey;
 		this.alt = event.altKey;
-		this.currX = eventParameters.clientX;
-		this.currY = eventParameters.clientY;
-		if (div !== undefined) {
-			this.currX = this.currX - div.offsetLeft;
-			this.currY = this.currY - div.offsetTop;
-		}
+		
+		this.SetCurrent (eventParameters, div);
 		this.diffX = this.currX - this.prevX;
 		this.diffY = this.currY - this.prevY;
 		this.prevX = this.currX;
@@ -65,12 +59,7 @@ JSM.Mouse.prototype =
 		}
 		
 		this.down = false;
-		this.currX = eventParameters.clientX;
-		this.currY = eventParameters.clientY;
-		if (div !== undefined) {
-			this.currX = this.currX - div.offsetLeft;
-			this.currY = this.currY - div.offsetTop;
-		}
+		this.SetCurrent (eventParameters, div);
 	},
 
 	Out : function (event, div)
@@ -81,11 +70,16 @@ JSM.Mouse.prototype =
 		}
 		
 		this.down = false;
+		this.SetCurrent (eventParameters, div);
+	},
+	
+	SetCurrent : function (eventParameters, div)
+	{
 		this.currX = eventParameters.clientX;
 		this.currY = eventParameters.clientY;
 		if (div !== undefined) {
 			this.currX = this.currX - div.offsetLeft;
 			this.currY = this.currY - div.offsetTop;
-		}
+		}	
 	}
 };

@@ -199,3 +199,37 @@ JSM.TriangulateWithCentroids = function (body)
 	
 	return result;
 };
+
+JSM.TriangulatePolygons = function (body)
+{
+	var result = new JSM.Body ();
+	
+	var i, j, coord;
+	for (i = 0; i < body.VertexCount (); i++) {
+		coord = body.GetVertexPosition (i);
+		result.AddVertex (new JSM.BodyVertex (new JSM.Coord (coord.x, coord.y, coord.z)));
+	}
+
+	var polygon, bodyPolygon, triangleIndices, triangle, bodyTriangle;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		polygon = new JSM.Polygon ();
+		bodyPolygon = body.GetPolygon (i);
+		for (j = 0; j < bodyPolygon.VertexIndexCount (); j++) {
+			coord = body.GetVertexPosition (bodyPolygon.GetVertexIndex (j));
+			polygon.AddVertex (coord.x, coord.y, coord.z);
+		}
+		triangleIndices = JSM.PolygonTriangulate (polygon);
+		for (j = 0; j < triangleIndices.length; j++) {
+			triangle = triangleIndices[j];
+			bodyTriangle = new JSM.BodyPolygon ([
+				bodyPolygon.GetVertexIndex (triangle[0]),
+				bodyPolygon.GetVertexIndex (triangle[1]),
+				bodyPolygon.GetVertexIndex (triangle[2])
+			]);
+			bodyTriangle.InheritAttributes (bodyPolygon);
+			result.AddPolygon (bodyTriangle);
+		}
+	}
+	
+	return result;
+};

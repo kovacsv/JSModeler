@@ -1,0 +1,437 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="csg.css">
+	<script type="text/javascript" src="../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
+	<title>JSModeler CSG Example</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+		var leftType = null;
+		var rightType = null;
+		var leftBody = null;
+		var rightBody = null;
+		var operation = null;
+
+		var leftParameters = {
+			cube : [
+				['size', [1.0, 1.0, 1.0]],
+				['position', [0.0, 0.0, 0.0]],
+				['rotation', [0.0, 0.0, 0.0]]
+			],
+			cylinder : [
+				['radius', [0.5]],
+				['height', [1.0]],
+				['segments', [50]],
+				['position', [0.0, 0.0, 0.0]],
+				['rotation', [0.0, 0.0, 0.0]]
+			],
+			sphere : [
+				['radius', [0.5]],
+				['segments', [20]],
+				['position', [0.0, 0.0, 0.0]],
+				['rotation', [0.0, 0.0, 0.0]]
+			]
+		};
+
+		var rightParameters = {
+			cube : [
+				['size', [1.0, 1.0, 1.0]],
+				['position', [0.5, 0.5, 0.5]],
+				['rotation', [0.0, 0.0, 0.0]]
+			],
+			cylinder : [
+				['radius', [0.5]],
+				['height', [1.0]],
+				['segments', [50]],
+				['position', [0.5, 0.5, 0.5]],
+				['rotation', [0.0, 0.0, 0.0]]
+			],
+			sphere : [
+				['radius', [0.5]],
+				['segments', [20]],
+				['position', [0.5, 0.5, 0.5]],
+				['rotation', [0.0, 0.0, 0.0]]
+			]
+		};
+
+		function GenerateParameterTable (divName, parameters)
+		{
+			function GenerateInput (origDivName, div, parameters, name, index, isSmall)
+			{
+				var inputId = origDivName + '_' + name + '_' + index;
+				var input = document.createElement ('input');
+				input.className = isSmall ? 'small' : 'large';
+				input.id = inputId;
+				input.value = parameters[index];
+				div.appendChild (input);
+			}
+
+			var div = document.getElementById (divName);
+			while (div.firstChild) {
+				div.removeChild (div.firstChild);
+			}
+
+			var table = document.createElement ('table');
+			table.className = 'parameters';
+			var i, j, parameter, tr, td, count;
+			for (i = 0; i < parameters.length; i++) {
+				parameter = parameters[i];
+				tr = document.createElement ('tr');
+				td = document.createElement ('td');
+				td.innerHTML = parameter[0];
+				tr.appendChild (td);
+				td = document.createElement ('td');
+				count = parameter[1].length;
+				for (j = 0; j < count; j++) {
+					GenerateInput (divName, td, parameter[1], parameter[0], j, count > 1);
+				}
+				tr.appendChild (td);
+				table.appendChild (tr);
+			}
+			div.appendChild (table);
+		}
+
+		function GenerateControls (menuDivName, divName, type)
+		{
+			var menuDiv = document.getElementById (menuDivName);
+			var menuElements = menuDiv.getElementsByTagName ('a');
+			var i, menuElement;
+			for (i = 0; i < menuElements.length - 1; i++) {
+				menuElement = menuElements[i];
+				if (menuElement.innerHTML == type) {
+					menuElement.className = 'active';
+				} else {
+					menuElement.className = '';
+				}
+			}
+
+			var isLeft = (divName == 'leftcontrols');
+			var parameters = [];
+			if (type == 'cube') {
+				parameters = isLeft ? leftParameters.cube : rightParameters.cube;
+			} else if (type == 'cylinder') {
+				parameters = isLeft ? leftParameters.cylinder : rightParameters.cylinder;
+			} else if (type == 'sphere') {
+				parameters = isLeft ? leftParameters.sphere : rightParameters.sphere;
+			}
+			GenerateParameterTable (divName, parameters);
+		}
+	
+		function TransformBody (body, rotation, offset)
+		{
+			if (body == null) {
+				return;
+			}
+
+			var transformation = new JSM.Transformation ();
+			var rotationX = parseFloat (rotation[0]) * JSM.DegRad;
+			var rotationY = parseFloat (rotation[1]) * JSM.DegRad;
+			var rotationZ = parseFloat (rotation[2]) * JSM.DegRad;
+			if (rotationX != 0.0 || rotationY != 0.0 || rotationZ != 0.0) {
+				var rotation = JSM.RotationXYZTransformation (rotationX, rotationY, rotationZ);
+				transformation.Append (rotation);
+			}
+			var offsetX = parseFloat (offset[0]);
+			var offsetY = parseFloat (offset[1]);
+			var offsetZ = parseFloat (offset[2]);
+			if (offsetX != 0.0 || offsetY != 0.0 || offsetZ != 0.0) {
+				var translation = JSM.TranslationTransformation (new JSM.Coord (offsetX, offsetY, offsetZ));
+				transformation.Append (translation);
+			}
+			body.Transform (transformation);	
+		}
+
+		function GetCuboidFromParameters (parameters)
+		{
+			var xSize = parameters.cube[0][1][0];
+			var ySize = parameters.cube[0][1][1];
+			var zSize = parameters.cube[0][1][2];
+
+			if (xSize <= 0 || ySize <= 0 || zSize <= 0) {
+				return null;
+			}
+
+			return JSM.GenerateCuboid (xSize, ySize, zSize);
+		}
+
+		function GetCylinderFromParameters (parameters)
+		{
+			var radius = parameters.cylinder[0][1][0];
+			var height = parameters.cylinder[1][1][0];
+			var segments = parameters.cylinder[2][1][0];
+			
+			if (radius <= 0 || height <= 0 || segments < 3) {
+				return null;
+			}
+
+			return JSM.GenerateCylinder (radius, height, segments, true, false);
+		}
+
+		function GetSphereFromParameters (parameters)
+		{
+			var radius = parameters.sphere[0][1][0];
+			var segments = parameters.sphere[1][1][0];
+
+			if (radius <= 0 ||segments < 3) {
+				return null;
+			}
+
+			return JSM.GenerateSphere (radius, segments, true);
+		}
+
+		function GenerateBody (divName, type)
+		{
+			var div = document.getElementById (divName);
+			var isLeft = (divName == 'leftcontrols');
+			var parameters = (isLeft ? leftParameters : rightParameters);
+
+			var body;
+			if (type == 'cube') {
+				parameters.cube[0][1][0] = parseFloat (document.getElementById (divName + '_size_0').value);
+				parameters.cube[0][1][1] = parseFloat (document.getElementById (divName + '_size_1').value);
+				parameters.cube[0][1][2] = parseFloat (document.getElementById (divName + '_size_2').value);
+				
+				parameters.cube[1][1][0] = parseFloat (document.getElementById (divName + '_position_0').value);
+				parameters.cube[1][1][1] = parseFloat (document.getElementById (divName + '_position_1').value);
+				parameters.cube[1][1][2] = parseFloat (document.getElementById (divName + '_position_2').value);
+
+				parameters.cube[2][1][0] = parseFloat (document.getElementById (divName + '_rotation_0').value);
+				parameters.cube[2][1][1] = parseFloat (document.getElementById (divName + '_rotation_1').value);
+				parameters.cube[2][1][2] = parseFloat (document.getElementById (divName + '_rotation_2').value);
+
+				body = GetCuboidFromParameters (parameters);
+				TransformBody (body, parameters.cube[2][1], parameters.cube[1][1]);
+			} else if (type == 'cylinder') {
+				parameters.cylinder[0][1][0] = parseFloat (document.getElementById (divName + '_radius_0').value);
+				parameters.cylinder[1][1][0] = parseFloat (document.getElementById (divName + '_height_0').value);
+				parameters.cylinder[2][1][0] = parseInt (document.getElementById (divName + '_segments_0').value);
+
+				parameters.cylinder[3][1][0] = parseFloat (document.getElementById (divName + '_position_0').value);
+				parameters.cylinder[3][1][1] = parseFloat (document.getElementById (divName + '_position_1').value);
+				parameters.cylinder[3][1][2] = parseFloat (document.getElementById (divName + '_position_2').value);
+
+				parameters.cylinder[4][1][0] = parseFloat (document.getElementById (divName + '_rotation_0').value);
+				parameters.cylinder[4][1][1] = parseFloat (document.getElementById (divName + '_rotation_1').value);
+				parameters.cylinder[4][1][2] = parseFloat (document.getElementById (divName + '_rotation_2').value);
+
+				body = GetCylinderFromParameters (parameters);
+				TransformBody (body, parameters.cylinder[4][1], parameters.cylinder[3][1]);
+			} else if (type == 'sphere') {
+				parameters.sphere[0][1][0] = parseFloat (document.getElementById (divName + '_radius_0').value);
+				parameters.sphere[1][1][0] = parseInt (document.getElementById (divName + '_segments_0').value);
+
+				parameters.sphere[2][1][0] = parseFloat (document.getElementById (divName + '_position_0').value);
+				parameters.sphere[2][1][1] = parseFloat (document.getElementById (divName + '_position_1').value);
+				parameters.sphere[2][1][2] = parseFloat (document.getElementById (divName + '_position_2').value);
+
+				parameters.sphere[3][1][0] = parseFloat (document.getElementById (divName + '_rotation_0').value);
+				parameters.sphere[3][1][1] = parseFloat (document.getElementById (divName + '_rotation_1').value);
+				parameters.sphere[3][1][2] = parseFloat (document.getElementById (divName + '_rotation_2').value);
+
+				body = GetSphereFromParameters (parameters);
+				TransformBody (body, parameters.sphere[3][1], parameters.sphere[2][1]);
+			}
+
+			return body;
+		}
+
+		function GenerateResult ()
+		{
+			if (leftBody == null || rightBody == null || operation == null) {
+				return;
+			}
+
+			viewer.RemoveMeshes ();
+
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material (0x279B61, 0x279B61));
+			materials.AddMaterial (new JSM.Material (0x008AB8, 0x008AB8));
+			leftBody.SetPolygonsMaterialIndex (0);
+			rightBody.SetPolygonsMaterialIndex (1);
+			
+			var boolOperation;
+			if (operation == 'union') {
+				boolOperation = 'Union';
+			} else if (operation == 'difference') {
+				boolOperation = 'Difference';
+			} else if (operation == 'intersection') {
+				boolOperation = 'Intersection';
+			}
+			var body = JSM.BooleanOperation (boolOperation, leftBody, rightBody);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			viewer.AddMeshes (meshes);
+			viewer.Draw ();
+		}
+
+		function GenerateLeftBody ()
+		{
+			var div = document.getElementById ('leftcontrols');
+			var result = GenerateBody ('leftcontrols', leftType);
+			if (result != null) {
+				leftBody = result;
+				div.style.background = "transparent";
+				GenerateResult ();
+			} else {
+				div.style.background = "#ffaaaa";
+			}
+		}
+
+		function GenerateRightBody ()
+		{
+			var div = document.getElementById ('rightcontrols');
+			var result = GenerateBody ('rightcontrols', rightType);
+			if (result != null) {
+				rightBody = result;
+				div.style.background = "transparent";
+				GenerateResult ();
+			} else {
+				div.style.background = "#ffaaaa";
+			}
+		}
+
+		function SwitchLeftType (type)
+		{
+			leftType = type;
+			GenerateControls ('leftboxmenu', 'leftcontrols', leftType);
+			GenerateLeftBody ();
+		}
+
+		function SwitchRightType (type)
+		{
+			rightType = type;
+			GenerateControls ('rightboxmenu', 'rightcontrols', rightType);
+			GenerateRightBody ();
+		}
+
+		function SwitchOperation (operationType)
+		{
+			var menuDiv = document.getElementById ('operationboxmenu');
+			var menuElements = menuDiv.getElementsByTagName ('a');
+			var i, menuElement;
+			for (i = 0; i < menuElements.length; i++) {
+				menuElement = menuElements[i];
+				if (menuElement.innerHTML == operationType) {
+					menuElement.className = 'active';
+				} else {
+					menuElement.className = '';
+				}
+			}
+			operation = operationType;
+			GenerateResult ();
+		}
+
+		function LeftKeyUp (event)
+		{
+			if (event.keyCode == 13) {
+				GenerateLeftBody ();
+			}
+
+		}
+
+		function RightKeyUp (event)
+		{
+			if (event.keyCode == 13) {
+				GenerateRightBody ();
+			}
+
+		}
+
+		function Resize ()
+		{
+			var left = document.getElementById ('left');
+			var canvas = document.getElementById ('example');
+			canvas.width = document.body.clientWidth - left.clientWidth;
+			canvas.height = document.body.clientHeight;
+
+			if (viewer != null) {
+				viewer.Resize ();
+			}
+		}
+
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+
+			var viewerSettings = {
+				cameraEyePosition : [-2.0, 4.0, 2.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0.0, 0.0, 1.0]
+			};
+
+			viewer = new JSM.Viewer ();
+			if (!viewer.Start ('example', viewerSettings)) {
+				Error ();
+				return;
+			}
+			
+			SwitchLeftType ('cube');
+			SwitchRightType ('cylinder');
+			SwitchOperation ('difference');
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="left">
+		<div class="title">
+			<span class="titlemain">csg</span>
+			<span class="titlesub">1.0</span>
+		</div>
+		<div id="menu">
+			<div class="box">
+				<div class="boxmenu" id="leftboxmenu">
+					<a href="javascript:SwitchLeftType ('cube');">cube</a>
+					<a href="javascript:SwitchLeftType ('cylinder');">cylinder</a>
+					<a href="javascript:SwitchLeftType ('sphere');">sphere</a>
+					<a class="button" href="javascript:GenerateLeftBody ();">update</a>
+					<div class="clearer"></div>
+				</div>
+				<div class="boxmain" id="leftcontrols" onkeyup="javascript:LeftKeyUp (event);"></div>
+			</div>
+			<div class="box">
+				<div class="boxmenu" id="rightboxmenu">
+					<a href="javascript:SwitchRightType ('cube');">cube</a>
+					<a href="javascript:SwitchRightType ('cylinder');">cylinder</a>
+					<a href="javascript:SwitchRightType ('sphere');">sphere</a>
+					<a class="button" href="javascript:GenerateRightBody ();">update</a>
+					<div class="clearer"></div>
+				</div>
+				<div class="boxmain" id="rightcontrols" onkeyup="javascript:RightKeyUp (event);"></div>
+			</div>
+			<div class="operationbox" id="operationboxmenu">
+				<a href="javascript:SwitchOperation ('union');">union</a>
+				<a href="javascript:SwitchOperation ('difference');">difference</a>
+				<a href="javascript:SwitchOperation ('intersection');">intersection</a>
+				<div class="clearer"></div>
+			</div>
+			<div class="projectlink">
+				<a href="https://github.com/kovacsv/JSModeler">go to jsmodeler home page</a>
+			</div>
+		</div>
+	</div>
+	<div id="right">
+		<canvas id="example" width="1000" height="500"></canvas>
+	</div>
+</body>
+
+</html>

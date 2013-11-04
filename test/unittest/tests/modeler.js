@@ -484,6 +484,29 @@ AddTest ('PainterTest', function (test)
 	test.Assert (ordered[0] == 4 && ordered[1] == 3 && ordered[2] == 2 && ordered[3] == 1 && ordered[4] == 0);
 });
 
+AddTest ('TriangulatePolygonsTest', function (test)
+{
+	var body = JSM.GenerateCuboid (1, 1, 1);
+	test.Assert (body.VertexCount () == 8);
+	test.Assert (body.PolygonCount () == 6);
+	test.Assert (JSM.CheckSolidBody (body));
+	
+	body = JSM.TriangulatePolygons (body);
+	test.Assert (body.VertexCount () == 8);
+	test.Assert (body.PolygonCount () == 12);
+	test.Assert (JSM.CheckSolidBody (body));
+
+	var body = JSM.GenerateCylinder (0.5, 1.0, 20, true, true);
+	test.Assert (body.VertexCount () == 40);
+	test.Assert (body.PolygonCount () == 22);
+	test.Assert (JSM.CheckSolidBody (body));
+	
+	body = JSM.TriangulatePolygons (body);
+	test.Assert (body.VertexCount () == 40);
+	test.Assert (body.PolygonCount () == 40 + 2 * 18);
+	test.Assert (JSM.CheckSolidBody (body));
+});
+
 AddTestSuite ('Modeler - Generator');
 
 AddTest ('GenerateRectangleTest', function (test)
@@ -1346,4 +1369,24 @@ AddTest ('BodyCylindricalTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[3][0], new JSM.Coord2D (radius * 3.0 / 6.0, 1.0)));
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[4][0], new JSM.Coord2D (radius * 2.0 / 6.0, 1.0)));
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[5][0], new JSM.Coord2D (radius * 1.0 / 6.0, 1.0)));
+});
+
+AddTestSuite ('Modeler - CSG');
+
+AddTest ('AddBodyToBSPTreeTest', function (test)
+{
+	var body = new JSM.GenerateCuboid (1, 1, 1);
+	var bspTree = new JSM.BSPTree ();
+	JSM.AddBodyToBSPTree (body, bspTree, 42);
+	
+	test.Assert (bspTree.NodeCount () == 6);
+	bspTree.Traverse (function (node) {
+		test.Assert (node.outside == null);
+		test.Assert (node.userData.id == 42);
+	});
+
+	var body2 = new JSM.GenerateCuboid (1, 1, 1);
+	body2.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+	JSM.AddBodyToBSPTree (body2, bspTree, 43);
+	test.Assert (bspTree.NodeCount () == 21);
 });

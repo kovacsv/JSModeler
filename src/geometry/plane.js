@@ -16,6 +16,11 @@ JSM.Plane.prototype =
 		this.d = JSM.ValueOrDefault (d, 0.0);
 	},
 	
+	GetNormal : function ()
+	{
+		return new JSM.Vector (this.a, this.b, this.c);
+	},
+	
 	Clone : function ()
 	{
 		return new JSM.Plane (this.a, this.b, this.c, this.d);

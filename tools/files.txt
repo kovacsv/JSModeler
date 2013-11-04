@@ -12,12 +12,13 @@
 ../src/geometry/lineutils.js
 ../src/geometry/transformation.js
 ../src/geometry/transformationutils.js
-../src/geometry/polygon.js
-../src/geometry/polygonutils.js
 ../src/geometry/plane.js
 ../src/geometry/planeutils.js
 ../src/geometry/projection.js
 ../src/geometry/convexhull.js
+../src/geometry/polygon.js
+../src/geometry/polygonutils.js
+../src/geometry/bsptree.js
 ../src/modeler/body.js
 ../src/modeler/bodyutils.js
 ../src/modeler/adjacencylist.js
@@ -31,6 +32,7 @@
 ../src/modeler/painter.js
 ../src/modeler/exporter.js
 ../src/modeler/camera.js
+../src/modeler/csg.js
 ../src/extras/extgenerator.js
 ../src/extras/svgtomodel.js
 ../src/viewer/mouse.js
