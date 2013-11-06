@@ -20,6 +20,7 @@ Useful links:
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/legobuilder.html">Lego Builder</a> is an interactive lego builder application.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/tictactoe.html">3D Tic-Tac-Toe</a> is a Tic-Tac-Toe game with 3D interface.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/robot/robot.html">Robotic Arm</a> is a realtime robotic arm simulator.</li>
+			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/csg.html">CSG Example</a> contains constructive solid geometry examples.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/svgto3d.html">SVGTo3D</a> contains examples of using SVG to model converter.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/deform.html">Deform</a> is a realtime polygon soft selection tool.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/solids.html">Solid Body Viewer</a> is an example of using the SVG viewer.</li>
