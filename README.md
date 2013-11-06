@@ -6,8 +6,13 @@ JSModeler is a JavaScript framework to create and visualize 3D models.
 Useful links:
 <ul>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/tutorial/minimal.html">JSModeler Minimal</a> is a minimalist example on using the framework.</li>
-	<li><a href="http://kovacsv.github.com/JSModeler/documentation/tutorial/tutorial.html">JSModeler Tutorial</a> shows instructions and examples on how to use the framework.</li>
-	<li><a href="http://kovacsv.github.com/JSModeler/documentation/reference/generator.html">JSModeler Generator Documentation</a> shows the usage of the built-in generator functions.</li>
+	<li>Documentation:
+		<ul>
+			<li><a href="http://kovacsv.github.com/JSModeler/documentation/tutorial/tutorial.html">JSModeler Tutorial</a> shows instructions and examples on how to use the framework.</li>
+			<li><a href="http://kovacsv.github.com/JSModeler/documentation/tutorial/svgto3d.html">JSModeler SVG To 3D Tutorial</a> shows instructions on how to use SVG to 3D functionality.</li>
+			<li><a href="http://kovacsv.github.com/JSModeler/documentation/reference/generator.html">JSModeler Generator Documentation</a> shows the usage of the built-in generator functions.</li>
+		</ul>
+	</li>
 	<li>Example applications written with JSModeler:
 		<ul>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/demo/demonstration.html">JSModeler Generator Demonstration</a> is a page which contains examples for generator functions.</li>
