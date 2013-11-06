@@ -17,8 +17,6 @@
 	<title>JSModeler SVG To 3D Tutorial</title>
 
 	<script type="text/javascript">
-		var viewer = null;
-
 		function Load ()
 		{
 			var viewerSettings = {
@@ -29,7 +27,7 @@
 				farClippingPlane : 100000.0
 			};
 
-			viewer = new JSM.Viewer ();
+			var viewer = new JSM.Viewer ();
 			if (!viewer.Start ('svgcanvas', viewerSettings)) {
 				viewer = null;
 				return;
@@ -103,7 +101,7 @@ var viewerSettings = {
 	farClippingPlane : 100000.0
 };
 
-viewer = new JSM.Viewer ();
+var viewer = new JSM.Viewer ();
 if (!viewer.Start ('svgcanvas', viewerSettings)) {
 	viewer = null;
 	return;
