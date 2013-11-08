@@ -126,16 +126,16 @@ JSM.SVGViewer.prototype =
 	Draw : function ()
 	{
 		var i, body, bodies;
-		var svgSettings = new JSM.SVGSettings (this.cameraMove, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.hiddenLine);
+		var drawSettings = new JSM.DrawSettings (this.cameraMove, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.hiddenLine);
 		
-		svgSettings.clear = false;
+		drawSettings.clear = false;
 		while (this.canvas.lastChild) {
 			this.canvas.removeChild (this.canvas.lastChild);
 		}
 		
 		for (i = 0; i < this.bodies.length; i++) {
 			body = this.bodies[i];
-			JSM.ExportBodyToSVG (body[0], body[1], svgSettings, this.canvas);
+			JSM.DrawBodyToSVG (body[0], body[1], drawSettings, this.canvas);
 		}
 
 		return true;

@@ -30,9 +30,10 @@
 ../src/modeler/generator.js
 ../src/modeler/solidgenerator.js
 ../src/modeler/painter.js
-../src/modeler/exporter.js
 ../src/modeler/camera.js
 ../src/modeler/csg.js
+../src/modeler/exporter.js
+../src/modeler/drawing.js
 ../src/extras/extgenerator.js
 ../src/extras/svgtomodel.js
 ../src/viewer/mouse.js
