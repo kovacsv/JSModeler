@@ -125,18 +125,16 @@ JSM.SVGViewer.prototype =
 
 	Draw : function ()
 	{
-		var i, body, bodies;
+		var i, bodyAndMaterials;
 		var drawSettings = new JSM.DrawSettings (this.cameraMove, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.hiddenLine);
-		
 		drawSettings.clear = false;
-		while (this.canvas.lastChild) {
-			this.canvas.removeChild (this.canvas.lastChild);
-		}
-		
+
 		var drawer = new JSM.SVGDrawer (this.canvas);
+		drawer.Clear ();
+		
 		for (i = 0; i < this.bodies.length; i++) {
-			body = this.bodies[i];
-			JSM.DrawProjectedBody (body[0], body[1], drawSettings, drawer);
+			bodyAndMaterials = this.bodies[i];
+			JSM.DrawProjectedBody (bodyAndMaterials[0], bodyAndMaterials[1], drawSettings, drawer);
 		}
 
 		return true;
