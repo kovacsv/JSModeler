@@ -144,7 +144,8 @@
 			var floating = document.getElementById ('floating');
 			var svgcontent = document.getElementById ('svgcontent');
 			var drawSettings = new JSM.DrawSettings (demo.viewer.cameraMove, demo.viewer.settings['fieldOfView'], demo.viewer.settings['nearClippingPlane'], demo.viewer.settings['farClippingPlane']);
-			JSM.DrawBodyToSVG (demo.body, null, drawSettings, svgcontent);
+			var drawer = new JSM.SVGDrawer (svgcontent);
+			JSM.DrawProjectedBody (demo.body, null, drawSettings, drawer);
 			svgcontent.style.display = 'block';
 			floating.style.display = 'block';
 		}

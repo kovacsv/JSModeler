@@ -133,9 +133,10 @@ JSM.SVGViewer.prototype =
 			this.canvas.removeChild (this.canvas.lastChild);
 		}
 		
+		var drawer = new JSM.SVGDrawer (this.canvas);
 		for (i = 0; i < this.bodies.length; i++) {
 			body = this.bodies[i];
-			JSM.DrawBodyToSVG (body[0], body[1], drawSettings, this.canvas);
+			JSM.DrawProjectedBody (body[0], body[1], drawSettings, drawer);
 		}
 
 		return true;
