@@ -130,7 +130,6 @@ JSM.SVGViewer.prototype =
 	{
 		var i, bodyAndMaterials;
 		var drawSettings = new JSM.DrawSettings (this.cameraMove, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.hiddenLine, false);
-		drawSettings.clear = false;
 		this.drawer.Clear ();
 		
 		for (i = 0; i < this.bodies.length; i++) {
@@ -208,6 +207,6 @@ JSM.SVGViewer.prototype =
 
 	OnTouchEnd : function (event)
 	{
-		this.touch.End (event, this.canvas);
+		this.touch.End (event);
 	}
 };
