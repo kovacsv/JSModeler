@@ -65,19 +65,20 @@ JSM.SVGDrawer.prototype =
 	}
 };
 
-JSM.DrawSettings = function (camera, fieldOfView, nearPlane, farPlane, hiddenLine)
+JSM.DrawSettings = function (camera, fieldOfView, nearPlane, farPlane, hiddenLine, clear)
 {
 	this.camera = camera;
 	this.fieldOfView = fieldOfView;
 	this.nearPlane = nearPlane;
 	this.farPlane = farPlane;
 	this.hiddenLine = hiddenLine;
-	this.clear = true;
+	this.clear = clear;
 };
 
 JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 {
-	if (settings.clear) {
+	var clear = settings.clear;
+	if (clear) {
 		drawer.Clear ();
 	}
 
