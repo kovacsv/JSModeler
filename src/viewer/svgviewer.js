@@ -4,6 +4,7 @@ JSM.SVGViewer = function ()
 	this.cameraMove = null;
 	this.settings = null;
 	this.bodies = null;
+	this.drawer = null;
 	this.hiddenLine = null;
 	this.mouse = null;
 	this.touch = null;
@@ -39,6 +40,8 @@ JSM.SVGViewer.prototype =
         if (!this.canvas) {
 			return false;
 		}
+		
+		this.drawer = new JSM.SVGDrawer (this.canvas);
 		return true;
 	},
 	
@@ -128,13 +131,11 @@ JSM.SVGViewer.prototype =
 		var i, bodyAndMaterials;
 		var drawSettings = new JSM.DrawSettings (this.cameraMove, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.hiddenLine);
 		drawSettings.clear = false;
-
-		var drawer = new JSM.SVGDrawer (this.canvas);
-		drawer.Clear ();
+		this.drawer.Clear ();
 		
 		for (i = 0; i < this.bodies.length; i++) {
 			bodyAndMaterials = this.bodies[i];
-			JSM.DrawProjectedBody (bodyAndMaterials[0], bodyAndMaterials[1], drawSettings, drawer);
+			JSM.DrawProjectedBody (bodyAndMaterials[0], bodyAndMaterials[1], drawSettings, this.drawer);
 		}
 
 		return true;

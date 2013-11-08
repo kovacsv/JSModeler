@@ -2,8 +2,6 @@ JSM.SVGDrawer = function (svgObject)
 {
 	this.svgObject = svgObject;
 	this.svgNameSpace = "http://www.w3.org/2000/svg";
-	this.height = this.GetHeight ();
-	this.width = this.GetWidth ();
 };
 
 JSM.SVGDrawer.prototype =
@@ -28,11 +26,12 @@ JSM.SVGDrawer.prototype =
 	DrawLine : function (from, to)
 	{
 		var svgLine = document.createElementNS (this.svgNameSpace, 'line');
+		var height = this.GetHeight ();
 		svgLine.setAttributeNS (null, 'stroke', 'black');
 		svgLine.setAttributeNS (null, 'x1', from.x);
-		svgLine.setAttributeNS (null, 'y1', this.height - from.y);
+		svgLine.setAttributeNS (null, 'y1', height - from.y);
 		svgLine.setAttributeNS (null, 'x2', to.x);
-		svgLine.setAttributeNS (null, 'y2', this.height - to.y);
+		svgLine.setAttributeNS (null, 'y2', height - to.y);
 		this.svgObject.appendChild (svgLine);		
 	},
 	
@@ -46,11 +45,12 @@ JSM.SVGDrawer.prototype =
 		}
 
 		var pointsString = '';
+		var height = this.GetHeight ();
 		
 		var i, point;
 		for (i = 0; i < points.length; i++) {
 			point = points[i];
-			pointsString = pointsString + point[0] + ', ' + (this.height - point[1]);
+			pointsString = pointsString + point[0] + ', ' + (height - point[1]);
 			if (i < points.length - 1) {
 				pointsString = pointsString + ', ';
 			}
