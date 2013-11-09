@@ -35,7 +35,7 @@ JSM.SVGDrawer.prototype =
 		this.svgObject.appendChild (svgLine);		
 	},
 	
-	DrawPolygon : function (points, color)
+	DrawPolygon : function (polygon, color)
 	{
 		function HexColorToHTMLColor (hexColor)
 		{
@@ -47,11 +47,11 @@ JSM.SVGDrawer.prototype =
 		var pointsString = '';
 		var height = this.GetHeight ();
 		
-		var i, point;
-		for (i = 0; i < points.length; i++) {
-			point = points[i];
-			pointsString = pointsString + point[0] + ', ' + (height - point[1]);
-			if (i < points.length - 1) {
+		var i, vertex;
+		for (i = 0; i < polygon.VertexCount (); i++) {
+			vertex = polygon.GetVertex (i);
+			pointsString = pointsString + vertex.x + ', ' + (height - vertex.y);
+			if (i < polygon.VertexCount () - 1) {
 				pointsString = pointsString + ', ';
 			}
 		}
@@ -77,6 +77,22 @@ JSM.DrawSettings = function (camera, fieldOfView, nearPlane, farPlane, drawMode,
 
 JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 {
+	function GetProjectedPolygon (polygon)
+	{
+		var projectedPolygon = new JSM.Polygon2D ();
+		
+		var i, coord, projected, x, y;
+		for (i = 0; i < polygon.VertexIndexCount (); i++) {
+			coord = body.GetVertexPosition (polygon.GetVertexIndex (i));
+			projected = JSM.Project (coord, eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
+			x = projected.x;
+			y = projected.y;
+			projectedPolygon.AddVertex (x, y);
+		}
+		
+		return projectedPolygon;
+	}
+
 	var clear = settings.clear;
 	if (clear) {
 		drawer.Clear ();
@@ -102,24 +118,14 @@ JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 			materials = new JSM.Materials ();
 		}
 		
-		var points, x, y;
+		var projectedPolygon;
 		var materialIndex, color;
 		for (i = 0; i < orderedPolygons.length; i++) {
 			polygon = body.GetPolygon (orderedPolygons[i]);
-
-			points = [];
-			for (j = 0; j < polygon.VertexIndexCount (); j++) {
-				coord = body.GetVertexPosition (polygon.GetVertexIndex (j));
-				projected = JSM.Project (coord, eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
-				x = projected.x;
-				y = projected.y;
-				points.push ([x, y]);
-			}
-
+			projectedPolygon = GetProjectedPolygon (polygon);
 			materialIndex = polygon.GetMaterialIndex ();
 			color = materials.GetMaterial (materialIndex).diffuse;
-			
-			drawer.DrawPolygon (points, color);
+			drawer.DrawPolygon (projectedPolygon, color);
 		}
 	} else if (drawMode == 'Wireframe') {
 		var vertexCount, currentCoord, currentVertex, vertex;
