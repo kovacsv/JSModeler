@@ -143,8 +143,9 @@
 		{
 			var floating = document.getElementById ('floating');
 			var svgcontent = document.getElementById ('svgcontent');
-			var svgSettings = new JSM.SVGSettings (demo.viewer.cameraMove, demo.viewer.settings['fieldOfView'], demo.viewer.settings['nearClippingPlane'], demo.viewer.settings['farClippingPlane']);
-			JSM.ExportBodyToSVG (demo.body, null, svgSettings, svgcontent);
+			var drawSettings = new JSM.DrawSettings (demo.viewer.cameraMove, demo.viewer.settings['fieldOfView'], demo.viewer.settings['nearClippingPlane'], demo.viewer.settings['farClippingPlane'], false, true);
+			var drawer = new JSM.SVGDrawer (svgcontent);
+			JSM.DrawProjectedBody (demo.body, null, drawSettings, drawer);
 			svgcontent.style.display = 'block';
 			floating.style.display = 'block';
 		}
