@@ -112,25 +112,25 @@ def Main ():
 	externsFilePath = os.path.abspath (externsFileName)
 	resultFilePath = os.path.abspath (resultFileName)
 	
-	PrintInfo ('Get version from file <' + versionsPath + '>.');
+	PrintInfo ('Get version from file <' + versionsPath + '>.')
 	version = GetVersion (versionsPath);
 	if version == [0, 0]:
 		PrintError ('Invalid version.');
 		return
 
-	PrintInfo ('Collect files to merge from <' + filesFilePath + '>.');
+	PrintInfo ('Collect files to merge from <' + filesFilePath + '>.')
 	inputFileNames = GetLinesFromFile (filesFilePath);
 	if len (inputFileNames) == 0:
 		PrintError ('Invalid file list.');
 		return
 
-	PrintInfo ('Merge files to <' + tempFilePath + '>.');
+	PrintInfo ('Merge files to <' + tempFilePath + '>.')
 	succeeded = MergeFiles (inputFileNames, tempFilePath)
 	if not succeeded:
 		PrintError ('Not existing file in file list.');
 		return
 
-	PrintInfo ('Compile merged file to <' + resultFilePath + '>.');
+	PrintInfo ('Compile merged file to <' + resultFilePath + '>.')
 	succeeded = CompileFile (tempFilePath, externsFilePath, resultFilePath)
 	if not succeeded:
 		PrintError ('Compilation failed.');
@@ -138,7 +138,7 @@ def Main ():
 		DeleteFile (tempFilePath)
 		return
 	
-	PrintInfo ('Write header to compiled file <' + resultFilePath + '>.');
+	PrintInfo ('Write header to compiled file <' + resultFilePath + '>.')
 	currentHeader = GetHeader (version, header)
 	if len (currentHeader) == 0:
 		PrintError ('Invalid header.');
@@ -146,14 +146,14 @@ def Main ():
 		DeleteFile (tempFilePath)
 		return
 	
-	succeeded = WriteHeader (resultFileName, currentHeader);
+	succeeded = WriteHeader (resultFileName, currentHeader)
 	if not succeeded:
 		PrintError ('Write header failed.');
 		DeleteFile (resultFilePath)
 		DeleteFile (tempFilePath)
 		return
 	
-	PrintInfo ('Delete merged file <' + tempFilePath + '>.');
+	PrintInfo ('Delete merged file <' + tempFilePath + '>.')
 	succeeded = DeleteFile (tempFilePath)
 	if not succeeded:
 		PrintError ('Delete failed.');

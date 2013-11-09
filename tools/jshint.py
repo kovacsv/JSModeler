@@ -23,7 +23,7 @@ def Main ():
 
 	sourcesPath = os.path.abspath (sourcesFolderName)
 	
-	PrintInfo ('JSHint folder <' + sourcesPath + '>.');
+	PrintInfo ('JSHint folder <' + sourcesPath + '>.')
 	succeeded = JSHintFolder (sourcesPath)
 	if not succeeded:
 		PrintError ('Found JSHint errors.');

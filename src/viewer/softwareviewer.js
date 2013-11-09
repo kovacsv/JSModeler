@@ -1,23 +1,24 @@
-JSM.SVGViewer = function ()
+JSM.SoftwareViewer = function ()
 {
 	this.canvas = null;
 	this.cameraMove = null;
 	this.settings = null;
 	this.bodies = null;
-	this.hiddenLine = null;
+	this.drawer = null;
+	this.drawMode = null;
 	this.mouse = null;
 	this.touch = null;
 };
 
-JSM.SVGViewer.prototype =
+JSM.SoftwareViewer.prototype =
 {
-	Start : function (canvasName, settings, hiddenLine)
+	Start : function (canvasName, settings)
 	{
 		if (!this.InitCanvas (canvasName)) {
 			return false;
 		}
 
-		if (!this.InitSettings (settings, hiddenLine)) {
+		if (!this.InitSettings (settings)) {
 			return false;
 		}
 		
@@ -39,10 +40,20 @@ JSM.SVGViewer.prototype =
         if (!this.canvas) {
 			return false;
 		}
+		
+		if (this.canvas instanceof (HTMLCanvasElement)) {
+			this.drawer = new JSM.CanvasDrawer (this.canvas);
+		} else if (this.canvas instanceof (SVGSVGElement)) {
+			this.drawer = new JSM.SVGDrawer (this.canvas);
+		}
+		
+		if (!this.drawer) {
+			return false;
+		}
 		return true;
 	},
 	
-	InitSettings : function (settings, hiddenLine)
+	InitSettings : function (settings)
 	{
 		this.settings = {
 			cameraEyePosition : [1.0, 1.0, 1.0],
@@ -50,9 +61,9 @@ JSM.SVGViewer.prototype =
 			cameraUpVector : [0.0, 0.0, 1.0],
 			fieldOfView : 45.0,
 			nearClippingPlane : 0.1,
-			farClippingPlane : 1000.0
+			farClippingPlane : 1000.0,
+			drawMode : 'Wireframe'
 		};
-		this.hiddenLine = false;
 	
 		if (settings !== undefined) {
 			if (settings.cameraEyePosition !== undefined) this.settings.cameraEyePosition = settings.cameraEyePosition;
@@ -61,7 +72,7 @@ JSM.SVGViewer.prototype =
 			if (settings.fieldOfView !== undefined) this.settings.fieldOfView = settings.fieldOfView;
 			if (settings.nearClippingPlane !== undefined) this.settings.nearClippingPlane = settings.nearClippingPlane;
 			if (settings.farClippingPlane !== undefined) this.settings.farClippingPlane = settings.farClippingPlane;
-			if (hiddenLine !== undefined) this.hiddenLine = hiddenLine;
+			if (settings.drawMode !== undefined) this.settings.drawMode = settings.drawMode;
 		}
 		
 		return true;
@@ -125,17 +136,13 @@ JSM.SVGViewer.prototype =
 
 	Draw : function ()
 	{
-		var i, body, bodies;
-		var svgSettings = new JSM.SVGSettings (this.cameraMove, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.hiddenLine);
-		
-		svgSettings.clear = false;
-		while (this.canvas.lastChild) {
-			this.canvas.removeChild (this.canvas.lastChild);
-		}
+		var i, bodyAndMaterials;
+		var drawSettings = new JSM.DrawSettings (this.cameraMove, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.settings.drawMode, false);
+		this.drawer.Clear ();
 		
 		for (i = 0; i < this.bodies.length; i++) {
-			body = this.bodies[i];
-			JSM.ExportBodyToSVG (body[0], body[1], svgSettings, this.canvas);
+			bodyAndMaterials = this.bodies[i];
+			JSM.DrawProjectedBody (bodyAndMaterials[0], bodyAndMaterials[1], drawSettings, this.drawer);
 		}
 
 		return true;
@@ -208,6 +215,6 @@ JSM.SVGViewer.prototype =
 
 	OnTouchEnd : function (event)
 	{
-		this.touch.End (event, this.canvas);
+		this.touch.End (event);
 	}
 };

@@ -25,7 +25,7 @@
 		function ChangeShowFaces ()
 		{
 			var check = document.getElementById ('showfacescheck');
-			viewer.hiddenLine = check.checked;
+			viewer.settings.drawMode = check.checked ? 'HiddenLinePainter' : 'Wireframe';
 			viewer.Draw ();
 		}
 	
@@ -163,7 +163,8 @@
 			var viewerSettings = {
 				cameraEyePosition : [3, 2, 3],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0.0, 0.0, 1.0]
+				cameraUpVector : [0.0, 0.0, 1.0],
+				drawMode : 'HiddenLinePainter'
 			};
 
 			window.onresize = Resize;
@@ -173,8 +174,8 @@
 			document.getElementById ('showfacescheck').checked = true;
 			document.getElementById ('coloredfacescheck').checked = true;
 			
-			viewer = new JSM.SVGViewer ();
-			var success = viewer.Start ('example', viewerSettings, true);
+			viewer = new JSM.SoftwareViewer ();
+			var success = viewer.Start ('example', viewerSettings);
 
 			SetBody (lastName);
 		}

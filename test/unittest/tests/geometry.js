@@ -818,40 +818,40 @@ AddTest ('ProjectionTest', function (test)
 
 	var projected = new JSM.Coord ();
 
-	projected = JSM.Project (new JSM.Coord (0, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	projected = JSM.Project (new JSM.Coord (0, 0, 0), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 50));
 
-	projected = JSM.Project (new JSM.Coord (0.5, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	projected = JSM.Project (new JSM.Coord (0.5, 0, 0), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 50));
 
-	projected = JSM.Project (new JSM.Coord (1.5, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	projected = JSM.Project (new JSM.Coord (1.5, 0, 0), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 50));
 
-	projected = JSM.Project (new JSM.Coord (100, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	projected = JSM.Project (new JSM.Coord (100, 0, 0), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 50));
 
-	projected = JSM.Project (new JSM.Coord (-100, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	projected = JSM.Project (new JSM.Coord (-100, 0, 0), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
 	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 50));
 
-	projected = JSM.Project (new JSM.Coord (1, 0, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	projected = JSM.Project (new JSM.Coord (1, 0, 0), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected == null);
 
-	projected = JSM.Project (new JSM.Coord (0, 0.5, 0), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	projected = JSM.Project (new JSM.Coord (0, 0.5, 0), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
-	test.Assert (JSM.IsEqual (projected.x, 189.62954934596522) && JSM.IsEqual (projected.y, 50));
+	test.Assert (JSM.IsEqual (projected.x, 220.710678118657) && JSM.IsEqual (projected.y, 50));
 
-	projected = JSM.Project (new JSM.Coord (0, 0, 0.5), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	projected = JSM.Project (new JSM.Coord (0, 0, 0.5), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
-	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 139.62954934596522));
+	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 170.710678118657));
 
-	projected = JSM.Project (new JSM.Coord (0, 0.5, 0.5), eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	projected = JSM.Project (new JSM.Coord (0, 0.5, 0.5), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
-	test.Assert (JSM.IsEqual (projected.x, 189.62954934596522) && JSM.IsEqual (projected.y, 139.62954934596522));
+	test.Assert (JSM.IsEqual (projected.x, 220.710678118657) && JSM.IsEqual (projected.y, 170.710678118657));
 });
 
 AddTest ('ConvexHullTest', function (test)

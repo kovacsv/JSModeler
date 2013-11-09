@@ -9,9 +9,8 @@
 <html>
 
 <head>
-
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
@@ -57,107 +56,42 @@
 	<script type="text/javascript" src="../src/viewer/viewer.js"></script>
 	<script type="text/javascript" src="../src/viewer/softwareviewer.js"></script>
 <!-- JSModeler includes end -->
-
+	<script type="text/javascript" src="contourbody.js"></script>
 	<title>Example</title>
 
 	<script type="text/javascript">
 		var viewer = null;
-		var mouseMoved = false;
-		var touchMoved = false;
-
-		function OnMouseDown (event)
-		{
-			mouseMoved = false;
-		}
-		
-		function OnMouseMove (event)
-		{
-			var logDiv = document.getElementById ('log');
-			logDiv.innerHTML = viewer.mouse.currX + ', ' + viewer.mouse.currY;
-			mouseMoved = true;
-		}
-
-		function OnMouseUp (event)
-		{
-			if (!mouseMoved) {
-				var logDiv = document.getElementById ('log');
-				logDiv.innerHTML = '';
-
-				var objects;
-				objects = viewer.GetObjectsUnderMouse ();
-				logDiv.innerHTML = viewer.mouse.currX + ', ' + viewer.mouse.currY + '<br>';
-				logDiv.innerHTML += 'GetObjectsUnderMouse: ' + objects + '<br>';
-			}
-			
-			mouseMoved = false;
-		}
-
-		function OnTouchStart (event)
-		{
-			touchMoved = false;
-		}
-		
-		function OnTouchMove (event)
-		{
-			var logDiv = document.getElementById ('log');
-			logDiv.innerHTML = viewer.touch.currX + ', ' + viewer.touch.currY;
-			touchMoved = true;
-		}
-
-		function OnTouchEnd (event)
-		{
-			if (!touchMoved) {
-				var logDiv = document.getElementById ('log');
-				logDiv.innerHTML = '';
-
-				var objects;
-				objects = viewer.GetObjectsUnderTouch ();
-				logDiv.innerHTML = viewer.touch.currX + ', ' + viewer.touch.currY + '<br>';
-				logDiv.innerHTML += 'GetObjectsUnderTouch: ' + objects + '<br>';
-			}
-			
-			touchMoved = false;
-		}
-
+		var body = null;
+	
 		function Load ()
 		{
-			var TextureLoaded = function () {
-				viewer.Draw ();
-			};
-
 			var viewerSettings = {
-				cameraEyePosition : [1.0, -1.0, 1.0],
+				cameraEyePosition : [2.0, 2.0, 2.0],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1]
+				cameraUpVector : [0, 0, 1],
+				drawMode : 'HiddenLineFrontFacing'
 			};
 
-			var canvas = document.getElementById ('example');
-			if (canvas.addEventListener) {
-				canvas.addEventListener ('mousedown', function (event) {OnMouseDown (event);}, false);
-				canvas.addEventListener ('mousemove', function (event) {OnMouseMove (event);}, false);
-				canvas.addEventListener ('mouseup', function (event) {OnMouseUp (event);}, false);
-				canvas.addEventListener ('touchstart', function (event) {OnTouchStart (event);}, false);
-				canvas.addEventListener ('touchmove', function (event) {OnTouchMove (event);}, false);
-				canvas.addEventListener ('touchend', function (event) {OnTouchEnd (event);}, false);
-			}
+			viewer = new JSM.SoftwareViewer ();
+			var success = viewer.Start ('example', viewerSettings);
 
-			viewer = new JSM.Viewer ();
-			viewer.Start ('example', viewerSettings);
+			//var body = TestBody0 ();
+			//var body = GenerateContourSolid ('Tetrahedron', 0.1);
+			//body = JSM.CatmullClarkSubdivision (body, 4);
+			var body = JSM.GenerateCuboid (1, 1, 1);
 			
-			var body1 = JSM.GenerateCuboid (1, 1, 1);
-			var body2 = JSM.GenerateCuboid (1, 1, 1);
-			body2.Transform (JSM.TranslationTransformation (new JSM.Vector (2, 0, 0)));
-			var body3 = JSM.GenerateCuboid (1, 1, 1);
-			body3.Transform (JSM.TranslationTransformation (new JSM.Vector (4, 0, 0)));
-			viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body1));
-			viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body2));
-			viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body3));
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
+			materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+			
+			body.GetPolygon (1).SetMaterialIndex (0);
+			body.GetPolygon (2).SetMaterialIndex (1);
 
-			viewer.FitInWindow ();
+			viewer.AddBody (body, materials);
 			viewer.Draw ();
 		}
-	
-	    window.onload = function ()
+		
+		window.onload = function ()
 		{
 			Load ();			
 		}
@@ -166,8 +100,7 @@
 </head>
 
 <body>
-	<canvas id="example" width="500" height="300" style="border : 1px solid #aaaaaa;"></canvas>
-	<div id="log"></div>
+	<canvas id="example" width="800" height="500"></canvas>
 </body>
 
 </html>
