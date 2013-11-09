@@ -1,4 +1,4 @@
-JSM.SVGViewer = function ()
+JSM.SoftwareViewer = function ()
 {
 	this.canvas = null;
 	this.cameraMove = null;
@@ -10,7 +10,7 @@ JSM.SVGViewer = function ()
 	this.touch = null;
 };
 
-JSM.SVGViewer.prototype =
+JSM.SoftwareViewer.prototype =
 {
 	Start : function (canvasName, settings)
 	{

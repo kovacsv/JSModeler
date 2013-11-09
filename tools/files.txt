@@ -40,4 +40,4 @@
 ../src/viewer/touch.js
 ../src/viewer/converter.js
 ../src/viewer/viewer.js
-../src/viewer/svgviewer.js
+../src/viewer/softwareviewer.js
