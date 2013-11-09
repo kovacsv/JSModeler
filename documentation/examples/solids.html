@@ -163,7 +163,8 @@
 			var viewerSettings = {
 				cameraEyePosition : [3, 2, 3],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0.0, 0.0, 1.0]
+				cameraUpVector : [0.0, 0.0, 1.0],
+				hiddenLine : true
 			};
 
 			window.onresize = Resize;
@@ -174,7 +175,7 @@
 			document.getElementById ('coloredfacescheck').checked = true;
 			
 			viewer = new JSM.SVGViewer ();
-			var success = viewer.Start ('example', viewerSettings, true);
+			var success = viewer.Start ('example', viewerSettings);
 
 			SetBody (lastName);
 		}

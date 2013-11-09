@@ -47,9 +47,9 @@
 	<script type="text/javascript" src="../src/modeler/camera.js"></script>
 	<script type="text/javascript" src="../src/modeler/csg.js"></script>
 	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
-	<script type="text/javascript" src="../src/modeler/drawing.js"></script>
 	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
 	<script type="text/javascript" src="../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/extras/drawing.js"></script>
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
 	<script type="text/javascript" src="../src/viewer/converter.js"></script>
@@ -271,11 +271,12 @@
 			var viewerSettings = {
 				cameraEyePosition : [2.0, 2.0, 2.0],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1]
+				cameraUpVector : [0, 0, 1],
+				hiddenLine : true
 			};
 
 			viewer = new JSM.SVGViewer ();
-			var success = viewer.Start ('example', viewerSettings, true);
+			var success = viewer.Start ('example', viewerSettings);
 
 			//var body = TestBody0 ();
 			//var body = GenerateContourSolid ('Tetrahedron', 0.1);

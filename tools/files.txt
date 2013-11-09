@@ -33,9 +33,9 @@
 ../src/modeler/camera.js
 ../src/modeler/csg.js
 ../src/modeler/exporter.js
-../src/modeler/drawing.js
 ../src/extras/extgenerator.js
 ../src/extras/svgtomodel.js
+../src/extras/drawing.js
 ../src/viewer/mouse.js
 ../src/viewer/touch.js
 ../src/viewer/converter.js

@@ -12,13 +12,13 @@ JSM.SVGViewer = function ()
 
 JSM.SVGViewer.prototype =
 {
-	Start : function (canvasName, settings, hiddenLine)
+	Start : function (canvasName, settings)
 	{
 		if (!this.InitCanvas (canvasName)) {
 			return false;
 		}
 
-		if (!this.InitSettings (settings, hiddenLine)) {
+		if (!this.InitSettings (settings)) {
 			return false;
 		}
 		
@@ -64,7 +64,7 @@ JSM.SVGViewer.prototype =
 			if (settings.fieldOfView !== undefined) this.settings.fieldOfView = settings.fieldOfView;
 			if (settings.nearClippingPlane !== undefined) this.settings.nearClippingPlane = settings.nearClippingPlane;
 			if (settings.farClippingPlane !== undefined) this.settings.farClippingPlane = settings.farClippingPlane;
-			if (hiddenLine !== undefined) this.hiddenLine = hiddenLine;
+			if (settings.hiddenLine !== undefined) this.hiddenLine = settings.hiddenLine;
 		}
 		
 		return true;
