@@ -41,7 +41,15 @@ JSM.SoftwareViewer.prototype =
 			return false;
 		}
 		
-		this.drawer = new JSM.SVGDrawer (this.canvas);
+		if (this.canvas instanceof (HTMLCanvasElement)) {
+			this.drawer = new JSM.CanvasDrawer (this.canvas);
+		} else if (this.canvas instanceof (SVGSVGElement)) {
+			this.drawer = new JSM.SVGDrawer (this.canvas);
+		}
+		
+		if (!this.drawer) {
+			return false;
+		}
 		return true;
 	},
 	

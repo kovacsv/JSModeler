@@ -1,3 +1,79 @@
+JSM.CanvasDrawer = function (canvas)
+{
+	this.canvas = canvas;
+	this.context = this.canvas.getContext ('2d');
+};
+
+JSM.CanvasDrawer.prototype =
+{
+	GetWidth : function ()
+	{
+		return this.canvas.width;
+	},
+
+	GetHeight : function ()
+	{
+		return this.canvas.height;
+	},
+
+	BeginPath : function ()
+	{
+		this.context.beginPath ();
+	},
+	
+	EndPath : function ()
+	{
+		this.context.stroke ();
+	},
+
+	Clear : function ()
+	{
+		this.context.clearRect (0, 0, this.canvas.width, this.canvas.height);
+		this.context.fillStyle = '#ffffff';
+		this.context.fillRect (0, 0, this.canvas.width, this.canvas.height);
+	},
+	
+	DrawLine : function (from, to)
+	{
+		this.context.moveTo (from.x, this.canvas.height - from.y);
+		this.context.lineTo (to.x, this.canvas.height - to.y);
+	},
+	
+	DrawPolygon : function (polygon, color)
+	{
+		function HexColorToHTMLColor (hexColor)
+		{
+			var rgb = JSM.HexColorToRGBComponents (hexColor);
+			var result = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
+			return result;
+		}
+		
+		this.context.fillStyle = HexColorToHTMLColor (color);
+		this.context.beginPath();
+
+		var i, vertex, nextVertex;
+		for (i = 0; i < polygon.VertexCount (); i++) {
+			vertex = polygon.GetVertex (i);
+			if (i === 0) {
+				this.context.moveTo (vertex.x, this.canvas.height - vertex.y);
+			} else {
+				this.context.lineTo (vertex.x, this.canvas.height - vertex.y);
+			}
+		}
+
+		this.context.closePath ();
+		this.context.fill ();			
+
+		this.BeginPath ();
+		for (i = 0; i < polygon.VertexCount (); i++) {
+			vertex = polygon.GetVertex (i);
+			nextVertex = polygon.GetVertex (i < polygon.VertexCount () - 1 ? i + 1 : 0);
+			this.DrawLine (vertex, nextVertex);
+		}
+		this.EndPath ();
+	}
+};
+
 JSM.SVGDrawer = function (svgObject)
 {
 	this.svgObject = svgObject;
@@ -16,6 +92,16 @@ JSM.SVGDrawer.prototype =
 		return this.svgObject.getAttribute ('height');
 	},
 
+	BeginPath : function ()
+	{
+		// nothing to do
+	},
+	
+	EndPath : function ()
+	{
+		// nothing to do
+	},
+	
 	Clear : function ()
 	{
 		while (this.svgObject.lastChild) {
@@ -141,6 +227,7 @@ JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 		}
 	} else if (drawMode == 'Wireframe') {
 		var vertexCount, currentCoord, currentVertex, vertex;
+		drawer.BeginPath ();
 		
 		var drawedLines = [];
 		for (i = 0; i < body.PolygonCount (); i++) {
@@ -161,6 +248,8 @@ JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 				currentCoord = projected;
 			}
 		}
+		
+		drawer.EndPath ();
 	}
 
 	return true;
