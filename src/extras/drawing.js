@@ -65,13 +65,13 @@ JSM.SVGDrawer.prototype =
 	}
 };
 
-JSM.DrawSettings = function (camera, fieldOfView, nearPlane, farPlane, hiddenLine, clear)
+JSM.DrawSettings = function (camera, fieldOfView, nearPlane, farPlane, drawMode, clear)
 {
 	this.camera = camera;
 	this.fieldOfView = fieldOfView;
 	this.nearPlane = nearPlane;
 	this.farPlane = farPlane;
-	this.hiddenLine = hiddenLine;
+	this.drawMode = drawMode;
 	this.clear = clear;
 };
 
@@ -93,17 +93,17 @@ JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 	var nearPlane = settings.nearPlane;
 	var farPlane = settings.farPlane;
 	var viewPort = [0, 0, width, height];
-	var hiddenLine = settings.hiddenLine;
+	var drawMode = settings.drawMode;
 
 	var i, j, polygon, coord, projected;
-	if (hiddenLine) {
+	if (drawMode == 'HiddenLinePainter') {
 		var orderedPolygons = JSM.OrderPolygons (body, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
 		if (materials === undefined || materials === null) {
 			materials = new JSM.Materials ();
 		}
 		
 		var points, x, y;
-		var svgPolyon, materialIndex, color;
+		var materialIndex, color;
 		for (i = 0; i < orderedPolygons.length; i++) {
 			polygon = body.GetPolygon (orderedPolygons[i]);
 
@@ -121,7 +121,7 @@ JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 			
 			drawer.DrawPolygon (points, color);
 		}
-	} else {
+	} else if (drawMode == 'Wireframe') {
 		var vertexCount, currentCoord, currentVertex, vertex;
 		
 		var drawedLines = [];

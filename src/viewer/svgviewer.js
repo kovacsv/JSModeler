@@ -5,7 +5,7 @@ JSM.SVGViewer = function ()
 	this.settings = null;
 	this.bodies = null;
 	this.drawer = null;
-	this.hiddenLine = null;
+	this.drawMode = null;
 	this.mouse = null;
 	this.touch = null;
 };
@@ -45,7 +45,7 @@ JSM.SVGViewer.prototype =
 		return true;
 	},
 	
-	InitSettings : function (settings, hiddenLine)
+	InitSettings : function (settings)
 	{
 		this.settings = {
 			cameraEyePosition : [1.0, 1.0, 1.0],
@@ -53,9 +53,9 @@ JSM.SVGViewer.prototype =
 			cameraUpVector : [0.0, 0.0, 1.0],
 			fieldOfView : 45.0,
 			nearClippingPlane : 0.1,
-			farClippingPlane : 1000.0
+			farClippingPlane : 1000.0,
+			drawMode : 'Wireframe'
 		};
-		this.hiddenLine = false;
 	
 		if (settings !== undefined) {
 			if (settings.cameraEyePosition !== undefined) this.settings.cameraEyePosition = settings.cameraEyePosition;
@@ -64,7 +64,7 @@ JSM.SVGViewer.prototype =
 			if (settings.fieldOfView !== undefined) this.settings.fieldOfView = settings.fieldOfView;
 			if (settings.nearClippingPlane !== undefined) this.settings.nearClippingPlane = settings.nearClippingPlane;
 			if (settings.farClippingPlane !== undefined) this.settings.farClippingPlane = settings.farClippingPlane;
-			if (settings.hiddenLine !== undefined) this.hiddenLine = settings.hiddenLine;
+			if (settings.drawMode !== undefined) this.settings.drawMode = settings.drawMode;
 		}
 		
 		return true;
@@ -129,7 +129,7 @@ JSM.SVGViewer.prototype =
 	Draw : function ()
 	{
 		var i, bodyAndMaterials;
-		var drawSettings = new JSM.DrawSettings (this.cameraMove, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.hiddenLine, false);
+		var drawSettings = new JSM.DrawSettings (this.cameraMove, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.settings.drawMode, false);
 		this.drawer.Clear ();
 		
 		for (i = 0; i < this.bodies.length; i++) {
