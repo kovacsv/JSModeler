@@ -111,21 +111,33 @@ JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 	var viewPort = [0, 0, width, height];
 	var drawMode = settings.drawMode;
 
-	var i, j, polygon, coord, projected;
+	var i, j, polygon, coord, projected, materialIndex, color;
 	if (drawMode == 'HiddenLinePainter') {
 		var orderedPolygons = JSM.OrderPolygons (body, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
 		if (materials === undefined || materials === null) {
 			materials = new JSM.Materials ();
 		}
 		
-		var projectedPolygon;
-		var materialIndex, color;
 		for (i = 0; i < orderedPolygons.length; i++) {
 			polygon = body.GetPolygon (orderedPolygons[i]);
-			projectedPolygon = GetProjectedPolygon (polygon);
+			projected = GetProjectedPolygon (polygon);
 			materialIndex = polygon.GetMaterialIndex ();
 			color = materials.GetMaterial (materialIndex).diffuse;
-			drawer.DrawPolygon (projectedPolygon, color);
+			drawer.DrawPolygon (projected, color);
+		}
+	} else if (drawMode == 'HiddenLineFrontFacing') {
+		if (materials === undefined || materials === null) {
+			materials = new JSM.Materials ();
+		}
+		
+		for (i = 0; i < body.PolygonCount (); i++) {
+			polygon = body.GetPolygon (i);
+			projected = GetProjectedPolygon (polygon);
+			if (JSM.PolygonOrientation2D (projected) == 'CounterClockwise') {
+				materialIndex = polygon.GetMaterialIndex ();
+				color = materials.GetMaterial (materialIndex).diffuse;
+				drawer.DrawPolygon (projected, color);
+			}
 		}
 	} else if (drawMode == 'Wireframe') {
 		var vertexCount, currentCoord, currentVertex, vertex;
