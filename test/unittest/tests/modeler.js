@@ -1105,17 +1105,35 @@ AddTest ('SolidGeneratorTest', function (test)
 	test.Assert (solid.VertexCount () == 60 && solid.PolygonCount () == 92);
 	test.Assert (ArePolygonsRegular (solid));
 	test.Assert (JSM.CheckSolidBody (solid));
+	
+	solid = JSM.GenerateSolidWithRadius ('TetrakisHexahedron', 1.0);
+	test.Assert (JSM.CheckSolidBody (solid));
+
+	solid = JSM.GenerateSolidWithRadius ('RhombicDodecahedron', 1.0);
+	test.Assert (JSM.CheckSolidBody (solid));
+
+	solid = JSM.GenerateSolidWithRadius ('PentakisDodecahedron', 1.0);
+	test.Assert (JSM.CheckSolidBody (solid));
 
 	solid = JSM.GenerateSolidWithRadius ('SmallStellatedDodecahedron', 1.0);
-	test.Assert (solid.VertexCount () == 32 && solid.PolygonCount () == 60);
 	test.Assert (JSM.CheckSolidBody (solid));
 
 	solid = JSM.GenerateSolidWithRadius ('GreatDodecahedron', 1.0);
-	test.Assert (solid.VertexCount () == 32 && solid.PolygonCount () == 60);
+	test.Assert (JSM.CheckSolidBody (solid));
+
+	solid = JSM.GenerateSolidWithRadius ('SmallTriambicIcosahedron', 1.0);
 	test.Assert (JSM.CheckSolidBody (solid));
 
 	solid = JSM.GenerateSolidWithRadius ('GreatStellatedDodecahedron', 1.0);
-	test.Assert (solid.VertexCount () == 32 && solid.PolygonCount () == 60);
+	test.Assert (JSM.CheckSolidBody (solid));
+
+	solid = JSM.GenerateSolidWithRadius ('SmallTriakisOctahedron', 1.0);
+	test.Assert (JSM.CheckSolidBody (solid));
+
+	solid = JSM.GenerateSolidWithRadius ('StellaOctangula', 1.0);
+	test.Assert (JSM.CheckSolidBody (solid));
+
+	solid = JSM.GenerateSolidWithRadius ('TriakisTetrahedron', 1.0);
 	test.Assert (JSM.CheckSolidBody (solid));
 });
 
