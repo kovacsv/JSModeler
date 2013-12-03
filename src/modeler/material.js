@@ -43,44 +43,36 @@ JSM.Material = function (ambient, diffuse, opacity, texture, textureWidth, textu
 	this.textureHeight = JSM.ValueOrDefault (textureHeight, 1.0);
 };
 
-JSM.Material.prototype =
-{
-
-};
-
 JSM.Materials = function ()
 {
 	this.materials = [];
 	this.defaultMaterial = new JSM.Material ();
 };
 
-JSM.Materials.prototype =
+JSM.Materials.prototype.AddMaterial = function (material)
 {
-	AddMaterial : function (material)
-	{
-		this.materials.push (material);
-	},
-	
-	GetMaterial : function (index)
-	{
-		if (index < 0 || index >= this.materials.length) {
-			return this.defaultMaterial;
-		}
-		return this.materials[index];
-	},
-	
-	GetDefaultMaterial : function (index)
-	{
+	this.materials.push (material);
+};
+
+JSM.Materials.prototype.GetMaterial = function (index)
+{
+	if (index < 0 || index >= this.materials.length) {
 		return this.defaultMaterial;
-	},
-	
-	Count : function ()
-	{
-		return this.materials.length;
-	},
-	
-	Clone : function ()
-	{
-		return new JSM.Material (this.ambient, this.diffuse, this.opacity, this.texture, this.textureWidth, this.textureHeight);
 	}
+	return this.materials[index];
+};
+
+JSM.Materials.prototype.GetDefaultMaterial = function (index)
+{
+	return this.defaultMaterial;
+};
+
+JSM.Materials.prototype.Count = function ()
+{
+	return this.materials.length;
+};
+
+JSM.Materials.prototype.Clone = function ()
+{
+	return new JSM.Material (this.ambient, this.diffuse, this.opacity, this.texture, this.textureWidth, this.textureHeight);
 };

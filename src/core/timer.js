@@ -4,22 +4,19 @@ JSM.Timer = function ()
 	this.stop = 0;
 };
 
-JSM.Timer.prototype =
+JSM.Timer.prototype.Start = function ()
 {
-	Start : function ()
-	{
-		var date = new Date ();
-		this.start = date.getTime ();
-	},
+	var date = new Date ();
+	this.start = date.getTime ();
+};
 
-	Stop : function ()
-	{
-		var date = new Date ();
-		this.end = date.getTime ();
-	},
-	
-	Result : function ()
-	{
-		return (this.end - this.start);
-	}
+JSM.Timer.prototype.Stop = function ()
+{
+	var date = new Date ();
+	this.end = date.getTime ();
+};
+
+JSM.Timer.prototype.Result = function ()
+{
+	return (this.end - this.start);
 };

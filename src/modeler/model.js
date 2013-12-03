@@ -3,41 +3,38 @@ JSM.Model = function ()
 	this.bodies = [];
 };
 
-JSM.Model.prototype =
+JSM.Model.prototype.AddBody = function (body)
 {
-	AddBody : function (body)
-	{
-		this.bodies.push (body);
-		return this.bodies.length - 1;
-	},
+	this.bodies.push (body);
+	return this.bodies.length - 1;
+};
 
-	GetBody : function (index)
-	{
-		return this.bodies[index];
-	},
-	
-	BodyCount : function ()
-	{
-		return this.bodies.length;
-	},
+JSM.Model.prototype.GetBody = function (index)
+{
+	return this.bodies[index];
+};
 
-	VertexCount : function ()
-	{
-		var count = 0;
-		var i;
-		for (i = 0; i < this.bodies.length; i++) {
-			count += this.bodies[i].VertexCount ();
-		}
-		return count;
-	},
+JSM.Model.prototype.BodyCount = function ()
+{
+	return this.bodies.length;
+};
 
-	PolygonCount : function ()
-	{
-		var count = 0;
-		var i;
-		for (i = 0; i < this.bodies.length; i++) {
-			count += this.bodies[i].PolygonCount ();
-		}
-		return count;
+JSM.Model.prototype.VertexCount = function ()
+{
+	var count = 0;
+	var i;
+	for (i = 0; i < this.bodies.length; i++) {
+		count += this.bodies[i].VertexCount ();
 	}
+	return count;
+};
+
+JSM.Model.prototype.PolygonCount = function ()
+{
+	var count = 0;
+	var i;
+	for (i = 0; i < this.bodies.length; i++) {
+		count += this.bodies[i].PolygonCount ();
+	}
+	return count;
 };
