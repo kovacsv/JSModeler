@@ -6,16 +6,17 @@ TicTacToe = function ()
 	this.winCount = null;
 	this.shapeSize = null;
 	this.table = null;
+	this.difficulty = null;
 };
 
 TicTacToe.prototype =
 {
-	Initialize : function ()
+	Initialize : function (size, difficulty)
 	{
-		this.xSize = 4;
-		this.ySize = 4;
-		this.zSize = 4;
-		this.winCount = 4;
+		this.xSize = size;
+		this.ySize = size;
+		this.zSize = size;
+		this.winCount = size;
 		this.shapeSize = 2;
 		
 		var i, j, k;
@@ -30,6 +31,13 @@ TicTacToe.prototype =
 				}
 			}
 		}
+		
+		this.difficulty = difficulty;
+	},
+	
+	GetDifficulty : function ()
+	{
+		return this.difficulty;
 	},
 	
 	IndexToDimensions : function (index)
@@ -142,12 +150,13 @@ TicTacToe.prototype =
 		count1 = counts1[0];
 		maxCount1 = counts1[1];
 		
-		var difficulty = 2;
-		if (difficulty == 1) {
+		if (this.difficulty == 0) {
+			// do nothing
+		} else if (this.difficulty == 1) {
 			if (maxCount1 == this.winCount - 1) {
 				count1 += 1000;
 			}
-		} else {
+		} else if (this.difficulty == 2) {
 			if (maxCount1 == this.winCount - 2) {
 				count1 += 500;
 			} if (maxCount1 == this.winCount - 1) {
@@ -295,7 +304,7 @@ TicTacToe.prototype =
 	{
 		var model = new JSM.Model ();
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0x000000, 0x000000, 0.08));
+		materials.AddMaterial (new JSM.Material (0x000000, 0x000000, 0.1));
 		
 		var offset = this.shapeSize * 1.5;
 
