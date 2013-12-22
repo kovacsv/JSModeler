@@ -556,10 +556,10 @@ AddTest ('GenerateSegmentedCuboidTest', function (test)
 
 AddTest ('GenerateSegmentedRectangleTest', function (test)
 {
-	var plane = JSM.GenerateSegmentedRectangle (1, 2, 1);
+	var plane = JSM.GenerateSegmentedRectangle (1, 2, 1, 1);
 	test.Assert (plane.VertexCount () == 4 && plane.PolygonCount () == 1);
 	
-	var plane = JSM.GenerateSegmentedRectangle (1, 2, 2);
+	var plane = JSM.GenerateSegmentedRectangle (1, 2, 2, 2);
 	test.Assert (plane.VertexCount () == 9 && plane.PolygonCount () == 4);
 	var polygonNormals = JSM.CalculateBodyPolygonNormals (plane);
 	test.Assert (polygonNormals.length == 4);
@@ -568,8 +568,11 @@ AddTest ('GenerateSegmentedRectangleTest', function (test)
 	test.Assert (JSM.CoordIsEqual (polygonNormals[2], new JSM.Vector (0, 0, 1)));
 	test.Assert (JSM.CoordIsEqual (polygonNormals[3], new JSM.Vector (0, 0, 1)));
 
-	var plane = JSM.GenerateSegmentedRectangle (1, 2, 3);
+	var plane = JSM.GenerateSegmentedRectangle (1, 2, 3, 3);
 	test.Assert (plane.VertexCount () == 16 && plane.PolygonCount () == 9);
+
+	var plane = JSM.GenerateSegmentedRectangle (1, 2, 6, 8);
+	test.Assert (plane.VertexCount () == 63 && plane.PolygonCount () == 48);
 });
 
 AddTest ('GenerateSphereTest', function (test)

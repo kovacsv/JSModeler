@@ -93,14 +93,14 @@ JSM.GenerateCuboidSides = function (xSize, ySize, zSize, sides)
 	return result;
 };
 
-JSM.GenerateSegmentedRectangle = function (xSize, ySize, segmentation)
+JSM.GenerateSegmentedRectangle = function (xSize, ySize, xSegmentation, ySegmentation)
 {
 	function AddVertices ()
 	{
 		var i, j, coord;
 
-		for (i = 0; i <= segmentation; i++) {	
-			for (j = 0; j <= segmentation; j++) {
+		for (i = 0; i <= ySegmentation; i++) {	
+			for (j = 0; j <= xSegmentation; j++) {
 				coord = new JSM.Coord (j * xSegment - xStart, i * ySegment - yStart, 0.0);
 				result.AddVertex (new JSM.BodyVertex (coord));
 			}
@@ -112,11 +112,11 @@ JSM.GenerateSegmentedRectangle = function (xSize, ySize, segmentation)
 		var i, j;
 		var current, next, top, ntop;
 		
-		for (i = 0; i < segmentation; i++) {
-			for (j = 0; j < segmentation; j++) {
-				current = i * (segmentation + 1) + j;
+		for (j = 0; j < ySegmentation; j++) {
+			for (i = 0; i < xSegmentation; i++) {
+				current = j * (xSegmentation + 1) + i;
 				next = current + 1;
-				top = current + segmentation + 1;
+				top = current + xSegmentation + 1;
 				ntop = top + 1;
 				result.AddPolygon (new JSM.BodyPolygon ([current, next, ntop, top]));
 			}
@@ -127,11 +127,11 @@ JSM.GenerateSegmentedRectangle = function (xSize, ySize, segmentation)
 	
 	var xStart = xSize / 2.0;
 	var yStart = ySize / 2.0;
-	var xSegment = xSize / segmentation;
-	var ySegment = ySize / segmentation;
+	var xSegment = xSize / xSegmentation;
+	var ySegment = ySize / ySegmentation;
 	
-	AddVertices (0);
-	AddPolygons (0);
+	AddVertices ();
+	AddPolygons ();
 
 	return result;
 };
