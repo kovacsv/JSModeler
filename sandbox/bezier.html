@@ -92,6 +92,21 @@
 			}			
 		};
 
+		JSM.SurfaceControlPoints.prototype.GetNValue = function ()
+		{
+			return this.n;
+		};
+
+		JSM.SurfaceControlPoints.prototype.GetMValue = function ()
+		{
+			return this.m;
+		};
+
+		JSM.SurfaceControlPoints.prototype.GetControlPoint = function (i, j)
+		{
+			return this.points[i][j];
+		};
+
 		JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmentation, ySegmentation, getPointCallback)
 		{
 			function AddVertices ()
@@ -136,7 +151,7 @@
 
 		JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegmentation)
 		{
-			function GetBezierSurfacePoint (scp, u, v)
+			function GetBezierSurfacePoint (surfaceControlPoints, u, v)
 			{
 				function BernsteinPolynomial (i, n, u)
 				{
@@ -157,12 +172,15 @@
 				}
 				
 				var i, j, result, tmp1, tmp2, scalar;
+				var n = surfaceControlPoints.GetNValue ();
+				var m = surfaceControlPoints.GetMValue ();
+				
 				result = new JSM.Coord (0.0, 0.0, 0.0);
-				for (i = 0; i <= scp.n; i++) {
+				for (i = 0; i <= n; i++) {
 					tmp1 = new JSM.Coord (0.0, 0.0, 0.0)
-					for (j = 0; j <= scp.m; j++) {
-						scalar = BernsteinPolynomial (i, scp.n, u) * BernsteinPolynomial (j, scp.m, v);
-						tmp2 = JSM.VectorMultiply (scp.points[i][j], scalar);
+					for (j = 0; j <= m; j++) {
+						scalar = BernsteinPolynomial (i, n, u) * BernsteinPolynomial (j, m, v);
+						tmp2 = JSM.VectorMultiply (surfaceControlPoints.GetControlPoint (i, j), scalar);
 						tmp1 = JSM.CoordAdd (tmp1, tmp2);
 					}
 					result = JSM.CoordAdd (result, tmp1);
