@@ -1,0 +1,223 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<script type="text/javascript" src="../build/three.min.js"></script>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../src/core/timer.js"></script>
+	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../src/modeler/solidgenerator.js"></script>
+	<script type="text/javascript" src="../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../src/viewer/converter.js"></script>
+	<script type="text/javascript" src="../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/softwareviewer.js"></script>
+<!-- JSModeler includes end -->
+	<title>Example</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+		
+		JSM.SurfaceControlPoints = function (n, m)
+		{
+			this.n = n;
+			this.m = m;
+			this.points = [];
+			
+			var i, j;
+			for (i = 0; i <= this.n; i++) {
+				this.points.push ([]);
+				for (j = 0; j <= this.m; j++) {
+					this.points[i].push (new JSM.Coord (0.0, 0.0, 0.0));
+				}
+			}
+		};
+		
+		JSM.SurfaceControlPoints.prototype.InitPlanar = function ()
+		{
+			var iStep = 1.0 / this.n;
+			var jStep = 1.0 / this.m;
+		
+			var i, j, point;
+			for (i = 0; i <= this.n; i++) {
+				for (j = 0; j <= this.m; j++) {
+					point = this.points[i][j];
+					point.x = i * iStep;
+					point.y = j * jStep;
+				}
+			}			
+		};
+
+		JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmentation, ySegmentation, getPointCallback)
+		{
+			function AddVertices ()
+			{
+				var i, j, u, v, coord;
+				for (i = 0; i <= ySegmentation; i++) {	
+					for (j = 0; j <= xSegmentation; j++) {
+						u = j * xSegment;
+						v = i * ySegment;
+						coord = getPointCallback (surfaceControlPoints, u, v);
+						result.AddVertex (new JSM.BodyVertex (coord));
+					}
+				}
+			}
+
+			function AddPolygons ()
+			{
+				var i, j;
+				var current, next, top, ntop;
+				
+				for (j = 0; j < ySegmentation; j++) {
+					for (i = 0; i < xSegmentation; i++) {
+						current = j * (xSegmentation + 1) + i;
+						next = current + 1;
+						top = current + xSegmentation + 1;
+						ntop = top + 1;
+						result.AddPolygon (new JSM.BodyPolygon ([current, next, ntop, top]));
+					}
+				}
+			}
+
+			var result = new JSM.Body ();
+			
+			var xSegment = 1.0 / xSegmentation;
+			var ySegment = 1.0 / ySegmentation;
+			
+			AddVertices ();
+			AddPolygons ();
+
+			return result;
+		};
+
+		JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegmentation)
+		{
+			function GetBezierSurfacePoint (scp, u, v)
+			{
+				function BernsteinPolynomial (i, n, u)
+				{
+					function BinomialCoefficient (n, k)
+					{
+						var result = 1.0;
+						var min = JSM.Minimum (k, n - k);
+						var i;
+						for (i = 0; i < min; i++) {
+							result = result * (n - i);
+							result = result / (i + 1);
+						}
+						return result;
+					}
+
+					var bc = BinomialCoefficient (n, i)
+					return bc * Math.pow (u, i) * Math.pow (1.0 - u, n - i);
+				}
+				
+				var i, j, result, tmp1, tmp2, scalar;
+				result = new JSM.Coord (0.0, 0.0, 0.0);
+				for (i = 0; i <= scp.n; i++) {
+					tmp1 = new JSM.Coord (0.0, 0.0, 0.0)
+					for (j = 0; j <= scp.m; j++) {
+						scalar = BernsteinPolynomial (i, scp.n, u) * BernsteinPolynomial (j, scp.m, v);
+						tmp2 = JSM.VectorMultiply (scp.points[i][j], scalar);
+						tmp1 = JSM.CoordAdd (tmp1, tmp2);
+					}
+					result = JSM.CoordAdd (result, tmp1);
+				}
+				return result;
+			};
+
+			var body = JSM.GenerateSurfaceFromControlPoints (surfaceControlPoints, xSegmentation, ySegmentation, GetBezierSurfacePoint);
+			return body;
+		};
+		
+		function Load ()
+		{
+			var TextureLoaded = function () {
+				viewer.Draw ();
+			};
+
+			var viewerSettings = {
+				cameraEyePosition : [-2.0, -1.5, 1.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
+
+			viewer = new JSM.Viewer ();
+			viewer.Start ('example', viewerSettings);
+			
+			var scp = new JSM.SurfaceControlPoints (4, 4);
+			scp.InitPlanar ();
+			
+			scp.points[1][1].z = 1.0;
+			scp.points[1][2].z = -1.5;
+			scp.points[1][3].z = 1.5;
+
+			var body = JSM.GenerateBezierSurface (scp, 10, 10);
+			var materials = new JSM.Materials ();
+			JSM.GenerateRandomMaterials (body, materials, true);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			for (var i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}
+
+			viewer.FitInWindow ();
+			viewer.Draw ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<canvas id="example" width="800" height="500"></canvas>
+</body>
+
+</html>
