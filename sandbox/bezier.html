@@ -79,7 +79,7 @@
 			viewer.Start ('example', viewerSettings);
 			
 			var scp = new JSM.SurfaceControlPoints (4, 4);
-			scp.InitPlanar ();
+			scp.InitPlanar (1, 1);
 			
 			scp.points[1][1].z = 1.0;
 			scp.points[1][2].z = -1.5;

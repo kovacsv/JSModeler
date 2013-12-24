@@ -13,10 +13,10 @@ JSM.SurfaceControlPoints = function (n, m)
 	}
 };
 
-JSM.SurfaceControlPoints.prototype.InitPlanar = function ()
+JSM.SurfaceControlPoints.prototype.InitPlanar = function (xSize, ySize)
 {
-	var iStep = 1.0 / this.n;
-	var jStep = 1.0 / this.m;
+	var iStep = xSize / this.n;
+	var jStep = ySize / this.m;
 
 	var i, j, point;
 	for (i = 0; i <= this.n; i++) {
