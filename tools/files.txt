@@ -36,6 +36,7 @@
 ../src/extras/subdivision.js
 ../src/extras/svgtomodel.js
 ../src/extras/csg.js
+../src/extras/surfaces.js
 ../src/viewer/mouse.js
 ../src/viewer/touch.js
 ../src/viewer/converter.js
