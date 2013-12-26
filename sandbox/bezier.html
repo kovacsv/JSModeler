@@ -84,7 +84,33 @@
 				mesh.position.z = point.z;
 				mesh.controlPointIndices = [i, j];
 				viewer.AddMesh (mesh);
-			}		
+			}
+
+		/*
+			var n = scp.GetNValue ();
+			var m = scp.GetMValue ();		
+		
+			var geometry = new THREE.Geometry ();
+			var i, j, point, vertex;
+			for (i = 0; i <= n; i++) {
+				for (j = 0; j <= m; j++) {
+					point = scp.GetControlPoint (i, j);
+					vertex = new THREE.Vector3 ();
+					vertex.x = point.x;
+					vertex.y = point.y;
+					vertex.z = point.z;
+					geometry.vertices.push (vertex);
+				}
+			}
+
+			var material = new THREE.ParticleBasicMaterial ({
+				size: 0.1,
+				color : 0xcc0000,
+				depthTest: false
+			});
+			var particle = new THREE.ParticleSystem (geometry, material);
+			viewer.scene.add (particle);		
+		*/
 		}
 		
 		function AddBezierSurfaceModel (scp)
@@ -196,8 +222,8 @@
 			scp.points[2][2].z = 0.2;
 
 			AddSurfaceControlPointsModel (scp);
-			AddBezierSurfaceModel (scp);
-
+			AddBezierSurfaceModel (scp);		
+					
 			viewer.FitInWindow ();
 			viewer.Draw ();
 		}

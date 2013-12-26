@@ -40,7 +40,7 @@ JSM.SurfaceControlPoints.prototype.InitPlanar = function (xSize, ySize)
 			point.x = i * iStep;
 			point.y = j * jStep;
 		}
-	}			
+	}
 };
 
 JSM.SurfaceControlPoints.prototype.GenerateModel = function (size, transform)
