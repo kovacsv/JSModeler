@@ -43,15 +43,17 @@ JSM.SurfaceControlPoints.prototype.InitPlanar = function (xSize, ySize)
 	}			
 };
 
-JSM.SurfaceControlPoints.prototype.GenerateModel = function (size)
+JSM.SurfaceControlPoints.prototype.GenerateModel = function (size, transform)
 {
 	var result = new JSM.Model ();
 	var i, j, point, body;
 	for (i = 0; i <= this.n; i++) {
 		for (j = 0; j <= this.m; j++) {
 			point = this.points[i][j];
-			body = JSM.GenerateCuboid (size, size, size);
-			body.Transform (JSM.TranslationTransformation (point));
+			body = JSM.GenerateSphere (size, 10, true);
+			if (transform) {
+				body.Transform (JSM.TranslationTransformation (point));
+			}
 			result.AddBody (body);
 		}
 	}
