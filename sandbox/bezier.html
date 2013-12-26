@@ -63,6 +63,26 @@
 	<script type="text/javascript">
 		var viewer = null;
 		
+		function AddSurfaceControlPointsModel (scp)
+		{
+			var scpModel = scp.GenerateModel (0.03);
+			var meshes = JSM.ConvertModelToThreeMeshes (scpModel);
+			for (var i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}		
+		}
+		
+		function AddBezierSurfaceModel (scp)
+		{
+			var body = JSM.GenerateBezierSurface (scp, 10, 10, false);
+			var materials = new JSM.Materials ();
+			JSM.GenerateRandomMaterials (body, materials, true);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			for (var i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}
+		}
+		
 		function Load ()
 		{
 			var TextureLoaded = function () {
@@ -78,20 +98,17 @@
 			viewer = new JSM.Viewer ();
 			viewer.Start ('example', viewerSettings);
 			
-			var scp = new JSM.SurfaceControlPoints (4, 4);
+			var scp = new JSM.SurfaceControlPoints (3, 3);
 			scp.InitPlanar (1, 1);
 			
-			scp.points[1][1].z = 1.0;
-			scp.points[1][2].z = -1.5;
-			scp.points[1][3].z = 1.5;
+			scp.points[0][3].z = 0.2;
+			scp.points[1][1].z = 0.2;
+			scp.points[1][2].z = 0.2;
+			scp.points[2][1].z = 0.2;
+			scp.points[2][2].z = 0.2;
 
-			var body = JSM.GenerateBezierSurface (scp, 10, 10);
-			var materials = new JSM.Materials ();
-			JSM.GenerateRandomMaterials (body, materials, true);
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}
+			AddSurfaceControlPointsModel (scp);
+			AddBezierSurfaceModel (scp);
 
 			viewer.FitInWindow ();
 			viewer.Draw ();

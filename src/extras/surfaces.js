@@ -13,21 +13,6 @@ JSM.SurfaceControlPoints = function (n, m)
 	}
 };
 
-JSM.SurfaceControlPoints.prototype.InitPlanar = function (xSize, ySize)
-{
-	var iStep = xSize / this.n;
-	var jStep = ySize / this.m;
-
-	var i, j, point;
-	for (i = 0; i <= this.n; i++) {
-		for (j = 0; j <= this.m; j++) {
-			point = this.points[i][j];
-			point.x = i * iStep;
-			point.y = j * jStep;
-		}
-	}			
-};
-
 JSM.SurfaceControlPoints.prototype.GetNValue = function ()
 {
 	return this.n;
@@ -43,7 +28,37 @@ JSM.SurfaceControlPoints.prototype.GetControlPoint = function (i, j)
 	return this.points[i][j];
 };
 
-JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmentation, ySegmentation, getPointCallback)
+JSM.SurfaceControlPoints.prototype.InitPlanar = function (xSize, ySize)
+{
+	var iStep = xSize / this.n;
+	var jStep = ySize / this.m;
+
+	var i, j, point;
+	for (i = 0; i <= this.n; i++) {
+		for (j = 0; j <= this.m; j++) {
+			point = this.points[i][j];
+			point.x = i * iStep;
+			point.y = j * jStep;
+		}
+	}			
+};
+
+JSM.SurfaceControlPoints.prototype.GenerateModel = function (size)
+{
+	var result = new JSM.Model ();
+	var i, j, point, body;
+	for (i = 0; i <= this.n; i++) {
+		for (j = 0; j <= this.m; j++) {
+			point = this.points[i][j];
+			body = JSM.GenerateCuboid (size, size, size);
+			body.Transform (JSM.TranslationTransformation (point));
+			result.AddBody (body);
+		}
+	}
+	return result;
+};
+
+JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmentation, ySegmentation, isCurved, getPointCallback)
 {
 	function AddVertices ()
 	{
@@ -62,6 +77,7 @@ JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmenta
 	{
 		var i, j;
 		var current, next, top, ntop;
+		var polygon;
 		
 		for (j = 0; j < ySegmentation; j++) {
 			for (i = 0; i < xSegmentation; i++) {
@@ -69,7 +85,12 @@ JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmenta
 				next = current + 1;
 				top = current + xSegmentation + 1;
 				ntop = top + 1;
-				result.AddPolygon (new JSM.BodyPolygon ([current, next, ntop, top]));
+				
+				polygon = new JSM.BodyPolygon ([current, next, ntop, top]);
+				if (isCurved) {
+					polygon.SetCurveGroup (0);
+				}				
+				result.AddPolygon (polygon);
 			}
 		}
 	}
@@ -85,7 +106,7 @@ JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmenta
 	return result;
 };
 
-JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegmentation)
+JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegmentation, isCurved)
 {
 	function GetBezierSurfacePoint (surfaceControlPoints, u, v)
 	{
@@ -124,6 +145,6 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 		return result;
 	}
 
-	var body = JSM.GenerateSurfaceFromControlPoints (surfaceControlPoints, xSegmentation, ySegmentation, GetBezierSurfacePoint);
+	var body = JSM.GenerateSurfaceFromControlPoints (surfaceControlPoints, xSegmentation, ySegmentation, isCurved, GetBezierSurfacePoint);
 	return body;
 };
