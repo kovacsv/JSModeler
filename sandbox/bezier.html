@@ -133,7 +133,7 @@
 			
 			mouseData = {
 				foundObject : foundObject,
-				originalObjectPos : foundObject.position,
+				originalObjectPos : foundObject.position.clone (),
 				originalMousePos : [viewer.mouse.currX, viewer.mouse.currY]
 			};
 			viewer.settings.cameraDisableOrbit = true;
@@ -163,7 +163,7 @@
 			}
 			
 			var currentPos = [viewer.mouse.currX, viewer.mouse.currY];
-			var ratio = 0.0001;
+			var ratio = 0.005;
 			var diff = (currentPos[1] - mouseData.originalMousePos[1]) * ratio;
 			mouseData.foundObject.position.z = mouseData.originalObjectPos.z - diff;
 		}
