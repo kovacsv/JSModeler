@@ -63,11 +63,33 @@
 	<script type="text/javascript">
 		var viewer = null;
 		var scp = null;
+		var controlPointGeometry = null;
 		var mouseData = null;
 		
 		function AddSurfaceControlPointsModel (scp)
 		{
-			var scpModel = scp.GenerateModel (0.02, false);
+		/*
+			function GenerateModel (scp, size, transform)
+			{
+				var result = new JSM.Model ();
+				var n = scp.GetNValue ();
+				var m = scp.GetMValue ();
+
+				var i, j, point, body;
+				for (i = 0; i <= n; i++) {
+					for (j = 0; j <= m; j++) {
+						point = scp.GetControlPoint (i, j);
+						body = JSM.GenerateSphere (size, 10, true);
+						if (transform) {
+							body.Transform (JSM.TranslationTransformation (point));
+						}
+						result.AddBody (body);
+					}
+				}
+				return result;
+			};		
+		
+			var scpModel = GenerateModel (scp, 0.02, false);
 			var meshes = JSM.ConvertModelToThreeMeshes (scpModel);
 			
 			var n = scp.GetNValue ();
@@ -85,12 +107,12 @@
 				mesh.controlPointIndices = [i, j];
 				viewer.AddMesh (mesh);
 			}
-
-		/*
+		*/
+		
 			var n = scp.GetNValue ();
 			var m = scp.GetMValue ();		
 		
-			var geometry = new THREE.Geometry ();
+			controlPointGeometry = new THREE.Geometry ();
 			var i, j, point, vertex;
 			for (i = 0; i <= n; i++) {
 				for (j = 0; j <= m; j++) {
@@ -99,7 +121,7 @@
 					vertex.x = point.x;
 					vertex.y = point.y;
 					vertex.z = point.z;
-					geometry.vertices.push (vertex);
+					controlPointGeometry.vertices.push (vertex);
 				}
 			}
 
@@ -108,9 +130,8 @@
 				color : 0xcc0000,
 				depthTest: false
 			});
-			var particle = new THREE.ParticleSystem (geometry, material);
-			viewer.scene.add (particle);		
-		*/
+			var particle = new THREE.ParticleSystem (controlPointGeometry, material);
+			viewer.scene.add (particle);
 		}
 		
 		function AddBezierSurfaceModel (scp)
@@ -141,25 +162,33 @@
 		
 		function OnMouseDown (event)
 		{
-			var foundObject = null;
-			var objects = viewer.GetObjectsUnderMouse ();
-			var i;
-			for (i = 0; i < objects.length; i++) {
-				if (objects[i].object instanceof THREE.Mesh) {
-					if (objects[i].object.controlPointIndices !== undefined) {
-						foundObject = objects[i].object;
+			var foundIndices = null;
+			var n = scp.GetNValue ();
+			var m = scp.GetMValue ();		
+		
+			var i, j, point, projected;
+			for (i = 0; i <= n; i++) {
+				for (j = 0; j <= m; j++) {
+					point = scp.GetControlPoint (i, j);
+					projected = viewer.ProjectVector (point.x, point.y, point.z);
+					if (Math.abs (projected.x - viewer.mouse.currX) < 10 &&
+						Math.abs (projected.y - viewer.mouse.currY) < 10)
+					{
+						foundIndices = [i, j];
 						break;
 					}
 				}
 			}
-			
-			if (foundObject === null) {
+
+			if (foundIndices === null) {
 				return;
 			}
 			
+			var foundVertexIndex = foundIndices[0] * (m + 1) + foundIndices[1];
 			mouseData = {
-				foundObject : foundObject,
-				originalObjectPos : foundObject.position.clone (),
+				foundIndices : foundIndices,
+				foundVertexIndex : foundVertexIndex,
+				originalVertexPos : controlPointGeometry.vertices[foundVertexIndex].clone (),
 				originalMousePos : [viewer.mouse.currX, viewer.mouse.currY]
 			};
 			viewer.settings.cameraDisableOrbit = true;
@@ -170,12 +199,13 @@
 			if (mouseData === null) {
 				return;
 			}
-			
-			var indices = mouseData.foundObject.controlPointIndices;
+
+			var indices = mouseData.foundIndices;
 			var point = scp.GetControlPoint (indices[0], indices[1]);
-			point.x = mouseData.foundObject.position.x;
-			point.y = mouseData.foundObject.position.y;
-			point.z = mouseData.foundObject.position.z;
+			var foundVertex = controlPointGeometry.vertices[mouseData.foundVertexIndex];
+			point.x = foundVertex.x;
+			point.y = foundVertex.y;
+			point.z = foundVertex.z;
 			AddBezierSurfaceModel (scp);
 
 			mouseData = null;
@@ -191,7 +221,9 @@
 			var currentPos = [viewer.mouse.currX, viewer.mouse.currY];
 			var ratio = 0.005;
 			var diff = (currentPos[1] - mouseData.originalMousePos[1]) * ratio;
-			mouseData.foundObject.position.z = mouseData.originalObjectPos.z - diff;
+			var foundVertex = controlPointGeometry.vertices[mouseData.foundVertexIndex];
+			foundVertex.z = mouseData.originalVertexPos.z - diff;
+			controlPointGeometry.verticesNeedUpdate = true;
 		}
 		
 		function Load ()

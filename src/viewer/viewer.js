@@ -449,6 +449,21 @@ JSM.Viewer.prototype.GetObjectsUnderTouch = function ()
 	return this.GetObjectsUnderPosition (this.touch.currX, this.touch.currY);
 };
 
+JSM.Viewer.prototype.ProjectVector = function (x, y, z)
+{
+	var width = this.canvas.width;
+	var height = this.canvas.height;
+	var halfWidth = width / 2;
+	var halfHeight = height / 2;
+
+	var projector = new THREE.Projector ();
+	var vector = new THREE.Vector3 (x, y, z);
+	projector.projectVector (vector, this.camera);
+	vector.x = (vector.x * halfWidth) + halfWidth;
+	vector.y = -(vector.y * halfHeight) + halfHeight;
+	return vector;
+};
+
 JSM.Viewer.prototype.Draw = function ()
 {
 	this.camera.position = new THREE.Vector3 (this.cameraMove.eye.x, this.cameraMove.eye.y, this.cameraMove.eye.z);
