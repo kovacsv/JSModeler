@@ -67,6 +67,12 @@
 		var controlPointScene = null;
 		var mouseData = null;
 		
+		function GetVertexIndex (scp, i, j)
+		{
+			var m = scp.GetMValue ();
+			return foundVertexIndex = i * (m + 1) + j;
+		}
+		
 		function RemoveEverythingFromScene (scene)
 		{
 			var current;
@@ -85,14 +91,30 @@
 		
 		function AddSurfaceControlPointsModel (scp)
 		{
-			function AddLine (scp, fromI, fromJ, toI, toJ)
+			function AddLine (scp, fromI, fromJ, toI, toJ, origGeometry)
 			{
+				function LinkOrigVertex (scp, geometry, origGeometry, vertex, i, j)
+				{
+					var fromVertex = origGeometry.vertices[GetVertexIndex (scp, i, j)];
+					if (fromVertex.lineGeometries === undefined || fromVertex.lineVertices === undefined) {
+						fromVertex.lineGeometries = [];
+						fromVertex.lineVertices = [];
+					}
+					fromVertex.lineGeometries.push (geometry);
+					fromVertex.lineVertices.push (vertex);			
+				}
+				
 				var fromPoint = scp.GetControlPoint (fromI, fromJ);
 				var toPoint = scp.GetControlPoint (toI, toJ);
 
 				var geometry = new THREE.Geometry ();
-				geometry.vertices.push (new THREE.Vector3 (fromPoint.x, fromPoint.y, fromPoint.z));
-				geometry.vertices.push (new THREE.Vector3 (toPoint.x, toPoint.y, toPoint.z));
+				var fromVertex = new THREE.Vector3 (fromPoint.x, fromPoint.y, fromPoint.z);
+				var toVertex = new THREE.Vector3 (toPoint.x, toPoint.y, toPoint.z);
+				geometry.vertices.push (fromVertex);
+				geometry.vertices.push (toVertex);
+				
+				LinkOrigVertex (scp, geometry, origGeometry, fromVertex, fromI, fromJ);
+				LinkOrigVertex (scp, geometry, origGeometry, toVertex, toI, toJ);
 				
 				var material = new THREE.LineBasicMaterial ({
 					color: 0xcc0000
@@ -115,11 +137,16 @@
 					vertex.y = point.y;
 					vertex.z = point.z;
 					controlPointGeometry.vertices.push (vertex);
+				}
+			}
+
+			for (i = 0; i <= n; i++) {
+				for (j = 0; j <= m; j++) {
 					if (i < n) {
-						AddLine (scp, i, j, i + 1, j);
+						AddLine (scp, i, j, i + 1, j, controlPointGeometry);
 					}
 					if (j < m) {
-						AddLine (scp, i, j, i, j + 1);
+						AddLine (scp, i, j, i, j + 1, controlPointGeometry);
 					}
 				}
 			}
@@ -170,11 +197,12 @@
 				return;
 			}
 			
-			var foundVertexIndex = foundIndices[0] * (m + 1) + foundIndices[1];
+			var foundVertexIndex = GetVertexIndex (scp, foundIndices[0], foundIndices[1]);
+			var foundVertex = controlPointGeometry.vertices[foundVertexIndex];
 			mouseData = {
 				foundIndices : foundIndices,
 				foundVertexIndex : foundVertexIndex,
-				originalVertexPos : controlPointGeometry.vertices[foundVertexIndex].clone (),
+				originalVertexPos : foundVertex.clone (),
 				originalMousePos : [viewer.mouse.currX, viewer.mouse.currY]
 			};
 			viewer.settings.cameraDisableOrbit = true;
@@ -194,8 +222,6 @@
 			point.z = foundVertex.z;
 			
 			RemoveEverythingFromScene (viewer.scene);
-			RemoveEverythingFromScene (controlPointScene);
-			AddSurfaceControlPointsModel (scp);
 			AddBezierSurfaceModel (scp);
 
 			mouseData = null;
@@ -212,8 +238,16 @@
 			var ratio = 0.005;
 			var diff = (currentPos[1] - mouseData.originalMousePos[1]) * ratio;
 			var foundVertex = controlPointGeometry.vertices[mouseData.foundVertexIndex];
+
 			foundVertex.z = mouseData.originalVertexPos.z - diff;
 			controlPointGeometry.verticesNeedUpdate = true;
+
+			var i;
+			for (i = 0; i < foundVertex.lineGeometries.length; i++) {
+				foundVertex.lineVertices[i].z = foundVertex.z;
+				foundVertex.lineGeometries[i].verticesNeedUpdate = true;
+			}
+
 		}
 		
 		function RunBeforeRender ()
