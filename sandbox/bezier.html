@@ -68,47 +68,6 @@
 		
 		function AddSurfaceControlPointsModel (scp)
 		{
-		/*
-			function GenerateModel (scp, size, transform)
-			{
-				var result = new JSM.Model ();
-				var n = scp.GetNValue ();
-				var m = scp.GetMValue ();
-
-				var i, j, point, body;
-				for (i = 0; i <= n; i++) {
-					for (j = 0; j <= m; j++) {
-						point = scp.GetControlPoint (i, j);
-						body = JSM.GenerateSphere (size, 10, true);
-						if (transform) {
-							body.Transform (JSM.TranslationTransformation (point));
-						}
-						result.AddBody (body);
-					}
-				}
-				return result;
-			};		
-		
-			var scpModel = GenerateModel (scp, 0.02, false);
-			var meshes = JSM.ConvertModelToThreeMeshes (scpModel);
-			
-			var n = scp.GetNValue ();
-			var m = scp.GetMValue ();
-			
-			var i, j, k, mesh, point;
-			for (k = 0; k < meshes.length; k++) {
-				mesh = meshes[k];
-				i = parseInt (k / (m + 1));
-				j = parseInt (k % (m + 1));
-				point = scp.GetControlPoint (i, j);
-				mesh.position.x = point.x;
-				mesh.position.y = point.y;
-				mesh.position.z = point.z;
-				mesh.controlPointIndices = [i, j];
-				viewer.AddMesh (mesh);
-			}
-		*/
-		
 			var n = scp.GetNValue ();
 			var m = scp.GetMValue ();		
 		
@@ -150,7 +109,7 @@
 			}
 		
 			RemoveNonControlPointMeshes ();
-			var body = JSM.GenerateBezierSurface (scp, 10, 10, false);
+			var body = JSM.GenerateBezierSurface (scp, 20, 20, false);
 			var materials = new JSM.Materials ();
 			JSM.GenerateRandomMaterials (body, materials, true);
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
