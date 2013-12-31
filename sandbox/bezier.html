@@ -66,8 +66,41 @@
 		var controlPointGeometry = null;
 		var mouseData = null;
 		
+		function RemoveEverythingFromModel ()
+		{
+			var current;
+			var i;
+			for (i = 0; i < viewer.scene.children.length; i++) {
+				current = viewer.scene.children[i];
+				if (current instanceof THREE.Mesh ||
+					current instanceof THREE.Line ||
+					current instanceof THREE.ParticleSystem)
+				{
+					viewer.scene.remove (current);
+					i--;
+				}
+			}
+		}
+		
 		function AddSurfaceControlPointsModel (scp)
 		{
+			function AddLine (scp, fromI, fromJ, toI, toJ)
+			{
+				var fromPoint = scp.GetControlPoint (fromI, fromJ);
+				var toPoint = scp.GetControlPoint (toI, toJ);
+
+				var geometry = new THREE.Geometry ();
+				geometry.vertices.push (new THREE.Vector3 (fromPoint.x, fromPoint.y, fromPoint.z));
+				geometry.vertices.push (new THREE.Vector3 (toPoint.x, toPoint.y, toPoint.z));
+				
+				var material = new THREE.LineBasicMaterial ({
+					color: 0xcc0000
+				});
+				
+				var line = new THREE.Line (geometry, material);
+				viewer.scene.add (line);
+			}
+			
 			var n = scp.GetNValue ();
 			var m = scp.GetMValue ();		
 		
@@ -81,6 +114,12 @@
 					vertex.y = point.y;
 					vertex.z = point.z;
 					controlPointGeometry.vertices.push (vertex);
+					if (i < n) {
+						AddLine (scp, i, j, i + 1, j);
+					}
+					if (j < m) {
+						AddLine (scp, i, j, i, j + 1);
+					}
 				}
 			}
 
@@ -89,29 +128,16 @@
 				color : 0xcc0000,
 				depthTest: false
 			});
+			
 			var particle = new THREE.ParticleSystem (controlPointGeometry, material);
 			viewer.scene.add (particle);
 		}
 		
 		function AddBezierSurfaceModel (scp)
 		{
-			function RemoveNonControlPointMeshes ()
-			{
-				var current;
-				var i;
-				for (i = 0; i < viewer.scene.children.length; i++) {
-					current = viewer.scene.children[i];
-					if (current instanceof THREE.Mesh && current.controlPointIndices === undefined) {
-						viewer.scene.remove (current);
-						i--;
-					}
-				}
-			}
-		
-			RemoveNonControlPointMeshes ();
 			var body = JSM.GenerateBezierSurface (scp, 20, 20, false);
 			var materials = new JSM.Materials ();
-			JSM.GenerateRandomMaterials (body, materials, true);
+			//JSM.GenerateRandomMaterials (body, materials, true);
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
 			var i;
 			for (i = 0; i < meshes.length; i++) {
@@ -165,6 +191,9 @@
 			point.x = foundVertex.x;
 			point.y = foundVertex.y;
 			point.z = foundVertex.z;
+			
+			RemoveEverythingFromModel ();
+			AddSurfaceControlPointsModel (scp);
 			AddBezierSurfaceModel (scp);
 
 			mouseData = null;
