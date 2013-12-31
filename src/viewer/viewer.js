@@ -7,6 +7,8 @@ JSM.Viewer = function ()
 	this.renderer = null;
 	this.ambientLight = null;
 	this.directionalLight = null;
+	this.runBeforeRender = null;
+	this.runAfterRender = null;
 
 	this.cameraMove = null;
 	this.mouse = null;
@@ -193,6 +195,16 @@ JSM.Viewer.prototype.InitEvents = function ()
 	}
 	
 	return true;
+};
+
+JSM.Viewer.prototype.SetRunBeforeRender = function (runBeforeRender)
+{
+	this.runBeforeRender = runBeforeRender;
+};
+
+JSM.Viewer.prototype.SetRunAfterRender = function (runAfterRender)
+{
+	this.runAfterRender = runAfterRender;
 };
 
 JSM.Viewer.prototype.AddMesh = function (mesh)
@@ -466,11 +478,18 @@ JSM.Viewer.prototype.ProjectVector = function (x, y, z)
 
 JSM.Viewer.prototype.Draw = function ()
 {
+	if (this.runBeforeRender !== null) {
+		this.runBeforeRender ();
+	}
+	
 	this.camera.position = new THREE.Vector3 (this.cameraMove.eye.x, this.cameraMove.eye.y, this.cameraMove.eye.z);
 	this.camera.up = new THREE.Vector3 (this.cameraMove.up.x, this.cameraMove.up.y, this.cameraMove.up.z);
 	this.camera.lookAt (new THREE.Vector3 (this.cameraMove.center.x, this.cameraMove.center.y, this.cameraMove.center.z));
 	this.renderer.render (this.scene, this.camera);
-	return true;
+	
+	if (this.runAfterRender !== null) {
+		this.runAfterRender ();
+	}
 };
 
 JSM.Viewer.prototype.DrawIfNeeded = function ()

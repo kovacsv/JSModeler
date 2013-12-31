@@ -64,19 +64,20 @@
 		var viewer = null;
 		var scp = null;
 		var controlPointGeometry = null;
+		var controlPointScene = null;
 		var mouseData = null;
 		
-		function RemoveEverythingFromModel ()
+		function RemoveEverythingFromScene (scene)
 		{
 			var current;
 			var i;
-			for (i = 0; i < viewer.scene.children.length; i++) {
-				current = viewer.scene.children[i];
+			for (i = 0; i < scene.children.length; i++) {
+				current = scene.children[i];
 				if (current instanceof THREE.Mesh ||
 					current instanceof THREE.Line ||
 					current instanceof THREE.ParticleSystem)
 				{
-					viewer.scene.remove (current);
+					scene.remove (current);
 					i--;
 				}
 			}
@@ -98,12 +99,12 @@
 				});
 				
 				var line = new THREE.Line (geometry, material);
-				viewer.scene.add (line);
+				controlPointScene.add (line);
 			}
 			
 			var n = scp.GetNValue ();
 			var m = scp.GetMValue ();		
-		
+			
 			controlPointGeometry = new THREE.Geometry ();
 			var i, j, point, vertex;
 			for (i = 0; i <= n; i++) {
@@ -130,7 +131,7 @@
 			});
 			
 			var particle = new THREE.ParticleSystem (controlPointGeometry, material);
-			viewer.scene.add (particle);
+			controlPointScene.add (particle);
 		}
 		
 		function AddBezierSurfaceModel (scp)
@@ -192,7 +193,8 @@
 			point.y = foundVertex.y;
 			point.z = foundVertex.z;
 			
-			RemoveEverythingFromModel ();
+			RemoveEverythingFromScene (viewer.scene);
+			RemoveEverythingFromScene (controlPointScene);
 			AddSurfaceControlPointsModel (scp);
 			AddBezierSurfaceModel (scp);
 
@@ -214,6 +216,17 @@
 			controlPointGeometry.verticesNeedUpdate = true;
 		}
 		
+		function RunBeforeRender ()
+		{
+			viewer.renderer.clear ();
+		}
+
+		function RunAfterRender ()
+		{
+			viewer.renderer.clear (false, true, false);
+			viewer.renderer.render (controlPointScene, viewer.camera);
+		}
+		
 		function Load ()
 		{
 			var TextureLoaded = function () {
@@ -232,6 +245,11 @@
 			document.addEventListener ('mousemove', OnMouseMove, false);
 			document.addEventListener ('mouseup', OnMouseUp);
 			viewer.canvas.addEventListener ('mousedown', OnMouseDown);
+
+			controlPointScene = new THREE.Scene();
+			viewer.SetRunAfterRender (RunAfterRender);
+			viewer.SetRunBeforeRender (RunBeforeRender);
+			viewer.renderer.autoClear = false;
 			
 			scp = new JSM.SurfaceControlPoints (3, 3);
 			scp.InitPlanar (1, 1);
