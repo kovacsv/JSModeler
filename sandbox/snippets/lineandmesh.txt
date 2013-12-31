@@ -1,0 +1,37 @@
+renderer = new THREE.WebGLRenderer ();
+renderer.setSize (300, 300);
+
+document.body.appendChild (renderer.domElement);
+
+var scene = new THREE.Scene ();
+var camera = new THREE.PerspectiveCamera (45, 300 / 300, 0.1, 10000);
+camera.position.set (3, 1, 2);
+camera.up.set (0, 0, 1);
+camera.lookAt (new THREE.Vector3 (0, 0, 0));
+
+scene.add (camera);
+
+var directionalLight = new THREE.DirectionalLight (0xffffff);
+directionalLight.position.set (3, 1, 2).normalize ();
+scene.add (directionalLight);
+
+var material = new THREE.MeshLambertMaterial ({
+    color: 0x00cc00
+});
+
+var geometry = new THREE.CubeGeometry (1, 1, 1);
+mesh = new THREE.Mesh (geometry, material);
+scene.add (mesh);
+
+var lineMat = new THREE.LineBasicMaterial ({
+    color: 0x0000cc
+});
+
+var lineGeom = new THREE.Geometry ();
+lineGeom.vertices.push (new THREE.Vector3 (-2, 0, 0));
+lineGeom.vertices.push (new THREE.Vector3 (2, 0, 0));
+
+var line = new THREE.Line (lineGeom, lineMat);
+scene.add (line);
+
+renderer.render (scene, camera);
