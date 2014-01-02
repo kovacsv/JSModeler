@@ -65,6 +65,7 @@
 		var scp = null;
 		var controlPointGeometry = null;
 		var controlPointScene = null;
+		var surfaceBody = null;
 		var mouseData = null;
 		
 		function GetVertexIndex (scp, i, j)
@@ -117,7 +118,7 @@
 				LinkOrigVertex (scp, geometry, origGeometry, toVertex, toI, toJ);
 				
 				var material = new THREE.LineBasicMaterial ({
-					color: 0xcc0000
+					color: 0x000000
 				});
 				
 				var line = new THREE.Line (geometry, material);
@@ -152,8 +153,8 @@
 			}
 
 			var material = new THREE.ParticleBasicMaterial ({
-				size: 0.1,
-				color : 0xcc0000,
+				size: 0.05,
+				color : 0x000000,
 				depthTest: false
 			});
 			
@@ -163,10 +164,14 @@
 		
 		function AddBezierSurfaceModel (scp)
 		{
-			var body = JSM.GenerateBezierSurface (scp, 20, 20, false);
 			var materials = new JSM.Materials ();
-			//JSM.GenerateRandomMaterials (body, materials, true);
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
+
+			surfaceBody = JSM.GenerateBezierSurface (scp, 20, 20, true);
+			surfaceBody.SetPolygonsMaterialIndex (0);
+
+			//JSM.GenerateRandomMaterials (surfaceBody, materials, true);
+			var meshes = JSM.ConvertBodyToThreeMeshes (surfaceBody, materials);
 			var i;
 			for (i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);
