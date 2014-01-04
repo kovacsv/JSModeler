@@ -28,6 +28,7 @@
 		}
 
 		var settings = {
+			showControlPoints : true,
 			controlPointsN : 3,
 			controlPointsM : 3,
 			surfaceXSize : 1,
@@ -84,7 +85,7 @@
 				LinkOrigVertex (scp, geometry, origGeometry, toVertex, toI, toJ);
 				
 				var material = new THREE.LineBasicMaterial ({
-					color: 0xff0000
+					color: 0x000000
 				});
 				
 				var line = new THREE.Line (geometry, material);
@@ -120,7 +121,7 @@
 
 			var material = new THREE.ParticleBasicMaterial ({
 				size: 0.05,
-				color : 0xff0000,
+				color : 0x000000,
 				depthTest: false
 			});
 			
@@ -153,6 +154,10 @@
 		
 		function OnMouseDown (event)
 		{
+			if (!settings.showControlPoints) {
+				return;
+			}
+		
 			var foundIndices = null;
 			var n = bezierData.controlPoints.GetNValue ();
 			var m = bezierData.controlPoints.GetMValue ();		
@@ -234,6 +239,10 @@
 
 		function RunAfterRender ()
 		{
+			if (!settings.showControlPoints) {
+				return;
+			}
+			
 			viewer.renderer.clear (false, true, false);
 			viewer.renderer.render (bezierData.controlPointScene, viewer.camera);
 		}
@@ -250,6 +259,13 @@
 			}		
 		}
 		
+		function ChangeShowControlPoints ()
+		{
+			var check = document.getElementById ('showcontrolpointscheck');
+			settings.showControlPoints = check.checked;
+			
+		}
+
 		function Load ()
 		{
 			window.onresize = Resize;
@@ -301,13 +317,16 @@
 			<div class="box">
 				<div class="boxtitle">settings</div>
 				<div class="boxcontent">
-					...
+					<input id="showcontrolpointscheck" type="checkbox" checked= "true" onchange="javascript:ChangeShowControlPoints ();">show control points
 				</div>
 			</div>
 			<div class="box">
-				<a href="javascript:ExportToStl ();">export model to stl</a><br>
-				<a href="javascript:ExportToObj ();">export model to obj</a><br>
-				<a href="javascript:ExportToSvg ();">export model to svg</a><br>
+				<div class="boxtitle">export</div>
+				<div class="boxcontent">
+					<a href="javascript:ExportToStl ();">export model to stl</a><br>
+					<a href="javascript:ExportToObj ();">export model to obj</a><br>
+					<a href="javascript:ExportToSvg ();">export model to svg</a>
+				</div>
 			</div>
 			<div class="projectlink">
 				<a href="https://github.com/kovacsv/JSModeler">go to jsmodeler home page</a>
