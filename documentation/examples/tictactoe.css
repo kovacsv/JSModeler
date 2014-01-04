@@ -12,8 +12,40 @@ html, body
 
 #controls
 {
+	color : #222222;
+	background : transparent;
 	text-align : center;
-	padding : 20px;
+	width : 100%;
+	float : left;
+	border-top : 6px solid #279b61;
+}
+
+div.left
+{
+	padding : 10px;
+	float : left;
+}
+
+div.center
+{
+	color : #aaaaaa;
+	background : transparent;
+	font-family: "Avant Garde", "Avantgarde", "Century Gothic", "CenturyGothic", "AppleGothic", sans-serif;
+	text-align : center;
+	font-size : 20px;
+	padding : 9px;
+	float : left;
+}
+
+div.right
+{
+	padding : 10px;
+	float : right;
+}
+
+div.clearer
+{
+	clear : both;
 }
 
 #floating
@@ -63,29 +95,31 @@ canvas
 	display:block;
 }
 
-a.large
+#controls a
 {
-	color : #999999;
-	background : transparent;
-	font-size: 30px;
+	color : #ffffff;
+	background : #008ab8;
+	text-decoration : none;
+	padding : 5px 10px;
+	margin-right : 10px;
+	border-radius : 5px;
 	display : block;
+	float : left;
 }
 
-a.small
+#controls a.notactive
 {
 	color : #aaaaaa;
-	background : transparent;
-	font-size: 12px;
-	display : block;
+	background : #eeeeee;
+}
+
+#controls a.active
+{
+	color : #ffffff;
+	background : #008ab8;
 }
 
 a
 {
 	text-decoration : none;
-	padding : 5px;
-}
-
-a:hover
-{
-	text-decoration : underline;
 }
