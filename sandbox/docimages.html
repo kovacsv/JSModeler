@@ -51,6 +51,7 @@
 	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
 	<script type="text/javascript" src="../src/extras/svgtomodel.js"></script>
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../src/extras/surfaces.js"></script>
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
 	<script type="text/javascript" src="../src/viewer/converter.js"></script>
@@ -98,7 +99,7 @@
 				var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 				InitViewer (body);
 			} else if (current == 2) {
-				var body = JSM.GenerateSegmentedRectangle (1, 1, 4);
+				var body = JSM.GenerateSegmentedRectangle (1, 1, 4, 4);
 				InitViewer (body);
 			} else if (current == 3) {
 				var body = JSM.GenerateSegmentedCuboid (1, 1, 1, 4);

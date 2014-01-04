@@ -62,113 +62,80 @@
 
 	<script type="text/javascript">
 		var viewer = null;
-		var body = null;
 
+		function Generate ()
+		{
+			var selectDiv = document.getElementById ('solids');
+			var selected = selectDiv.options[selectDiv.selectedIndex].value;
+		
+			var body = JSM.GenerateSolidWithRadius (selected, 1.0);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body);
+			viewer.RemoveMeshes ();
+			viewer.AddMeshes (meshes);
+			viewer.FitInWindow ();
+		}
+		
 		function Load ()
 		{
-			function TextureLoaded () {
+			var TextureLoaded = function () {
 				viewer.Draw ();
-			}
-		
+			};
+
 			var viewerSettings = {
-				cameraEyePosition : [3.0, -3.0, 3.0],
+				cameraEyePosition : [-2.0, -1.5, 1.0],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0.0, 0.0, 1.0]
+				cameraUpVector : [0, 0, 1]
 			};
 
 			viewer = new JSM.Viewer ();
-			if (!viewer.Start ('example', viewerSettings)) {
-				alert ('Viewer initialization failed.');
-				return;
-			}
-/*
-			var basePoints = [
-				new JSM.Coord (0, 0, 0),
-				new JSM.Coord (1, 0, 0),
-				new JSM.Coord (1.1, 0.4, 0),
-				new JSM.Coord (1.1, 0.6, 0),
-				new JSM.Coord (1, 1, 0),
-				new JSM.Coord (0, 1, 0),
-				new JSM.Coord (-0.1, 0.6, 0),
-				new JSM.Coord (-0.1, 0.4, 0)
-			];
-			
-			var curveGroups = [
-				-1,
-				0,
-				0,
-				0,
-				-1,
-				1,
-				1,
-				1
-			];
-			
-			var direction = new JSM.Vector (0.0, 0.0, 1.0);
-			var prism = JSM.GenerateCurvedPrism (basePoints, curveGroups, direction, 0.3, true);
-*/
-			var basePoints = [
-				new JSM.Coord (0, 0, 0),
-				new JSM.Coord (1, 0, 0),
-				new JSM.Coord (1.1, 0.4, 0),
-				new JSM.Coord (1.1, 0.6, 0),
-				new JSM.Coord (1, 1, 0),
-				new JSM.Coord (0, 1, 0),
-				new JSM.Coord (-0.1, 0.6, 0),
-				new JSM.Coord (-0.1, 0.4, 0),
-				null,
-				new JSM.Coord (0.2, 0.2, 0),
-				new JSM.Coord (0.1, 0.4, 0),
-				new JSM.Coord (0.1, 0.6, 0),
-				new JSM.Coord (0.2, 0.8, 0),
-				new JSM.Coord (0.8, 0.8, 0),
-				new JSM.Coord (0.9, 0.6, 0),
-				new JSM.Coord (0.9, 0.4, 0),
-				new JSM.Coord (0.8, 0.2, 0)
-			];
-			
-			var curveGroups = [
-				-1,
-				0,
-				0,
-				0,
-				-1,
-				1,
-				1,
-				1,
-				null,
-				0,
-				0,
-				0,
-				-1,
-				0,
-				0,
-				0,
-				-1
-			];
-			
-			var direction = new JSM.Vector (0.0, 0.0, 1.0);
-			var prism = JSM.GenerateCurvedPrismWithHole (basePoints, curveGroups, direction, 0.3, true);
-			var conversionData = new JSM.ConversionData (TextureLoaded, false, false);
-			var meshes = JSM.ConvertBodyToThreeMeshes (prism /*, null, conversionData*/);
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}
+			viewer.Start ('example', viewerSettings);
 
-			viewer.FitInWindow ();
-			viewer.Draw ();
+			Generate ();
 		}
-
+	
 	    window.onload = function ()
 		{
-			Load ();
+			Load ();			
 		}
 	</script>
 
 </head>
 
 <body>
-	<canvas id="example" width="800" height="500" style="border : 1px solid black;"></canvas>
+	<select id="solids" onchange="Generate ();">
+		<option>Tetrahedron</option>
+		<option>Tetrahedron</option>
+		<option>Hexahedron</option>
+		<option>Octahedron</option>
+		<option>Dodecahedron</option>
+		<option>Icosahedron</option>
+		<option>TruncatedTetrahedron</option>
+		<option>Cuboctahedron</option>
+		<option>TruncatedCube</option>
+		<option>TruncatedOctahedron</option>
+		<option>Rhombicuboctahedron</option>
+		<option>TruncatedCuboctahedron</option>
+		<option>SnubCube</option>
+		<option>Icosidodecahedron</option>
+		<option>TruncatedDodecahedron</option>
+		<option>TruncatedIcosahedron</option>
+		<option>Rhombicosidodecahedron</option>
+		<option>TruncatedIcosidodecahedron</option>
+		<option>SnubDodecahedron</option>
+
+		<option>TetrakisHexahedron</option>
+		<option>RhombicDodecahedron</option>
+		<option>PentakisDodecahedron</option>
+		<option>SmallStellatedDodecahedron</option>
+		<option>GreatDodecahedron</option>
+		<option>SmallTriambicIcosahedron</option>
+		<option>GreatStellatedDodecahedron</option>
+		<option>SmallTriakisOctahedron</option>
+		<option>StellaOctangula</option>
+		<option>TriakisTetrahedron</option>
+	</select>
+	<br>
+	<canvas id="example" width="800" height="500"></canvas>
 </body>
 
 </html>

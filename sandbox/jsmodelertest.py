@@ -170,11 +170,11 @@ def TestTicTacToe (browser, path):
 	fullPath = os.path.join (path, 'documentation\\examples\\tictactoe.html')
 	browser.SetURL ('file:///' + fullPath + '#norandom')
 	browser.Capture ('tictactoe_empty');
-	browser.Click (670, 230)
+	browser.Click (683, 312)
 	browser.Capture ('tictactoe_1');
-	browser.Click (660, 340)
+	browser.Click (675, 429)
 	browser.Capture ('tictactoe_2');
-	browser.Click (520, 240)
+	browser.Click (524, 323)
 	browser.Capture ('tictactoe_3');
 
 def TestDeform (browser, path):

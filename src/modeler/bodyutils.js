@@ -233,3 +233,20 @@ JSM.TriangulatePolygons = function (body)
 	
 	return result;
 };
+
+JSM.GenerateRandomMaterials = function (body, materials, seeded)
+{
+	var minColor = 0;
+	var maxColor = 16777215;
+	var i, color, material;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		if (seeded !== undefined && seeded) {
+			color = JSM.SeededRandomInt (minColor, maxColor, i + 1);
+		} else {
+			color = JSM.RandomInt (minColor, maxColor);
+		}
+		materials.AddMaterial (new JSM.Material (color, color));
+		material = materials.Count () - 1;
+		body.GetPolygon (i).SetMaterialIndex (material);
+	}
+};
