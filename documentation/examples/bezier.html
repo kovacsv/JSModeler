@@ -1,0 +1,322 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="bezier.css">
+	<script type="text/javascript" src="../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
+	<title>JSModeler Bezier Surface Example</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+		var mouseData = null;
+
+		var bezierData = {
+			controlPoints : null,
+			controlPointGeometry : null,
+			controlPointScene : null,
+			surfaceBody : null
+		}
+
+		var settings = {
+			controlPointsN : 3,
+			controlPointsM : 3,
+			surfaceXSize : 1,
+			surfaceYSize : 1
+		};
+		
+		function GetVertexIndex (scp, i, j)
+		{
+			var m = scp.GetMValue ();
+			return foundVertexIndex = i * (m + 1) + j;
+		}
+		
+		function RemoveEverythingFromScene (scene)
+		{
+			var current;
+			var i;
+			for (i = 0; i < scene.children.length; i++) {
+				current = scene.children[i];
+				if (current instanceof THREE.Mesh ||
+					current instanceof THREE.Line ||
+					current instanceof THREE.ParticleSystem)
+				{
+					scene.remove (current);
+					i--;
+				}
+			}
+		}
+		
+		function AddSurfaceControlPointsModel (scp)
+		{
+			function AddLine (scp, fromI, fromJ, toI, toJ, origGeometry)
+			{
+				function LinkOrigVertex (scp, geometry, origGeometry, vertex, i, j)
+				{
+					var fromVertex = origGeometry.vertices[GetVertexIndex (scp, i, j)];
+					if (fromVertex.lineGeometries === undefined || fromVertex.lineVertices === undefined) {
+						fromVertex.lineGeometries = [];
+						fromVertex.lineVertices = [];
+					}
+					fromVertex.lineGeometries.push (geometry);
+					fromVertex.lineVertices.push (vertex);			
+				}
+				
+				var fromPoint = scp.GetControlPoint (fromI, fromJ);
+				var toPoint = scp.GetControlPoint (toI, toJ);
+
+				var geometry = new THREE.Geometry ();
+				var fromVertex = new THREE.Vector3 (fromPoint.x, fromPoint.y, fromPoint.z);
+				var toVertex = new THREE.Vector3 (toPoint.x, toPoint.y, toPoint.z);
+				geometry.vertices.push (fromVertex);
+				geometry.vertices.push (toVertex);
+				
+				LinkOrigVertex (scp, geometry, origGeometry, fromVertex, fromI, fromJ);
+				LinkOrigVertex (scp, geometry, origGeometry, toVertex, toI, toJ);
+				
+				var material = new THREE.LineBasicMaterial ({
+					color: 0xff0000
+				});
+				
+				var line = new THREE.Line (geometry, material);
+				bezierData.controlPointScene.add (line);
+			}
+			
+			var n = scp.GetNValue ();
+			var m = scp.GetMValue ();		
+			
+			bezierData.controlPointGeometry = new THREE.Geometry ();
+			var i, j, point, vertex;
+			for (i = 0; i <= n; i++) {
+				for (j = 0; j <= m; j++) {
+					point = scp.GetControlPoint (i, j);
+					vertex = new THREE.Vector3 ();
+					vertex.x = point.x;
+					vertex.y = point.y;
+					vertex.z = point.z;
+					bezierData.controlPointGeometry.vertices.push (vertex);
+				}
+			}
+
+			for (i = 0; i <= n; i++) {
+				for (j = 0; j <= m; j++) {
+					if (i < n) {
+						AddLine (scp, i, j, i + 1, j, bezierData.controlPointGeometry);
+					}
+					if (j < m) {
+						AddLine (scp, i, j, i, j + 1, bezierData.controlPointGeometry);
+					}
+				}
+			}
+
+			var material = new THREE.ParticleBasicMaterial ({
+				size: 0.05,
+				color : 0xff0000,
+				depthTest: false
+			});
+			
+			var particle = new THREE.ParticleSystem (bezierData.controlPointGeometry, material);
+			bezierData.controlPointScene.add (particle);
+		}
+		
+		function AddBezierSurfaceModel (scp)
+		{
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'tile.png', 0.1, 0.1));
+
+			bezierData.surfaceBody = JSM.GenerateBezierSurface (scp, 20, 20, true);
+			bezierData.surfaceBody.SetPolygonsMaterialIndex (0);
+			bezierData.surfaceBody.SetTextureProjectionType ('Planar');
+			bezierData.surfaceBody.SetTextureProjectionCoords (new JSM.CoordSystem (
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (1.0, 0.0, 0.0),
+				new JSM.Coord (0.0, 1.0, 0.0),
+				new JSM.Coord (0.0, 0.0, 0.0)
+			));			
+			
+			//JSM.GenerateRandomMaterials (bezierData.surfaceBody, materials, true);
+			var meshes = JSM.ConvertBodyToThreeMeshes (bezierData.surfaceBody, materials);
+			var i;
+			for (i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}
+		}
+		
+		function OnMouseDown (event)
+		{
+			var foundIndices = null;
+			var n = bezierData.controlPoints.GetNValue ();
+			var m = bezierData.controlPoints.GetMValue ();		
+		
+			var i, j, point, projected;
+			for (i = 0; i <= n; i++) {
+				for (j = 0; j <= m; j++) {
+					point = bezierData.controlPoints.GetControlPoint (i, j);
+					projected = viewer.ProjectVector (point.x, point.y, point.z);
+					if (Math.abs (projected.x - viewer.mouse.currX) < 10 &&
+						Math.abs (projected.y - viewer.mouse.currY) < 10)
+					{
+						foundIndices = [i, j];
+						break;
+					}
+				}
+			}
+
+			if (foundIndices === null) {
+				return;
+			}
+			
+			var foundVertexIndex = GetVertexIndex (bezierData.controlPoints, foundIndices[0], foundIndices[1]);
+			var foundVertex = bezierData.controlPointGeometry.vertices[foundVertexIndex];
+			mouseData = {
+				foundIndices : foundIndices,
+				foundVertexIndex : foundVertexIndex,
+				originalVertexPos : foundVertex.clone (),
+				originalMousePos : [viewer.mouse.currX, viewer.mouse.currY]
+			};
+			viewer.settings.cameraDisableOrbit = true;
+		}
+		
+		function OnMouseUp (event)
+		{
+			if (mouseData === null) {
+				return;
+			}
+
+			var indices = mouseData.foundIndices;
+			var point = bezierData.controlPoints.GetControlPoint (indices[0], indices[1]);
+			var foundVertex = bezierData.controlPointGeometry.vertices[mouseData.foundVertexIndex];
+			point.x = foundVertex.x;
+			point.y = foundVertex.y;
+			point.z = foundVertex.z;
+			
+			RemoveEverythingFromScene (viewer.scene);
+			AddBezierSurfaceModel (bezierData.controlPoints);
+
+			mouseData = null;
+			viewer.settings.cameraDisableOrbit = false;
+		}
+		
+		function OnMouseMove (event)
+		{
+			if (mouseData === null) {
+				return;
+			}
+			
+			var currentPos = [viewer.mouse.currX, viewer.mouse.currY];
+			var ratio = 0.005;
+			var diff = (currentPos[1] - mouseData.originalMousePos[1]) * ratio;
+			var foundVertex = bezierData.controlPointGeometry.vertices[mouseData.foundVertexIndex];
+
+			foundVertex.z = mouseData.originalVertexPos.z - diff;
+			bezierData.controlPointGeometry.verticesNeedUpdate = true;
+
+			var i;
+			for (i = 0; i < foundVertex.lineGeometries.length; i++) {
+				foundVertex.lineVertices[i].z = foundVertex.z;
+				foundVertex.lineGeometries[i].verticesNeedUpdate = true;
+			}
+		}
+		
+		function RunBeforeRender ()
+		{
+			viewer.renderer.clear ();
+		}
+
+		function RunAfterRender ()
+		{
+			viewer.renderer.clear (false, true, false);
+			viewer.renderer.render (bezierData.controlPointScene, viewer.camera);
+		}
+		
+		function Resize ()
+		{
+			var left = document.getElementById ('left');
+			var canvas = document.getElementById ('example');
+			canvas.width = document.body.clientWidth - left.clientWidth;
+			canvas.height = document.body.clientHeight;
+
+			if (viewer !== null) {
+				viewer.Resize ();
+			}		
+		}
+		
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+
+			var viewerSettings = {
+				cameraEyePosition : [-2.0, -1.5, 1.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
+
+			viewer = new JSM.Viewer ();
+			viewer.Start ('example', viewerSettings);
+			
+			document.addEventListener ('mousemove', OnMouseMove, false);
+			document.addEventListener ('mouseup', OnMouseUp);
+			viewer.canvas.addEventListener ('mousedown', OnMouseDown);
+
+			bezierData.controlPointScene = new THREE.Scene();
+			viewer.SetRunAfterRender (RunAfterRender);
+			viewer.SetRunBeforeRender (RunBeforeRender);
+			viewer.renderer.autoClear = false;
+			
+			bezierData.controlPoints = new JSM.SurfaceControlPoints (settings.controlPointsN, settings.controlPointsM);
+			bezierData.controlPoints.InitPlanar (settings.surfaceXSize, settings.surfaceYSize);
+
+			AddSurfaceControlPointsModel (bezierData.controlPoints);
+			AddBezierSurfaceModel (bezierData.controlPoints);		
+			
+			viewer.FitInWindow ();
+			viewer.Draw ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="left">
+		<div id="menu">
+			<div id="title">
+				<span id="titlemain">bezier</span>
+				<span id="titleversion">1.0</span>
+			</div>
+			<div class="box">
+				<div class="boxtitle">settings</div>
+				<div class="boxcontent">
+					...
+				</div>
+			</div>
+			<div class="box">
+				<a href="javascript:ExportToStl ();">export model to stl</a><br>
+				<a href="javascript:ExportToObj ();">export model to obj</a><br>
+				<a href="javascript:ExportToSvg ();">export model to svg</a><br>
+			</div>
+			<div class="projectlink">
+				<a href="https://github.com/kovacsv/JSModeler">go to jsmodeler home page</a>
+			</div>
+		</div>
+	</div>
+	<div id="right">
+		<canvas id="example" width="800" height="500"></canvas>
+	</div>
+</body>
+
+</html>
