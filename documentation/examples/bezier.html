@@ -56,7 +56,7 @@
 				}
 			}
 		}
-		
+
 		function AddSurfaceControlPointsModel (scp)
 		{
 			function AddLine (scp, fromI, fromJ, toI, toJ, origGeometry)
@@ -91,6 +91,8 @@
 				var line = new THREE.Line (geometry, material);
 				bezierData.controlPointScene.add (line);
 			}
+			
+			RemoveEverythingFromScene (bezierData.controlPointScene);
 			
 			var n = scp.GetNValue ();
 			var m = scp.GetMValue ();		
@@ -131,10 +133,12 @@
 		
 		function AddBezierSurfaceModel (scp)
 		{
+			RemoveEverythingFromScene (viewer.scene);
+			
 			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'tile2.png', 0.1, 0.1));
+			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'tiles.png', 1.0, 1.0));
 
-			bezierData.surfaceBody = JSM.GenerateBezierSurface (scp, 20, 20, true);
+			bezierData.surfaceBody = JSM.GenerateBezierSurface (scp, 16, 16, true);
 			bezierData.surfaceBody.SetPolygonsMaterialIndex (0);
 			bezierData.surfaceBody.SetTextureProjectionType ('Planar');
 			bezierData.surfaceBody.SetTextureProjectionCoords (new JSM.CoordSystem (
@@ -204,7 +208,6 @@
 			point.y = foundVertex.y;
 			point.z = foundVertex.z;
 			
-			RemoveEverythingFromScene (viewer.scene);
 			AddBezierSurfaceModel (bezierData.controlPoints);
 
 			mouseData = null;
@@ -263,7 +266,29 @@
 		{
 			var check = document.getElementById ('showcontrolpointscheck');
 			settings.showControlPoints = check.checked;
+		}
+
+		function RandomizeControlPoints ()
+		{
+			var n = bezierData.controlPoints.GetNValue ();
+			var m = bezierData.controlPoints.GetMValue ();		
+		
+			var i, j, point, vertexIndex, vertex;
+			for (i = 0; i <= n; i++) {
+				for (j = 0; j <= m; j++) {
+					point = bezierData.controlPoints.GetControlPoint (i, j);
+					point.z = JSM.RandomInt (-1000, 1000) / 1000;
+					
+					vertexIndex = GetVertexIndex (bezierData.controlPoints, i, j);
+					vertex = bezierData.controlPointGeometry.vertices[vertexIndex];
+					vertex.x = point.x;
+					vertex.y = point.y;
+					vertex.z = point.z;
+				}
+			}
 			
+			AddSurfaceControlPointsModel (bezierData.controlPoints);
+			AddBezierSurfaceModel (bezierData.controlPoints);
 		}
 
 		function Load ()
@@ -318,6 +343,12 @@
 				<div class="boxtitle">settings</div>
 				<div class="boxcontent">
 					<input id="showcontrolpointscheck" type="checkbox" checked= "true" onchange="javascript:ChangeShowControlPoints ();">show control points
+				</div>
+			</div>
+			<div class="box">
+				<div class="boxtitle">other</div>
+				<div class="boxcontent">
+					<a href="javascript:RandomizeControlPoints ();">randomize control points</a><br>
 				</div>
 			</div>
 			<div class="box">

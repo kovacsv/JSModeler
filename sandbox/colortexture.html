@@ -1,0 +1,74 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Example</title>
+
+	<script type="text/javascript">
+		function CreateColoredImage (parent, width, height, rows, columns, fromRG, toRG)
+		{
+			function RandomInt (from, to)
+			{
+				return Math.floor ((Math.random () * (to - from + 1)) + from); 
+			}
+			
+			function GetRandomColor ()
+			{
+				return 'rgb(' + RandomInt (0, 255) + ', ' + RandomInt (0, 255) + ', ' + RandomInt (0, 255) + ')';
+			}
+		
+			function GetColor (r, g)
+			{
+				return 'rgb(' + r + ', ' + g + ', ' + 0 + ')';
+			}
+			
+			var canvas = document.createElement ('canvas');
+			canvas.width = width;
+			canvas.height = height;
+
+			var context = canvas.getContext ('2d');
+			var xSize = parseInt (width / rows);
+			var ySize = parseInt (height / columns);
+			
+			var rDiff = toRG[0] - fromRG[0];
+			var gDiff = toRG[1] - fromRG[1];
+			var rStep = parseInt (rDiff / rows);
+			var gStep = parseInt (gDiff / columns);
+			
+			var i, j;
+			for (i = 0; i < rows; i++) {
+				for (j = 0; j < columns; j++) {
+					context.fillStyle = GetColor (parseInt (fromRG[0] + i * rStep), parseInt (fromRG[1] + j * gStep));
+					context.fillRect (i * xSize, j * ySize, xSize, ySize);
+				}
+			}
+
+			parent.appendChild (canvas);
+		}
+	
+		function Load ()
+		{
+			CreateColoredImage (document.body, 256, 256, 16, 16, [255, 64], [64, 255]);
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+</body>
+
+</html>
