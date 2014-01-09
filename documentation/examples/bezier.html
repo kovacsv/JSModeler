@@ -56,6 +56,12 @@
 				}
 			}
 		}
+		
+		function InitSurfaceControlPoints ()
+		{
+			bezierData.controlPoints = new JSM.SurfaceControlPoints (settings.controlPointsN, settings.controlPointsM);
+			bezierData.controlPoints.InitPlanar (settings.surfaceXSize, settings.surfaceYSize);		
+		}
 
 		function AddSurfaceControlPointsModel (scp)
 		{
@@ -138,7 +144,7 @@
 			var materials = new JSM.Materials ();
 			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'tiles.png', 1.0, 1.0));
 
-			bezierData.surfaceBody = JSM.GenerateBezierSurface (scp, 16, 16, true);
+			bezierData.surfaceBody = JSM.GenerateBezierSurface (scp, 32, 32, true);
 			bezierData.surfaceBody.SetPolygonsMaterialIndex (0);
 			bezierData.surfaceBody.SetTextureProjectionType ('Planar');
 			bezierData.surfaceBody.SetTextureProjectionCoords (new JSM.CoordSystem (
@@ -262,10 +268,37 @@
 			}		
 		}
 		
-		function ChangeShowControlPoints ()
+		function UpdateUserInterface ()
 		{
-			var check = document.getElementById ('showcontrolpointscheck');
-			settings.showControlPoints = check.checked;
+			document.getElementById ('showcontrolpoints').className = settings.showControlPoints ? 'activebutton' : 'button';
+			document.getElementById ('hidecontrolpoints').className = settings.showControlPoints ? 'button' : 'activebutton';
+			document.getElementById ('changedimension3').className = settings.controlPointsN == 3 ? 'activebutton' : 'button';
+			document.getElementById ('changedimension4').className = settings.controlPointsN == 4 ? 'activebutton' : 'button';
+			document.getElementById ('changedimension5').className = settings.controlPointsN == 5 ? 'activebutton' : 'button';
+		}
+		
+		function ChangeControlPointsVisibility (show)
+		{
+			settings.showControlPoints = show;
+			UpdateUserInterface ();
+		}
+
+		function ChangeControlPointsDimension (dimension)
+		{
+			settings.controlPointsN = dimension;
+			settings.controlPointsM = dimension;
+			UpdateUserInterface ();
+			
+			InitSurfaceControlPoints ();
+			AddSurfaceControlPointsModel (bezierData.controlPoints);
+			AddBezierSurfaceModel (bezierData.controlPoints);
+		}
+
+		function ResetControlPoints ()
+		{
+			InitSurfaceControlPoints ();
+			AddSurfaceControlPointsModel (bezierData.controlPoints);
+			AddBezierSurfaceModel (bezierData.controlPoints);
 		}
 
 		function RandomizeControlPoints ()
@@ -314,9 +347,9 @@
 			viewer.SetRunBeforeRender (RunBeforeRender);
 			viewer.renderer.autoClear = false;
 			
-			bezierData.controlPoints = new JSM.SurfaceControlPoints (settings.controlPointsN, settings.controlPointsM);
-			bezierData.controlPoints.InitPlanar (settings.surfaceXSize, settings.surfaceYSize);
+			UpdateUserInterface ();
 
+			InitSurfaceControlPoints ();
 			AddSurfaceControlPointsModel (bezierData.controlPoints);
 			AddBezierSurfaceModel (bezierData.controlPoints);		
 			
@@ -340,15 +373,32 @@
 				<span id="titleversion">1.0</span>
 			</div>
 			<div class="box">
-				<div class="boxtitle">settings</div>
+				<div class="boxtitle">control points</div>
 				<div class="boxcontent">
-					<input id="showcontrolpointscheck" type="checkbox" checked= "true" onchange="javascript:ChangeShowControlPoints ();">show control points
+					<table class="controls">
+						<tr>
+							<td>visibility:</td>
+							<td>
+								<a href="javascript:ChangeControlPointsVisibility (true);"><span id="showcontrolpoints" class="button">show</span></a>
+								<a href="javascript:ChangeControlPointsVisibility (false);"><span id="hidecontrolpoints" class="button">hide</span></a>
+							</td>
+						</tr>
+						<tr>
+							<td>dimension:</td>
+							<td>
+								<a href="javascript:ChangeControlPointsDimension (3);"><span id="changedimension3" class="button">3</span></a>
+								<a href="javascript:ChangeControlPointsDimension (4);"><span id="changedimension4" class="button">4</span></a>
+								<a href="javascript:ChangeControlPointsDimension (5);"><span id="changedimension5" class="button">5</span></a>
+							</td>
+						</tr>
+					</table>
 				</div>
 			</div>
 			<div class="box">
 				<div class="boxtitle">other</div>
 				<div class="boxcontent">
-					<a href="javascript:RandomizeControlPoints ();">randomize control points</a><br>
+					<a href="javascript:ResetControlPoints ();">reset control points</a><br>
+					<a href="javascript:RandomizeControlPoints ();">randomize control points</a>
 				</div>
 			</div>
 			<div class="box">

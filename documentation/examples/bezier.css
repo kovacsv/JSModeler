@@ -14,7 +14,7 @@ html, body
 {
 	color : #000000;
 	background : #ffffff;
-	width : 250px;
+	width : 260px;
 	float : left;
 }
 
@@ -80,7 +80,7 @@ div.clearer
 div.box
 {
 	color : #000000;
-	background : #f5f5f5;
+	background : #fafafa;
 	padding : 10px;
 	margin-bottom : 10px;
 	border : 1px solid #e5e5e5;
@@ -106,6 +106,32 @@ div.text
 div.button
 {
 	margin-top : 10px;
+}
+
+table.controls tr td
+{
+	padding : 5px 10px 5px 0px;
+}
+
+table.controls a
+{
+	text-decoration : none;
+}
+
+span.button
+{
+	color : #000000;
+	background : #dddddd;
+	padding : 5px 10px;
+	border-radius : 3px;
+}
+
+span.activebutton
+{
+	color : #ffffff;
+	background : #279b61;
+	padding : 5px 10px;
+	border-radius : 3px;
 }
 
 div.projectlink
