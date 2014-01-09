@@ -272,9 +272,11 @@
 		{
 			document.getElementById ('showcontrolpoints').className = settings.showControlPoints ? 'activebutton' : 'button';
 			document.getElementById ('hidecontrolpoints').className = settings.showControlPoints ? 'button' : 'activebutton';
-			document.getElementById ('changedimension3').className = settings.controlPointsN == 3 ? 'activebutton' : 'button';
-			document.getElementById ('changedimension4').className = settings.controlPointsN == 4 ? 'activebutton' : 'button';
-			document.getElementById ('changedimension5').className = settings.controlPointsN == 5 ? 'activebutton' : 'button';
+			document.getElementById ('changedegree1').className = settings.controlPointsN == 1 ? 'activebutton' : 'button';
+			document.getElementById ('changedegree2').className = settings.controlPointsN == 2 ? 'activebutton' : 'button';
+			document.getElementById ('changedegree3').className = settings.controlPointsN == 3 ? 'activebutton' : 'button';
+			document.getElementById ('changedegree4').className = settings.controlPointsN == 4 ? 'activebutton' : 'button';
+			document.getElementById ('changedegree5').className = settings.controlPointsN == 5 ? 'activebutton' : 'button';
 		}
 		
 		function ChangeControlPointsVisibility (show)
@@ -283,10 +285,10 @@
 			UpdateUserInterface ();
 		}
 
-		function ChangeControlPointsDimension (dimension)
+		function ChangeControlPointsDegree (degree)
 		{
-			settings.controlPointsN = dimension;
-			settings.controlPointsM = dimension;
+			settings.controlPointsN = degree;
+			settings.controlPointsM = degree;
 			UpdateUserInterface ();
 			
 			InitSurfaceControlPoints ();
@@ -384,11 +386,13 @@
 							</td>
 						</tr>
 						<tr>
-							<td>dimension:</td>
+							<td>degree:</td>
 							<td>
-								<a href="javascript:ChangeControlPointsDimension (3);"><span id="changedimension3" class="button">3</span></a>
-								<a href="javascript:ChangeControlPointsDimension (4);"><span id="changedimension4" class="button">4</span></a>
-								<a href="javascript:ChangeControlPointsDimension (5);"><span id="changedimension5" class="button">5</span></a>
+								<a href="javascript:ChangeControlPointsDegree (1);"><span id="changedegree1" class="button">1</span></a>
+								<a href="javascript:ChangeControlPointsDegree (2);"><span id="changedegree2" class="button">2</span></a>
+								<a href="javascript:ChangeControlPointsDegree (3);"><span id="changedegree3" class="button">3</span></a>
+								<a href="javascript:ChangeControlPointsDegree (4);"><span id="changedegree4" class="button">4</span></a>
+								<a href="javascript:ChangeControlPointsDegree (5);"><span id="changedegree5" class="button">5</span></a>
 							</td>
 						</tr>
 					</table>
