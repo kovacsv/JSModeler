@@ -256,18 +256,6 @@
 			viewer.renderer.render (bezierData.controlPointScene, viewer.camera);
 		}
 		
-		function Resize ()
-		{
-			var left = document.getElementById ('left');
-			var canvas = document.getElementById ('example');
-			canvas.width = document.body.clientWidth - left.clientWidth;
-			canvas.height = document.body.clientHeight;
-
-			if (viewer !== null) {
-				viewer.Resize ();
-			}		
-		}
-		
 		function UpdateUserInterface ()
 		{
 			document.getElementById ('showcontrolpoints').className = settings.showControlPoints ? 'activebutton' : 'button';
@@ -312,7 +300,7 @@
 			for (i = 0; i <= n; i++) {
 				for (j = 0; j <= m; j++) {
 					point = bezierData.controlPoints.GetControlPoint (i, j);
-					point.z = JSM.RandomInt (-1000, 1000) / 1000;
+					point.z = JSM.RandomInt (-1000, 1000) / 2000;
 					
 					vertexIndex = GetVertexIndex (bezierData.controlPoints, i, j);
 					vertex = bezierData.controlPointGeometry.vertices[vertexIndex];
@@ -326,9 +314,104 @@
 			AddBezierSurfaceModel (bezierData.controlPoints);
 		}
 
+		function ExportModel (format)
+		{
+			var floating = document.getElementById ('floating');
+			var exporttext = document.getElementById ('exporttext');
+			var exported = '';
+			if (format == 'stl') {
+				exported = JSM.ExportBodyToStl (bezierData.surfaceBody, 'JSModelerModel');
+			} else if (format == 'obj') {
+				exported = JSM.ExportBodyToObj (bezierData.surfaceBody);
+			}
+			exporttext.value = exported;
+			exporttext.style.display = 'block';
+			floating.style.display = 'block';			
+		}
+
+		function ExportAsSvg (svgcontent)
+		{
+			var drawSettings = new JSM.DrawSettings (viewer.cameraMove, viewer.settings['fieldOfView'], viewer.settings['nearClippingPlane'], viewer.settings['farClippingPlane'], 'Wireframe', true);
+			var drawer = new JSM.SVGDrawer (svgcontent);
+			JSM.DrawProjectedBody (bezierData.surfaceBody, null, drawSettings, drawer);
+		}
+		
+		function ViewAsSvg ()
+		{
+			var floating = document.getElementById ('floating');
+			var svgcontent = document.getElementById ('svgcontent');
+			ExportAsSvg (svgcontent);
+			svgcontent.style.display = 'block';
+			floating.style.display = 'block';
+		}
+
+		function OpenSvgFile ()
+		{
+			var svgcontent = document.getElementById ('svgcontent');
+			ExportAsSvg (svgcontent);
+			svgcontent.style.display = 'block';
+
+			var serializer = new XMLSerializer ();
+			var xml = serializer.serializeToString (svgcontent);
+			window.open ("data:image/svg+xml," + xml);
+			svgcontent.style.display = 'none';
+		}
+
+		function DocumentClick (clickEvent)
+		{
+			var floating = document.getElementById ('floating');
+			var exporttext = document.getElementById ('exporttext');
+			var svgcontent = document.getElementById ('svgcontent');
+			var isInFloating = false;
+			
+			var target = clickEvent.target;
+			while (target !== null) {
+				if (target === floating) {
+					isInFloating = true;
+					break;
+				}
+				target = target.parentElement;
+			}
+			
+			if (!isInFloating) {
+				if (floating.style.display !== 'none') {
+					floating.style.display = 'none';
+					exporttext.style.display = 'none';
+					svgcontent.style.display = 'none';
+				}
+			}
+		}
+
+		function Resize ()
+		{
+			var left = document.getElementById ('left');
+			var canvas = document.getElementById ('example');
+			canvas.width = document.body.clientWidth - left.clientWidth;
+			canvas.height = document.body.clientHeight;
+
+			if (viewer !== null) {
+				viewer.Resize ();
+			}		
+
+			var floatingMargin = 100;
+
+			var floating = document.getElementById ('floating');
+			floating.style.left = floatingMargin + 'px';
+			floating.style.top = floatingMargin + 'px';
+			floating.style.width = (document.body.clientWidth - 2.0 * floatingMargin) + 'px';
+			floating.style.height = (document.body.clientHeight - 2.0 * floatingMargin) + 'px';
+
+			var svgcontent = document.getElementById ('svgcontent');
+			svgcontent.style.left = floatingMargin + 'px';
+			svgcontent.style.top = floatingMargin + 'px';
+			svgcontent.setAttribute ('width', document.body.clientWidth - 2.0 * floatingMargin);
+			svgcontent.setAttribute ('height', document.body.clientHeight - 2.0 * floatingMargin);
+		}
+
 		function Load ()
 		{
 			window.onresize = Resize;
+			document.onclick = DocumentClick;
 			Resize ();
 
 			var viewerSettings = {
@@ -406,11 +489,17 @@
 				</div>
 			</div>
 			<div class="box">
+				<div class="boxtitle">svg</div>
+				<div class="boxcontent">
+					<a href="javascript:ViewAsSvg ();">view as svg</a><br>
+					<a href="javascript:OpenSvgFile ();">open svg file</a>
+				</div>
+			</div>
+			<div class="box">
 				<div class="boxtitle">export</div>
 				<div class="boxcontent">
-					<a href="javascript:ExportToStl ();">export model to stl</a><br>
-					<a href="javascript:ExportToObj ();">export model to obj</a><br>
-					<a href="javascript:ExportToSvg ();">export model to svg</a>
+					<a href="javascript:ExportModel ('stl');">export model to stl</a><br>
+					<a href="javascript:ExportModel ('obj');">export model to obj</a><br>
 				</div>
 			</div>
 			<div class="projectlink">
@@ -420,6 +509,10 @@
 	</div>
 	<div id="right">
 		<canvas id="example" width="800" height="500"></canvas>
+	</div>
+	<div id="floating">
+		<textarea id="exporttext"></textarea>
+		<svg id="svgcontent" xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>
 	</div>
 </body>
 
