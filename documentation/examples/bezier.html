@@ -386,8 +386,8 @@
 		{
 			var left = document.getElementById ('left');
 			var canvas = document.getElementById ('example');
-			canvas.width = document.body.clientWidth - left.clientWidth;
-			canvas.height = document.body.clientHeight;
+			canvas.width = document.body.clientWidth - left.clientWidth - 20;
+			canvas.height = document.body.clientHeight - 20;
 
 			if (viewer !== null) {
 				viewer.Resize ();
