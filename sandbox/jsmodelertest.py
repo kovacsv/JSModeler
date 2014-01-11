@@ -302,6 +302,50 @@ def TestCSGApp (browser, path):
 	browser.Click (40, 370)
 	browser.Capture ('csg')
 
+def TestBezier (browser, path):
+	def MoveControlPoint (browser, x, y, distance):
+		browser.DragDrop (x, y, x, y + distance)
+		browser.Capture ('bezier')		
+
+	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
+		return
+
+	browser.SetURL (os.path.join (path, 'documentation\\examples\\bezier.html'))
+	browser.Capture ('bezier')
+
+	browser.Click (175, 130)
+	browser.Capture ('bezier')
+	browser.Click (120, 130)
+	browser.Capture ('bezier')
+	
+	browser.Click (112, 160)
+	browser.Capture ('bezier')
+	browser.Click (144, 160)
+	browser.Capture ('bezier')
+	browser.Click (202, 160)
+	browser.Capture ('bezier')
+	browser.Click (232, 160)
+	browser.Capture ('bezier')
+	browser.Click (172, 160)
+	browser.Capture ('bezier')
+	
+	MoveControlPoint (browser, 912, 430, -40)
+	MoveControlPoint (browser, 986, 368, 70)
+	MoveControlPoint (browser, 758, 382, -80)
+	MoveControlPoint (browser, 843, 334, -100)
+	
+	browser.Click (60, 316)
+	browser.Capture ('bezier')
+	browser.Click (60, 550)
+
+	browser.Click (60, 396)
+	browser.Capture ('bezier')
+	browser.Click (60, 550)
+
+	browser.Click (60, 412)
+	browser.Capture ('bezier')
+	browser.Click (60, 550)
+
 def Main (argv):
 	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
@@ -332,6 +376,7 @@ def Main (argv):
 		TestClock (browser, path)
 		TestSVGTo3D (browser, path)
 		TestCSGApp (browser, path)
+		TestBezier (browser, path)
 		browser.Close ()
 	end = time.time ()
 	
