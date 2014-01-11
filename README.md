@@ -22,6 +22,7 @@ Useful links:
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/robot/robot.html">Robotic Arm</a> is a realtime robotic arm simulator.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/csg.html">CSG Example</a> contains constructive solid geometry examples.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/svgto3d.html">SVGTo3D</a> contains examples of using SVG to model converter.</li>
+			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/bezier.html">Bezier Surface Generator</a> is an interactive surface generator.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/deform.html">Deform</a> is a realtime polygon soft selection tool.</li>
 			<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/solids.html">Solid Body Viewer</a> is an example of using the SVG viewer.</li>
 		</ul>
