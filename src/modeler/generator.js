@@ -275,6 +275,27 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 	return result;
 };
 
+JSM.GenerateCirclePoints = function (radius, segmentation, origo)
+{
+	var result = [];
+	var segments = segmentation;
+
+	var theta = 2.0 * Math.PI;
+	var step = 2.0 * Math.PI / segments;
+	
+	var i, coord;
+	for (i = 0; i < segments; i++) {
+		coord = JSM.CylindricalToCartesian (radius, 0.0, theta);
+		if (origo !== undefined && origo !== null) {
+			coord = JSM.CoordAdd (coord, origo);
+		}
+		result.push (coord);
+		theta += step;
+	}
+	
+	return result;
+};
+
 JSM.GenerateCircle = function (radius, segmentation)
 {
 	var result = new JSM.Body ();
@@ -283,15 +304,16 @@ JSM.GenerateCircle = function (radius, segmentation)
 	var theta = 2.0 * Math.PI;
 	var step = 2.0 * Math.PI / segments;
 	
+	var circlePoints = JSM.GenerateCirclePoints (radius, segmentation);
 	var i;
-	for (i = 0; i < segments; i++) {
-		result.AddVertex (new JSM.BodyVertex (JSM.CylindricalToCartesian (radius, 0.0, theta)));
-		theta -= step;
+	for (i = 0; i < circlePoints.length; i++) {
+		result.AddVertex (new JSM.BodyVertex (circlePoints[i]));
+		theta += step;
 	}
 
 	var topPolygon = new JSM.BodyPolygon ();
 	for (i = 0; i < segments; i++) {
-		topPolygon.AddVertexIndex (segments - i - 1);
+		topPolygon.AddVertexIndex (i);
 	}
 	result.AddPolygon (topPolygon);
 
@@ -1618,6 +1640,55 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 		e1,
 		e2,
 		e3
+	));
+
+	return result;
+};
+
+JSM.GenerateTube = function (basePolygon, withStartAndEnd)
+{
+	var result = new JSM.Body ();
+	var contourCount = basePolygon.length;
+	var count = basePolygon[0].length;
+
+	var i, j;
+	for (j = 0; j < count; j++) {
+		for (i = 0; i < contourCount; i++) {
+			result.AddVertex (new JSM.BodyVertex (basePolygon[i][j]));
+		}
+	}
+
+	var current, next;
+	for (j = 0; j < contourCount - 1; j++) {
+		for (i = 0; i < count; i++) {
+			current = j + contourCount * i;
+			next = current + contourCount;
+			if (i === count - 1) {
+				next = j;
+			}
+			result.AddPolygon (new JSM.BodyPolygon ([current, next, next + 1, current + 1]));
+		}
+	}
+
+	if (withStartAndEnd) {
+		var topPolygon = new JSM.BodyPolygon ();
+		var bottomPolygon = new JSM.BodyPolygon ();
+		for (i = 0; i < count; i++) {
+			topPolygon.AddVertexIndex (contourCount * i + contourCount - 1);
+		}
+		for (i = count - 1; i >= 0; i--) {
+			bottomPolygon.AddVertexIndex (contourCount * i);
+		}
+		result.AddPolygon (topPolygon);
+		result.AddPolygon (bottomPolygon);
+	}
+
+	result.SetTextureProjectionType ('Cubic');
+	result.SetTextureProjectionCoords (new JSM.CoordSystem (
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (1.0, 0.0, 0.0),
+		new JSM.Coord (0.0, 1.0, 0.0),
+		new JSM.Coord (0.0, 0.0, 1.0)
 	));
 
 	return result;

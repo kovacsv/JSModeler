@@ -978,6 +978,80 @@ AddTest ('GenerateRevolvedTest', function (test)
 	test.Assert (!JSM.CheckSolidBody (openRevolved));
 });
 
+AddTest ('GenerateTubeTest', function (test)
+{
+	var polygons = [
+		[
+			new JSM.Coord (0, 0, 0),
+			new JSM.Coord (1, 0, 0),
+			new JSM.Coord (1, 1, 0),
+			new JSM.Coord (0, 1, 0)
+		],
+		[
+			new JSM.Coord (0, 0, 1),
+			new JSM.Coord (1, 0, 1),
+			new JSM.Coord (1, 1, 1),
+			new JSM.Coord (0, 1, 1)
+		]
+	];
+	var tube = JSM.GenerateTube (polygons, true);
+	test.Assert (tube.VertexCount () == 8);
+	test.Assert (tube.PolygonCount () == 6);
+	test.Assert (JSM.CheckSolidBody (tube));
+	
+	var polygons = [
+		[
+			new JSM.Coord (0, 0, 0),
+			new JSM.Coord (1, 0, 0),
+			new JSM.Coord (1, 1, 0),
+			new JSM.Coord (0, 1, 0)
+		],
+		[
+			new JSM.Coord (0, 0, 0.5),
+			new JSM.Coord (1, 0, 0.5),
+			new JSM.Coord (1, 1, 0.5),
+			new JSM.Coord (0, 1, 0.5)
+		],
+		[
+			new JSM.Coord (0, 0, 1.5),
+			new JSM.Coord (1, 0, 1.5),
+			new JSM.Coord (1, 1, 1.5),
+			new JSM.Coord (0, 1, 1.5)
+		],
+		[
+			new JSM.Coord (0, 0, 2.0),
+			new JSM.Coord (1, 0, 2.0),
+			new JSM.Coord (1, 1, 2.0),
+			new JSM.Coord (0, 1, 2.0)
+		],
+		[
+			new JSM.Coord (0, 0, 2.3),
+			new JSM.Coord (1, 0, 2.3),
+			new JSM.Coord (1, 1, 2.3),
+			new JSM.Coord (0, 1, 2.3)
+		]
+	];
+	
+	var tube = JSM.GenerateTube (polygons, true);
+	test.Assert (tube.VertexCount () == 20);
+	test.Assert (tube.PolygonCount () == 18);
+	test.Assert (JSM.CheckSolidBody (tube));
+
+	var polygons = [];
+	var i, j, circle;
+	for (i = 0; i < 10; i++) {
+		circle = JSM.GenerateCirclePoints (i % 2 == 0 ? 1.0 : 0.8, 20);
+		for (j = 0; j < circle.length; j++) {
+			circle[j].z = i;
+		}
+		polygons.push (circle);
+	}
+	var tube = JSM.GenerateTube (polygons, true);
+	test.Assert (tube.VertexCount () == 200);
+	test.Assert (tube.PolygonCount () == 182);
+	test.Assert (JSM.CheckSolidBody (tube));
+});
+
 AddTest ('GenerateFunctionSurfaceTest', function (test)
 {
 	function TheFunction (x, y)
