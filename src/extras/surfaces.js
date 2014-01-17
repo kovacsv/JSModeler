@@ -43,16 +43,16 @@ JSM.SurfaceControlPoints.prototype.InitPlanar = function (xSize, ySize)
 	}
 };
 
-JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmentation, ySegmentation, isCurved, getPointCallback)
+JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, isCurved, getPointCallback, userData)
 {
 	function AddVertices ()
 	{
 		var i, j, u, v, coord;
 		for (i = 0; i <= ySegmentation; i++) {	
 			for (j = 0; j <= xSegmentation; j++) {
-				u = j * xSegment;
-				v = i * ySegment;
-				coord = getPointCallback (surfaceControlPoints, u, v);
+				u = xStart + j * xSegment;
+				v = yStart + i * ySegment;
+				coord = getPointCallback (u, v, userData);
 				result.AddVertex (new JSM.BodyVertex (coord));
 			}
 		}
@@ -82,8 +82,12 @@ JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmenta
 
 	var result = new JSM.Body ();
 	
-	var xSegment = 1.0 / xSegmentation;
-	var ySegment = 1.0 / ySegmentation;
+	var xStart = xRange[0];
+	var yStart = yRange[0];
+	var xDiff = xRange[1] - xRange[0];
+	var yDiff = yRange[1] - yRange[0];
+	var xSegment = xDiff / xSegmentation;
+	var ySegment = yDiff / ySegmentation;
 	
 	AddVertices ();
 	AddPolygons ();
@@ -93,7 +97,7 @@ JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmenta
 
 JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegmentation, isCurved)
 {
-	function GetBezierSurfacePoint (surfaceControlPoints, u, v)
+	function GetBezierSurfacePoint (u, v, surfaceControlPoints)
 	{
 		function BernsteinPolynomial (i, n, u)
 		{
@@ -130,6 +134,6 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 		return result;
 	}
 
-	var body = JSM.GenerateSurfaceFromControlPoints (surfaceControlPoints, xSegmentation, ySegmentation, isCurved, GetBezierSurfacePoint);
+	var body = JSM.GenerateSurface ([0, 1], [0, 1], xSegmentation, ySegmentation, isCurved, GetBezierSurfacePoint, surfaceControlPoints);
 	return body;
 };
