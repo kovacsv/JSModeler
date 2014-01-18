@@ -78,7 +78,6 @@
 
 			viewer = new JSM.Viewer ();
 			if (!viewer.Start ('example', viewerSettings)) {
-				alert ('Viewer initialization failed.');
 				return;
 			}
 
@@ -91,6 +90,7 @@
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);
 			}
+			viewer.FitInWindow ();
 			viewer.Draw ();
 		}
 		
