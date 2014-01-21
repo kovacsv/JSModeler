@@ -1,7 +1,6 @@
 import os
 import sys
 import re
-import inspect
 
 rootFolderDir = '..'
 filesFileName = 'files.txt'
@@ -72,7 +71,7 @@ def ReplaceIncludesInFile (htmlFileName, inputFileNames):
 	result.close ()
 	
 def Main ():
-	currentPath = os.path.dirname (os.path.abspath (inspect.getsourcefile (Main)))
+	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
 
 	filesFilePath = os.path.abspath (filesFileName)

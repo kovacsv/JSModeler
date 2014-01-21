@@ -1,7 +1,6 @@
 import os
 import sys
 import re
-import inspect
 
 header = '/* JSModeler [mainVersion].[subVersion] - http://www.github.com/kovacsv/JSModeler */ ';
 versionFileName = '../src/core/jsm.js'
@@ -103,7 +102,7 @@ def DeleteFile (fileName):
 	return True
 	
 def Main ():
-	currentPath = os.path.dirname (os.path.abspath (inspect.getsourcefile (Main)))
+	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
 
 	versionsPath = os.path.abspath (versionFileName)
