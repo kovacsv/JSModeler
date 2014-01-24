@@ -43,7 +43,7 @@ JSM.SurfaceControlPoints.prototype.InitPlanar = function (xSize, ySize)
 	}
 };
 
-JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, isCurved, getPointCallback, userData)
+JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, useTriangles, isCurved, getPointCallback, userData)
 {
 	function AddVertices ()
 	{
@@ -52,7 +52,7 @@ JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, is
 			for (j = 0; j <= xSegmentation; j++) {
 				u = xStart + j * xSegment;
 				v = yStart + i * ySegment;
-				coord = getPointCallback (u, v, userData);
+				coord = getPointCallback (i, j, u, v, userData);
 				result.AddVertex (new JSM.BodyVertex (coord));
 			}
 		}
@@ -71,11 +71,24 @@ JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, is
 				top = current + xSegmentation + 1;
 				ntop = top + 1;
 				
-				polygon = new JSM.BodyPolygon ([current, next, ntop, top]);
-				if (isCurved) {
-					polygon.SetCurveGroup (0);
-				}				
-				result.AddPolygon (polygon);
+				if (useTriangles) {
+					polygon = new JSM.BodyPolygon ([current, next, ntop]);
+					if (isCurved) {
+						polygon.SetCurveGroup (0);
+					}				
+					result.AddPolygon (polygon);
+					polygon = new JSM.BodyPolygon ([current, ntop, top]);
+					if (isCurved) {
+						polygon.SetCurveGroup (0);
+					}				
+					result.AddPolygon (polygon);
+				} else {
+					polygon = new JSM.BodyPolygon ([current, next, ntop, top]);
+					if (isCurved) {
+						polygon.SetCurveGroup (0);
+					}				
+					result.AddPolygon (polygon);
+				}
 			}
 		}
 	}
@@ -95,9 +108,9 @@ JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, is
 	return result;
 };
 
-JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegmentation, isCurved)
+JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegmentation, useTriangles, isCurved)
 {
-	function GetBezierSurfacePoint (u, v, surfaceControlPoints)
+	function GetBezierSurfacePoint (uIndex, vIndex, u, v, surfaceControlPoints)
 	{
 		function BernsteinPolynomial (i, n, u)
 		{
@@ -134,6 +147,6 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 		return result;
 	}
 
-	var body = JSM.GenerateSurface ([0, 1], [0, 1], xSegmentation, ySegmentation, isCurved, GetBezierSurfacePoint, surfaceControlPoints);
+	var body = JSM.GenerateSurface ([0, 1], [0, 1], xSegmentation, ySegmentation, useTriangles, isCurved, GetBezierSurfacePoint, surfaceControlPoints);
 	return body;
 };

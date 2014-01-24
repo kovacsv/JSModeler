@@ -66,7 +66,7 @@
 
 		JSM.GenerateMobiusStrip = function ()
 		{
-			function GetSurfacePoint (u, v, userData)
+			function GetSurfacePoint (uIndex, vIndex, u, v, userData)
 			{
 				result = new JSM.Coord (
 					v / 2.0 * Math.sin (u / 2.0),
@@ -76,13 +76,13 @@
 				return result;
 			}
 
-			var body = JSM.GenerateSurface ([0, 2 * Math.PI], [-1, 1], 50, 50, true, GetSurfacePoint, null);
+			var body = JSM.GenerateSurface ([0, 2 * Math.PI], [-1, 1], 50, 50, true, true, GetSurfacePoint, null);
 			return body;
 		};
 
 		JSM.GenerateSeaShell = function ()
 		{
-			function GetSurfacePoint (u, v, userData)
+			function GetSurfacePoint (uIndex, vIndex, u, v, userData)
 			{
 				var a = -0.2;
 				var b = 0.4;
@@ -98,7 +98,7 @@
 				return result;
 			}
 
-			var body = JSM.GenerateSurface ([0, 10 * Math.PI], [0, Math.PI], 200, 100, true, GetSurfacePoint, null);
+			var body = JSM.GenerateSurface ([0, 10 * Math.PI], [0, Math.PI], 200, 100, true, true, GetSurfacePoint, null);
 			return body;
 		};		
 		
