@@ -483,7 +483,8 @@ JSM.JSONFileLoader.prototype.OnReady = function (responseText)
 		return;
 	}
 	
-	this.onReady (responseText);
+	var jsonData = JSON.parse (responseText);
+	this.onReady (jsonData);
 };
 
 JSM.JSONFileConverter = function (onReady, onTextureLoaded)
@@ -498,13 +499,12 @@ JSM.JSONFileConverter.prototype.Convert = function (fileName)
 	loader.Load (fileName);
 };
 
-JSM.JSONFileConverter.prototype.OnReady = function (responseText) 
+JSM.JSONFileConverter.prototype.OnReady = function (jsonData) 
 {
 	if (this.onReady === null) {
 		return;
 	}
 	
-	var jsonData = JSON.parse (responseText);
 	var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData, this.onTextureLoaded);
 	this.onReady (meshes);
 };
