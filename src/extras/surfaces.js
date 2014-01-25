@@ -108,7 +108,7 @@ JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, us
 	return result;
 };
 
-JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegmentation, useTriangles, isCurved)
+JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegmentation, isCurved)
 {
 	function GetBezierSurfacePoint (uIndex, vIndex, u, v, surfaceControlPoints)
 	{
@@ -147,6 +147,23 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 		return result;
 	}
 
-	var body = JSM.GenerateSurface ([0, 1], [0, 1], xSegmentation, ySegmentation, useTriangles, isCurved, GetBezierSurfacePoint, surfaceControlPoints);
+	var body = JSM.GenerateSurface ([0, 1], [0, 1], xSegmentation, ySegmentation, false, isCurved, GetBezierSurfacePoint, surfaceControlPoints);
+	return body;
+};
+
+JSM.GenerateMobiusStrip = function (width, xSegmentation, ySegmentation, isCurved)
+{
+	function GetSurfacePoint (uIndex, vIndex, u, v, userData)
+	{
+		var result = new JSM.Coord (
+			v / 2.0 * Math.sin (u / 2.0),
+			(1.0 + v / 2.0 * Math.cos (u / 2.0)) * Math.sin (u),
+			(1.0 + v / 2.0 * Math.cos (u / 2.0)) * Math.cos (u)
+		);
+		return result;
+	}
+
+	var widthHalf = width / 2.0;
+	var body = JSM.GenerateSurface ([0, 2 * Math.PI], [-widthHalf, widthHalf], xSegmentation, ySegmentation, false, isCurved, GetSurfacePoint, null);
 	return body;
 };
