@@ -123,8 +123,7 @@
 		
 		function ConvertFile (fileName)
 		{
-			var converter = new JSM.JSONFileConverter ();
-			converter.onReady = Converted;
+			var converter = new JSM.JSONFileConverter (Converted);
 			converter.Convert (fileName);
 		}
 	
