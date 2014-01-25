@@ -78,7 +78,7 @@
 			viewer = new JSM.Viewer ();
 			viewer.Start ('example', viewerSettings);
 			
-			var body = JSM.GenerateMobiusStrip (2.0, 100, 10, false);
+			var body = JSM.GenerateMobiusStrip (3.0, 100, 10, false);
 			var meshes = JSM.ConvertBodyToThreeMeshes (body);
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);
