@@ -151,13 +151,13 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 	return body;
 };
 
-JSM.GenerateMobiusStrip = function (aParameter, xSegmentation, ySegmentation, isCurved)
+JSM.GenerateMobiusStrip = function (a, xSegmentation, ySegmentation, isCurved)
 {
 	function GetSurfacePoint (uIndex, vIndex, u, v, userData)
 	{
 		var result = new JSM.Coord (
-			(aParameter - v * Math.sin (u / 2.0)) * Math.sin (u),
-			(aParameter - v * Math.sin (u / 2.0)) * Math.cos (u),
+			(a - v * Math.sin (u / 2.0)) * Math.sin (u),
+			(a - v * Math.sin (u / 2.0)) * Math.cos (u),
 			v * Math.cos (u / 2.0)
 		);
 		return result;
