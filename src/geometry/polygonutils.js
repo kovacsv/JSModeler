@@ -615,7 +615,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 				vertexTypes.push (currType);				
 			}
 		
-			var firstVertex = (index === 0)
+			var firstVertex = (index === 0);
 			var lastVertex = (index === polygon.VertexCount ());
 			
 			var currIndex, prevIndex;
@@ -673,36 +673,6 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 		}
 	}
 
-	function GetEntryVertices (vertexTypes, entryVertices)
-	{
-		function FindPrevSide (index, vertexTypes)
-		{
-			var currIndex = index;
-			while (vertexTypes[currIndex] === 0) {
-				currIndex = (currIndex > 0 ? currIndex - 1 : vertexTypes.length - 1);
-			}
-			return vertexTypes[currIndex];
-		}
-
-		var i, currSide, prevIndex, nextIndex, prevSide, nextSide;
-		for (i = 0; i < vertexTypes.length; i++) {
-			currSide = vertexTypes[i];
-			if (currSide === 0) {
-				prevIndex = (i > 0 ? i - 1 : vertexTypes.length - 1);
-				nextIndex = (i < vertexTypes.length - 1 ? i + 1 : 0);
-				prevSide = vertexTypes[prevIndex];
-				nextSide = vertexTypes[nextIndex];
-				if (nextSide !== 0 && prevSide === 0) {
-					prevSide = FindPrevSide (prevIndex, vertexTypes);
-				}
-
-				if ((prevSide == -1 && nextSide == 1) || (prevSide == 1 && nextSide == -1)) {
-					entryVertices.push (i);
-				}
-			}
-		}
-	}
-
 	function AddSimplePolygon (polygon, foundSide, frontPolygons, backPolygons, planePolygons)
 	{
 		if (foundSide == 1) {
@@ -714,8 +684,38 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 		}
 	}
 
-	function AddCuttedPolygons (cutPolygon, entryVertices, vertexTypes, frontPolygons, backPolygons)
+	function AddCuttedPolygons (cutPolygon, vertexTypes, frontPolygons, backPolygons)
 	{
+		function GetEntryVertices (vertexTypes, entryVertices)
+		{
+			function FindPrevSide (index, vertexTypes)
+			{
+				var currIndex = index;
+				while (vertexTypes[currIndex] === 0) {
+					currIndex = (currIndex > 0 ? currIndex - 1 : vertexTypes.length - 1);
+				}
+				return vertexTypes[currIndex];
+			}
+
+			var i, currSide, prevIndex, nextIndex, prevSide, nextSide;
+			for (i = 0; i < vertexTypes.length; i++) {
+				currSide = vertexTypes[i];
+				if (currSide === 0) {
+					prevIndex = (i > 0 ? i - 1 : vertexTypes.length - 1);
+					nextIndex = (i < vertexTypes.length - 1 ? i + 1 : 0);
+					prevSide = vertexTypes[prevIndex];
+					nextSide = vertexTypes[nextIndex];
+					if (nextSide !== 0 && prevSide === 0) {
+						prevSide = FindPrevSide (prevIndex, vertexTypes);
+					}
+
+					if ((prevSide == -1 && nextSide == 1) || (prevSide == 1 && nextSide == -1)) {
+						entryVertices.push (i);
+					}
+				}
+			}
+		}
+
 		function SortEntryVertices (cutPolygon, entryVertices)
 		{
 			function SwapArrayValues (array, from, to)
@@ -840,6 +840,12 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 			}
 		}
 
+		var entryVertices = [];
+		GetEntryVertices (vertexTypes, entryVertices);
+		if (entryVertices.length === 0 || entryVertices.length % 2 !== 0) {
+			return;
+		}
+
 		SortEntryVertices (cutPolygon, entryVertices);
 		GetOneSideCuttedPolygons (cutPolygon, entryVertices, vertexTypes, frontPolygons, backPolygons, false);
 		GetOneSideCuttedPolygons (cutPolygon, entryVertices, vertexTypes, frontPolygons, backPolygons, true);
@@ -852,12 +858,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 	if (cutPolygon.VertexCount () === 0 && vertexTypes.length === 0) {
 		AddSimplePolygon (polygon, foundSide, frontPolygons, backPolygons, planePolygons);
 	} else {
-		var entryVertices = [];
-		GetEntryVertices (vertexTypes, entryVertices);
-		if (entryVertices.length === 0 || entryVertices.length % 2 !== 0) {
-			return false;
-		}
-		AddCuttedPolygons (cutPolygon, entryVertices, vertexTypes, frontPolygons, backPolygons);
+		AddCuttedPolygons (cutPolygon, vertexTypes, frontPolygons, backPolygons);
 	}
 
 	if (frontPolygons.length + backPolygons.length + planePolygons.length === 0) {
