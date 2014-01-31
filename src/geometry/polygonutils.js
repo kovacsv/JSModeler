@@ -592,7 +592,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 	{
 		function AddVertex (polygon, index, cutPolygon, originalTypes, vertexTypes)
 		{
-			function AddIntersectionVertex (cutPolygon, vertexTypes, prevIndex, currIndex, currType)
+			function AddIntersectionVertex (polygon, cutPolygon, vertexTypes, prevIndex, currIndex, currType)
 			{
 				var prevType = vertexTypes[vertexTypes.length - 1];
 				if (prevType !== 0 && currType !== 0 && prevType != currType) {
@@ -608,7 +608,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 				}
 			}
 			
-			function AddOriginalVertex (cutPolygon, vertexTypes, currIndex, currType)
+			function AddOriginalVertex (polygon, cutPolygon, vertexTypes, currIndex, currType)
 			{
 				var currVertex = polygon.GetVertex (currIndex);
 				cutPolygon.AddVertex (currVertex.x, currVertex.y, currVertex.z);
@@ -629,11 +629,11 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 			
 			var currType = originalTypes[currIndex];
 			if (!firstVertex) {
-				AddIntersectionVertex (cutPolygon, vertexTypes, prevIndex, currIndex, currType);
+				AddIntersectionVertex (polygon, cutPolygon, vertexTypes, prevIndex, currIndex, currType);
 			}
 			
 			if (!lastVertex) {
-				AddOriginalVertex (cutPolygon, vertexTypes, currIndex, currType);
+				AddOriginalVertex (polygon, cutPolygon, vertexTypes, currIndex, currType);
 			}
 
 			return currType;
