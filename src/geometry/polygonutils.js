@@ -594,39 +594,48 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 		{
 			function AddIntersectionVertex (cutPolygon, vertexTypes, prevIndex, currIndex, currType)
 			{
-				if (vertexTypes.length > 0) {
-					var prevType = vertexTypes[vertexTypes.length - 1];
-					if (prevType !== 0 && currType !== 0 && prevType != currType) {
-						var prevVertex = polygon.GetVertex (prevIndex);
-						var currVertex = polygon.GetVertex (currIndex);
-						var line = new JSM.Line (currVertex, JSM.CoordSub (currVertex, prevVertex));
-						var intersection = new JSM.Coord ();
-						var linePlanePosition = JSM.LinePlanePosition (line, plane, intersection);
-						if (linePlanePosition == 'LineIntersectsPlane') {
-							cutPolygon.AddVertex (intersection.x, intersection.y, intersection.z);
-							vertexTypes.push (0);
-						}
+				var prevType = vertexTypes[vertexTypes.length - 1];
+				if (prevType !== 0 && currType !== 0 && prevType != currType) {
+					var prevVertex = polygon.GetVertex (prevIndex);
+					var currVertex = polygon.GetVertex (currIndex);
+					var line = new JSM.Line (currVertex, JSM.CoordSub (currVertex, prevVertex));
+					var intersection = new JSM.Coord ();
+					var linePlanePosition = JSM.LinePlanePosition (line, plane, intersection);
+					if (linePlanePosition == 'LineIntersectsPlane') {
+						cutPolygon.AddVertex (intersection.x, intersection.y, intersection.z);
+						vertexTypes.push (0);
 					}
 				}
 			}
+			
+			function AddOriginalVertex (cutPolygon, vertexTypes, currIndex, currType)
+			{
+				var currVertex = polygon.GetVertex (currIndex);
+				cutPolygon.AddVertex (currVertex.x, currVertex.y, currVertex.z);
+				vertexTypes.push (currType);				
+			}
 		
-			var currIndex, prevIndex, currVertex, currType;
-			if (index == polygon.VertexCount ()) {
+			var firstVertex = (index === 0)
+			var lastVertex = (index === polygon.VertexCount ());
+			
+			var currIndex, prevIndex;
+			if (lastVertex) {
 				currIndex = 0;
 				prevIndex = polygon.VertexCount () - 1;
-				currType = vertexTypes[currIndex];
-				AddIntersectionVertex (cutPolygon, vertexTypes, polygon.VertexCount () - 1, currIndex, currType);
 			} else {
 				currIndex = index;
 				prevIndex = currIndex - 1;
-				currType = originalTypes[currIndex];
-				AddIntersectionVertex (cutPolygon, vertexTypes, currIndex - 1, currIndex, currType);
-
-				currVertex = polygon.GetVertex (currIndex);
-				cutPolygon.AddVertex (currVertex.x, currVertex.y, currVertex.z);
-				vertexTypes.push (currType);
 			}
 			
+			var currType = originalTypes[currIndex];
+			if (!firstVertex) {
+				AddIntersectionVertex (cutPolygon, vertexTypes, prevIndex, currIndex, currType);
+			}
+			
+			if (!lastVertex) {
+				AddOriginalVertex (cutPolygon, vertexTypes, currIndex, currType);
+			}
+
 			return currType;
 		}
 
