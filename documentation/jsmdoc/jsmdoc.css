@@ -1,0 +1,77 @@
+html, body
+{
+	color : #000000;
+	background : #ffffff;
+	font-size : 12px;
+	font-family : Arial, cursive;
+	margin : 0px;
+	padding : 0px;
+	width : 100%;
+	height : 100%;
+}
+
+div.left
+{
+	color : #eeeeee;
+	background : #222222;
+	width : 250px;
+	height : 100%;
+	float : left;
+}
+
+div.content
+{
+	padding : 10px;
+}
+
+div.title
+{
+	font-size : 27px;
+	margin-bottom : 15px;
+}
+
+div.modulename
+{
+	font-size : 17px;
+	margin-top : 15px;
+	margin-bottom : 10px;
+}
+
+div.entryname
+{
+	font-size : 12px;
+	margin-bottom : 5px;
+}
+
+div.mark
+{
+	text-align : center;
+	padding : 0px;
+	width : 20px;
+	margin-right : 5px;
+	border-radius : 5px;
+	float : left;
+}
+
+div.mark.function
+{
+	color : #ffffff;
+	background : #279b61;
+}
+
+div.mark.class
+{
+	color : #ffffff;
+	background : #cc3333;
+}
+
+div.indented
+{
+	margin-left : 15px;
+}
+
+div.right
+{
+	height : 100%;
+	float : left;
+}

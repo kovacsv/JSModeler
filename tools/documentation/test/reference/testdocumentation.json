@@ -1,6 +1,6 @@
 {
 	"modules" : {
-		"module1" : {
+		"Module1" : {
 			"functions" : {
 				"ExampleFunctionNoOtherSections" : {
 				},
@@ -88,7 +88,7 @@
 				}
 			}
 		},
-		"module2" : {
+		"Module2" : {
 			"functions" : {
 				"ExampleFunctionWithInAnotherModule" : {
 					"description" : "This is the description.",

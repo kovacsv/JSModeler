@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="jsmdoc.css">
+	<title>JSModeler Documentation</title>
+
+	<script type="text/javascript">
+		function AddModule (module, parentDiv)
+		{
+			function AddEntry (functionVal, parentDiv, isFunction)
+			{
+				var entryDiv = document.createElement ('div');
+				entryDiv.className = 'entryname'
+				
+				var markDiv = document.createElement ('div');
+				if (isFunction) {
+					markDiv.className = 'mark function';
+					markDiv.innerHTML = 'f';
+				} else {
+					markDiv.className = 'mark class';
+					markDiv.innerHTML = 'c';
+				}
+				entryDiv.appendChild (markDiv);
+				
+				var nameDiv = document.createElement ('div');
+				nameDiv.innerHTML = functionVal;
+				entryDiv.appendChild (nameDiv);
+				
+				parentDiv.appendChild (entryDiv);			
+			}
+			
+			if (module.functions !== undefined) {
+				var functionVal;
+				for (functionVal in module.functions) {
+					AddEntry (functionVal, parentDiv, true);
+				}
+			}
+			if (module.classes !== undefined) {
+				var classVal;
+				for (classVal in module.classes) {
+					AddEntry (classVal, parentDiv, false);
+				}
+			}
+		}	
+	
+		function AddModules (jsonData, parentDiv)
+		{
+			var modules = jsonData.modules;
+			var module, moduleName, indented;
+			for (module in modules) {
+				moduleName = document.createElement ('div');
+				moduleName.className = 'modulename'
+				moduleName.innerHTML = module;
+				parentDiv.appendChild (moduleName);
+				indented = document.createElement ('div');
+				indented.className = 'indented'
+				AddModule (modules[module], indented);
+				parentDiv.appendChild (indented);
+			}
+		}
+	
+		function DocumentationLoaded (jsonData)
+		{
+			var docDiv = document.getElementById ('documentation');
+			documentation.innerHTML = '';
+			AddModules (jsonData, docDiv);
+
+		}
+	
+		function Load ()
+		{
+			var request = new XMLHttpRequest ();
+			request.overrideMimeType ('application/json');
+			request.open ('GET', 'jsmdoc.json', true);
+			request.onreadystatechange = function () {
+				if (request.readyState == 4) {
+					var jsonData = JSON.parse (request.responseText);
+					DocumentationLoaded (jsonData);
+				}
+			};
+			request.send (null);
+		}
+
+		window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+</head>
+
+<body>
+	<div class="left">
+		<div class="content">
+			<div class="title">
+				JSModeler
+			</div>
+			<div id="documentation">
+				Loading...
+			</div>
+		</div>
+	</div>
+	<div class="right">
+	</div>
+</body>
+
+</html>

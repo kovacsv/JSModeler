@@ -1,0 +1,83 @@
+{
+	"modules" : {
+		"Core" : {
+			"functions" : {
+				"IsZero" : {
+					"description" : "Determines if the given value is near zero. Uses epsilon for comparison."
+				},
+				"IsPositive" : {
+					"description" : "Determines if the given value is positive. Uses epsilon for comparison."
+				},
+				"IsNegative" : {
+					"description" : "Determines if the given value is negative. Uses epsilon for comparison."
+				},
+				"IsLower" : {
+					"description" : "Determines if a value is lower than an other. Uses epsilon for comparison."
+				},
+				"IsGreater" : {
+					"description" : "Determines if a value is greater than an other. Uses epsilon for comparison."
+				},
+				"IsEqual" : {
+					"description" : "Determines if two values are equal. Uses epsilon for comparison."
+				},
+				"IsEqualWithEps" : {
+					"description" : "Determines if two values are equal. Uses the given epsilon for comparison."
+				},
+				"IsLowerOrEqual" : {
+					"description" : "Determines if a value is lower or equal to an other. Uses epsilon for comparison."
+				},
+				"IsGreaterOrEqual" : {
+					"description" : "Determines if a value is greater or equal to an other. Uses epsilon for comparison."
+				},
+				"Minimum" : {
+					"description" : "Returns the minimum of two values. Uses epsilon for comparison."
+				},
+				"Maximum" : {
+					"description" : "Returns the maximum of two values. Uses epsilon for comparison."
+				},
+				"ArcSin" : {
+					"description" : "Calculates the arcus sinus value."
+				},
+				"ArcCos" : {
+					"description" : "Calculates the arcus cosinus value."
+				},
+				"RandomInt" : {
+					"description" : "Generates a random integer between two integers."
+				},
+				"SeededRandomInt" : {
+					"description" : "Generates a random integer between two integers. A seed number can be specified."
+				},
+				"ValueOrDefault" : {
+					"description" : "Returns the given value, or a default if it is undefined."
+				},
+				"Assert" : {
+					"description" : "Shows up an alert with the given message is the condition is false."
+				}
+			},
+			"classes" : {
+				"Timer" : {
+					"description" : "Utility class for time measure.",
+					"functions" : {
+						"Start" : {
+							"description" : "Starts the timer."
+						},
+						"Stop" : {
+							"description" : "Stops the timer."
+						},
+						"Result" : {
+							"description" : "Returns the time between start and stop;."
+						}
+					}
+				}
+			}
+		},
+		"Geometry" : {
+		},
+		"Modeler" : {
+		},
+		"Extras" : {
+		},
+		"Viewer" : {
+		}
+	}
+}

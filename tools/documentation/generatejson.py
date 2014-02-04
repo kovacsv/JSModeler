@@ -48,7 +48,8 @@ def Main (argv):
 	
 	documentation = jsmdoc.Documentation ()
 	for moduleName in moduleNames:
-		documentation.AddModule (moduleName, filesByModule[moduleName])
+		newModuleName = moduleName.title ()
+		documentation.AddModule (newModuleName, filesByModule[moduleName])
 	documentation.WriteJSON (resultFilePath)
 	
 	return
