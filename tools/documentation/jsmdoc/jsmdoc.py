@@ -193,17 +193,17 @@ class Function:
 		if self.HasDescription ():
 			file.Write (tabs + 1, '"description" : "' + self.description + '"', self.HasParameters () or self.HasReturns ())
 		if self.HasParameters ():
-			file.Write (tabs + 1, '"parameters" : {', False)
+			file.Write (tabs + 1, '"parameters" : [', False)
 			for i in range (0, len (self.parameters)):
 				parameter = self.parameters[i]
 				parameter.WriteJSON (tabs + 2, file, i < len (self.parameters) - 1)
-			file.Write (tabs + 1, '}', self.HasReturns ())
+			file.Write (tabs + 1, ']', self.HasReturns ())
 		if self.HasReturns ():
-			file.Write (tabs + 1, '"returns" : {', False)
+			file.Write (tabs + 1, '"returns" : [', False)
 			for i in range (0, len (self.returns)):
 				parameter = self.returns[i]
 				parameter.WriteJSON (tabs + 2, file, i < len (self.returns) - 1)
-			file.Write (tabs + 1, '}', False)
+			file.Write (tabs + 1, ']', False)
 		file.Write (tabs, '}', comma)
 
 class Class:

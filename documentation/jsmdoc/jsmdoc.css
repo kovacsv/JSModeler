@@ -1,6 +1,6 @@
 html, body
 {
-	color : #000000;
+	color : #222222;
 	background : #ffffff;
 	font-size : 12px;
 	font-family : Arial, cursive;
@@ -12,11 +12,12 @@ html, body
 
 div.left
 {
-	color : #eeeeee;
+	color : #dddddd;
 	background : #222222;
 	width : 250px;
 	height : 100%;
 	float : left;
+	overflow : auto;
 }
 
 div.content
@@ -26,8 +27,20 @@ div.content
 
 div.title
 {
-	font-size : 27px;
 	margin-bottom : 15px;
+}
+
+span.maintitle
+{
+	font-size : 27px;
+}
+
+span.subtitle
+{
+	color : #777777;
+	background : transparent;
+	font-size : 12px;
+	margin-left : 4px;
 }
 
 div.modulename
@@ -37,32 +50,38 @@ div.modulename
 	margin-bottom : 10px;
 }
 
-div.entryname
+div.entry
 {
 	font-size : 12px;
 	margin-bottom : 5px;
+	cursor : pointer;
 }
 
-div.mark
+div.entrymark
 {
 	text-align : center;
-	padding : 0px;
+	padding : 2px;
 	width : 20px;
 	margin-right : 5px;
 	border-radius : 5px;
 	float : left;
 }
 
-div.mark.function
+div.entrymark.function
 {
 	color : #ffffff;
 	background : #279b61;
 }
 
-div.mark.class
+div.entrymark.class
 {
 	color : #ffffff;
 	background : #cc3333;
+}
+
+div.entryname
+{
+	padding : 2px;
 }
 
 div.indented
@@ -74,4 +93,22 @@ div.right
 {
 	height : 100%;
 	float : left;
+	overflow : auto;
+}
+
+div.doctitle1
+{
+	font-size : 27px;
+	margin-bottom : 10px;
+}
+
+div.doctitle2
+{
+	font-size : 27px;
+	margin-bottom : 10px;
+}
+
+div.doccontent
+{
+	font-size : 19px;
 }

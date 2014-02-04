@@ -72,6 +72,94 @@
 			}
 		},
 		"Geometry" : {
+			"functions" : {
+				"MatrixDeterminant2x2" : {
+					"description" : "Calculates the determinant of a 2x2 matrix."
+				},
+				"MatrixDeterminant3x3" : {
+					"description" : "Calculates the determinant of a 3x3 matrix."
+				},
+				"MatrixDeterminant4x4" : {
+					"description" : "Calculates the determinant of a 4x4 matrix."
+				},
+				"VectorMatrixMultiply4x4" : {
+					"description" : "Multiplies a vector with a matrix.",
+					"parameters" : [
+						["vector", "number[4]", "the vector"],
+						["matrix", "number[16]", "the matrix"]
+					],
+					"returns" : [
+						["number[4]", "the vector result of the multiplication"]
+					]
+				},
+				"MatrixMultiply4x4" : {
+					"description" : "Multiplies a two matrices."
+				}
+			},
+			"classes" : {
+				"Coord2D" : {
+					"description" : "Represents a 2D coordinate.",
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the coordinate."
+						},
+						"ToString" : {
+							"description" : "Converts the coordinate values to string."
+						},
+						"Clone" : {
+							"description" : "Clones the coordinate."
+						}
+					}
+				},
+				"PolarCoord" : {
+					"description" : "Represents a 2D polar coordinate.",
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the coordinate."
+						},
+						"ToString" : {
+							"description" : "Converts the coordinate values to string."
+						},
+						"Clone" : {
+							"description" : "Clones the coordinate."
+						}
+					}
+				},
+				"Coord" : {
+					"description" : "Represents a 3D coordinate.",
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the coordinate."
+						},
+						"ToString" : {
+							"description" : "Converts the coordinate values to string."
+						},
+						"Clone" : {
+							"description" : "Clones the coordinate."
+						}
+					}
+				},
+				"SphericalCoord" : {
+					"description" : "Represents a 3D spherical coordinate.",
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the coordinate."
+						},
+						"ToString" : {
+							"description" : "Converts the coordinate values to string."
+						},
+						"Clone" : {
+							"description" : "Clones the coordinate."
+						}
+					}
+				},
+				"Vector2D" : {
+					"description" : "Same as Coord2D."
+				},
+				"Vector" : {
+					"description" : "Same as Coord."
+				}
+			}
 		},
 		"Modeler" : {
 		},

@@ -10,45 +10,107 @@
 	<title>JSModeler Documentation</title>
 
 	<script type="text/javascript">
+		var jsonData = null;
+	
+		function ShowFunction (entryArray, entryName)
+		{
+			var docDiv = document.getElementById ('documentation');
+			while (docDiv.lastChild) {
+				docDiv.removeChild (docDiv.lastChild);
+			}
+			
+			var titleDiv = document.createElement ('div');
+			titleDiv.className = 'doctitle1';
+			titleDiv.innerHTML = entryName;
+			docDiv.appendChild (titleDiv);
+
+			var indented = document.createElement ('div');
+			indented.className = 'indented';
+			
+			var content = entryArray[entryName];
+			if (content.description !== undefined) {
+				var contentDiv = document.createElement ('div');
+				contentDiv.className = 'doccontent';
+				contentDiv.innerHTML = content.description;
+				indented.appendChild (contentDiv);
+			}
+			
+			docDiv.appendChild (indented);
+		}
+	
+		function ShowClass (entryArray, entryName)
+		{
+			var docDiv = document.getElementById ('documentation');
+			while (docDiv.lastChild) {
+				docDiv.removeChild (docDiv.lastChild);
+			}
+			
+			var titleDiv = document.createElement ('div');
+			titleDiv.className = 'doctitle1';
+			titleDiv.innerHTML = entryName;
+			docDiv.appendChild (titleDiv);
+
+			var indented = document.createElement ('div');
+			indented.className = 'indented';
+			
+			var content = entryArray[entryName];
+			if (content.description !== undefined) {
+				var contentDiv = document.createElement ('div');
+				contentDiv.className = 'doccontent';
+				contentDiv.innerHTML = content.description;
+				indented.appendChild (contentDiv);
+			}
+			
+			docDiv.appendChild (indented);
+		}
+
 		function AddModule (module, parentDiv)
 		{
-			function AddEntry (functionVal, parentDiv, isFunction)
+			function AddEntry (entryArray, entryName, parentDiv, isFunction)
 			{
 				var entryDiv = document.createElement ('div');
-				entryDiv.className = 'entryname'
+				entryDiv.className = 'entry'
+				entryDiv.onclick = function () {
+					if (isFunction) {
+						ShowFunction (entryArray, entryName);
+					} else {
+						ShowClass (entryArray, entryName);
+					}
+				}
 				
 				var markDiv = document.createElement ('div');
 				if (isFunction) {
-					markDiv.className = 'mark function';
-					markDiv.innerHTML = 'f';
+					markDiv.className = 'entrymark function';
+					markDiv.innerHTML = 'F';
 				} else {
-					markDiv.className = 'mark class';
-					markDiv.innerHTML = 'c';
+					markDiv.className = 'entrymark class';
+					markDiv.innerHTML = 'C';
 				}
 				entryDiv.appendChild (markDiv);
 				
 				var nameDiv = document.createElement ('div');
-				nameDiv.innerHTML = functionVal;
+				nameDiv.className = 'entryname'
+				nameDiv.innerHTML = entryName;
 				entryDiv.appendChild (nameDiv);
-				
+
 				parentDiv.appendChild (entryDiv);			
 			}
 			
 			if (module.functions !== undefined) {
-				var functionVal;
-				for (functionVal in module.functions) {
-					AddEntry (functionVal, parentDiv, true);
+				var functionName;
+				for (functionName in module.functions) {
+					AddEntry (module.functions, functionName, parentDiv, true);
 				}
 			}
 			if (module.classes !== undefined) {
-				var classVal;
-				for (classVal in module.classes) {
-					AddEntry (classVal, parentDiv, false);
+				var className;
+				for (className in module.classes) {
+					AddEntry (module.classes, className, parentDiv, false);
 				}
 			}
 		}	
 	
-		function AddModules (jsonData, parentDiv)
+		function AddModules (parentDiv)
 		{
 			var modules = jsonData.modules;
 			var module, moduleName, indented;
@@ -64,12 +126,13 @@
 			}
 		}
 	
-		function DocumentationLoaded (jsonData)
+		function DocumentationLoaded ()
 		{
-			var docDiv = document.getElementById ('documentation');
-			documentation.innerHTML = '';
-			AddModules (jsonData, docDiv);
-
+			var entriesDiv = document.getElementById ('entries');
+			while (entriesDiv.lastChild) {
+				entriesDiv.removeChild (entriesDiv.lastChild);
+			}
+			AddModules (entriesDiv);
 		}
 	
 		function Load ()
@@ -79,7 +142,7 @@
 			request.open ('GET', 'jsmdoc.json', true);
 			request.onreadystatechange = function () {
 				if (request.readyState == 4) {
-					var jsonData = JSON.parse (request.responseText);
+					jsonData = JSON.parse (request.responseText);
 					DocumentationLoaded (jsonData);
 				}
 			};
@@ -97,14 +160,18 @@
 	<div class="left">
 		<div class="content">
 			<div class="title">
-				JSModeler
+				<span class="maintitle">JSModeler</span> <span class="subtitle">docs</span>
 			</div>
-			<div id="documentation">
+			<div id="entries">
 				Loading...
 			</div>
 		</div>
 	</div>
 	<div class="right">
+		<div class="content">
+			<div id="documentation">
+			</div>
+		</div>
 	</div>
 </body>
 

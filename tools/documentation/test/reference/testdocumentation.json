@@ -11,37 +11,37 @@
 					"description" : "This is the description. Description has multiple lines. This is the last line."
 				},
 				"ExampleFunctionWithParameters" : {
-					"parameters" : {
+					"parameters" : [
 						["exampleParamA", "exampleTypeA", "example parameter description a"],
 						["exampleParamB", "exampleTypeB", "example parameter description a"]
-					}
+					]
 				},
 				"ExampleFunctionWithParametersAndDescription" : {
 					"description" : "This is the description.",
-					"parameters" : {
+					"parameters" : [
 						["exampleParamA", "exampleTypeA", "example parameter description a"],
 						["exampleParamB", "exampleTypeB", "example parameter description a"]
-					}
+					]
 				},
 				"ExampleFunctionWithParametersAndDescriptionAndReturns" : {
 					"description" : "This is the description.",
-					"parameters" : {
+					"parameters" : [
 						["exampleParamA", "exampleTypeA", "example parameter description a"],
 						["exampleParamB", "exampleTypeB", "example parameter description a"]
-					},
-					"returns" : {
+					],
+					"returns" : [
 						["exampleTypeC", "example return value description c"]
-					}
+					]
 				},
 				"ExampleFunctionWithInAnotherFile" : {
 					"description" : "This is the description.",
-					"parameters" : {
+					"parameters" : [
 						["exampleParamA", "exampleTypeA", "example parameter description a"],
 						["exampleParamB", "exampleTypeB", "example parameter description a"]
-					},
-					"returns" : {
+					],
+					"returns" : [
 						["exampleTypeC", "example return value description c"]
-					}
+					]
 				}
 			},
 			"classes" : {
@@ -72,17 +72,17 @@
 					"functions" : {
 						"Function1" : {
 							"description" : "This is a member function for ExampleClass",
-							"parameters" : {
+							"parameters" : [
 								["exampleParamA", "exampleTypeA", "example parameter description a"],
 								["exampleParamB", "exampleTypeB", "example parameter description a"]
-							}
+							]
 						},
 						"Function2" : {
 							"description" : "This is a member function for ExampleClass",
-							"parameters" : {
+							"parameters" : [
 								["exampleParamA", "exampleTypeA", "example parameter description a"],
 								["exampleParamB", "exampleTypeB", "example parameter description a"]
-							}
+							]
 						}
 					}
 				}
@@ -92,13 +92,13 @@
 			"functions" : {
 				"ExampleFunctionWithInAnotherModule" : {
 					"description" : "This is the description.",
-					"parameters" : {
+					"parameters" : [
 						["exampleParamA", "exampleTypeA", "example parameter description a"],
 						["exampleParamB", "exampleTypeB", "example parameter description a"]
-					},
-					"returns" : {
+					],
+					"returns" : [
 						["exampleTypeC", "example return value description c"]
-					}
+					]
 				}
 			}
 		}
