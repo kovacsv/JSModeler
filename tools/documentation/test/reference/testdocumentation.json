@@ -1,0 +1,106 @@
+{
+	"modules" : {
+		"module1" : {
+			"functions" : {
+				"ExampleFunctionNoOtherSections" : {
+				},
+				"ExampleFunctionWithDescription" : {
+					"description" : "This is the description."
+				},
+				"ExampleFunctionMultiline" : {
+					"description" : "This is the description. Description has multiple lines. This is the last line."
+				},
+				"ExampleFunctionWithParameters" : {
+					"parameters" : {
+						["exampleParamA", "exampleTypeA", "example parameter description a"],
+						["exampleParamB", "exampleTypeB", "example parameter description a"]
+					}
+				},
+				"ExampleFunctionWithParametersAndDescription" : {
+					"description" : "This is the description.",
+					"parameters" : {
+						["exampleParamA", "exampleTypeA", "example parameter description a"],
+						["exampleParamB", "exampleTypeB", "example parameter description a"]
+					}
+				},
+				"ExampleFunctionWithParametersAndDescriptionAndReturns" : {
+					"description" : "This is the description.",
+					"parameters" : {
+						["exampleParamA", "exampleTypeA", "example parameter description a"],
+						["exampleParamB", "exampleTypeB", "example parameter description a"]
+					},
+					"returns" : {
+						["exampleTypeC", "example return value description c"]
+					}
+				},
+				"ExampleFunctionWithInAnotherFile" : {
+					"description" : "This is the description.",
+					"parameters" : {
+						["exampleParamA", "exampleTypeA", "example parameter description a"],
+						["exampleParamB", "exampleTypeB", "example parameter description a"]
+					},
+					"returns" : {
+						["exampleTypeC", "example return value description c"]
+					}
+				}
+			},
+			"classes" : {
+				"ExampleClassWithNoOtherSections" : {
+				},
+				"ExampleClassWithDescription" : {
+					"description" : "This is the description."
+				},
+				"ExampleClassWithParameters" : {
+					"parameters" : {
+						["exampleParamA", "exampleTypeA", "example parameter description a"],
+						["exampleParamB", "exampleTypeB", "example parameter description a"]
+					}
+				},
+				"ExampleClassWithDescriptionAndParameters" : {
+					"description" : "This is the description.",
+					"parameters" : {
+						["exampleParamA", "exampleTypeA", "example parameter description a"],
+						["exampleParamB", "exampleTypeB", "example parameter description a"]
+					}
+				},
+				"ExampleClass" : {
+					"description" : "This class has a lot of functions.",
+					"parameters" : {
+						["exampleParamA", "exampleTypeA", "example parameter description a"],
+						["exampleParamB", "exampleTypeB", "example parameter description a"]
+					},
+					"functions" : {
+						"Function1" : {
+							"description" : "This is a member function for ExampleClass",
+							"parameters" : {
+								["exampleParamA", "exampleTypeA", "example parameter description a"],
+								["exampleParamB", "exampleTypeB", "example parameter description a"]
+							}
+						},
+						"Function2" : {
+							"description" : "This is a member function for ExampleClass",
+							"parameters" : {
+								["exampleParamA", "exampleTypeA", "example parameter description a"],
+								["exampleParamB", "exampleTypeB", "example parameter description a"]
+							}
+						}
+					}
+				}
+			}
+		},
+		"module2" : {
+			"functions" : {
+				"ExampleFunctionWithInAnotherModule" : {
+					"description" : "This is the description.",
+					"parameters" : {
+						["exampleParamA", "exampleTypeA", "example parameter description a"],
+						["exampleParamB", "exampleTypeB", "example parameter description a"]
+					},
+					"returns" : {
+						["exampleTypeC", "example return value description c"]
+					}
+				}
+			}
+		}
+	}
+}

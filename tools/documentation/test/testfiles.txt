@@ -1,0 +1,3 @@
+testsource/module1/testfile1.js
+testsource/module1/testfile2.js
+testsource/module2/testfile3.js
