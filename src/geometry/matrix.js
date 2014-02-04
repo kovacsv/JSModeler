@@ -2,10 +2,10 @@
 * Function: VectorMatrixMultiply4x4
 * Description: Multiplies a vector with a matrix.
 * Parameters:
-* 	vector {number[4]} the vector
-* 	matrix {number[16]} the matrix
+*	vector {number[4]} the vector
+*	matrix {number[16]} the matrix
 * Returns:
-* 	{number[4]} the vector result of the multiplication
+*	{number[4]} the vector result of the multiplication
 */
 JSM.VectorMatrixMultiply4x4 = function (vector, matrix)
 {
