@@ -538,7 +538,7 @@ JSM.CoordTurnType = function (a, b, c, normal)
 * Function: CalculateCentroid
 * Description: Calculates center points of the given coordinates.
 * Parameters:
-*	coords {Coord} the array of coordinates
+*	coords {Coord[*]} the array of coordinates
 * Returns:
 *	{Coord} the result
 */
@@ -561,7 +561,7 @@ JSM.CalculateCentroid = function (coords)
 * Function: CalculateNormal
 * Description: Calculates normal vector for the given coordinates.
 * Parameters:
-*	coords {Coord} the array of coordinates
+*	coords {Coord[*]} the array of coordinates
 * Returns:
 *	{Vector} the result
 */

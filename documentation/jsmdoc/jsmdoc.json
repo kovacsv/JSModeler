@@ -538,7 +538,7 @@
 				"CalculateCentroid" : {
 					"description" : "Calculates center points of the given coordinates.",
 					"parameters" : [
-						["coords", "Coord", "the array of coordinates"]
+						["coords", "Coord[*]", "the array of coordinates"]
 					],
 					"returns" : [
 						["Coord", "the result"]
@@ -547,7 +547,7 @@
 				"CalculateNormal" : {
 					"description" : "Calculates normal vector for the given coordinates.",
 					"parameters" : [
-						["coords", "Coord", "the array of coordinates"]
+						["coords", "Coord[*]", "the array of coordinates"]
 					],
 					"returns" : [
 						["Vector", "the result"]
@@ -963,6 +963,24 @@
 					],
 					"returns" : [
 						["Coord", "the result"]
+					]
+				},
+				"ConvexHull2D" : {
+					"description" : "Calculates the 2D convex hull from the given coordinates.",
+					"parameters" : [
+						["coords", "Coord2D[*]", "the coordinate array"]
+					],
+					"returns" : [
+						["Coord2D[*]", "coordinate array of the convex hull"]
+					]
+				},
+				"ConvexHull3D" : {
+					"description" : "Calculates the 3D convex hull from the given coordinates.",
+					"parameters" : [
+						["coords", "Coord[*]", "the coordinate array"]
+					],
+					"returns" : [
+						["Coord[3][*]", "triangles of the convex hull (array of arrays with three coordinates)"]
 					]
 				}
 			},
