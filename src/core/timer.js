@@ -9,7 +9,7 @@ JSM.Timer = function ()
 };
 
 /**
-* Function: Timer->Start
+* Function: Timer.Start
 * Description: Starts the timer.
 */
 JSM.Timer.prototype.Start = function ()
@@ -19,7 +19,7 @@ JSM.Timer.prototype.Start = function ()
 };
 
 /**
-* Function: Timer->Stop
+* Function: Timer.Stop
 * Description: Stops the timer.
 */
 JSM.Timer.prototype.Stop = function ()
@@ -29,8 +29,10 @@ JSM.Timer.prototype.Stop = function ()
 };
 
 /**
-* Function: Timer->Result
-* Description: Returns the time between start and stop;.
+* Function: Timer.Result
+* Description: Returns the time between start and stop.
+* Returns:
+*	{number} The result.
 */
 JSM.Timer.prototype.Result = function ()
 {

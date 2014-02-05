@@ -1,6 +1,10 @@
 /**
 * Function: MatrixDeterminant2x2
 * Description: Calculates the determinant of a 2x2 matrix.
+* Parameters:
+*	m00..m11 {4 numbers} the matrix values
+* Returns:
+*	{number} the result
 */
 JSM.MatrixDeterminant2x2 = function (m00, m01,
 									m10, m11)
@@ -11,6 +15,10 @@ JSM.MatrixDeterminant2x2 = function (m00, m01,
 /**
 * Function: MatrixDeterminant3x3
 * Description: Calculates the determinant of a 3x3 matrix.
+* Parameters:
+*	m00..m22 {9 numbers} the matrix values
+* Returns:
+*	{number} the result
 */
 JSM.MatrixDeterminant3x3 = function (m00, m01, m02,
 									m10, m11, m12,
@@ -25,6 +33,10 @@ JSM.MatrixDeterminant3x3 = function (m00, m01, m02,
 /**
 * Function: MatrixDeterminant4x4
 * Description: Calculates the determinant of a 4x4 matrix.
+* Parameters:
+*	m00..m33 {16 numbers} the matrix values
+* Returns:
+*	{number} the result
 */
 JSM.MatrixDeterminant4x4 = function (m00, m01, m02, m03,
 									m10, m11, m12, m13,

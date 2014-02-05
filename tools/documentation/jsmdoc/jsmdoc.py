@@ -10,7 +10,7 @@ keywords = [
 	'Returns:'
 ]
 
-classFunctionSeparator = '->'
+classFunctionSeparator = '.'
 
 functionKeyword = keywords[0]
 classKeyword = keywords[1]
@@ -239,11 +239,11 @@ class Class:
 		if self.HasDescription ():
 			file.Write (tabs + 1, '"description" : "' + self.description + '"', self.HasParameters () or self.HasFunctions ())
 		if self.HasParameters ():
-			file.Write (tabs + 1, '"parameters" : {', False)
+			file.Write (tabs + 1, '"parameters" : [', False)
 			for i in range (0, len (self.parameters)):
 				parameter = self.parameters[i]
 				parameter.WriteJSON (tabs + 2, file, i < len (self.parameters) - 1)
-			file.Write (tabs + 1, '}', self.HasFunctions ())
+			file.Write (tabs + 1, ']', self.HasFunctions ())
 		if self.HasFunctions ():
 			file.Write (tabs + 1, '"functions" : {', False)
 			for i in range (0, len (self.functions)):

@@ -43,6 +43,11 @@ JSM.VectorMatrixMultiply4x4 = function (vector, matrix)
 /**
 * Function: MatrixMultiply4x4
 * Description: Multiplies a two matrices.
+* Parameters:
+*	matrix1 {number[16]} first matrix
+*	matrix2 {number[16]} second matrix
+* Returns:
+*	{number[16]} the matrix result of the multiplication
 */
 JSM.MatrixMultiply4x4 = function (matrix1, matrix2)
 {

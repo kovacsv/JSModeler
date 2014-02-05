@@ -11,31 +11,102 @@
 
 	<script type="text/javascript">
 		var jsonData = null;
+		var clickLinks = [];
 	
+		function CreateElement (type, className, innerHTML)
+		{
+			var elem = document.createElement (type);
+			elem.className = className;
+			if (innerHTML !== undefined) {
+				elem.innerHTML = innerHTML;
+			}
+			return elem;
+		}
+
+		function GenerateParameterTable (parameters, parentDiv)
+		{
+			var indented = CreateElement ('div', 'moreindented')
+			var table = CreateElement ('table', 'parametertable'); 
+			var i, parameter, tr, typeName, typeCell;
+			for (i = 0; i < parameters.length; i++) {
+				parameter = parameters[i];
+				tr = CreateElement ('tr', 'parametertablerow');
+				if (parameter.length == 3) {
+					typeName = parameter[1];
+					typeCell = CreateElement ('td', 'parametertabletypecell', typeName);
+					tr.appendChild (CreateElement ('td', 'parametertablenamecell', parameter[0]));
+					tr.appendChild (typeCell);
+					tr.appendChild (CreateElement ('td', 'parametertabledesccell', parameter[2]));
+				} else if (parameter.length == 2) {
+					typeName = parameter[0];
+					typeCell = CreateElement ('td', 'parametertabletypecell', typeName);
+					tr.appendChild (typeCell);
+					tr.appendChild (CreateElement ('td', 'parametertabledesccell', parameter[1]));
+				}
+				if (typeName in clickLinks) {
+					typeCell.className += ' link';
+					typeCell.onclick = function (theTypeName) {
+						return function () {
+							window.location.hash = theTypeName;
+						}
+					} (typeName);
+				}
+				table.appendChild (tr);
+			}
+			indented.appendChild (table);
+			parentDiv.appendChild (indented);
+		}
+		
+		function GenerateFunctionDoc (entryArray, entryName, parentDiv, isMember)
+		{
+			parentDiv.appendChild (CreateElement ('div', isMember ? 'doctitle3' : 'doctitle1', entryName));
+			var indented = CreateElement ('div', 'moreindented')
+			var content = entryArray[entryName];
+			if (content.description !== undefined) {
+				indented.appendChild (CreateElement ('div', 'doccontent', content.description));
+			}
+			if (content.parameters !== undefined) {
+				indented.appendChild (CreateElement ('div', isMember ? 'doctitle4' : 'doctitle2', 'parameters'));
+				GenerateParameterTable (content.parameters, indented);
+			}
+			if (content.returns !== undefined) {
+				indented.appendChild (CreateElement ('div', isMember ? 'doctitle4' : 'doctitle2', 'returns'));
+				GenerateParameterTable (content.returns, indented);
+			}
+			parentDiv.appendChild (indented);
+		}
+
+		function GenerateClassDoc (entryArray, entryName, parentDiv)
+		{
+			parentDiv.appendChild (CreateElement ('div', 'doctitle1', entryName));
+			var indented = CreateElement ('div', 'moreindented')
+			var content = entryArray[entryName];
+			if (content.description !== undefined) {
+				indented.appendChild (CreateElement ('div', 'doccontent', content.description));
+			}
+			if (content.parameters !== undefined) {
+				indented.appendChild (CreateElement ('div', 'doctitle2', 'constructor'));
+				GenerateParameterTable (content.parameters, indented);
+			}
+			if (content.functions !== undefined) {
+				indented.appendChild (CreateElement ('div', 'doctitle2', 'functions'));
+				var indented2 = CreateElement ('div', 'moreindented');
+				var functionVal;
+				for (functionVal in content.functions) {
+					GenerateFunctionDoc (content.functions, functionVal, indented2, true);
+				}
+				indented.appendChild (indented2);
+			}
+			parentDiv.appendChild (indented);
+		}
+
 		function ShowFunction (entryArray, entryName)
 		{
 			var docDiv = document.getElementById ('documentation');
 			while (docDiv.lastChild) {
 				docDiv.removeChild (docDiv.lastChild);
 			}
-			
-			var titleDiv = document.createElement ('div');
-			titleDiv.className = 'doctitle1';
-			titleDiv.innerHTML = entryName;
-			docDiv.appendChild (titleDiv);
-
-			var indented = document.createElement ('div');
-			indented.className = 'indented';
-			
-			var content = entryArray[entryName];
-			if (content.description !== undefined) {
-				var contentDiv = document.createElement ('div');
-				contentDiv.className = 'doccontent';
-				contentDiv.innerHTML = content.description;
-				indented.appendChild (contentDiv);
-			}
-			
-			docDiv.appendChild (indented);
+			GenerateFunctionDoc (entryArray, entryName, docDiv, false);
 		}
 	
 		function ShowClass (entryArray, entryName)
@@ -44,68 +115,44 @@
 			while (docDiv.lastChild) {
 				docDiv.removeChild (docDiv.lastChild);
 			}
-			
-			var titleDiv = document.createElement ('div');
-			titleDiv.className = 'doctitle1';
-			titleDiv.innerHTML = entryName;
-			docDiv.appendChild (titleDiv);
-
-			var indented = document.createElement ('div');
-			indented.className = 'indented';
-			
-			var content = entryArray[entryName];
-			if (content.description !== undefined) {
-				var contentDiv = document.createElement ('div');
-				contentDiv.className = 'doccontent';
-				contentDiv.innerHTML = content.description;
-				indented.appendChild (contentDiv);
-			}
-			
-			docDiv.appendChild (indented);
+			GenerateClassDoc (entryArray, entryName, docDiv);
 		}
 
 		function AddModule (module, parentDiv)
 		{
 			function AddEntry (entryArray, entryName, parentDiv, isFunction)
 			{
-				var entryDiv = document.createElement ('div');
-				entryDiv.className = 'entry'
+				var entryDiv = CreateElement ('div', 'entry');
 				entryDiv.onclick = function () {
+					window.location.hash = entryName;
+				}
+				if (isFunction) {
+					entryDiv.appendChild (CreateElement ('div', 'entrymark function', 'F'));
+				} else {
+					entryDiv.appendChild (CreateElement ('div', 'entrymark class', 'C'));
+				}
+
+				clickLinks[entryName] = function () {
 					if (isFunction) {
 						ShowFunction (entryArray, entryName);
 					} else {
 						ShowClass (entryArray, entryName);
 					}
 				}
-				
-				var markDiv = document.createElement ('div');
-				if (isFunction) {
-					markDiv.className = 'entrymark function';
-					markDiv.innerHTML = 'F';
-				} else {
-					markDiv.className = 'entrymark class';
-					markDiv.innerHTML = 'C';
-				}
-				entryDiv.appendChild (markDiv);
-				
-				var nameDiv = document.createElement ('div');
-				nameDiv.className = 'entryname'
-				nameDiv.innerHTML = entryName;
-				entryDiv.appendChild (nameDiv);
-
+				entryDiv.appendChild (CreateElement ('div', 'entryname', entryName));
 				parentDiv.appendChild (entryDiv);			
 			}
 			
-			if (module.functions !== undefined) {
-				var functionName;
-				for (functionName in module.functions) {
-					AddEntry (module.functions, functionName, parentDiv, true);
-				}
-			}
 			if (module.classes !== undefined) {
 				var className;
 				for (className in module.classes) {
 					AddEntry (module.classes, className, parentDiv, false);
+				}
+			}
+			if (module.functions !== undefined) {
+				var functionName;
+				for (functionName in module.functions) {
+					AddEntry (module.functions, functionName, parentDiv, true);
 				}
 			}
 		}	
@@ -113,19 +160,30 @@
 		function AddModules (parentDiv)
 		{
 			var modules = jsonData.modules;
-			var module, moduleName, indented;
+			var module, indented;
 			for (module in modules) {
-				moduleName = document.createElement ('div');
-				moduleName.className = 'modulename'
-				moduleName.innerHTML = module;
-				parentDiv.appendChild (moduleName);
-				indented = document.createElement ('div');
-				indented.className = 'indented'
+				parentDiv.appendChild (CreateElement ('div', 'modulename', module));
+				indented = CreateElement ('div', 'indented');
 				AddModule (modules[module], indented);
 				parentDiv.appendChild (indented);
 			}
 		}
 	
+		function Resize ()
+		{
+			var left = document.getElementById ('left');
+			var right = document.getElementById ('right');
+			right.style.width = (document.body.clientWidth - left.offsetWidth) + 'px';
+		}
+	
+		function HashChange ()
+		{
+			var hash = window.location.hash.substr (1);
+			if (hash in clickLinks) {
+				clickLinks[hash] ();
+			}
+		}
+
 		function DocumentationLoaded ()
 		{
 			var entriesDiv = document.getElementById ('entries');
@@ -133,10 +191,16 @@
 				entriesDiv.removeChild (entriesDiv.lastChild);
 			}
 			AddModules (entriesDiv);
+
+			window.onhashchange = HashChange;
+			HashChange ();
 		}
-	
+
 		function Load ()
 		{
+			window.onresize = Resize;
+			Resize ();
+			
 			var request = new XMLHttpRequest ();
 			request.overrideMimeType ('application/json');
 			request.open ('GET', 'jsmdoc.json', true);
@@ -157,7 +221,7 @@
 </head>
 
 <body>
-	<div class="left">
+	<div id="left">
 		<div class="content">
 			<div class="title">
 				<span class="maintitle">JSModeler</span> <span class="subtitle">docs</span>
@@ -167,7 +231,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="right">
+	<div id="right">
 		<div class="content">
 			<div id="documentation">
 			</div>

@@ -1,3 +1,12 @@
+/**
+* Function: CoordSectorPosition2D
+* Description: Calculates the position of a coordinate and a sector.
+* Parameters:
+*	coord {Coord2D} the coordinate
+*	sector {Sector2D} the sector
+* Returns:
+*	{string} 'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'
+*/
 JSM.CoordSectorPosition2D = function (coord, sector)
 {
 	var x = coord.x;
@@ -34,6 +43,15 @@ JSM.CoordSectorPosition2D = function (coord, sector)
 	return 'CoordInsideOfSector';
 };
 
+/**
+* Function: SectorSectorPosition2D
+* Description: Calculates the position of two sectors.
+* Parameters:
+*	aSector {Sector2D} the first sector
+*	bSector {Sector2D} the second sector
+* Returns:
+*	{string} 'SectorsIntersectsCoincident', 'SectorsIntersectsEndPoint', 'SectorsIntersectsOnePoint', or 'SectorsDontIntersects'
+*/
 JSM.SectorSectorPosition2D = function (aSector, bSector, intersection)
 {
 	var x1 = aSector.beg.x;

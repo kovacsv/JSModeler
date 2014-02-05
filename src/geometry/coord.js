@@ -1,6 +1,9 @@
 /**
 * Class: Coord2D
 * Description: Represents a 2D coordinate.
+* Parameters:
+*	x {number} the first component
+*	y {number} the second component
 */
 JSM.Coord2D = function (x, y)
 {
@@ -9,8 +12,11 @@ JSM.Coord2D = function (x, y)
 };
 
 /**
-* Function: Coord2D->Set
+* Function: Coord2D.Set
 * Description: Sets the coordinate.
+* Parameters:
+*	x {number} the first component
+*	y {number} the second component
 */
 JSM.Coord2D.prototype.Set = function (x, y)
 {
@@ -19,8 +25,10 @@ JSM.Coord2D.prototype.Set = function (x, y)
 };
 
 /**
-* Function: Coord2D->ToString
+* Function: Coord2D.ToString
 * Description: Converts the coordinate values to string.
+* Returns:
+*	{string} the string representation of the coordinate
 */
 JSM.Coord2D.prototype.ToString = function ()
 {
@@ -28,8 +36,10 @@ JSM.Coord2D.prototype.ToString = function ()
 };
 
 /**
-* Function: Coord2D->Clone
+* Function: Coord2D.Clone
 * Description: Clones the coordinate.
+* Returns:
+*	{Coord2D} a cloned instance
 */
 JSM.Coord2D.prototype.Clone = function ()
 {
@@ -39,6 +49,9 @@ JSM.Coord2D.prototype.Clone = function ()
 /**
 * Class: PolarCoord
 * Description: Represents a 2D polar coordinate.
+* Parameters:
+*	radius {number} the first component
+*	angle {number} the second component
 */
 JSM.PolarCoord = function (radius, angle)
 {
@@ -47,8 +60,11 @@ JSM.PolarCoord = function (radius, angle)
 };
 
 /**
-* Function: PolarCoord->Set
+* Function: PolarCoord.Set
 * Description: Sets the coordinate.
+* Parameters:
+*	radius {number} the first component
+*	angle {number} the second component
 */
 JSM.PolarCoord.prototype.Set = function (radius, angle)
 {
@@ -57,8 +73,10 @@ JSM.PolarCoord.prototype.Set = function (radius, angle)
 };
 
 /**
-* Function: PolarCoord->ToString
+* Function: PolarCoord.ToString
 * Description: Converts the coordinate values to string.
+* Returns:
+*	{string} the string representation of the coordinate
 */
 JSM.PolarCoord.prototype.ToString = function ()
 {
@@ -66,8 +84,10 @@ JSM.PolarCoord.prototype.ToString = function ()
 };
 
 /**
-* Function: PolarCoord->Clone
+* Function: PolarCoord.Clone
 * Description: Clones the coordinate.
+* Returns:
+*	{PolarCoord} a cloned instance
 */
 JSM.PolarCoord.prototype.Clone = function ()
 {
@@ -77,6 +97,10 @@ JSM.PolarCoord.prototype.Clone = function ()
 /**
 * Class: Coord
 * Description: Represents a 3D coordinate.
+* Parameters:
+*	x {number} the first component
+*	y {number} the second component
+*	z {number} the third component
 */
 JSM.Coord = function (x, y, z)
 {
@@ -86,8 +110,12 @@ JSM.Coord = function (x, y, z)
 };
 
 /**
-* Function: Coord->Set
+* Function: Coord.Set
 * Description: Sets the coordinate.
+* Parameters:
+*	x {number} the first component
+*	y {number} the second component
+*	z {number} the third component
 */
 JSM.Coord.prototype.Set = function (x, y, z)
 {
@@ -97,8 +125,10 @@ JSM.Coord.prototype.Set = function (x, y, z)
 };
 
 /**
-* Function: Coord->ToString
+* Function: Coord.ToString
 * Description: Converts the coordinate values to string.
+* Returns:
+*	{string} the string representation of the coordinate
 */
 JSM.Coord.prototype.ToString = function ()
 {
@@ -106,8 +136,10 @@ JSM.Coord.prototype.ToString = function ()
 };
 
 /**
-* Function: Coord->Clone
+* Function: Coord.Clone
 * Description: Clones the coordinate.
+* Returns:
+*	{Coord} a cloned instance
 */
 JSM.Coord.prototype.Clone = function ()
 {
@@ -117,6 +149,10 @@ JSM.Coord.prototype.Clone = function ()
 /**
 * Class: SphericalCoord
 * Description: Represents a 3D spherical coordinate.
+* Parameters:
+*	radius {number} the first component
+*	theta {number} the second component
+*	phi {number} the third component
 */
 JSM.SphericalCoord = function (radius, theta, phi)
 {
@@ -126,8 +162,12 @@ JSM.SphericalCoord = function (radius, theta, phi)
 };
 
 /**
-* Function: SphericalCoord->Set
+* Function: SphericalCoord.Set
 * Description: Sets the coordinate.
+* Parameters:
+*	radius {number} the first component
+*	theta {number} the second component
+*	phi {number} the third component
 */
 JSM.SphericalCoord.prototype.Set = function (radius, theta, phi)
 {
@@ -137,8 +177,10 @@ JSM.SphericalCoord.prototype.Set = function (radius, theta, phi)
 };
 
 /**
-* Function: SphericalCoord->ToString
+* Function: SphericalCoord.ToString
 * Description: Converts the coordinate values to string.
+* Returns:
+*	{string} the string representation of the coordinate
 */
 JSM.SphericalCoord.prototype.ToString = function ()
 {
@@ -146,8 +188,10 @@ JSM.SphericalCoord.prototype.ToString = function ()
 };
 
 /**
-* Function: SphericalCoord->Clone
+* Function: SphericalCoord.Clone
 * Description: Clones the coordinate.
+* Returns:
+*	{SphericalCoord} a cloned instance
 */
 JSM.SphericalCoord.prototype.Clone = function ()
 {

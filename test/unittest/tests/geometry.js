@@ -258,19 +258,19 @@ AddTest ('CircleTest', function (test) {
 	test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 450.0 * JSM.DegRad), new JSM.Coord2D (0.0, 1.0)));
 	
 	var unitRadius = 2.0 * 1.0 * Math.PI;
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 0.0 * JSM.DegRad), 0.0));
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 90.0 * JSM.DegRad), unitRadius / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 180.0 * JSM.DegRad), unitRadius / 2.0));
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 270.0 * JSM.DegRad), 3.0 * unitRadius / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 360.0 * JSM.DegRad), unitRadius));
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 450.0 * JSM.DegRad), 5.0 * unitRadius / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 0.0 * JSM.DegRad), 0.0));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 90.0 * JSM.DegRad), unitRadius / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 180.0 * JSM.DegRad), unitRadius / 2.0));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 270.0 * JSM.DegRad), 3.0 * unitRadius / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 360.0 * JSM.DegRad), unitRadius));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 450.0 * JSM.DegRad), 5.0 * unitRadius / 4.0));
 	
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, 0.0), 0.0 * JSM.DegRad));
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, unitRadius / 4.0), 90.0 * JSM.DegRad));
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, unitRadius / 2.0), 180.0 * JSM.DegRad));
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, 3.0 * unitRadius / 4.0), 270.0 * JSM.DegRad));
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, unitRadius), 360.0 * JSM.DegRad));
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, 5.0 * unitRadius / 4.0), 450.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, 0.0), 0.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, unitRadius / 4.0), 90.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, unitRadius / 2.0), 180.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, 3.0 * unitRadius / 4.0), 270.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, unitRadius), 360.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, 5.0 * unitRadius / 4.0), 450.0 * JSM.DegRad));
 });
 
 AddTest ('MatrixTest', function (test) {

@@ -1,3 +1,12 @@
+/**
+* Function: CoordLinePosition2D
+* Description: Calculates the position of a coordinate and a line.
+* Parameters:
+*	coord {Coord2D} the coordinate
+*	line {Line2D} the line
+* Returns:
+*	{string} 'CoordAtLineLeft', 'CoordAtLineRight', or 'CoordOnLine'
+*/
 JSM.CoordLinePosition2D = function (coord, line)
 {
 	var x = coord.x;
@@ -15,6 +24,15 @@ JSM.CoordLinePosition2D = function (coord, line)
 	return 'CoordOnLine';
 };
 
+/**
+* Function: CoordLinePosition
+* Description: Calculates the position of a coordinate and a line.
+* Parameters:
+*	coord {Coord} the coordinate
+*	line {Line} the line
+* Returns:
+*	{string} 'CoordOutsideOfLine', or 'CoordOnLine'
+*/
 JSM.CoordLinePosition = function (coord, line, projected)
 {
 	var x = coord.x;
@@ -58,6 +76,15 @@ JSM.CoordLinePosition = function (coord, line, projected)
 	return 'CoordOutsideOfLine';
 };
 
+/**
+* Function: ProjectCoordToLine
+* Description: Projects a coordinate to a line.
+* Parameters:
+*	coord {Coord} the coordinate
+*	line {Line} the line
+* Returns:
+*	{Coord} the projected coordinate
+*/
 JSM.ProjectCoordToLine = function (coord, line)
 {
 	var result = new JSM.Coord ();
@@ -89,6 +116,17 @@ JSM.ProjectCoordToLine = function (coord, line)
 	return result;
 };
 
+/**
+* Function: LineLineClosestPoint
+* Description: Calculates the closest points between two lines.
+* Parameters:
+*	aLine {Line} first line
+*	bLine {Line} second line
+*	aClosestPoint {Coord} (out) the closest point on first line
+*	bClosestPoint {Coord} (out) the closest point on second line
+* Returns:
+*	{boolean} success
+*/
 JSM.LineLineClosestPoint = function (aLine, bLine, aClosestPoint, bClosestPoint)
 {
 	function Dmnop (v, m, n, o, p)
@@ -135,6 +173,16 @@ JSM.LineLineClosestPoint = function (aLine, bLine, aClosestPoint, bClosestPoint)
 	return true;
 };
 
+/**
+* Function: LineLinePosition
+* Description: Calculates the position of two lines.
+* Parameters:
+*	aLine {Line} first line
+*	bLine {Line} second line
+*	intersection {Coord} (out) the intersection point if it exists
+* Returns:
+*	{string} 'LinesIntersectsCoincident', 'LinesIntersectsOnePoint', or 'LinesDontIntersects'
+*/
 JSM.LineLinePosition = function (aLine, bLine, intersection)
 {
 	var aClosestPoint = new JSM.Coord ();

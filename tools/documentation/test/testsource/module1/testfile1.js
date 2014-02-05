@@ -65,7 +65,7 @@
 */
 
 /**
-* Function: ExampleClass->Function1
+* Function: ExampleClass.Function1
 * Description: This is a member function for ExampleClass
 * Parameters:
 * 	exampleParamA {exampleTypeA} example parameter description a
@@ -73,7 +73,7 @@
 */
 
 /**
-* Function: ExampleClass->Function2
+* Function: ExampleClass.Function2
 * Description: This is a member function for ExampleClass
 * Parameters:
 * 	exampleParamA {exampleTypeA} example parameter description a

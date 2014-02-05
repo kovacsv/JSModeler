@@ -10,11 +10,18 @@ html, body
 	height : 100%;
 }
 
-div.left
+#left
 {
 	color : #dddddd;
 	background : #222222;
-	width : 250px;
+	width : 300px;
+	height : 100%;
+	float : left;
+	overflow : auto;
+}
+
+#right
+{
 	height : 100%;
 	float : left;
 	overflow : auto;
@@ -37,10 +44,10 @@ span.maintitle
 
 span.subtitle
 {
-	color : #777777;
+	color : #888888;
 	background : transparent;
 	font-size : 12px;
-	margin-left : 4px;
+	margin-left : 5px;
 }
 
 div.modulename
@@ -89,26 +96,63 @@ div.indented
 	margin-left : 15px;
 }
 
-div.right
+div.moreindented
 {
-	height : 100%;
-	float : left;
-	overflow : auto;
+	margin-left : 25px;
 }
 
 div.doctitle1
 {
 	font-size : 27px;
-	margin-bottom : 10px;
+	margin-bottom : 15px;
 }
 
 div.doctitle2
 {
-	font-size : 27px;
+	font-size : 19px;
+	margin-top : 15px;
 	margin-bottom : 10px;
+}
+
+div.doctitle3
+{
+	font-size : 17px;
+	margin-top : 10px;
+	margin-bottom : 5px;
+}
+
+div.doctitle4
+{
+	font-size : 15px;
+	margin-top : 5px;
+	margin-bottom : 3px;
 }
 
 div.doccontent
 {
-	font-size : 19px;
+	font-size : 15px;
+}
+
+table.parametertable td.parametertablenamecell
+{
+	padding : 0px 10px;
+	font-weight : bold;
+}
+
+table.parametertable td.parametertabletypecell
+{
+	padding : 0px 10px;
+	font-style : italic;
+}
+
+table.parametertable td.parametertabletypecell.link
+{
+	color : #225588;
+	background : transparent;
+	cursor : pointer;
+}
+
+table.parametertable td.parametertabledesccell
+{
+	padding : 0px 10px;
 }

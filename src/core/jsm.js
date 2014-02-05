@@ -11,6 +11,10 @@ JSM.DegRad = 0.017453292519943;
 /**
 * Function: IsZero
 * Description: Determines if the given value is near zero. Uses epsilon for comparison.
+* Parameters:
+*	a {number} the value
+* Returns:
+*	{boolean} the result
 */
 JSM.IsZero = function (a)
 {
@@ -20,6 +24,10 @@ JSM.IsZero = function (a)
 /**
 * Function: IsPositive
 * Description: Determines if the given value is positive. Uses epsilon for comparison.
+* Parameters:
+*	a {number} the value
+* Returns:
+*	{boolean} the result
 */
 JSM.IsPositive = function (a)
 {
@@ -29,6 +37,10 @@ JSM.IsPositive = function (a)
 /**
 * Function: IsNegative
 * Description: Determines if the given value is negative. Uses epsilon for comparison.
+* Parameters:
+*	a {number} the value
+* Returns:
+*	{boolean} the result
 */
 JSM.IsNegative = function (a)
 {
@@ -38,6 +50,11 @@ JSM.IsNegative = function (a)
 /**
 * Function: IsLower
 * Description: Determines if a value is lower than an other. Uses epsilon for comparison.
+* Parameters:
+*	a {number} first value
+*	b {number} second value
+* Returns:
+*	{boolean} the result
 */
 JSM.IsLower = function (a, b)
 {
@@ -47,6 +64,11 @@ JSM.IsLower = function (a, b)
 /**
 * Function: IsGreater
 * Description: Determines if a value is greater than an other. Uses epsilon for comparison.
+* Parameters:
+*	a {number} first value
+*	b {number} second value
+* Returns:
+*	{boolean} the result
 */
 JSM.IsGreater = function (a, b)
 {
@@ -56,6 +78,11 @@ JSM.IsGreater = function (a, b)
 /**
 * Function: IsEqual
 * Description: Determines if two values are equal. Uses epsilon for comparison.
+* Parameters:
+*	a {number} first value
+*	b {number} second value
+* Returns:
+*	{boolean} the result
 */
 JSM.IsEqual = function (a, b)
 {
@@ -65,6 +92,12 @@ JSM.IsEqual = function (a, b)
 /**
 * Function: IsEqualWithEps
 * Description: Determines if two values are equal. Uses the given epsilon for comparison.
+* Parameters:
+*	a {number} first value
+*	b {number} second value
+*	eps {number} epsilon value
+* Returns:
+*	{boolean} the result
 */
 JSM.IsEqualWithEps = function (a, b, eps)
 {
@@ -74,6 +107,11 @@ JSM.IsEqualWithEps = function (a, b, eps)
 /**
 * Function: IsLowerOrEqual
 * Description: Determines if a value is lower or equal to an other. Uses epsilon for comparison.
+* Parameters:
+*	a {number} first value
+*	b {number} second value
+* Returns:
+*	{boolean} the result
 */
 JSM.IsLowerOrEqual = function (a, b)
 {
@@ -83,6 +121,11 @@ JSM.IsLowerOrEqual = function (a, b)
 /**
 * Function: IsGreaterOrEqual
 * Description: Determines if a value is greater or equal to an other. Uses epsilon for comparison.
+* Parameters:
+*	a {number} first value
+*	b {number} second value
+* Returns:
+*	{boolean} the result
 */
 JSM.IsGreaterOrEqual = function (a, b)
 {
@@ -92,6 +135,11 @@ JSM.IsGreaterOrEqual = function (a, b)
 /**
 * Function: Minimum
 * Description: Returns the minimum of two values. Uses epsilon for comparison.
+* Parameters:
+*	a {number} first value
+*	b {number} second value
+* Returns:
+*	{number} the result
 */
 JSM.Minimum = function (a, b)
 {
@@ -101,6 +149,11 @@ JSM.Minimum = function (a, b)
 /**
 * Function: Maximum
 * Description: Returns the maximum of two values. Uses epsilon for comparison.
+* Parameters:
+*	a {number} first value
+*	b {number} second value
+* Returns:
+*	{number} the result
 */
 JSM.Maximum = function (a, b)
 {
@@ -110,6 +163,10 @@ JSM.Maximum = function (a, b)
 /**
 * Function: ArcSin
 * Description: Calculates the arcus sinus value.
+* Parameters:
+*	value {number} the value
+* Returns:
+*	{number} the result
 */
 JSM.ArcSin = function (value)
 {
@@ -125,6 +182,10 @@ JSM.ArcSin = function (value)
 /**
 * Function: ArcCos
 * Description: Calculates the arcus cosinus value.
+* Parameters:
+*	value {number} the value
+* Returns:
+*	{number} the result
 */
 JSM.ArcCos = function (value)
 {
@@ -140,6 +201,11 @@ JSM.ArcCos = function (value)
 /**
 * Function: RandomInt
 * Description: Generates a random integer between two integers.
+* Parameters:
+*	from {integer} lowest random result
+*	to {integer} highest random result
+* Returns:
+*	{integer} the result
 */
 JSM.RandomInt = function (from, to)
 {
@@ -149,6 +215,12 @@ JSM.RandomInt = function (from, to)
 /**
 * Function: SeededRandomInt
 * Description: Generates a random integer between two integers. A seed number can be specified.
+* Parameters:
+*	from {integer} lowest random result
+*	to {integer} highest random result
+*	seed {integer} seed value
+* Returns:
+*	{integer} the result
 */
 JSM.SeededRandomInt = function (from, to, seed)
 {
@@ -159,6 +231,11 @@ JSM.SeededRandomInt = function (from, to, seed)
 /**
 * Function: ValueOrDefault
 * Description: Returns the given value, or a default if it is undefined.
+* Parameters:
+*	val {anything} new value
+*	def {anything} default value
+* Returns:
+*	{anything} the result
 */
 JSM.ValueOrDefault = function (val, def)
 {
@@ -170,7 +247,10 @@ JSM.ValueOrDefault = function (val, def)
 
 /**
 * Function: Assert
-* Description: Shows up an alert with the given message is the condition is false.
+* Description: Shows up an alert with the given message if the condition is false.
+* Parameters:
+*	condition {boolean} the condition to check
+*	message {string} error message
 */
 JSM.Assert = function (condition, message)
 {
