@@ -223,7 +223,7 @@
 						["matrix", "number[16]", "the matrix"]
 					],
 					"returns" : [
-						["number[4]", "the vector result of the multiplication"]
+						["number[4]", "the result vector"]
 					]
 				},
 				"MatrixMultiply4x4" : {
@@ -233,7 +233,7 @@
 						["matrix2", "number[16]", "second matrix"]
 					],
 					"returns" : [
-						["number[16]", "the matrix result of the multiplication"]
+						["number[16]", "the result matrix"]
 					]
 				},
 				"CoordIsEqual2D" : {
@@ -742,6 +742,228 @@
 					"returns" : [
 						["string", "'LinesIntersectsCoincident', 'LinesIntersectsOnePoint', or 'LinesDontIntersects'"]
 					]
+				},
+				"IdentityTransformation" : {
+					"description" : "Generates an identity transformation.",
+					"returns" : [
+						["Transformation", "the result"]
+					]
+				},
+				"TranslationTransformation" : {
+					"description" : "Generates a translation transformation.",
+					"parameters" : [
+						["translation", "Vector", "the translation vector"]
+					],
+					"returns" : [
+						["Transformation", "the result"]
+					]
+				},
+				"OffsetTransformation" : {
+					"description" : "Generates an offset transformation.",
+					"parameters" : [
+						["direction", "Vector", "the direction of the offset"],
+						["distance", "number", "the distance of the offset"]
+					],
+					"returns" : [
+						["Transformation", "the result"]
+					]
+				},
+				"RotationTransformation" : {
+					"description" : "Generates a rotation transformation.",
+					"parameters" : [
+						["axis", "Vector", "the axis of the rotation"],
+						["angle", "number", "the angle of the rotation"],
+						["origo", "Coord", "the origo of the rotation"]
+					],
+					"returns" : [
+						["Transformation", "the result"]
+					]
+				},
+				"RotationXTransformation" : {
+					"description" : "Generates a rotation transformation around the x axis.",
+					"parameters" : [
+						["angle", "number", "the angle of the rotation"],
+						["origo", "Coord", "the origo of the rotation"]
+					],
+					"returns" : [
+						["Transformation", "the result"]
+					]
+				},
+				"RotationYTransformation" : {
+					"description" : "Generates a rotation transformation around the y axis.",
+					"parameters" : [
+						["angle", "number", "the angle of the rotation"],
+						["origo", "Coord", "the origo of the rotation"]
+					],
+					"returns" : [
+						["Transformation", "the result"]
+					]
+				},
+				"RotationZTransformation" : {
+					"description" : "Generates a rotation transformation around the z axis.",
+					"parameters" : [
+						["angle", "number", "the angle of the rotation"],
+						["origo", "Coord", "the origo of the rotation"]
+					],
+					"returns" : [
+						["Transformation", "the result"]
+					]
+				},
+				"RotationXYZTransformation" : {
+					"description" : "Generates a rotation transformation around all axis in x, y, z order.",
+					"parameters" : [
+						["xAngle", "number", "the x angle of the rotation"],
+						["yAngle", "number", "the y angle of the rotation"],
+						["zAngle", "number", "the z angle of the rotation"],
+						["origo", "Coord", "the origo of the rotation"]
+					],
+					"returns" : [
+						["Transformation", "the result"]
+					]
+				},
+				"GetPlaneFromCoordAndDirection" : {
+					"description" : "Generates a plane from a coordinate and a direction.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["direction", "Vector", "the direction"]
+					],
+					"returns" : [
+						["Plane", "the result"]
+					]
+				},
+				"GetPlaneFromThreeCoords" : {
+					"description" : "Generates a plane from three coordinates.",
+					"parameters" : [
+						["a", "Coord", "the first coordinate"],
+						["b", "Coord", "the second coordinate"],
+						["c", "Coord", "the third coordinate"]
+					],
+					"returns" : [
+						["Plane", "the result"]
+					]
+				},
+				"CoordPlanePosition" : {
+					"description" : "Calculates the position of a coordinate and a plane.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["plane", "Plane", "the plane"]
+					],
+					"returns" : [
+						["string", "'CoordInFrontOfPlane', 'CoordAtBackOfPlane', or 'CoordOnPlane'"]
+					]
+				},
+				"LinePlanePosition" : {
+					"description" : "Calculates the position of a line and a plane.",
+					"parameters" : [
+						["line", "Line", "the line"],
+						["plane", "Plane", "the plane"],
+						["intersection", "Coord", "(out) the intersection point if it exists"]
+					],
+					"returns" : [
+						["string", "'LineParallelToPlane', or 'LineIntersectsPlane'"]
+					]
+				},
+				"LinePlaneIntersection" : {
+					"description" : "Calculates the intersection point of a line and a plane.",
+					"parameters" : [
+						["line", "Line", "the line"],
+						["plane", "Plane", "the plane"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"CoordPlaneSignedDistance" : {
+					"description" : "Calculates the signed distance of a coordinate and a plane.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["plane", "Plane", "the plane"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"CoordPlaneDistance" : {
+					"description" : "Calculates the distance of a coordinate and a plane.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["plane", "Plane", "the plane"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"CoordPlaneSignedDirectionalDistance" : {
+					"description" : "Calculates the signed distance of a coordinate and a plane along a direction vector.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["direction", "Vector", "the direction"],
+						["plane", "Plane", "the plane"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"CoordPlaneDirectionalDistance" : {
+					"description" : "Calculates the distance of a coordinate and a plane along a direction vector.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["direction", "Vector", "the direction"],
+						["plane", "Plane", "the plane"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"ProjectCoordToPlane" : {
+					"description" : "Projects a coordinate to a plane.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["plane", "Plane", "the plane"]
+					],
+					"returns" : [
+						["Coord", "the projected coordinate"]
+					]
+				},
+				"CalculateModelViewMatrix" : {
+					"description" : "Calculates a model view matrix.",
+					"parameters" : [
+						["eye", "Coord", "the eye of the camera"],
+						["center", "Coord", "the center of the camera"],
+						["up", "Vector", "the up vector of the camera"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"CalculateProjectionMatrix" : {
+					"description" : "Calculates a projection matrix.",
+					"parameters" : [
+						["fieldOfView", "number", "camera field of view"],
+						["aspectRatio", "number", "aspect ratio of the desired image"],
+						["nearPlane", "number", "near cutting plane distance"],
+						["farPlane", "number", "far cutting plane distance"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"Project" : {
+					"description" : "Projects a 3D coordinate to a 2D image.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["eye", "Coord", "the eye of the camera"],
+						["center", "Coord", "the center of the camera"],
+						["up", "Vector", "the up vector of the camera"],
+						["fieldOfView", "number", "camera field of view"],
+						["aspectRatio", "number", "aspect ratio of the desired image"],
+						["nearPlane", "number", "near cutting plane distance"],
+						["farPlane", "number", "far cutting plane distance"],
+						["viewPort", "number[4]", "view port coordinates in pixels"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
 				}
 			},
 			"classes" : {
@@ -1003,6 +1225,38 @@
 							"description" : "Clones the transformation.",
 							"returns" : [
 								["Transformation", "a cloned instance"]
+							]
+						}
+					}
+				},
+				"Plane" : {
+					"description" : "Represents a plane.",
+					"parameters" : [
+						["a", "number", "the a component of plane equation"],
+						["b", "number", "the b component of plane equation"],
+						["c", "number", "the c component of plane equation"],
+						["d", "number", "the d component of plane equation"]
+					],
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the plane.",
+							"parameters" : [
+								["a", "number", "the a component of plane equation"],
+								["b", "number", "the b component of plane equation"],
+								["c", "number", "the c component of plane equation"],
+								["d", "number", "the d component of plane equation"]
+							]
+						},
+						"GetNormal" : {
+							"description" : "Calculates the normal vector of the plane.",
+							"returns" : [
+								["Vector", "the result"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the plane.",
+							"returns" : [
+								["Plane", "a cloned instance"]
 							]
 						}
 					}

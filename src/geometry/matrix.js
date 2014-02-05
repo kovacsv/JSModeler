@@ -5,7 +5,7 @@
 *	vector {number[4]} the vector
 *	matrix {number[16]} the matrix
 * Returns:
-*	{number[4]} the vector result of the multiplication
+*	{number[4]} the result vector
 */
 JSM.VectorMatrixMultiply4x4 = function (vector, matrix)
 {
@@ -47,7 +47,7 @@ JSM.VectorMatrixMultiply4x4 = function (vector, matrix)
 *	matrix1 {number[16]} first matrix
 *	matrix2 {number[16]} second matrix
 * Returns:
-*	{number[16]} the matrix result of the multiplication
+*	{number[16]} the result matrix
 */
 JSM.MatrixMultiply4x4 = function (matrix1, matrix2)
 {
