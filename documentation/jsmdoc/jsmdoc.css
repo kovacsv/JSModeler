@@ -44,8 +44,6 @@ span.maintitle
 
 span.subtitle
 {
-	color : #888888;
-	background : transparent;
 	font-size : 12px;
 	margin-left : 5px;
 }
@@ -109,7 +107,7 @@ div.doctitle1
 
 div.doctitle2
 {
-	font-size : 19px;
+	font-size : 21px;
 	margin-top : 15px;
 	margin-bottom : 10px;
 }
