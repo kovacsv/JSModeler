@@ -975,12 +975,170 @@
 					]
 				},
 				"ConvexHull3D" : {
-					"description" : "Calculates the 3D convex hull from the given coordinates.",
+					"description" : "Calculates the 3D convex hull from the given coordinates. The result defines convex hull triangles as an array of arrays with three coordinates.",
 					"parameters" : [
 						["coords", "Coord[*]", "the coordinate array"]
 					],
 					"returns" : [
-						["Coord[3][*]", "triangles of the convex hull (array of arrays with three coordinates)"]
+						["Coord[3][*]", "the result"]
+					]
+				},
+				"PolygonSignedArea2D" : {
+					"description" : "Calculates the signed area of a polygon. The result is positive if the polygon has counter clockwise orientation, negative if it has clockwise orientation.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"PolygonArea2D" : {
+					"description" : "Calculates the area of a polygon.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"PolygonOrientation2D" : {
+					"description" : "Calculates the orientation of a polygon.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"]
+					],
+					"returns" : [
+						["string", "'CounterClockwise', 'Clockwise', or 'Invalid'"]
+					]
+				},
+				"ChangePolygonOrientation2D" : {
+					"description" : "Reverses the orientation of a polygon.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"]
+					]
+				},
+				"PolygonComplexity2D" : {
+					"description" : "Calculates the complexity of a polygon.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"]
+					],
+					"returns" : [
+						["string", "'Concave', 'Convex', or 'Invalid'"]
+					]
+				},
+				"CoordPolygonPosition2D" : {
+					"description" : "Calculates the position of a coordinate and a polygon.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["polygon", "Polygon2D", "the polygon"]
+					],
+					"returns" : [
+						["string", "'CoordOutsideOfPolygon', 'CoordInsideOfPolygon', or 'CoordOnPolygonEdge'"]
+					]
+				},
+				"SectorIntersectsPolygon2D" : {
+					"description" : "Determines if a sector intersects a polygon. The sides next to the starting and ending vertices will be skipped. To avoid this, give -1 for these values.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"],
+						["sector", "Sector2D", "the sector"],
+						["from", "integer", "index of starting vertex"],
+						["end", "integer", "index of ending vertex"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsPolygonVertexVisible2D" : {
+					"description" : "Determines if a polygons vertex is visible from an another vertex. It means that the sector between the vertices does not intersects any side of the polygon and the sector lies fully inside the polygon.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"],
+						["from", "integer", "index of starting vertex"],
+						["end", "integer", "index of ending vertex"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"CreatePolygonWithHole2D" : {
+					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
+					"parameters" : [
+						["vertices", "Coord2D[*]", "array of contour vertices with null values at contour ends"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result"]
+					]
+				},
+				"PolygonTriangulate2D" : {
+					"description" : "Triangulates a polygon. The result defines triangles as an array of arrays with three original vertex indices.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"]
+					],
+					"returns" : [
+						["integer[3][*]", "the result"]
+					]
+				},
+				"CheckTriangulation2D" : {
+					"description" : "Checks a triangulation created with PolygonTriangulate2D. It checks if the area of triangles equal to the area of the original polygon.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"],
+						["triangles", "integer[3][*]", "the triangulation"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"CreatePolygonWithHole" : {
+					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
+					"parameters" : [
+						["vertices", "Coord[*]", "array of contour vertices with null values at contour ends"]
+					],
+					"returns" : [
+						["Coord[*]", "the result"]
+					]
+				},
+				"PolygonTriangulate" : {
+					"description" : "Triangulates a polygon. The result defines triangles as an array of arrays with three original vertex indices.",
+					"parameters" : [
+						["polygon", "Polygon", "the polygon"]
+					],
+					"returns" : [
+						["integer[3][*]", "the result"]
+					]
+				},
+				"OffsetPolygonContour" : {
+					"description" : "Offsets all vertices of a polygon.",
+					"parameters" : [
+						["polygon", "Polygon", "the polygon"],
+						["width", "number", "the width of the offset"]
+					],
+					"returns" : [
+						["Polygon", "the result"]
+					]
+				},
+				"CutPolygonWithPlane" : {
+					"description" : "Cuts a polygon with a plane. The result array contains cutted polygons grouped by their position to the plane.",
+					"parameters" : [
+						["polygon", "Polygon", "the polygon"],
+						["plane", "Plane", "the plane"],
+						["frontPolygons", "Polygon[]", "(out) polygons in front of the plane"],
+						["backPolygons", "Polygon[]", "(out) polygons at the back of the plane"],
+						["planePolygons", "Polygon[]", "(out) polygons on the plane"]
+					],
+					"returns" : [
+						["boolean", "success"]
+					]
+				},
+				"ClipPolygonWithBSPTree" : {
+					"description" : "Clips a polygon with a created BSP tree.",
+					"parameters" : [
+						["polygon", "Polygon", "the polygon"],
+						["bspTree", "BSPTree", "the BSP tree"],
+						["frontPolygons", "Polygon[]", "(out) polygons in front of the tree"],
+						["backPolygons", "Polygon[]", "(out) polygons at the back of the tree"],
+						["planarFrontPolygons", "Polygon[]", "(out) polygons on the tree looks front"],
+						["planarBackPolygons", "Polygon[]", "(out) polygons on the tree looks back"]
+					],
+					"returns" : [
+						["boolean", "success"]
 					]
 				}
 			},
@@ -1433,6 +1591,90 @@
 							"description" : "Clones the polygon.",
 							"returns" : [
 								["Polygon", "a cloned instance"]
+							]
+						}
+					}
+				},
+				"BSPNode" : {
+					"description" : "Node of a BSP tree.",
+					"functions" : {
+						"IsLeaf" : {
+							"description" : "Returns if the node is leaf.",
+							"returns" : [
+								["boolean", "the result"]
+							]
+						}
+					}
+				},
+				"BSPTree" : {
+					"description" : "Defines a BSP tree.",
+					"functions" : {
+						"AddPolygon" : {
+							"description" : "Adds a polygon to the tree.",
+							"parameters" : [
+								["polygon", "Polygon", "the polygon"],
+								["userData", "anything", "user data for polygon"]
+							],
+							"returns" : [
+								["boolean", "success"]
+							]
+						},
+						"Traverse" : {
+							"description" : "Traverses the tree and calls a function on node found.",
+							"parameters" : [
+								["nodeFound", "function", "the callback function"]
+							]
+						},
+						"TraverseNode" : {
+							"description" : "Traverses a node and its children and calls a function on node found.",
+							"parameters" : [
+								["node", "BSPNode", "the node"],
+								["nodeFound", "function", "the callback function"]
+							]
+						},
+						"GetNodes" : {
+							"description" : "Returns the nodes as an array.",
+							"returns" : [
+								["BSPNode[]", "the result"]
+							]
+						},
+						"GetNodes" : {
+							"description" : "Count nodes.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"AddPolygonToNode" : {
+							"description" : "Adds a polygon to a node.",
+							"parameters" : [
+								["node", "BSPNode", "the node"],
+								["polygon", "Polygon", "the polygon"],
+								["userData", "anything", "user data for polygon"]
+							],
+							"returns" : [
+								["boolean", "success"]
+							]
+						},
+						"AddInsidePolygonsToNode" : {
+							"description" : "Adds inside a polygons to a node.",
+							"parameters" : [
+								["node", "BSPNode", "the node"],
+								["polygon", "Polygon[]", "the polygons"],
+								["userData", "anything", "user data for polygons"]
+							]
+						},
+						"AddOutsidePolygonsToNode" : {
+							"description" : "Adds outside a polygons to a node.",
+							"parameters" : [
+								["node", "BSPNode", "the node"],
+								["polygon", "Polygon[]", "the polygons"],
+								["userData", "anything", "user data for polygons"]
+							]
+						},
+						"GetNewNode" : {
+							"description" : "Creates a new node.",
+							"returns" : [
+								["BSPNode", "the new node"]
 							]
 						}
 					}

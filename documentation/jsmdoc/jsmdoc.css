@@ -150,6 +150,18 @@ table.parametertable td.parametertabletypecell.link
 	cursor : pointer;
 }
 
+div.related
+{
+	margin-bottom : 3px;
+}
+
+div.related.link
+{
+	color : #225588;
+	background : transparent;
+	cursor : pointer;
+}
+
 table.parametertable td.parametertabledesccell
 {
 	padding : 0px 10px;

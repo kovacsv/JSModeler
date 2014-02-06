@@ -11,7 +11,7 @@
 
 	<script type="text/javascript">
 		var jsonData = null;
-		var clickLinks = [];
+		var entryClickCommands = [];
 	
 		function CreateElement (type, className, innerHTML)
 		{
@@ -23,11 +23,28 @@
 			return elem;
 		}
 
+		function CreateLinkIfNeeded (elem, name)
+		{
+			nameToCheck = name;
+			parIndex = nameToCheck.indexOf ('[');
+			if (parIndex != -1) {
+				nameToCheck = nameToCheck.substring (0, parIndex);
+			}
+			if (nameToCheck in entryClickCommands) {
+				elem.className += ' link';
+				elem.onclick = function (theTypeName) {
+					return function () {
+						window.location.hash = theTypeName;
+					}
+				} (nameToCheck);
+			}
+		}
+		
 		function GenerateParameterTable (parameters, parentDiv)
 		{
 			var indented = CreateElement ('div', 'moreindented')
 			var table = CreateElement ('table', 'parametertable'); 
-			var i, parameter, tr, typeName, typeCell;
+			var i, parameter, tr, typeName, typeCell, parIndex, typeNameToCheck;
 			for (i = 0; i < parameters.length; i++) {
 				parameter = parameters[i];
 				tr = CreateElement ('tr', 'parametertablerow');
@@ -43,14 +60,7 @@
 					tr.appendChild (typeCell);
 					tr.appendChild (CreateElement ('td', 'parametertabledesccell', parameter[1]));
 				}
-				if (typeName in clickLinks) {
-					typeCell.className += ' link';
-					typeCell.onclick = function (theTypeName) {
-						return function () {
-							window.location.hash = theTypeName;
-						}
-					} (typeName);
-				}
+				CreateLinkIfNeeded (typeCell, typeName);
 				table.appendChild (tr);
 			}
 			indented.appendChild (table);
@@ -78,6 +88,41 @@
 
 		function GenerateClassDoc (entryArray, entryName, parentDiv)
 		{
+			function FindRelatedFunctions (entryName)
+			{
+				function FindByParameterName (section, functionName, entryName, result, isParameter)
+				{
+					var index;
+					if (section !== undefined) {
+						for (index = 0; index < section.length; index++) {
+							if (section[index][isParameter ? 1 : 0] == entryName) {
+								if (result.indexOf (functionName) == -1) {
+									result.push (functionName);
+								}
+							}
+						}
+					}
+				}
+				
+				var result = [];
+				var modules = jsonData.modules;
+				var moduleName, theModule;
+				var funtionName, theFunction;
+				for (moduleName in modules) {
+					theModule = modules[moduleName];
+					if (theModule !== undefined) {
+						for (functionName in theModule.functions) {
+							theFunction = theModule.functions[functionName];
+							if (theFunction !== undefined) {
+								FindByParameterName (theFunction.parameters, functionName, entryName, result, true);
+								FindByParameterName (theFunction.returns, functionName, entryName, result, false);
+							}
+						}
+					}
+				}
+				return result;
+			}
+		
 			parentDiv.appendChild (CreateElement ('div', 'doctitle1', entryName));
 			var indented = CreateElement ('div', 'moreindented')
 			var content = entryArray[entryName];
@@ -96,6 +141,19 @@
 					GenerateFunctionDoc (content.functions, functionVal, indented2, true);
 				}
 				indented.appendChild (indented2);
+			}
+			
+			related = FindRelatedFunctions (entryName);
+			if (related.length > 0) {
+				indented.appendChild (CreateElement ('div', 'doctitle2', 'related functions'));
+				var indented3 = CreateElement ('div', 'moreindented');
+				var i, relatedDiv;
+				for (i = 0; i < related.length; i++) {
+					relatedDiv = CreateElement ('div', 'related', related[i]);
+					CreateLinkIfNeeded (relatedDiv, related[i]);
+					indented3.appendChild (relatedDiv);
+				}
+				indented.appendChild (indented3)
 			}
 			parentDiv.appendChild (indented);
 		}
@@ -132,7 +190,7 @@
 					entryDiv.appendChild (CreateElement ('div', 'entrymark class', 'C'));
 				}
 
-				clickLinks[entryName] = function () {
+				entryClickCommands[entryName] = function () {
 					if (isFunction) {
 						ShowFunction (entryArray, entryName);
 					} else {
@@ -179,8 +237,8 @@
 		function HashChange ()
 		{
 			var hash = window.location.hash.substr (1);
-			if (hash in clickLinks) {
-				clickLinks[hash] ();
+			if (hash in entryClickCommands) {
+				entryClickCommands[hash] ();
 			}
 		}
 

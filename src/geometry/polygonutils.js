@@ -1,3 +1,13 @@
+/**
+* Function: PolygonSignedArea2D
+* Description:
+*	Calculates the signed area of a polygon. The result is positive if the polygon has
+*	counter clockwise orientation, negative if it has clockwise orientation.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+* Returns:
+*	{number} the result
+*/
 JSM.PolygonSignedArea2D = function (polygon)
 {
 	var count = polygon.VertexCount ();
@@ -14,11 +24,27 @@ JSM.PolygonSignedArea2D = function (polygon)
 	return area;
 };
 
+/**
+* Function: PolygonArea2D
+* Description: Calculates the area of a polygon.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+* Returns:
+*	{number} the result
+*/
 JSM.PolygonArea2D = function (polygon)
 {
 	return Math.abs (JSM.PolygonSignedArea2D (polygon));
 };
 
+/**
+* Function: PolygonOrientation2D
+* Description: Calculates the orientation of a polygon.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+* Returns:
+*	{string} 'CounterClockwise', 'Clockwise', or 'Invalid'
+*/
 JSM.PolygonOrientation2D = function (polygon)
 {
 	var signedArea = JSM.PolygonSignedArea2D (polygon);
@@ -31,6 +57,12 @@ JSM.PolygonOrientation2D = function (polygon)
 	return 'Invalid';
 };
 
+/**
+* Function: ChangePolygonOrientation2D
+* Description: Reverses the orientation of a polygon.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+*/
 JSM.ChangePolygonOrientation2D = function (polygon)
 {
 	var oldPolygon = polygon.Clone ();
@@ -43,6 +75,14 @@ JSM.ChangePolygonOrientation2D = function (polygon)
 	}
 };
 
+/**
+* Function: PolygonComplexity2D
+* Description: Calculates the complexity of a polygon.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+* Returns:
+*	{string} 'Concave', 'Convex', or 'Invalid'
+*/
 JSM.PolygonComplexity2D = function (polygon)
 {
 	var hasCounterClockwiseVertex = false;
@@ -80,6 +120,15 @@ JSM.PolygonComplexity2D = function (polygon)
 	return 'Convex';
 };
 
+/**
+* Function: CoordPolygonPosition2D
+* Description: Calculates the position of a coordinate and a polygon.
+* Parameters:
+*	coord {Coord} the coordinate
+*	polygon {Polygon2D} the polygon
+* Returns:
+*	{string} 'CoordOutsideOfPolygon', 'CoordInsideOfPolygon', or 'CoordOnPolygonEdge'
+*/
 JSM.CoordPolygonPosition2D = function (coord, polygon)
 {
 	var count = polygon.VertexCount ();
@@ -140,6 +189,19 @@ JSM.CoordPolygonPosition2D = function (coord, polygon)
 	return 'CoordInsideOfPolygon';
 };
 
+/**
+* Function: SectorIntersectsPolygon2D
+* Description:
+*	Determines if a sector intersects a polygon. The sides next to the starting and
+*	ending vertices will be skipped. To avoid this, give -1 for these values.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+*	sector {Sector2D} the sector
+*	from {integer} index of starting vertex
+*	end {integer} index of ending vertex
+* Returns:
+*	{boolean} the result
+*/
 JSM.SectorIntersectsPolygon2D = function (polygon, sector, from, to)
 {
 	var count = polygon.VertexCount ();
@@ -162,6 +224,19 @@ JSM.SectorIntersectsPolygon2D = function (polygon, sector, from, to)
 	return false;
 };
 
+/**
+* Function: IsPolygonVertexVisible2D
+* Description:
+*	Determines if a polygons vertex is visible from an another vertex. It means that the
+*	sector between the vertices does not intersects any side of the polygon and the sector
+*	lies fully inside the polygon.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+*	from {integer} index of starting vertex
+*	end {integer} index of ending vertex
+* Returns:
+*	{boolean} the result
+*/
 JSM.IsPolygonVertexVisible2D = function (polygon, from, to)
 {
 	if (from === to) {
@@ -188,6 +263,16 @@ JSM.IsPolygonVertexVisible2D = function (polygon, from, to)
 	return true;
 };
 
+/**
+* Function: CreatePolygonWithHole2D
+* Description:
+*	Creates a simple polygon from multiple contours by creating in-out edges between
+*	contours. The input array should contain null values at contour ends.
+* Parameters:
+*	vertices {Coord2D[*]} array of contour vertices with null values at contour ends
+* Returns:
+*	{Coord2D[*]} the result
+*/
 JSM.CreatePolygonWithHole2D = function (vertices)
 {
 	function FindHoleEntryPoint (contourIndex)
@@ -307,6 +392,16 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 	return result;
 };
 
+/**
+* Function: PolygonTriangulate2D
+* Description:
+*	Triangulates a polygon. The result defines triangles as an
+*	array of arrays with three original vertex indices.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+* Returns:
+*	{integer[3][*]} the result
+*/
 JSM.PolygonTriangulate2D = function (polygon)
 {
 	function Increase (value, count)
@@ -476,6 +571,17 @@ JSM.PolygonTriangulate2D = function (polygon)
 	return GetResult ();	
 };
 
+/**
+* Function: CheckTriangulation2D
+* Description:
+*	Checks a triangulation created with PolygonTriangulate2D. It checks if
+*	the area of triangles equal to the area of the original polygon.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+*	triangles {integer[3][*]} the triangulation
+* Returns:
+*	{boolean} the result
+*/
 JSM.CheckTriangulation2D = function (polygon, triangles)
 {
 	var polygonArea = JSM.PolygonSignedArea2D (polygon);
@@ -504,6 +610,16 @@ JSM.CheckTriangulation2D = function (polygon, triangles)
 	return true;
 };
 
+/**
+* Function: CreatePolygonWithHole
+* Description:
+*	Creates a simple polygon from multiple contours by creating in-out edges between
+*	contours. The input array should contain null values at contour ends.
+* Parameters:
+*	vertices {Coord[*]} array of contour vertices with null values at contour ends
+* Returns:
+*	{Coord[*]} the result
+*/
 JSM.CreatePolygonWithHole = function (vertices)
 {
 	var noNullVertices = [];
@@ -532,6 +648,16 @@ JSM.CreatePolygonWithHole = function (vertices)
 	return JSM.CreatePolygonWithHole2D (vertices2D);
 };
 
+/**
+* Function: PolygonTriangulate
+* Description:
+*	Triangulates a polygon. The result defines triangles as an
+*	array of arrays with three original vertex indices.
+* Parameters:
+*	polygon {Polygon} the polygon
+* Returns:
+*	{integer[3][*]} the result
+*/
 JSM.PolygonTriangulate = function (polygon)
 {
 	var polygon2D = new JSM.Polygon2D ();
@@ -548,6 +674,15 @@ JSM.PolygonTriangulate = function (polygon)
 	return JSM.PolygonTriangulate2D (polygon2D);
 };
 
+/**
+* Function: OffsetPolygonContour
+* Description: Offsets all vertices of a polygon.
+* Parameters:
+*	polygon {Polygon} the polygon
+*	width {number} the width of the offset
+* Returns:
+*	{Polygon} the result
+*/
 JSM.OffsetPolygonContour = function (polygon, width)
 {
 	var count = polygon.VertexCount ();
@@ -586,6 +721,20 @@ JSM.OffsetPolygonContour = function (polygon, width)
 	return result;
 };
 
+/**
+* Function: CutPolygonWithPlane
+* Description:
+*	Cuts a polygon with a plane. The result array contains cutted
+*	polygons grouped by their position to the plane.
+* Parameters:
+*	polygon {Polygon} the polygon
+*	plane {Plane} the plane
+*	frontPolygons {Polygon[]} (out) polygons in front of the plane
+*	backPolygons {Polygon[]} (out) polygons at the back of the plane
+*	planePolygons {Polygon[]} (out) polygons on the plane
+* Returns:
+*	{boolean} success
+*/
 JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons, planePolygons)
 {
 	function AddCutVerticesToPolygon (polygon, plane, cutPolygon, vertexTypes)

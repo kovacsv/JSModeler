@@ -66,11 +66,13 @@ JSM.ConvexHull2D = function (coords)
 
 /**
 * Function: ConvexHull3D
-* Description: Calculates the 3D convex hull from the given coordinates.
+* Description:
+*	Calculates the 3D convex hull from the given coordinates. The result defines
+*	convex hull triangles as an array of arrays with three coordinates.
 * Parameters:
 *	coords {Coord[*]} the coordinate array
 * Returns:
-*	{Coord[3][*]} triangles of the convex hull (array of arrays with three coordinates)
+*	{Coord[3][*]} the result
 */
 JSM.ConvexHull3D = function (coords)
 {
