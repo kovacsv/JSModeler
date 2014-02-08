@@ -19,6 +19,7 @@
 ../src/geometry/polygon.js
 ../src/geometry/polygonutils.js
 ../src/geometry/bsptree.js
+../src/geometry/utilities.js
 ../src/modeler/body.js
 ../src/modeler/model.js
 ../src/modeler/material.js

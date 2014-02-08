@@ -4,8 +4,8 @@
 * Parameters:
 *	body {Body} the body
 *	x {number} the x coordinate of the vertex
-*	y {number} the x coordinate of the vertex
-*	z {number} the x coordinate of the vertex
+*	y {number} the y coordinate of the vertex
+*	z {number} the z coordinate of the vertex
 */
 JSM.AddVertexToBody = function (body, x, y, z)
 {
@@ -28,11 +28,12 @@ JSM.AddPolygonToBody = function (body, vertices)
 * Function: CalculateBodyVertexToPolygon
 * Description:
 *	Calculates an array which contains array of the connected polygon
-*	indices for all vertex indices in the body.
+*	indices for all vertex indices in the body. The result is an
+*	array of array of polygon indices.
 * Parameters:
 *	body {Body} the body
 * Returns:
-*	{integer[*][*]} array of array of polygon indices
+*	{integer[*][*]} the result
 */
 JSM.CalculateBodyVertexToPolygon = function (body)
 {
@@ -110,11 +111,13 @@ JSM.CalculateBodyPolygonNormals = function (body)
 
 /**
 * Function: CalculateBodyVertexNormals
-* Description: Calculates vertex normal vectors for all vertices stored in the body.
+* Description:
+*	Calculates vertex normal vectors for all vertices stored in the body.
+*	The result is an array of array with vertex normal vectors.
 * Parameters:
 *	body {Body} the body
 * Returns:
-*	{Vector[*]} the result
+*	{Vector[*][*]} the result
 */
 JSM.CalculateBodyVertexNormals = function (body)
 {
@@ -178,40 +181,6 @@ JSM.MakeBodyInsideOut = function (body)
 			polygon.vertices.push (vertices[count - j - 1]);
 		}
 	}
-};
-
-/**
-* Function: GetGaussianCParameter
-* Description:
-*	Calculates the gaussian functions c parameter which can be used
-*	for the gaussian function to reach epsilon at a given value.
-* Parameters:
-*	x {number} the value
-*	a {number} the a parameter of the function
-*	b {number} the b parameter of the function
-*	epsilon {number} the epsilon value
-* Returns:
-*	{number} the c parameter of the function
-*/
-JSM.GetGaussianCParameter = function (x, a, b, epsilon)
-{
-	return Math.sqrt (-(Math.pow (x - b, 2.0) / (2.0 * Math.log (epsilon / Math.abs (a)))));
-};
-
-/**
-* Function: GetGaussianValue
-* Description: Calculates the gaussian functions value.
-* Parameters:
-*	x {number} the value
-*	a {number} the a parameter of the function
-*	b {number} the b parameter of the function
-*	c {number} the c parameter of the function
-* Returns:
-*	{number} the result
-*/
-JSM.GetGaussianValue = function (x, a, b, c)
-{
-	return a * Math.exp (-(Math.pow (x - b, 2.0) / (2.0 * Math.pow (c, 2.0))));
 };
 
 /**

@@ -1,3 +1,12 @@
+/**
+* Function: GenerateRectangle
+* Description: Generates a rectangle.
+* Parameters:
+*	xSize {number} x size
+*	ySize {number} y size
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateRectangle = function (xSize, ySize)
 {
 	var result = new JSM.Body ();
@@ -23,6 +32,16 @@ JSM.GenerateRectangle = function (xSize, ySize)
 	return result;
 };
 
+/**
+* Function: GenerateCuboid
+* Description: Generates a cuboid.
+* Parameters:
+*	xSize {number} x size
+*	ySize {number} y size
+*	zSize {number} z size
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCuboid = function (xSize, ySize, zSize)
 {
 	var result = new JSM.Body ();
@@ -58,6 +77,19 @@ JSM.GenerateCuboid = function (xSize, ySize, zSize)
 	return result;
 };
 
+/**
+* Function: GenerateCuboidSides
+* Description:
+*	Generates the specified sides of a cuboid. The last parameter is
+*	a boolean array which defines sides visibility.
+* Parameters:
+*	xSize {number} x size
+*	ySize {number} y size
+*	zSize {number} z size
+*	sides {boolean[]} sides visibility
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCuboidSides = function (xSize, ySize, zSize, sides)
 {
 	var result = new JSM.Body ();
@@ -93,6 +125,17 @@ JSM.GenerateCuboidSides = function (xSize, ySize, zSize, sides)
 	return result;
 };
 
+/**
+* Function: GenerateSegmentedRectangle
+* Description:	Generates a segmented rectangle.
+* Parameters:
+*	xSize {number} x size
+*	ySize {number} y size
+*	xSegmentation {integer} segmentation along x side
+*	ySegmentation {integer} segmentation along y side
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateSegmentedRectangle = function (xSize, ySize, xSegmentation, ySegmentation)
 {
 	function AddVertices ()
@@ -136,6 +179,17 @@ JSM.GenerateSegmentedRectangle = function (xSize, ySize, xSegmentation, ySegment
 	return result;
 };
 
+/**
+* Function: GenerateSegmentedCuboid
+* Description:	Generates a segmented cuboid.
+* Parameters:
+*	xSize {number} x size
+*	ySize {number} y size
+*	zSize {number} z size
+*	segmentation {integer} segmentation of the sides
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 {
 	function GetLevelOffset (level)

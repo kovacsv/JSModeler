@@ -1140,6 +1140,30 @@
 					"returns" : [
 						["boolean", "success"]
 					]
+				},
+				"GetGaussianCParameter" : {
+					"description" : "Calculates the gaussian functions c parameter which can be used for the gaussian function to reach epsilon at a given value.",
+					"parameters" : [
+						["x", "number", "the value"],
+						["a", "number", "the a parameter of the function"],
+						["b", "number", "the b parameter of the function"],
+						["epsilon", "number", "the epsilon value"]
+					],
+					"returns" : [
+						["number", "the c parameter of the function"]
+					]
+				},
+				"GetGaussianValue" : {
+					"description" : "Calculates the gaussian functions value.",
+					"parameters" : [
+						["x", "number", "the value"],
+						["a", "number", "the a parameter of the function"],
+						["b", "number", "the b parameter of the function"],
+						["c", "number", "the c parameter of the function"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
 				}
 			},
 			"classes" : {
@@ -1717,8 +1741,8 @@
 					"parameters" : [
 						["body", "Body", "the body"],
 						["x", "number", "the x coordinate of the vertex"],
-						["y", "number", "the x coordinate of the vertex"],
-						["z", "number", "the x coordinate of the vertex"]
+						["y", "number", "the y coordinate of the vertex"],
+						["z", "number", "the z coordinate of the vertex"]
 					]
 				},
 				"AddPolygonToBody" : {
@@ -1729,12 +1753,12 @@
 					]
 				},
 				"CalculateBodyVertexToPolygon" : {
-					"description" : "Calculates an array which contains array of the connected polygon indices for all vertex indices in the body.",
+					"description" : "Calculates an array which contains array of the connected polygon indices for all vertex indices in the body. The result is an array of array of polygon indices.",
 					"parameters" : [
 						["body", "Body", "the body"]
 					],
 					"returns" : [
-						["integer[*][*]", "array of array of polygon indices"]
+						["integer[*][*]", "the result"]
 					]
 				},
 				"CalculateBodyPolygonNormal" : {
@@ -1757,42 +1781,18 @@
 					]
 				},
 				"CalculateBodyVertexNormals" : {
-					"description" : "Calculates vertex normal vectors for all vertices stored in the body.",
+					"description" : "Calculates vertex normal vectors for all vertices stored in the body. The result is an array of array with vertex normal vectors.",
 					"parameters" : [
 						["body", "Body", "the body"]
 					],
 					"returns" : [
-						["Vector[*]", "the result"]
+						["Vector[*][*]", "the result"]
 					]
 				},
 				"MakeBodyInsideOut" : {
 					"description" : "Reverses all polygons orientation in the body.",
 					"parameters" : [
 						["body", "Body", "the body"]
-					]
-				},
-				"GetGaussianCParameter" : {
-					"description" : "Calculates the gaussian functions c parameter which can be used for the gaussian function to reach epsilon at a given value.",
-					"parameters" : [
-						["x", "number", "the value"],
-						["a", "number", "the a parameter of the function"],
-						["b", "number", "the b parameter of the function"],
-						["epsilon", "number", "the epsilon value"]
-					],
-					"returns" : [
-						["number", "the c parameter of the function"]
-					]
-				},
-				"GetGaussianValue" : {
-					"description" : "Calculates the gaussian functions value.",
-					"parameters" : [
-						["x", "number", "the value"],
-						["a", "number", "the a parameter of the function"],
-						["b", "number", "the b parameter of the function"],
-						["c", "number", "the c parameter of the function"]
-					],
-					"returns" : [
-						["number", "the result"]
 					]
 				},
 				"SoftMoveBodyVertex" : {
@@ -1993,6 +1993,63 @@
 					"parameters" : [
 						["body", "Body", "the body"],
 						["plane", "Plane", "the plane"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateRectangle" : {
+					"description" : "Generates a rectangle.",
+					"parameters" : [
+						["xSize", "number", "x size"],
+						["ySize", "number", "y size"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCuboid" : {
+					"description" : "Generates a cuboid.",
+					"parameters" : [
+						["xSize", "number", "x size"],
+						["ySize", "number", "y size"],
+						["zSize", "number", "z size"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCuboidSides" : {
+					"description" : "Generates the specified sides of a cuboid. The last parameter is a boolean array which defines sides visibility.",
+					"parameters" : [
+						["xSize", "number", "x size"],
+						["ySize", "number", "y size"],
+						["zSize", "number", "z size"],
+						["sides", "boolean[]", "sides visibility"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateSegmentedRectangle" : {
+					"description" : "Generates a segmented rectangle.",
+					"parameters" : [
+						["xSize", "number", "x size"],
+						["ySize", "number", "y size"],
+						["xSegmentation", "integer", "segmentation along x side"],
+						["ySegmentation", "integer", "segmentation along y side"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateSegmentedCuboid" : {
+					"description" : "Generates a segmented cuboid.",
+					"parameters" : [
+						["xSize", "number", "x size"],
+						["ySize", "number", "y size"],
+						["zSize", "number", "z size"],
+						["segmentation", "integer", "segmentation of the sides"]
 					],
 					"returns" : [
 						["Body", "the result"]
