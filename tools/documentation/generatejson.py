@@ -47,16 +47,11 @@ def Main (argv):
 			filesByModule[moduleName] = []
 		filesByModule[moduleName].append (absPath)
 	
-	try:
-		documentation = jsmdoc.Documentation ()
-		for moduleName in moduleNames:
-			newModuleName = moduleName.title ()
-			documentation.AddModule (newModuleName, filesByModule[moduleName])
-		documentation.WriteJSON (resultFilePath)
-	except:
-		PrintError ('Could not create documentation.');
-		return 1
-	
+	documentation = jsmdoc.Documentation ()
+	for moduleName in moduleNames:
+		newModuleName = moduleName.title ()
+		documentation.AddModule (newModuleName, filesByModule[moduleName])
+	documentation.WriteJSON (resultFilePath)
 	return 0
 	
 sys.exit (Main (sys.argv))
