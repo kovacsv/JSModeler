@@ -1682,6 +1682,252 @@
 			}
 		},
 		"Modeler" : {
+			"classes" : {
+				"BodyVertex" : {
+					"description" : "Represents a vertex of a 3D body. The vertex contains only its position as a 3D coordinate.",
+					"parameters" : [
+						["position", "Coord", "the position"]
+					],
+					"functions" : {
+						"GetPosition" : {
+							"description" : "Returns the position of the vertex.",
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"SetPosition" : {
+							"description" : "Sets the position of the vertex.",
+							"parameters" : [
+								["position", "Coord", "the position"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the vertex.",
+							"returns" : [
+								["BodyVertex", "a cloned instance"]
+							]
+						}
+					}
+				},
+				"BodyPolygon" : {
+					"description" : "Represents a polygon of a 3D body. The polygon contains vertex indices of vertices stored in its 3D body, material indices of materials defined outside of the body, and a curve group index which defines if its normal vector calculation in case of smooth surfaces.",
+					"parameters" : [
+						["vertices", "integer[]", "array of vertex indices stored in the body"]
+					],
+					"functions" : {
+						"AddVertexIndex" : {
+							"description" : "Adds a stored vertex index to the polygon.",
+							"parameters" : [
+								["index", "integer", "the stored vertex index"]
+							]
+						},
+						"GetVertexIndex" : {
+							"description" : "Returns a stored vertex index in the defined polygon vertex index.",
+							"parameters" : [
+								["index", "integer", "the polygon vertex index"]
+							],
+							"returns" : [
+								["integer", "the stored vertex index"]
+							]
+						},
+						"VertexIndexCount" : {
+							"description" : "Returns the stored vertex index count of the polygon.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"HasMaterialIndex" : {
+							"description" : "Returns if the polygon has a material index.",
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"GetMaterialIndex" : {
+							"description" : "Returns the polygons material index.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"SetMaterialIndex" : {
+							"description" : "Sets the polygons material index.",
+							"parameters" : [
+								["material", "integer", "the material index"]
+							]
+						},
+						"HasCurveGroup" : {
+							"description" : "Returns if the polygon has a curve group index.",
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"GetCurveGroup" : {
+							"description" : "Returns the polygons curve group index.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"SetCurveGroup" : {
+							"description" : "Sets the polygons curve group index.",
+							"parameters" : [
+								["group", "integer", "the curve group index"]
+							]
+						},
+						"InheritAttributes" : {
+							"description" : "Inherits attributes (material and curve group index) from an another polygon.",
+							"parameters" : [
+								["source", "BodyPolygon", "the source polygon"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the polygon.",
+							"returns" : [
+								["BodyPolygon", "a cloned instance"]
+							]
+						}
+					}
+				},
+				"Body" : {
+					"description" : "Represents a 3D body. The body contains vertices, polygons, and a texture coordinate system.",
+					"functions" : {
+						"AddVertex" : {
+							"description" : "Adds a vertex to the body.",
+							"parameters" : [
+								["vertex", "BodyVertex", "the vertex"]
+							],
+							"returns" : [
+								["integer", "the index of the newly added vertex"]
+							]
+						},
+						"AddPolygon" : {
+							"description" : "Adds a polygon to the body.",
+							"parameters" : [
+								["polygon", "BodyPolygon", "the polygon"]
+							],
+							"returns" : [
+								["integer", "the index of the newly added polygon"]
+							]
+						},
+						"GetVertex" : {
+							"description" : "Returns the vertex in the given index.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["BodyVertex", "the result"]
+							]
+						},
+						"GetVertexPosition" : {
+							"description" : "Returns the position of the vertex in the given index.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"SetVertexPosition" : {
+							"description" : "Sets the position of the vertex in the given index.",
+							"parameters" : [
+								["index", "integer", "the vertex index"],
+								["position", "Coord", "the new position"]
+							]
+						},
+						"VertexCount" : {
+							"description" : "Returns the vertex count of the body.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetPolygon" : {
+							"description" : "Returns the polygon in the given index.",
+							"parameters" : [
+								["index", "integer", "the polygon index"]
+							],
+							"returns" : [
+								["BodyPolygon", "the result"]
+							]
+						},
+						"PolygonCount" : {
+							"description" : "Returns the polygon count of the body.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"SetPolygonsMaterialIndex" : {
+							"description" : "Sets the material index for all polygons in the body.",
+							"parameters" : [
+								["material", "integer", "the material index"]
+							]
+						},
+						"SetPolygonsCurveGroup" : {
+							"description" : "Sets the curve group index for all polygons in the body.",
+							"parameters" : [
+								["group", "integer", "the curve group index"]
+							]
+						},
+						"GetTextureProjectionType" : {
+							"description" : "Returns the texture projection type of the body.",
+							"returns" : [
+								["string", "the result"]
+							]
+						},
+						"SetTextureProjectionType" : {
+							"description" : "Sets the texture projection type of the body.",
+							"parameters" : [
+								["projection", "string", "the new texture projection type"]
+							]
+						},
+						"GetTextureProjectionCoords" : {
+							"description" : "Returns the texture projection coordinate system of the body.",
+							"returns" : [
+								["CoordSystem", "the result"]
+							]
+						},
+						"SetTextureProjectionCoords" : {
+							"description" : "Sets the texture projection coordinate system of the body.",
+							"parameters" : [
+								["coords", "CoordSystem", "the new texture projection coordinate system"]
+							]
+						},
+						"Transform" : {
+							"description" : "Transforms the body.",
+							"parameters" : [
+								["transformation", "Transformation", "the transformation"]
+							]
+						},
+						"GetBoundingBox" : {
+							"description" : "Returns the bounding box of the body.",
+							"returns" : [
+								["Coord[2]", "the minimum and maximum coordinate of the bounding box"]
+							]
+						},
+						"GetCenter" : {
+							"description" : "Returns the center of the bounding box of the body.",
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"GetBoundingSphereRadius" : {
+							"description" : "Returns the radius of the bounding sphere of the body.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"OffsetToOrigo" : {
+							"description" : "Offsets the body to the origo."
+						},
+						"Merge" : {
+							"description" : "Merges an existing body to the body.",
+							"parameters" : [
+								["body", "Body", "the body to merge"]
+							]
+						},
+						"Clear" : {
+							"description" : "Makes the body empty."
+						}
+					}
+				}
+			}
 		},
 		"Extras" : {
 		},
