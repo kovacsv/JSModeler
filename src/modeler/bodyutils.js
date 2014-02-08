@@ -14,7 +14,7 @@ JSM.CalculateBodyVertexToPolygon = function (body)
 	
 	var i, j;
 	for (i = 0; i < body.VertexCount (); i++) {
-		result[i] = [];
+		result.push ([]);
 	}
 	
 	var polygon;
@@ -69,7 +69,7 @@ JSM.CalculateBodyVertexNormals = function (body)
 {
 	var result = [];
 	var polygonNormals = JSM.CalculateBodyPolygonNormals (body);
-	var vertexToPolygon = JSM.CalculateBodyVertexToPolygon (body);
+	var vertexToPolygon = null;
 	
 	var i, j, k, polygon, normal;
 	var average, count, neighbourPolygons, neighbourPolygon;
@@ -78,6 +78,9 @@ JSM.CalculateBodyVertexNormals = function (body)
 		result[i] = [];
 
 		if (polygon.HasCurveGroup ()) {
+			if (vertexToPolygon === null) {
+				vertexToPolygon = JSM.CalculateBodyVertexToPolygon (body);
+			}
 			for (j = 0; j < polygon.VertexIndexCount (); j++) {
 				average = new JSM.Vector (0.0, 0.0, 0.0);
 				count = 0;
