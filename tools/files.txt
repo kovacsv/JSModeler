@@ -20,12 +20,12 @@
 ../src/geometry/polygonutils.js
 ../src/geometry/bsptree.js
 ../src/modeler/body.js
+../src/modeler/model.js
 ../src/modeler/material.js
 ../src/modeler/bodyutils.js
 ../src/modeler/adjacencylist.js
-../src/modeler/cututils.js
 ../src/modeler/textureutils.js
-../src/modeler/model.js
+../src/modeler/cututils.js
 ../src/modeler/generator.js
 ../src/modeler/solidgenerator.js
 ../src/modeler/camera.js

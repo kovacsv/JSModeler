@@ -1887,6 +1887,116 @@
 					"returns" : [
 						["boolean", "the result"]
 					]
+				},
+				"CalculatePlanarTextureCoord" : {
+					"description" : "Calculates the planar texture coordinate for a coordinate.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["system", "CoordSystem", "the coordinate system"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
+				"CalculatePolygonPlanarTextureCoords" : {
+					"description" : "Calculates the planar texture coordinates for a polygon.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["index", "integer", "the polygon index"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result"]
+					]
+				},
+				"CalculateCubicTextureCoord" : {
+					"description" : "Calculates the cubic texture coordinate for a coordinate.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["normal", "Vector", "the normal vector for calculation"],
+						["system", "CoordSystem", "the coordinate system"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
+				"CalculatePolygonCubicTextureCoords" : {
+					"description" : "Calculates the cubic texture coordinates for a polygon.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["index", "integer", "the polygon index"],
+						["normal", "Vector", "the normal vector for calculation"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result"]
+					]
+				},
+				"CalculateCylindricalTextureCoord" : {
+					"description" : "Calculates the cylindrical texture coordinate for a coordinate.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["normal", "Vector", "the normal vector for calculation"],
+						["system", "CoordSystem", "the coordinate system"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
+				"CalculatePolygonCylindricalTextureCoords" : {
+					"description" : "Calculates the cylindrical texture coordinates for a polygon.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["index", "integer", "the polygon index"],
+						["normal", "Vector", "the normal vector for calculation"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result"]
+					]
+				},
+				"CalculateBodyPlanarTextureCoords" : {
+					"description" : "Calculates the planar texture coordinates for a body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result"]
+					]
+				},
+				"CalculateBodyCubicTextureCoords" : {
+					"description" : "Calculates the cubic texture coordinates for a body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result"]
+					]
+				},
+				"CalculateBodyCylindricalTextureCoords" : {
+					"description" : "Calculates the cylindrical texture coordinates for a body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result"]
+					]
+				},
+				"CalculateBodyTextureCoords" : {
+					"description" : "Calculates the texture coordinates for a body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result"]
+					]
+				},
+				"CutBodyByPlane" : {
+					"description" : "Cuts a body by a plane.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["plane", "Plane", "the plane"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
 				}
 			},
 			"classes" : {
@@ -1923,13 +2033,13 @@
 					],
 					"functions" : {
 						"AddVertexIndex" : {
-							"description" : "Adds a stored vertex index to the polygon.",
+							"description" : "Adds a vertex index to the polygon.",
 							"parameters" : [
-								["index", "integer", "the stored vertex index"]
+								["index", "integer", "the vertex index"]
 							]
 						},
 						"GetVertexIndex" : {
-							"description" : "Returns a stored vertex index in the defined polygon vertex index.",
+							"description" : "Returns the body vertex index at the given polygon vertex index.",
 							"parameters" : [
 								["index", "integer", "the polygon vertex index"]
 							],
@@ -1938,7 +2048,7 @@
 							]
 						},
 						"VertexIndexCount" : {
-							"description" : "Returns the stored vertex index count of the polygon.",
+							"description" : "Returns the vertex count of the polygon.",
 							"returns" : [
 								["integer", "the result"]
 							]
@@ -2015,7 +2125,7 @@
 							]
 						},
 						"GetVertex" : {
-							"description" : "Returns the vertex in the given index.",
+							"description" : "Returns the vertex at the given index.",
 							"parameters" : [
 								["index", "integer", "the vertex index"]
 							],
@@ -2024,7 +2134,7 @@
 							]
 						},
 						"GetVertexPosition" : {
-							"description" : "Returns the position of the vertex in the given index.",
+							"description" : "Returns the position of the vertex at the given index.",
 							"parameters" : [
 								["index", "integer", "the vertex index"]
 							],
@@ -2033,7 +2143,7 @@
 							]
 						},
 						"SetVertexPosition" : {
-							"description" : "Sets the position of the vertex in the given index.",
+							"description" : "Sets the position of the vertex at the given index.",
 							"parameters" : [
 								["index", "integer", "the vertex index"],
 								["position", "Coord", "the new position"]
@@ -2046,7 +2156,7 @@
 							]
 						},
 						"GetPolygon" : {
-							"description" : "Returns the polygon in the given index.",
+							"description" : "Returns the polygon at the given index.",
 							"parameters" : [
 								["index", "integer", "the polygon index"]
 							],
@@ -2134,6 +2244,47 @@
 						}
 					}
 				},
+				"Model" : {
+					"description" : "Represents a 3D model. The model contains bodies.",
+					"functions" : {
+						"AddBody" : {
+							"description" : "Adds a body to the model.",
+							"parameters" : [
+								["body", "Body", "the body"]
+							],
+							"returns" : [
+								["integer", "the index of the newly added body"]
+							]
+						},
+						"GetBody" : {
+							"description" : "Returns the stored body with the given index.",
+							"parameters" : [
+								["index", "integer", "the index of the body"]
+							],
+							"returns" : [
+								["Body", "the result"]
+							]
+						},
+						"BodyCount" : {
+							"description" : "Returns the body count of the model.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"VertexCount" : {
+							"description" : "Returns the vertex count of the model.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"PolygonCount" : {
+							"description" : "Returns the polygon count of the model.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						}
+					}
+				},
 				"Material" : {
 					"description" : "Defines a material.",
 					"parameters" : [
@@ -2190,7 +2341,7 @@
 					"description" : "Contains adjacency information for a body polygon. Contains arrays with indices of connected vertex and poly edge info."
 				},
 				"AdjacencyInfo" : {
-					"description" : "Contains adjacency information for a body. Contains arrays with indices of vertex, edge and polygon info."
+					"description" : "Contains adjacency information for a body. Contains arrays with vertex, edge and polygon info."
 				}
 			}
 		},

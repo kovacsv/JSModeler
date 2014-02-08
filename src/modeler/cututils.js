@@ -1,3 +1,12 @@
+/**
+* Function: CutBodyByPlane
+* Description: Cuts a body by a plane.
+* Parameters:
+*	body {Body} the body
+*	plane {Plane} the plane
+* Returns:
+*	{Body} the result
+*/
 JSM.CutBodyByPlane = function (body, plane)
 {
 	function CutBodyPolygonByPlane (polygon, plane, indexTable)

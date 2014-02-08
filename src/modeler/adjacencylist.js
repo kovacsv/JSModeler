@@ -52,7 +52,7 @@ JSM.PgonInfo = function ()
 * Class: AdjacencyInfo
 * Description:
 *	Contains adjacency information for a body. Contains arrays
-*	with indices of vertex, edge and polygon info.
+*	with vertex, edge and polygon info.
 */
 JSM.AdjacencyInfo = function ()
 {

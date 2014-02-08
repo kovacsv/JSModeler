@@ -81,9 +81,9 @@ JSM.BodyVertex.prototype.Clone = function ()
 
 /**
 * Function: BodyPolygon.AddVertexIndex
-* Description: Adds a stored vertex index to the polygon.
+* Description: Adds a vertex index to the polygon.
 * Parameters:
-*	index {integer} the stored vertex index
+*	index {integer} the vertex index
 */
 JSM.BodyPolygon.prototype.AddVertexIndex = function (index)
 {
@@ -92,7 +92,7 @@ JSM.BodyPolygon.prototype.AddVertexIndex = function (index)
 
 /**
 * Function: BodyPolygon.GetVertexIndex
-* Description: Returns a stored vertex index in the defined polygon vertex index.
+* Description: Returns the body vertex index at the given polygon vertex index.
 * Parameters:
 *	index {integer} the polygon vertex index
 * Returns:
@@ -105,7 +105,7 @@ JSM.BodyPolygon.prototype.GetVertexIndex = function (index)
 
 /**
 * Function: BodyPolygon.VertexIndexCount
-* Description: Returns the stored vertex index count of the polygon.
+* Description: Returns the vertex count of the polygon.
 * Returns:
 *	{integer} the result
 */
@@ -240,7 +240,7 @@ JSM.Body.prototype.AddPolygon = function (polygon)
 
 /**
 * Function: Body.GetVertex
-* Description: Returns the vertex in the given index.
+* Description: Returns the vertex at the given index.
 * Parameters:
 *	index {integer} the vertex index
 * Returns:
@@ -253,7 +253,7 @@ JSM.Body.prototype.GetVertex = function (index)
 
 /**
 * Function: Body.GetVertexPosition
-* Description: Returns the position of the vertex in the given index.
+* Description: Returns the position of the vertex at the given index.
 * Parameters:
 *	index {integer} the vertex index
 * Returns:
@@ -266,7 +266,7 @@ JSM.Body.prototype.GetVertexPosition = function (index)
 
 /**
 * Function: Body.SetVertexPosition
-* Description: Sets the position of the vertex in the given index.
+* Description: Sets the position of the vertex at the given index.
 * Parameters:
 *	index {integer} the vertex index
 *	position {Coord} the new position
@@ -289,7 +289,7 @@ JSM.Body.prototype.VertexCount = function ()
 
 /**
 * Function: Body.GetPolygon
-* Description: Returns the polygon in the given index.
+* Description: Returns the polygon at the given index.
 * Parameters:
 *	index {integer} the polygon index
 * Returns:
