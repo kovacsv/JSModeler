@@ -245,7 +245,7 @@ JSM.CalculatePolygonCylindricalTextureCoords = function (body, index, normal)
 * Parameters:
 *	body {Body} the body
 * Returns:
-*	{Coord2D[*]} the result
+*	{Coord2D[*][*]} the result
 */
 JSM.CalculateBodyPlanarTextureCoords = function (body)
 {
@@ -263,7 +263,7 @@ JSM.CalculateBodyPlanarTextureCoords = function (body)
 * Parameters:
 *	body {Body} the body
 * Returns:
-*	{Coord2D[*]} the result
+*	{Coord2D[*][*]} the result
 */
 JSM.CalculateBodyCubicTextureCoords = function (body)
 {
@@ -283,7 +283,7 @@ JSM.CalculateBodyCubicTextureCoords = function (body)
 * Parameters:
 *	body {Body} the body
 * Returns:
-*	{Coord2D[*]} the result
+*	{Coord2D[*][*]} the result
 */
 JSM.CalculateBodyCylindricalTextureCoords = function (body)
 {
@@ -299,11 +299,13 @@ JSM.CalculateBodyCylindricalTextureCoords = function (body)
 
 /**
 * Function: CalculateBodyTextureCoords
-* Description: Calculates the texture coordinates for a body.
+* Description:
+*	Calculates the texture coordinates for a body. The result
+*	is an array of arrays of texture coordinates.
 * Parameters:
 *	body {Body} the body
 * Returns:
-*	{Coord2D[*]} the result
+*	{Coord2D[*][*]} the result
 */
 JSM.CalculateBodyTextureCoords = function (body)
 {

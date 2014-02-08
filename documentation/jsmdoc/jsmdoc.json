@@ -1958,7 +1958,7 @@
 						["body", "Body", "the body"]
 					],
 					"returns" : [
-						["Coord2D[*]", "the result"]
+						["Coord2D[*][*]", "the result"]
 					]
 				},
 				"CalculateBodyCubicTextureCoords" : {
@@ -1967,7 +1967,7 @@
 						["body", "Body", "the body"]
 					],
 					"returns" : [
-						["Coord2D[*]", "the result"]
+						["Coord2D[*][*]", "the result"]
 					]
 				},
 				"CalculateBodyCylindricalTextureCoords" : {
@@ -1976,16 +1976,16 @@
 						["body", "Body", "the body"]
 					],
 					"returns" : [
-						["Coord2D[*]", "the result"]
+						["Coord2D[*][*]", "the result"]
 					]
 				},
 				"CalculateBodyTextureCoords" : {
-					"description" : "Calculates the texture coordinates for a body.",
+					"description" : "Calculates the texture coordinates for a body. The result is an array of arrays of texture coordinates.",
 					"parameters" : [
 						["body", "Body", "the body"]
 					],
 					"returns" : [
-						["Coord2D[*]", "the result"]
+						["Coord2D[*][*]", "the result"]
 					]
 				},
 				"CutBodyByPlane" : {
