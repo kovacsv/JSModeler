@@ -53,6 +53,7 @@ div.modulename
 	font-size : 17px;
 	margin-top : 15px;
 	margin-bottom : 10px;
+	cursor : pointer;
 }
 
 div.entry

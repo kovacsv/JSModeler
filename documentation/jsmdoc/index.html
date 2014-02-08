@@ -11,6 +11,7 @@
 
 	<script type="text/javascript">
 		var jsonData = null;
+		var moduleEntryDivs = [];
 		var entryClickCommands = [];
 	
 		function CreateElement (type, className, innerHTML)
@@ -215,13 +216,38 @@
 			}
 		}	
 	
+		function ShowModuleEntries (moduleName)
+		{
+			var moduleEntryDiv;
+			if (moduleName in moduleEntryDivs) {
+				moduleEntryDiv = moduleEntryDivs[moduleName];
+				if (moduleEntryDiv.style.display == 'none') {
+					moduleEntryDiv.style.display = 'block';
+				} else {
+					moduleEntryDiv.style.display = 'none';
+				}
+			}
+		}
+	
 		function AddModules (parentDiv)
 		{
 			var modules = jsonData.modules;
-			var module, indented;
+			var module, nameDiv, indented;
 			for (module in modules) {
-				parentDiv.appendChild (CreateElement ('div', 'modulename', module));
+				if (modules[module].functions === undefined && modules[module].classes === undefined) {
+					continue;
+				}
+				
+				nameDiv = CreateElement ('div', 'modulename', module);
+				nameDiv.onclick = function (theModule) {
+					return function () {
+						ShowModuleEntries (theModule);
+					}
+				} (module);
+				parentDiv.appendChild (nameDiv);
 				indented = CreateElement ('div', 'indented');
+				indented.style.display = 'none';
+				moduleEntryDivs[module] = indented;
 				AddModule (modules[module], indented);
 				parentDiv.appendChild (indented);
 			}
