@@ -690,6 +690,14 @@
 						["string", "'SectorsIntersectsCoincident', 'SectorsIntersectsEndPoint', 'SectorsIntersectsOnePoint', or 'SectorsDontIntersects'"]
 					]
 				},
+				"GetSectorSegmentation" : {
+					"description" : "Returns the segmented coordinates of a sector.",
+					"parameters" : [
+						["sector", "Sector", "the sector"],
+						["segmentation", "integer", "the segmentation"],
+						["coords", "Coord[*]", "(out) the result coordinates"]
+					]
+				},
 				"CoordLinePosition2D" : {
 					"description" : "Calculates the position of a coordinate and a line.",
 					"parameters" : [
@@ -1163,6 +1171,27 @@
 					],
 					"returns" : [
 						["number", "the result"]
+					]
+				},
+				"GenerateCirclePoints" : {
+					"description" : "Generates coordinates on circle.",
+					"parameters" : [
+						["radius", "number", "the radius of the circle"],
+						["segmentation", "number", "the segmentation of the circle"],
+						["origo", "Coord", "the origo of the circle"]
+					],
+					"returns" : [
+						["Coord[*]", "the result"]
+					]
+				},
+				"GetRuledMesh" : {
+					"description" : "Generates ruled mesh coordinates and polygons between two coordinate array. The two array should have the same length. The result is a coordinate array and a polygon array which contains indices for vertices.",
+					"parameters" : [
+						["aCoords", "Coord[*]", "the first coordinate array"],
+						["bCoords", "Coord[*]", "the second coordinate array"],
+						["segmentation", "number", "the segmentation of the mesh"],
+						["vertices", "Coord[*]", "(out) the vertices of the mesh"],
+						["polygons", "integer[*][4]", "(out) the polygons of the mesh"]
 					]
 				}
 			},
@@ -2050,6 +2079,194 @@
 						["ySize", "number", "y size"],
 						["zSize", "number", "z size"],
 						["segmentation", "integer", "segmentation of the sides"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCircle" : {
+					"description" : "Generates a circle.",
+					"parameters" : [
+						["radius", "number", "the radius of the circle"],
+						["segmentation", "integer", "the segmentation of the circle"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateSphere" : {
+					"description" : "Generates a sphere.",
+					"parameters" : [
+						["radius", "number", "the radius of the sphere"],
+						["segmentation", "integer", "the segmentation of the sphere"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTriangulatedSphere" : {
+					"description" : "Generates a sphere from triangles.",
+					"parameters" : [
+						["radius", "number", "the radius of the sphere"],
+						["iterations", "integer", "the iteration number"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCylinder" : {
+					"description" : "Generates a cylinder.",
+					"parameters" : [
+						["radius", "number", "the radius of the cylinder"],
+						["height", "number", "the height of the cylinder"],
+						["segmentation", "integer", "the segmentation of the top and bottom polygons"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GeneratePie" : {
+					"description" : "Generates a pie.",
+					"parameters" : [
+						["radius", "number", "the radius of the pie"],
+						["height", "number", "the height of the pie"],
+						["angle", "number", "the angle of the pie"],
+						["segmentation", "integer", "the segmentation of the top and bottom polygons"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCone" : {
+					"description" : "Generates a cone.",
+					"parameters" : [
+						["topRadius", "number", "the top radius of the cone"],
+						["bottomRadius", "number", "the bottom radius of the cone"],
+						["height", "number", "the height of the cone"],
+						["segmentation", "integer", "the segmentation of the top and bottom polygons"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GeneratePrism" : {
+					"description" : "Generates a prism defined by a polygon. The base polygon is an array of coordinates which will be offseted in the given direction.",
+					"parameters" : [
+						["basePolygon", "Coord[*]", "the base polygon"],
+						["direction", "Vector", "the vector of the offset"],
+						["height", "number", "the height of the prism"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCurvedPrism" : {
+					"description" : "Same as GeneratePrism, but curve groups can be defined for all sides.",
+					"parameters" : [
+						["basePolygon", "Coord[*]", "the base polygon"],
+						["curveGroups", "integer[*]", "the curve groups"],
+						["direction", "Vector", "the vector of the offset"],
+						["height", "number", "the height of the prism"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GeneratePrismWithHole" : {
+					"description" : "Generates a prism defined by a polygon. The polygon can contain null values which defines the end of the current contour. The holes have to be in reversed orientation than the main contour.",
+					"parameters" : [
+						["basePolygon", "Coord[*]", "the base polygon which can contain null values"],
+						["direction", "Vector", "the vector of the offset"],
+						["height", "number", "the height of the prism"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCurvedPrismWithHole" : {
+					"description" : "Same as GeneratePrismWithHole, but curve groups can be defined for all sides.",
+					"parameters" : [
+						["basePolygon", "Coord[*]", "the base polygon which can contain null values"],
+						["direction", "Vector", "the vector of the offset"],
+						["height", "number", "the height of the prism"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GeneratePrismShell" : {
+					"description" : "Generates a prism with the given width of sides.",
+					"parameters" : [
+						["basePolygon", "Coord[*]", "the base polygon"],
+						["direction", "Vector", "the vector of the offset"],
+						["height", "number", "the height of the prism"],
+						["width", "number", "the width of the prism sides"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCylinderShell" : {
+					"description" : "Generates a cylinder with the given width of sides.",
+					"parameters" : [
+						["radius", "number", "the radius of the cylinder"],
+						["height", "number", "the height of the cylinder"],
+						["width", "number", "the width of the cylinder sides"],
+						["segmentation", "integer", "the segmentation of the top and bottom polygons"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateLineShell" : {
+					"description" : "Generates a polyline with width and height.",
+					"parameters" : [
+						["basePolyLine", "Coord[*]", "the base polyline"],
+						["direction", "Vector", "the vector of the offset"],
+						["height", "number", "the height of the shell"],
+						["width", "number", "the width of the shell"],
+						["withStartAndEnd", "boolean", "generate start and end polygons"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTorus" : {
+					"description" : "Generates a torus.",
+					"parameters" : [
+						["outerRadius", "number", "the outer radius of the torus"],
+						["innerRadius", "number", "the inner radius of the torus"],
+						["outerSegmentation", "integer", "the outer segmentation of the torus"],
+						["innerSegmentation", "integer", "the inner segmentation of the torus"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GeneratePolyTorus" : {
+					"description" : "Generates a torus with a polygon cross section.",
+					"parameters" : [
+						["basePolygon", "Coord2D[*]", "the cross section polygon of the torus"],
+						["outerRadius", "number", "the outer radius of the torus"],
+						["outerSegmentation", "integer", "the outer segmentation of the torus"],
+						["isCurved", "boolean", "create smooth surfaces"]
 					],
 					"returns" : [
 						["Body", "the result"]

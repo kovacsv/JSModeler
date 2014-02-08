@@ -329,27 +329,15 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 	return result;
 };
 
-JSM.GenerateCirclePoints = function (radius, segmentation, origo)
-{
-	var result = [];
-	var segments = segmentation;
-
-	var theta = 2.0 * Math.PI;
-	var step = 2.0 * Math.PI / segments;
-	
-	var i, coord;
-	for (i = 0; i < segments; i++) {
-		coord = JSM.CylindricalToCartesian (radius, 0.0, theta);
-		if (origo !== undefined && origo !== null) {
-			coord = JSM.CoordAdd (coord, origo);
-		}
-		result.push (coord);
-		theta += step;
-	}
-	
-	return result;
-};
-
+/**
+* Function: GenerateCircle
+* Description:	Generates a circle.
+* Parameters:
+*	radius {number} the radius of the circle
+*	segmentation {integer} the segmentation of the circle
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCircle = function (radius, segmentation)
 {
 	var result = new JSM.Body ();
@@ -382,6 +370,16 @@ JSM.GenerateCircle = function (radius, segmentation)
 	return result;
 };
 
+/**
+* Function: GenerateSphere
+* Description: Generates a sphere.
+* Parameters:
+*	radius {number} the radius of the sphere
+*	segmentation {integer} the segmentation of the sphere
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateSphere = function (radius, segmentation, isCurved)
 {
 	var result = new JSM.Body ();
@@ -469,6 +467,16 @@ JSM.GenerateSphere = function (radius, segmentation, isCurved)
 	return result;
 };
 
+/**
+* Function: GenerateTriangulatedSphere
+* Description: Generates a sphere from triangles.
+* Parameters:
+*	radius {number} the radius of the sphere
+*	iterations {integer} the iteration number
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 {
 	function GenerateIcosahedron (radius) {
@@ -583,6 +591,18 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 	return result;
 };
 
+/**
+* Function: GenerateCylinder
+* Description: Generates a cylinder.
+* Parameters:
+*	radius {number} the radius of the cylinder
+*	height {number} the height of the cylinder
+*	segmentation {integer} the segmentation of the top and bottom polygons
+*	withTopAndBottom {boolean} generate top and bottom polygons
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCylinder = function (radius, height, segmentation, withTopAndBottom, isCurved)
 {
 	var result = new JSM.Body ();
@@ -634,6 +654,19 @@ JSM.GenerateCylinder = function (radius, height, segmentation, withTopAndBottom,
 	return result;
 };
 
+/**
+* Function: GeneratePie
+* Description: Generates a pie.
+* Parameters:
+*	radius {number} the radius of the pie
+*	height {number} the height of the pie
+*	angle {number} the angle of the pie
+*	segmentation {integer} the segmentation of the top and bottom polygons
+*	withTopAndBottom {boolean} generate top and bottom polygons
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GeneratePie = function (radius, height, angle, segmentation, withTopAndBottom, isCurved)
 {
 	var result = new JSM.Body ();
@@ -687,6 +720,19 @@ JSM.GeneratePie = function (radius, height, angle, segmentation, withTopAndBotto
 	return result;
 };
 
+/**
+* Function: GenerateCone
+* Description: Generates a cone.
+* Parameters:
+*	topRadius {number} the top radius of the cone
+*	bottomRadius {number} the bottom radius of the cone
+*	height {number} the height of the cone
+*	segmentation {integer} the segmentation of the top and bottom polygons
+*	withTopAndBottom {boolean} generate top and bottom polygons
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, withTopAndBottom, isCurved)
 {
 	var result = new JSM.Body ();
@@ -792,6 +838,19 @@ JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, with
 	return result;
 };
 
+/**
+* Function: GeneratePrism
+* Description:
+*	Generates a prism defined by a polygon. The base polygon is an array
+*	of coordinates which will be offseted in the given direction.
+* Parameters:
+*	basePolygon {Coord[*]} the base polygon
+*	direction {Vector} the vector of the offset
+*	height {number} the height of the prism
+*	withTopAndBottom {boolean} generate top and bottom polygons
+* Returns:
+*	{Body} the result
+*/
 JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
 {
 	var result = new JSM.Body ();
@@ -841,6 +900,18 @@ JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
 	return result;
 };
 
+/**
+* Function: GenerateCurvedPrism
+* Description: Same as GeneratePrism, but curve groups can be defined for all sides.
+* Parameters:
+*	basePolygon {Coord[*]} the base polygon
+*	curveGroups {integer[*]} the curve groups
+*	direction {Vector} the vector of the offset
+*	height {number} the height of the prism
+*	withTopAndBottom {boolean} generate top and bottom polygons
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCurvedPrism = function (basePolygon, curveGroups, direction, height, withTopAndBottom)
 {
 	var result = JSM.GeneratePrism (basePolygon, direction, height, withTopAndBottom);
@@ -860,6 +931,20 @@ JSM.GenerateCurvedPrism = function (basePolygon, curveGroups, direction, height,
 	return result;
 };
 
+/**
+* Function: GeneratePrismWithHole
+* Description:
+*	Generates a prism defined by a polygon. The polygon can contain null
+*	values which defines the end of the current contour. The holes have
+*	to be in reversed orientation than the main contour.
+* Parameters:
+*	basePolygon {Coord[*]} the base polygon which can contain null values
+*	direction {Vector} the vector of the offset
+*	height {number} the height of the prism
+*	withTopAndBottom {boolean} generate top and bottom polygons
+* Returns:
+*	{Body} the result
+*/
 JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAndBottom)
 {
 	function AddVertices ()
@@ -981,6 +1066,17 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 	return result;
 };
 
+/**
+* Function: GenerateCurvedPrismWithHole
+* Description: Same as GeneratePrismWithHole, but curve groups can be defined for all sides.
+* Parameters:
+*	basePolygon {Coord[*]} the base polygon which can contain null values
+*	direction {Vector} the vector of the offset
+*	height {number} the height of the prism
+*	withTopAndBottom {boolean} generate top and bottom polygons
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCurvedPrismWithHole = function (basePolygon, curveGroups, direction, height, withTopAndBottom)
 {
 	var result = JSM.GeneratePrismWithHole (basePolygon, direction, height, withTopAndBottom);
@@ -1005,6 +1101,18 @@ JSM.GenerateCurvedPrismWithHole = function (basePolygon, curveGroups, direction,
 	return result;
 };
 
+/**
+* Function: GeneratePrismShell
+* Description: Generates a prism with the given width of sides.
+* Parameters:
+*	basePolygon {Coord[*]} the base polygon
+*	direction {Vector} the vector of the offset
+*	height {number} the height of the prism
+*	width {number} the width of the prism sides
+*	withTopAndBottom {boolean} generate top and bottom polygons
+* Returns:
+*	{Body} the result
+*/
 JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTopAndBottom)
 {
 	var result = new JSM.Body ();
@@ -1079,6 +1187,19 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 	return result;
 };
 
+/**
+* Function: GenerateCylinderShell
+* Description: Generates a cylinder with the given width of sides.
+* Parameters:
+*	radius {number} the radius of the cylinder
+*	height {number} the height of the cylinder
+*	width {number} the width of the cylinder sides
+*	segmentation {integer} the segmentation of the top and bottom polygons
+*	withTopAndBottom {boolean} generate top and bottom polygons
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCylinderShell = function (radius, height, width, segmentation, withTopAndBottom, isCurved)
 {
 	function GenerateCircle (radius, segmentation, bottom)
@@ -1110,6 +1231,19 @@ JSM.GenerateCylinderShell = function (radius, height, width, segmentation, withT
 	return result;
 };
 
+/**
+* Function: GenerateLineShell
+* Description: Generates a polyline with width and height.
+* Parameters:
+*	basePolyLine {Coord[*]} the base polyline
+*	direction {Vector} the vector of the offset
+*	height {number} the height of the shell
+*	width {number} the width of the shell
+*	withStartAndEnd {boolean} generate start and end polygons
+*	withTopAndBottom {boolean} generate top and bottom polygons
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withStartAndEnd, withTopAndBottom)
 {
 	var result = new JSM.Body ();
@@ -1227,6 +1361,18 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 	return result;
 };
 
+/**
+* Function: GenerateTorus
+* Description: Generates a torus.
+* Parameters:
+*	outerRadius {number} the outer radius of the torus
+*	innerRadius {number} the inner radius of the torus
+*	outerSegmentation {integer} the outer segmentation of the torus
+*	innerSegmentation {integer} the inner segmentation of the torus
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, innerSegmentation, isCurved)
 {
 	var result = new JSM.Body ();
@@ -1297,6 +1443,17 @@ JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, inner
 	return result;
 };
 
+/**
+* Function: GeneratePolyTorus
+* Description: Generates a torus with a polygon cross section.
+* Parameters:
+*	basePolygon {Coord2D[*]} the cross section polygon of the torus
+*	outerRadius {number} the outer radius of the torus
+*	outerSegmentation {integer} the outer segmentation of the torus
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GeneratePolyTorus = function (basePolygon, outerRadius, outerSegmentation, isCurved)
 {
 	var result = new JSM.Body ();
@@ -1368,73 +1525,14 @@ JSM.GeneratePolyTorus = function (basePolygon, outerRadius, outerSegmentation, i
 	return result;
 };
 
-JSM.GetLineSegmentation = function (begin, end, segmentation, coords)
-{
-	var direction = JSM.CoordSub (end, begin);
-	var length = JSM.CoordDistance (begin, end);
-	var step = length / segmentation;
-	var distance = 0.0;
-
-	var i;
-	for (i = 0; i <= segmentation; i++) {
-		coords.push (JSM.CoordOffset (begin, direction, distance));
-		distance += step;
-	}
-};
-
-JSM.GetRuledMesh = function (aCoords, bCoords, segmentation, vertices, polygons)
-{
-	if (aCoords.length !== bCoords.length) {
-		return;
-	}
-
-	var lineSegmentation = aCoords.length - 1;
-	var meshSegmentation = segmentation;
-	var directions = [];
-	var lengths = [];
-
-	var i, j;
-	for (i = 0; i <= lineSegmentation; i++) {
-		directions.push (JSM.CoordSub (bCoords[i], aCoords[i]));
-		lengths.push (JSM.CoordDistance (aCoords[i], bCoords[i]));
-	}
-
-	var step, coord;
-	for (i = 0; i <= lineSegmentation; i++) {
-		step = lengths[i] / meshSegmentation;
-		for (j = 0; j <= meshSegmentation; j++) {
-			coord = JSM.CoordOffset (aCoords[i], directions[i], step * j);
-			vertices.push (coord);
-		}
-	}
-
-	var current, top, next, ntop, polygon;
-	for (i = 0; i < lineSegmentation; i++) {
-		for (j = 0; j < meshSegmentation; j++) {
-			current = i * (meshSegmentation + 1) + j;
-			top = current + meshSegmentation + 1;
-			next = current + 1;
-			ntop = top + 1;
-
-			current = i * (meshSegmentation + 1) + j;
-			top = current + 1;
-			next = current + meshSegmentation + 1;
-			ntop = next + 1;
-
-			polygon = [current, next, ntop, top];
-			polygons.push (polygon);
-		}
-	}
-};
-
 JSM.GenerateRuledFromSectors = function (aSector, bSector, lineSegmentation, meshSegmentation, isCurved)
 {
 	var result = new JSM.Body ();
 
 	var aCoords = [];
 	var bCoords = [];
-	JSM.GetLineSegmentation (aSector.beg, aSector.end, lineSegmentation, aCoords);
-	JSM.GetLineSegmentation (bSector.beg, bSector.end, lineSegmentation, bCoords);
+	JSM.GetSectorSegmentation (aSector, lineSegmentation, aCoords);
+	JSM.GetSectorSegmentation (bSector, lineSegmentation, bCoords);
 
 	var vertices = [];
 	var polygons = [];
@@ -1484,8 +1582,8 @@ JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegment
 
 	var aCoords = [];
 	var bCoords = [];
-	JSM.GetLineSegmentation (aSector.beg, aSector.end, lineSegmentation, aCoords);
-	JSM.GetLineSegmentation (bSector.beg, bSector.end, lineSegmentation, bCoords);
+	JSM.GetSectorSegmentation (aSector, lineSegmentation, aCoords);
+	JSM.GetSectorSegmentation (bSector, lineSegmentation, bCoords);
 
 	var vertices = [];
 	var polygons = [];

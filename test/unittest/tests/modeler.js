@@ -931,7 +931,7 @@ AddTest ('GenerateRuledTest', function (test)
 	var sector1 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (2.0, 0.0, 0.0));
 	var sector2 = new JSM.Sector (new JSM.Coord (0.0, 2.0, 0.0), new JSM.Coord (2.0, 2.0, 0.0));
 	var sector1Coords = [];
-	JSM.GetLineSegmentation (sector1.beg, sector1.end, 2, sector1Coords);
+	JSM.GetSectorSegmentation (sector1, 2, sector1Coords);
 	test.Assert (sector1Coords.length == 3);
 	test.Assert (JSM.CoordIsEqual (sector1Coords[0], new JSM.Vector (0.0, 0.0, 0.0)));
 	test.Assert (JSM.CoordIsEqual (sector1Coords[1], new JSM.Vector (1.0, 0.0, 0.0)));
