@@ -1,9 +1,21 @@
+/**
+* Class: VertInfo
+* Description:
+*	Contains adjacency information for a body vertex. Contains arrays
+*	with indices of connected edge and polygon info.
+*/
 JSM.VertInfo = function ()
 {
 	this.edges = [];
 	this.pgons = [];
 };
 
+/**
+* Class: EdgeInfo
+* Description:
+*	Contains adjacency information for a body edge. Contains indices
+*	of connected vertex and polygon info.
+*/
 JSM.EdgeInfo = function ()
 {
 	this.vert1 = -1;
@@ -12,18 +24,36 @@ JSM.EdgeInfo = function ()
 	this.pgon2 = -1;
 };
 
+/**
+* Class: PolyEdgeInfo
+* Description:
+*	Contains adjacency information for a body polygon edge. Contains an index
+*	of an existing edge, and a flag which defines its direction.
+*/
 JSM.PolyEdgeInfo = function ()
 {
 	this.index = -1;
 	this.reverse = false;
 };
 
+/**
+* Class: PgonInfo
+* Description:
+*	Contains adjacency information for a body polygon. Contains arrays
+*	with indices of connected vertex and poly edge info.
+*/
 JSM.PgonInfo = function ()
 {
 	this.verts = [];
 	this.pedges = [];
 };
 
+/**
+* Class: AdjacencyInfo
+* Description:
+*	Contains adjacency information for a body. Contains arrays
+*	with indices of vertex, edge and polygon info.
+*/
 JSM.AdjacencyInfo = function ()
 {
 	this.verts = [];
@@ -31,6 +61,15 @@ JSM.AdjacencyInfo = function ()
 	this.pgons = [];
 };
 
+/**
+* Function: GetPolyEdgeStartVertex
+* Description: Returns the start vertex index of a polygon edge.
+* Parameters:
+*	polyEdge {PolyEdgeInfo} the polygon edge info
+*	adjacencyInfo {AdjacencyInfo} the adjacency info
+* Returns:
+*	{integer} the result
+*/
 JSM.GetPolyEdgeStartVertex = function (polyEdge, adjacencyInfo)
 {
 	if (!polyEdge.reverse) {
@@ -40,6 +79,15 @@ JSM.GetPolyEdgeStartVertex = function (polyEdge, adjacencyInfo)
 	}
 };
 
+/**
+* Function: GetPolyEdgeEndVertex
+* Description: Returns the end vertex index of a polygon edge.
+* Parameters:
+*	polyEdge {PolyEdgeInfo} the polygon edge info
+*	adjacencyInfo {AdjacencyInfo} the adjacency info
+* Returns:
+*	{integer} the result
+*/
 JSM.GetPolyEdgeEndVertex = function (polyEdge, adjacencyInfo)
 {
 	if (!polyEdge.reverse) {
@@ -49,64 +97,14 @@ JSM.GetPolyEdgeEndVertex = function (polyEdge, adjacencyInfo)
 	}
 };
 
-JSM.IsSolidBody = function (body)
-{
-	var adjacencyInfo = JSM.CalculateAdjacencyInfo (body);
-	var i, edge;
-	for (i = 0; i < adjacencyInfo.edges.length; i++) {
-		edge = adjacencyInfo.edges[i];
-		if (edge.pgon1 === -1 || edge.pgon2 === -1) {
-			return false;
-		}
-	}
-	return true;
-};
-
-JSM.CheckSolidBody = function (body)
-{
-	var adjacencyInfo = JSM.CalculateAdjacencyInfo (body);
-	var i, j, edge, pedge, found, pgon1, pgon2, pgon1Reverse, pgon2Reverse;
-	for (i = 0; i < adjacencyInfo.edges.length; i++) {
-		edge = adjacencyInfo.edges[i];
-		if (edge.pgon1 === -1 || edge.pgon2 === -1) {
-			return false;
-		}
-		
-		pgon1 = adjacencyInfo.pgons[edge.pgon1];
-		found = false;
-		for (j = 0; j < pgon1.pedges.length; j++) {
-			pedge = pgon1.pedges[j];
-			if (pedge.index == i) {
-				pgon1Reverse = pedge.reverse;
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			return false;
-		}
-		
-		pgon2 = adjacencyInfo.pgons[edge.pgon2];
-		found = false;
-		for (j = 0; j < pgon2.pedges.length; j++) {
-			pedge = pgon2.pedges[j];
-			if (pedge.index == i) {
-				pgon2Reverse = pedge.reverse;
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			return false;
-		}
-		
-		if (pgon1Reverse == pgon2Reverse) {
-			return false;
-		}
-	}
-	return true;
-};
-
+/**
+* Function: CalculateAdjacencyInfo
+* Description: Calculates the adjacency info for a body.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{AdjacencyInfo} the result
+*/
 JSM.CalculateAdjacencyInfo = function (body)
 {
 	function AddEdge (from, to, polygon)
@@ -179,4 +177,83 @@ JSM.CalculateAdjacencyInfo = function (body)
 	}	
 	
 	return adjacencyInfo;
+};
+
+/**
+* Function: IsSolidBody
+* Description:
+*	Returns if a given body is solid. It means that every
+*	edges of the body has two polygon neighbours.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{boolean} the result
+*/
+JSM.IsSolidBody = function (body)
+{
+	var adjacencyInfo = JSM.CalculateAdjacencyInfo (body);
+	var i, edge;
+	for (i = 0; i < adjacencyInfo.edges.length; i++) {
+		edge = adjacencyInfo.edges[i];
+		if (edge.pgon1 === -1 || edge.pgon2 === -1) {
+			return false;
+		}
+	}
+	return true;
+};
+
+/**
+* Function: CheckSolidBody
+* Description:
+*	Returns if a given body solid body is correct. It means that every
+*	edges of the body has two polygon neighbours, and there are no edge
+*	in the body which appears twice with the same direction.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{boolean} the result
+*/
+JSM.CheckSolidBody = function (body)
+{
+	var adjacencyInfo = JSM.CalculateAdjacencyInfo (body);
+	var i, j, edge, pedge, found, pgon1, pgon2, pgon1Reverse, pgon2Reverse;
+	for (i = 0; i < adjacencyInfo.edges.length; i++) {
+		edge = adjacencyInfo.edges[i];
+		if (edge.pgon1 === -1 || edge.pgon2 === -1) {
+			return false;
+		}
+		
+		pgon1 = adjacencyInfo.pgons[edge.pgon1];
+		found = false;
+		for (j = 0; j < pgon1.pedges.length; j++) {
+			pedge = pgon1.pedges[j];
+			if (pedge.index == i) {
+				pgon1Reverse = pedge.reverse;
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			return false;
+		}
+		
+		pgon2 = adjacencyInfo.pgons[edge.pgon2];
+		found = false;
+		for (j = 0; j < pgon2.pedges.length; j++) {
+			pedge = pgon2.pedges[j];
+			if (pedge.index == i) {
+				pgon2Reverse = pedge.reverse;
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			return false;
+		}
+		
+		if (pgon1Reverse == pgon2Reverse) {
+			return false;
+		}
+	}
+	return true;
 };

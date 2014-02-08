@@ -1840,6 +1840,53 @@
 						["materials", "Materials", "the materials"],
 						["seed", "integer", "seed value"]
 					]
+				},
+				"GetPolyEdgeStartVertex" : {
+					"description" : "Returns the start vertex index of a polygon edge.",
+					"parameters" : [
+						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
+						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
+					],
+					"returns" : [
+						["integer", "the result"]
+					]
+				},
+				"GetPolyEdgeEndVertex" : {
+					"description" : "Returns the end vertex index of a polygon edge.",
+					"parameters" : [
+						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
+						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
+					],
+					"returns" : [
+						["integer", "the result"]
+					]
+				},
+				"CalculateAdjacencyInfo" : {
+					"description" : "Calculates the adjacency info for a body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["AdjacencyInfo", "the result"]
+					]
+				},
+				"IsSolidBody" : {
+					"description" : "Returns if a given body is solid. It means that every edges of the body has two polygon neighbours.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"CheckSolidBody" : {
+					"description" : "Returns if a given body solid body is correct. It means that every edges of the body has two polygon neighbours, and there are no edge in the body which appears twice with the same direction.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
 				}
 			},
 			"classes" : {
@@ -2129,6 +2176,21 @@
 							]
 						}
 					}
+				},
+				"VertInfo" : {
+					"description" : "Contains adjacency information for a body vertex. Contains arrays with indices of connected edge and polygon info."
+				},
+				"EdgeInfo" : {
+					"description" : "Contains adjacency information for a body edge. Contains indices of connected vertex and polygon info."
+				},
+				"PolyEdgeInfo" : {
+					"description" : "Contains adjacency information for a body polygon edge. Contains an index of an existing edge, and a flag which defines its direction."
+				},
+				"PgonInfo" : {
+					"description" : "Contains adjacency information for a body polygon. Contains arrays with indices of connected vertex and poly edge info."
+				},
+				"AdjacencyInfo" : {
+					"description" : "Contains adjacency information for a body. Contains arrays with indices of vertex, edge and polygon info."
 				}
 			}
 		},
