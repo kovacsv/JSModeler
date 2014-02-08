@@ -121,7 +121,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 	}
 
 	var result = new JSM.Body ();
-	var al = JSM.CalculateAdjacencyList (body);
+	var al = JSM.CalculateAdjacencyInfo (body);
 
 	AddOriginalVertices ();
 

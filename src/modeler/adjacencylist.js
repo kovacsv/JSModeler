@@ -1,10 +1,10 @@
-JSM.Vert = function ()
+JSM.VertInfo = function ()
 {
 	this.edges = [];
 	this.pgons = [];
 };
 
-JSM.Edge = function ()
+JSM.EdgeInfo = function ()
 {
 	this.vert1 = -1;
 	this.vert2 = -1;
@@ -12,49 +12,49 @@ JSM.Edge = function ()
 	this.pgon2 = -1;
 };
 
-JSM.PolyEdge = function ()
+JSM.PolyEdgeInfo = function ()
 {
 	this.index = -1;
 	this.reverse = false;
 };
 
-JSM.Pgon = function ()
+JSM.PgonInfo = function ()
 {
 	this.verts = [];
 	this.pedges = [];
 };
 
-JSM.AdjacencyList = function ()
+JSM.AdjacencyInfo = function ()
 {
 	this.verts = [];
 	this.edges = [];
 	this.pgons = [];
 };
 
-JSM.GetPolyEdgeStartVertex = function (polyEdge, adjacencyList)
+JSM.GetPolyEdgeStartVertex = function (polyEdge, adjacencyInfo)
 {
 	if (!polyEdge.reverse) {
-		return adjacencyList.edges[polyEdge.index].vert1;
+		return adjacencyInfo.edges[polyEdge.index].vert1;
 	} else {
-		return adjacencyList.edges[polyEdge.index].vert2;
+		return adjacencyInfo.edges[polyEdge.index].vert2;
 	}
 };
 
-JSM.GetPolyEdgeEndVertex = function (polyEdge, adjacencyList)
+JSM.GetPolyEdgeEndVertex = function (polyEdge, adjacencyInfo)
 {
 	if (!polyEdge.reverse) {
-		return adjacencyList.edges[polyEdge.index].vert2;
+		return adjacencyInfo.edges[polyEdge.index].vert2;
 	} else {
-		return adjacencyList.edges[polyEdge.index].vert1;
+		return adjacencyInfo.edges[polyEdge.index].vert1;
 	}
 };
 
 JSM.IsSolidBody = function (body)
 {
-	var adjacencyList = JSM.CalculateAdjacencyList (body);
+	var adjacencyInfo = JSM.CalculateAdjacencyInfo (body);
 	var i, edge;
-	for (i = 0; i < adjacencyList.edges.length; i++) {
-		edge = adjacencyList.edges[i];
+	for (i = 0; i < adjacencyInfo.edges.length; i++) {
+		edge = adjacencyInfo.edges[i];
 		if (edge.pgon1 === -1 || edge.pgon2 === -1) {
 			return false;
 		}
@@ -64,15 +64,15 @@ JSM.IsSolidBody = function (body)
 
 JSM.CheckSolidBody = function (body)
 {
-	var adjacencyList = JSM.CalculateAdjacencyList (body);
+	var adjacencyInfo = JSM.CalculateAdjacencyInfo (body);
 	var i, j, edge, pedge, found, pgon1, pgon2, pgon1Reverse, pgon2Reverse;
-	for (i = 0; i < adjacencyList.edges.length; i++) {
-		edge = adjacencyList.edges[i];
+	for (i = 0; i < adjacencyInfo.edges.length; i++) {
+		edge = adjacencyInfo.edges[i];
 		if (edge.pgon1 === -1 || edge.pgon2 === -1) {
 			return false;
 		}
 		
-		pgon1 = adjacencyList.pgons[edge.pgon1];
+		pgon1 = adjacencyInfo.pgons[edge.pgon1];
 		found = false;
 		for (j = 0; j < pgon1.pedges.length; j++) {
 			pedge = pgon1.pedges[j];
@@ -86,7 +86,7 @@ JSM.CheckSolidBody = function (body)
 			return false;
 		}
 		
-		pgon2 = adjacencyList.pgons[edge.pgon2];
+		pgon2 = adjacencyInfo.pgons[edge.pgon2];
 		found = false;
 		for (j = 0; j < pgon2.pedges.length; j++) {
 			pedge = pgon2.pedges[j];
@@ -107,15 +107,15 @@ JSM.CheckSolidBody = function (body)
 	return true;
 };
 
-JSM.CalculateAdjacencyList = function (body)
+JSM.CalculateAdjacencyInfo = function (body)
 {
 	function AddEdge (from, to, polygon)
 	{
-		var pedge = new JSM.PolyEdge ();
+		var pedge = new JSM.PolyEdgeInfo ();
 	
 		var i, edge;
-		for (i = 0; i < adjacencyList.edges.length; i++) {
-			edge = adjacencyList.edges[i];
+		for (i = 0; i < adjacencyInfo.edges.length; i++) {
+			edge = adjacencyInfo.edges[i];
 			if (edge.vert1 === from && edge.vert2 === to) {
 				pedge.index = i;
 				pedge.reverse = false;
@@ -126,17 +126,17 @@ JSM.CalculateAdjacencyList = function (body)
 		}
 
 		if (pedge.index === -1) {
-			var newEdge = new JSM.Edge ();
+			var newEdge = new JSM.EdgeInfo ();
 			newEdge.vert1 = from;
 			newEdge.vert2 = to;
 			newEdge.pgon1 = polygon;
 			newEdge.pgon2 = -1;
-			adjacencyList.edges.push (newEdge);
+			adjacencyInfo.edges.push (newEdge);
 			
-			pedge.index = adjacencyList.edges.length - 1;
+			pedge.index = adjacencyInfo.edges.length - 1;
 			pedge.reverse = false;
 		} else {
-			var currEdge = adjacencyList.edges[pedge.index];
+			var currEdge = adjacencyInfo.edges[pedge.index];
 			if (currEdge.pgon1 === -1) {
 				currEdge.pgon1 = polygon;
 			} else if (currEdge.pgon1 !== polygon && currEdge.pgon2 === -1) {
@@ -147,20 +147,20 @@ JSM.CalculateAdjacencyList = function (body)
 		return pedge;
 	}
 
-	var adjacencyList = new JSM.AdjacencyList ();
+	var adjacencyInfo = new JSM.AdjacencyInfo ();
 	
 	var i, j;
 
 	var vert, pgon;
 	for (i = 0; i < body.VertexCount (); i++) {
-		vert = new JSM.Vert ();
-		adjacencyList.verts.push (vert);
+		vert = new JSM.VertInfo ();
+		adjacencyInfo.verts.push (vert);
 	}	
 	
 	var polygon, count, curr, next, pedge;
 	for (i = 0; i < body.PolygonCount (); i++) {
 		polygon = body.GetPolygon (i);
-		pgon = new JSM.Pgon ();
+		pgon = new JSM.PgonInfo ();
 		
 		count = polygon.VertexIndexCount ();
 		for (j = 0; j < count; j++) {
@@ -172,11 +172,11 @@ JSM.CalculateAdjacencyList = function (body)
 			pgon.verts.push (curr);
 			pgon.pedges.push (pedge);
 			
-			adjacencyList.verts[curr].edges.push (pedge.index);
-			adjacencyList.verts[curr].pgons.push (i);
+			adjacencyInfo.verts[curr].edges.push (pedge.index);
+			adjacencyInfo.verts[curr].pgons.push (i);
 		}
-		adjacencyList.pgons.push (pgon);
+		adjacencyInfo.pgons.push (pgon);
 	}	
 	
-	return adjacencyList;
+	return adjacencyInfo;
 };

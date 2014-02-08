@@ -304,7 +304,7 @@ JSM.ExportBodyGeometryToGDL = function (body, writeMaterials)
 	var gdlContent = '';
 
 	AddLineToContent ('base');
-	var al = JSM.CalculateAdjacencyList (body);
+	var al = JSM.CalculateAdjacencyInfo (body);
 	
 	var i;
 	for (i = 0; i < al.verts.length; i++) {

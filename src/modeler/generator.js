@@ -474,7 +474,7 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 		vertex.SetPosition (JSM.VectorMultiply (vertex.GetPosition (), scale));
 	}
 	
-	var iteration, oldVertexCoord, oldBody, adjacencyList;
+	var iteration, oldVertexCoord, oldBody, adjacencyInfo;
 	var currentEdge, edgeVertexIndices;
 	var currentPgon, polygonVertexIndices;
 	var midCoord, edgeCoord, currentPolyEdge;
@@ -482,26 +482,26 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 		oldBody = result;
 		
 		result = new JSM.Body ();
-		adjacencyList = JSM.CalculateAdjacencyList (oldBody);
-		for (i = 0; i < adjacencyList.verts.length; i++) {
+		adjacencyInfo = JSM.CalculateAdjacencyInfo (oldBody);
+		for (i = 0; i < adjacencyInfo.verts.length; i++) {
 			oldVertexCoord = oldBody.GetVertexPosition (i);
 			JSM.AddVertexToBody (result, oldVertexCoord.x, oldVertexCoord.y, oldVertexCoord.z);
 		}
 		
 		edgeVertexIndices = [];
-		for (i = 0; i < adjacencyList.edges.length; i++) {
-			currentEdge = adjacencyList.edges[i];
+		for (i = 0; i < adjacencyInfo.edges.length; i++) {
+			currentEdge = adjacencyInfo.edges[i];
 			midCoord = JSM.MidCoord (oldBody.GetVertexPosition (currentEdge.vert1), oldBody.GetVertexPosition (currentEdge.vert2));
 			edgeCoord = JSM.VectorMultiply (JSM.VectorNormalize (midCoord), radius);
 			edgeVertexIndices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));		
 		}
 
-		for (i = 0; i < adjacencyList.pgons.length; i++) {
-			currentPgon = adjacencyList.pgons[i];
+		for (i = 0; i < adjacencyInfo.pgons.length; i++) {
+			currentPgon = adjacencyInfo.pgons[i];
 			polygonVertexIndices = [];
 			for (j = 0; j < currentPgon.pedges.length; j++) {
 				currentPolyEdge = currentPgon.pedges[j];
-				polygonVertexIndices.push (JSM.GetPolyEdgeStartVertex (currentPolyEdge, adjacencyList));
+				polygonVertexIndices.push (JSM.GetPolyEdgeStartVertex (currentPolyEdge, adjacencyInfo));
 				polygonVertexIndices.push (edgeVertexIndices[currentPolyEdge.index]);
 			}
 

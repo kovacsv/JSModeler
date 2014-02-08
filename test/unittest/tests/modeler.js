@@ -132,7 +132,7 @@ AddTest ('AdjacencyListTest', function (test)
 
 	var cube = JSM.GenerateCuboid (1, 1, 1);
 	test.Assert (JSM.CheckSolidBody (cube));
-	var al = JSM.CalculateAdjacencyList (cube);
+	var al = JSM.CalculateAdjacencyInfo (cube);
 /*
 		 7__9__6
 		/|    /|
