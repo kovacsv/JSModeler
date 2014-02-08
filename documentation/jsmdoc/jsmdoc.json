@@ -1119,9 +1119,9 @@
 					"parameters" : [
 						["polygon", "Polygon", "the polygon"],
 						["plane", "Plane", "the plane"],
-						["frontPolygons", "Polygon[]", "(out) polygons in front of the plane"],
-						["backPolygons", "Polygon[]", "(out) polygons at the back of the plane"],
-						["planePolygons", "Polygon[]", "(out) polygons on the plane"]
+						["frontPolygons", "Polygon[*]", "(out) polygons in front of the plane"],
+						["backPolygons", "Polygon[*]", "(out) polygons at the back of the plane"],
+						["planePolygons", "Polygon[*]", "(out) polygons on the plane"]
 					],
 					"returns" : [
 						["boolean", "success"]
@@ -1132,10 +1132,10 @@
 					"parameters" : [
 						["polygon", "Polygon", "the polygon"],
 						["bspTree", "BSPTree", "the BSP tree"],
-						["frontPolygons", "Polygon[]", "(out) polygons in front of the tree"],
-						["backPolygons", "Polygon[]", "(out) polygons at the back of the tree"],
-						["planarFrontPolygons", "Polygon[]", "(out) polygons on the tree looks front"],
-						["planarBackPolygons", "Polygon[]", "(out) polygons on the tree looks back"]
+						["frontPolygons", "Polygon[*]", "(out) polygons in front of the tree"],
+						["backPolygons", "Polygon[*]", "(out) polygons at the back of the tree"],
+						["planarFrontPolygons", "Polygon[*]", "(out) polygons on the tree looks front"],
+						["planarBackPolygons", "Polygon[*]", "(out) polygons on the tree looks back"]
 					],
 					"returns" : [
 						["boolean", "success"]
@@ -1635,7 +1635,7 @@
 						"GetNodes" : {
 							"description" : "Returns the nodes as an array.",
 							"returns" : [
-								["BSPNode[]", "the result"]
+								["BSPNode[*]", "the result"]
 							]
 						},
 						"GetNodes" : {
@@ -1659,7 +1659,7 @@
 							"description" : "Adds inside a polygons to a node.",
 							"parameters" : [
 								["node", "BSPNode", "the node"],
-								["polygon", "Polygon[]", "the polygons"],
+								["polygon", "Polygon[*]", "the polygons"],
 								["userData", "anything", "user data for polygons"]
 							]
 						},
@@ -1667,7 +1667,7 @@
 							"description" : "Adds outside a polygons to a node.",
 							"parameters" : [
 								["node", "BSPNode", "the node"],
-								["polygon", "Polygon[]", "the polygons"],
+								["polygon", "Polygon[*]", "the polygons"],
 								["userData", "anything", "user data for polygons"]
 							]
 						},
@@ -1682,6 +1682,166 @@
 			}
 		},
 		"Modeler" : {
+			"functions" : {
+				"HexColorToRGBComponents" : {
+					"description" : "Converts hex color strings to RGB components.",
+					"parameters" : [
+						["hexColor", "string", "the hex color string"]
+					],
+					"returns" : [
+						["integer[3]", "the RGB components"]
+					]
+				},
+				"HexColorToRGBColor" : {
+					"description" : "Converts hex color strings to RGB color.",
+					"parameters" : [
+						["hexColor", "string", "the hex color string"]
+					],
+					"returns" : [
+						["integer", "the RGB value"]
+					]
+				},
+				"RGBComponentsToRGBColor" : {
+					"description" : "Converts RGB components to RGB color.",
+					"parameters" : [
+						["red", "integer", "the red component"],
+						["green", "integer", "the green component"],
+						["blue", "integer", "the blue component"]
+					],
+					"returns" : [
+						["integer", "the RGB value"]
+					]
+				},
+				"AddVertexToBody" : {
+					"description" : "Adds a vertex to an existing body.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["x", "number", "the x coordinate of the vertex"],
+						["y", "number", "the x coordinate of the vertex"],
+						["z", "number", "the x coordinate of the vertex"]
+					]
+				},
+				"AddPolygonToBody" : {
+					"description" : "Adds a polygon to an existing body.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["vertices", "integer[*]", "array of vertex indices stored in the body"]
+					]
+				},
+				"CalculateBodyVertexToPolygon" : {
+					"description" : "Calculates an array which contains array of the connected polygon indices for all vertex indices in the body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["integer[*][*]", "array of array of polygon indices"]
+					]
+				},
+				"CalculateBodyPolygonNormal" : {
+					"description" : "Calculates a normal vector for a polygon stored in the body.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["index", "integer", "the polygon index"]
+					],
+					"returns" : [
+						["Vector", "the result"]
+					]
+				},
+				"CalculateBodyPolygonNormals" : {
+					"description" : "Calculates polygon normal vectors for all polygons stored in the body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["Vector[*]", "the result"]
+					]
+				},
+				"CalculateBodyVertexNormals" : {
+					"description" : "Calculates vertex normal vectors for all vertices stored in the body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["Vector[*]", "the result"]
+					]
+				},
+				"MakeBodyInsideOut" : {
+					"description" : "Reverses all polygons orientation in the body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					]
+				},
+				"GetGaussianCParameter" : {
+					"description" : "Calculates the gaussian functions c parameter which can be used for the gaussian function to reach epsilon at a given value.",
+					"parameters" : [
+						["x", "number", "the value"],
+						["a", "number", "the a parameter of the function"],
+						["b", "number", "the b parameter of the function"],
+						["epsilon", "number", "the epsilon value"]
+					],
+					"returns" : [
+						["number", "the c parameter of the function"]
+					]
+				},
+				"GetGaussianValue" : {
+					"description" : "Calculates the gaussian functions value.",
+					"parameters" : [
+						["x", "number", "the value"],
+						["a", "number", "the a parameter of the function"],
+						["b", "number", "the b parameter of the function"],
+						["c", "number", "the c parameter of the function"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"SoftMoveBodyVertex" : {
+					"description" : "Moves a vertex and its nearby vertices depending on gaussian function.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["index", "integer", "the vertex index to move"],
+						["radius", "number", "the radius of the movement"],
+						["direction", "Vector", "the direction of the movement"],
+						["distance", "number", "the distance of the movement"]
+					]
+				},
+				"CalculatePolygonCentroid" : {
+					"description" : "Calculates the centroid of a polygon stored in the body.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["index", "integer", "the polygon index"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"TriangulateWithCentroids" : {
+					"description" : "Triangulates all polygons of the body by connecting all polygon vertices with the centroid vertex of the polygon.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"TriangulateWithCentroids" : {
+					"description" : "Triangulates all polygons of the body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateRandomMaterials" : {
+					"description" : "Generates random materials for a body. A seed number can be specified.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["materials", "Materials", "the materials"],
+						["seed", "integer", "seed value"]
+					]
+				}
+			},
 			"classes" : {
 				"BodyVertex" : {
 					"description" : "Represents a vertex of a 3D body. The vertex contains only its position as a 3D coordinate.",
@@ -1712,7 +1872,7 @@
 				"BodyPolygon" : {
 					"description" : "Represents a polygon of a 3D body. The polygon contains vertex indices of vertices stored in its 3D body, material indices of materials defined outside of the body, and a curve group index which defines if its normal vector calculation in case of smooth surfaces.",
 					"parameters" : [
-						["vertices", "integer[]", "array of vertex indices stored in the body"]
+						["vertices", "integer[*]", "array of vertex indices stored in the body"]
 					],
 					"functions" : {
 						"AddVertexIndex" : {
@@ -1924,6 +2084,49 @@
 						},
 						"Clear" : {
 							"description" : "Makes the body empty."
+						}
+					}
+				},
+				"Material" : {
+					"description" : "Defines a material.",
+					"parameters" : [
+						["ambient", "number", "the ambient component"],
+						["diffuse", "number", "the diffuse component"],
+						["opacity", "number", "the opacity component"],
+						["texture", "string", "the name of the texture file"],
+						["textureWidth", "number", "the width of the texture"],
+						["textureHeight", "number", "the height of the texture"]
+					]
+				},
+				"Materials" : {
+					"description" : "Defines a material container.",
+					"functions" : {
+						"GetMaterial" : {
+							"description" : "Returns a material from the container.",
+							"parameters" : [
+								["index", "integer", "the index"]
+							],
+							"returns" : [
+								["Material", "the result"]
+							]
+						},
+						"AddMaterial" : {
+							"description" : "Adds a material to the container.",
+							"parameters" : [
+								["material", "Material", "the material"]
+							]
+						},
+						"GetDefaultMaterial" : {
+							"description" : "Returns the default material from the container. It is always exists.",
+							"returns" : [
+								["Material", "the result"]
+							]
+						},
+						"Count" : {
+							"description" : "Returns the material count of the container.",
+							"returns" : [
+								["integer", "the result"]
+							]
 						}
 					}
 				}

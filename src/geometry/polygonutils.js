@@ -729,9 +729,9 @@ JSM.OffsetPolygonContour = function (polygon, width)
 * Parameters:
 *	polygon {Polygon} the polygon
 *	plane {Plane} the plane
-*	frontPolygons {Polygon[]} (out) polygons in front of the plane
-*	backPolygons {Polygon[]} (out) polygons at the back of the plane
-*	planePolygons {Polygon[]} (out) polygons on the plane
+*	frontPolygons {Polygon[*]} (out) polygons in front of the plane
+*	backPolygons {Polygon[*]} (out) polygons at the back of the plane
+*	planePolygons {Polygon[*]} (out) polygons on the plane
 * Returns:
 *	{boolean} success
 */

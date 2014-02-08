@@ -81,7 +81,7 @@ JSM.BSPTree.prototype.TraverseNode = function (node, nodeFound)
 * Function: BSPTree.GetNodes
 * Description: Returns the nodes as an array.
 * Returns:
-*	{BSPNode[]} the result
+*	{BSPNode[*]} the result
 */
 JSM.BSPTree.prototype.GetNodes = function ()
 {
@@ -164,7 +164,7 @@ JSM.BSPTree.prototype.AddPolygonToNode = function (node, polygon, userData)
 * Description: Adds inside a polygons to a node.
 * Parameters:
 *	node {BSPNode} the node
-*	polygon {Polygon[]} the polygons
+*	polygon {Polygon[*]} the polygons
 *	userData {anything} user data for polygons
 */
 JSM.BSPTree.prototype.AddInsidePolygonsToNode = function (node, polygons, userData)
@@ -184,7 +184,7 @@ JSM.BSPTree.prototype.AddInsidePolygonsToNode = function (node, polygons, userDa
 * Description: Adds outside a polygons to a node.
 * Parameters:
 *	node {BSPNode} the node
-*	polygon {Polygon[]} the polygons
+*	polygon {Polygon[*]} the polygons
 *	userData {anything} user data for polygons
 */
 JSM.BSPTree.prototype.AddOutsidePolygonsToNode = function (node, polygons, userData)
@@ -217,10 +217,10 @@ JSM.BSPTree.prototype.GetNewNode = function ()
 * Parameters:
 *	polygon {Polygon} the polygon
 *	bspTree {BSPTree} the BSP tree
-*	frontPolygons {Polygon[]} (out) polygons in front of the tree
-*	backPolygons {Polygon[]} (out) polygons at the back of the tree
-*	planarFrontPolygons {Polygon[]} (out) polygons on the tree looks front
-*	planarBackPolygons {Polygon[]} (out) polygons on the tree looks back
+*	frontPolygons {Polygon[*]} (out) polygons in front of the tree
+*	backPolygons {Polygon[*]} (out) polygons at the back of the tree
+*	planarFrontPolygons {Polygon[*]} (out) polygons on the tree looks front
+*	planarBackPolygons {Polygon[*]} (out) polygons on the tree looks back
 * Returns:
 *	{boolean} success
 */

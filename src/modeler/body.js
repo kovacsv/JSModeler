@@ -18,7 +18,7 @@ JSM.BodyVertex = function (position)
 *	in its 3D body, material indices of materials defined outside of the body, and a curve
 *	group index which defines if its normal vector calculation in case of smooth surfaces.
 * Parameters:
-*	vertices {integer[]} array of vertex indices stored in the body
+*	vertices {integer[*]} array of vertex indices stored in the body
 */
 JSM.BodyPolygon = function (vertices)
 {
