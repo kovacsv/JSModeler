@@ -29,10 +29,11 @@ def Main (argv):
 	filesFilePath = os.path.abspath (argv[1])
 	resultFilePath = os.path.abspath (argv[2])
 	
+	PrintInfo ('Create documentation from files <' + filesFilePath + '>.')
 	inputFileNames = GetLinesFromFile (filesFilePath);
 	if len (inputFileNames) == 0:
 		PrintError ('Invalid file list.');
-		return
+		return 1
 
 	moduleNames = []
 	filesByModule = {}
@@ -46,12 +47,16 @@ def Main (argv):
 			filesByModule[moduleName] = []
 		filesByModule[moduleName].append (absPath)
 	
-	documentation = jsmdoc.Documentation ()
-	for moduleName in moduleNames:
-		newModuleName = moduleName.title ()
-		documentation.AddModule (newModuleName, filesByModule[moduleName])
-	documentation.WriteJSON (resultFilePath)
+	try:
+		documentation = jsmdoc.Documentation ()
+		for moduleName in moduleNames:
+			newModuleName = moduleName.title ()
+			documentation.AddModule (newModuleName, filesByModule[moduleName])
+		documentation.WriteJSON (resultFilePath)
+	except:
+		PrintError ('Could not create documentation.');
+		return 1
 	
-	return
+	return 0
 	
-Main (sys.argv)
+sys.exit (Main (sys.argv))

@@ -4,8 +4,7 @@ import sys
 currentPath = os.path.dirname (os.path.abspath (__file__))
 os.chdir (currentPath)
 
-def Main (argv):
-	os.system (os.path.join ('documentation', 'generatejson.py') + ' files.txt' + ' ' + os.path.join ('..', 'documentation', 'jsmdoc', 'jsmdoc.json'))
-	return
+def Main ():
+	return os.system (os.path.join ('documentation', 'generatejson.py') + ' files.txt' + ' ' + os.path.join ('..', 'documentation', 'jsmdoc', 'jsmdoc.json'))
 	
-Main (sys.argv)
+sys.exit (Main ())

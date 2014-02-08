@@ -26,8 +26,8 @@ def Main ():
 	succeeded = JSHintFolder (sourcesPath)
 	if not succeeded:
 		PrintError ('Found JSHint errors.');
-		return
+		return 1
 
-	return
+	return 0
 		
-Main ()
+sys.exit (Main ())

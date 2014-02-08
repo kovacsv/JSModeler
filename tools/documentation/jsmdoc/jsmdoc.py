@@ -345,10 +345,8 @@ class Documentation:
 						theFunction.AddReturn (theReturn)
 				if len (className) == 0:
 					module.AddFunction (theFunction)
-					print 'Function: ' + theFunction.GetName () + '.'
 				else:
 					module.AddClassFunction (className, theFunction)
-					print 'ClassFunction: ' + className + classFunctionSeparator + theFunction.GetName () + '.'
 			elif partType == classKeyword:
 				theClass = Class (partName)
 				if descriptionKeyword in partContent.keys ():
@@ -358,7 +356,6 @@ class Documentation:
 						theParameter = Parameter (parameters[0], parameters[1], parameters[2])
 						theClass.AddParameter (theParameter)
 				module.AddClass (theClass)
-				print 'Class: ' + theClass.GetName () + '.'
 				
 	def WriteJSON (self, fileName):
 		file = JSONFile (fileName)
