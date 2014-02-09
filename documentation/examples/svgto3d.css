@@ -1,0 +1,76 @@
+body, html
+{
+	color : #333333;
+	background : #f5f5f5;
+	font-size : 12px;
+	font-family : arial;
+}
+
+#frame
+{
+	width : 880px;
+	margin : 30px auto;
+}
+
+#floating
+{
+	position : absolute;
+	box-shadow : 0px 0px 5px #dddddd;
+	display : none;
+}
+
+#svgcanvas
+{
+	color : #000000;
+	background : #ffffff;
+	width : 100%;
+	height : 100%;
+}
+
+#footer
+{
+	text-align : center;
+	padding : 10px;
+}
+
+div.title1
+{
+	font-size : 70px;
+	text-align : center;
+	text-shadow : 1px 1px #888888;
+}
+
+div.title2
+{
+	font-size : 18px;
+	text-align : center;
+	margin-bottom : 5px;
+}
+
+div.box
+{
+	color : #444444;
+	background : #ffffff;
+	width : 180px;
+	height : 180px;
+	padding : 10px;
+	margin : 10px;
+	box-shadow : 0px 0px 5px #dddddd;
+	float : left;
+}
+
+div.clearer
+{
+	clear : both;
+}
+
+a
+{
+	color : #336699;
+	text-decoration : none;
+}
+
+a:hover
+{
+	text-decoration : underline;
+}

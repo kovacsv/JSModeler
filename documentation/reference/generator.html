@@ -80,6 +80,46 @@ var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 			</div>
 		</div>
 
+		<div class="title2">JSM.GenerateCuboidSides</div>
+		<div class="indented">
+			<div class="title3">Description</div>
+			<div class="indented">
+				Generates cuboid sides. The center of the cuboid will be the origo.
+			</div>
+			<div class="title3">Parameters</div>
+			<div class="indented">
+				<table class="parameters">
+					<tr>
+						<td class="name">xSize</td>
+						<td class="type">number</td>
+						<td>X size of the cuboid.</td>
+					</tr>
+					<tr>
+						<td class="name">ySize</td>
+						<td class="type">number</td>
+						<td>Y size of the cuboid.</td>
+					</tr>
+					<tr>
+						<td class="name">zSize</td>
+						<td class="type">number</td>
+						<td>Z size of the cuboid.</td>
+					</tr>
+					<tr>
+						<td class="name">sides</td>
+						<td class="type">[boolean]</td>
+						<td>Generate value for each side.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="title3">Example</div>
+			<div class="indented">
+<pre>
+var body = JSM.GenerateCuboidSides (1.0, 1.0, 1.0, [1, 1, 1, 0, 1, 0]);
+</pre>
+<img src="images/cuboidsides.png">
+			</div>
+		</div>
+
 		<div class="title2">JSM.GenerateSegmentedRectangle</div>
 		<div class="indented">
 			<div class="title3">Description</div>
@@ -100,16 +140,21 @@ var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 						<td>Y size of the rectangle.</td>
 					</tr>
 					<tr>
-						<td class="name">segmentation</td>
+						<td class="name">xSegmentation</td>
 						<td class="type">integer</td>
-						<td>Segmentation number.</td>
+						<td>Segmentation number along the x axis.</td>
+					</tr>
+					<tr>
+						<td class="name">ySegmentation</td>
+						<td class="type">integer</td>
+						<td>Segmentation number along the y axis.</td>
 					</tr>
 				</table>
 			</div>
 			<div class="title3">Example</div>
 			<div class="indented">
 <pre>
-var body = JSM.GenerateSegmentedRectangle (1, 1, 4);
+var body = JSM.GenerateSegmentedRectangle (1, 1, 4, 4);
 </pre>
 <img src="images/segmentedrectangle.png">
 			</div>

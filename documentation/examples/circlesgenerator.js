@@ -55,8 +55,8 @@ JSM.GenerateSVGCircles = function (svgObject, greatRadius, smallRadius, controlR
 		var radiusDiff = greatRadius - smallRadius;
 		var smallCenter = PolarToCartesianWithCenter (greatCenter, radiusDiff, rotationAngle);
 
-		var greatArcLength = JSM.GetPolarArcLengthFromAngle (greatRadius, rotationAngle);
-		var smallAngle = JSM.GetPolarAngleFromArcLength (smallRadius, greatArcLength);
+		var greatArcLength = JSM.GetArcLengthFromAngle (greatRadius, rotationAngle);
+		var smallAngle = JSM.GetAngleFromArcLength (smallRadius, greatArcLength);
 		var controlPosition = PolarToCartesianWithCenter (smallCenter, controlRadius, controlAngle);
 		
 		return controlPosition;

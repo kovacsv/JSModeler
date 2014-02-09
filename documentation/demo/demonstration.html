@@ -100,6 +100,11 @@
 					demo.GenerateSuperShape ();
 					break;
 
+				case 'legobrick':
+					demo.GenerateLegoBrickUI ();
+					demo.GenerateLegoBrick ();
+					break;
+
 				default:
 					demo.GenerateCuboidUI ();
 					demo.GenerateCuboid ();
@@ -138,8 +143,9 @@
 		{
 			var floating = document.getElementById ('floating');
 			var svgcontent = document.getElementById ('svgcontent');
-			var svgSettings = new JSM.SVGSettings (demo.viewer.cameraMove, demo.viewer.settings['fieldOfView'], demo.viewer.settings['nearClippingPlane'], demo.viewer.settings['farClippingPlane']);
-			JSM.ExportBodyToSVG (demo.body, null, svgSettings, svgcontent);
+			var drawSettings = new JSM.DrawSettings (demo.viewer.cameraMove, demo.viewer.settings['fieldOfView'], demo.viewer.settings['nearClippingPlane'], demo.viewer.settings['farClippingPlane'], 'Wireframe', true);
+			var drawer = new JSM.SVGDrawer (svgcontent);
+			JSM.DrawProjectedBody (demo.body, null, drawSettings, drawer);
 			svgcontent.style.display = 'block';
 			floating.style.display = 'block';
 		}
@@ -247,7 +253,8 @@
 		<a href="demonstration.html#revolved">revolved</a> | 
 		<a href="demonstration.html#solids">solids</a> | 
 		<a href="demonstration.html#function">function</a> |
-		<a href="demonstration.html#supershape">supershape</a>
+		<a href="demonstration.html#supershape">supershape</a> |
+		<a href="demonstration.html#legobrick">legobrick</a>
 	</div>
 	<div id="left">
 		<div id="leftmenu" class="leftbox">

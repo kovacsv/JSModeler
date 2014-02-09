@@ -1,0 +1,128 @@
+<!--
+	Author:		Kovacs Viktor
+	Homepage:	http://www.kovacsv.hu
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/tutorial.css">
+	<script type="text/javascript" src="../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
+	<title>JSModeler SVG To 3D Tutorial</title>
+
+	<script type="text/javascript">
+		function Load ()
+		{
+			var viewerSettings = {
+				cameraEyePosition : [-3, -2, 1.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0.0, 0.0, 1.0],
+				nearClippingPlane : 1.0,
+				farClippingPlane : 100000.0
+			};
+
+			var viewer = new JSM.Viewer ();
+			if (!viewer.Start ('svgcanvas', viewerSettings)) {
+				viewer = null;
+				return;
+			}
+
+			var svgObject = document.getElementById ('svgid');
+			var modelAndMaterials = JSM.SvgToModel (svgObject, 8, 5);
+			var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1]);
+			viewer.AddMeshes (meshes);
+
+			viewer.FitInWindow ();
+			viewer.Draw ();
+		}
+		
+		window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+	
+</head>
+
+<body>
+	<div id="frame">
+		<div class="title1">JSModeler SVG To 3D Tutorial</div>
+		
+		<div class="title2">1. Create a correct SVG file</div>
+		<p>
+			To create a correct SVG file you should use an SVG editor software (I used <a href="http://inkscape.org/">Inkscape</a>). The SVG file should have the following properties:
+			<ul>
+				<li>It can contain only path, rect and polygon tags. Other tags will be skipped. With Inkscape you can convert anything to path.</li>
+				<li>If a path lies inside an another path, make a hole from it. You can create this with Inkscape. Do not use a lot of holes in a path.</li>
+			</ul>
+		</p>
+
+		<div class="title2">2. Place the SVG somewhere in your page</div>
+		<p>
+			The conversion currently works only with inline SVG objects. If you would like to hide it, set its position to absolute, and offset it outside of the screen. Do not use css hidden attribute.
+		</p>
+		<p>
+			<svg id="svgid" xmlns="http://www.w3.org/2000/svg" version="1.1" width="180" height="180" viewBox="0 0 180 180" segmentlength="1">
+				<path
+				   style="fill:#ff0000;fill-opacity:1;stroke:none"
+				   d="M 30 10 C 18.92 10 10 18.92 10 30 L 10 150 C 10 161.08 18.92 170 30 170 L 150 170 C 161.08 170 170 161.08 170 150 L 170 30 C 170 18.92 161.08 10 150 10 L 30 10 z M 87.25 43.6875 L 116.25 47 L 95.65625 56.0625 L 61.46875 48.65625 L 87.25 43.6875 z M 118.25 51.09375 L 114.1875 82.6875 L 96.5625 102.375 L 97.65625 60.15625 L 118.25 51.09375 z M 59.5625 52.75 L 93.65625 60.15625 L 92.46875 102.375 L 64.5625 86.5625 L 59.5625 52.75 z M 83.4375 114.875 C 85.95539 114.87503 88.42837 115.51662 90.84375 116.78125 L 88.40625 121.5 C 87.08462 120.47463 85.75064 119.96877 84.40625 119.96875 C 83.75682 119.96877 83.16893 120.13837 82.65625 120.46875 C 82.07518 120.84475 81.81249 121.34214 81.8125 121.96875 C 81.81249 122.584 82.17415 123.08693 82.9375 123.53125 C 83.27929 123.73635 84.32226 124.09246 86.03125 124.59375 C 88.17317 125.22039 89.68228 126.13055 90.59375 127.28125 C 91.37987 128.26108 91.78123 129.52442 91.78125 131.0625 C 91.78123 135.00456 90.05727 137.55371 86.59375 138.75 C 85.38606 139.17155 84.07746 139.375 82.6875 139.375 C 79.77082 139.375 77.05761 138.51596 74.5625 136.75 L 77.15625 131.84375 C 78.97916 133.48438 80.75683 134.3125 82.5 134.3125 C 83.28612 134.3125 83.95311 134.14584 84.5 133.78125 C 85.13801 133.3711 85.46874 132.78321 85.46875 132.03125 C 85.46874 131.34766 85.11262 130.76824 84.40625 130.3125 C 83.88215 129.97072 82.99186 129.63445 81.75 129.28125 C 80.24609 128.83693 79.32486 128.51466 78.9375 128.34375 C 78.32226 128.08172 77.77669 127.7907 77.34375 127.4375 C 76.10189 126.41212 75.5 124.85483 75.5 122.78125 C 75.5 120.61656 76.15007 118.83042 77.4375 117.40625 C 78.9414 115.73147 80.93098 114.87503 83.4375 114.875 z M 64.625 115.4375 L 70.71875 115.4375 L 70.71875 131.59375 C 70.718736 132.5394 70.64517 133.30241 70.53125 133.90625 C 70.291979 135.19369 69.60806 136.33822 68.46875 137.375 C 66.999013 138.7194 65.212883 139.40625 63.09375 139.40625 C 60.587236 139.40625 58.549477 138.27018 57 135.96875 L 60.96875 131.90625 C 61.151037 133.42155 61.798172 134.1875 62.9375 134.1875 C 64.099602 134.1875 64.679029 133.26889 64.65625 131.46875 L 64.625 130.1875 L 64.625 115.4375 z M 98.5625 115.4375 L 104.53125 115.4375 L 109.28125 127.875 L 114.28125 115.4375 L 120.3125 115.4375 L 123.84375 138.78125 L 117.78125 138.78125 L 116.03125 125.34375 L 110.40625 138.78125 L 108 138.78125 L 102.625 125.34375 L 100.625 138.78125 L 94.59375 138.78125 L 98.5625 115.4375 z "
+				   id="path3955" />
+			</svg>
+		</p>
+
+		<div class="title2">3. Create the 3D model</div>
+		<p>
+			Include headers.
+<pre>
+&lt;script type="text/javascript" src="three.min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="jsmodeler.js"&gt;&lt;/script&gt;
+</pre>
+			Add an id to your SVG object.
+<pre>
+&lt;svg id="svgid" ...
+</pre>
+			Place a canvas where you would like to show your model.
+<pre>
+&ltcanvas id="svgcanvas" width="300" height="300"&gt&lt/canvas&gt
+</pre>
+			Add this code to window.onload event:
+<pre>
+var viewerSettings = {
+	cameraEyePosition : [-3, -2, 1.0],
+	cameraCenterPosition : [0.0, 0.0, 0.0],
+	cameraUpVector : [0.0, 0.0, 1.0],
+	nearClippingPlane : 1.0,
+	farClippingPlane : 100000.0
+};
+
+var viewer = new JSM.Viewer ();
+if (!viewer.Start ('svgcanvas', viewerSettings)) {
+	viewer = null;
+	return;
+}
+
+var svgObject = document.getElementById ('svgid');
+var modelAndMaterials = JSM.SvgToModel (svgObject, 8, 5);
+var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1]);
+viewer.AddMeshes (meshes);
+
+viewer.FitInWindow ();
+viewer.Draw ();
+</pre>
+		</p>
+		<p>
+			Here is the result:
+		<p>
+		</p>
+			<canvas id="svgcanvas" width="300" height="300"></canvas>
+		</p>
+	</div>
+</body>
+
+</html>
