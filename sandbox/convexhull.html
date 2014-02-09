@@ -43,9 +43,9 @@
 	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/cututils.js"></script>
 	<script type="text/javascript" src="../src/modeler/generator.js"></script>
-	<script type="text/javascript" src="../src/modeler/solidgenerator.js"></script>
 	<script type="text/javascript" src="../src/modeler/camera.js"></script>
 	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../src/extras/solidgenerator.js"></script>
 	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
 	<script type="text/javascript" src="../src/extras/painter.js"></script>
 	<script type="text/javascript" src="../src/extras/drawing.js"></script>
@@ -111,7 +111,7 @@
 			viewer.Start ('example', viewerSettings);
 			
 			var bodyAndMaterials = GenerateBodyFromHull ();
-			//alert (JSM.ExportBodyToGDL (bodyAndMaterials[0]));
+			//alert (JSM.ExportBodyToGdl (bodyAndMaterials[0]));
 			var conversionData = new JSM.ConversionData (TextureLoaded, true);
 			var meshes = JSM.ConvertBodyToThreeMeshes (bodyAndMaterials[0], bodyAndMaterials[1], conversionData);
 			for (var i = 0; i < meshes.length; i++) {

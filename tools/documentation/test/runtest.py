@@ -13,7 +13,7 @@ def Main (argv):
 	
 	referenceFilePath = os.path.join ('reference', 'testdocumentation.json')	
 	resultFilePath = os.path.join ('result', 'testdocumentation.json')
-	os.system (os.path.join ('..', 'generatejson.py') + ' testfiles.txt' + ' ' + resultFilePath)
+	os.system (os.path.join ('..', 'generatejson.py') + ' TestProject testfiles.txt' + ' ' + resultFilePath)
 	
 	equal = filecmp.cmp (referenceFilePath, resultFilePath)	
 	if equal:

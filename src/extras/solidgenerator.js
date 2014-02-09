@@ -1,3 +1,12 @@
+/**
+* Function: GenerateSolidWithRadius
+* Description: Generates a special solid with the given radius.
+* Parameters:
+*	solidName {string} the name of the solid
+*	radius {number} the radius of the solid
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateSolidWithRadius = function (solidName, radius)
 {
 	var result = new JSM.Body ();
@@ -99,6 +108,12 @@ JSM.GenerateSolidWithRadius = function (solidName, radius)
 	return result;
 };
 
+/**
+* Function: GenerateTetrahedron
+* Description: Generates a tetrahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTetrahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -118,6 +133,13 @@ JSM.GenerateTetrahedron = function ()
 	return result;
 };
 
+
+/**
+* Function: GenerateHexahedron
+* Description: Generates a hexahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateHexahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -143,6 +165,12 @@ JSM.GenerateHexahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateOctahedron
+* Description: Generates an octahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateOctahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -169,6 +197,12 @@ JSM.GenerateOctahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateDodecahedron
+* Description: Generates a dodecahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateDodecahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -219,6 +253,12 @@ JSM.GenerateDodecahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateIcosahedron
+* Description: Generates an icosahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateIcosahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -266,6 +306,12 @@ JSM.GenerateIcosahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateTruncatedTetrahedron
+* Description: Generates a truncated tetrahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTruncatedTetrahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -301,6 +347,12 @@ JSM.GenerateTruncatedTetrahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateCuboctahedron
+* Description: Generates a cuboctahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCuboctahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -342,6 +394,12 @@ JSM.GenerateCuboctahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateTruncatedCube
+* Description: Generates a truncated cube.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTruncatedCube = function ()
 {
 	var result = new JSM.Body ();
@@ -395,6 +453,12 @@ JSM.GenerateTruncatedCube = function ()
 	return result;
 };
 
+/**
+* Function: GenerateTruncatedOctahedron
+* Description: Generates a truncated octahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTruncatedOctahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -452,6 +516,12 @@ JSM.GenerateTruncatedOctahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateRhombicuboctahedron
+* Description: Generates a rhombicuboctahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateRhombicuboctahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -517,6 +587,12 @@ JSM.GenerateRhombicuboctahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateTruncatedCuboctahedron
+* Description: Generates a truncated cuboctahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTruncatedCuboctahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -611,6 +687,12 @@ JSM.GenerateTruncatedCuboctahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateSnubCube
+* Description: Generates a snub cube.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateSnubCube = function ()
 {
 	var result = new JSM.Body ();
@@ -692,6 +774,12 @@ JSM.GenerateSnubCube = function ()
 	return result;
 };
 
+/**
+* Function: GenerateIcosidodecahedron
+* Description: Generates an icosidodecahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateIcosidodecahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -773,6 +861,12 @@ JSM.GenerateIcosidodecahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateTruncatedDodecahedron
+* Description: Generates a truncated dodecahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTruncatedDodecahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -891,6 +985,12 @@ JSM.GenerateTruncatedDodecahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateTruncatedIcosahedron
+* Description: Generates a truncated icosahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTruncatedIcosahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -1010,6 +1110,12 @@ JSM.GenerateTruncatedIcosahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateRhombicosidodecahedron
+* Description: Generates a rhombicosidodecahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateRhombicosidodecahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -1159,6 +1265,12 @@ JSM.GenerateRhombicosidodecahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateTruncatedIcosidodecahedron
+* Description: Generates a truncated icosidodecahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTruncatedIcosidodecahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -1379,6 +1491,12 @@ JSM.GenerateTruncatedIcosidodecahedron = function ()
 	return result;
 };
 
+/**
+* Function: GenerateSnubDodecahedron
+* Description: Generates a snub dodecahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateSnubDodecahedron = function ()
 {
 	var result = new JSM.Body ();
@@ -1575,6 +1693,14 @@ JSM.GenerateSnubDodecahedron = function ()
 	return result;
 };
 
+/**
+* Function: AddCumulatedPolygonToBody
+* Description: Adds polygons to a body by cumulating the original polygons vertex index array.
+* Parameters:
+*	body {Body} the body
+*	vertices {integer[*]} the vertices of the original polygon
+*	height {number} the height of the cumulation
+*/
 JSM.AddCumulatedPolygonToBody = function (body, vertices, height)
 {
 	function CalculatePolygonCentroidAndNormal (vertices, centroidCoord, normalVector)
@@ -1611,6 +1737,14 @@ JSM.AddCumulatedPolygonToBody = function (body, vertices, height)
 	}
 };
 
+/**
+* Function: GenerateCumulatedTetrahedron
+* Description: Generates a cumulated tetrahedron.
+* Parameters:
+*	pyramidUnitHeight {number} the unit height of pyramids
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCumulatedTetrahedron = function (pyramidUnitHeight)
 {
 	var result = new JSM.Body ();
@@ -1633,6 +1767,14 @@ JSM.GenerateCumulatedTetrahedron = function (pyramidUnitHeight)
 	return result;	
 };
 
+/**
+* Function: GenerateCumulatedHexahedron
+* Description: Generates a cumulated hexahedron.
+* Parameters:
+*	pyramidUnitHeight {number} the unit height of pyramids
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCumulatedHexahedron = function (pyramidUnitHeight)
 {
 	var result = new JSM.Body ();
@@ -1661,6 +1803,14 @@ JSM.GenerateCumulatedHexahedron = function (pyramidUnitHeight)
 	return result;	
 };
 
+/**
+* Function: GenerateCumulatedOctahedron
+* Description: Generates a cumulated octahedron.
+* Parameters:
+*	pyramidUnitHeight {number} the unit height of pyramids
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCumulatedOctahedron = function (pyramidUnitHeight)
 {
 	var result = new JSM.Body ();
@@ -1690,6 +1840,14 @@ JSM.GenerateCumulatedOctahedron = function (pyramidUnitHeight)
 	return result;	
 };
 
+/**
+* Function: GenerateCumulatedDodecahedron
+* Description: Generates a cumulated dodecahedron.
+* Parameters:
+*	pyramidUnitHeight {number} the unit height of pyramids
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCumulatedDodecahedron = function (pyramidUnitHeight)
 {
 	var result = new JSM.Body ();
@@ -1742,6 +1900,14 @@ JSM.GenerateCumulatedDodecahedron = function (pyramidUnitHeight)
 	return result;	
 };
 
+/**
+* Function: GenerateCumulatedIcosahedron
+* Description: Generates a cumulated icosahedron.
+* Parameters:
+*	pyramidUnitHeight {number} the unit height of pyramids
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateCumulatedIcosahedron = function (pyramidUnitHeight)
 {
 	var result = new JSM.Body ();
@@ -1792,60 +1958,120 @@ JSM.GenerateCumulatedIcosahedron = function (pyramidUnitHeight)
 	return result;
 };
 
+/**
+* Function: GenerateTetrakisHexahedron
+* Description: Generates a tetrakis hexahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTetrakisHexahedron = function ()
 {
 	var pyramidUnitHeight = 1.0 / 4.0;
 	return JSM.GenerateCumulatedHexahedron (pyramidUnitHeight);
 };
 
+/**
+* Function: GenerateRhombicDodecahedron
+* Description: Generates a rhombic dodecahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateRhombicDodecahedron = function ()
 {
 	var pyramidUnitHeight = 1.0 / 2.0;
 	return JSM.GenerateCumulatedHexahedron (pyramidUnitHeight);
 };
 
+/**
+* Function: GeneratePentakisDodecahedron
+* Description: Generates a pentakis dodecahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GeneratePentakisDodecahedron = function ()
 {
 	var pyramidUnitHeight = Math.sqrt ((65.0 + 22.0 * Math.sqrt (5.0)) / 5.0) / 19.0;
 	return JSM.GenerateCumulatedDodecahedron (pyramidUnitHeight);
 };
 
+/**
+* Function: GenerateSmallStellatedDodecahedron
+* Description: Generates a small stellated dodecahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateSmallStellatedDodecahedron = function ()
 {
 	var pyramidUnitHeight = Math.sqrt ((5.0 + 2.0 * Math.sqrt (5.0)) / 5.0);
 	return JSM.GenerateCumulatedDodecahedron (pyramidUnitHeight);
 };
 
+/**
+* Function: GenerateGreatDodecahedron
+* Description: Generates a great dodecahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateGreatDodecahedron = function ()
 {
 	var pyramidUnitHeight = (Math.sqrt (3.0) * (Math.sqrt (5.0) - 3.0)) / 6.0;
 	return JSM.GenerateCumulatedIcosahedron (pyramidUnitHeight);
 };
 
+/**
+* Function: GenerateSmallTriambicIcosahedron
+* Description: Generates a small triambic icosahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateSmallTriambicIcosahedron = function ()
 {
 	var pyramidUnitHeight = Math.sqrt (15.0) / 15.0;
 	return JSM.GenerateCumulatedIcosahedron (pyramidUnitHeight);
 };
 
+/**
+* Function: GenerateGreatStellatedDodecahedron
+* Description: Generates a great stellated dodecahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateGreatStellatedDodecahedron = function ()
 {
 	var pyramidUnitHeight = (Math.sqrt (3.0) * (3.0 + Math.sqrt (5.0))) / 6.0;
 	return JSM.GenerateCumulatedIcosahedron (pyramidUnitHeight);
 };
 
+/**
+* Function: GenerateSmallTriakisOctahedron
+* Description: Generates a small triakis octahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateSmallTriakisOctahedron = function ()
 {
 	var pyramidUnitHeight = Math.sqrt (3.0) - 2.0 * Math.sqrt (6.0) / 3.0;
 	return JSM.GenerateCumulatedOctahedron (pyramidUnitHeight);
 };
 
+/**
+* Function: GenerateStellaOctangula
+* Description: Generates a stella octangula.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateStellaOctangula = function ()
 {
 	var pyramidUnitHeight = Math.sqrt (6.0) / 3.0;
 	return JSM.GenerateCumulatedOctahedron (pyramidUnitHeight);
 };
 
+/**
+* Function: GenerateTriakisTetrahedron
+* Description: Generates a triakis tetrahedron.
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateTriakisTetrahedron = function ()
 {
 	var pyramidUnitHeight = Math.sqrt (6.0) / 15.0;

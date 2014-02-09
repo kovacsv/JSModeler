@@ -1525,6 +1525,18 @@ JSM.GeneratePolyTorus = function (basePolygon, outerRadius, outerSegmentation, i
 	return result;
 };
 
+/**
+* Function: GenerateRuledFromSectors
+* Description: Generates a ruled surface between two sectors.
+* Parameters:
+*	aSector {Sector} the first sector
+*	bSector {Sector} the second sector
+*	lineSegmentation {integer} the segmentation along sectors
+*	meshSegmentation {integer} the segmentation along surface
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateRuledFromSectors = function (aSector, bSector, lineSegmentation, meshSegmentation, isCurved)
 {
 	var result = new JSM.Body ();
@@ -1564,18 +1576,53 @@ JSM.GenerateRuledFromSectors = function (aSector, bSector, lineSegmentation, mes
 	return result;
 };
 
-JSM.GenerateGrid = function (xSize, ySize, xSegmentation, ySegmentation, curved)
+/**
+* Function: GenerateGrid
+* Description: Generates a planar grid.
+* Parameters:
+*	xSize {number} the x size
+*	ySize {number} the y size
+*	xSegmentation {integer} the segmentation along x axis
+*	ySegmentation {integer} the segmentation along y axis
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
+JSM.GenerateGrid = function (xSize, ySize, xSegmentation, ySegmentation, isCurved)
 {
 	var xSector = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (xSize, 0.0, 0.0));
 	var ySector = new JSM.Sector (new JSM.Coord (0.0, ySize, 0.0), new JSM.Coord (xSize, ySize, 0.0));
-	return JSM.GenerateRuledFromSectors (xSector, ySector, xSegmentation, ySegmentation, curved);
+	return JSM.GenerateRuledFromSectors (xSector, ySector, xSegmentation, ySegmentation, isCurved);
 };
 
-JSM.GenerateQuadGrid = function (size, segmentation, curved)
+/**
+* Function: GenerateSquareGrid
+* Description: Generates a planar square grid.
+* Parameters:
+*	size {number} the size
+*	segmentation {integer} the segmentation
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
+JSM.GenerateSquareGrid = function (size, segmentation, isCurved)
 {
-	return JSM.GenerateGrid (size, size, segmentation, segmentation, curved);
+	return JSM.GenerateGrid (size, size, segmentation, segmentation, isCurved);
 };
 
+/**
+* Function: GenerateRuledFromSectorsWithHeight
+* Description: Generates a ruled surface with height between two sectors.
+* Parameters:
+*	aSector {Sector} the first sector
+*	bSector {Sector} the second sector
+*	lineSegmentation {integer} the segmentation along sectors
+*	meshSegmentation {integer} the segmentation along surface
+*	isCurved {boolean} create smooth surfaces
+*	height {height} the height
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegmentation, meshSegmentation, isCurved, height)
 {
 	var result = new JSM.Body ();
@@ -1677,6 +1724,19 @@ JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegment
 	return result;
 };
 
+/**
+* Function: GenerateRuledFromCoords
+* Description:
+*	Generates a ruled surface between two coordinate arrays.
+*	The two arrays should have the same length.
+* Parameters:
+*	aCoords {Coord[*]} the first coordinate array
+*	bCoords {Coord[*]} the second coordinate array
+*	meshSegmentation {integer} the segmentation along surface
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateRuledFromCoords = function (aCoords, bCoords, meshSegmentation, isCurved)
 {
 	var result = new JSM.Body ();
@@ -1711,6 +1771,21 @@ JSM.GenerateRuledFromCoords = function (aCoords, bCoords, meshSegmentation, isCu
 	return result;
 };
 
+/**
+* Function: GenerateRevolved
+* Description:
+*	Generates a revolved surface by rotating a polyline around a given axis.
+*	If the angle is 360 degree, it can generate top and bottom polygons.
+* Parameters:
+*	polyLine {Coord[*]} the polyline
+*	axis {Sector} the axis
+*	angle {number} the angle
+*	segmentation {integer} the segmentation
+*	withTopAndBottom {boolean} generate top and bottom polygons
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAndBottom, isCurved)
 {
 	var result = new JSM.Body ();
@@ -1797,16 +1872,27 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 	return result;
 };
 
-JSM.GenerateTube = function (basePolygon, withStartAndEnd)
+/**
+* Function: GenerateTube
+* Description:
+*	Generates a tube from a given array of polygons. All of the
+*	polygons should have same number of vertices.
+* Parameters:
+*	basePolygons {Coord[*][*]} the array of polygons
+*	withStartAndEnd {boolean} generate start and end polygons
+* Returns:
+*	{Body} the result
+*/
+JSM.GenerateTube = function (basePolygons, withStartAndEnd)
 {
 	var result = new JSM.Body ();
-	var contourCount = basePolygon.length;
-	var count = basePolygon[0].length;
+	var contourCount = basePolygons.length;
+	var count = basePolygons[0].length;
 
 	var i, j;
 	for (j = 0; j < count; j++) {
 		for (i = 0; i < contourCount; i++) {
-			result.AddVertex (new JSM.BodyVertex (basePolygon[i][j]));
+			result.AddVertex (new JSM.BodyVertex (basePolygons[i][j]));
 		}
 	}
 
@@ -1846,6 +1932,18 @@ JSM.GenerateTube = function (basePolygon, withStartAndEnd)
 	return result;
 };
 
+/**
+* Function: GenerateFunctionSurface
+* Description: Generates the surface of a given function.
+* Parameters:
+*	function3D {function} the callback function for get surface point
+*	intervalMin {Coord2D} the minimum of the interval
+*	intervalMax {Coord2D} the maximum of the interval
+*	segmentation {integer} the segmentation
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateFunctionSurface = function (function3D, intervalMin, intervalMax, segmentation, isCurved)
 {
 	var aSector = new JSM.Sector (new JSM.Coord (intervalMin.x, intervalMin.y, 0.0), new JSM.Coord (intervalMax.x, intervalMin.y, 0.0));
@@ -1869,6 +1967,19 @@ JSM.GenerateFunctionSurface = function (function3D, intervalMin, intervalMax, se
 	return result;
 };
 
+/**
+* Function: GenerateFunctionSurfaceSolid
+* Description: Generates the surface of a given function with a solid body.
+* Parameters:
+*	function3D {function} the callback function for get surface point
+*	intervalMin {Coord2D} the minimum of the interval
+*	intervalMax {Coord2D} the maximum of the interval
+*	segmentation {integer} the segmentation
+*	isCurved {boolean} create smooth surfaces
+*	bottomZ {number} the bottom z coordinate of the solid
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateFunctionSurfaceSolid = function (function3D, intervalMin, intervalMax, segmentation, isCurved, bottomZ)
 {
 	var aSector = new JSM.Sector (new JSM.Coord (intervalMax.x, intervalMin.y, 0.0), new JSM.Coord (intervalMin.x, intervalMin.y, 0.0));

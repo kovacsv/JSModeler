@@ -300,8 +300,9 @@ class Module:
 		file.Write (tabs, '}', comma)
 
 class Documentation:
-	def __init__ (self):
+	def __init__ (self, projectName):
 		self.modules = []
+		self.projectName = projectName
 	
 	def AddModule (self, moduleName, sourceFiles):
 		module = Module (moduleName)
@@ -361,6 +362,7 @@ class Documentation:
 		file = JSONFile (fileName)
 		file.Open ()
 		file.Write (0, '{', False)
+		file.Write (1, '"project" : "' + self.projectName +'"', True)
 		if len (self.modules) > 0:
 			file.Write (1, '"modules" : {', False)
 			for i in range (0, len (self.modules)):

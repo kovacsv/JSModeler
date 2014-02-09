@@ -1,3 +1,11 @@
+/**
+* Function: CatmullClarkSubdivisionOneIteration
+* Description: Runs one iteration of Catmull-Clark subdivision on a body.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{Body} the result
+*/
 JSM.CatmullClarkSubdivisionOneIteration = function (body)
 {
 	function AddOriginalVertices ()
@@ -137,6 +145,15 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 	return result;
 };
 
+/**
+* Function: CatmullClarkSubdivision
+* Description: Runs multiple iterations of Catmull-Clark subdivision on a body.
+* Parameters:
+*	body {Body} the body
+*	iterations {integer} the iteration number
+* Returns:
+*	{Body} the result
+*/
 JSM.CatmullClarkSubdivision = function (body, iterations)
 {
 	var result = body;

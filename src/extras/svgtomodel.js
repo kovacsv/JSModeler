@@ -1,3 +1,13 @@
+/**
+* Function: SvgToModel
+* Description: Converts an svg objects rect, path and polygon elements to a body.
+* Parameters:
+*	svgObject {html svg element} the svg element
+*	height {number} the height of the result body
+*	segmentLength {number} the maximum length of curved segments
+* Returns:
+*	{Body} the result
+*/
 JSM.SvgToModel = function (svgObject, height, segmentLength)
 {
 	function SegmentElem (elem, segmentLength)

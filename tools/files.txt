@@ -28,9 +28,9 @@
 ../src/modeler/textureutils.js
 ../src/modeler/cututils.js
 ../src/modeler/generator.js
-../src/modeler/solidgenerator.js
 ../src/modeler/camera.js
 ../src/modeler/exporter.js
+../src/extras/solidgenerator.js
 ../src/extras/extgenerator.js
 ../src/extras/painter.js
 ../src/extras/drawing.js

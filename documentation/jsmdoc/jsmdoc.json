@@ -1,4 +1,5 @@
 {
+	"project" : "JSModeler",
 	"modules" : {
 		"Core" : {
 			"functions" : {
@@ -1185,7 +1186,7 @@
 					]
 				},
 				"GetRuledMesh" : {
-					"description" : "Generates ruled mesh coordinates and polygons between two coordinate array. The two array should have the same length. The result is a coordinate array and a polygon array which contains indices for vertices.",
+					"description" : "Generates ruled mesh coordinates and polygons between two coordinate array. The two arrays should have the same length. The result is a coordinate array and a polygon array which contains indices for vertices.",
 					"parameters" : [
 						["aCoords", "Coord[*]", "the first coordinate array"],
 						["bCoords", "Coord[*]", "the second coordinate array"],
@@ -2271,6 +2272,225 @@
 					"returns" : [
 						["Body", "the result"]
 					]
+				},
+				"GenerateRuledFromSectors" : {
+					"description" : "Generates a ruled surface between two sectors.",
+					"parameters" : [
+						["aSector", "Sector", "the first sector"],
+						["bSector", "Sector", "the second sector"],
+						["lineSegmentation", "integer", "the segmentation along sectors"],
+						["meshSegmentation", "integer", "the segmentation along surface"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateGrid" : {
+					"description" : "Generates a planar grid.",
+					"parameters" : [
+						["xSize", "number", "the x size"],
+						["ySize", "number", "the y size"],
+						["xSegmentation", "integer", "the segmentation along x axis"],
+						["ySegmentation", "integer", "the segmentation along y axis"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateSquareGrid" : {
+					"description" : "Generates a planar square grid.",
+					"parameters" : [
+						["size", "number", "the size"],
+						["segmentation", "integer", "the segmentation"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateRuledFromSectorsWithHeight" : {
+					"description" : "Generates a ruled surface with height between two sectors.",
+					"parameters" : [
+						["aSector", "Sector", "the first sector"],
+						["bSector", "Sector", "the second sector"],
+						["lineSegmentation", "integer", "the segmentation along sectors"],
+						["meshSegmentation", "integer", "the segmentation along surface"],
+						["isCurved", "boolean", "create smooth surfaces"],
+						["height", "height", "the height"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateRuledFromCoords" : {
+					"description" : "Generates a ruled surface between two coordinate arrays. The two arrays should have the same length.",
+					"parameters" : [
+						["aCoords", "Coord[*]", "the first coordinate array"],
+						["bCoords", "Coord[*]", "the second coordinate array"],
+						["meshSegmentation", "integer", "the segmentation along surface"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateRevolved" : {
+					"description" : "Generates a revolved surface by rotating a polyline around a given axis. If the angle is 360 degree, it can generate top and bottom polygons.",
+					"parameters" : [
+						["polyLine", "Coord[*]", "the polyline"],
+						["axis", "Sector", "the axis"],
+						["angle", "number", "the angle"],
+						["segmentation", "integer", "the segmentation"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTube" : {
+					"description" : "Generates a tube from a given array of polygons. All of the polygons should have same number of vertices.",
+					"parameters" : [
+						["basePolygons", "Coord[*][*]", "the array of polygons"],
+						["withStartAndEnd", "boolean", "generate start and end polygons"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateFunctionSurface" : {
+					"description" : "Generates the surface of a given function.",
+					"parameters" : [
+						["function3D", "function", "the callback function for get surface point"],
+						["intervalMin", "Coord2D", "the minimum of the interval"],
+						["intervalMax", "Coord2D", "the maximum of the interval"],
+						["segmentation", "integer", "the segmentation"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateFunctionSurfaceSolid" : {
+					"description" : "Generates the surface of a given function with a solid body.",
+					"parameters" : [
+						["function3D", "function", "the callback function for get surface point"],
+						["intervalMin", "Coord2D", "the minimum of the interval"],
+						["intervalMax", "Coord2D", "the maximum of the interval"],
+						["segmentation", "integer", "the segmentation"],
+						["isCurved", "boolean", "create smooth surfaces"],
+						["bottomZ", "number", "the bottom z coordinate of the solid"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"ExportBodyContentToStl" : {
+					"description" : "Exports a body content to stl.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["name", "string", "name the body"],
+						["hasConvexPolygons", "boolean", "the body has only convex polygons"]
+					],
+					"returns" : [
+						["string", "the result"]
+					]
+				},
+				"ExportBodyToStl" : {
+					"description" : "Exports a body to stl.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["name", "string", "name the body"],
+						["hasConvexPolygons", "boolean", "the body has only convex polygons"]
+					],
+					"returns" : [
+						["string", "the result"]
+					]
+				},
+				"ExportModelToStl" : {
+					"description" : "Exports a model to stl.",
+					"parameters" : [
+						["model", "Model", "the model"],
+						["name", "string", "name the model"],
+						["hasConvexPolygons", "boolean", "the model has only convex polygons"]
+					],
+					"returns" : [
+						["string", "the result"]
+					]
+				},
+				"ExportBodyContentToObj" : {
+					"description" : "Exports a body content to obj.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["name", "string", "name the body"],
+						["hasConvexPolygons", "boolean", "the body has only convex polygons"]
+					],
+					"returns" : [
+						["string", "the result"]
+					]
+				},
+				"ExportBodyToObj" : {
+					"description" : "Exports a body to obj.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["name", "string", "name the body"],
+						["hasConvexPolygons", "boolean", "the body has only convex polygons"]
+					],
+					"returns" : [
+						["string", "the result"]
+					]
+				},
+				"ExportModelToObj" : {
+					"description" : "Exports a model to obj.",
+					"parameters" : [
+						["model", "Model", "the model"],
+						["name", "string", "name the model"],
+						["hasConvexPolygons", "boolean", "the model has only convex polygons"]
+					],
+					"returns" : [
+						["string", "the result"]
+					]
+				},
+				"ExportMaterialsToGdl" : {
+					"description" : "Exports a material container to gdl.",
+					"parameters" : [
+						["materials", "Materials", "the material container"]
+					],
+					"returns" : [
+						["string", "the result"]
+					]
+				},
+				"ExportBodyGeometryToGdl" : {
+					"description" : "Exports a body geometry to gdl.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["writeMaterials", "boolean", "write materials"]
+					],
+					"returns" : [
+						["string", "the result"]
+					]
+				},
+				"ExportBodyToGdl" : {
+					"description" : "Exports a body to gdl.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["materials", "Materials", "the material container"]
+					],
+					"returns" : [
+						["string", "the result"]
+					]
+				},
+				"ExportModelToGdl" : {
+					"description" : "Exports a model to gdl.",
+					"parameters" : [
+						["model", "Model", "the model"],
+						["materials", "Materials", "the material container"]
+					],
+					"returns" : [
+						["string", "the result"]
+					]
 				}
 			},
 			"classes" : {
@@ -2616,10 +2836,582 @@
 				},
 				"AdjacencyInfo" : {
 					"description" : "Contains adjacency information for a body. Contains arrays with vertex, edge and polygon info."
+				},
+				"Camera" : {
+					"description" : "Represents a camera.",
+					"parameters" : [
+						["eye", "Coord", "the eye position"],
+						["center", "Coord", "the center position"],
+						["up", "Vector", "the up vector"]
+					],
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the camera.",
+							"parameters" : [
+								["eye", "Coord", "the eye position"],
+								["center", "Coord", "the center position"],
+								["up", "Vector", "the up vector"]
+							]
+						},
+						"SetFixUp" : {
+							"description" : "Sets if the camera has fix up when orbiting.",
+							"parameters" : [
+								["fixUp", "boolean", "the value"]
+							]
+						},
+						"SetOrbitEnabled" : {
+							"description" : "Sets if the orbit is enabled.",
+							"parameters" : [
+								["orbit", "boolean", "the value"]
+							]
+						},
+						"SetZoomEnabled" : {
+							"description" : "Sets if the zoom is enabled.",
+							"parameters" : [
+								["zoom", "boolean", "the value"]
+							]
+						},
+						"Zoom" : {
+							"description" : "Moves the camera along the eye-center direction with 10% of the distance.",
+							"parameters" : [
+								["zoomIn", "boolean", "zoom in or out"]
+							]
+						},
+						"Orbit" : {
+							"description" : "Orbits the camera with given angles.",
+							"parameters" : [
+								["angleX", "number", "x angle of orbit"],
+								["angleY", "number", "y angle of orbit"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the camera.",
+							"returns" : [
+								["Camera", "a cloned instance"]
+							]
+						}
+					}
 				}
 			}
 		},
 		"Extras" : {
+			"functions" : {
+				"GenerateSolidWithRadius" : {
+					"description" : "Generates a special solid with the given radius.",
+					"parameters" : [
+						["solidName", "string", "the name of the solid"],
+						["radius", "number", "the radius of the solid"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTetrahedron" : {
+					"description" : "Generates a tetrahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateHexahedron" : {
+					"description" : "Generates a hexahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateOctahedron" : {
+					"description" : "Generates an octahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateDodecahedron" : {
+					"description" : "Generates a dodecahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateIcosahedron" : {
+					"description" : "Generates an icosahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTruncatedTetrahedron" : {
+					"description" : "Generates a truncated tetrahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCuboctahedron" : {
+					"description" : "Generates a cuboctahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTruncatedCube" : {
+					"description" : "Generates a truncated cube.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTruncatedOctahedron" : {
+					"description" : "Generates a truncated octahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateRhombicuboctahedron" : {
+					"description" : "Generates a rhombicuboctahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTruncatedCuboctahedron" : {
+					"description" : "Generates a truncated cuboctahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateSnubCube" : {
+					"description" : "Generates a snub cube.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateIcosidodecahedron" : {
+					"description" : "Generates an icosidodecahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTruncatedDodecahedron" : {
+					"description" : "Generates a truncated dodecahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTruncatedIcosahedron" : {
+					"description" : "Generates a truncated icosahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateRhombicosidodecahedron" : {
+					"description" : "Generates a rhombicosidodecahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTruncatedIcosidodecahedron" : {
+					"description" : "Generates a truncated icosidodecahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateSnubDodecahedron" : {
+					"description" : "Generates a snub dodecahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"AddCumulatedPolygonToBody" : {
+					"description" : "Adds polygons to a body by cumulating the original polygons vertex index array.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["vertices", "integer[*]", "the vertices of the original polygon"],
+						["height", "number", "the height of the cumulation"]
+					]
+				},
+				"GenerateCumulatedTetrahedron" : {
+					"description" : "Generates a cumulated tetrahedron.",
+					"parameters" : [
+						["pyramidUnitHeight", "number", "the unit height of pyramids"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCumulatedHexahedron" : {
+					"description" : "Generates a cumulated hexahedron.",
+					"parameters" : [
+						["pyramidUnitHeight", "number", "the unit height of pyramids"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCumulatedOctahedron" : {
+					"description" : "Generates a cumulated octahedron.",
+					"parameters" : [
+						["pyramidUnitHeight", "number", "the unit height of pyramids"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCumulatedDodecahedron" : {
+					"description" : "Generates a cumulated dodecahedron.",
+					"parameters" : [
+						["pyramidUnitHeight", "number", "the unit height of pyramids"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateCumulatedIcosahedron" : {
+					"description" : "Generates a cumulated icosahedron.",
+					"parameters" : [
+						["pyramidUnitHeight", "number", "the unit height of pyramids"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTetrakisHexahedron" : {
+					"description" : "Generates a tetrakis hexahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateRhombicDodecahedron" : {
+					"description" : "Generates a rhombic dodecahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GeneratePentakisDodecahedron" : {
+					"description" : "Generates a pentakis dodecahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateSmallStellatedDodecahedron" : {
+					"description" : "Generates a small stellated dodecahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateGreatDodecahedron" : {
+					"description" : "Generates a great dodecahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateSmallTriambicIcosahedron" : {
+					"description" : "Generates a small triambic icosahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateGreatStellatedDodecahedron" : {
+					"description" : "Generates a great stellated dodecahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateSmallTriakisOctahedron" : {
+					"description" : "Generates a small triakis octahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateStellaOctangula" : {
+					"description" : "Generates a stella octangula.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateTriakisTetrahedron" : {
+					"description" : "Generates a triakis tetrahedron.",
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateLegoBrick" : {
+					"description" : "Generates a lego brick.",
+					"parameters" : [
+						["rows", "integer", "the row count"],
+						["columns", "integer", "the columns count"],
+						["isLarge", "boolean", "the brick is large"],
+						["hasTopCylinders", "boolean", "the brick has top cylinders"],
+						["hasBottomCylinders", "boolean", "the brick has bottom cylinders"],
+						["segmentation", "integer", "the segmentation of cylinders"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateSuperShape" : {
+					"description" : "Generates a supershape.",
+					"parameters" : [
+						["parameters", "12 numbers", "the supershape parameters"],
+						["segmentation", "integer", "the segmentation"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"OrderPolygons" : {
+					"description" : "Order body polygons from front to back depending on the eye position.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["eye", "Coord", "the camera eye position"],
+						["center", "Coord", "the camera center position"],
+						["up", "Vector", "the camera up vector"],
+						["fieldOfView", "number", "camera field of view"],
+						["aspectRatio", "number", "aspect ratio of the desired image"],
+						["nearPlane", "number", "near cutting plane distance"],
+						["farPlane", "number", "far cutting plane distance"],
+						["viewPort", "number[4]", "view port coordinates in pixels"]
+					],
+					"returns" : [
+						["integer[]", "the ordered polygon indices"]
+					]
+				},
+				"DrawProjectedBody" : {
+					"description" : "Draws a projected body.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["materials", "Materials", "the material container"],
+						["settings", "DrawSettings", "the draw settings"],
+						["drawer", "drawer object", "the drawer object"]
+					]
+				},
+				"CatmullClarkSubdivisionOneIteration" : {
+					"description" : "Runs one iteration of Catmull-Clark subdivision on a body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"CatmullClarkSubdivision" : {
+					"description" : "Runs multiple iterations of Catmull-Clark subdivision on a body.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["iterations", "integer", "the iteration number"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"SvgToModel" : {
+					"description" : "Converts an svg objects rect, path and polygon elements to a body.",
+					"parameters" : [
+						["svgObject", "html svg element", "the svg element"],
+						["height", "number", "the height of the result body"],
+						["segmentLength", "number", "the maximum length of curved segments"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"AddBodyToBSPTree" : {
+					"description" : "Adds a body to a BSP tree.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["bspTree", "BSPTree", "the BSP tree"],
+						["id", "anything", "the id for added polygons"]
+					]
+				},
+				"BooleanOperation" : {
+					"description" : "Makes a boolean operation on the given bodies.",
+					"parameters" : [
+						["operation", "string", "the operation ('Union', 'Difference', or 'Intersection')"],
+						["aBody", "Body", "the first body"],
+						["bBody", "Body", "the second body"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateSurface" : {
+					"description" : "Generates a parametric surface.",
+					"parameters" : [
+						["xRange", "number[2]", "the from-to range on x axis"],
+						["yRange", "number[2]", "the from-to range on y axis"],
+						["xSegmentation", "integer", "the segmentation along the x axis"],
+						["ySegmentation", "integer", "the segmentation along the y axis"],
+						["useTriangles", "boolean", "generate triangles instead of quadrangles"],
+						["isCurved", "boolean", "create smooth surfaces"],
+						["getPointCallback", "function", "callback function which returns the point for a position"],
+						["userData", "anything", "user data which will be passed to getPointCallback"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateBezierSurface" : {
+					"description" : "Generates a bezier surface base on the given control points.",
+					"parameters" : [
+						["surfaceControlPoints", "SurfaceControlPoints", "the control points"],
+						["xSegmentation", "integer", "the segmentation along the x axis"],
+						["ySegmentation", "integer", "the segmentation along the y axis"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GenerateMobiusStrip" : {
+					"description" : "Generates a mobius strip.",
+					"parameters" : [
+						["a", "number", "the parameter of mobius strip"],
+						["xSegmentation", "integer", "the segmentation along the x axis"],
+						["ySegmentation", "integer", "the segmentation along the y axis"],
+						["isCurved", "boolean", "create smooth surfaces"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				}
+			},
+			"classes" : {
+				"LegoDimensions" : {
+					"description" : "Class that contains lego brick dimensions."
+				},
+				"CanvasDrawer" : {
+					"description" : "Represents an object which can draw primitives to a canvas.",
+					"parameters" : [
+						["canvas", "html canvas element", "the destination element"]
+					],
+					"functions" : {
+						"GetWidth" : {
+							"description" : "Returns the width of the target.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetHeight" : {
+							"description" : "Returns the height of the target.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"BeginPath" : {
+							"description" : "Begins a path."
+						},
+						"EndPath" : {
+							"description" : "Ends a path."
+						},
+						"Clear" : {
+							"description" : "Clears the target."
+						},
+						"DrawLine" : {
+							"description" : "Draws a line to the target.",
+							"parameters" : [
+								["from", "Coord2D", "the start of the line"],
+								["to", "Coord2D", "the end of the line"]
+							]
+						},
+						"DrawPolygon" : {
+							"description" : "Draws a polygon to the target.",
+							"parameters" : [
+								["polygon", "Polygon2D", "the polygon"],
+								["color", "string", "the hex color string"]
+							]
+						}
+					}
+				},
+				"SVGDrawer" : {
+					"description" : "Represents an object which can draw primitives to an svg.",
+					"parameters" : [
+						["svgObject", "html svg element", "the destination element"]
+					],
+					"functions" : {
+						"GetWidth" : {
+							"description" : "Returns the width of the target.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetHeight" : {
+							"description" : "Returns the height of the target.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"BeginPath" : {
+							"description" : "Begins a path."
+						},
+						"EndPath" : {
+							"description" : "Ends a path."
+						},
+						"Clear" : {
+							"description" : "Clears the target."
+						},
+						"DrawLine" : {
+							"description" : "Draws a line to the target.",
+							"parameters" : [
+								["from", "Coord2D", "the start of the line"],
+								["to", "Coord2D", "the end of the line"]
+							]
+						},
+						"DrawPolygon" : {
+							"description" : "Draws a polygon to the target.",
+							"parameters" : [
+								["polygon", "Polygon2D", "the polygon"],
+								["color", "string", "the hex color string"]
+							]
+						}
+					}
+				},
+				"DrawSettings" : {
+					"description" : "Represents the draw settings.",
+					"parameters" : [
+						["camera", "Camera", "the camera"],
+						["fieldOfView", "number", "camera field of view"],
+						["aspectRatio", "number", "aspect ratio of the desired image"],
+						["nearPlane", "number", "near cutting plane distance"],
+						["farPlane", "number", "far cutting plane distance"],
+						["clear", "boolean", "clear the canvas before draw"]
+					]
+				},
+				"BSPPolygonUserData" : {
+					"description" : "Class that contains user data for polygons in BSP tree."
+				},
+				"SurfaceControlPoints" : {
+					"description" : "Represents control points for surface generation.",
+					"parameters" : [
+						["n", "integer", "the first dimension"],
+						["m", "integer", "the second dimension"]
+					],
+					"functions" : {
+						"GetNValue" : {
+							"description" : "Returns the n value.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetMValue" : {
+							"description" : "Returns the m value.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetControlPoint" : {
+							"description" : "Returns a control point.",
+							"parameters" : [
+								["i", "integer", "the first dimension"],
+								["j", "integer", "the second dimension"]
+							],
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"InitPlanar" : {
+							"description" : "Inits planar control points.",
+							"parameters" : [
+								["xSize", "number", "the x size"],
+								["xSize", "number", "the y size"]
+							]
+						}
+					}
+				}
+			}
 		},
 		"Viewer" : {
 		}

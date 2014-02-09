@@ -1,3 +1,7 @@
+/**
+* Class: LegoDimensions
+* Description: Class that contains lego brick dimensions.
+*/
 JSM.LegoDimensions = function ()
 {
 	this.legoWidth = 0.78;
@@ -11,6 +15,20 @@ JSM.LegoDimensions = function ()
 	this.legoBottomLargeCylinderWallWidth = 0.1;
 };
 
+/**
+* Function: GenerateLegoBrick
+* Description: Generates a lego brick.
+* Parameters:
+*	rows {integer} the row count
+*	columns {integer} the columns count
+*	isLarge {boolean} the brick is large
+*	hasTopCylinders {boolean} the brick has top cylinders
+*	hasBottomCylinders {boolean} the brick has bottom cylinders
+*	segmentation {integer} the segmentation of cylinders
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateLegoBrick = function (rows, columns, isLarge, hasTopCylinders, hasBottomCylinders, segmentation, isCurved)
 {
 	function OffsetBody (body, offset)
@@ -111,6 +129,16 @@ JSM.GenerateLegoBrick = function (rows, columns, isLarge, hasTopCylinders, hasBo
 	return result;
 };
 
+/**
+* Function: GenerateSuperShape
+* Description: Generates a supershape.
+* Parameters:
+*	parameters {12 numbers} the supershape parameters
+*	segmentation {integer} the segmentation
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateSuperShape = function (	a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
 									a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat,
 									segmentation, isCurved)

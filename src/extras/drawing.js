@@ -1,156 +1,249 @@
+/**
+* Class: CanvasDrawer
+* Description: Represents an object which can draw primitives to a canvas.
+* Parameters:
+*	canvas {html canvas element} the destination element
+*/
 JSM.CanvasDrawer = function (canvas)
 {
 	this.canvas = canvas;
 	this.context = this.canvas.getContext ('2d');
 };
 
-JSM.CanvasDrawer.prototype =
+/**
+* Function: CanvasDrawer.GetWidth
+* Description: Returns the width of the target.
+* Returns:
+*	{integer} the result
+*/
+JSM.CanvasDrawer.prototype.GetWidth = function ()
 {
-	GetWidth : function ()
-	{
-		return this.canvas.width;
-	},
-
-	GetHeight : function ()
-	{
-		return this.canvas.height;
-	},
-
-	BeginPath : function ()
-	{
-		this.context.beginPath ();
-	},
-	
-	EndPath : function ()
-	{
-		this.context.stroke ();
-	},
-
-	Clear : function ()
-	{
-		this.context.clearRect (0, 0, this.canvas.width, this.canvas.height);
-		this.context.fillStyle = '#ffffff';
-		this.context.fillRect (0, 0, this.canvas.width, this.canvas.height);
-	},
-	
-	DrawLine : function (from, to)
-	{
-		this.context.moveTo (from.x, this.canvas.height - from.y);
-		this.context.lineTo (to.x, this.canvas.height - to.y);
-	},
-	
-	DrawPolygon : function (polygon, color)
-	{
-		function HexColorToHTMLColor (hexColor)
-		{
-			var rgb = JSM.HexColorToRGBComponents (hexColor);
-			var result = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
-			return result;
-		}
-		
-		this.context.fillStyle = HexColorToHTMLColor (color);
-		this.context.beginPath();
-
-		var i, vertex, nextVertex;
-		for (i = 0; i < polygon.VertexCount (); i++) {
-			vertex = polygon.GetVertex (i);
-			if (i === 0) {
-				this.context.moveTo (vertex.x, this.canvas.height - vertex.y);
-			} else {
-				this.context.lineTo (vertex.x, this.canvas.height - vertex.y);
-			}
-		}
-
-		this.context.closePath ();
-		this.context.fill ();			
-
-		this.BeginPath ();
-		for (i = 0; i < polygon.VertexCount (); i++) {
-			vertex = polygon.GetVertex (i);
-			nextVertex = polygon.GetVertex (i < polygon.VertexCount () - 1 ? i + 1 : 0);
-			this.DrawLine (vertex, nextVertex);
-		}
-		this.EndPath ();
-	}
+	return this.canvas.width;
 };
 
+/**
+* Function: CanvasDrawer.GetHeight
+* Description: Returns the height of the target.
+* Returns:
+*	{integer} the result
+*/
+JSM.CanvasDrawer.prototype.GetHeight = function ()
+{
+	return this.canvas.height;
+};
+
+/**
+* Function: CanvasDrawer.BeginPath
+* Description: Begins a path.
+*/
+JSM.CanvasDrawer.prototype.BeginPath = function ()
+{
+	this.context.beginPath ();
+};
+
+/**
+* Function: CanvasDrawer.EndPath
+* Description: Ends a path.
+*/
+JSM.CanvasDrawer.prototype.EndPath = function ()
+{
+	this.context.stroke ();
+};
+
+/**
+* Function: CanvasDrawer.Clear
+* Description: Clears the target.
+*/
+JSM.CanvasDrawer.prototype.Clear = function ()
+{
+	this.context.clearRect (0, 0, this.canvas.width, this.canvas.height);
+	this.context.fillStyle = '#ffffff';
+	this.context.fillRect (0, 0, this.canvas.width, this.canvas.height);
+};
+
+/**
+* Function: CanvasDrawer.DrawLine
+* Description: Draws a line to the target.
+* Parameters:
+*	from {Coord2D} the start of the line
+*	to {Coord2D} the end of the line
+*/
+JSM.CanvasDrawer.prototype.DrawLine = function (from, to)
+{
+	this.context.moveTo (from.x, this.canvas.height - from.y);
+	this.context.lineTo (to.x, this.canvas.height - to.y);
+};
+
+/**
+* Function: CanvasDrawer.DrawPolygon
+* Description: Draws a polygon to the target.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+*	color {string} the hex color string
+*/
+JSM.CanvasDrawer.prototype.DrawPolygon = function (polygon, color)
+{
+	function HexColorToHTMLColor (hexColor)
+	{
+		var rgb = JSM.HexColorToRGBComponents (hexColor);
+		var result = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
+		return result;
+	}
+	
+	this.context.fillStyle = HexColorToHTMLColor (color);
+	this.context.beginPath();
+
+	var i, vertex, nextVertex;
+	for (i = 0; i < polygon.VertexCount (); i++) {
+		vertex = polygon.GetVertex (i);
+		if (i === 0) {
+			this.context.moveTo (vertex.x, this.canvas.height - vertex.y);
+		} else {
+			this.context.lineTo (vertex.x, this.canvas.height - vertex.y);
+		}
+	}
+
+	this.context.closePath ();
+	this.context.fill ();			
+
+	this.BeginPath ();
+	for (i = 0; i < polygon.VertexCount (); i++) {
+		vertex = polygon.GetVertex (i);
+		nextVertex = polygon.GetVertex (i < polygon.VertexCount () - 1 ? i + 1 : 0);
+		this.DrawLine (vertex, nextVertex);
+	}
+	this.EndPath ();
+};
+
+/**
+* Class: SVGDrawer
+* Description: Represents an object which can draw primitives to an svg.
+* Parameters:
+*	svgObject {html svg element} the destination element
+*/
 JSM.SVGDrawer = function (svgObject)
 {
 	this.svgObject = svgObject;
 	this.svgNameSpace = "http://www.w3.org/2000/svg";
 };
 
-JSM.SVGDrawer.prototype =
+/**
+* Function: SVGDrawer.GetWidth
+* Description: Returns the width of the target.
+* Returns:
+*	{integer} the result
+*/
+JSM.SVGDrawer.prototype.GetWidth = function ()
 {
-	GetWidth : function ()
-	{
-		return this.svgObject.getAttribute ('width');
-	},
+	return this.svgObject.getAttribute ('width');
+};
 
-	GetHeight : function ()
-	{
-		return this.svgObject.getAttribute ('height');
-	},
+/**
+* Function: SVGDrawer.GetHeight
+* Description: Returns the height of the target.
+* Returns:
+*	{integer} the result
+*/
+JSM.SVGDrawer.prototype.GetHeight = function ()
+{
+	return this.svgObject.getAttribute ('height');
+};
 
-	BeginPath : function ()
-	{
-		// nothing to do
-	},
-	
-	EndPath : function ()
-	{
-		// nothing to do
-	},
-	
-	Clear : function ()
-	{
-		while (this.svgObject.lastChild) {
-			this.svgObject.removeChild (this.svgObject.lastChild);
-		}
-	},
-	
-	DrawLine : function (from, to)
-	{
-		var svgLine = document.createElementNS (this.svgNameSpace, 'line');
-		var height = this.GetHeight ();
-		svgLine.setAttributeNS (null, 'stroke', 'black');
-		svgLine.setAttributeNS (null, 'x1', from.x);
-		svgLine.setAttributeNS (null, 'y1', height - from.y);
-		svgLine.setAttributeNS (null, 'x2', to.x);
-		svgLine.setAttributeNS (null, 'y2', height - to.y);
-		this.svgObject.appendChild (svgLine);		
-	},
-	
-	DrawPolygon : function (polygon, color)
-	{
-		function HexColorToHTMLColor (hexColor)
-		{
-			var rgb = JSM.HexColorToRGBComponents (hexColor);
-			var result = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
-			return result;
-		}
+/**
+* Function: SVGDrawer.BeginPath
+* Description: Begins a path.
+*/
+JSM.SVGDrawer.prototype.BeginPath = function ()
+{
+	// nothing to do
+};
 
-		var pointsString = '';
-		var height = this.GetHeight ();
-		
-		var i, vertex;
-		for (i = 0; i < polygon.VertexCount (); i++) {
-			vertex = polygon.GetVertex (i);
-			pointsString = pointsString + vertex.x + ', ' + (height - vertex.y);
-			if (i < polygon.VertexCount () - 1) {
-				pointsString = pointsString + ', ';
-			}
-		}
-		
-		var svgPolyon = document.createElementNS (this.svgNameSpace, 'polygon');
-		svgPolyon.setAttributeNS (null, 'points', pointsString);
-		svgPolyon.setAttributeNS (null, 'fill', HexColorToHTMLColor (color));
-		svgPolyon.setAttributeNS (null, 'fill-opacity', '1.0');
-		svgPolyon.setAttributeNS (null, 'stroke', 'black');
-		this.svgObject.appendChild (svgPolyon);		
+/**
+* Function: SVGDrawer.EndPath
+* Description: Ends a path.
+*/
+JSM.SVGDrawer.prototype.EndPath = function ()
+{
+	// nothing to do
+};
+
+/**
+* Function: SVGDrawer.Clear
+* Description: Clears the target.
+*/
+JSM.SVGDrawer.prototype.Clear = function ()
+{
+	while (this.svgObject.lastChild) {
+		this.svgObject.removeChild (this.svgObject.lastChild);
 	}
 };
 
+/**
+* Function: SVGDrawer.DrawLine
+* Description: Draws a line to the target.
+* Parameters:
+*	from {Coord2D} the start of the line
+*	to {Coord2D} the end of the line
+*/
+JSM.SVGDrawer.prototype.DrawLine = function (from, to)
+{
+	var svgLine = document.createElementNS (this.svgNameSpace, 'line');
+	var height = this.GetHeight ();
+	svgLine.setAttributeNS (null, 'stroke', 'black');
+	svgLine.setAttributeNS (null, 'x1', from.x);
+	svgLine.setAttributeNS (null, 'y1', height - from.y);
+	svgLine.setAttributeNS (null, 'x2', to.x);
+	svgLine.setAttributeNS (null, 'y2', height - to.y);
+	this.svgObject.appendChild (svgLine);		
+};
+
+/**
+* Function: SVGDrawer.DrawPolygon
+* Description: Draws a polygon to the target.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+*	color {string} the hex color string
+*/
+JSM.SVGDrawer.prototype.DrawPolygon = function (polygon, color)
+{
+	function HexColorToHTMLColor (hexColor)
+	{
+		var rgb = JSM.HexColorToRGBComponents (hexColor);
+		var result = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
+		return result;
+	}
+
+	var pointsString = '';
+	var height = this.GetHeight ();
+	
+	var i, vertex;
+	for (i = 0; i < polygon.VertexCount (); i++) {
+		vertex = polygon.GetVertex (i);
+		pointsString = pointsString + vertex.x + ', ' + (height - vertex.y);
+		if (i < polygon.VertexCount () - 1) {
+			pointsString = pointsString + ', ';
+		}
+	}
+	
+	var svgPolyon = document.createElementNS (this.svgNameSpace, 'polygon');
+	svgPolyon.setAttributeNS (null, 'points', pointsString);
+	svgPolyon.setAttributeNS (null, 'fill', HexColorToHTMLColor (color));
+	svgPolyon.setAttributeNS (null, 'fill-opacity', '1.0');
+	svgPolyon.setAttributeNS (null, 'stroke', 'black');
+	this.svgObject.appendChild (svgPolyon);		
+};
+
+/**
+* Class: DrawSettings
+* Description: Represents the draw settings.
+* Parameters:
+*	camera {Camera} the camera
+*	fieldOfView {number} camera field of view
+*	aspectRatio {number} aspect ratio of the desired image
+*	nearPlane {number} near cutting plane distance
+*	farPlane {number} far cutting plane distance
+*	clear {boolean} clear the canvas before draw
+*/
 JSM.DrawSettings = function (camera, fieldOfView, nearPlane, farPlane, drawMode, clear)
 {
 	this.camera = camera;
@@ -161,6 +254,15 @@ JSM.DrawSettings = function (camera, fieldOfView, nearPlane, farPlane, drawMode,
 	this.clear = clear;
 };
 
+/**
+* Function: DrawProjectedBody
+* Description: Draws a projected body.
+* Parameters:
+*	body {Body} the body
+*	materials {Materials} the material container
+*	settings {DrawSettings} the draw settings
+*	drawer {drawer object} the drawer object
+*/
 JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 {
 	function GetProjectedPolygon (polygon)

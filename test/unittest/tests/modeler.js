@@ -309,18 +309,18 @@ AddTest ('ExportTest', function (test)
 	var materials = new JSM.Materials ();
 	materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
 	
-	var gdl1 = JSM.ExportBodyToGDL (body1);
+	var gdl1 = JSM.ExportBodyToGdl (body1);
 	test.Assert (gdl1 == gdl1Ref);
-	var gdl2 = JSM.ExportBodyToGDL (body2);
+	var gdl2 = JSM.ExportBodyToGdl (body2);
 	test.Assert (gdl2 == gdl2Ref);
-	var modelGdl = JSM.ExportModelToGDL (model);
+	var modelGdl = JSM.ExportModelToGdl (model);
 	test.Assert (modelGdl == gdl1 + gdl2);
 
-	var gdl1 = JSM.ExportBodyToGDL (body1, materials);
+	var gdl1 = JSM.ExportBodyToGdl (body1, materials);
 	test.Assert (gdl1 == gdlMatHeader + gdlGeom1Ref);
-	var gdl2 = JSM.ExportBodyToGDL (body2, materials);
+	var gdl2 = JSM.ExportBodyToGdl (body2, materials);
 	test.Assert (gdl2 == gdlMatHeader + gdlGeom2Ref);
-	var modelGdl = JSM.ExportModelToGDL (model, materials);
+	var modelGdl = JSM.ExportModelToGdl (model, materials);
 	test.Assert (modelGdl == gdlMatHeader + gdlGeom1Ref + gdlGeom2Ref);
 
 	var stl1 = JSM.ExportBodyToStl (body1, 'Body1');

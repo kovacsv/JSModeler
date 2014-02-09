@@ -34,12 +34,8 @@ div.content
 
 div.title
 {
-	margin-bottom : 15px;
-}
-
-span.maintitle
-{
 	font-size : 33px;
+	margin-bottom : 15px;
 }
 
 span.subtitle
@@ -116,13 +112,13 @@ div.doctitle2
 div.doctitle3
 {
 	font-size : 17px;
-	margin-top : 10px;
+	margin-top : 15px;
 	margin-bottom : 5px;
 }
 
 div.doctitle4
 {
-	font-size : 15px;
+	font-size : 13px;
 	margin-top : 5px;
 	margin-bottom : 3px;
 }

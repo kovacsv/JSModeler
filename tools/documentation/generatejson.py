@@ -22,12 +22,13 @@ def GetLinesFromFile (fileName):
 	return lines
 
 def Main (argv):
-	if len (argv) != 3:
-		print 'usage: generatedoc <filesFileName> <resultFileName>'
-		return
+	if len (argv) != 4:
+		print 'usage: generatedoc <projectName> <filesFileName> <resultFileName>'
+		return 1
 	
-	filesFilePath = os.path.abspath (argv[1])
-	resultFilePath = os.path.abspath (argv[2])
+	projectName = argv[1]
+	filesFilePath = os.path.abspath (argv[2])
+	resultFilePath = os.path.abspath (argv[3])
 	
 	PrintInfo ('Create documentation from files <' + filesFilePath + '>.')
 	inputFileNames = GetLinesFromFile (filesFilePath);
@@ -47,7 +48,7 @@ def Main (argv):
 			filesByModule[moduleName] = []
 		filesByModule[moduleName].append (absPath)
 	
-	documentation = jsmdoc.Documentation ()
+	documentation = jsmdoc.Documentation (projectName)
 	for moduleName in moduleNames:
 		newModuleName = moduleName.title ()
 		documentation.AddModule (newModuleName, filesByModule[moduleName])

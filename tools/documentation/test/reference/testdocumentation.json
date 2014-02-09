@@ -1,4 +1,5 @@
 {
+	"project" : "TestProject",
 	"modules" : {
 		"Module1" : {
 			"functions" : {

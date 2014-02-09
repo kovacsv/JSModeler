@@ -67,7 +67,7 @@ JSM.GenerateCirclePoints = function (radius, segmentation, origo)
 * Function: GetRuledMesh
 * Description:
 *	Generates ruled mesh coordinates and polygons between two coordinate array.
-*	The two array should have the same length. The result is a coordinate array
+*	The two arrays should have the same length. The result is a coordinate array
 *	and a polygon array which contains indices for vertices.
 * Parameters:
 *	aCoords {Coord[*]} the first coordinate array
