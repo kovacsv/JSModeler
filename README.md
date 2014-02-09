@@ -5,6 +5,7 @@ JSModeler is a JavaScript framework to create and visualize 3D models.
 
 <a href="http://kovacsv.github.com/JSModeler/documentation/tutorial/tutorial.html">Tutorial</a> - 
 <a href="http://kovacsv.github.com/JSModeler/documentation/jsmdoc/index.html">Reference</a> - 
+<a href="https://github.com/kovacsv/JSModeler/wiki">Wiki</a> - 
 <a href="http://kovacsv.github.com/JSModeler/documentation/demo/demonstration.html">Demo</a>
 
 Useful links
