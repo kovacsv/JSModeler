@@ -48,9 +48,9 @@ Cuboid.prototype =
 	{
 		var settingsDialog = new JSM.SettingsDialog ();
 		var myThis = this;
-		settingsDialog.OnClosed = function () {
+		settingsDialog.OnClosed (function () {
 			GenerateShape (myThis, existing);
-		};
+		});
 
 		settingsDialog.Open ('set cuboid parameters', this.parameters);
 	},
@@ -92,9 +92,9 @@ Sphere.prototype =
 	{
 		var settingsDialog = new JSM.SettingsDialog ();
 		var myThis = this;
-		settingsDialog.OnClosed = function () {
+		settingsDialog.OnClosed (function () {
 			GenerateShape (myThis, existing);
-		};
+		});
 
 		settingsDialog.Open ('set sphere parameters', this.parameters);
 	},
@@ -138,9 +138,9 @@ Cylinder.prototype =
 	{
 		var settingsDialog = new JSM.SettingsDialog ();
 		var myThis = this;
-		settingsDialog.OnClosed = function () {
+		settingsDialog.OnClosed (function () {
 			GenerateShape (myThis, existing);
-		};
+		});
 
 		settingsDialog.Open ('set cylinder parameters', this.parameters);
 	},
@@ -187,9 +187,9 @@ Pie.prototype =
 	{
 		var settingsDialog = new JSM.SettingsDialog ();
 		var myThis = this;
-		settingsDialog.OnClosed = function () {
+		settingsDialog.OnClosed (function () {
 			GenerateShape (myThis, existing);
-		};
+		});
 
 		settingsDialog.Open ('set pie parameters', this.parameters);
 	},
@@ -237,9 +237,9 @@ Cone.prototype =
 	{
 		var settingsDialog = new JSM.SettingsDialog ();
 		var myThis = this;
-		settingsDialog.OnClosed = function () {
+		settingsDialog.OnClosed (function () {
 			GenerateShape (myThis, existing);
-		};
+		});
 
 		settingsDialog.Open ('set cone parameters', this.parameters);
 	},
@@ -286,9 +286,9 @@ Torus.prototype =
 	{
 		var settingsDialog = new JSM.SettingsDialog ();
 		var myThis = this;
-		settingsDialog.OnClosed = function () {
+		settingsDialog.OnClosed (function () {
 			GenerateShape (myThis, existing);
-		};
+		});
 
 		settingsDialog.Open ('set torus parameters', this.parameters);
 	},
@@ -342,9 +342,9 @@ Prism.prototype =
 	{
 		var settingsDialog = new JSM.SettingsDialog ();
 		var myThis = this;
-		settingsDialog.OnClosed = function () {
+		settingsDialog.OnClosed (function () {
 			GenerateShape (myThis, existing);
-		};
+		});
 
 		settingsDialog.Open ('set prism parameters', this.parameters);
 	},
@@ -406,9 +406,9 @@ PrismShell.prototype =
 	{
 		var settingsDialog = new JSM.SettingsDialog ();
 		var myThis = this;
-		settingsDialog.OnClosed = function () {
+		settingsDialog.OnClosed (function () {
 			GenerateShape (myThis, existing);
-		};
+		});
 
 		settingsDialog.Open ('set prismshell parameters', this.parameters);
 	},
