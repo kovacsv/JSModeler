@@ -33,7 +33,7 @@ JSM.AddBodyToBSPTree = function (body, bspTree, id)
 
 	var i, polygon, userData;
 	for (i = 0; i < body.PolygonCount (); i++) {
-		userData = new JSM.BSPPolygonUserData (id, 0);
+		userData = new JSM.BSPPolygonUserData ();
 		userData.id = id;
 		polygon = ConvertBodyPolygonToPolygon (body, i, userData);
 		bspTree.AddPolygon (polygon, userData);
