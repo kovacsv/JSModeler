@@ -16,7 +16,7 @@ JSM.BodyVertex = function (position)
 * Description:
 *	Represents a polygon of a 3D body. The polygon contains vertex indices of vertices stored
 *	in its 3D body, material indices of materials defined outside of the body, and a curve
-*	group index which defines if its normal vector calculation in case of smooth surfaces.
+*	group index which defines its normal vector calculation in case of smooth surfaces.
 * Parameters:
 *	vertices {integer[*]} array of vertex indices stored in the body
 */
