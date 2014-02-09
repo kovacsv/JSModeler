@@ -1,3 +1,9 @@
+/**
+* Function: IdentityTransformation
+* Description: Generates an identity transformation.
+* Returns:
+*	{Transformation} the result
+*/
 JSM.IdentityTransformation = function ()
 {
 	var transformation = new JSM.Transformation ();
@@ -9,6 +15,14 @@ JSM.IdentityTransformation = function ()
 	return transformation;
 };
 
+/**
+* Function: TranslationTransformation
+* Description: Generates a translation transformation.
+* Parameters:
+*	translation {Vector} the translation vector
+* Returns:
+*	{Transformation} the result
+*/
 JSM.TranslationTransformation = function (translation)
 {
 	var transformation = new JSM.Transformation ();
@@ -20,6 +34,15 @@ JSM.TranslationTransformation = function (translation)
 	return transformation;
 };
 
+/**
+* Function: OffsetTransformation
+* Description: Generates an offset transformation.
+* Parameters:
+*	direction {Vector} the direction of the offset
+*	distance {number} the distance of the offset
+* Returns:
+*	{Transformation} the result
+*/
 JSM.OffsetTransformation = function (direction, distance)
 {
 	var normal = JSM.VectorNormalize (direction);
@@ -27,6 +50,16 @@ JSM.OffsetTransformation = function (direction, distance)
 	return JSM.TranslationTransformation (translation);
 };
 
+/**
+* Function: RotationTransformation
+* Description: Generates a rotation transformation.
+* Parameters:
+*	axis {Vector} the axis of the rotation
+*	angle {number} the angle of the rotation
+*	origo {Coord} the origo of the rotation
+* Returns:
+*	{Transformation} the result
+*/
 JSM.RotationTransformation = function (axis, angle, origo)
 {
 	var transformation = new JSM.Transformation ();
@@ -65,6 +98,15 @@ JSM.RotationTransformation = function (axis, angle, origo)
 	return transformation;
 };
 
+/**
+* Function: RotationXTransformation
+* Description: Generates a rotation transformation around the x axis.
+* Parameters:
+*	angle {number} the angle of the rotation
+*	origo {Coord} the origo of the rotation
+* Returns:
+*	{Transformation} the result
+*/
 JSM.RotationXTransformation = function (angle, origo)
 {
 	var transformation = new JSM.Transformation ();
@@ -85,6 +127,15 @@ JSM.RotationXTransformation = function (angle, origo)
 	return transformation;	
 };
 
+/**
+* Function: RotationYTransformation
+* Description: Generates a rotation transformation around the y axis.
+* Parameters:
+*	angle {number} the angle of the rotation
+*	origo {Coord} the origo of the rotation
+* Returns:
+*	{Transformation} the result
+*/
 JSM.RotationYTransformation = function (angle, origo)
 {
 	var transformation = new JSM.Transformation ();
@@ -105,6 +156,15 @@ JSM.RotationYTransformation = function (angle, origo)
 	return transformation;
 };
 
+/**
+* Function: RotationZTransformation
+* Description: Generates a rotation transformation around the z axis.
+* Parameters:
+*	angle {number} the angle of the rotation
+*	origo {Coord} the origo of the rotation
+* Returns:
+*	{Transformation} the result
+*/
 JSM.RotationZTransformation = function (angle, origo)
 {
 	var transformation = new JSM.Transformation ();
@@ -125,24 +185,22 @@ JSM.RotationZTransformation = function (angle, origo)
 	return transformation;
 };
 
+/**
+* Function: RotationXYZTransformation
+* Description: Generates a rotation transformation around all axis in x, y, z order.
+* Parameters:
+*	xAngle {number} the x angle of the rotation
+*	yAngle {number} the y angle of the rotation
+*	zAngle {number} the z angle of the rotation
+*	origo {Coord} the origo of the rotation
+* Returns:
+*	{Transformation} the result
+*/
 JSM.RotationXYZTransformation = function (xAngle, yAngle, zAngle, origo)
 {
 	var transformation = new JSM.Transformation ();
 	transformation.Append (JSM.RotationXTransformation (xAngle, origo));
 	transformation.Append (JSM.RotationYTransformation (yAngle, origo));
 	transformation.Append (JSM.RotationZTransformation (zAngle, origo));
-	return transformation;
-};
-
-JSM.SystemConversionTransformation = function (fromE1, fromE2, fromE3, toE1, toE2, toE3)
-{
-	var transformation = new JSM.Transformation ();
-
-	transformation.matrix = [
-		JSM.VectorDot (toE1, fromE1), JSM.VectorDot (toE1, fromE2), JSM.VectorDot (toE1, fromE3), 0.0,
-		JSM.VectorDot (toE2, fromE1), JSM.VectorDot (toE2, fromE2), JSM.VectorDot (toE2, fromE3), 0.0,
-		JSM.VectorDot (toE3, fromE1), JSM.VectorDot (toE3, fromE2), JSM.VectorDot (toE3, fromE3), 0.0
-	];
-	
 	return transformation;
 };

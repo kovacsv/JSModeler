@@ -1,3 +1,11 @@
+/**
+* Function: CoordSystemToDirectionVectors
+* Description: Converts coordinate system vectors to origo relative direction vectors.
+* Parameters:
+*	system {CoordSystem} the coordinate system
+* Returns:
+*	{CoordSystem} the result
+*/
 JSM.CoordSystemToDirectionVectors = function (system)
 {
 	return new JSM.CoordSystem (
@@ -8,6 +16,14 @@ JSM.CoordSystemToDirectionVectors = function (system)
 	);
 };
 
+/**
+* Function: CoordSystemToAbsoluteCoords
+* Description: Converts coordinate system vectors to absolute coordinates.
+* Parameters:
+*	system {CoordSystem} the coordinate system
+* Returns:
+*	{CoordSystem} the result
+*/
 JSM.CoordSystemToAbsoluteCoords = function (system)
 {
 	return new JSM.CoordSystem (
@@ -18,6 +34,16 @@ JSM.CoordSystemToAbsoluteCoords = function (system)
 	);
 };
 
+/**
+* Function: ChangeCoordSystem
+* Description: Converts a coordinate from one coordinate system to another.
+* Parameters:
+*	coord {Coord} the coordinate
+*	from {CoordSystem} first coordinate system
+*	to {CoordSystem} second coordinate system
+* Returns:
+*	{Coord} the result
+*/
 JSM.ChangeCoordSystem = function (coord, from, to)
 {
 	var fromE1 = JSM.VectorNormalize (from.e1);

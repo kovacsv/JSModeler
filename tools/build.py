@@ -1,7 +1,6 @@
 import os
 import sys
 import re
-import inspect
 
 header = '/* JSModeler [mainVersion].[subVersion] - http://www.github.com/kovacsv/JSModeler */ ';
 versionFileName = '../src/core/jsm.js'
@@ -103,7 +102,7 @@ def DeleteFile (fileName):
 	return True
 	
 def Main ():
-	currentPath = os.path.dirname (os.path.abspath (inspect.getsourcefile (Main)))
+	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
 
 	versionsPath = os.path.abspath (versionFileName)
@@ -116,19 +115,19 @@ def Main ():
 	version = GetVersion (versionsPath);
 	if version == [0, 0]:
 		PrintError ('Invalid version.');
-		return
+		return 1
 
 	PrintInfo ('Collect files to merge from <' + filesFilePath + '>.')
 	inputFileNames = GetLinesFromFile (filesFilePath);
 	if len (inputFileNames) == 0:
 		PrintError ('Invalid file list.');
-		return
+		return 1
 
 	PrintInfo ('Merge files to <' + tempFilePath + '>.')
 	succeeded = MergeFiles (inputFileNames, tempFilePath)
 	if not succeeded:
 		PrintError ('Not existing file in file list.');
-		return
+		return 1
 
 	PrintInfo ('Compile merged file to <' + resultFilePath + '>.')
 	succeeded = CompileFile (tempFilePath, externsFilePath, resultFilePath)
@@ -136,7 +135,7 @@ def Main ():
 		PrintError ('Compilation failed.');
 		DeleteFile (resultFilePath)
 		DeleteFile (tempFilePath)
-		return
+		return 1
 	
 	PrintInfo ('Write header to compiled file <' + resultFilePath + '>.')
 	currentHeader = GetHeader (version, header)
@@ -144,14 +143,14 @@ def Main ():
 		PrintError ('Invalid header.');
 		DeleteFile (resultFileName)
 		DeleteFile (tempFilePath)
-		return
+		return 1
 	
 	succeeded = WriteHeader (resultFileName, currentHeader)
 	if not succeeded:
 		PrintError ('Write header failed.');
 		DeleteFile (resultFilePath)
 		DeleteFile (tempFilePath)
-		return
+		return 1
 	
 	PrintInfo ('Delete merged file <' + tempFilePath + '>.')
 	succeeded = DeleteFile (tempFilePath)
@@ -159,8 +158,8 @@ def Main ():
 		PrintError ('Delete failed.');
 		DeleteFile (resultFilePath)
 		DeleteFile (tempFilePath)
-		return
+		return 1
 	
 	return
 	
-Main ()
+sys.exit (Main ())

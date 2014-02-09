@@ -1,7 +1,6 @@
 import os
 import sys
 import re
-import inspect
 
 rootFolderDir = '..'
 filesFileName = 'files.txt'
@@ -72,7 +71,7 @@ def ReplaceIncludesInFile (htmlFileName, inputFileNames):
 	result.close ()
 	
 def Main ():
-	currentPath = os.path.dirname (os.path.abspath (inspect.getsourcefile (Main)))
+	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
 
 	filesFilePath = os.path.abspath (filesFileName)
@@ -80,7 +79,7 @@ def Main ():
 	inputFileNames = GetLinesFromFile (filesFilePath);
 	if len (inputFileNames) == 0:
 		PrintError ('Invalid file list.');
-		return
+		return 1
 	
 	rootFolderDirPath = os.path.abspath (rootFolderDir)
 	PrintInfo ('Collect HTML files from <' + rootFolderDirPath + '>.')
@@ -89,6 +88,6 @@ def Main ():
 	PrintInfo ('Replace includes in <' + rootFolderDirPath + '>.')
 	for htmlFileName in htmlFiles:
 		ReplaceIncludesInFile (htmlFileName, inputFileNames)
-	return
+	return 0
 	
-Main ()
+sys.exit (Main ())

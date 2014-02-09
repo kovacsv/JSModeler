@@ -132,7 +132,7 @@ AddTest ('AdjacencyListTest', function (test)
 
 	var cube = JSM.GenerateCuboid (1, 1, 1);
 	test.Assert (JSM.CheckSolidBody (cube));
-	var al = JSM.CalculateAdjacencyList (cube);
+	var al = JSM.CalculateAdjacencyInfo (cube);
 /*
 		 7__9__6
 		/|    /|
@@ -309,18 +309,18 @@ AddTest ('ExportTest', function (test)
 	var materials = new JSM.Materials ();
 	materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
 	
-	var gdl1 = JSM.ExportBodyToGDL (body1);
+	var gdl1 = JSM.ExportBodyToGdl (body1);
 	test.Assert (gdl1 == gdl1Ref);
-	var gdl2 = JSM.ExportBodyToGDL (body2);
+	var gdl2 = JSM.ExportBodyToGdl (body2);
 	test.Assert (gdl2 == gdl2Ref);
-	var modelGdl = JSM.ExportModelToGDL (model);
+	var modelGdl = JSM.ExportModelToGdl (model);
 	test.Assert (modelGdl == gdl1 + gdl2);
 
-	var gdl1 = JSM.ExportBodyToGDL (body1, materials);
+	var gdl1 = JSM.ExportBodyToGdl (body1, materials);
 	test.Assert (gdl1 == gdlMatHeader + gdlGeom1Ref);
-	var gdl2 = JSM.ExportBodyToGDL (body2, materials);
+	var gdl2 = JSM.ExportBodyToGdl (body2, materials);
 	test.Assert (gdl2 == gdlMatHeader + gdlGeom2Ref);
-	var modelGdl = JSM.ExportModelToGDL (model, materials);
+	var modelGdl = JSM.ExportModelToGdl (model, materials);
 	test.Assert (modelGdl == gdlMatHeader + gdlGeom1Ref + gdlGeom2Ref);
 
 	var stl1 = JSM.ExportBodyToStl (body1, 'Body1');
@@ -931,7 +931,7 @@ AddTest ('GenerateRuledTest', function (test)
 	var sector1 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (2.0, 0.0, 0.0));
 	var sector2 = new JSM.Sector (new JSM.Coord (0.0, 2.0, 0.0), new JSM.Coord (2.0, 2.0, 0.0));
 	var sector1Coords = [];
-	JSM.GetLineSegmentation (sector1.beg, sector1.end, 2, sector1Coords);
+	JSM.GetSectorSegmentation (sector1, 2, sector1Coords);
 	test.Assert (sector1Coords.length == 3);
 	test.Assert (JSM.CoordIsEqual (sector1Coords[0], new JSM.Vector (0.0, 0.0, 0.0)));
 	test.Assert (JSM.CoordIsEqual (sector1Coords[1], new JSM.Vector (1.0, 0.0, 0.0)));
@@ -976,6 +976,80 @@ AddTest ('GenerateRevolvedTest', function (test)
 	test.Assert (openRevolved.PolygonCount () == 10);
 	test.Assert (!JSM.IsSolidBody (openRevolved));
 	test.Assert (!JSM.CheckSolidBody (openRevolved));
+});
+
+AddTest ('GenerateTubeTest', function (test)
+{
+	var polygons = [
+		[
+			new JSM.Coord (0, 0, 0),
+			new JSM.Coord (1, 0, 0),
+			new JSM.Coord (1, 1, 0),
+			new JSM.Coord (0, 1, 0)
+		],
+		[
+			new JSM.Coord (0, 0, 1),
+			new JSM.Coord (1, 0, 1),
+			new JSM.Coord (1, 1, 1),
+			new JSM.Coord (0, 1, 1)
+		]
+	];
+	var tube = JSM.GenerateTube (polygons, true);
+	test.Assert (tube.VertexCount () == 8);
+	test.Assert (tube.PolygonCount () == 6);
+	test.Assert (JSM.CheckSolidBody (tube));
+	
+	var polygons = [
+		[
+			new JSM.Coord (0, 0, 0),
+			new JSM.Coord (1, 0, 0),
+			new JSM.Coord (1, 1, 0),
+			new JSM.Coord (0, 1, 0)
+		],
+		[
+			new JSM.Coord (0, 0, 0.5),
+			new JSM.Coord (1, 0, 0.5),
+			new JSM.Coord (1, 1, 0.5),
+			new JSM.Coord (0, 1, 0.5)
+		],
+		[
+			new JSM.Coord (0, 0, 1.5),
+			new JSM.Coord (1, 0, 1.5),
+			new JSM.Coord (1, 1, 1.5),
+			new JSM.Coord (0, 1, 1.5)
+		],
+		[
+			new JSM.Coord (0, 0, 2.0),
+			new JSM.Coord (1, 0, 2.0),
+			new JSM.Coord (1, 1, 2.0),
+			new JSM.Coord (0, 1, 2.0)
+		],
+		[
+			new JSM.Coord (0, 0, 2.3),
+			new JSM.Coord (1, 0, 2.3),
+			new JSM.Coord (1, 1, 2.3),
+			new JSM.Coord (0, 1, 2.3)
+		]
+	];
+	
+	var tube = JSM.GenerateTube (polygons, true);
+	test.Assert (tube.VertexCount () == 20);
+	test.Assert (tube.PolygonCount () == 18);
+	test.Assert (JSM.CheckSolidBody (tube));
+
+	var polygons = [];
+	var i, j, circle;
+	for (i = 0; i < 10; i++) {
+		circle = JSM.GenerateCirclePoints (i % 2 == 0 ? 1.0 : 0.8, 20);
+		for (j = 0; j < circle.length; j++) {
+			circle[j].z = i;
+		}
+		polygons.push (circle);
+	}
+	var tube = JSM.GenerateTube (polygons, true);
+	test.Assert (tube.VertexCount () == 200);
+	test.Assert (tube.PolygonCount () == 182);
+	test.Assert (JSM.CheckSolidBody (tube));
 });
 
 AddTest ('GenerateFunctionSurfaceTest', function (test)

@@ -1,3 +1,12 @@
+/**
+* Function: GetPlaneFromCoordAndDirection
+* Description: Generates a plane from a coordinate and a direction.
+* Parameters:
+*	coord {Coord} the coordinate
+*	direction {Vector} the direction
+* Returns:
+*	{Plane} the result
+*/
 JSM.GetPlaneFromCoordAndDirection = function (coord, direction)
 {
 	var plane = new JSM.Plane ();
@@ -10,6 +19,16 @@ JSM.GetPlaneFromCoordAndDirection = function (coord, direction)
 	return plane;
 };
 
+/**
+* Function: GetPlaneFromThreeCoords
+* Description: Generates a plane from three coordinates.
+* Parameters:
+*	a {Coord} the first coordinate
+*	b {Coord} the second coordinate
+*	c {Coord} the third coordinate
+* Returns:
+*	{Plane} the result
+*/
 JSM.GetPlaneFromThreeCoords = function (a, b, c)
 {
 	var plane = new JSM.Plane ();
@@ -21,6 +40,15 @@ JSM.GetPlaneFromThreeCoords = function (a, b, c)
 	return plane;
 };
 
+/**
+* Function: CoordPlanePosition
+* Description: Calculates the position of a coordinate and a plane.
+* Parameters:
+*	coord {Coord} the coordinate
+*	plane {Plane} the plane
+* Returns:
+*	{string} 'CoordInFrontOfPlane', 'CoordAtBackOfPlane', or 'CoordOnPlane'
+*/
 JSM.CoordPlanePosition = function (coord, plane)
 {
 	var a = plane.a;
@@ -42,6 +70,16 @@ JSM.CoordPlanePosition = function (coord, plane)
 	return 'CoordOnPlane';
 };
 
+/**
+* Function: LinePlanePosition
+* Description: Calculates the position of a line and a plane.
+* Parameters:
+*	line {Line} the line
+*	plane {Plane} the plane
+*	intersection {Coord} (out) the intersection point if it exists
+* Returns:
+*	{string} 'LineParallelToPlane', or 'LineIntersectsPlane'
+*/
 JSM.LinePlanePosition = function (line, plane, intersection)
 {
 	var	direction = JSM.VectorNormalize (line.direction);
@@ -73,6 +111,15 @@ JSM.LinePlanePosition = function (line, plane, intersection)
 	return 'LineIntersectsPlane';
 };
 
+/**
+* Function: LinePlaneIntersection
+* Description: Calculates the intersection point of a line and a plane.
+* Parameters:
+*	line {Line} the line
+*	plane {Plane} the plane
+* Returns:
+*	{Coord} the result
+*/
 JSM.LinePlaneIntersection = function (line, plane)
 {
 	var	direction = JSM.VectorNormalize (line.direction);
@@ -101,6 +148,15 @@ JSM.LinePlaneIntersection = function (line, plane)
 	return result;
 };
 
+/**
+* Function: CoordPlaneSignedDistance
+* Description: Calculates the signed distance of a coordinate and a plane.
+* Parameters:
+*	coord {Coord} the coordinate
+*	plane {Plane} the plane
+* Returns:
+*	{number} the result
+*/
 JSM.CoordPlaneSignedDistance = function (coord, plane)
 {
 	var x = coord.x;
@@ -116,11 +172,30 @@ JSM.CoordPlaneSignedDistance = function (coord, plane)
 	return distance;
 };
 
+/**
+* Function: CoordPlaneDistance
+* Description: Calculates the distance of a coordinate and a plane.
+* Parameters:
+*	coord {Coord} the coordinate
+*	plane {Plane} the plane
+* Returns:
+*	{number} the result
+*/
 JSM.CoordPlaneDistance = function (coord, plane)
 {
 	return Math.abs (JSM.CoordPlaneSignedDistance (coord, plane));
 };
 
+/**
+* Function: CoordPlaneSignedDirectionalDistance
+* Description: Calculates the signed distance of a coordinate and a plane along a direction vector.
+* Parameters:
+*	coord {Coord} the coordinate
+*	direction {Vector} the direction
+*	plane {Plane} the plane
+* Returns:
+*	{number} the result
+*/
 JSM.CoordPlaneSignedDirectionalDistance = function (coord, direction, plane)
 {
 	var	normal = JSM.VectorNormalize (direction);
@@ -154,11 +229,30 @@ JSM.CoordPlaneSignedDirectionalDistance = function (coord, direction, plane)
 	return distance;
 };
 
+/**
+* Function: CoordPlaneDirectionalDistance
+* Description: Calculates the distance of a coordinate and a plane along a direction vector.
+* Parameters:
+*	coord {Coord} the coordinate
+*	direction {Vector} the direction
+*	plane {Plane} the plane
+* Returns:
+*	{number} the result
+*/
 JSM.CoordPlaneDirectionalDistance = function (coord, direction, plane)
 {
 	return Math.abs (JSM.CoordPlaneSignedDirectionalDistance (coord, direction, plane));
 };
 
+/**
+* Function: ProjectCoordToPlane
+* Description: Projects a coordinate to a plane.
+* Parameters:
+*	coord {Coord} the coordinate
+*	plane {Plane} the plane
+* Returns:
+*	{Coord} the projected coordinate
+*/
 JSM.ProjectCoordToPlane = function (coord, plane)
 {
 	var x = coord.x;

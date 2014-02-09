@@ -39,7 +39,7 @@ function CalculateEdgeLine (body, al, index, edgeAngle, width)
 
 function CalculateVertexOffsets (body, width)
 {
-	var al = JSM.CalculateAdjacencyList (body);
+	var al = JSM.CalculateAdjacencyInfo (body);
 	var edgeAngle = CalculateEdgeAngle (body, al);
 	
 	var vert = al.verts[0];

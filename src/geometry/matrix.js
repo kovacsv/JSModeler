@@ -1,3 +1,12 @@
+/**
+* Function: VectorMatrixMultiply4x4
+* Description: Multiplies a vector with a matrix.
+* Parameters:
+*	vector {number[4]} the vector
+*	matrix {number[16]} the matrix
+* Returns:
+*	{number[4]} the result vector
+*/
 JSM.VectorMatrixMultiply4x4 = function (vector, matrix)
 {
 	var result = [];
@@ -31,6 +40,15 @@ JSM.VectorMatrixMultiply4x4 = function (vector, matrix)
 	return result;
 };
 
+/**
+* Function: MatrixMultiply4x4
+* Description: Multiplies a two matrices.
+* Parameters:
+*	matrix1 {number[16]} first matrix
+*	matrix2 {number[16]} second matrix
+* Returns:
+*	{number[16]} the result matrix
+*/
 JSM.MatrixMultiply4x4 = function (matrix1, matrix2)
 {
 	var result = [];

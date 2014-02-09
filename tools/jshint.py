@@ -1,7 +1,6 @@
 import os
 import sys
 import re
-import inspect
 
 sourcesFolderName = '../src'
 
@@ -18,7 +17,7 @@ def JSHintFolder (folderPath):
 	return True
 	
 def Main ():
-	currentPath = os.path.dirname (os.path.abspath (inspect.getsourcefile (Main)))
+	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
 
 	sourcesPath = os.path.abspath (sourcesFolderName)
@@ -27,8 +26,8 @@ def Main ():
 	succeeded = JSHintFolder (sourcesPath)
 	if not succeeded:
 		PrintError ('Found JSHint errors.');
-		return
+		return 1
 
-	return
+	return 0
 		
-Main ()
+sys.exit (Main ())

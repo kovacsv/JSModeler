@@ -1,3 +1,13 @@
+/**
+* Function: ExportBodyContentToStl
+* Description: Exports a body content to stl.
+* Parameters:
+*	body {Body} the body
+*	name {string} name the body
+*	hasConvexPolygons {boolean} the body has only convex polygons
+* Returns:
+*	{string} the result
+*/
 JSM.ExportBodyContentToStl = function (body, name, hasConvexPolygons)
 {
 	function AddLineToContent (line)
@@ -83,6 +93,16 @@ JSM.ExportBodyContentToStl = function (body, name, hasConvexPolygons)
 	return stlContent;
 };
 
+/**
+* Function: ExportBodyToStl
+* Description: Exports a body to stl.
+* Parameters:
+*	body {Body} the body
+*	name {string} name the body
+*	hasConvexPolygons {boolean} the body has only convex polygons
+* Returns:
+*	{string} the result
+*/
 JSM.ExportBodyToStl = function (body, name, hasConvexPolygons)
 {
 	function AddLineToContent (line)
@@ -99,6 +119,16 @@ JSM.ExportBodyToStl = function (body, name, hasConvexPolygons)
 	return stlContent;
 };
 
+/**
+* Function: ExportModelToStl
+* Description: Exports a model to stl.
+* Parameters:
+*	model {Model} the model
+*	name {string} name the model
+*	hasConvexPolygons {boolean} the model has only convex polygons
+* Returns:
+*	{string} the result
+*/
 JSM.ExportModelToStl = function (model, name, hasConvexPolygons)
 {
 	function AddLineToContent (line)
@@ -119,6 +149,16 @@ JSM.ExportModelToStl = function (model, name, hasConvexPolygons)
 	return stlContent;
 };
 
+/**
+* Function: ExportBodyContentToObj
+* Description: Exports a body content to obj.
+* Parameters:
+*	body {Body} the body
+*	name {string} name the body
+*	hasConvexPolygons {boolean} the body has only convex polygons
+* Returns:
+*	{string} the result
+*/
 JSM.ExportBodyContentToObj = function (body, vertexOffset, normalOffset)
 {
 	function AddToContent (line)
@@ -175,11 +215,31 @@ JSM.ExportBodyContentToObj = function (body, vertexOffset, normalOffset)
 	return objContent;
 };
 
+/**
+* Function: ExportBodyToObj
+* Description: Exports a body to obj.
+* Parameters:
+*	body {Body} the body
+*	name {string} name the body
+*	hasConvexPolygons {boolean} the body has only convex polygons
+* Returns:
+*	{string} the result
+*/
 JSM.ExportBodyToObj = function (body)
 {
 	return JSM.ExportBodyContentToObj (body, 0, 0);
 };
 
+/**
+* Function: ExportModelToObj
+* Description: Exports a model to obj.
+* Parameters:
+*	model {Model} the model
+*	name {string} name the model
+*	hasConvexPolygons {boolean} the model has only convex polygons
+* Returns:
+*	{string} the result
+*/
 JSM.ExportModelToObj = function (model, name, hasConvexPolygons)
 {
 	var objContent = '';
@@ -198,7 +258,15 @@ JSM.ExportModelToObj = function (model, name, hasConvexPolygons)
 	return objContent;
 };
 
-JSM.ExportMaterialsToGDL = function (materials)
+/**
+* Function: ExportMaterialsToGdl
+* Description: Exports a material container to gdl.
+* Parameters:
+*	materials {Materials} the material container
+* Returns:
+*	{string} the result
+*/
+JSM.ExportMaterialsToGdl = function (materials)
 {
 	function HexColorToRGBColorString (hexColor)
 	{
@@ -235,7 +303,16 @@ JSM.ExportMaterialsToGDL = function (materials)
 	return gdlContent;
 };
 
-JSM.ExportBodyGeometryToGDL = function (body, writeMaterials)
+/**
+* Function: ExportBodyGeometryToGdl
+* Description: Exports a body geometry to gdl.
+* Parameters:
+*	body {Body} the body
+*	writeMaterials {boolean} write materials
+* Returns:
+*	{string} the result
+*/
+JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 {
 	function AddToContent (line)
 	{
@@ -304,7 +381,7 @@ JSM.ExportBodyGeometryToGDL = function (body, writeMaterials)
 	var gdlContent = '';
 
 	AddLineToContent ('base');
-	var al = JSM.CalculateAdjacencyList (body);
+	var al = JSM.CalculateAdjacencyInfo (body);
 	
 	var i;
 	for (i = 0; i < al.verts.length; i++) {
@@ -323,33 +400,51 @@ JSM.ExportBodyGeometryToGDL = function (body, writeMaterials)
 	return gdlContent;
 };
 
-JSM.ExportBodyToGDL = function (body, materials)
+/**
+* Function: ExportBodyToGdl
+* Description: Exports a body to gdl.
+* Parameters:
+*	body {Body} the body
+*	materials {Materials} the material container
+* Returns:
+*	{string} the result
+*/
+JSM.ExportBodyToGdl = function (body, materials)
 {
 	var gdlContent = '';
 
 	var writeMaterials = false;
 	if (materials !== undefined && materials !== null) {
-		gdlContent += JSM.ExportMaterialsToGDL (materials);
+		gdlContent += JSM.ExportMaterialsToGdl (materials);
 		writeMaterials = true;
 	}
 
-	gdlContent += JSM.ExportBodyGeometryToGDL (body, writeMaterials);
+	gdlContent += JSM.ExportBodyGeometryToGdl (body, writeMaterials);
 	return gdlContent;
 };
 
-JSM.ExportModelToGDL = function (model, materials)
+/**
+* Function: ExportModelToGdl
+* Description: Exports a model to gdl.
+* Parameters:
+*	model {Model} the model
+*	materials {Materials} the material container
+* Returns:
+*	{string} the result
+*/
+JSM.ExportModelToGdl = function (model, materials)
 {
 	var gdlContent = '';
 	var writeMaterials = false;
 	if (materials !== undefined && materials !== null) {
-		gdlContent += JSM.ExportMaterialsToGDL (materials);
+		gdlContent += JSM.ExportMaterialsToGdl (materials);
 		writeMaterials = true;
 	}
 	
 	var i, body;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		gdlContent += JSM.ExportBodyGeometryToGDL (body, writeMaterials);
+		gdlContent += JSM.ExportBodyGeometryToGdl (body, writeMaterials);
 	}
 
 	return gdlContent;

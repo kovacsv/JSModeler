@@ -1,58 +1,28 @@
-JSM.SurfaceControlPoints = function (n, m)
-{
-	this.n = n;
-	this.m = m;
-	this.points = [];
-	
-	var i, j;
-	for (i = 0; i <= this.n; i++) {
-		this.points.push ([]);
-		for (j = 0; j <= this.m; j++) {
-			this.points[i].push (new JSM.Coord ());
-		}
-	}
-};
-
-JSM.SurfaceControlPoints.prototype.GetNValue = function ()
-{
-	return this.n;
-};
-
-JSM.SurfaceControlPoints.prototype.GetMValue = function ()
-{
-	return this.m;
-};
-
-JSM.SurfaceControlPoints.prototype.GetControlPoint = function (i, j)
-{
-	return this.points[i][j];
-};
-
-JSM.SurfaceControlPoints.prototype.InitPlanar = function (xSize, ySize)
-{
-	var iStep = xSize / this.n;
-	var jStep = ySize / this.m;
-
-	var i, j, point;
-	for (i = 0; i <= this.n; i++) {
-		for (j = 0; j <= this.m; j++) {
-			point = this.points[i][j];
-			point.x = i * iStep;
-			point.y = j * jStep;
-		}
-	}
-};
-
-JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmentation, ySegmentation, isCurved, getPointCallback)
+/**
+* Function: GenerateSurface
+* Description: Generates a parametric surface.
+* Parameters:
+*	xRange {number[2]} the from-to range on x axis
+*	yRange {number[2]} the from-to range on y axis
+*	xSegmentation {integer} the segmentation along the x axis
+*	ySegmentation {integer} the segmentation along the y axis
+*	useTriangles {boolean} generate triangles instead of quadrangles
+*	isCurved {boolean} create smooth surfaces
+*	getPointCallback {function} callback function which returns the point for a position
+*	userData {anything} user data which will be passed to getPointCallback
+* Returns:
+*	{Body} the result
+*/
+JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, useTriangles, isCurved, getPointCallback, userData)
 {
 	function AddVertices ()
 	{
 		var i, j, u, v, coord;
 		for (i = 0; i <= ySegmentation; i++) {	
 			for (j = 0; j <= xSegmentation; j++) {
-				u = j * xSegment;
-				v = i * ySegment;
-				coord = getPointCallback (surfaceControlPoints, u, v);
+				u = xStart + j * xSegment;
+				v = yStart + i * ySegment;
+				coord = getPointCallback (i, j, u, v, userData);
 				result.AddVertex (new JSM.BodyVertex (coord));
 			}
 		}
@@ -71,19 +41,36 @@ JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmenta
 				top = current + xSegmentation + 1;
 				ntop = top + 1;
 				
-				polygon = new JSM.BodyPolygon ([current, next, ntop, top]);
-				if (isCurved) {
-					polygon.SetCurveGroup (0);
-				}				
-				result.AddPolygon (polygon);
+				if (useTriangles) {
+					polygon = new JSM.BodyPolygon ([current, next, ntop]);
+					if (isCurved) {
+						polygon.SetCurveGroup (0);
+					}				
+					result.AddPolygon (polygon);
+					polygon = new JSM.BodyPolygon ([current, ntop, top]);
+					if (isCurved) {
+						polygon.SetCurveGroup (0);
+					}				
+					result.AddPolygon (polygon);
+				} else {
+					polygon = new JSM.BodyPolygon ([current, next, ntop, top]);
+					if (isCurved) {
+						polygon.SetCurveGroup (0);
+					}				
+					result.AddPolygon (polygon);
+				}
 			}
 		}
 	}
 
 	var result = new JSM.Body ();
 	
-	var xSegment = 1.0 / xSegmentation;
-	var ySegment = 1.0 / ySegmentation;
+	var xStart = xRange[0];
+	var yStart = yRange[0];
+	var xDiff = xRange[1] - xRange[0];
+	var yDiff = yRange[1] - yRange[0];
+	var xSegment = xDiff / xSegmentation;
+	var ySegment = yDiff / ySegmentation;
 	
 	AddVertices ();
 	AddPolygons ();
@@ -91,9 +78,100 @@ JSM.GenerateSurfaceFromControlPoints = function (surfaceControlPoints, xSegmenta
 	return result;
 };
 
+/**
+* Class: SurfaceControlPoints
+* Description: Represents control points for surface generation.
+* Parameters:
+*	n {integer} the first dimension
+*	m {integer} the second dimension
+*/
+JSM.SurfaceControlPoints = function (n, m)
+{
+	this.n = n;
+	this.m = m;
+	this.points = [];
+	
+	var i, j;
+	for (i = 0; i <= this.n; i++) {
+		this.points.push ([]);
+		for (j = 0; j <= this.m; j++) {
+			this.points[i].push (new JSM.Coord ());
+		}
+	}
+};
+
+/**
+* Function: SurfaceControlPoints.GetNValue
+* Description: Returns the n value.
+* Returns:
+*	{integer} the result
+*/
+JSM.SurfaceControlPoints.prototype.GetNValue = function ()
+{
+	return this.n;
+};
+
+/**
+* Function: SurfaceControlPoints.GetMValue
+* Description: Returns the m value.
+* Returns:
+*	{integer} the result
+*/
+JSM.SurfaceControlPoints.prototype.GetMValue = function ()
+{
+	return this.m;
+};
+
+/**
+* Function: SurfaceControlPoints.GetControlPoint
+* Description: Returns a control point.
+* Parameters:
+*	i {integer} the first dimension
+*	j {integer} the second dimension
+* Returns:
+*	{Coord} the result
+*/
+JSM.SurfaceControlPoints.prototype.GetControlPoint = function (i, j)
+{
+	return this.points[i][j];
+};
+
+/**
+* Function: SurfaceControlPoints.InitPlanar
+* Description: Inits planar control points.
+* Parameters:
+*	xSize {number} the x size
+*	xSize {number} the y size
+*/
+JSM.SurfaceControlPoints.prototype.InitPlanar = function (xSize, ySize)
+{
+	var iStep = xSize / this.n;
+	var jStep = ySize / this.m;
+
+	var i, j, point;
+	for (i = 0; i <= this.n; i++) {
+		for (j = 0; j <= this.m; j++) {
+			point = this.points[i][j];
+			point.x = i * iStep;
+			point.y = j * jStep;
+		}
+	}
+};
+
+/**
+* Function: GenerateBezierSurface
+* Description: Generates a bezier surface base on the given control points.
+* Parameters:
+*	surfaceControlPoints {SurfaceControlPoints} the control points
+*	xSegmentation {integer} the segmentation along the x axis
+*	ySegmentation {integer} the segmentation along the y axis
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
 JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegmentation, isCurved)
 {
-	function GetBezierSurfacePoint (surfaceControlPoints, u, v)
+	function GetBezierSurfacePoint (uIndex, vIndex, u, v, surfaceControlPoints)
 	{
 		function BernsteinPolynomial (i, n, u)
 		{
@@ -130,6 +208,33 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 		return result;
 	}
 
-	var body = JSM.GenerateSurfaceFromControlPoints (surfaceControlPoints, xSegmentation, ySegmentation, isCurved, GetBezierSurfacePoint);
+	var body = JSM.GenerateSurface ([0, 1], [0, 1], xSegmentation, ySegmentation, false, isCurved, GetBezierSurfacePoint, surfaceControlPoints);
+	return body;
+};
+
+/**
+* Function: GenerateMobiusStrip
+* Description: Generates a mobius strip.
+* Parameters:
+*	a {number} the parameter of mobius strip
+*	xSegmentation {integer} the segmentation along the x axis
+*	ySegmentation {integer} the segmentation along the y axis
+*	isCurved {boolean} create smooth surfaces
+* Returns:
+*	{Body} the result
+*/
+JSM.GenerateMobiusStrip = function (a, xSegmentation, ySegmentation, isCurved)
+{
+	function GetSurfacePoint (uIndex, vIndex, u, v, userData)
+	{
+		var result = new JSM.Coord (
+			(a - v * Math.sin (u / 2.0)) * Math.sin (u),
+			(a - v * Math.sin (u / 2.0)) * Math.cos (u),
+			v * Math.cos (u / 2.0)
+		);
+		return result;
+	}
+
+	var body = JSM.GenerateSurface ([0, 2 * Math.PI], [-1.0, 1.0], xSegmentation, ySegmentation, false, isCurved, GetSurfacePoint, null);
 	return body;
 };

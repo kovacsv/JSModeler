@@ -1,9 +1,21 @@
+/**
+* Class: BSPPolygonUserData
+* Description: Class that contains user data for polygons in BSP tree.
+*/
 JSM.BSPPolygonUserData = function ()
 {
 	this.id = null;
 	this.material = null;
 };
 
+/**
+* Function: AddBodyToBSPTree
+* Description: Adds a body to a BSP tree.
+* Parameters:
+*	body {Body} the body
+*	bspTree {BSPTree} the BSP tree
+*	id {anything} the id for added polygons
+*/
 JSM.AddBodyToBSPTree = function (body, bspTree, id)
 {
 	function ConvertBodyPolygonToPolygon (body, index, userData)
@@ -21,13 +33,23 @@ JSM.AddBodyToBSPTree = function (body, bspTree, id)
 
 	var i, polygon, userData;
 	for (i = 0; i < body.PolygonCount (); i++) {
-		userData = new JSM.BSPPolygonUserData (id, 0);
+		userData = new JSM.BSPPolygonUserData ();
 		userData.id = id;
 		polygon = ConvertBodyPolygonToPolygon (body, i, userData);
 		bspTree.AddPolygon (polygon, userData);
 	}
 };
 
+/**
+* Function: BooleanOperation
+* Description: Makes a boolean operation on the given bodies.
+* Parameters:
+*	operation {string} the operation ('Union', 'Difference', or 'Intersection')
+*	aBody {Body} the first body
+*	bBody {Body} the second body
+* Returns:
+*	{Body} the result
+*/
 JSM.BooleanOperation = function (operation, aBody, bBody)
 {
 	function AddPolygonToBody (polygon, body, reversed)

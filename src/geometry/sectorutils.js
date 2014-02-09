@@ -1,3 +1,12 @@
+/**
+* Function: CoordSectorPosition2D
+* Description: Calculates the position of a coordinate and a sector.
+* Parameters:
+*	coord {Coord2D} the coordinate
+*	sector {Sector2D} the sector
+* Returns:
+*	{string} 'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'
+*/
 JSM.CoordSectorPosition2D = function (coord, sector)
 {
 	var x = coord.x;
@@ -34,6 +43,15 @@ JSM.CoordSectorPosition2D = function (coord, sector)
 	return 'CoordInsideOfSector';
 };
 
+/**
+* Function: SectorSectorPosition2D
+* Description: Calculates the position of two sectors.
+* Parameters:
+*	aSector {Sector2D} the first sector
+*	bSector {Sector2D} the second sector
+* Returns:
+*	{string} 'SectorsIntersectsCoincident', 'SectorsIntersectsEndPoint', 'SectorsIntersectsOnePoint', or 'SectorsDontIntersects'
+*/
 JSM.SectorSectorPosition2D = function (aSector, bSector, intersection)
 {
 	var x1 = aSector.beg.x;
@@ -96,4 +114,26 @@ JSM.SectorSectorPosition2D = function (aSector, bSector, intersection)
 	}
 
 	return 'SectorsIntersectsOnePoint';
+};
+
+/**
+* Function: GetSectorSegmentation
+* Description: Returns the segmented coordinates of a sector.
+* Parameters:
+*	sector {Sector} the sector
+*	segmentation {integer} the segmentation
+*	coords {Coord[*]} (out) the result coordinates
+*/
+JSM.GetSectorSegmentation = function (sector, segmentation, coords)
+{
+	var direction = JSM.CoordSub (sector.end, sector.beg);
+	var length = JSM.CoordDistance (sector.beg, sector.end);
+	var step = length / segmentation;
+	var distance = 0.0;
+
+	var i;
+	for (i = 0; i <= segmentation; i++) {
+		coords.push (JSM.CoordOffset (sector.beg, direction, distance));
+		distance += step;
+	}
 };

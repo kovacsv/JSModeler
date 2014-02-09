@@ -1,3 +1,7 @@
+/**
+* Class: Transformation
+* Description: Represents a transformation matrix.
+*/
 JSM.Transformation = function ()
 {
 	this.matrix = [
@@ -7,6 +11,12 @@ JSM.Transformation = function ()
 	];
 };
 
+/**
+* Function: Transformation.Append
+* Description: Adds a transformation to the matrix.
+* Parameters:
+*	source {Transformation} the another transformation
+*/
 JSM.Transformation.prototype.Append = function (source)
 {
 	this.matrix = [
@@ -25,6 +35,14 @@ JSM.Transformation.prototype.Append = function (source)
 	];
 };
 
+/**
+* Function: Transformation.Apply
+* Description: Apply transformation to a coordinate.
+* Parameters:
+*	coord {Coord} the coordinate
+* Returns:
+*	{Coord} the result
+*/
 JSM.Transformation.prototype.Apply = function (coord)
 {
 	var result = new JSM.Coord ();
@@ -34,6 +52,12 @@ JSM.Transformation.prototype.Apply = function (coord)
 	return result;
 };
 
+/**
+* Function: Transformation.Clone
+* Description: Clones the transformation.
+* Returns:
+*	{Transformation} a cloned instance
+*/
 JSM.Transformation.prototype.Clone = function ()
 {
 	var result = new JSM.Transformation ();

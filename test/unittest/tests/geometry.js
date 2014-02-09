@@ -258,19 +258,19 @@ AddTest ('CircleTest', function (test) {
 	test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 450.0 * JSM.DegRad), new JSM.Coord2D (0.0, 1.0)));
 	
 	var unitRadius = 2.0 * 1.0 * Math.PI;
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 0.0 * JSM.DegRad), 0.0));
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 90.0 * JSM.DegRad), unitRadius / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 180.0 * JSM.DegRad), unitRadius / 2.0));
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 270.0 * JSM.DegRad), 3.0 * unitRadius / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 360.0 * JSM.DegRad), unitRadius));
-	test.Assert (JSM.IsEqual (JSM.GetPolarArcLengthFromAngle (1.0, 450.0 * JSM.DegRad), 5.0 * unitRadius / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 0.0 * JSM.DegRad), 0.0));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 90.0 * JSM.DegRad), unitRadius / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 180.0 * JSM.DegRad), unitRadius / 2.0));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 270.0 * JSM.DegRad), 3.0 * unitRadius / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 360.0 * JSM.DegRad), unitRadius));
+	test.Assert (JSM.IsEqual (JSM.GetArcLengthFromAngle (1.0, 450.0 * JSM.DegRad), 5.0 * unitRadius / 4.0));
 	
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, 0.0), 0.0 * JSM.DegRad));
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, unitRadius / 4.0), 90.0 * JSM.DegRad));
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, unitRadius / 2.0), 180.0 * JSM.DegRad));
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, 3.0 * unitRadius / 4.0), 270.0 * JSM.DegRad));
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, unitRadius), 360.0 * JSM.DegRad));
-	test.Assert (JSM.IsEqual (JSM.GetPolarAngleFromArcLength (1.0, 5.0 * unitRadius / 4.0), 450.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, 0.0), 0.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, unitRadius / 4.0), 90.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, unitRadius / 2.0), 180.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, 3.0 * unitRadius / 4.0), 270.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, unitRadius), 360.0 * JSM.DegRad));
+	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, 5.0 * unitRadius / 4.0), 450.0 * JSM.DegRad));
 });
 
 AddTest ('MatrixTest', function (test) {
@@ -454,74 +454,6 @@ AddTest ('TransformationTest', function (test) {
 	coord = trZ.Apply (coord);
 	
 	test.Assert (JSM.CoordIsEqual (trXYZ.Apply (new JSM.Coord (1.0, 2.0, 3.0)), coord));		
-});
-
-AddTest ('SystemConversionTest', function (test) {
-	var system1 = new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Vector (0.0, 1.0, 0.0),
-		new JSM.Vector (-1.0, 0.0, 0.0),
-		new JSM.Vector (0.0, 0.0, 1.0)
-	);
-
-	var system2 = new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Vector (1.0, 0.0, 0.0),
-		new JSM.Vector (0.0, 1.0, 0.0),
-		new JSM.Vector (0.0, 0.0, 1.0)
-	);
-
-	var transformation = new JSM.SystemConversionTransformation (system1.e1, system1.e2, system1.e3, system2.e1, system2.e2, system2.e3);
-	
-	var coord0 = new JSM.Coord (0.0, 0.0, 0.0);
-	var coord1 = new JSM.Coord (1.0, 0.0, 0.0);
-	var coord2 = new JSM.Coord (0.0, 1.0, 0.0);
-	var coord3 = new JSM.Coord (0.0, 0.0, 1.0);
-	var coord4 = new JSM.Coord (1.0, 1.0, 0.0);
-	var coord5 = new JSM.Coord (-1.0, 1.0, 0.0);
-	
-	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord0), new JSM.Coord (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord1), new JSM.Coord (0.0, 1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord2), new JSM.Coord (-1.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord3), new JSM.Coord (0.0, 0.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord4), new JSM.Coord (-1.0, 1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord5), new JSM.Coord (-1.0, -1.0, 0.0)));
-
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord0, system1, system2), new JSM.Coord (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord1, system1, system2), new JSM.Coord (0.0, 1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord2, system1, system2), new JSM.Coord (-1.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord3, system1, system2), new JSM.Coord (0.0, 0.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord4, system1, system2), new JSM.Coord (-1.0, 1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord5, system1, system2), new JSM.Coord (-1.0, -1.0, 0.0)));
-	
-	system2.origo.x = 1.0;
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord0, system1, system2), new JSM.Coord (1.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord1, system1, system2), new JSM.Coord (1.0, 1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord2, system1, system2), new JSM.Coord (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord3, system1, system2), new JSM.Coord (1.0, 0.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord4, system1, system2), new JSM.Coord (0.0, 1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord5, system1, system2), new JSM.Coord (0.0, -1.0, 0.0)));
-
-	system1.origo.x = 1.0;
-	system2.origo.x = 2.0;
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord0, system1, system2), new JSM.Coord (2.0, -1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord1, system1, system2), new JSM.Coord (2.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord2, system1, system2), new JSM.Coord (1.0, -1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord3, system1, system2), new JSM.Coord (2.0, -1.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord4, system1, system2), new JSM.Coord (1.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (coord5, system1, system2), new JSM.Coord (1.0, -2.0, 0.0)));
-
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (new JSM.Coord (2.0, -1.0, 0.0), system2, system1), coord0));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (new JSM.Coord (2.0, 0.0, 0.0), system2, system1), coord1));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (new JSM.Coord (1.0, -1.0, 0.0), system2, system1), coord2));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (new JSM.Coord (2.0, -1.0, 1.0), system2, system1), coord3));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (new JSM.Coord (1.0, 0.0, 0.0), system2, system1), coord4));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (new JSM.Coord (1.0, -2.0, 0.0), system2, system1), coord5));
-
-	var o1 = new JSM.Coord (1.0, 0.0, 0.0);
-	var o2 = new JSM.Coord (2.0, 0.0, 0.0);
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (o1, system1, system2), new JSM.Coord (2.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (JSM.ChangeCoordSystem (o2, system2, system1), new JSM.Coord (1.0, 0.0, 0.0)));
 });
 
 AddTest ('SectorTest', function (test) {

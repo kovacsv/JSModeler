@@ -1,3 +1,11 @@
+/**
+* Function: ConvexHull2D
+* Description: Calculates the 2D convex hull from the given coordinates.
+* Parameters:
+*	coords {Coord2D[*]} the coordinate array
+* Returns:
+*	{Coord2D[*]} coordinate array of the convex hull
+*/
 JSM.ConvexHull2D = function (coords)
 {
 	function FindLeftMostCoord (coords)
@@ -56,6 +64,16 @@ JSM.ConvexHull2D = function (coords)
 	return result;
 };
 
+/**
+* Function: ConvexHull3D
+* Description:
+*	Calculates the 3D convex hull from the given coordinates. The result defines
+*	convex hull triangles as an array of arrays with three coordinates.
+* Parameters:
+*	coords {Coord[*]} the coordinate array
+* Returns:
+*	{Coord[3][*]} the result
+*/
 JSM.ConvexHull3D = function (coords)
 {
 	function Vertex ()

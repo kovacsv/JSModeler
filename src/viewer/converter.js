@@ -458,13 +458,12 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 	return result;
 };
 
-JSM.JSONFileConverter = function ()
+JSM.JSONFileLoader = function (onReady)
 {
-	this.textureLoadedCallback = null;
-	this.onReady = null;
+	this.onReady = onReady;
 };
 
-JSM.JSONFileConverter.prototype.Convert = function (fileName, textureLoadedCallback)
+JSM.JSONFileLoader.prototype.Load = function (fileName)
 {
 	var myThis = this;
 	var request = new XMLHttpRequest ();
@@ -475,17 +474,37 @@ JSM.JSONFileConverter.prototype.Convert = function (fileName, textureLoadedCallb
 			myThis.OnReady (request.responseText);
 		}
 	};
-	this.textureLoadedCallback = textureLoadedCallback;
-	request.send (null);			
+	request.send (null);
 };
 
-JSM.JSONFileConverter.prototype.OnReady = function (responseText) 
+JSM.JSONFileLoader.prototype.OnReady = function (responseText) 
 {
 	if (this.onReady === null) {
 		return;
 	}
 	
 	var jsonData = JSON.parse (responseText);
-	var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData, this.textureLoadedCallback);
+	this.onReady (jsonData);
+};
+
+JSM.JSONFileConverter = function (onReady, onTextureLoaded)
+{
+	this.onReady = onReady;
+	this.onTextureLoaded = onTextureLoaded;
+};
+
+JSM.JSONFileConverter.prototype.Convert = function (fileName)
+{
+	var loader = new JSM.JSONFileLoader (this.OnReady.bind (this));
+	loader.Load (fileName);
+};
+
+JSM.JSONFileConverter.prototype.OnReady = function (jsonData) 
+{
+	if (this.onReady === null) {
+		return;
+	}
+	
+	var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData, this.onTextureLoaded);
 	this.onReady (meshes);
 };

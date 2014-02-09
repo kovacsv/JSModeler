@@ -74,7 +74,7 @@
 			var eps = 0.00001;
 			var a = distance;
 			var b = 0.0;
-			var c = JSM.GetGaussianParameterToReachEpsilonAtValue (radius, a, b, eps);
+			var c = JSM.GetGaussianCParameter (radius, a, b, eps);
 			
 			var i, x, currentDistance, newDistance, currentCoord, newCoord;
 			for (i = 0; i < vertexData.length; i++) {

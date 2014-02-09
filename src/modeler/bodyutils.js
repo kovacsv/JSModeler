@@ -1,20 +1,47 @@
+/**
+* Function: AddVertexToBody
+* Description: Adds a vertex to an existing body.
+* Parameters:
+*	body {Body} the body
+*	x {number} the x coordinate of the vertex
+*	y {number} the y coordinate of the vertex
+*	z {number} the z coordinate of the vertex
+*/
 JSM.AddVertexToBody = function (body, x, y, z)
 {
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (x, y, z)));
 };
 
+/**
+* Function: AddPolygonToBody
+* Description: Adds a polygon to an existing body.
+* Parameters:
+*	body {Body} the body
+*	vertices {integer[*]} array of vertex indices stored in the body
+*/
 JSM.AddPolygonToBody = function (body, vertices)
 {
 	body.AddPolygon (new JSM.BodyPolygon (vertices));
 };
 
+/**
+* Function: CalculateBodyVertexToPolygon
+* Description:
+*	Calculates an array which contains array of the connected polygon
+*	indices for all vertex indices in the body. The result is an
+*	array of array of polygon indices.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{integer[*][*]} the result
+*/
 JSM.CalculateBodyVertexToPolygon = function (body)
 {
 	var result = [];
 	
 	var i, j;
 	for (i = 0; i < body.VertexCount (); i++) {
-		result[i] = [];
+		result.push ([]);
 	}
 	
 	var polygon;
@@ -28,6 +55,15 @@ JSM.CalculateBodyVertexToPolygon = function (body)
 	return result;
 };
 
+/**
+* Function: CalculateBodyPolygonNormal
+* Description: Calculates a normal vector for a polygon stored in the body.
+* Parameters:
+*	body {Body} the body
+*	index {integer} the polygon index
+* Returns:
+*	{Vector} the result
+*/
 JSM.CalculateBodyPolygonNormal = function (body, index)
 {
 	var polygon = body.GetPolygon (index);
@@ -53,6 +89,14 @@ JSM.CalculateBodyPolygonNormal = function (body, index)
 	return normalized;
 };
 
+/**
+* Function: CalculateBodyPolygonNormals
+* Description: Calculates polygon normal vectors for all polygons stored in the body.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{Vector[*]} the result
+*/
 JSM.CalculateBodyPolygonNormals = function (body)
 {
 	var result = [];
@@ -65,11 +109,21 @@ JSM.CalculateBodyPolygonNormals = function (body)
 	return result;
 };
 
+/**
+* Function: CalculateBodyVertexNormals
+* Description:
+*	Calculates vertex normal vectors for all vertices stored in the body.
+*	The result is an array of array with vertex normal vectors.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{Vector[*][*]} the result
+*/
 JSM.CalculateBodyVertexNormals = function (body)
 {
 	var result = [];
 	var polygonNormals = JSM.CalculateBodyPolygonNormals (body);
-	var vertexToPolygon = JSM.CalculateBodyVertexToPolygon (body);
+	var vertexToPolygon = null;
 	
 	var i, j, k, polygon, normal;
 	var average, count, neighbourPolygons, neighbourPolygon;
@@ -78,6 +132,9 @@ JSM.CalculateBodyVertexNormals = function (body)
 		result[i] = [];
 
 		if (polygon.HasCurveGroup ()) {
+			if (vertexToPolygon === null) {
+				vertexToPolygon = JSM.CalculateBodyVertexToPolygon (body);
+			}
 			for (j = 0; j < polygon.VertexIndexCount (); j++) {
 				average = new JSM.Vector (0.0, 0.0, 0.0);
 				count = 0;
@@ -106,6 +163,12 @@ JSM.CalculateBodyVertexNormals = function (body)
 	return result;
 };
 
+/**
+* Function: MakeBodyInsideOut
+* Description: Reverses all polygons orientation in the body.
+* Parameters:
+*	body {Body} the body
+*/
 JSM.MakeBodyInsideOut = function (body)
 {
 	var i, j, polygon, count, vertices;
@@ -120,16 +183,16 @@ JSM.MakeBodyInsideOut = function (body)
 	}
 };
 
-JSM.GetGaussianParameterToReachEpsilonAtValue = function (x, a, b, epsilon)
-{
-	return Math.sqrt (-(Math.pow (x - b, 2.0) / (2.0 * Math.log (epsilon / Math.abs (a)))));
-};
-
-JSM.GetGaussianValue = function (x, a, b, c)
-{
-	return a * Math.exp (-(Math.pow (x - b, 2.0) / (2.0 * Math.pow (c, 2.0))));
-};
-
+/**
+* Function: SoftMoveBodyVertex
+* Description: Moves a vertex and its nearby vertices depending on gaussian function.
+* Parameters:
+*	body {Body} the body
+*	index {integer} the vertex index to move
+*	radius {number} the radius of the movement
+*	direction {Vector} the direction of the movement
+*	distance {number} the distance of the movement
+*/
 JSM.SoftMoveBodyVertex = function (body, index, radius, direction, distance)
 {
 	var referenceCoord = body.GetVertex (index).position;
@@ -137,7 +200,7 @@ JSM.SoftMoveBodyVertex = function (body, index, radius, direction, distance)
 	var eps = 0.00001;
 	var a = distance;
 	var b = 0.0;
-	var c = JSM.GetGaussianParameterToReachEpsilonAtValue (radius, a, b, eps);
+	var c = JSM.GetGaussianCParameter (radius, a, b, eps);
 
 	var i, x, currentDistance, newDistance, currentCoord;
 	for (i = 0; i < body.VertexCount (); i++) {
@@ -154,6 +217,15 @@ JSM.SoftMoveBodyVertex = function (body, index, radius, direction, distance)
 	}
 };
 
+/**
+* Function: CalculatePolygonCentroid
+* Description: Calculates the centroid of a polygon stored in the body.
+* Parameters:
+*	body {Body} the body
+*	index {integer} the polygon index
+* Returns:
+*	{Coord} the result
+*/
 JSM.CalculatePolygonCentroid = function (body, index)
 {
 	var polygon = body.GetPolygon (index);
@@ -169,6 +241,16 @@ JSM.CalculatePolygonCentroid = function (body, index)
 	return result;
 };
 
+/**
+* Function: TriangulateWithCentroids
+* Description:
+*	Triangulates all polygons of the body by connecting all polygon
+*	vertices with the centroid vertex of the polygon.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{Body} the result
+*/
 JSM.TriangulateWithCentroids = function (body)
 {
 	var result = new JSM.Body ();
@@ -200,6 +282,14 @@ JSM.TriangulateWithCentroids = function (body)
 	return result;
 };
 
+/**
+* Function: TriangulateWithCentroids
+* Description: Triangulates all polygons of the body.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{Body} the result
+*/
 JSM.TriangulatePolygons = function (body)
 {
 	var result = new JSM.Body ();
@@ -234,6 +324,14 @@ JSM.TriangulatePolygons = function (body)
 	return result;
 };
 
+/**
+* Function: GenerateRandomMaterials
+* Description: Generates random materials for a body. A seed number can be specified.
+* Parameters:
+*	body {Body} the body
+*	materials {Materials} the materials
+*	seed {integer} seed value
+*/
 JSM.GenerateRandomMaterials = function (body, materials, seeded)
 {
 	var minColor = 0;
