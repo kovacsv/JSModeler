@@ -1,11 +1,3 @@
-JSM.Parameter = function (name, type, value, side)
-{
-	this.name = name;
-	this.type = type;
-	this.value = value;
-	this.side = side;
-};
-
 JSM.TextControl = function ()
 {
 	this.input = null;
@@ -77,7 +69,7 @@ JSM.CoordControl.prototype.Create = function (div, parameter)
 	var xInput = document.createElement ('input');
 	div.appendChild (xInput);
 	xInput.type = 'text';
-	xInput.value = parameter.value[0];
+	xInput.value = parameter.value.x;
 	xInput.style.width = this.settings.inputs.width;
 	xInput.style.marginRight = this.settings.inputs.margin;
 	this.inputs.push (xInput);
@@ -85,7 +77,7 @@ JSM.CoordControl.prototype.Create = function (div, parameter)
 	var yInput = document.createElement ('input');
 	div.appendChild (yInput);
 	yInput.type = 'text';
-	yInput.value = parameter.value[1];
+	yInput.value = parameter.value.y;
 	yInput.style.width = this.settings.inputs.width;
 	yInput.style.marginRight = this.settings.inputs.margin;
 	this.inputs.push (yInput);
@@ -93,16 +85,16 @@ JSM.CoordControl.prototype.Create = function (div, parameter)
 	var zInput = document.createElement ('input');
 	div.appendChild (zInput);
 	zInput.type = 'text';
-	zInput.value = parameter.value[2];
+	zInput.value = parameter.value.z;
 	zInput.style.width = this.settings.inputs.width;
 	this.inputs.push (zInput);
 };
 
 JSM.CoordControl.prototype.GetValue = function (parameter)
 {
-	parameter.value[0] = this.inputs[0].value;
-	parameter.value[1] = this.inputs[1].value;
-	parameter.value[2] = this.inputs[2].value;
+	parameter.value.x = this.inputs[0].value;
+	parameter.value.y = this.inputs[1].value;
+	parameter.value.z = this.inputs[2].value;
 };
 
 JSM.CoordControl.prototype.InitSettings = function ()
@@ -510,7 +502,7 @@ JSM.PolygonControl.prototype.InitSettings = function ()
 			gridStep : 10,
 			border : '1px solid #cccccc',
 			polygonColor : '#eeeeee',
-			polygonStrokeColor : '#333333',
+			polygonStrokeColor : '#222222',
 			markerColor : '#cc0000',
 			gridStrokeColor : '#cccccc'
 		},

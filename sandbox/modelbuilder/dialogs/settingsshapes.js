@@ -11,16 +11,16 @@ function GetMaterials (body, color)
 function TransformBody (body, rotation, offset)
 {
 	var transformation = new JSM.Transformation ();
-	var rotationX = parseFloat (rotation[0]) * JSM.DegRad;
-	var rotationY = parseFloat (rotation[1]) * JSM.DegRad;
-	var rotationZ = parseFloat (rotation[2]) * JSM.DegRad;
+	var rotationX = parseFloat (rotation.x) * JSM.DegRad;
+	var rotationY = parseFloat (rotation.y) * JSM.DegRad;
+	var rotationZ = parseFloat (rotation.z) * JSM.DegRad;
 	if (rotationX != 0.0 || rotationY != 0.0 || rotationZ != 0.0) {
 		var rotation = JSM.RotationXYZTransformation (rotationX, rotationY, rotationZ);
 		transformation.Append (rotation);
 	}
-	var offsetX = parseFloat (offset[0]);
-	var offsetY = parseFloat (offset[1]);
-	var offsetZ = parseFloat (offset[2]);
+	var offsetX = parseFloat (offset.x);
+	var offsetY = parseFloat (offset.y);
+	var offsetZ = parseFloat (offset.z);
 	if (offsetX != 0.0 || offsetY != 0.0 || offsetZ != 0.0) {
 		var translation = JSM.TranslationTransformation (new JSM.Coord (offsetX, offsetY, offsetZ));
 		transformation.Append (translation);
@@ -37,8 +37,8 @@ Cuboid = function ()
 		xSize : new JSM.Parameter ('x size', 'text', 1, 'left'),
 		ySize : new JSM.Parameter ('y size', 'text', 1, 'left'),
 		zSize : new JSM.Parameter ('z size', 'text', 1, 'left'),
-		rotation : new JSM.Parameter ('rotation', 'coord', [0, 0, 0], 'left'),
-		offset : new JSM.Parameter ('offset', 'coord', [0, 0, 0], 'left')
+		rotation : new JSM.Parameter ('rotation', 'coord', new JSM.Coord (), 'left'),
+		offset : new JSM.Parameter ('offset', 'coord', new JSM.Coord (), 'left')
 	};
 };
 
@@ -81,8 +81,8 @@ Sphere = function ()
 		radius : new JSM.Parameter ('radius', 'text', 0.5, 'left'),
 		segmentation : new JSM.Parameter ('segmentation', 'text', 25, 'left'),
 		curved : new JSM.Parameter ('smooth surface', 'check', true, 'left'),
-		rotation : new JSM.Parameter ('rotation', 'coord', [0, 0, 0], 'left'),
-		offset : new JSM.Parameter ('offset', 'coord', [0, 0, 0], 'left'),
+		rotation : new JSM.Parameter ('rotation', 'coord', new JSM.Coord (), 'left'),
+		offset : new JSM.Parameter ('offset', 'coord', new JSM.Coord (), 'left'),
 	};
 };
 
@@ -127,8 +127,8 @@ Cylinder = function ()
 		segmentation : new JSM.Parameter ('segmentation', 'text', 25, 'left'),
 		topBottom : new JSM.Parameter ('top and bottom', 'check', true, 'left'),
 		curved : new JSM.Parameter ('smooth surface', 'check', true, 'left'),
-		rotation : new JSM.Parameter ('rotation', 'coord', [0, 0, 0], 'left'),
-		offset : new JSM.Parameter ('offset', 'coord', [0, 0, 0], 'left'),
+		rotation : new JSM.Parameter ('rotation', 'coord', new JSM.Coord (), 'left'),
+		offset : new JSM.Parameter ('offset', 'coord', new JSM.Coord (), 'left'),
 	};
 };
 
@@ -176,8 +176,8 @@ Pie = function ()
 		segmentation : new JSM.Parameter ('segmentation', 'text', 25, 'left'),
 		topBottom : new JSM.Parameter ('top and bottom', 'check', true, 'left'),
 		curved : new JSM.Parameter ('smooth surface', 'check', true, 'left'),
-		rotation : new JSM.Parameter ('rotation', 'coord', [0, 0, 0], 'left'),
-		offset : new JSM.Parameter ('offset', 'coord', [0, 0, 0], 'left'),
+		rotation : new JSM.Parameter ('rotation', 'coord', new JSM.Coord (), 'left'),
+		offset : new JSM.Parameter ('offset', 'coord', new JSM.Coord (), 'left'),
 	};
 };
 
@@ -226,8 +226,8 @@ Cone = function ()
 		segmentation : new JSM.Parameter ('segmentation', 'text', 25, 'left'),
 		topBottom : new JSM.Parameter ('top and bottom', 'check', true, 'left'),
 		curved : new JSM.Parameter ('smooth surface', 'check', true, 'left'),
-		rotation : new JSM.Parameter ('rotation', 'coord', [0, 0, 0], 'left'),
-		offset : new JSM.Parameter ('offset', 'coord', [0, 0, 0], 'left'),
+		rotation : new JSM.Parameter ('rotation', 'coord', new JSM.Coord (), 'left'),
+		offset : new JSM.Parameter ('offset', 'coord', new JSM.Coord (), 'left'),
 	};
 };
 
@@ -275,8 +275,8 @@ Torus = function ()
 		outerSegmentation : new JSM.Parameter ('outer segmentation', 'text', 30, 'left'),
 		innerSegmentation : new JSM.Parameter ('inner segmentation', 'text', 30, 'left'),
 		curved : new JSM.Parameter ('smooth surface', 'check', true, 'left'),
-		rotation : new JSM.Parameter ('rotation', 'coord', [0, 0, 0], 'left'),
-		offset : new JSM.Parameter ('offset', 'coord', [0, 0, 0], 'left')
+		rotation : new JSM.Parameter ('rotation', 'coord', new JSM.Coord (), 'left'),
+		offset : new JSM.Parameter ('offset', 'coord', new JSM.Coord (), 'left')
 	};
 };
 
@@ -322,8 +322,8 @@ Prism = function ()
 		color : new JSM.Parameter ('color', 'color', '008ab8', 'right'),
 		height : new JSM.Parameter ('height', 'text', 1.0, 'right'),
 		topBottom : new JSM.Parameter ('top and bottom', 'check', true, 'right'),
-		rotation : new JSM.Parameter ('rotation', 'coord', [0, 0, 0], 'right'),
-		offset : new JSM.Parameter ('offset', 'coord', [0, 0, 0], 'right')
+		rotation : new JSM.Parameter ('rotation', 'coord', new JSM.Coord (), 'right'),
+		offset : new JSM.Parameter ('offset', 'coord', new JSM.Coord (), 'right')
 	};
 	
 	this.parameters.basePolygon.value[1] = [
@@ -386,8 +386,8 @@ PrismShell = function ()
 		height : new JSM.Parameter ('height', 'text', 1.0, 'right'),
 		width : new JSM.Parameter ('width', 'text', 0.1, 'right'),
 		topBottom : new JSM.Parameter ('top and bottom', 'check', true, 'right'),
-		rotation : new JSM.Parameter ('rotation', 'coord', [0, 0, 0], 'right'),
-		offset : new JSM.Parameter ('offset', 'coord', [0, 0, 0], 'right')
+		rotation : new JSM.Parameter ('rotation', 'coord', new JSM.Coord (), 'right'),
+		offset : new JSM.Parameter ('offset', 'coord', new JSM.Coord (), 'right')
 	};
 	
 	this.parameters.basePolygon.value[1] = [

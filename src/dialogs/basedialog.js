@@ -1,7 +1,10 @@
 JSM.BaseDialog = function ()
 {
-	this.settings = null;
+	this.styles = null;
 	this.dialog = null;
+	this.title = null;
+	this.cancelButtonText = null;
+	this.okButtonText = null;
 	this.okButton = null;
 	this.cancelButton = null;
 	this.mouseClickHandler = null;
@@ -10,11 +13,14 @@ JSM.BaseDialog = function ()
 JSM.BaseDialog.prototype.Open = function (title)
 {
 	this.InitSettings ();
-	this.settings.dialog.title = title;
 	if (this.dialog !== null) {
 		return;
 	}
 	
+	this.title = title;
+	this.cancelButtonText = 'cancel';
+	this.okButtonText = 'ok';
+
 	var myThis = this;
 	this.mouseClickHandler = function (clickEvent) {
 		myThis.MouseClick (clickEvent);
@@ -49,9 +55,8 @@ JSM.BaseDialog.prototype.Close = function ()
 
 JSM.BaseDialog.prototype.InitSettings = function ()
 {
-	this.settings = {
+	this.styles = {
 		dialog : {
-			title : 'Title',
 			color : '#000000',
 			fontFamily : 'Arial, cursive',
 			fontSize : '12px',
@@ -71,8 +76,6 @@ JSM.BaseDialog.prototype.InitSettings = function ()
 		controls : {
 			color : '#000000',
 			background : 'transparent',
-			okButtonText : 'ok',
-			cancelButtonText : 'cancel',
 			padding : '5px 5px 15px 5px',
 			align : 'right'
 		},
@@ -95,43 +98,41 @@ JSM.BaseDialog.prototype.MouseClick = function (clickEvent)
 	while (target !== null) {
 		if (target === this.dialog) {
 			dialogClicked = true;
-		} else if (target === this.okButton) {
-			this.OnOkButtonClicked ();
-			return;
-		} else if (target === this.cancelButton) {
-			this.OnCancelButtonClicked ();
+		} else if (target === this.okButton || target === this.cancelButton) {
+			this.ButtonClicked (target);
 			return;
 		}
 		target = target.parentElement;
 	}
 	
 	if (!dialogClicked) {
-		this.OnCancelButtonClicked ();
+		this.Close ();
 	}
 };
 
-JSM.BaseDialog.prototype.OnOkButtonClicked = function ()
+JSM.BaseDialog.prototype.ButtonClicked = function (target)
 {
-	this.Close ();
-	this.OkButtonClicked ();
-};
+	var targetString = null;
+	if (target === this.okButton) {
+		targetString = 'ok';
+	} else if (target === this.cancelButton) {
+		targetString = 'cancel';
+	}
 
-JSM.BaseDialog.prototype.OnCancelButtonClicked = function ()
-{
 	this.Close ();
-	this.Close ();
+	this.OnButtonClicked (targetString);
 };
 
 JSM.BaseDialog.prototype.InitDialog = function ()
 {
 	this.dialog = document.createElement ('div');
 	document.body.appendChild (this.dialog);
-	this.dialog.style.color = this.settings.dialog.color;
-	this.dialog.style.background = this.settings.dialog.background;
-	this.dialog.style.fontFamily = this.settings.dialog.fontFamily;
-	this.dialog.style.fontSize = this.settings.dialog.fontSize;
+	this.dialog.style.color = this.styles.dialog.color;
+	this.dialog.style.background = this.styles.dialog.background;
+	this.dialog.style.fontFamily = this.styles.dialog.fontFamily;
+	this.dialog.style.fontSize = this.styles.dialog.fontSize;
 	this.dialog.style.position = 'absolute';
-	this.dialog.style.boxShadow = this.settings.dialog.shadow;
+	this.dialog.style.boxShadow = this.styles.dialog.shadow;
 	this.dialog.style.left = '0px';
 	this.dialog.style.top = '0px';
 };
@@ -140,19 +141,19 @@ JSM.BaseDialog.prototype.InitTitle = function ()
 {
 	var div = document.createElement ('div');
 	this.dialog.appendChild (div);
-	div.innerHTML = this.settings.dialog.title;
-	div.style.color = this.settings.title.color;
-	div.style.background = this.settings.title.background;
-	div.style.padding = this.settings.title.padding;
+	div.innerHTML = this.title;
+	div.style.color = this.styles.title.color;
+	div.style.background = this.styles.title.background;
+	div.style.padding = this.styles.title.padding;
 };
 
 JSM.BaseDialog.prototype.InitContent = function ()
 {
 	var div = document.createElement ('div');
 	this.dialog.appendChild (div);
-	div.style.color = this.settings.content.color;
-	div.style.background = this.settings.content.background;
-	div.style.padding = this.settings.content.padding;
+	div.style.color = this.styles.content.color;
+	div.style.background = this.styles.content.background;
+	div.style.padding = this.styles.content.padding;
 	this.FillContent (div);
 };
 
@@ -160,32 +161,32 @@ JSM.BaseDialog.prototype.InitControls = function ()
 {
 	var div = document.createElement ('div');
 	this.dialog.appendChild (div);
-	div.style.color = this.settings.controls.color;
-	div.style.background = this.settings.controls.background;
-	div.style.padding = this.settings.controls.padding;
-	div.style.textAlign = this.settings.controls.align;
+	div.style.color = this.styles.controls.color;
+	div.style.background = this.styles.controls.background;
+	div.style.padding = this.styles.controls.padding;
+	div.style.textAlign = this.styles.controls.align;
 	
 	this.cancelButton = document.createElement ('span');
 	div.appendChild (this.cancelButton);
-	this.cancelButton.innerHTML = this.settings.controls.cancelButtonText;
-	this.cancelButton.style.color = this.settings.button.color;
-	this.cancelButton.style.background = this.settings.button.background;
-	this.cancelButton.style.padding = this.settings.button.padding;
-	this.cancelButton.style.margin = this.settings.button.margin;
-	this.cancelButton.style.border = this.settings.button.border;
-	this.cancelButton.style.borderRadius = this.settings.button.borderRadius;
-	this.cancelButton.style.cursor = this.settings.button.cursor;
+	this.cancelButton.innerHTML = this.cancelButtonText;
+	this.cancelButton.style.color = this.styles.button.color;
+	this.cancelButton.style.background = this.styles.button.background;
+	this.cancelButton.style.padding = this.styles.button.padding;
+	this.cancelButton.style.margin = this.styles.button.margin;
+	this.cancelButton.style.border = this.styles.button.border;
+	this.cancelButton.style.borderRadius = this.styles.button.borderRadius;
+	this.cancelButton.style.cursor = this.styles.button.cursor;
 	
 	this.okButton = document.createElement ('span');
 	div.appendChild (this.okButton);
-	this.okButton.innerHTML = this.settings.controls.okButtonText;
-	this.okButton.style.color = this.settings.button.color;
-	this.okButton.style.background = this.settings.button.background;
-	this.okButton.style.padding = this.settings.button.padding;
-	this.okButton.style.margin = this.settings.button.margin;
-	this.okButton.style.border = this.settings.button.border;
-	this.okButton.style.borderRadius = this.settings.button.borderRadius;
-	this.okButton.style.cursor = this.settings.button.cursor;
+	this.okButton.innerHTML = this.okButtonText;
+	this.okButton.style.color = this.styles.button.color;
+	this.okButton.style.background = this.styles.button.background;
+	this.okButton.style.padding = this.styles.button.padding;
+	this.okButton.style.margin = this.styles.button.margin;
+	this.okButton.style.border = this.styles.button.border;
+	this.okButton.style.borderRadius = this.styles.button.borderRadius;
+	this.okButton.style.cursor = this.styles.button.cursor;
 };
 
 JSM.BaseDialog.prototype.SetPosition = function ()

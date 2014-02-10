@@ -1,13 +1,21 @@
+JSM.Parameter = function (name, type, value, side)
+{
+	this.name = name;
+	this.type = type;
+	this.value = value;
+	this.side = side;
+};
+
 JSM.ParameterTable = function ()
 {
 	this.inputs = null;
-	this.settings = null;
+	this.styles = null;
 };
 
 JSM.ParameterTable.prototype.Create = function (div, parameters)
 {
 	this.inputs = [];
-	this.InitSettings ();
+	this.InitStyles ();
 	this.CreateParameterTable (div, parameters);
 };
 
@@ -20,9 +28,9 @@ JSM.ParameterTable.prototype.GetValues = function (parameters)
 	}
 };
 
-JSM.ParameterTable.prototype.InitSettings = function ()
+JSM.ParameterTable.prototype.InitStyles = function ()
 {
-	this.settings = {
+	this.styles = {
 		table : {
 			cellPadding : '5px 15px'
 		},
@@ -56,11 +64,11 @@ JSM.ParameterTable.prototype.CreateParameterTable = function (div, parameters)
 
 		var containerLeft = document.createElement ('td');
 		containerRow.appendChild (containerLeft);
-		containerLeft.style.verticalAlign = this.settings.td.verticalAlign;
+		containerLeft.style.verticalAlign = this.styles.td.verticalAlign;
 		
 		var leftTable = document.createElement ('table');
 		containerLeft.appendChild (leftTable);
-		leftTable.cellPadding = this.settings.table.cellPadding;
+		leftTable.cellPadding = this.styles.table.cellPadding;
 
 		for (index in parameters) {
 			parameter = parameters[index];
@@ -71,11 +79,11 @@ JSM.ParameterTable.prototype.CreateParameterTable = function (div, parameters)
 		
 		var containerRight = document.createElement ('td');
 		containerRow.appendChild (containerRight);
-		containerRight.style.verticalAlign = this.settings.td.verticalAlign;
+		containerRight.style.verticalAlign = this.styles.td.verticalAlign;
 		
 		var rightTable = document.createElement ('table');
 		containerRight.appendChild (rightTable);
-		rightTable.cellPadding = this.settings.table.cellPadding;
+		rightTable.cellPadding = this.styles.table.cellPadding;
 
 		for (index in parameters) {
 			parameter = parameters[index];
@@ -86,7 +94,7 @@ JSM.ParameterTable.prototype.CreateParameterTable = function (div, parameters)
 	} else {
 		var table = document.createElement ('table');
 		div.appendChild (table);		
-		table.cellPadding = this.settings.table.cellPadding;
+		table.cellPadding = this.styles.table.cellPadding;
 		
 		for (index in parameters) {
 			this.CreateParameter (table, index, parameters);		
@@ -160,8 +168,10 @@ JSM.SettingsDialog.prototype.FillContent = function (div)
 	this.parameterTable.Create (div, this.parameters);
 };
 
-JSM.SettingsDialog.prototype.OkButtonClicked = function ()
+JSM.SettingsDialog.prototype.OnButtonClicked = function (target)
 {
-	this.parameterTable.GetValues (this.parameters);
-	this.onClosed ();
+	if (target == 'ok') {
+		this.parameterTable.GetValues (this.parameters);
+		this.onClosed ();
+	}
 };
