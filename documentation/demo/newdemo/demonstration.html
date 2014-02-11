@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/demonstration.css">
+	<script type="text/javascript" src="../../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../../build/jsmodeler.js"></script>
+	<title>JSModeler Demonstration</title>
+	<script type="text/javascript">
+		var viewer = null;
+		var current = 'cuboid';
+		var shapes = {
+			cuboid : {
+				parameters : {
+					xSize : new JSM.Parameter ('x size', 'text', 1, 'left'),
+					ySize : new JSM.Parameter ('y size', 'text', 1, 'left'),
+					zSize : new JSM.Parameter ('z size', 'text', 1, 'left')
+				},
+				generator : function () {
+					var parameters = shapes.cuboid.parameters;
+					return JSM.GenerateCuboid (parameters.xSize.value, parameters.ySize.value, parameters.zSize.value);
+				}
+			},
+			sphere : {
+				parameters : {
+					radius : new JSM.Parameter ('radius', 'text', 0.5, 'left'),
+					segmentation : new JSM.Parameter ('segmentation', 'text', 20, 'left'),
+					isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+				},
+				generator : function () {
+					var parameters = shapes.sphere.parameters;
+					return JSM.GenerateSphere (parameters.radius.value, parseInt (parameters.segmentation.value), parameters.isCurved.value);
+				}
+			}
+		};
+		
+		function Resize ()
+		{
+			var canvas = document.getElementById ('demo');
+			canvas.width = document.body.clientWidth - left.clientWidth;
+			canvas.height = document.body.clientHeight;
+			if (viewer !== null) {
+				viewer.Resize ();
+			}
+		}
+		
+		function Generate ()
+		{
+			var shape = shapes[current];
+			if (shape === undefined) {
+				return;
+			}
+			
+			var body = shape.generator ();
+			var meshes = JSM.ConvertBodyToThreeMeshes (body);
+			viewer.RemoveMeshes ();
+			viewer.AddMeshes (meshes);
+			viewer.Draw ();
+		}
+
+		function Settings ()
+		{
+			var shape = shapes[current];
+			if (shape === undefined) {
+				return;
+			}
+			
+			var settingsDialog = new JSM.SettingsDialog ();
+			settingsDialog.OnClosed (function () {
+				Generate ();
+			});
+			settingsDialog.Open ('set cuboid parameters', shape.parameters);
+		}
+
+		function AddMenuTitle (name)
+		{
+			var menu = document.getElementById ('menu');
+			var menuDiv = document.createElement ('div');
+			menuDiv.className = 'menutitle';
+			menuDiv.innerHTML = name;
+			menu.appendChild (menuDiv);
+		}
+
+		function AddMenuEntry (name)
+		{
+			var menu = document.getElementById ('menu');
+			var menuDiv = document.createElement ('div');
+			menuDiv.className = 'menuentry';
+			menuDiv.innerHTML = name;
+			menuDiv.onclick = function (name) {
+				return function () {
+					window.location.hash = name;
+				}
+			} (name);
+			menu.appendChild (menuDiv);
+		}
+
+		function HashChange ()
+		{
+			var hash = window.location.hash.substr (1);
+			if (hash in shapes) {
+				current = hash;
+			}
+			Generate ();
+		}
+		
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+
+			var viewerSettings = {
+				cameraEyePosition : [-2.0, -1.5, 1.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
+
+			viewer = new JSM.Viewer ();
+			viewer.Start ('demo', viewerSettings);
+
+			AddMenuTitle ('basic shapes');
+			AddMenuEntry ('cuboid');
+			AddMenuEntry ('sphere');
+			
+			window.onhashchange = HashChange;
+			HashChange ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+
+	</script>
+
+</head>
+
+<body>
+	<div id="left">
+		<div class="content">
+			<div class="title">
+				<div class="maintitle">JSModeler</div>
+				<div class="subtitle">generator demonstration</div>
+			</div>
+			<div id="menu">
+			</div>
+		</div>
+	</div>
+	<div id="right">
+		<canvas id="demo" width="1000" height="500"></canvas>
+	</div>
+	<div class="button settings" onclick="Settings ()"><img src="include/settings.png" alt="settings" title="settings" /></div>
+	<div class="button info"><img src="include/info.png" alt="info" title="info" /></div>
+</body>
+
+</html>
