@@ -155,7 +155,7 @@ JSM.SettingsDialog.prototype = new JSM.BaseDialog ();
 JSM.SettingsDialog.prototype.Open = function (title, parameters)
 {
 	this.parameters = parameters;
-	JSM.BaseDialog.prototype.Open.call (this, title);
+	JSM.BaseDialog.prototype.Open.call (this, title, 'cancel', 'ok');
 };
 
 JSM.SettingsDialog.prototype.OnClosed = function (callback)

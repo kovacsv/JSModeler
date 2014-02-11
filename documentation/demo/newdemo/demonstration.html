@@ -14,28 +14,269 @@
 		var viewer = null;
 		var current = 'cuboid';
 		var shapes = {
+			rectangle : {
+				name : 'rectangle',
+				parameters : {
+					xSize : new JSM.Parameter ('x size', 'text', 1, 'left'),
+					ySize : new JSM.Parameter ('y size', 'text', 1, 'left')
+				},
+				check : function () {
+					var parameters = shapes.rectangle.parameters;
+					if (JSM.IsPositive (parameters.xSize.value) &&
+						JSM.IsPositive (parameters.ySize.value))
+					{
+						return true;
+					}
+					return false;
+				},
+				generate : function () {
+					var parameters = shapes.rectangle.parameters;
+					return JSM.GenerateRectangle (
+						parameters.xSize.value,
+						parameters.ySize.value
+					);
+				}
+			},
+			circle : {
+				name : 'circle',
+				parameters : {
+					radius : new JSM.Parameter ('radius', 'text', 0.5, 'left'),
+					segmentation : new JSM.Parameter ('segmentation', 'text', 20, 'left')
+				},
+				check : function () {
+					var parameters = shapes.circle.parameters;
+					if (JSM.IsPositive (parameters.radius.value) &&
+						parseInt (parameters.segmentation.value) > 1)
+					{
+						return true;
+					}
+					return false;
+				},
+				generate : function () {
+					var parameters = shapes.circle.parameters;
+					return JSM.GenerateCircle (
+						parameters.radius.value,
+						parseInt (parameters.segmentation.value)
+					);
+				}
+			},
 			cuboid : {
+				name : 'cuboid',
 				parameters : {
 					xSize : new JSM.Parameter ('x size', 'text', 1, 'left'),
 					ySize : new JSM.Parameter ('y size', 'text', 1, 'left'),
 					zSize : new JSM.Parameter ('z size', 'text', 1, 'left')
 				},
-				generator : function () {
+				check : function () {
 					var parameters = shapes.cuboid.parameters;
-					return JSM.GenerateCuboid (parameters.xSize.value, parameters.ySize.value, parameters.zSize.value);
+					if (JSM.IsPositive (parameters.xSize.value) &&
+						JSM.IsPositive (parameters.ySize.value) &&
+						JSM.IsPositive (parameters.zSize.value))
+					{
+						return true;
+					}
+					return false;
+				},
+				generate : function () {
+					var parameters = shapes.cuboid.parameters;
+					return JSM.GenerateCuboid (
+						parameters.xSize.value,
+						parameters.ySize.value,
+						parameters.zSize.value
+					);
 				}
 			},
 			sphere : {
+				name : 'sphere',
 				parameters : {
 					radius : new JSM.Parameter ('radius', 'text', 0.5, 'left'),
 					segmentation : new JSM.Parameter ('segmentation', 'text', 20, 'left'),
 					isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
 				},
-				generator : function () {
+				check : function () {
 					var parameters = shapes.sphere.parameters;
-					return JSM.GenerateSphere (parameters.radius.value, parseInt (parameters.segmentation.value), parameters.isCurved.value);
+					if (JSM.IsPositive (parameters.radius.value) &&
+						parseInt (parameters.segmentation.value) > 1)
+					{
+						return true;
+					}
+					return false;
+				},
+				generate : function () {
+					var parameters = shapes.sphere.parameters;
+					return JSM.GenerateSphere (
+						parameters.radius.value,
+						parseInt (parameters.segmentation.value),
+						parameters.isCurved.value
+					);
 				}
-			}
+			},
+			trisphere : {
+				name : 'trisphere',
+				parameters : {
+					radius : new JSM.Parameter ('radius', 'text', 0.5, 'left'),
+					iterations : new JSM.Parameter ('iterations', 'text', 3, 'left'),
+					isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+				},
+				check : function () {
+					var parameters = shapes.trisphere.parameters;
+					if (JSM.IsPositive (parameters.radius.value) &&
+						parseInt (parameters.iterations.value) >= 0)
+					{
+						return true;
+					}
+					return false;
+				},
+				generate : function () {
+					var parameters = shapes.trisphere.parameters;
+					return JSM.GenerateTriangulatedSphere (
+						parameters.radius.value,
+						parseInt (parameters.iterations.value),
+						parameters.isCurved.value
+					);
+				}
+			},
+			cylinder : {
+				name : 'cylinder',
+				parameters : {
+					radius : new JSM.Parameter ('radius', 'text', 0.5, 'left'),
+					height : new JSM.Parameter ('height', 'text', 1.0, 'left'),
+					segmentation : new JSM.Parameter ('segmentation', 'text', 25, 'left'),
+					withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', 1, 'left'),
+					isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+				},
+				check : function () {
+					var parameters = shapes.cylinder.parameters;
+					if (JSM.IsPositive (parameters.radius.value) &&
+						JSM.IsPositive (parameters.height.value) &&
+						parseInt (parameters.segmentation.value) > 2)
+					{
+						return true;
+					}
+					return false;
+				},
+				generate : function () {
+					var parameters = shapes.cylinder.parameters;
+					return JSM.GenerateCylinder (
+						parameters.radius.value,
+						parameters.height.value,
+						parseInt (parameters.segmentation.value),
+						parameters.withTopAndBottom.value,
+						parameters.isCurved.value
+					);
+				}
+			},
+			pie : {
+				name : 'pie',
+				parameters : {
+					radius : new JSM.Parameter ('radius', 'text', 0.5, 'left'),
+					height : new JSM.Parameter ('height', 'text', 1.0, 'left'),
+					angle : new JSM.Parameter ('angle', 'text', 270, 'left'),
+					segmentation : new JSM.Parameter ('segmentation', 'text', 25, 'left'),
+					withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', 1, 'left'),
+					isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+				},
+				check : function () {
+					var parameters = shapes.pie.parameters;
+					if (JSM.IsPositive (parameters.radius.value) &&
+						JSM.IsPositive (parameters.height.value) &&
+						JSM.IsPositive (parameters.angle.value) &&
+						parseInt (parameters.segmentation.value) > 2)
+					{
+						return true;
+					}
+					return false;
+				},
+				generate : function () {
+					var parameters = shapes.pie.parameters;
+					return JSM.GeneratePie (
+						parameters.radius.value,
+						parameters.height.value,
+						parameters.angle.value * JSM.DegRad,
+						parseInt (parameters.segmentation.value),
+						parameters.withTopAndBottom.value,
+						parameters.isCurved.value
+					);
+				}
+			},
+			cone : {
+				name : 'cone',
+				parameters : {
+					topRadius : new JSM.Parameter ('top radius', 'text', 0.3, 'left'),
+					bottomRadius : new JSM.Parameter ('bottom radius', 'text', 0.5, 'left'),
+					height : new JSM.Parameter ('height', 'text', 1.0, 'left'),
+					segmentation : new JSM.Parameter ('segmentation', 'text', 25, 'left'),
+					withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', 1, 'left'),
+					isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+				},
+				check : function () {
+					var parameters = shapes.cone.parameters;
+					if (JSM.IsZero (parameters.topRadius.value) && JSM.IsZero (parameters.bottomRadius.value)) {
+						return false;
+					}
+					if (!JSM.IsNegative (parameters.topRadius.value) &&
+						!JSM.IsNegative (parameters.bottomRadius.value) &&
+						JSM.IsPositive (parameters.height.value) &&
+						parseInt (parameters.segmentation.value) > 2)
+					{
+						return true;
+					}
+					return false;
+				},
+				generate : function () {
+					var parameters = shapes.cone.parameters;
+					return JSM.GenerateCone (
+						parameters.topRadius.value,
+						parameters.bottomRadius.value,
+						parameters.height.value,
+						parseInt (parameters.segmentation.value),
+						parameters.withTopAndBottom.value,
+						parameters.isCurved.value
+					);
+				}
+			},
+			prism : {
+				name : 'prism',
+				parameters : {
+					basePolygon : new JSM.Parameter (null, 'polygon', [0.01, [
+						new JSM.Coord2D (-0.5, -0.5),
+						new JSM.Coord2D (0.5, -0.5),
+						new JSM.Coord2D (0.5, 0.5),
+						new JSM.Coord2D (0, 0.5),
+						new JSM.Coord2D (0, 0),
+						new JSM.Coord2D (-0.5, 0)
+					]], 'left'),
+					direction : new JSM.Parameter ('direction', 'coord', new JSM.Coord (0.0, 0.0, 1.0), 'right'),
+					height : new JSM.Parameter ('height', 'text', 1.0, 'right'),
+					withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', 1, 'right')
+				},
+				check : function () {
+					var parameters = shapes.prism.parameters;
+					if (parameters.basePolygon.value[1].length > 2 &&
+						JSM.IsPositive (parameters.height.value) &&
+						JSM.IsPositive (JSM.VectorLength (parameters.direction.value)))
+					{
+						return true;
+					}
+					return false;
+				},
+				generate : function () {
+					var parameters = shapes.prism.parameters;
+					var i, current;
+					var origPolygon = parameters.basePolygon.value[1];
+					var basePolygon = [];
+					for (i = 0; i < origPolygon.length; i++) {
+						current = origPolygon[i];
+						basePolygon.push (new JSM.Coord (current.x, current.y, -parameters.height.value / 2.0));
+					}
+					return JSM.GeneratePrism (
+						basePolygon,
+						parameters.direction.value,
+						parameters.height.value,
+						parameters.withTopAndBottom.value
+					);
+				}
+			},
 		};
 		
 		function Resize ()
@@ -54,10 +295,15 @@
 			if (shape === undefined) {
 				return;
 			}
-			
-			var body = shape.generator ();
-			var meshes = JSM.ConvertBodyToThreeMeshes (body);
+
 			viewer.RemoveMeshes ();
+			var check = shape.check ();
+			if (!check) {
+				return;
+			}
+			
+			var body = shape.generate ();
+			var meshes = JSM.ConvertBodyToThreeMeshes (body);
 			viewer.AddMeshes (meshes);
 			viewer.Draw ();
 		}
@@ -87,10 +333,15 @@
 
 		function AddMenuEntry (name)
 		{
+			var shape = shapes[name];
+			if (shape === undefined) {
+				return;
+			}
+			
 			var menu = document.getElementById ('menu');
 			var menuDiv = document.createElement ('div');
 			menuDiv.className = 'menuentry';
-			menuDiv.innerHTML = name;
+			menuDiv.innerHTML = shape.name;
 			menuDiv.onclick = function (name) {
 				return function () {
 					window.location.hash = name;
@@ -123,9 +374,18 @@
 			viewer.Start ('demo', viewerSettings);
 
 			AddMenuTitle ('basic shapes');
+			AddMenuEntry ('rectangle');
+			AddMenuEntry ('circle');
 			AddMenuEntry ('cuboid');
 			AddMenuEntry ('sphere');
+			AddMenuEntry ('trisphere');
+			AddMenuEntry ('cylinder');
+			AddMenuEntry ('pie');
+			AddMenuEntry ('cone');
 			
+			AddMenuTitle ('polygonal shapes');
+			AddMenuEntry ('prism');
+
 			window.onhashchange = HashChange;
 			HashChange ();
 		}
