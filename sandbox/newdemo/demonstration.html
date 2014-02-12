@@ -81,7 +81,9 @@
 			torus : { name : 'torus', generator : new JSM.TorusGenerator () },
 			prism : { name : 'prism', generator : new JSM.PrismGenerator () },
 			prismshell : { name : 'prism shell', generator : new JSM.PrismShellGenerator () },
-			cylindershell : { name : 'cylinder shell', generator : new JSM.CylinderShellGenerator () }
+			cylindershell : { name : 'cylinder shell', generator : new JSM.CylinderShellGenerator () },
+			polytorus : { name : 'polytorus', generator : new JSM.PolyTorusGenerator () },
+			lego : { name : 'lego brick', generator : new JSM.LegoBrickGenerator () }
 		};
 	
 		function ShowHide (divName, show)
@@ -96,8 +98,11 @@
 
 		function Resize ()
 		{
+			var left = document.getElementById ('left');
+			var right = document.getElementById ('right');
 			var canvas = document.getElementById ('demo');
-			canvas.width = document.body.clientWidth - left.clientWidth;
+			
+			canvas.width = document.body.clientWidth - left.offsetWidth;
 			canvas.height = document.body.clientHeight;
 			if (viewer !== null) {
 				viewer.Resize ();
@@ -240,9 +245,11 @@
 			AddMenuTitle ('polygonal shapes');
 			AddMenuEntry ('prism');
 			AddMenuEntry ('prismshell');
+			AddMenuEntry ('cylindershell');
+			AddMenuEntry ('polytorus');
 
 			AddMenuTitle ('other shapes');
-			AddMenuEntry ('cylindershell');
+			AddMenuEntry ('lego');
 
 			window.onhashchange = HashChange;
 			HashChange ();

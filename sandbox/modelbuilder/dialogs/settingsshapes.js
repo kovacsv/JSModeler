@@ -439,3 +439,44 @@ PrismShell.prototype =
 		return [body, materials];
 	}
 }
+
+JSM.LegoBrickGenerator = function ()
+{
+	this.parameters = {
+		outerRadius : new JSM.Parameter ('outer radius', 'number', 0.5, 'left'),
+		innerRadius : new JSM.Parameter ('inner radius', 'number', 0.2, 'left'),
+		outerSegmentation : new JSM.Parameter ('outer segmentation', 'integer', 25, 'left'),
+		innerSegmentation : new JSM.Parameter ('inner segmentation', 'integer', 25, 'left'),
+		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+	};
+};
+
+JSM.LegoBrickGenerator.prototype = new JSM.ShapeGenerator ();
+
+JSM.LegoBrickGenerator.prototype.Check = function ()
+{
+	if (!JSM.IsPositive (this.parameters.outerRadius.value)) {
+		return false;
+	}
+	if (!JSM.IsPositive (this.parameters.innerRadius.value)) {
+		return false;
+	}
+	if (this.parameters.outerSegmentation.value < 3) {
+		return false;
+	}
+	if (this.parameters.innerSegmentation.value < 3) {
+		return false;
+	}
+	return true;
+}
+
+JSM.LegoBrickGenerator.prototype.Generate = function ()
+{
+	return JSM.GenerateTorus (
+		this.parameters.outerRadius.value,
+		this.parameters.innerRadius.value,
+		this.parameters.outerSegmentation.value,
+		this.parameters.innerSegmentation.value,
+		this.parameters.isCurved.value
+	);
+}

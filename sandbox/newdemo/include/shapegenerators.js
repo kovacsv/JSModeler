@@ -157,7 +157,7 @@ JSM.TriSphereGenerator.prototype.Check = function ()
 	if (!JSM.IsPositive (this.parameters.radius.value)) {
 		return false;
 	}
-	if (this.parameters.iterations.value < 3) {
+	if (this.parameters.iterations.value < 0) {
 		return false;
 	}
 	return true;
@@ -397,9 +397,9 @@ JSM.PrismShellGenerator = function ()
 			new JSM.Coord2D (-0.5, -0.5),
 			new JSM.Coord2D (0.5, -0.5),
 			new JSM.Coord2D (0.5, 0.5),
-			new JSM.Coord2D (0, 0.5),
-			new JSM.Coord2D (0, 0),
-			new JSM.Coord2D (-0.5, 0)
+			new JSM.Coord2D (0.0, 0.5),
+			new JSM.Coord2D (0.0, 0.0),
+			new JSM.Coord2D (-0.5, 0.0)
 		]], 'left'),
 		direction : new JSM.Parameter ('direction', 'coord', new JSM.Coord (0.0, 0.0, 1.0), 'right'),
 		height : new JSM.Parameter ('height', 'number', 1.0, 'right'),
@@ -486,4 +486,98 @@ JSM.CylinderShellGenerator.prototype.Generate = function ()
 		this.parameters.withTopAndBottom.value,
 		this.parameters.isCurved.value
 	);
+}
+
+JSM.PolyTorusGenerator = function ()
+{
+	this.parameters = {
+		basePolygon : new JSM.Parameter (null, 'polygon', [0.01, [
+			new JSM.Coord2D (-0.25, -0.25),
+			new JSM.Coord2D (0.25, -0.25),
+			new JSM.Coord2D (0.25, 0.0),
+			new JSM.Coord2D (0.0, 0.0),
+			new JSM.Coord2D (0.0, 0.25),
+			new JSM.Coord2D (-0.25, 0.25)
+		]], 'left'),
+		outerRadius : new JSM.Parameter ('outer radius', 'number', 0.5, 'right'),
+		outerSegmentation : new JSM.Parameter ('outer segmentation', 'integer', 25, 'right'),
+		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'right')
+	};
+};
+
+JSM.PolyTorusGenerator.prototype = new JSM.ShapeGenerator ();
+
+JSM.PolyTorusGenerator.prototype.Check = function ()
+{
+	if (this.parameters.basePolygon.value[1].length < 3) {
+		return false;
+	}
+	if (!JSM.IsPositive (this.parameters.outerRadius.value)) {
+		return false;
+	}
+	if (this.parameters.outerSegmentation.value < 3) {
+		return false;
+	}
+	return true;
+}
+
+JSM.PolyTorusGenerator.prototype.Generate = function ()
+{
+	var i, current;
+	var origPolygon = this.parameters.basePolygon.value[1];
+	var basePolygon = [];
+	for (i = 0; i < origPolygon.length; i++) {
+		current = origPolygon[i];
+		basePolygon.push (new JSM.Coord2D (current.x, current.y));
+	}
+	return JSM.GeneratePolyTorus (
+		basePolygon,
+		this.parameters.outerRadius.value,
+		this.parameters.outerSegmentation.value,
+		this.parameters.isCurved.value
+	);
+}
+
+JSM.LegoBrickGenerator = function ()
+{
+	this.parameters = {
+		rows : new JSM.Parameter ('rows', 'integer', 3, 'left'),
+		columns : new JSM.Parameter ('columns', 'integer', 2, 'left'),
+		isLarge : new JSM.Parameter ('large', 'check', 1, 'left'),
+		hasTopCylinders : new JSM.Parameter ('top cylinders', 'check', 1, 'left'),
+		hasBottomCylinders : new JSM.Parameter ('bottom cylinders', 'check', 1, 'left'),
+		segmentation : new JSM.Parameter ('segmentation', 'integer', 25, 'left'),
+		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+	};
+};
+
+JSM.LegoBrickGenerator.prototype = new JSM.ShapeGenerator ();
+
+JSM.LegoBrickGenerator.prototype.Check = function ()
+{
+	if (this.parameters.rows.value < 1) {
+		return false;
+	}
+	if (this.parameters.columns.value < 1) {
+		return false;
+	}
+	if (this.parameters.segmentation.value < 3) {
+		return false;
+	}
+	return true;
+}
+
+JSM.LegoBrickGenerator.prototype.Generate = function ()
+{
+	var body = JSM.GenerateLegoBrick (
+		this.parameters.rows.value,
+		this.parameters.columns.value,
+		this.parameters.isLarge.value,
+		this.parameters.hasTopCylinders.value,
+		this.parameters.hasBottomCylinders.value,
+		this.parameters.segmentation.value,
+		this.parameters.isCurved.value
+	);
+	body.OffsetToOrigo ();
+	return body;
 }

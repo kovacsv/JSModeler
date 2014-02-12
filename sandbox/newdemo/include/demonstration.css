@@ -17,6 +17,7 @@ html, body
 	width : 220px;
 	height : 100%;
 	float : left;
+	overflow : auto;
 }
 
 #right
