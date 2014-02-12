@@ -36,14 +36,58 @@ div.button
 	cursor : pointer;
 }
 
-div.button.settings
+div.button img
+{
+	float : left;
+}
+
+div.buttoncontent
+{
+	margin-left : 8px;
+	float : left;
+}
+
+div.buttoncontententry
+{
+	margin-left : 8px;
+	float : left;
+}
+
+div.color
+{
+	width : 15px;
+	height : 15px;
+	float : left;
+	border-radius : 50%;
+}
+
+#settings
 {
 	top : 10px;
 }
 
-div.button.info
+#info
 {
 	top : 50px;
+}
+
+#export
+{
+
+	top : 90px;
+}
+
+#color
+{
+
+	top : 130px;
+}
+
+#fail
+{
+	color : #ffffff;
+	background : #cc3333;
+	top : 170px;
 }
 
 div.content

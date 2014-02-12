@@ -13,7 +13,7 @@ JSM.BaseDialog = function ()
 
 JSM.BaseDialog.prototype.Open = function (title, cancelText, okText)
 {
-	this.InitSettings ();
+	this.InitStyles ();
 	if (this.dialog !== null) {
 		return;
 	}
@@ -54,7 +54,7 @@ JSM.BaseDialog.prototype.Close = function ()
 	}
 };
 
-JSM.BaseDialog.prototype.InitSettings = function ()
+JSM.BaseDialog.prototype.InitStyles = function ()
 {
 	this.styles = {
 		dialog : {

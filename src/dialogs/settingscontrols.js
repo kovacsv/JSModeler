@@ -1,28 +1,60 @@
-JSM.TextControl = function ()
+JSM.StaticControl = function ()
 {
 	this.input = null;
-	this.settings = null;
+	this.styles = null;
 };
 
-JSM.TextControl.prototype.Create = function (div, parameter)
+JSM.StaticControl.prototype.Create = function (div, parameter)
 {
-	this.InitSettings ();
+	this.InitStyles ();
+	
+	this.input = document.createElement ('span');
+	div.appendChild (this.input);
+	this.input.innerHTML = parameter.value;
+};
+
+JSM.StaticControl.prototype.GetValue = function (parameter)
+{
+	parameter.value = this.input.innerHTML;
+};
+
+JSM.StaticControl.prototype.InitStyles = function ()
+{
+
+};
+
+JSM.InputControl = function (type)
+{
+	this.type = type;
+	this.input = null;
+	this.styles = null;
+};
+
+JSM.InputControl.prototype.Create = function (div, parameter)
+{
+	this.InitStyles ();
 	
 	this.input = document.createElement ('input');
 	div.appendChild (this.input);
 	this.input.type = 'text';
 	this.input.value = parameter.value;
-	this.input.style.width = this.settings.inputs.width;
+	this.input.style.width = this.styles.inputs.width;
 };
 
-JSM.TextControl.prototype.GetValue = function (parameter)
+JSM.InputControl.prototype.GetValue = function (parameter)
 {
-	parameter.value = this.input.value;
+	if (this.type == 'number') {
+		parameter.value = parseFloat (this.input.value);
+	} else if (this.type == 'integer') {
+		parameter.value = parseInt (this.input.value, 10);
+	} else {
+		parameter.value = this.input.value;
+	}
 };
 
-JSM.TextControl.prototype.InitSettings = function ()
+JSM.InputControl.prototype.InitStyles = function ()
 {
-	this.settings = {
+	this.styles = {
 		inputs : {
 			width : '175px'
 		}
@@ -32,12 +64,12 @@ JSM.TextControl.prototype.InitSettings = function ()
 JSM.CheckControl = function ()
 {
 	this.input = null;
-	this.settings = null;
+	this.styles = null;
 };
 
 JSM.CheckControl.prototype.Create = function (div, parameter)
 {
-	this.InitSettings ();
+	this.InitStyles ();
 	
 	this.input = document.createElement ('input');
 	div.appendChild (this.input);
@@ -50,7 +82,7 @@ JSM.CheckControl.prototype.GetValue = function (parameter)
 	parameter.value = this.input.checked;
 };
 
-JSM.CheckControl.prototype.InitSettings = function ()
+JSM.CheckControl.prototype.InitStyles = function ()
 {
 	
 };
@@ -58,35 +90,35 @@ JSM.CheckControl.prototype.InitSettings = function ()
 JSM.CoordControl = function ()
 {
 	this.inputs = null;
-	this.settings = null;
+	this.styles = null;
 };
 
 JSM.CoordControl.prototype.Create = function (div, parameter)
 {
 	this.inputs = [];
-	this.InitSettings ();
+	this.InitStyles ();
 	
 	var xInput = document.createElement ('input');
 	div.appendChild (xInput);
 	xInput.type = 'text';
 	xInput.value = parameter.value.x;
-	xInput.style.width = this.settings.inputs.width;
-	xInput.style.marginRight = this.settings.inputs.margin;
+	xInput.style.width = this.styles.inputs.width;
+	xInput.style.marginRight = this.styles.inputs.margin;
 	this.inputs.push (xInput);
 
 	var yInput = document.createElement ('input');
 	div.appendChild (yInput);
 	yInput.type = 'text';
 	yInput.value = parameter.value.y;
-	yInput.style.width = this.settings.inputs.width;
-	yInput.style.marginRight = this.settings.inputs.margin;
+	yInput.style.width = this.styles.inputs.width;
+	yInput.style.marginRight = this.styles.inputs.margin;
 	this.inputs.push (yInput);
 
 	var zInput = document.createElement ('input');
 	div.appendChild (zInput);
 	zInput.type = 'text';
 	zInput.value = parameter.value.z;
-	zInput.style.width = this.settings.inputs.width;
+	zInput.style.width = this.styles.inputs.width;
 	this.inputs.push (zInput);
 };
 
@@ -97,9 +129,9 @@ JSM.CoordControl.prototype.GetValue = function (parameter)
 	parameter.value.z = this.inputs[2].value;
 };
 
-JSM.CoordControl.prototype.InitSettings = function ()
+JSM.CoordControl.prototype.InitStyles = function ()
 {
-	this.settings = {
+	this.styles = {
 		inputs : {
 			width : '50px',
 			margin : '6px'
@@ -111,19 +143,19 @@ JSM.ColorControl = function ()
 {
 	this.input = null;
 	this.preview = null;
-	this.settings = null;
+	this.styles = null;
 };
 
 JSM.ColorControl.prototype.Create = function (div, parameter)
 {
-	this.InitSettings ();
+	this.InitStyles ();
 	
 	this.input = document.createElement ('input');
 	div.appendChild (this.input);
 	this.input.type = 'text';
 	this.input.value = parameter.value;
-	this.input.style.width = this.settings.inputs.width;
-	this.input.style.marginRight = this.settings.inputs.margin;
+	this.input.style.width = this.styles.inputs.width;
+	this.input.style.marginRight = this.styles.inputs.margin;
 	if (this.input.addEventListener) {
 		var myThis = this;
 		this.input.addEventListener ('keyup', function () {myThis.ColorChanged ();});
@@ -131,9 +163,9 @@ JSM.ColorControl.prototype.Create = function (div, parameter)
 	
 	this.preview = document.createElement ('div');
 	div.appendChild (this.preview);
-	this.preview.style.width = this.settings.preview.width;
-	this.preview.style.height = this.settings.preview.height;
-	this.preview.style.cssFloat = this.settings.preview.cssFloat;
+	this.preview.style.width = this.styles.preview.width;
+	this.preview.style.height = this.styles.preview.height;
+	this.preview.style.cssFloat = this.styles.preview.cssFloat;
 	this.ColorChanged ();
 };
 
@@ -149,9 +181,9 @@ JSM.ColorControl.prototype.ColorChanged = function ()
 	}
 };
 
-JSM.ColorControl.prototype.InitSettings = function ()
+JSM.ColorControl.prototype.InitStyles = function ()
 {
-	this.settings = {
+	this.styles = {
 		inputs : {
 			width : '125px',
 			margin : '5px'
@@ -171,7 +203,7 @@ JSM.PolygonControl = function ()
 	this.scaleInput = null;
 	this.snapInput = null;
 	this.coordViewer = null;
-	this.settings = null;
+	this.styles = null;
 	
 	this.coords = null;
 	this.current = null;
@@ -183,13 +215,13 @@ JSM.PolygonControl = function ()
 
 JSM.PolygonControl.prototype.Create = function (div, parameter)
 {
-	this.InitSettings ();
+	this.InitStyles ();
 
 	var controlsTable = document.createElement ('table');
 	div.appendChild (controlsTable);
-	controlsTable.style.marginBottom = this.settings.controls.margin;
-	controlsTable.style.width = this.settings.controls.tableWidth;
-	controlsTable.style.cellPadding = this.settings.controls.tableCellPadding;
+	controlsTable.style.marginBottom = this.styles.controls.margin;
+	controlsTable.style.width = this.styles.controls.tableWidth;
+	controlsTable.style.cellPadding = this.styles.controls.tableCellPadding;
 	
 	var controlsTopRow = document.createElement ('tr');
 	controlsTable.appendChild (controlsTopRow);
@@ -206,7 +238,7 @@ JSM.PolygonControl.prototype.Create = function (div, parameter)
 	controlsLeft.appendChild (this.scaleInput);
 	this.scaleInput.type = 'text';
 	this.scaleInput.value = parameter.value[0];
-	this.scaleInput.style.width = this.settings.controls.scaleInputWidth;
+	this.scaleInput.style.width = this.styles.controls.scaleInputWidth;
 	
 	var controlsRight = document.createElement ('td');
 	controlsTopRow.appendChild (controlsRight);
@@ -223,9 +255,9 @@ JSM.PolygonControl.prototype.Create = function (div, parameter)
 
 	this.canvas = document.createElement ('canvas');
 	div.appendChild (this.canvas);
-	this.canvas.width = this.settings.editor.width;
-	this.canvas.height = this.settings.editor.height;
-	this.canvas.style.border = this.settings.editor.border;
+	this.canvas.width = this.styles.editor.width;
+	this.canvas.height = this.styles.editor.height;
+	this.canvas.style.border = this.styles.editor.border;
 	if (this.canvas.addEventListener) {
 		var myThis = this;
 		this.canvas.addEventListener ('mousemove', function (event) {myThis.MouseMove (event);});
@@ -235,8 +267,8 @@ JSM.PolygonControl.prototype.Create = function (div, parameter)
 
 	this.coordViewer = document.createElement ('div');
 	div.appendChild (this.coordViewer);
-	this.coordViewer.style.marginTop = this.settings.coordViewer.margin;
-	this.coordViewer.style.textAlign = this.settings.coordViewer.textAlign;
+	this.coordViewer.style.marginTop = this.styles.coordViewer.margin;
+	this.coordViewer.style.textAlign = this.styles.coordViewer.textAlign;
 	
 	this.SetCurrentCoord (new JSM.Coord2D ());
 	this.context = this.canvas.getContext ('2d');
@@ -280,8 +312,8 @@ JSM.PolygonControl.prototype.GetMouseCoord = function (event)
 	}
 	
 	if (this.snapInput.checked) {
-		xCoord -= xCoord % this.settings.editor.gridStep;
-		yCoord -= yCoord % this.settings.editor.gridStep;
+		xCoord -= xCoord % this.styles.editor.gridStep;
+		yCoord -= yCoord % this.styles.editor.gridStep;
 	}		
 	return new JSM.Coord2D (xCoord, yCoord);
 };
@@ -360,13 +392,13 @@ JSM.PolygonControl.prototype.UpdateMarker = function (mouseCoord)
 	}
 	
 	if (this.mode == 'Create') {
-		if (JSM.CoordDistance2D (mouseCoord, this.coords[0]) < this.settings.editor.gridStep) {
+		if (JSM.CoordDistance2D (mouseCoord, this.coords[0]) < this.styles.editor.gridStep) {
 			this.marker = 0;
 		}
 	} else if (this.mode == 'Finished') {
 		var i;
 		for (i = 0; i < this.coords.length; i++) {
-			if (JSM.CoordDistance2D (mouseCoord, this.coords[i]) < this.settings.editor.gridStep) {
+			if (JSM.CoordDistance2D (mouseCoord, this.coords[i]) < this.styles.editor.gridStep) {
 				this.marker = i;
 				break;
 			}
@@ -416,10 +448,10 @@ JSM.PolygonControl.prototype.Draw = function ()
 JSM.PolygonControl.prototype.DrawGrid = function ()
 {
 	this.context.beginPath ();
-	this.context.strokeStyle = this.settings.editor.gridStrokeColor;
+	this.context.strokeStyle = this.styles.editor.gridStrokeColor;
 
 	var i, coord;
-	var step = this.settings.editor.gridStep;
+	var step = this.styles.editor.gridStep;
 	for (i = step; i < this.canvas.width; i += step) {
 		coord = new JSM.Coord2D (i, 0);
 		this.ContextMoveTo (coord);
@@ -443,8 +475,8 @@ JSM.PolygonControl.prototype.DrawCoords = function ()
 		return false;
 	}
 	
-	this.context.fillStyle = this.settings.editor.polygonColor;
-	this.context.strokeStyle = this.settings.editor.polygonStrokeColor;
+	this.context.fillStyle = this.styles.editor.polygonColor;
+	this.context.strokeStyle = this.styles.editor.polygonStrokeColor;
 	this.context.beginPath ();
 
 	var firstCoord = this.coords[0];
@@ -484,7 +516,7 @@ JSM.PolygonControl.prototype.DrawMarker = function ()
 	}
 
 	var markerCoord = this.coords[this.marker];
-	this.context.fillStyle = this.settings.editor.markerColor;
+	this.context.fillStyle = this.styles.editor.markerColor;
 	this.context.beginPath();
 	this.context.arc (markerCoord.x, markerCoord.y, 5, 0, 2.0 * Math.PI, true); 
 	this.context.closePath();
@@ -493,9 +525,9 @@ JSM.PolygonControl.prototype.DrawMarker = function ()
 	return true;
 };
 
-JSM.PolygonControl.prototype.InitSettings = function ()
+JSM.PolygonControl.prototype.InitStyles = function ()
 {
-	this.settings = {
+	this.styles = {
 		editor : {
 			width : 260,
 			height : 260,
@@ -503,7 +535,7 @@ JSM.PolygonControl.prototype.InitSettings = function ()
 			border : '1px solid #cccccc',
 			polygonColor : '#eeeeee',
 			polygonStrokeColor : '#222222',
-			markerColor : '#cc0000',
+			markerColor : '#222222',
 			gridStrokeColor : '#cccccc'
 		},
 		coordViewer : {

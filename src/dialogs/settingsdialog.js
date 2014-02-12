@@ -1,9 +1,9 @@
 JSM.Parameter = function (name, type, value, side)
 {
-	this.name = name;
-	this.type = type;
-	this.value = value;
-	this.side = side;
+	this.name = JSM.ValueOrDefault (name, null);
+	this.type = JSM.ValueOrDefault (type, null);
+	this.value = JSM.ValueOrDefault (value, null);
+	this.side = JSM.ValueOrDefault (side, null);
 };
 
 JSM.ParameterTable = function ()
@@ -121,8 +121,12 @@ JSM.ParameterTable.prototype.CreateParameter = function (table, index, parameter
 	}
 	
 	var control = null;
-	if (parameter.type == 'text') {
-		control = new JSM.TextControl ();
+	if (parameter.type == 'static') {
+		control = new JSM.StaticControl ();
+		control.Create (tdInput, parameter);
+		this.inputs[index] = control;
+	} else if (	parameter.type == 'text' || parameter.type == 'number' || parameter.type == 'integer') {
+		control = new JSM.InputControl (parameter.type);
 		control.Create (tdInput, parameter);
 		this.inputs[index] = control;
 	} else if (parameter.type == 'check') {
@@ -141,6 +145,31 @@ JSM.ParameterTable.prototype.CreateParameter = function (table, index, parameter
 		control = new JSM.PolygonControl ();
 		control.Create (tdInput, parameter);
 		this.inputs[index] = control;
+	}
+};
+
+JSM.InfoDialog = function ()
+{
+	this.parameterTable = new JSM.ParameterTable ();
+};
+
+JSM.InfoDialog.prototype = new JSM.BaseDialog ();
+
+JSM.InfoDialog.prototype.Open = function (title, parameters)
+{
+	this.parameters = parameters;
+	JSM.BaseDialog.prototype.Open.call (this, title, null, 'ok');
+};
+
+JSM.InfoDialog.prototype.FillContent = function (div)
+{
+	this.parameterTable.Create (div, this.parameters);
+};
+
+JSM.InfoDialog.prototype.OnButtonClicked = function (target)
+{
+	if (target == 'ok') {
+		this.parameterTable.GetValues (this.parameters);
 	}
 };
 
@@ -172,6 +201,8 @@ JSM.SettingsDialog.prototype.OnButtonClicked = function (target)
 {
 	if (target == 'ok') {
 		this.parameterTable.GetValues (this.parameters);
-		this.onClosed ();
+		if (this.onClosed !== null) {
+			this.onClosed ();
+		}
 	}
 };

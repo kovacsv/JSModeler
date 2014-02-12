@@ -1,0 +1,299 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/demonstration.css">
+
+	<script type="text/javascript" src="../../build/three.min.js"></script>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../../src/core/timer.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../../src/extras/surfaces.js"></script>
+	<script type="text/javascript" src="../../src/dialogs/basedialog.js"></script>
+	<script type="text/javascript" src="../../src/dialogs/settingscontrols.js"></script>
+	<script type="text/javascript" src="../../src/dialogs/settingsdialog.js"></script>
+	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/converter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
+<!-- JSModeler includes end -->	
+	
+	<script type="text/javascript" src="include/shapegenerators.js"></script>
+	
+	<title>JSModeler Demonstration</title>
+	<script type="text/javascript">
+		var viewer = null;
+		var body = null;
+		var currentShape = 'cuboid';
+		var currentColor = '279b61';
+
+		var shapes = {
+			rectangle : { name : 'rectangle', generator : new JSM.RectangleGenerator () },
+			circle : { name : 'circle', generator : new JSM.CircleGenerator () },
+			cuboid : { name : 'cuboid', generator : new JSM.CuboidGenerator () },
+			sphere : { name : 'sphere', generator : new JSM.SphereGenerator () },
+			trisphere : { name : 'trisphere', generator : new JSM.TriSphereGenerator () },
+			cylinder : { name : 'cylinder', generator : new JSM.CylinderGenerator () },
+			pie : { name : 'pie', generator : new JSM.PieGenerator () },
+			cone : { name : 'cone', generator : new JSM.ConeGenerator () },
+			torus : { name : 'torus', generator : new JSM.TorusGenerator () },
+			prism : { name : 'prism', generator : new JSM.PrismGenerator () },
+			prismshell : { name : 'prism shell', generator : new JSM.PrismShellGenerator () },
+			cylindershell : { name : 'cylinder shell', generator : new JSM.CylinderShellGenerator () }
+		};
+	
+		function ShowHide (divName, show)
+		{
+			var div = document.getElementById (divName);
+			if (show) {
+				div.style.display = 'block';
+			} else {
+				div.style.display = 'none';
+			}
+		}
+
+		function Resize ()
+		{
+			var canvas = document.getElementById ('demo');
+			canvas.width = document.body.clientWidth - left.clientWidth;
+			canvas.height = document.body.clientHeight;
+			if (viewer !== null) {
+				viewer.Resize ();
+			}
+		}
+		
+		function Generate ()
+		{
+			function ConvertColor (color) {
+				var resultFormat = '0x' + color;
+				return parseInt (resultFormat);
+			};		
+		
+			var shape = shapes[currentShape];
+			if (shape === undefined) {
+				return;
+			}
+
+			viewer.RemoveMeshes ();
+			var check = shape.generator.Check ();
+			ShowHide ('fail', !check);
+			if (!check) {
+				return;
+			}
+			
+			var materials = new JSM.Materials ();
+			var color = ConvertColor (currentColor);
+			materials.AddMaterial (new JSM.Material (color, color));
+			
+			body = shape.generator.Generate ();
+			body.SetPolygonsMaterialIndex (0);
+			
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			viewer.AddMeshes (meshes);
+			viewer.Draw ();
+		}
+
+		function Settings ()
+		{
+			var shape = shapes[currentShape];
+			if (shape === undefined) {
+				return;
+			}
+			
+			var settingsDialog = new JSM.SettingsDialog ();
+			settingsDialog.OnClosed (function () {
+				Generate ();
+			});
+			settingsDialog.Open ('parameters', shape.generator.GetParameters ());
+		}
+
+		function Info ()
+		{
+			if (body === null) {
+				return;
+			}
+
+			var parameters = {
+				xSize : new JSM.Parameter ('vertex count', 'static', body.VertexCount (), 'left'),
+				ySize : new JSM.Parameter ('polygon count', 'static', body.PolygonCount (), 'left')
+			};
+			
+			var infoDialog = new JSM.InfoDialog ();
+			infoDialog.Open ('information', parameters);
+		}
+
+		function ChangeColor (color)
+		{
+			var currentColorDiv = document.getElementById ('currentcolor');
+			currentColorDiv.style.background = '#' + color;
+			currentColor = color;
+			Generate ();
+		}
+		
+		function AddMenuTitle (name)
+		{
+			var menu = document.getElementById ('menu');
+			var menuDiv = document.createElement ('div');
+			menuDiv.className = 'menutitle';
+			menuDiv.innerHTML = name;
+			menu.appendChild (menuDiv);
+		}
+
+		function AddMenuEntry (name)
+		{
+			var shape = shapes[name];
+			if (shape === undefined) {
+				return;
+			}
+			
+			var menu = document.getElementById ('menu');
+			var menuDiv = document.createElement ('div');
+			menuDiv.className = 'menuentry';
+			menuDiv.innerHTML = shape.name;
+			menuDiv.onclick = function (name) {
+				return function () {
+					window.location.hash = name;
+				}
+			} (name);
+			menu.appendChild (menuDiv);
+		}
+
+		function HashChange ()
+		{
+			var hash = window.location.hash.substr (1);
+			if (hash in shapes) {
+				currentShape = hash;
+			}
+			Generate ();
+		}
+		
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+
+			var viewerSettings = {
+				cameraEyePosition : [-4.0, -3.0, 2.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
+
+			viewer = new JSM.Viewer ();
+			viewer.Start ('demo', viewerSettings);
+			
+			var demo = document.getElementById ('demo');
+			demo.addEventListener ('dblclick', Settings, false);
+
+			AddMenuTitle ('basic shapes');
+			AddMenuEntry ('rectangle');
+			AddMenuEntry ('circle');
+			AddMenuEntry ('cuboid');
+			AddMenuEntry ('sphere');
+			AddMenuEntry ('trisphere');
+			AddMenuEntry ('cylinder');
+			AddMenuEntry ('pie');
+			AddMenuEntry ('cone');
+			AddMenuEntry ('torus');
+			
+			AddMenuTitle ('polygonal shapes');
+			AddMenuEntry ('prism');
+			AddMenuEntry ('prismshell');
+
+			AddMenuTitle ('other shapes');
+			AddMenuEntry ('cylindershell');
+
+			window.onhashchange = HashChange;
+			HashChange ();
+		}
+		
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+
+	</script>
+
+</head>
+
+<body>
+	<div id="left">
+		<div class="content">
+			<div class="title">
+				<div class="maintitle">JSModeler</div>
+				<div class="subtitle">generator demonstration</div>
+			</div>
+			<div id="menu">
+			</div>
+		</div>
+	</div>
+	<div id="right">
+		<canvas id="demo" width="1000" height="500"></canvas>
+	</div>
+	<div class="button" id="settings" onclick="Settings ()" title="settings"><img src="include/settings.png" alt="settings" /></div>
+	<div class="button" id="info" onclick="Info ()" title="info"><img src="include/info.png" alt="info" /></div>
+	<div class="button" id="export" title="export" onmouseover="ShowHide ('exportcontent', true);" onmouseout="ShowHide ('exportcontent', false);">
+		<img src="include/export.png" alt="export" />
+		<div class="buttoncontent" id="exportcontent" style="display : none;">
+			<div class="buttoncontententry">stl</div>
+			<div class="buttoncontententry">obj</div>
+			<div class="buttoncontententry">svg</div>
+		</div>
+	</div>
+	<div class="button" id="color" title="color" onmouseover="ShowHide ('colorcontent', true);" onmouseout="ShowHide ('colorcontent', false);">
+		<div class="color" id="currentcolor" style="background : #279b61;"></div>
+		<div class="buttoncontent" id="colorcontent" style="display : none;">
+			<div class="buttoncontententry" onclick="ChangeColor ('279b61')"><div class="color" style="background : #279b61;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('008ab8')"><div class="color" style="background : #008ab8;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('cc3333')"><div class="color" style="background : #cc3333;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('ffcc33')"><div class="color" style="background : #ffcc33;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('cc6699')"><div class="color" style="background : #cc6699;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('a3e496')"><div class="color" style="background : #a3e496;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('95cae4')"><div class="color" style="background : #95cae4;"></div></div>
+		</div>
+	</div>
+	<div class="button" id="fail" onclick="Settings ()" title="fail" style="display : none;"><img src="include/fail.png" alt="info" /></div>
+</body>
+
+</html>
