@@ -23,7 +23,11 @@ function AddBodyToViewer (viewer, body, materials, info)
 		viewer.Draw ();
 	}
 
-	var conversionData = new JSM.ConversionData (TextureLoaded, false);
+	var conversionData = {
+		textureLoadedCallback : TextureLoaded,
+		hasConvexPolygons : false,
+		doubleSided : true
+	};
 	var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
 	viewer.AddMeshes (meshes);
 	SetViewer (viewer, info);
@@ -38,7 +42,11 @@ function AddModelToViewer (viewer, model, materials, info)
 		viewer.Draw ();
 	}
 
-	var conversionData = new JSM.ConversionData (TextureLoaded, false);
+	var conversionData = {
+		textureLoadedCallback : TextureLoaded,
+		hasConvexPolygons : false,
+		doubleSided : true
+	};
 	var meshes = JSM.ConvertModelToThreeMeshes (model, materials, conversionData);
 	viewer.AddMeshes (meshes);
 	SetViewer (viewer, info);

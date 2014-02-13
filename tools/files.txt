@@ -41,6 +41,7 @@
 ../src/dialogs/basedialog.js
 ../src/dialogs/settingscontrols.js
 ../src/dialogs/settingsdialog.js
+../src/dialogs/floatingdialog.js
 ../src/viewer/mouse.js
 ../src/viewer/touch.js
 ../src/viewer/converter.js

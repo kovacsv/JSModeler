@@ -6,17 +6,17 @@ JSM.ShapeGenerator = function ()
 JSM.ShapeGenerator.prototype.GetParameters = function ()
 {
 	return this.parameters;
-}
+};
 
 JSM.ShapeGenerator.prototype.Check = function ()
 {
 	return false;
-}
+};
 
 JSM.ShapeGenerator.prototype.Generate = function ()
 {
 	return null;
-}
+};
 
 JSM.RectangleGenerator = function ()
 {
@@ -37,7 +37,7 @@ JSM.RectangleGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.RectangleGenerator.prototype.Generate = function ()
 {
@@ -45,7 +45,7 @@ JSM.RectangleGenerator.prototype.Generate = function ()
 		this.parameters.xSize.value,
 		this.parameters.ySize.value
 	);
-}
+};
 
 JSM.CircleGenerator = function ()
 {
@@ -66,7 +66,7 @@ JSM.CircleGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.CircleGenerator.prototype.Generate = function ()
 {
@@ -74,7 +74,7 @@ JSM.CircleGenerator.prototype.Generate = function ()
 		this.parameters.radius.value,
 		this.parameters.segmentation.value
 	);
-}
+};
 
 JSM.CuboidGenerator = function ()
 {
@@ -99,7 +99,7 @@ JSM.CuboidGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.CuboidGenerator.prototype.Generate = function ()
 {
@@ -108,14 +108,14 @@ JSM.CuboidGenerator.prototype.Generate = function ()
 		this.parameters.ySize.value,
 		this.parameters.zSize.value
 	);
-}
+};
 
 JSM.SphereGenerator = function ()
 {
 	this.parameters = {
 		radius : new JSM.Parameter ('radius', 'number', 0.5, 'left'),
 		segmentation : new JSM.Parameter ('segmentation', 'integer', 20, 'left'),
-		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+		isCurved : new JSM.Parameter ('smooth', 'check', true, 'left')
 	};
 };
 
@@ -130,7 +130,7 @@ JSM.SphereGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.SphereGenerator.prototype.Generate = function ()
 {
@@ -139,14 +139,14 @@ JSM.SphereGenerator.prototype.Generate = function ()
 		this.parameters.segmentation.value,
 		this.parameters.isCurved.value
 	);
-}
+};
 
 JSM.TriSphereGenerator = function ()
 {
 	this.parameters = {
 		radius : new JSM.Parameter ('radius', 'number', 0.5, 'left'),
 		iterations : new JSM.Parameter ('iterations', 'integer', 3, 'left'),
-		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+		isCurved : new JSM.Parameter ('smooth', 'check', true, 'left')
 	};
 };
 
@@ -161,7 +161,7 @@ JSM.TriSphereGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.TriSphereGenerator.prototype.Generate = function ()
 {
@@ -170,7 +170,7 @@ JSM.TriSphereGenerator.prototype.Generate = function ()
 		this.parameters.iterations.value,
 		this.parameters.isCurved.value
 	);
-}
+};
 
 JSM.CylinderGenerator = function ()
 {
@@ -178,8 +178,8 @@ JSM.CylinderGenerator = function ()
 		radius : new JSM.Parameter ('radius', 'number', 0.5, 'left'),
 		height : new JSM.Parameter ('height', 'number', 1.0, 'left'),
 		segmentation : new JSM.Parameter ('segmentation', 'integer', 25, 'left'),
-		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', 1, 'left'),
-		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', true, 'left'),
+		isCurved : new JSM.Parameter ('smooth', 'check', true, 'left')
 	};
 };
 
@@ -197,7 +197,7 @@ JSM.CylinderGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.CylinderGenerator.prototype.Generate = function ()
 {
@@ -208,7 +208,7 @@ JSM.CylinderGenerator.prototype.Generate = function ()
 		this.parameters.withTopAndBottom.value,
 		this.parameters.isCurved.value
 	);
-}
+};
 
 JSM.PieGenerator = function ()
 {
@@ -217,8 +217,8 @@ JSM.PieGenerator = function ()
 		height : new JSM.Parameter ('height', 'number', 1.0, 'left'),
 		angle : new JSM.Parameter ('angle', 'number', 270, 'left'),
 		segmentation : new JSM.Parameter ('segmentation', 'integer', 25, 'left'),
-		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', 1, 'left'),
-		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', true, 'left'),
+		isCurved : new JSM.Parameter ('smooth', 'check', true, 'left')
 	};
 };
 
@@ -239,7 +239,7 @@ JSM.PieGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.PieGenerator.prototype.Generate = function ()
 {
@@ -251,7 +251,7 @@ JSM.PieGenerator.prototype.Generate = function ()
 		this.parameters.withTopAndBottom.value,
 		this.parameters.isCurved.value
 	);
-}
+};
 
 JSM.ConeGenerator = function ()
 {
@@ -260,8 +260,8 @@ JSM.ConeGenerator = function ()
 		bottomRadius : new JSM.Parameter ('bottom radius', 'number', 0.5, 'left'),
 		height : new JSM.Parameter ('height', 'number', 1.0, 'left'),
 		segmentation : new JSM.Parameter ('segmentation', 'integer', 25, 'left'),
-		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', 1, 'left'),
-		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', true, 'left'),
+		isCurved : new JSM.Parameter ('smooth', 'check', true, 'left')
 	};
 };
 
@@ -285,7 +285,7 @@ JSM.ConeGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.ConeGenerator.prototype.Generate = function ()
 {
@@ -297,7 +297,7 @@ JSM.ConeGenerator.prototype.Generate = function ()
 		this.parameters.withTopAndBottom.value,
 		this.parameters.isCurved.value
 	);
-}
+};
 
 JSM.TorusGenerator = function ()
 {
@@ -306,7 +306,7 @@ JSM.TorusGenerator = function ()
 		innerRadius : new JSM.Parameter ('inner radius', 'number', 0.2, 'left'),
 		outerSegmentation : new JSM.Parameter ('outer segmentation', 'integer', 25, 'left'),
 		innerSegmentation : new JSM.Parameter ('inner segmentation', 'integer', 25, 'left'),
-		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+		isCurved : new JSM.Parameter ('smooth', 'check', true, 'left')
 	};
 };
 
@@ -327,7 +327,7 @@ JSM.TorusGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.TorusGenerator.prototype.Generate = function ()
 {
@@ -338,7 +338,7 @@ JSM.TorusGenerator.prototype.Generate = function ()
 		this.parameters.innerSegmentation.value,
 		this.parameters.isCurved.value
 	);
-}
+};
 
 JSM.PrismGenerator = function ()
 {
@@ -353,7 +353,7 @@ JSM.PrismGenerator = function ()
 		]], 'left'),
 		direction : new JSM.Parameter ('direction', 'coord', new JSM.Coord (0.0, 0.0, 1.0), 'right'),
 		height : new JSM.Parameter ('height', 'number', 1.0, 'right'),
-		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', 1, 'right')
+		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', true, 'right')
 	};
 };
 
@@ -371,15 +371,15 @@ JSM.PrismGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.PrismGenerator.prototype.Generate = function ()
 {
+	var polygon = JSM.CreateCCWPolygonFromVertices (this.parameters.basePolygon.value[1]);
 	var i, current;
-	var origPolygon = this.parameters.basePolygon.value[1];
 	var basePolygon = [];
-	for (i = 0; i < origPolygon.length; i++) {
-		current = origPolygon[i];
+	for (i = 0; i < polygon.VertexCount (); i++) {
+		current = polygon.GetVertex (i);
 		basePolygon.push (new JSM.Coord (current.x, current.y, -this.parameters.height.value / 2.0));
 	}
 	return JSM.GeneratePrism (
@@ -388,7 +388,7 @@ JSM.PrismGenerator.prototype.Generate = function ()
 		this.parameters.height.value,
 		this.parameters.withTopAndBottom.value
 	);
-}
+};
 
 JSM.PrismShellGenerator = function ()
 {
@@ -404,7 +404,7 @@ JSM.PrismShellGenerator = function ()
 		direction : new JSM.Parameter ('direction', 'coord', new JSM.Coord (0.0, 0.0, 1.0), 'right'),
 		height : new JSM.Parameter ('height', 'number', 1.0, 'right'),
 		width : new JSM.Parameter ('width', 'number', 0.1, 'right'),
-		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', 1, 'right')
+		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', true, 'right')
 	};
 };
 
@@ -425,15 +425,15 @@ JSM.PrismShellGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.PrismShellGenerator.prototype.Generate = function ()
 {
+	var polygon = JSM.CreateCCWPolygonFromVertices (this.parameters.basePolygon.value[1]);
 	var i, current;
-	var origPolygon = this.parameters.basePolygon.value[1];
 	var basePolygon = [];
-	for (i = 0; i < origPolygon.length; i++) {
-		current = origPolygon[i];
+	for (i = 0; i < polygon.VertexCount (); i++) {
+		current = polygon.GetVertex (i);
 		basePolygon.push (new JSM.Coord (current.x, current.y, -this.parameters.height.value / 2.0));
 	}
 	return JSM.GeneratePrismShell (
@@ -443,7 +443,64 @@ JSM.PrismShellGenerator.prototype.Generate = function ()
 		this.parameters.width.value,
 		this.parameters.withTopAndBottom.value
 	);
-}
+};
+
+JSM.LineShellGenerator = function ()
+{
+	this.parameters = {
+		basePolyLine : new JSM.Parameter (null, 'polyline', [0.01, [
+			new JSM.Coord2D (-0.5, -0.5),
+			new JSM.Coord2D (0.5, -0.5),
+			new JSM.Coord2D (0.5, 0.5),
+			new JSM.Coord2D (0.0, 0.5),
+			new JSM.Coord2D (0.0, 0.0),
+			new JSM.Coord2D (-0.5, 0.0)
+		]], 'left'),
+		direction : new JSM.Parameter ('direction', 'coord', new JSM.Coord (0.0, 0.0, 1.0), 'right'),
+		height : new JSM.Parameter ('height', 'number', 1.0, 'right'),
+		width : new JSM.Parameter ('width', 'number', 0.1, 'right'),
+		withStartAndEnd : new JSM.Parameter ('start and end', 'check', true, 'right'),
+		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', true, 'right')
+	};
+};
+
+JSM.LineShellGenerator.prototype = new JSM.ShapeGenerator ();
+
+JSM.LineShellGenerator.prototype.Check = function ()
+{
+	if (this.parameters.basePolyLine.value[1].length < 2) {
+		return false;
+	}
+	if (!JSM.IsPositive (this.parameters.height.value)) {
+		return false;
+	}
+	if (!JSM.IsPositive (this.parameters.width.value)) {
+		return false;
+	}
+	if (JSM.IsZero (JSM.VectorLength (this.parameters.direction.value))) {
+		return false;
+	}
+	return true;
+};
+
+JSM.LineShellGenerator.prototype.Generate = function ()
+{
+	var polygon = JSM.CreateCCWPolygonFromVertices (this.parameters.basePolyLine.value[1]);
+	var i, current;
+	var basePolyLine = [];
+	for (i = 0; i < polygon.VertexCount (); i++) {
+		current = polygon.GetVertex (i);
+		basePolyLine.push (new JSM.Coord (current.x, current.y, -this.parameters.height.value / 2.0));
+	}
+	return JSM.GenerateLineShell (
+		basePolyLine,
+		this.parameters.direction.value,
+		this.parameters.height.value,
+		this.parameters.width.value,
+		this.parameters.withStartAndEnd.value,
+		this.parameters.withTopAndBottom.value
+	);
+};
 
 JSM.CylinderShellGenerator = function ()
 {
@@ -452,8 +509,8 @@ JSM.CylinderShellGenerator = function ()
 		height : new JSM.Parameter ('height', 'number', 1.0, 'left'),
 		width : new JSM.Parameter ('width', 'number', 0.1, 'left'),
 		segmentation : new JSM.Parameter ('segmentation', 'integer', 25, 'left'),
-		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', 1, 'left'),
-		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', true, 'left'),
+		isCurved : new JSM.Parameter ('smooth', 'check', true, 'left')
 	};
 };
 
@@ -474,7 +531,7 @@ JSM.CylinderShellGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.CylinderShellGenerator.prototype.Generate = function ()
 {
@@ -486,7 +543,63 @@ JSM.CylinderShellGenerator.prototype.Generate = function ()
 		this.parameters.withTopAndBottom.value,
 		this.parameters.isCurved.value
 	);
-}
+};
+
+JSM.RevolveGenerator = function ()
+{
+	this.parameters = {
+		basePolyLine : new JSM.Parameter (null, 'polyline', [0.01, [
+			new JSM.Coord2D (0.2, 0.6),
+			new JSM.Coord2D (0.5, 0.2),
+			new JSM.Coord2D (0.3, 0.0),
+			new JSM.Coord2D (0.3, -0.4)
+		]], 'left'),
+		axisBeg : new JSM.Parameter ('axis start', 'coord', new JSM.Coord (0, 0, 0), 'right'),
+		axisEnd : new JSM.Parameter ('axis end', 'coord', new JSM.Coord (0, 0, 1), 'right'),
+		angle : new JSM.Parameter ('angle', 'number', 360, 'right'),
+		segmentation : new JSM.Parameter ('segmentation', 'integer', 25, 'right'),
+		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', true, 'right'),
+		isCurved : new JSM.Parameter ('smooth', 'check', true, 'right')
+	};
+};
+
+JSM.RevolveGenerator.prototype = new JSM.ShapeGenerator ();
+
+JSM.RevolveGenerator.prototype.Check = function ()
+{
+	if (this.parameters.basePolyLine.value[1].length < 2) {
+		return false;
+	}
+	if (JSM.IsZero (JSM.CoordDistance (this.parameters.axisBeg.value, this.parameters.axisEnd.value))) {
+		return false;
+	}
+	if (!JSM.IsPositive (this.parameters.angle.value)) {
+		return false;
+	}
+	if (this.parameters.segmentation.value < 3) {
+		return false;
+	}
+	return true;
+};
+
+JSM.RevolveGenerator.prototype.Generate = function ()
+{
+	var polygon = JSM.CreateCCWPolygonFromVertices (this.parameters.basePolyLine.value[1]);
+	var i, current;
+	var basePolyLine = [];
+	for (i = 0; i < polygon.VertexCount (); i++) {
+		current = polygon.GetVertex (i);
+		basePolyLine.push (new JSM.Coord (current.x, 0.0, current.y));
+	}
+	return JSM.GenerateRevolved (
+		basePolyLine,
+		new JSM.Sector (this.parameters.axisBeg.value, this.parameters.axisEnd.value),
+		this.parameters.angle.value * JSM.DegRad,
+		this.parameters.segmentation.value,
+		this.parameters.withTopAndBottom.value,
+		this.parameters.isCurved.value
+	);
+};
 
 JSM.PolyTorusGenerator = function ()
 {
@@ -501,7 +614,7 @@ JSM.PolyTorusGenerator = function ()
 		]], 'left'),
 		outerRadius : new JSM.Parameter ('outer radius', 'number', 0.5, 'right'),
 		outerSegmentation : new JSM.Parameter ('outer segmentation', 'integer', 25, 'right'),
-		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'right')
+		isCurved : new JSM.Parameter ('smooth', 'check', true, 'right')
 	};
 };
 
@@ -519,35 +632,29 @@ JSM.PolyTorusGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.PolyTorusGenerator.prototype.Generate = function ()
 {
-	var i, current;
-	var origPolygon = this.parameters.basePolygon.value[1];
-	var basePolygon = [];
-	for (i = 0; i < origPolygon.length; i++) {
-		current = origPolygon[i];
-		basePolygon.push (new JSM.Coord2D (current.x, current.y));
-	}
+	var polygon = JSM.CreateCCWPolygonFromVertices (this.parameters.basePolygon.value[1]);
 	return JSM.GeneratePolyTorus (
-		basePolygon,
+		polygon.vertices,
 		this.parameters.outerRadius.value,
 		this.parameters.outerSegmentation.value,
 		this.parameters.isCurved.value
 	);
-}
+};
 
 JSM.LegoBrickGenerator = function ()
 {
 	this.parameters = {
 		rows : new JSM.Parameter ('rows', 'integer', 3, 'left'),
 		columns : new JSM.Parameter ('columns', 'integer', 2, 'left'),
-		isLarge : new JSM.Parameter ('large', 'check', 1, 'left'),
-		hasTopCylinders : new JSM.Parameter ('top cylinders', 'check', 1, 'left'),
-		hasBottomCylinders : new JSM.Parameter ('bottom cylinders', 'check', 1, 'left'),
+		isLarge : new JSM.Parameter ('large', 'check', true, 'left'),
+		hasTopCylinders : new JSM.Parameter ('top cylinders', 'check', true, 'left'),
+		hasBottomCylinders : new JSM.Parameter ('bottom cylinders', 'check', true, 'left'),
 		segmentation : new JSM.Parameter ('segmentation', 'integer', 25, 'left'),
-		isCurved : new JSM.Parameter ('smooth', 'check', 1, 'left')
+		isCurved : new JSM.Parameter ('smooth', 'check', true, 'left')
 	};
 };
 
@@ -565,7 +672,7 @@ JSM.LegoBrickGenerator.prototype.Check = function ()
 		return false;
 	}
 	return true;
-}
+};
 
 JSM.LegoBrickGenerator.prototype.Generate = function ()
 {
@@ -580,4 +687,4 @@ JSM.LegoBrickGenerator.prototype.Generate = function ()
 	);
 	body.OffsetToOrigo ();
 	return body;
-}
+};

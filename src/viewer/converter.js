@@ -1,10 +1,3 @@
-JSM.ConversionData = function (textureLoadedCallback, hasConvexPolygons, doubleSided)
-{
-	this.textureLoadedCallback = JSM.ValueOrDefault (textureLoadedCallback, null);
-	this.hasConvexPolygons = JSM.ValueOrDefault (hasConvexPolygons, false);
-	this.doubleSided = JSM.ValueOrDefault (doubleSided, true);
-};
-
 JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, textureCoords, conversionData)
 {
 	function CreateGeometry (polygonIndices, materialIndex)
@@ -263,7 +256,11 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 {
 	if (conversionData === undefined) {
-		conversionData = new JSM.ConversionData ();
+		conversionData = {
+			textureLoadedCallback : null,
+			hasConvexPolygons : false,
+			doubleSided : true
+		};
 	}
 
 	var vertexNormals = JSM.CalculateBodyVertexNormals (body);

@@ -53,6 +53,7 @@
 	<script type="text/javascript" src="../../src/dialogs/basedialog.js"></script>
 	<script type="text/javascript" src="../../src/dialogs/settingscontrols.js"></script>
 	<script type="text/javascript" src="../../src/dialogs/settingsdialog.js"></script>
+	<script type="text/javascript" src="../../src/dialogs/floatingdialog.js"></script>
 	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
 	<script type="text/javascript" src="../../src/viewer/converter.js"></script>
@@ -156,8 +157,12 @@
 			}
 			
 			var body = shape.GetBodyAndMaterials ();
+			var conversionData = {
+				textureLoadedCallback : null,
+				hasConvexPolygons : false,
+				doubleSided : true
+			};
 			if (body[0] != null) {
-				var conversionData = new JSM.ConversionData (null, false);
 				shape.meshes = JSM.ConvertBodyToThreeMeshes (body[0], body[1], conversionData);
 				for (i = 0; i < shape.meshes.length; i++) {
 					shape.meshes[i].shapeReference = shape;

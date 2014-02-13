@@ -51,6 +51,7 @@
 	<script type="text/javascript" src="../src/dialogs/basedialog.js"></script>
 	<script type="text/javascript" src="../src/dialogs/settingscontrols.js"></script>
 	<script type="text/javascript" src="../src/dialogs/settingsdialog.js"></script>
+	<script type="text/javascript" src="../src/dialogs/floatingdialog.js"></script>
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
 	<script type="text/javascript" src="../src/viewer/converter.js"></script>
@@ -94,7 +95,11 @@
 				body = JSM.GenerateConicSpiral (0.2, 0.1, 0.0, 2, 50, 50, true);
 			}
 			var materials = new JSM.Materials ();
-			var conversionData = new JSM.ConversionData (TextureLoaded, false, true);
+			var conversionData = {
+				textureLoadedCallback : TextureLoaded,
+				hasConvexPolygons : false,
+				doubleSided : true
+			};
 			//JSM.GenerateRandomMaterials (body, materials, true);
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
 			

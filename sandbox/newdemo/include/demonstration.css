@@ -56,10 +56,9 @@ div.buttoncontententry
 
 div.color
 {
-	width : 13px;
-	height : 13px;
+	width : 15px;
+	height : 15px;
 	float : left;
-	border : 1px solid #ffffff;
 	border-radius : 5px;
 }
 

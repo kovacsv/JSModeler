@@ -51,6 +51,7 @@
 	<script type="text/javascript" src="../src/dialogs/basedialog.js"></script>
 	<script type="text/javascript" src="../src/dialogs/settingscontrols.js"></script>
 	<script type="text/javascript" src="../src/dialogs/settingsdialog.js"></script>
+	<script type="text/javascript" src="../src/dialogs/floatingdialog.js"></script>
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
 	<script type="text/javascript" src="../src/viewer/converter.js"></script>
@@ -122,8 +123,11 @@
 			}
 			*/
 
-			var cd = new JSM.ConversionData ();
-			cd.doubleSided = false;
+			var conversionData = {
+				textureLoadedCallback : null,
+				hasConvexPolygons : true,
+				doubleSided : false
+			};
 			timer.Start ();
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials/*, cd*/);
 			timer.Stop ();

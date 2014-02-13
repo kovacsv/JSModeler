@@ -51,6 +51,7 @@
 	<script type="text/javascript" src="../src/dialogs/basedialog.js"></script>
 	<script type="text/javascript" src="../src/dialogs/settingscontrols.js"></script>
 	<script type="text/javascript" src="../src/dialogs/settingsdialog.js"></script>
+	<script type="text/javascript" src="../src/dialogs/floatingdialog.js"></script>
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
 	<script type="text/javascript" src="../src/viewer/converter.js"></script>
@@ -110,7 +111,11 @@
 			
 			var bodyAndMaterials = GenerateBodyFromHull ();
 			//alert (JSM.ExportBodyToGdl (bodyAndMaterials[0]));
-			var conversionData = new JSM.ConversionData (TextureLoaded, true);
+			var conversionData = {
+				textureLoadedCallback : TextureLoaded,
+				hasConvexPolygons : true,
+				doubleSided : true
+			};
 			var meshes = JSM.ConvertBodyToThreeMeshes (bodyAndMaterials[0], bodyAndMaterials[1], conversionData);
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);

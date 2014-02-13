@@ -1021,6 +1021,38 @@ AddTest ('PolygonTest', function (test)
 	test.Assert (triangles.length == 2);
 	test.Assert (triangles[0].toString () == '0,1,2');
 	test.Assert (triangles[1].toString () == '0,2,3');
+	
+	var vertices = [
+		new JSM.Coord2D (-0.5, -0.5),
+		new JSM.Coord2D (0.5, -0.5),
+		new JSM.Coord2D (0.5, 0.5),
+		new JSM.Coord2D (0.0, 0.5),
+		new JSM.Coord2D (0.0, 0.0),
+		new JSM.Coord2D (-0.5, 0.0)	
+	]
+	
+	var polygon = JSM.CreatePolygonFromVertices (vertices);
+	test.Assert (polygon.VertexCount () == 6);
+	
+	vertices[0].x = 1.0;
+	vertices[0].y = 1.0;
+
+	test.Assert (polygon.GetVertex (0).x == -0.5 && polygon.GetVertex (0).y == -0.5);
+	
+	var vertices = [
+		new JSM.Coord2D (-0.5, 0.0),
+		new JSM.Coord2D (0.0, 0.0),
+		new JSM.Coord2D (0.0, 0.5),
+		new JSM.Coord2D (0.5, 0.5),
+		new JSM.Coord2D (0.5, -0.5),
+		new JSM.Coord2D (-0.5, -0.5),
+	];
+	
+	var polygon = JSM.CreatePolygonFromVertices (vertices);
+	test.Assert (JSM.PolygonOrientation2D (polygon) == 'Clockwise');
+
+	var polygon = JSM.CreateCCWPolygonFromVertices (vertices);
+	test.Assert (JSM.PolygonOrientation2D (polygon) == 'CounterClockwise');
 });
 
 AddTest ('ContourPolygon2DTest', function (test)

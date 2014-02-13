@@ -13,7 +13,6 @@ JSM.BaseDialog = function ()
 
 JSM.BaseDialog.prototype.Open = function (title, cancelText, okText)
 {
-	this.InitStyles ();
 	if (this.dialog !== null) {
 		return;
 	}
@@ -31,6 +30,7 @@ JSM.BaseDialog.prototype.Open = function (title, cancelText, okText)
 		document.addEventListener ('click', this.mouseClickHandler, true);
 	}
 	
+	this.InitStyles ();
 	this.InitDialog ();
 	this.InitTitle ();
 	this.InitContent ();
@@ -62,7 +62,8 @@ JSM.BaseDialog.prototype.InitStyles = function ()
 			fontFamily : 'Arial, cursive',
 			fontSize : '12px',
 			background : '#ffffff',
-			shadow : '0px 0px 10px #555555'
+			shadow : '0px 0px 10px #555555',
+			position : 'absolute'
 		},
 		title : {
 			color : '#eeeeee',
@@ -132,7 +133,7 @@ JSM.BaseDialog.prototype.InitDialog = function ()
 	this.dialog.style.background = this.styles.dialog.background;
 	this.dialog.style.fontFamily = this.styles.dialog.fontFamily;
 	this.dialog.style.fontSize = this.styles.dialog.fontSize;
-	this.dialog.style.position = 'absolute';
+	this.dialog.style.position = this.styles.dialog.position;
 	this.dialog.style.boxShadow = this.styles.dialog.shadow;
 	this.dialog.style.left = '0px';
 	this.dialog.style.top = '0px';

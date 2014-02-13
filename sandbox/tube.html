@@ -51,6 +51,7 @@
 	<script type="text/javascript" src="../src/dialogs/basedialog.js"></script>
 	<script type="text/javascript" src="../src/dialogs/settingscontrols.js"></script>
 	<script type="text/javascript" src="../src/dialogs/settingsdialog.js"></script>
+	<script type="text/javascript" src="../src/dialogs/floatingdialog.js"></script>
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
 	<script type="text/javascript" src="../src/viewer/converter.js"></script>
@@ -97,7 +98,11 @@
 			var direction = new JSM.Vector (0.0, 0.0, 1.0);
 			var body = JSM.GenerateTube (polygons, true);
 			var materials = new JSM.Materials ();
-			var conversionData = new JSM.ConversionData (TextureLoaded, false, false);
+			var conversionData = {
+				textureLoadedCallback : TextureLoaded,
+				hasConvexPolygons : false,
+				doubleSided : false
+			};
 			JSM.GenerateRandomMaterials (body, materials, true);
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
 			for (var i = 0; i < meshes.length; i++) {

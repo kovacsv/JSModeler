@@ -124,9 +124,9 @@ JSM.CoordControl.prototype.Create = function (div, parameter)
 
 JSM.CoordControl.prototype.GetValue = function (parameter)
 {
-	parameter.value.x = this.inputs[0].value;
-	parameter.value.y = this.inputs[1].value;
-	parameter.value.z = this.inputs[2].value;
+	parameter.value.x = parseFloat (this.inputs[0].value);
+	parameter.value.y = parseFloat (this.inputs[1].value);
+	parameter.value.z = parseFloat (this.inputs[2].value);
 };
 
 JSM.CoordControl.prototype.InitStyles = function ()
@@ -196,8 +196,13 @@ JSM.ColorControl.prototype.InitStyles = function ()
 	};
 };
 
-JSM.PolygonControl = function ()
+JSM.PolygonControl = function (type)
 {
+	this.type = 'polygon';
+	if (type !== undefined && type !== null) {
+		this.type = type;
+	}
+
 	this.canvas = null;
 	this.context = null;
 	this.scaleInput = null;
@@ -387,13 +392,28 @@ JSM.PolygonControl.prototype.MoveCoord = function (mouseCoord)
 JSM.PolygonControl.prototype.UpdateMarker = function (mouseCoord)
 {
 	this.marker = -1;
-	if (this.coords.length < 3) {
+	if (this.type == 'polygon') {
+		if (this.coords.length < 3) {
+			return;
+		}
+	} else if (this.type == 'polyline') {
+		if (this.coords.length < 2) {
+			return;
+		}
+	} else {
 		return;
 	}
 	
 	if (this.mode == 'Create') {
-		if (JSM.CoordDistance2D (mouseCoord, this.coords[0]) < this.styles.editor.gridStep) {
-			this.marker = 0;
+		var refCoordIndex = 0;
+		if (this.type == 'polygon') {
+			refCoordIndex = 0;
+		} else if (this.type == 'polyline') {
+			refCoordIndex = this.coords.length - 1;
+		}
+		var refCoord = this.coords[refCoordIndex];
+		if (JSM.CoordDistance2D (mouseCoord, refCoord) < this.styles.editor.gridStep) {
+			this.marker = refCoordIndex;
 		}
 	} else if (this.mode == 'Finished') {
 		var i;
@@ -491,8 +511,10 @@ JSM.PolygonControl.prototype.DrawCoords = function ()
 	if (this.mode == 'Create') {
 		this.ContextLineTo (this.current);
 	} else {
-		this.ContextLineTo (firstCoord);
-		this.context.fill ();
+		if (this.type == 'polygon') {
+			this.ContextLineTo (firstCoord);
+			this.context.fill ();
+		}
 	}
 	
 	this.context.stroke ();

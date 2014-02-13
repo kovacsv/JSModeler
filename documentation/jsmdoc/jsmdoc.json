@@ -992,6 +992,15 @@
 						["Coord[3][*]", "the result"]
 					]
 				},
+				"CreatePolygonFromVertices" : {
+					"description" : "Creates a cloned polygon from the given vertices.",
+					"parameters" : [
+						["vertices", "Coord2D[*]", "the vertices"]
+					],
+					"returns" : [
+						["Polygon2D", "the result"]
+					]
+				},
 				"PolygonSignedArea2D" : {
 					"description" : "Calculates the signed area of a polygon. The result is positive if the polygon has counter clockwise orientation, negative if it has clockwise orientation.",
 					"parameters" : [
@@ -1023,6 +1032,15 @@
 					"description" : "Reverses the orientation of a polygon.",
 					"parameters" : [
 						["polygon", "Polygon2D", "the polygon"]
+					]
+				},
+				"CreateCCWPolygonFromVertices" : {
+					"description" : "Creates a cloned polygon from the given vertices with couter clockwise orientation.",
+					"parameters" : [
+						["vertices", "Coord2D[*]", "the vertices"]
+					],
+					"returns" : [
+						["Polygon2D", "the result"]
 					]
 				},
 				"PolygonComplexity2D" : {

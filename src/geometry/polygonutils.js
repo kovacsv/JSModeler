@@ -1,4 +1,25 @@
 /**
+* Function: CreatePolygonFromVertices
+* Description: Creates a cloned polygon from the given vertices.
+* Parameters:
+*	vertices {Coord2D[*]} the vertices
+* Returns:
+*	{Polygon2D} the result
+*/
+JSM.CreatePolygonFromVertices = function (vertices)
+{
+	var polygon = new JSM.Polygon2D ();
+
+	var i, current;
+	for (i = 0; i < vertices.length; i++) {
+		current = vertices[i];
+		polygon.AddVertex (current.x, current.y);
+	}
+	
+	return polygon;
+};
+
+/**
 * Function: PolygonSignedArea2D
 * Description:
 *	Calculates the signed area of a polygon. The result is positive if the polygon has
@@ -73,6 +94,23 @@ JSM.ChangePolygonOrientation2D = function (polygon)
 		oldVertex = oldPolygon.GetVertex (i);
 		polygon.AddVertex (oldVertex.x, oldVertex.y);
 	}
+};
+
+/**
+* Function: CreateCCWPolygonFromVertices
+* Description: Creates a cloned polygon from the given vertices with couter clockwise orientation.
+* Parameters:
+*	vertices {Coord2D[*]} the vertices
+* Returns:
+*	{Polygon2D} the result
+*/
+JSM.CreateCCWPolygonFromVertices = function (vertices)
+{
+	var polygon = JSM.CreatePolygonFromVertices (vertices);
+	if (JSM.PolygonOrientation2D (polygon) != 'CounterClockwise') {
+		JSM.ChangePolygonOrientation2D (polygon);
+	}
+	return polygon;
 };
 
 /**

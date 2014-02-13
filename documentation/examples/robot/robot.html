@@ -121,7 +121,11 @@
 		
 			var materials = new JSM.Materials ();
 			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'wall.jpg', 10.0, 10.0));
-			var conversionData = new JSM.ConversionData (TextureLoaded, true, false);
+			var conversionData = {
+				textureLoadedCallback : null,
+				hasConvexPolygons : true,
+				doubleSided : true
+			};
 			var cube = JSM.GenerateCuboid (8.0, 8.0, 8.0);
 			cube.SetPolygonsMaterialIndex (0);
 			cube.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 4.0)));

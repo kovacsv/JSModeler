@@ -348,7 +348,13 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 	function AddEdge (index)
 	{
 		var edge = al.edges[index];
-		AddLineToContent ('edge ' + (edge.vert1 + 1) + ', ' + (edge.vert2 + 1) + ', -1, -1, 0' + ' ! ' + (index + 1));
+		var status = 0;
+		if (edge.pgon1 != -1 && edge.pgon2 != -1) {
+			if (body.GetPolygon (edge.pgon1).GetCurveGroup () == body.GetPolygon (edge.pgon2).GetCurveGroup ()) {
+				status = 2;
+			}
+		}
+		AddLineToContent ('edge ' + (edge.vert1 + 1) + ', ' + (edge.vert2 + 1) + ', -1, -1, ' + status + ' ! ' + (index + 1));
 	}
 
 	function AddPolygon (index)
@@ -359,7 +365,11 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 		}
 	
 		var pgon = al.pgons[index];
-		AddToContent ('pgon ' + pgon.pedges.length + ', 0, 0, ');
+		var status = 0;
+		if (body.GetPolygon (index).HasCurveGroup ()) {
+			status = 2;
+		}
+		AddToContent ('pgon ' + pgon.pedges.length + ', 0, ' + status + ', ');
 		var pedgeList = '';
 		var i, pedge;
 		for (i = 0; i < pgon.pedges.length; i++) {

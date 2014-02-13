@@ -179,7 +179,11 @@
 			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'tile.png', 0.1, 0.1));
 			body.SetPolygonsMaterialIndex (0);
 
-			var conversionData = new JSM.ConversionData (TextureLoaded, true, true);
+			var conversionData = {
+				textureLoadedCallback : TextureLoaded,
+				hasConvexPolygons : true,
+				doubleSided : true
+			};
 			meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);

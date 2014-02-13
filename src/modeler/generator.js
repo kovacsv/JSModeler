@@ -1125,7 +1125,8 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 
 	var polygon = new JSM.Polygon ();
 	polygon.vertices = basePolygon;
-	var innerBasePolygon = JSM.OffsetPolygonContour (polygon, width).vertices;
+	var offsetedPolygon = JSM.OffsetPolygonContour (polygon, width);
+	var innerBasePolygon = offsetedPolygon.vertices;
 	for (i = 0; i < count; i++) {
 		result.AddVertex (new JSM.BodyVertex (innerBasePolygon[i]));
 	}
@@ -1272,6 +1273,7 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 		angles.push (angle);
 	}
 
+	var normal = new JSM.Vector (0, 0, 1);
 	var innerBasePolyLine = [];
 	var distance, innerCoord, offsetDirection;
 	for (i = 0; i < count; i++) {
@@ -1286,7 +1288,7 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 		angle = angles[curr];
 		distance = width / Math.sin (angle);
 		innerCoord = JSM.CoordOffset (basePolyLine[curr], offsetDirection, distance);
-		innerCoord = JSM.CoordRotate (innerCoord, direction, -(Math.PI - angle), basePolyLine[curr]);
+		innerCoord = JSM.CoordRotate (innerCoord, normal, -(Math.PI - angle), basePolyLine[curr]);
 		innerBasePolyLine.push (innerCoord);
 	}
 
@@ -1377,7 +1379,7 @@ JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, inner
 {
 	var result = new JSM.Body ();
 	
-	var theta = 2.0 * Math.PI;
+	var theta = 0.0;
 	var step = 2.0 * Math.PI / innerSegmentation;
 	
 	var circle = [];
@@ -1387,7 +1389,7 @@ JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, inner
 		coord2D = JSM.PolarToCartesian (innerRadius, theta);
 		coord = new JSM.Coord (coord2D.x + outerRadius, 0.0, coord2D.y);
 		circle.push (coord);
-		theta -= step;
+		theta += step;
 	}
 
 	var axisDir = new JSM.Coord (0.0, 0.0, 1.0);

@@ -142,7 +142,11 @@ JSM.ParameterTable.prototype.CreateParameter = function (table, index, parameter
 		control.Create (tdInput, parameter);
 		this.inputs[index] = control;
 	} else if (parameter.type == 'polygon') {
-		control = new JSM.PolygonControl ();
+		control = new JSM.PolygonControl ('polygon');
+		control.Create (tdInput, parameter);
+		this.inputs[index] = control;
+	} else if (parameter.type == 'polyline') {
+		control = new JSM.PolygonControl ('polyline');
 		control.Create (tdInput, parameter);
 		this.inputs[index] = control;
 	}

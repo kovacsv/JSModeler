@@ -53,6 +53,7 @@
 	<script type="text/javascript" src="../../src/dialogs/basedialog.js"></script>
 	<script type="text/javascript" src="../../src/dialogs/settingscontrols.js"></script>
 	<script type="text/javascript" src="../../src/dialogs/settingsdialog.js"></script>
+	<script type="text/javascript" src="../../src/dialogs/floatingdialog.js"></script>
 	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
 	<script type="text/javascript" src="../../src/viewer/converter.js"></script>
@@ -66,6 +67,7 @@
 	<script type="text/javascript">
 		var viewer = null;
 		var body = null;
+		var materials = null;
 		var currentShape = 'cuboid';
 		var currentColor = '279b61';
 
@@ -81,7 +83,9 @@
 			torus : { name : 'torus', generator : new JSM.TorusGenerator () },
 			prism : { name : 'prism', generator : new JSM.PrismGenerator () },
 			prismshell : { name : 'prism shell', generator : new JSM.PrismShellGenerator () },
+			lineshell : { name : 'line shell', generator : new JSM.LineShellGenerator () },
 			cylindershell : { name : 'cylinder shell', generator : new JSM.CylinderShellGenerator () },
+			revolved : { name : 'revolved', generator : new JSM.RevolveGenerator () },
 			polytorus : { name : 'polytorus', generator : new JSM.PolyTorusGenerator () },
 			lego : { name : 'lego brick', generator : new JSM.LegoBrickGenerator () }
 		};
@@ -128,14 +132,19 @@
 				return;
 			}
 			
-			var materials = new JSM.Materials ();
+			materials = new JSM.Materials ();
 			var color = ConvertColor (currentColor);
 			materials.AddMaterial (new JSM.Material (color, color));
 			
 			body = shape.generator.Generate ();
 			body.SetPolygonsMaterialIndex (0);
-			
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+
+			var conversionData = {
+				textureLoadedCallback : null,
+				hasConvexPolygons : false,
+				doubleSided : false
+			};			
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
 			viewer.AddMeshes (meshes);
 			viewer.Draw ();
 		}
@@ -169,6 +178,30 @@
 			infoDialog.Open ('information', parameters);
 		}
 
+		function Export (format)
+		{
+			if (body === null) {
+				return;
+			}
+
+			var floatingDialog = new JSM.FloatingDialog ();
+			if (format == 'stl') {
+				floatingDialog.Open ('textarea');
+				floatingDialog.GetContent ().value = JSM.ExportBodyToStl (body, 'JSModelerBody', false);
+			} else if (format == 'obj') {
+				floatingDialog.Open ('textarea');
+				floatingDialog.GetContent ().value = JSM.ExportBodyToObj (body, 'JSModelerBody', false);
+			} else if (format == 'gdl') {
+				floatingDialog.Open ('textarea');
+				floatingDialog.GetContent ().value = JSM.ExportBodyToGdl (body);
+			} else if (format == 'svg') {
+				floatingDialog.Open ('svg');
+				var drawSettings = new JSM.DrawSettings (viewer.cameraMove, viewer.settings['fieldOfView'], viewer.settings['nearClippingPlane'], viewer.settings['farClippingPlane'], 'Wireframe', true);
+				var drawer = new JSM.SVGDrawer (floatingDialog.GetContent ());
+				JSM.DrawProjectedBody (body, materials, drawSettings, drawer);
+			}
+		}		
+		
 		function ChangeColor (color)
 		{
 			var currentColorDiv = document.getElementById ('currentcolor');
@@ -245,7 +278,9 @@
 			AddMenuTitle ('polygonal shapes');
 			AddMenuEntry ('prism');
 			AddMenuEntry ('prismshell');
+			AddMenuEntry ('lineshell');
 			AddMenuEntry ('cylindershell');
+			AddMenuEntry ('revolved');
 			AddMenuEntry ('polytorus');
 
 			AddMenuTitle ('other shapes');
@@ -283,9 +318,10 @@
 	<div class="button" id="export" title="export" onmouseover="ShowHide ('exportcontent', true);" onmouseout="ShowHide ('exportcontent', false);">
 		<img src="include/export.png" alt="export" />
 		<div class="buttoncontent" id="exportcontent" style="display : none;">
-			<div class="buttoncontententry">stl</div>
-			<div class="buttoncontententry">obj</div>
-			<div class="buttoncontententry">svg</div>
+			<div class="buttoncontententry" onclick="Export ('stl')">stl</div>
+			<div class="buttoncontententry" onclick="Export ('obj')">obj</div>
+			<div class="buttoncontententry" onclick="Export ('gdl')">gdl</div>
+			<div class="buttoncontententry" onclick="Export ('svg')">svg</div>
 		</div>
 	</div>
 	<div class="button" id="color" title="color" onmouseover="ShowHide ('colorcontent', true);" onmouseout="ShowHide ('colorcontent', false);">
