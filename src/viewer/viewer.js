@@ -81,18 +81,18 @@ JSM.Viewer.prototype.InitSettings = function (settings)
 	};
 
 	if (settings !== undefined) {
-		if (settings.cameraEyePosition !== undefined) this.settings.cameraEyePosition = settings.cameraEyePosition;
-		if (settings.cameraCenterPosition !== undefined) this.settings.cameraCenterPosition = settings.cameraCenterPosition;
-		if (settings.cameraUpVector !== undefined) this.settings.cameraUpVector = settings.cameraUpVector;
-		if (settings.cameraFixUp !== undefined) this.settings.cameraFixUp = settings.cameraFixUp;
-		if (settings.cameraDisableOrbit !== undefined) this.settings.cameraDisableOrbit = settings.cameraDisableOrbit;
-		if (settings.cameraDisableZoom !== undefined) this.settings.cameraDisableZoom = settings.cameraDisableZoom;
-		if (settings.fieldOfView !== undefined) this.settings.fieldOfView = settings.fieldOfView;
-		if (settings.nearClippingPlane !== undefined) this.settings.nearClippingPlane = settings.nearClippingPlane;
-		if (settings.farClippingPlane !== undefined) this.settings.farClippingPlane = settings.farClippingPlane;
-		if (settings.lightAmbientColor !== undefined) this.settings.lightAmbientColor = settings.lightAmbientColor;
-		if (settings.lightDiffuseColor !== undefined) this.settings.lightDiffuseColor = settings.lightDiffuseColor;
-		if (settings.autoUpdate !== undefined) this.settings.autoUpdate = settings.autoUpdate;
+		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = settings.cameraEyePosition; }
+		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = settings.cameraCenterPosition; }
+		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = settings.cameraUpVector; }
+		if (settings.cameraFixUp !== undefined) { this.settings.cameraFixUp = settings.cameraFixUp; }
+		if (settings.cameraDisableOrbit !== undefined) { this.settings.cameraDisableOrbit = settings.cameraDisableOrbit; }
+		if (settings.cameraDisableZoom !== undefined) { this.settings.cameraDisableZoom = settings.cameraDisableZoom; }
+		if (settings.fieldOfView !== undefined) { this.settings.fieldOfView = settings.fieldOfView; }
+		if (settings.nearClippingPlane !== undefined) { this.settings.nearClippingPlane = settings.nearClippingPlane; }
+		if (settings.farClippingPlane !== undefined) { this.settings.farClippingPlane = settings.farClippingPlane; }
+		if (settings.lightAmbientColor !== undefined) { this.settings.lightAmbientColor = settings.lightAmbientColor; }
+		if (settings.lightDiffuseColor !== undefined) { this.settings.lightDiffuseColor = settings.lightDiffuseColor; }
+		if (settings.autoUpdate !== undefined) { this.settings.autoUpdate = settings.autoUpdate; }
 	}
 
 	return true;
@@ -123,7 +123,7 @@ JSM.Viewer.prototype.InitThree = function (canvasName)
 	return true;
 };
 
-JSM.Viewer.prototype.InitCamera = function (canvasName)
+JSM.Viewer.prototype.InitCamera = function ()
 {
 	this.mouse = new JSM.Mouse ();
 	if (!this.mouse) {
@@ -226,7 +226,6 @@ JSM.Viewer.prototype.MeshCount = function ()
 {
 	var count = 0;
 	
-	var current;
 	this.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
 			count = count + 1;
@@ -240,7 +239,6 @@ JSM.Viewer.prototype.VertexCount = function ()
 {
 	var count = 0;
 	
-	var current;
 	this.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
 			count = count + current.geometry.vertices.length;
@@ -254,7 +252,6 @@ JSM.Viewer.prototype.FaceCount = function ()
 {
 	var count = 0;
 	
-	var current;
 	this.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
 			count = count + current.geometry.faces.length;
@@ -308,7 +305,6 @@ JSM.Viewer.prototype.RemoveLastMesh = function ()
 {
 	var found = null;
 	
-	var current;
 	this.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
 			found = current;
@@ -390,7 +386,7 @@ JSM.Viewer.prototype.GetBoundingBox = function ()
 	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
 	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
 	
-	var current, geometry, coord;
+	var geometry, coord;
 	this.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
 			geometry = current.geometry;
@@ -415,8 +411,8 @@ JSM.Viewer.prototype.GetBoundingSphereRadius = function ()
 {
 	var center = this.GetCenter ();
 	var radius = 0.0;
-	
-	var current, geometry, coord, distance;
+
+	var geometry, coord, distance;
 	this.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
 			geometry = current.geometry;

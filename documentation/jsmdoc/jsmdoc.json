@@ -2442,8 +2442,8 @@
 					"description" : "Exports a body content to obj.",
 					"parameters" : [
 						["body", "Body", "the body"],
-						["name", "string", "name the body"],
-						["hasConvexPolygons", "boolean", "the body has only convex polygons"]
+						["vertexOffset", "integer", "vertex index offset"],
+						["normalOffset", "integer", "normal index offset"]
 					],
 					"returns" : [
 						["string", "the result"]
@@ -2452,9 +2452,7 @@
 				"ExportBodyToObj" : {
 					"description" : "Exports a body to obj.",
 					"parameters" : [
-						["body", "Body", "the body"],
-						["name", "string", "name the body"],
-						["hasConvexPolygons", "boolean", "the body has only convex polygons"]
+						["body", "Body", "the body"]
 					],
 					"returns" : [
 						["string", "the result"]
@@ -2463,9 +2461,7 @@
 				"ExportModelToObj" : {
 					"description" : "Exports a model to obj.",
 					"parameters" : [
-						["model", "Model", "the model"],
-						["name", "string", "name the model"],
-						["hasConvexPolygons", "boolean", "the model has only convex polygons"]
+						["model", "Model", "the model"]
 					],
 					"returns" : [
 						["string", "the result"]
@@ -3185,13 +3181,7 @@
 					"parameters" : [
 						["body", "Body", "the body"],
 						["eye", "Coord", "the camera eye position"],
-						["center", "Coord", "the camera center position"],
-						["up", "Vector", "the camera up vector"],
-						["fieldOfView", "number", "camera field of view"],
-						["aspectRatio", "number", "aspect ratio of the desired image"],
-						["nearPlane", "number", "near cutting plane distance"],
-						["farPlane", "number", "far cutting plane distance"],
-						["viewPort", "number[4]", "view port coordinates in pixels"]
+						["center", "Coord", "the camera center position"]
 					],
 					"returns" : [
 						["integer[]", "the ordered polygon indices"]

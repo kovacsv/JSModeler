@@ -193,7 +193,7 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		} 
 		if (hasTexture) {
 			var textureName = modelerMaterial.texture;
-			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (image) {
+			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
 				if (conversionData.textureLoadedCallback !== null) {
 					conversionData.textureLoadedCallback ();
 				}
@@ -210,7 +210,7 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		meshes.push (mesh);
 	}
 
-	var i, j;
+	var i;
 	var polygonsByMaterial = [];
 	var polygonsWithNoMaterial = [];
 	var hasVertexNormals = (vertexNormals !== undefined && vertexNormals !== null);
@@ -268,8 +268,6 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 	var i, j;
 	var hasTextures = false;
 	if (materials !== undefined && materials !== null) {
-		var projection = body.GetTextureProjectionType ();
-		var coords = body.GetTextureProjectionCoords ();
 		for (i = 0; i < materials.Count (); i++) {
 			if (materials.GetMaterial (i).texture !== null) {
 				hasTextures = true;
@@ -359,7 +357,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 			}
 			
 			if (textureName !== undefined) {
-				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (image) {
+				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
 					if (textureLoadedCallback !== undefined) {
 						textureLoadedCallback ();
 					}

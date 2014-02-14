@@ -207,8 +207,6 @@ JSM.BaseDialog.prototype.InitControls = function ()
 
 JSM.BaseDialog.prototype.SetPosition = function ()
 {
-	var height = this.dialog.clientHeight;
-	var width = this.dialog.clientWidth;
 	this.dialog.style.left = ((window.innerWidth - this.dialog.clientWidth) / 2.0) + 'px';
 	this.dialog.style.top = ((window.innerHeight - this.dialog.clientHeight) / 2.0) + 'px';
 };

@@ -2,6 +2,10 @@ import os
 import sys
 import re
 
+currentPath = os.path.dirname (os.path.abspath (__file__))
+os.chdir (currentPath)
+
+configFilePath = 'jshintconfig.json'
 sourcesFolderName = '../src'
 
 def PrintInfo (message):
@@ -11,15 +15,12 @@ def PrintError (error):
 	print ('Error: ' + error)
 
 def JSHintFolder (folderPath):
-	result = os.system ('jshint ' + folderPath)
+	result = os.system ('jshint --config ' + configFilePath + ' ' + folderPath)
 	if result != 0:
 		return False
 	return True
 	
 def Main ():
-	currentPath = os.path.dirname (os.path.abspath (__file__))
-	os.chdir (currentPath)
-
 	sourcesPath = os.path.abspath (sourcesFolderName)
 	
 	PrintInfo ('JSHint folder <' + sourcesPath + '>.')

@@ -317,7 +317,7 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 	{
 		var originalPolygon = new JSM.Polygon2D ();
 		var contourPolygon = new JSM.Polygon2D ();
-		var i, j, k, vertex;
+		var i, j, vertex;
 		for (i = 0; i < result.length; i++) {
 			vertex = vertices[result[i]];
 			originalPolygon.AddVertex (vertex.x, vertex.y);
@@ -406,8 +406,6 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 	}
 
 	var result = [];
-	var count = vertices.length;
-	
 	var contourEnds = [];
 	var contourCount = 0;
 	

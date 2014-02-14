@@ -35,9 +35,6 @@ JSM.ExportBodyContentToStl = function (body, name, hasConvexPolygons)
 		}
 		
 		var vertex1, vertex2, vertex3;
-		var normal1, normal2, normal3;
-		var uv1, uv2, uv3;
-
 		var normal = null;
 		if (count === 3) {
 			normal = JSM.CalculateBodyPolygonNormal (body, index);
@@ -154,8 +151,8 @@ JSM.ExportModelToStl = function (model, name, hasConvexPolygons)
 * Description: Exports a body content to obj.
 * Parameters:
 *	body {Body} the body
-*	name {string} name the body
-*	hasConvexPolygons {boolean} the body has only convex polygons
+*	vertexOffset {integer} vertex index offset
+*	normalOffset {integer} normal index offset
 * Returns:
 *	{string} the result
 */
@@ -220,8 +217,6 @@ JSM.ExportBodyContentToObj = function (body, vertexOffset, normalOffset)
 * Description: Exports a body to obj.
 * Parameters:
 *	body {Body} the body
-*	name {string} name the body
-*	hasConvexPolygons {boolean} the body has only convex polygons
 * Returns:
 *	{string} the result
 */
@@ -235,12 +230,10 @@ JSM.ExportBodyToObj = function (body)
 * Description: Exports a model to obj.
 * Parameters:
 *	model {Model} the model
-*	name {string} name the model
-*	hasConvexPolygons {boolean} the model has only convex polygons
 * Returns:
 *	{string} the result
 */
-JSM.ExportModelToObj = function (model, name, hasConvexPolygons)
+JSM.ExportModelToObj = function (model)
 {
 	var objContent = '';
 	

@@ -200,7 +200,6 @@ JSM.CalculatePolygonCylindricalTextureCoords = function (body, index, normal)
 	var polygon = body.GetPolygon (index);
 	var system = body.GetTextureProjectionCoords ();
 
-	var angle = 0;
 	var i, j, coord, textureValues;
 	for (i = 0; i < polygon.VertexIndexCount (); i++) {
 		coord = body.GetVertexPosition (polygon.GetVertexIndex (i));

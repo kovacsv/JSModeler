@@ -480,27 +480,27 @@ AddTest ('PainterTest', function (test)
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 3.0, 1.0)));
 	body.AddPolygon (new JSM.BodyPolygon ([16, 17, 18, 19]));
 	
-	ordered = JSM.OrderPolygons (body, new JSM.Coord (0, 10, 0), center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	ordered = JSM.OrderPolygons (body, new JSM.Coord (0, 10, 0), center);
 	test.Assert (ordered.length == body.PolygonCount ());
 	test.Assert (ordered[0] == 0 && ordered[1] == 1 && ordered[2] == 2 && ordered[3] == 3 && ordered[4] == 4);
 
-	ordered = JSM.OrderPolygons (body, new JSM.Coord (4, 8, 3), center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	ordered = JSM.OrderPolygons (body, new JSM.Coord (4, 8, 3), center);
 	test.Assert (ordered.length == body.PolygonCount ());
 	test.Assert (ordered[0] == 0 && ordered[1] == 1 && ordered[2] == 2 && ordered[3] == 3 && ordered[4] == 4);
 
-	ordered = JSM.OrderPolygons (body, new JSM.Coord (0, -10, 0), center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	ordered = JSM.OrderPolygons (body, new JSM.Coord (0, -10, 0), center);
 	test.Assert (ordered.length == body.PolygonCount ());
 	test.Assert (ordered[0] == 4 && ordered[1] == 3 && ordered[2] == 2 && ordered[3] == 1 && ordered[4] == 0);
 
-	ordered = JSM.OrderPolygons (body, new JSM.Coord (7, -5, 4), center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	ordered = JSM.OrderPolygons (body, new JSM.Coord (7, -5, 4), center);
 	test.Assert (ordered.length == body.PolygonCount ());
 	test.Assert (ordered[0] == 4 && ordered[1] == 3 && ordered[2] == 2 && ordered[3] == 1 && ordered[4] == 0);
 
-	ordered = JSM.OrderPolygons (body, new JSM.Coord (-4, -7, 5), center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	ordered = JSM.OrderPolygons (body, new JSM.Coord (-4, -7, 5), center);
 	test.Assert (ordered.length == body.PolygonCount ());
 	test.Assert (ordered[0] == 4 && ordered[1] == 3 && ordered[2] == 2 && ordered[3] == 1 && ordered[4] == 0);
 
-	ordered = JSM.OrderPolygons (body, new JSM.Coord (-7, -7, 0.5), center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+	ordered = JSM.OrderPolygons (body, new JSM.Coord (-7, -7, 0.5), center);
 	test.Assert (ordered.length == body.PolygonCount ());
 	test.Assert (ordered[0] == 4 && ordered[1] == 3 && ordered[2] == 2 && ordered[3] == 1 && ordered[4] == 0);
 });

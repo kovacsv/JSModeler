@@ -66,7 +66,7 @@ JSM.GenerateLegoBrick = function (rows, columns, isLarge, hasTopCylinders, hasBo
 	var walls = JSM.GeneratePrismShell (basePolygon, normal, unitHeight - wallWidth, wallWidth, true);
 	result.Merge (walls);
 		
-	var i, j, k;
+	var i, j;
 	for (i = 0; i < 4; i++) {
 		basePolygon[i].z = unitHeight - wallWidth;
 	}
@@ -211,7 +211,7 @@ JSM.GenerateSuperShape = function (	a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
 
 	var result = JSM.GenerateSphere (1.0, segmentation, isCurved);
 
-	var i, j, vertex, coord, spherical, newCoord;
+	var i, vertex, coord, spherical, newCoord;
 	for (i = 0; i < result.VertexCount (); i++) {
 		vertex = result.GetVertex (i);
 		coord = vertex.position;

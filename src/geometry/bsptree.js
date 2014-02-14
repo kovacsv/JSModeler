@@ -101,7 +101,7 @@ JSM.BSPTree.prototype.GetNodes = function ()
 JSM.BSPTree.prototype.NodeCount = function ()
 {
 	var count = 0;
-	this.Traverse (function (node) {
+	this.Traverse (function () {
 		count = count + 1;
 	});
 	return count;
@@ -138,7 +138,6 @@ JSM.BSPTree.prototype.AddPolygonToNode = function (node, polygon, userData)
 		var planePolygons = [];
 		var cutSucceeded = JSM.CutPolygonWithPlane (polygon, node.plane, frontPolygons, backPolygons, planePolygons);
 		if (cutSucceeded) {
-			var i;
 			if (backPolygons.length > 0) {
 				this.AddInsidePolygonsToNode (node, backPolygons, userData);
 			}

@@ -124,7 +124,7 @@ JSM.CanvasDrawer.prototype.DrawPolygon = function (polygon, color)
 JSM.SVGDrawer = function (svgObject)
 {
 	this.svgObject = svgObject;
-	this.svgNameSpace = "http://www.w3.org/2000/svg";
+	this.svgNameSpace = 'http://www.w3.org/2000/svg';
 };
 
 /**
@@ -301,7 +301,7 @@ JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 
 	var i, j, polygon, coord, projected, materialIndex, color;
 	if (drawMode == 'HiddenLinePainter') {
-		var orderedPolygons = JSM.OrderPolygons (body, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+		var orderedPolygons = JSM.OrderPolygons (body, eye, center);
 		if (materials === undefined || materials === null) {
 			materials = new JSM.Materials ();
 		}

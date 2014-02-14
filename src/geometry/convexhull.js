@@ -200,7 +200,6 @@ JSM.ConvexHull3D = function (coords)
 	
 	function CheckTetrahedronOrientation (body, a, b, c, d)
 	{
-		var plane = JSM.GetPlaneFromThreeCoords (body.vertices[a].position, body.vertices[b].position, body.vertices[c].position);
 		if (JSM.IsLower (GetTetrahedronVolume (body, a, b, c, d), 0.0)) {
 			return false;
 		}
@@ -226,7 +225,7 @@ JSM.ConvexHull3D = function (coords)
 	{
 		var visibleTriangles = [];
 		
-		var i, j, triangle;
+		var i, triangle;
 		for (i = 0; i < body.triangles.length; i++) {
 			triangle = body.triangles[i];
 			if (!triangle.valid) {
@@ -241,7 +240,7 @@ JSM.ConvexHull3D = function (coords)
 			}
 		}
 		
-		var edge, edge1, edge2, edge3, edge1Vis, edge2Vis, edge3Vis;
+		var edge1, edge2, edge3, edge1Vis, edge2Vis, edge3Vis;
 		var newTriangles = [];
 		for (i = 0; i < visibleTriangles.length; i++) {
 			if (!visibleTriangles[i]) {

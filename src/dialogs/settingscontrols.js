@@ -397,7 +397,7 @@ JSM.PolygonControl.prototype.MouseDown = function (event)
 	this.Draw ();
 };
 
-JSM.PolygonControl.prototype.MouseUp = function (event)
+JSM.PolygonControl.prototype.MouseUp = function ()
 {
 	if (this.mode == 'Move') {
 		this.mode = 'Finished';

@@ -203,7 +203,7 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 
 	function GetLevelSideVertices (level)
 	{
-		var i, j;
+		var i;
 		
 		var vertices = [];
 		var offset = GetLevelOffset (level);
@@ -479,7 +479,7 @@ JSM.GenerateSphere = function (radius, segmentation, isCurved)
 */
 JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 {
-	function GenerateIcosahedron (radius) {
+	function GenerateIcosahedron () {
 		var result = new JSM.Body ();
 
 		var a = 1.0;
@@ -958,7 +958,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 		}			
 	}
 
-	function GetContourEnds (contourIndex)
+	function GetContourEnds ()
 	{
 		var contourCount = 0;
 		var contourEnds = [];
@@ -1952,7 +1952,7 @@ JSM.GenerateFunctionSurface = function (function3D, intervalMin, intervalMax, se
 	var bSector = new JSM.Sector (new JSM.Coord (intervalMin.x, intervalMax.y, 0.0), new JSM.Coord (intervalMax.x, intervalMax.y, 0.0));
 	var result = JSM.GenerateRuledFromSectors (aSector, bSector, segmentation, segmentation, isCurved);
 
-	var i, coord, functionValue;
+	var i, coord;
 	for (i = 0; i < result.VertexCount (); i++) {
 		coord = result.GetVertexPosition (i);
 		coord.z = function3D (coord.x, coord.y);
@@ -1988,7 +1988,7 @@ JSM.GenerateFunctionSurfaceSolid = function (function3D, intervalMin, intervalMa
 	var bSector = new JSM.Sector (new JSM.Coord (intervalMax.x, intervalMax.y, 0.0), new JSM.Coord (intervalMin.x, intervalMax.y, 0.0));
 	var result = JSM.GenerateRuledFromSectorsWithHeight (aSector, bSector, segmentation, segmentation, isCurved, bottomZ);
 
-	var i, coord, functionValue;
+	var i, coord;
 	var topVertexCount = (segmentation + 1) * (segmentation + 1);
 	for (i = 0; i < topVertexCount; i++) {
 		coord = result.GetVertexPosition (i);
