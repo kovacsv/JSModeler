@@ -279,9 +279,10 @@ AddTest ('ExportTest', function (test)
 {
 	var gdl1Ref = "base\nvert 0, 0, 0 ! 1\nvert 1, 0, 0 ! 2\nvert 0, 1, 0 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
 	var gdl2Ref = "base\nvert 0, 0, 1 ! 1\nvert 1, 0, 1 ! 2\nvert 0, 1, 1 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
-	var gdlMatHeader = "define material \"material1\" 2, 0,0.8,0 ! 1\ndefine material \"material2\" 2, 0.8,0,0 ! 2\n";
+	var gdlMatHeader = "define material \"material1\" 2, 0,0.8,0 ! 1\ndefine material \"material2\" 2, 0.8,0,0 ! 2\ndefine material \"material3\" 2, 0,0,0.8 ! 3\n";
 	var gdlGeom1Ref = "base\nvert 0, 0, 0 ! 1\nvert 1, 0, 0 ! 2\nvert 0, 1, 0 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\nset material \"material1\"\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
 	var gdlGeom2Ref = "base\nvert 0, 0, 1 ! 1\nvert 1, 0, 1 ! 2\nvert 0, 1, 1 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\nset material \"material2\"\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
+	var gdlGeom3Ref = "base\nvert 0, 0, 2 ! 1\nvert 1, 0, 2 ! 2\nvert 0, 1, 2 ! 3\nvert 0, 0, 3 ! 4\nvert 1, 0, 3 ! 5\nvert 0, 1, 3 ! 6\nvert 0, 0, 4 ! 7\nvert 1, 0, 4 ! 8\nvert 0, 1, 4 ! 9\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\nedge 4, 5, -1, -1, 0 ! 4\nedge 5, 6, -1, -1, 0 ! 5\nedge 6, 4, -1, -1, 0 ! 6\nedge 7, 8, -1, -1, 0 ! 7\nedge 8, 9, -1, -1, 0 ! 8\nedge 9, 7, -1, -1, 0 ! 9\nset material \"material2\"\npgon 3, 0, 0, 1, 2, 3 ! 1\npgon 3, 0, 0, 4, 5, 6 ! 2\nset material \"material3\"\npgon 3, 0, 0, 7, 8, 9 ! 3\nbody -1\n";
 	var stl1Ref = "solid Body1\n\tfacet normal 0 0 1\n\t\touter loop\n\t\t\tvertex 0 0 0\n\t\t\tvertex 1 0 0\n\t\t\tvertex 0 1 0\n\t\tendloop\n\tendfacet\nendsolid Body1\n";
 	var stl2Ref = "solid Body2\n\tfacet normal 0 0 1\n\t\touter loop\n\t\t\tvertex 0 0 1\n\t\t\tvertex 1 0 1\n\t\t\tvertex 0 1 1\n\t\tendloop\n\tendfacet\nendsolid Body2\n";
 	var modelStlRef = "solid Model\n\tfacet normal 0 0 1\n\t\touter loop\n\t\t\tvertex 0 0 0\n\t\t\tvertex 1 0 0\n\t\t\tvertex 0 1 0\n\t\tendloop\n\tendfacet\n\tfacet normal 0 0 1\n\t\touter loop\n\t\t\tvertex 0 0 1\n\t\t\tvertex 1 0 1\n\t\t\tvertex 0 1 1\n\t\tendloop\n\tendfacet\nendsolid Model\n";
@@ -302,12 +303,30 @@ AddTest ('ExportTest', function (test)
 	body2.AddPolygon (new JSM.BodyPolygon ([0, 1, 2]));
 	body2.GetPolygon (0).SetMaterialIndex (0);
 	
+	var body3 = new JSM.Body ();
+	body3.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 2)));
+	body3.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 2)));
+	body3.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 2)));
+	body3.AddPolygon (new JSM.BodyPolygon ([0, 1, 2]));
+	body3.GetPolygon (0).SetMaterialIndex (0);
+	body3.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 3)));
+	body3.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 3)));
+	body3.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 3)));
+	body3.AddPolygon (new JSM.BodyPolygon ([3, 4, 5]));
+	body3.GetPolygon (1).SetMaterialIndex (0);
+	body3.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 4)));
+	body3.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 4)));
+	body3.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 4)));
+	body3.AddPolygon (new JSM.BodyPolygon ([6, 7, 8]));
+	body3.GetPolygon (2).SetMaterialIndex (1);
+
 	var model = new JSM.Model ();
 	model.AddBody (body1);
 	model.AddBody (body2);
 	
 	var materials = new JSM.Materials ();
 	materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
+	materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
 	
 	var gdl1 = JSM.ExportBodyToGdl (body1);
 	test.Assert (gdl1 == gdl1Ref);
@@ -320,6 +339,8 @@ AddTest ('ExportTest', function (test)
 	test.Assert (gdl1 == gdlMatHeader + gdlGeom1Ref);
 	var gdl2 = JSM.ExportBodyToGdl (body2, materials);
 	test.Assert (gdl2 == gdlMatHeader + gdlGeom2Ref);
+	var gdl3 = JSM.ExportBodyToGdl (body3, materials);
+	test.Assert (gdl3 == gdlMatHeader + gdlGeom3Ref);
 	var modelGdl = JSM.ExportModelToGdl (model, materials);
 	test.Assert (modelGdl == gdlMatHeader + gdlGeom1Ref + gdlGeom2Ref);
 
@@ -1212,6 +1233,73 @@ AddTest ('SolidGeneratorTest', function (test)
 
 	solid = JSM.GenerateSolidWithRadius ('TriakisTetrahedron', 1.0);
 	test.Assert (JSM.CheckSolidBody (solid));
+});
+
+AddTest ('ConvexHullBodyTest', function (test)
+{
+	var AllPolygonIsTriangle = function (body)
+	{
+		var i;
+		for (i = 0; i < body.PolygonCount (); i++) {
+			if (body.GetPolygon (i).VertexIndexCount () != 3) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	var a = 1.0;
+	var b = 0.0;
+	var c = (1.0 + Math.sqrt (5.0)) / 2.0;
+	var d = 1.0 / c;
+	
+	coords = [
+		new JSM.Coord (+a, +a, +a),
+		new JSM.Coord (+a, +a, -a),
+		new JSM.Coord (+a, -a, +a),
+		new JSM.Coord (-a, +a, +a),
+		
+		new JSM.Coord (+a, -a, -a),
+		new JSM.Coord (-a, +a, -a),
+		new JSM.Coord (-a, -a, +a),
+		new JSM.Coord (-a, -a, -a),
+
+		new JSM.Coord (+b, +d, +c),
+		new JSM.Coord (+b, +d, -c),
+		new JSM.Coord (+b, -d, +c),
+		new JSM.Coord (+b, -d, -c),
+
+		new JSM.Coord (+d, +c, +b),
+		new JSM.Coord (+d, -c, +b),
+		new JSM.Coord (-d, +c, +b),
+		new JSM.Coord (-d, -c, +b),
+
+		new JSM.Coord (+c, +b, +d),
+		new JSM.Coord (-c, +b, +d),
+		new JSM.Coord (+c, +b, -d),
+		new JSM.Coord (-c, +b, -d)
+	];
+	
+	var body = JSM.GenerateConvexHullBody (coords);
+	test.Assert (body.VertexCount () == 20);
+	test.Assert (body.PolygonCount () == 12 * 3);
+	test.Assert (AllPolygonIsTriangle (body));
+	test.Assert (JSM.CheckSolidBody (body));
+
+	coords.push (new JSM.Coord (0, 0, 0));
+	coords.push (new JSM.Coord (0.1, 0, 0));
+	coords.push (new JSM.Coord (0.1, 0.1, 0));
+	coords.push (new JSM.Coord (0, 0.1, 0));
+	coords.push (new JSM.Coord (0, 0, 0.1));
+	coords.push (new JSM.Coord (0.1, 0, 0.1));
+	coords.push (new JSM.Coord (0.1, 0.1, 0.1));
+	coords.push (new JSM.Coord (0, 0.1, 0.1));
+
+	var body = JSM.GenerateConvexHullBody (coords);
+	test.Assert (body.VertexCount () == 20);
+	test.Assert (body.PolygonCount () == 12 * 3);
+	test.Assert (AllPolygonIsTriangle (body));
+	test.Assert (JSM.CheckSolidBody (body));
 });
 
 AddTestSuite ('Modeler - Texture');

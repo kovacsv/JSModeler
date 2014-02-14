@@ -130,6 +130,46 @@ JSM.GenerateLegoBrick = function (rows, columns, isLarge, hasTopCylinders, hasBo
 };
 
 /**
+* Function: GenerateConvexHullBody
+* Description: Generates a convex hull body from the given coordinates.
+* Parameters:
+*	coord {Coord[*]} the coordinates
+* Returns:
+*	{Body} the result
+*/
+JSM.GenerateConvexHullBody = function (coords)
+{
+	var result = new JSM.Body ();
+	var convexHull = JSM.ConvexHull3D (coords);
+	
+	var oldToNewIndexTable = {};
+	var i, j, current, index;
+	for (i = 0; i < convexHull.length; i++) {
+		current = convexHull[i];
+		for (j = 0; j < current.length; j++) {
+			index = current[j];
+			if (!(index in oldToNewIndexTable)) {
+				oldToNewIndexTable[index] = result.VertexCount ();
+				result.AddVertex (new JSM.BodyVertex (coords[index]));
+			}
+		}
+	}
+	
+	var newPolygon;
+	for (i = 0; i < convexHull.length; i++) {
+		current = convexHull[i];
+		newPolygon = [];
+		for (j = 0; j < current.length; j++) {
+			index = current[j];
+			newPolygon.push (oldToNewIndexTable[index]);
+		}		
+		result.AddPolygon (new JSM.BodyPolygon (newPolygon));
+	}
+
+	return result;
+};
+
+/**
 * Function: GenerateSuperShape
 * Description: Generates a supershape.
 * Parameters:

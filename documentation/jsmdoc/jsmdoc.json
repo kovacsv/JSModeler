@@ -3160,6 +3160,15 @@
 						["Body", "the result"]
 					]
 				},
+				"GenerateConvexHullBody" : {
+					"description" : "Generates a convex hull body from the given coordinates.",
+					"parameters" : [
+						["coord", "Coord[*]", "the coordinates"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
 				"GenerateSuperShape" : {
 					"description" : "Generates a supershape.",
 					"parameters" : [
