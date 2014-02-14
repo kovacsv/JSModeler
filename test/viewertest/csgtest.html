@@ -98,7 +98,7 @@
 				hasConvexPolygons : false,
 				doubleSided : false
 			};
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, cd);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
 			viewer.AddMeshes (meshes);
 			viewer.Draw ();	
 		}
