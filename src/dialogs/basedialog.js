@@ -9,6 +9,7 @@ JSM.BaseDialog = function ()
 	this.okButton = null;
 	this.cancelButton = null;
 	this.mouseClickHandler = null;
+	this.resizeHandler = null;
 };
 
 JSM.BaseDialog.prototype.Open = function (title, cancelText, okText)
@@ -25,9 +26,15 @@ JSM.BaseDialog.prototype.Open = function (title, cancelText, okText)
 	this.mouseClickHandler = function (clickEvent) {
 		myThis.MouseClick (clickEvent);
 	};
+	this.resizeHandler = function () {
+		myThis.SetPosition ();
+	};
 
 	if (document.addEventListener) {
 		document.addEventListener ('click', this.mouseClickHandler, true);
+	}
+	if (window.addEventListener) {
+		window.addEventListener ('resize', this.resizeHandler, true);
 	}
 	
 	this.InitStyles ();
@@ -51,6 +58,9 @@ JSM.BaseDialog.prototype.Close = function ()
 
 	if (document.removeEventListener) {
 		document.removeEventListener ('click', this.mouseClickHandler, true);
+	}
+	if (window.removeEventListener) {
+		window.removeEventListener ('click', this.resizeHandler, true);
 	}
 };
 

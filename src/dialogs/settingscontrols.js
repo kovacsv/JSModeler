@@ -45,8 +45,14 @@ JSM.InputControl.prototype.GetValue = function (parameter)
 {
 	if (this.type == 'number') {
 		parameter.value = parseFloat (this.input.value);
+		if (isNaN (parameter.value)) {
+			parameter.value = 0.0;
+		}
 	} else if (this.type == 'integer') {
 		parameter.value = parseInt (this.input.value, 10);
+		if (isNaN (parameter.value)) {
+			parameter.value = 0;
+		}
 	} else {
 		parameter.value = this.input.value;
 	}

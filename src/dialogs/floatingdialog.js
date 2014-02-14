@@ -2,11 +2,10 @@ JSM.FloatingDialog = function ()
 {
 	this.styles = null;
 	this.dialog = null;
-	this.content = null;
 	this.mouseClickHandler = null;
 };
 
-JSM.FloatingDialog.prototype.Open = function (contentType)
+JSM.FloatingDialog.prototype.Open = function ()
 {
 	if (this.dialog !== null) {
 		return;
@@ -23,12 +22,11 @@ JSM.FloatingDialog.prototype.Open = function (contentType)
 	
 	this.InitStyles ();
 	this.InitDialog ();
-	this.InitContent (contentType);
 };
 
-JSM.FloatingDialog.prototype.GetContent = function ()
+JSM.FloatingDialog.prototype.GetDialog = function ()
 {
-	return this.content;
+	return this.dialog;
 };
 
 JSM.FloatingDialog.prototype.Close = function ()
@@ -54,14 +52,7 @@ JSM.FloatingDialog.prototype.InitStyles = function ()
 			height : '90%',
 			left : '5%',
 			top : '5%'
-		},
-		content : {
-			color : '#000000',
-			background : '#ffffff',
-			width : '100%',
-			height : '100%',
-			border : '1px solid #cccccc'
-		}		
+		}	
 	};
 };
 
@@ -93,21 +84,4 @@ JSM.FloatingDialog.prototype.InitDialog = function ()
 	this.dialog.style.height = this.styles.dialog.height;
 	this.dialog.style.left = this.styles.dialog.left;
 	this.dialog.style.top = this.styles.dialog.top;
-};
-
-JSM.FloatingDialog.prototype.InitContent = function (contentType)
-{
-	if (contentType == 'svg') {
-		this.content = document.createElementNS ('http://www.w3.org/2000/svg', 'svg');
-		this.content.setAttribute ('width', this.dialog.clientWidth);
-		this.content.setAttribute ('height', this.dialog.clientHeight);
-	} else {
-		this.content = document.createElement (contentType);
-	}
-	this.dialog.appendChild (this.content);
-	this.content.style.color = this.styles.content.color;
-	this.content.style.background = this.styles.content.background;
-	this.content.style.width = this.styles.content.width;
-	this.content.style.height = this.styles.content.height;
-	this.content.style.border = this.styles.content.border;
 };
