@@ -350,18 +350,23 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 		var edge = al.edges[index];
 		var status = 0;
 		if (edge.pgon1 != -1 && edge.pgon2 != -1) {
-			if (body.GetPolygon (edge.pgon1).GetCurveGroup () == body.GetPolygon (edge.pgon2).GetCurveGroup ()) {
-				status = 2;
+			if (body.GetPolygon (edge.pgon1).HasCurveGroup () && body.GetPolygon (edge.pgon2).HasCurveGroup ()) {
+				if (body.GetPolygon (edge.pgon1).GetCurveGroup () == body.GetPolygon (edge.pgon2).GetCurveGroup ()) {
+					status = 2;
+				}
 			}
 		}
 		AddLineToContent ('edge ' + (edge.vert1 + 1) + ', ' + (edge.vert2 + 1) + ', -1, -1, ' + status + ' ! ' + (index + 1));
 	}
 
-	function AddPolygon (index)
+	function AddPolygon (index, lastMaterialIndex)
 	{
+		var materialIndex = -1;
 		if (writeMaterials) {
-			var materialIndex = body.GetPolygon (index).GetMaterialIndex () + 2;
-			AddLineToContent ('set material "material' + materialIndex + '"');
+			materialIndex = body.GetPolygon (index).GetMaterialIndex () + 2;
+			if (materialIndex != lastMaterialIndex) {
+				AddLineToContent ('set material "material' + materialIndex + '"');
+			}
 		}
 	
 		var pgon = al.pgons[index];
@@ -386,6 +391,8 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 		AddToContent (pedgeList);
 		AddToContent (' ! ' + (index + 1));
 		AddLineToContent ('');
+		
+		return materialIndex;
 	}
 
 	var gdlContent = '';
@@ -402,8 +409,9 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 		AddEdge (i);
 	}
 	
+	var lastMaterialIndex = -1;
 	for (i = 0; i < al.pgons.length; i++) {
-		AddPolygon (i);
+		lastMaterialIndex = AddPolygon (i, lastMaterialIndex);
 	}
 
 	AddLineToContent ('body -1');
