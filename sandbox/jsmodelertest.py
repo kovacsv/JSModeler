@@ -329,10 +329,10 @@ def TestBezier (browser, path):
 	browser.Click (172, 160)
 	browser.Capture ('bezier')
 	
-	MoveControlPoint (browser, 912, 430, -40)
-	MoveControlPoint (browser, 986, 368, 70)
-	MoveControlPoint (browser, 758, 382, -80)
-	MoveControlPoint (browser, 843, 334, -100)
+	MoveControlPoint (browser, 897, 418, -40)
+	MoveControlPoint (browser, 966, 357, 70)
+	MoveControlPoint (browser, 748, 371, -80)
+	MoveControlPoint (browser, 831, 324, -100)
 	
 	browser.Click (60, 316)
 	browser.Capture ('bezier')
