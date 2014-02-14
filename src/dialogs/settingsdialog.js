@@ -129,6 +129,10 @@ JSM.ParameterTable.prototype.CreateParameter = function (table, index, parameter
 		control = new JSM.InputControl (parameter.type);
 		control.Create (tdInput, parameter);
 		this.inputs[index] = control;
+	} else if (parameter.type == 'select') {
+		control = new JSM.SelectControl ();
+		control.Create (tdInput, parameter);
+		this.inputs[index] = control;
 	} else if (parameter.type == 'check') {
 		control = new JSM.CheckControl ();
 		control.Create (tdInput, parameter);

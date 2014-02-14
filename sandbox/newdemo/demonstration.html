@@ -87,6 +87,27 @@
 			cylindershell : { name : 'cylinder shell', generator : new JSM.CylinderShellGenerator () },
 			revolved : { name : 'revolved', generator : new JSM.RevolveGenerator () },
 			polytorus : { name : 'polytorus', generator : new JSM.PolyTorusGenerator () },
+			platonic : { name : 'platonic', generator : new JSM.SolidGenerator ([
+				['Tetrahedron', 'tetrahedron'],
+				['Hexahedron', 'hexahedron'],
+				['Octahedron', 'octahedron'],
+				['Dodecahedron', 'dodecahedron'],
+				['Icosahedron', 'icosahedron']
+			])},
+			archimedean : { name : 'archimedean', generator : new JSM.SolidGenerator ([
+				['TruncatedTetrahedron', 'truncated tetrahedron'],
+				['Cuboctahedron', 'cuboctahedron'],
+				['TruncatedCube', 'truncated cube'],
+				['TruncatedOctahedron', 'truncated octahedron'],
+				['Rhombicuboctahedron', 'rhombicuboctahedron'],
+				['TruncatedCuboctahedron', 'truncated cuboctahedron'],
+				['SnubCube', 'snub cube'],
+				['Icosidodecahedron', 'icosidodecahedron'],
+				['TruncatedDodecahedron', 'truncated dodecahedron'],
+				['Rhombicosidodecahedron', 'rhombicosidodecahedron'],
+				['TruncatedIcosidodecahedron', 'truncated icosidodecahedron'],
+				['SnubDodecahedron', 'snub dodecahedron']
+			])},
 			lego : { name : 'lego brick', generator : new JSM.LegoBrickGenerator () },
 			convexhull : { name : 'convex hull', generator : new JSM.ConvexHullGenerator () }
 		};
@@ -212,7 +233,7 @@
 				return;
 			}
 			
-			body = JSM.CatmullClarkSubdivision (body, 3);
+			body = JSM.CatmullClarkSubdivision (body, 1);
 			ShowBody ();
 		}
 		
@@ -346,6 +367,10 @@
 			AddMenuEntry ('cylindershell');
 			AddMenuEntry ('revolved');
 			AddMenuEntry ('polytorus');
+
+			AddMenuTitle ('solids');
+			AddMenuEntry ('platonic');
+			AddMenuEntry ('archimedean');
 
 			AddMenuTitle ('other shapes');
 			AddMenuEntry ('lego');

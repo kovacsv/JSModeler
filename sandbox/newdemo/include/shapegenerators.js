@@ -645,6 +645,31 @@ JSM.PolyTorusGenerator.prototype.Generate = function ()
 	);
 };
 
+JSM.SolidGenerator = function (types)
+{
+	this.parameters = {
+		type : new JSM.Parameter ('type', 'select', [0, types], 'left'),
+		radius : new JSM.Parameter ('radius', 'number', 1, 'left')
+	};
+};
+
+JSM.SolidGenerator.prototype = new JSM.ShapeGenerator ();
+
+JSM.SolidGenerator.prototype.Check = function ()
+{
+	if (!JSM.IsPositive (this.parameters.radius.value)) {
+		return false;
+	}
+	return true;
+};
+
+JSM.SolidGenerator.prototype.Generate = function ()
+{
+	var selected = this.parameters.type.value[0];
+	var name = this.parameters.type.value[1][selected][0];
+	return JSM.GenerateSolidWithRadius (name, this.parameters.radius.value);
+};
+
 JSM.LegoBrickGenerator = function ()
 {
 	this.parameters = {

@@ -67,6 +67,44 @@ JSM.InputControl.prototype.InitStyles = function ()
 	};
 };
 
+JSM.SelectControl = function ()
+{
+	this.input = null;
+	this.styles = null;
+};
+
+JSM.SelectControl.prototype.Create = function (div, parameter)
+{
+	this.InitStyles ();
+	
+	this.input = document.createElement ('select');
+	div.appendChild (this.input);
+	
+	var options = parameter.value[1];
+	var i, option;
+	for (i = 0; i < options.length; i++) {
+		option = document.createElement ('option');
+		option.text = options[i][1];
+		this.input.add (option);
+	}
+	this.input.selectedIndex = parameter.value[0];
+	this.input.style.width = this.styles.inputs.width;
+};
+
+JSM.SelectControl.prototype.GetValue = function (parameter)
+{
+	parameter.value[0] = this.input.selectedIndex;
+};
+
+JSM.SelectControl.prototype.InitStyles = function ()
+{
+	this.styles = {
+		inputs : {
+			width : '225px'
+		}
+	};
+};
+
 JSM.CheckControl = function ()
 {
 	this.input = null;
