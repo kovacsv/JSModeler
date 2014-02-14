@@ -72,23 +72,28 @@ div.color
 	top : 50px;
 }
 
-#export
+#subdivision
 {
 
 	top : 90px;
 }
 
+#export
+{
+	top : 130px;
+}
+
 #color
 {
 
-	top : 130px;
+	top : 170px;
 }
 
 #fail
 {
 	color : #ffffff;
 	background : #cc3333;
-	top : 170px;
+	top : 210px;
 }
 
 div.content

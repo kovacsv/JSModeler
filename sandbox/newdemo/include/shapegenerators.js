@@ -272,10 +272,10 @@ JSM.ConeGenerator.prototype.Check = function ()
 	if (JSM.IsZero (this.parameters.topRadius.value) && JSM.IsZero (this.parameters.bottomRadius.value)) {
 		return false;
 	}
-	if (!JSM.IsPositive (this.parameters.topRadius.value)) {
+	if (JSM.IsNegative (this.parameters.topRadius.value)) {
 		return false;
 	}
-	if (!JSM.IsPositive (this.parameters.bottomRadius.value)) {
+	if (JSM.IsNegative (this.parameters.bottomRadius.value)) {
 		return false;
 	}
 	if (!JSM.IsPositive (this.parameters.height.value)) {
@@ -685,6 +685,37 @@ JSM.LegoBrickGenerator.prototype.Generate = function ()
 		this.parameters.segmentation.value,
 		this.parameters.isCurved.value
 	);
+	body.OffsetToOrigo ();
+	return body;
+};
+
+JSM.ConvexHullGenerator = function ()
+{
+	this.parameters = {
+		number : new JSM.Parameter ('random coordinates', 'integer', 50, 'left')
+	};
+};
+
+JSM.ConvexHullGenerator.prototype = new JSM.ShapeGenerator ();
+
+JSM.ConvexHullGenerator.prototype.Check = function ()
+{
+	if (this.parameters.number.value < 4) {
+		return false;
+	}
+	return true;
+};
+
+JSM.ConvexHullGenerator.prototype.Generate = function ()
+{
+	var coords = [];
+	var i, coord;
+	for (i = 0; i < this.parameters.number.value; i++) {
+		coord = new JSM.Coord (Math.random (), Math.random (), Math.random ());
+		coords.push (coord);
+	}
+	
+	var body = JSM.GenerateConvexHullBody (coords);
 	body.OffsetToOrigo ();
 	return body;
 };

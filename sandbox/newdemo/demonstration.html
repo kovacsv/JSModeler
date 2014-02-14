@@ -87,7 +87,8 @@
 			cylindershell : { name : 'cylinder shell', generator : new JSM.CylinderShellGenerator () },
 			revolved : { name : 'revolved', generator : new JSM.RevolveGenerator () },
 			polytorus : { name : 'polytorus', generator : new JSM.PolyTorusGenerator () },
-			lego : { name : 'lego brick', generator : new JSM.LegoBrickGenerator () }
+			lego : { name : 'lego brick', generator : new JSM.LegoBrickGenerator () },
+			convexhull : { name : 'convex hull', generator : new JSM.ConvexHullGenerator () }
 		};
 	
 		function ShowHide (divName, show)
@@ -113,40 +114,47 @@
 			}
 		}
 		
-		function Generate ()
+		function ShowBody ()
 		{
 			function ConvertColor (color) {
 				var resultFormat = '0x' + color;
 				return parseInt (resultFormat);
 			};		
 		
+			materials = new JSM.Materials ();
+			var color = ConvertColor (currentColor);
+			materials.AddMaterial (new JSM.Material (color, color));
+
+			var conversionData = {
+				textureLoadedCallback : null,
+				hasConvexPolygons : false,
+				doubleSided : false
+			};
+
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
+			viewer.RemoveMeshes ();
+			viewer.AddMeshes (meshes);
+			viewer.Draw ();		
+		}
+		
+		function Generate ()
+		{
+			viewer.RemoveMeshes ();
 			var shape = shapes[currentShape];
 			if (shape === undefined) {
 				return;
 			}
 
-			viewer.RemoveMeshes ();
 			var check = shape.generator.Check ();
 			ShowHide ('fail', !check);
 			if (!check) {
 				return;
 			}
 			
-			materials = new JSM.Materials ();
-			var color = ConvertColor (currentColor);
-			materials.AddMaterial (new JSM.Material (color, color));
-			
 			body = shape.generator.Generate ();
 			body.SetPolygonsMaterialIndex (0);
 
-			var conversionData = {
-				textureLoadedCallback : null,
-				hasConvexPolygons : false,
-				doubleSided : false
-			};			
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
-			viewer.AddMeshes (meshes);
-			viewer.Draw ();
+			ShowBody ();
 		}
 
 		function Settings ()
@@ -178,36 +186,92 @@
 			infoDialog.Open ('information', parameters);
 		}
 
+		function Subdivision ()
+		{
+			var disabledShapes = [
+				'lego'
+			];
+		
+			var errorMessage = null;
+			var maxPolygonCount = 2000;
+			if (disabledShapes.indexOf (currentShape) != -1) {
+				errorMessage = 'You cannot subdivide this body.';
+			} else if (body.PolygonCount () > maxPolygonCount) {
+				errorMessage = 'You cannot subdivide a body with more than ' + maxPolygonCount + ' polygons.';
+			} else if (!JSM.IsSolidBody (body)) {
+				errorMessage = 'You cannot subdivide an opened body.';
+			}
+			
+			if (errorMessage !== null) {
+				var parameters = {
+					xSize : new JSM.Parameter (null, 'static', errorMessage, 'left'),
+				};
+				
+				var infoDialog = new JSM.InfoDialog ();
+				infoDialog.Open ('error', parameters);
+				return;
+			}
+			
+			body = JSM.CatmullClarkSubdivision (body, 3);
+			ShowBody ();
+		}
+		
 		function Export (format)
 		{
+			function AddContent (floatingDialog, contentType)
+			{
+				var dialog = floatingDialog.GetDialog ();
+				var content = null;
+				if (contentType == 'svg') {
+					content = document.createElementNS ('http://www.w3.org/2000/svg', 'svg');
+					content.setAttribute ('width', dialog.clientWidth);
+					content.setAttribute ('height', dialog.clientHeight);
+				} else {
+					content = document.createElement (contentType);
+				}
+
+				dialog.appendChild (content);
+				content.style.color = '#000000';
+				content.style.background = '#ffffff';
+				content.style.width = '100%';
+				content.style.height = '100%';
+				content.style.border = '1px solid #cccccc';
+				return content;
+			}
+		
 			if (body === null) {
 				return;
 			}
 
 			var floatingDialog = new JSM.FloatingDialog ();
+			var content = null;
 			if (format == 'stl') {
-				floatingDialog.Open ('textarea');
-				floatingDialog.GetContent ().value = JSM.ExportBodyToStl (body, 'JSModelerBody', false);
+				floatingDialog.Open ();
+				content = AddContent (floatingDialog, 'textarea');
+				content.value = JSM.ExportBodyToStl (body, 'JSModelerBody', false);
 			} else if (format == 'obj') {
-				floatingDialog.Open ('textarea');
-				floatingDialog.GetContent ().value = JSM.ExportBodyToObj (body, 'JSModelerBody', false);
+				floatingDialog.Open ();
+				content = AddContent (floatingDialog, 'textarea');
+				content.value = JSM.ExportBodyToObj (body, 'JSModelerBody', false);
 			} else if (format == 'gdl') {
-				floatingDialog.Open ('textarea');
-				floatingDialog.GetContent ().value = JSM.ExportBodyToGdl (body);
+				floatingDialog.Open ();
+				content = AddContent (floatingDialog, 'textarea');
+				content.value = JSM.ExportBodyToGdl (body, materials);
 			} else if (format == 'svg') {
-				floatingDialog.Open ('svg');
+				floatingDialog.Open ();
+				content = AddContent (floatingDialog, 'svg');
 				var drawSettings = new JSM.DrawSettings (viewer.cameraMove, viewer.settings['fieldOfView'], viewer.settings['nearClippingPlane'], viewer.settings['farClippingPlane'], 'Wireframe', true);
-				var drawer = new JSM.SVGDrawer (floatingDialog.GetContent ());
+				var drawer = new JSM.SVGDrawer (content);
 				JSM.DrawProjectedBody (body, materials, drawSettings, drawer);
 			}
-		}		
-		
+		}
+
 		function ChangeColor (color)
 		{
 			var currentColorDiv = document.getElementById ('currentcolor');
 			currentColorDiv.style.background = '#' + color;
 			currentColor = color;
-			Generate ();
+			ShowBody ();
 		}
 		
 		function AddMenuTitle (name)
@@ -285,6 +349,7 @@
 
 			AddMenuTitle ('other shapes');
 			AddMenuEntry ('lego');
+			AddMenuEntry ('convexhull');
 
 			window.onhashchange = HashChange;
 			HashChange ();
@@ -315,6 +380,7 @@
 	</div>
 	<div class="button" id="settings" onclick="Settings ()" title="settings"><img src="include/settings.png" alt="settings" /></div>
 	<div class="button" id="info" onclick="Info ()" title="info"><img src="include/info.png" alt="info" /></div>
+	<div class="button" id="subdivision" onclick="Subdivision ()" title="subdivision"><img src="include/subdivision.png" alt="subdivision" /></div>
 	<div class="button" id="export" title="export" onmouseover="ShowHide ('exportcontent', true);" onmouseout="ShowHide ('exportcontent', false);">
 		<img src="include/export.png" alt="export" />
 		<div class="buttoncontent" id="exportcontent" style="display : none;">
