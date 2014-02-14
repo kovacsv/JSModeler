@@ -24,13 +24,19 @@
 			return elem;
 		}
 
-		function CreateLinkIfNeeded (elem, name)
+		function GetParameterNameToCheck (name)
 		{
-			nameToCheck = name;
-			parIndex = nameToCheck.indexOf ('[');
+			var nameToCheck = name;
+			var parIndex = nameToCheck.indexOf ('[');
 			if (parIndex != -1) {
 				nameToCheck = nameToCheck.substring (0, parIndex);
 			}
+			return nameToCheck;
+		}
+		
+		function CreateLinkIfNeeded (elem, name)
+		{
+			nameToCheck = GetParameterNameToCheck (name);
 			if (nameToCheck in entryClickCommands) {
 				elem.className += ' link';
 				elem.onclick = function (theTypeName) {
@@ -93,10 +99,11 @@
 			{
 				function FindByParameterName (section, functionName, entryName, result, isParameter)
 				{
-					var index;
+					var index, nameToCheck;
 					if (section !== undefined) {
 						for (index = 0; index < section.length; index++) {
-							if (section[index][isParameter ? 1 : 0] == entryName) {
+							nameToCheck = GetParameterNameToCheck (section[index][isParameter ? 1 : 0]);
+							if (nameToCheck == entryName) {
 								if (result.indexOf (functionName) == -1) {
 									result.push (functionName);
 								}
