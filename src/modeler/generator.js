@@ -142,7 +142,7 @@ JSM.GenerateSegmentedRectangle = function (xSize, ySize, xSegmentation, ySegment
 	{
 		var i, j, coord;
 
-		for (i = 0; i <= ySegmentation; i++) {	
+		for (i = 0; i <= ySegmentation; i++) {
 			for (j = 0; j <= xSegmentation; j++) {
 				coord = new JSM.Coord (j * xSegment - xStart, i * ySegment - yStart, 0.0);
 				result.AddVertex (new JSM.BodyVertex (coord));
@@ -244,7 +244,7 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 
 		var zCoord = level * zSegment;
 		if (level === 0 || level === segmentation) {
-			for (i = 0; i <= segmentation; i++) {	
+			for (i = 0; i <= segmentation; i++) {
 				for (j = 0; j <= segmentation; j++) {
 					coord = new JSM.Coord (j * xSegment - xStart, i * ySegment - yStart, zCoord - zStart);
 					result.AddVertex (new JSM.BodyVertex (coord));
@@ -555,7 +555,7 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 			currentEdge = adjacencyInfo.edges[i];
 			midCoord = JSM.MidCoord (oldBody.GetVertexPosition (currentEdge.vert1), oldBody.GetVertexPosition (currentEdge.vert2));
 			edgeCoord = JSM.VectorMultiply (JSM.VectorNormalize (midCoord), radius);
-			edgeVertexIndices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));		
+			edgeVertexIndices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));
 		}
 
 		for (i = 0; i < adjacencyInfo.pgons.length; i++) {
@@ -955,7 +955,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 				result.AddVertex (new JSM.BodyVertex (basePolygon[i]));
 				result.AddVertex (new JSM.BodyVertex (JSM.CoordOffset (basePolygon[i], direction, height)));
 			}
-		}			
+		}
 	}
 
 	function GetContourEnds ()
@@ -996,7 +996,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 		var i;
 		for (i = 0; i < contourEnds.length - 1; i++) {
 			AddContourPolygons (i, contourEnds);
-		}	
+		}
 	}
 	
 	function GetVertexMap ()

@@ -29,7 +29,7 @@ JSM.OrderPolygons = function (body, eye, center)
 		}
 		
 		result = JSM.VectorMultiply (result, 1.0 / polygon.VertexIndexCount ());
-		return result;	
+		return result;
 	}
 	
 	function CalculatePolygonValues ()
@@ -173,7 +173,7 @@ JSM.OrderPolygons = function (body, eye, center)
 					SwapArrayValues (ordered, j, j + 1);
 				}
 			}
-		}		
+		}
 	}
 	
 	var result = [];

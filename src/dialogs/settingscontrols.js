@@ -363,7 +363,7 @@ JSM.PolygonControl.prototype.GetMouseCoord = function (event)
 	if (this.snapInput.checked) {
 		xCoord -= xCoord % this.styles.editor.gridStep;
 		yCoord -= yCoord % this.styles.editor.gridStep;
-	}		
+	}
 	return new JSM.Coord2D (xCoord, yCoord);
 };
 
@@ -562,7 +562,7 @@ JSM.PolygonControl.prototype.DrawCoords = function ()
 	}
 	
 	this.context.stroke ();
-	return true;	
+	return true;
 };
 
 JSM.PolygonControl.prototype.ContextMoveTo = function (coord)
@@ -584,7 +584,7 @@ JSM.PolygonControl.prototype.DrawMarker = function ()
 	var markerCoord = this.coords[this.marker];
 	this.context.fillStyle = this.styles.editor.markerColor;
 	this.context.beginPath();
-	this.context.arc (markerCoord.x, markerCoord.y, 5, 0, 2.0 * Math.PI, true); 
+	this.context.arc (markerCoord.x, markerCoord.y, 5, 0, 2.0 * Math.PI, true);
 	this.context.closePath();
 	this.context.fill();
 

@@ -245,7 +245,7 @@ JSM.Viewer.prototype.VertexCount = function ()
 		}
 	});
 	
-	return count;	
+	return count;
 };
 
 JSM.Viewer.prototype.FaceCount = function ()
@@ -258,7 +258,7 @@ JSM.Viewer.prototype.FaceCount = function ()
 		}
 	});
 	
-	return count;	
+	return count;
 };
 
 JSM.Viewer.prototype.GetMesh = function (index)
@@ -343,7 +343,7 @@ JSM.Viewer.prototype.EnableCameraZoom = function (enable)
 JSM.Viewer.prototype.Resize = function ()
 {
 	this.camera.aspect = this.canvas.width / this.canvas.height;
-	this.camera.updateProjectionMatrix (); 
+	this.camera.updateProjectionMatrix ();
 	this.renderer.setSize (this.canvas.width, this.canvas.height);
 	this.DrawIfNeeded ();
 };
@@ -444,7 +444,7 @@ JSM.Viewer.prototype.GetObjectsUnderPosition = function (x, y)
 	vector.normalize ();
 
 	var ray = new THREE.Raycaster (cameraPosition, vector);
-	return ray.intersectObjects (this.scene.children);		
+	return ray.intersectObjects (this.scene.children);
 };
 
 JSM.Viewer.prototype.GetObjectsUnderMouse = function ()

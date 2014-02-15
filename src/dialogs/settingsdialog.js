@@ -23,8 +23,10 @@ JSM.ParameterTable.prototype.GetValues = function (parameters)
 {
 	var index, parameter;
 	for (index in parameters) {
-		parameter = parameters[index];
-		this.inputs[index].GetValue (parameter);
+		if (parameters.hasOwnProperty (index)) {
+			parameter = parameters[index];
+			this.inputs[index].GetValue (parameter);
+		}
 	}
 };
 
@@ -47,11 +49,13 @@ JSM.ParameterTable.prototype.CreateParameterTable = function (div, parameters)
 
 	var index, parameter;
 	for (index in parameters) {
-		parameter = parameters[index];
-		if (parameter.side == 'left') {
-			hasLeft = true;
-		} else if (parameter.side == 'right') {
-			hasRight = true;
+		if (parameters.hasOwnProperty (index)) {
+			parameter = parameters[index];
+			if (parameter.side == 'left') {
+				hasLeft = true;
+			} else if (parameter.side == 'right') {
+				hasRight = true;
+			}
 		}
 	}
 	
@@ -71,9 +75,11 @@ JSM.ParameterTable.prototype.CreateParameterTable = function (div, parameters)
 		leftTable.cellPadding = this.styles.table.cellPadding;
 
 		for (index in parameters) {
-			parameter = parameters[index];
-			if (parameter.side == 'left') {
-				this.CreateParameter (leftTable, index, parameters);
+			if (parameters.hasOwnProperty (index)) {
+				parameter = parameters[index];
+				if (parameter.side == 'left') {
+					this.CreateParameter (leftTable, index, parameters);
+				}
 			}
 		}
 		
@@ -86,18 +92,22 @@ JSM.ParameterTable.prototype.CreateParameterTable = function (div, parameters)
 		rightTable.cellPadding = this.styles.table.cellPadding;
 
 		for (index in parameters) {
-			parameter = parameters[index];
-			if (parameter.side == 'right') {
-				this.CreateParameter (rightTable, index, parameters);
+			if (parameters.hasOwnProperty (index)) {
+				parameter = parameters[index];
+				if (parameter.side == 'right') {
+					this.CreateParameter (rightTable, index, parameters);
+				}
 			}
 		}
 	} else {
 		var table = document.createElement ('table');
-		div.appendChild (table);		
+		div.appendChild (table);
 		table.cellPadding = this.styles.table.cellPadding;
 		
 		for (index in parameters) {
-			this.CreateParameter (table, index, parameters);		
+			if (parameters.hasOwnProperty (index)) {
+				this.CreateParameter (table, index, parameters);
+			}
 		}
 	}
 };

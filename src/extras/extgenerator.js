@@ -162,7 +162,7 @@ JSM.GenerateConvexHullBody = function (coords)
 		for (j = 0; j < current.length; j++) {
 			index = current[j];
 			newPolygon.push (oldToNewIndexTable[index]);
-		}		
+		}
 		result.AddPolygon (new JSM.BodyPolygon (newPolygon));
 	}
 
@@ -179,8 +179,8 @@ JSM.GenerateConvexHullBody = function (coords)
 * Returns:
 *	{Body} the result
 */
-JSM.GenerateSuperShape = function (	a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
-									a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat,
+JSM.GenerateSuperShape = function (	aLon, bLon, mLon, n1Lon, n2Lon, n3Lon,
+									aLat, bLat, mLat, n1Lat, n2Lat, n3Lat,
 									segmentation, isCurved)
 {
 	function CartesianToSpherical (coord)
@@ -201,8 +201,8 @@ JSM.GenerateSuperShape = function (	a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
 	function CalculateSuperFormulaCoordinate (phi, theta)
 	{
 		var coord = new JSM.Coord ();
-		var rPhi = CalculateSuperFormula (phi, a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat);
-		var rTheta = CalculateSuperFormula (theta, a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon);
+		var rPhi = CalculateSuperFormula (phi, aLat, bLat, mLat, n1Lat, n2Lat, n3Lat);
+		var rTheta = CalculateSuperFormula (theta, aLon, bLon, mLon, n1Lon, n2Lon, n3Lon);
 		coord.x = rTheta * Math.cos (theta) * rPhi * Math.cos (phi);
 		coord.y = rTheta * Math.sin (theta) * rPhi * Math.cos (phi);
 		coord.z = rPhi * Math.sin (phi);

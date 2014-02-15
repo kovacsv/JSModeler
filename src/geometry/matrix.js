@@ -101,7 +101,7 @@ JSM.MatrixMultiply4x4 = function (matrix1, matrix2)
 	result[12] = a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30;
 	result[13] = a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31;
 	result[14] = a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32;
-	result[15] = a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33;	
+	result[15] = a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33;
 	
 	return result;
 };

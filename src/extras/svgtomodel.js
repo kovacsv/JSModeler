@@ -127,7 +127,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			if (JSM.CoordIsEqual2DWithEps (firstCoord, lastCoord, 0.1)) {
 				polygon.GetContour (contour).vertices.pop ();
 			}
-		}				
+		}
 	
 		function StartNewContour (result, contour)
 		{

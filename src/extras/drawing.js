@@ -104,7 +104,7 @@ JSM.CanvasDrawer.prototype.DrawPolygon = function (polygon, color)
 	}
 
 	this.context.closePath ();
-	this.context.fill ();			
+	this.context.fill ();
 
 	this.BeginPath ();
 	for (i = 0; i < polygon.VertexCount (); i++) {
@@ -194,7 +194,7 @@ JSM.SVGDrawer.prototype.DrawLine = function (from, to)
 	svgLine.setAttributeNS (null, 'y1', height - from.y);
 	svgLine.setAttributeNS (null, 'x2', to.x);
 	svgLine.setAttributeNS (null, 'y2', height - to.y);
-	this.svgObject.appendChild (svgLine);		
+	this.svgObject.appendChild (svgLine);
 };
 
 /**
@@ -230,7 +230,7 @@ JSM.SVGDrawer.prototype.DrawPolygon = function (polygon, color)
 	svgPolyon.setAttributeNS (null, 'fill', HexColorToHTMLColor (color));
 	svgPolyon.setAttributeNS (null, 'fill-opacity', '1.0');
 	svgPolyon.setAttributeNS (null, 'stroke', 'black');
-	this.svgObject.appendChild (svgPolyon);		
+	this.svgObject.appendChild (svgPolyon);
 };
 
 /**

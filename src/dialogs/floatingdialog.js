@@ -52,7 +52,7 @@ JSM.FloatingDialog.prototype.InitStyles = function ()
 			height : '90%',
 			left : '5%',
 			top : '5%'
-		}	
+		}
 	};
 };
 

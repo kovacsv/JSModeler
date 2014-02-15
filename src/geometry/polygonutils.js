@@ -604,7 +604,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 		}
 	}
 
-	return GetResult ();	
+	return GetResult ();
 };
 
 /**
@@ -797,7 +797,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 			{
 				var currVertex = polygon.GetVertex (currIndex);
 				cutPolygon.AddVertex (currVertex.x, currVertex.y, currVertex.z);
-				vertexTypes.push (currType);				
+				vertexTypes.push (currType);
 			}
 		
 			var firstVertex = (index === 0);

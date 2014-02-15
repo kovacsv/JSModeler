@@ -168,7 +168,7 @@ JSM.ConvexHull3D = function (coords)
 			edge.tri1 = -1;
 		} else if (edge.tri2 == triangleIndex) {
 			edge.tri2 = -1;
-		}		
+		}
 	}
 
 	function RemoveTriangle (body, triangleIndex)

@@ -175,7 +175,7 @@ JSM.BSPTree.prototype.AddInsidePolygonsToNode = function (node, polygons, userDa
 	var i;
 	for (i = 0; i < polygons.length; i++) {
 		this.AddPolygonToNode (node.inside, polygons[i], userData);
-	}		
+	}
 };
 
 /**
@@ -195,7 +195,7 @@ JSM.BSPTree.prototype.AddOutsidePolygonsToNode = function (node, polygons, userD
 	var i;
 	for (i = 0; i < polygons.length; i++) {
 		this.AddPolygonToNode (node.outside, polygons[i], userData);
-	}		
+	}
 };
 
 /**

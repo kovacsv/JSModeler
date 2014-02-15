@@ -28,7 +28,7 @@ JSM.Camera.prototype.Set = function (eye, center, up)
 {
 	this.eye = new JSM.Coord (eye[0], eye[1], eye[2]);
 	this.center = new JSM.Coord (center[0], center[1], center[2]);
-	this.up = new JSM.Coord (up[0], up[1], up[2]);	
+	this.up = new JSM.Coord (up[0], up[1], up[2]);
 };
 
 /**

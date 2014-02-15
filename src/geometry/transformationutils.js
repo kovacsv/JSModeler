@@ -124,7 +124,7 @@ JSM.RotationXTransformation = function (angle, origo)
 		transformation.Append (JSM.RotationXTransformation (angle));
 		transformation.Append (JSM.TranslationTransformation (new JSM.Vector (origo.x, origo.y, origo.z)));
 	}
-	return transformation;	
+	return transformation;
 };
 
 /**

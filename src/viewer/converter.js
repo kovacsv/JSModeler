@@ -177,7 +177,7 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 			AddPolygon (geometry, polygonIndices[i], hasTexture);
 		}
 
-		var material = null;		
+		var material = null;
 		material = new THREE.MeshLambertMaterial ({
 			ambient : modelerMaterial.ambient,
 			color : modelerMaterial.diffuse
@@ -190,7 +190,7 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		if (hasOpacity) {
 			material.opacity = modelerMaterial.opacity;
 			material.transparent = true;
-		} 
+		}
 		if (hasTexture) {
 			var textureName = modelerMaterial.texture;
 			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
@@ -472,7 +472,7 @@ JSM.JSONFileLoader.prototype.Load = function (fileName)
 	request.send (null);
 };
 
-JSM.JSONFileLoader.prototype.OnReady = function (responseText) 
+JSM.JSONFileLoader.prototype.OnReady = function (responseText)
 {
 	if (this.onReady === null) {
 		return;
@@ -494,7 +494,7 @@ JSM.JSONFileConverter.prototype.Convert = function (fileName)
 	loader.Load (fileName);
 };
 
-JSM.JSONFileConverter.prototype.OnReady = function (jsonData) 
+JSM.JSONFileConverter.prototype.OnReady = function (jsonData)
 {
 	if (this.onReady === null) {
 		return;

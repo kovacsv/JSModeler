@@ -1717,7 +1717,7 @@ JSM.AddCumulatedPolygonToBody = function (body, vertices, height)
 
 		centroidCoord.Set (centroid.x, centroid.y, centroid.z);
 		normalVector.Set (normal.x, normal.y, normal.z);
-	}	
+	}
 
 	var centroidCoord = new JSM.Coord ();
 	var normalVector = new JSM.Vector ();
@@ -1764,7 +1764,7 @@ JSM.GenerateCumulatedTetrahedron = function (pyramidUnitHeight)
 	JSM.AddCumulatedPolygonToBody (result, [0, 3, 2], height);
 	JSM.AddCumulatedPolygonToBody (result, [1, 2, 3], height);
 
-	return result;	
+	return result;
 };
 
 /**
@@ -1800,7 +1800,7 @@ JSM.GenerateCumulatedHexahedron = function (pyramidUnitHeight)
 	JSM.AddCumulatedPolygonToBody (result, [2, 6, 7, 4], height);
 	JSM.AddCumulatedPolygonToBody (result, [3, 5, 7, 6], height);
 
-	return result;	
+	return result;
 };
 
 /**
@@ -1837,7 +1837,7 @@ JSM.GenerateCumulatedOctahedron = function (pyramidUnitHeight)
 	JSM.AddCumulatedPolygonToBody (result, [1, 4, 2], height);
 	JSM.AddCumulatedPolygonToBody (result, [1, 5, 3], height);
 
-	return result;	
+	return result;
 };
 
 /**
@@ -1897,7 +1897,7 @@ JSM.GenerateCumulatedDodecahedron = function (pyramidUnitHeight)
 	JSM.AddCumulatedPolygonToBody (result, [5, 9, 11, 7, 19], height);
 	JSM.AddCumulatedPolygonToBody (result, [6, 17, 19, 7, 15], height);
 
-	return result;	
+	return result;
 };
 
 /**
