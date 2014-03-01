@@ -95,10 +95,12 @@
 			var color = ConvertColor (currentColor);
 			materials.AddMaterial (new JSM.Material (color, color));
 
+			var isExplorer = (navigator.userAgent.indexOf ('MSIE') !== -1 || navigator.appVersion.indexOf ('Trident') != -1);
+			var doubleSided = !isExplorer;
 			var conversionData = {
 				textureLoadedCallback : null,
 				hasConvexPolygons : false,
-				doubleSided : false
+				doubleSided : doubleSided
 			};
 
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
