@@ -1,8 +1,3 @@
-<!--
-	Author:		Kovacs Viktor
-	Homepage:	http://www.kovacsv.hu
--->
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 	 "http://www.w3.org/TR/html4/strict.dtd">
 
@@ -97,7 +92,11 @@
 			
 			var modelAndMaterials = JSM.GenerateClock (1.0, 100);
 			
-			var conversionData = new JSM.ConversionData (null, true);
+			var conversionData = {
+				textureLoadedCallback : null,
+				hasConvexPolygons : true,
+				doubleSided : true
+			};
 			var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1], conversionData);
 
 			for (var i = 0; i < meshes.length; i++) {

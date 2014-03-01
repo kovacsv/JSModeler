@@ -42,6 +42,11 @@ a.button
 	float : left;
 }
 
+div.content
+{
+	padding : 10px;
+}
+
 canvas
 {
 	display : block;

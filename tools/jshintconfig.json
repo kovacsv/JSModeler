@@ -1,0 +1,33 @@
+{
+	"bitwise" : true,
+	"camelcase" : true,
+	"curly" : true,
+	"es3" : true,
+	"forin" : true,
+	"immed" : true,
+	"latedef" : true,
+	"noarg" : true,
+	"nonew" : true,
+	"quotmark" : "single",
+	"undef" : true,
+	"unused" : true,
+	"boss" : true,
+	"eqnull" : true,
+	"funcscope" : true,
+	"iterator" : true,
+	"loopfunc" : true,
+	"multistr" : true,
+	"smarttabs" : true,
+	"shadow" : true,
+	"sub" : true,
+	"supernew" : true,
+	"validthis" : true,
+	"trailing" : true,
+	"browser" : true,
+	"devel" : true,
+	"globals" : {
+		"JSM" : true,
+		"THREE" : false,
+		"requestAnimationFrame" : false
+	}
+}

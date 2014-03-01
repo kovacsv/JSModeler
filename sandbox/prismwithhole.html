@@ -1,8 +1,3 @@
-<!--
-	Author:		Kovacs Viktor
-	Homepage:	http://www.kovacsv.hu
--->
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 	 "http://www.w3.org/TR/html4/strict.dtd">
 
@@ -53,6 +48,10 @@
 	<script type="text/javascript" src="../src/extras/svgtomodel.js"></script>
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../src/extras/surfaces.js"></script>
+	<script type="text/javascript" src="../src/dialogs/basedialog.js"></script>
+	<script type="text/javascript" src="../src/dialogs/settingscontrols.js"></script>
+	<script type="text/javascript" src="../src/dialogs/settingsdialog.js"></script>
+	<script type="text/javascript" src="../src/dialogs/floatingdialog.js"></script>
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
 	<script type="text/javascript" src="../src/viewer/converter.js"></script>
@@ -107,7 +106,11 @@
 			
 			var direction = new JSM.Vector (0.0, 0.0, 1.0);
 			var prism = JSM.GeneratePrismWithHole (basePoints, direction, 0.3, true);
-			//var conversionData = new JSM.ConversionData (TextureLoaded, false, false);
+			var conversionData = {
+				textureLoadedCallback : TextureLoaded,
+				hasConvexPolygons : false,
+				doubleSided : false
+			};
 			var meshes = JSM.ConvertBodyToThreeMeshes (prism /*, null, conversionData*/);
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);

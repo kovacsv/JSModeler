@@ -1,10 +1,3 @@
-JSM.ConversionData = function (textureLoadedCallback, hasConvexPolygons, doubleSided)
-{
-	this.textureLoadedCallback = JSM.ValueOrDefault (textureLoadedCallback, null);
-	this.hasConvexPolygons = JSM.ValueOrDefault (hasConvexPolygons, false);
-	this.doubleSided = JSM.ValueOrDefault (doubleSided, true);
-};
-
 JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, textureCoords, conversionData)
 {
 	function CreateGeometry (polygonIndices, materialIndex)
@@ -184,7 +177,7 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 			AddPolygon (geometry, polygonIndices[i], hasTexture);
 		}
 
-		var material = null;		
+		var material = null;
 		material = new THREE.MeshLambertMaterial ({
 			ambient : modelerMaterial.ambient,
 			color : modelerMaterial.diffuse
@@ -197,10 +190,10 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		if (hasOpacity) {
 			material.opacity = modelerMaterial.opacity;
 			material.transparent = true;
-		} 
+		}
 		if (hasTexture) {
 			var textureName = modelerMaterial.texture;
-			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (image) {
+			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
 				if (conversionData.textureLoadedCallback !== null) {
 					conversionData.textureLoadedCallback ();
 				}
@@ -217,7 +210,7 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 		meshes.push (mesh);
 	}
 
-	var i, j;
+	var i;
 	var polygonsByMaterial = [];
 	var polygonsWithNoMaterial = [];
 	var hasVertexNormals = (vertexNormals !== undefined && vertexNormals !== null);
@@ -263,7 +256,11 @@ JSM.ConvertBodyToThreeMeshesSpecial = function (body, materials, vertexNormals, 
 JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 {
 	if (conversionData === undefined) {
-		conversionData = new JSM.ConversionData ();
+		conversionData = {
+			textureLoadedCallback : null,
+			hasConvexPolygons : false,
+			doubleSided : true
+		};
 	}
 
 	var vertexNormals = JSM.CalculateBodyVertexNormals (body);
@@ -271,8 +268,6 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 	var i, j;
 	var hasTextures = false;
 	if (materials !== undefined && materials !== null) {
-		var projection = body.GetTextureProjectionType ();
-		var coords = body.GetTextureProjectionCoords ();
 		for (i = 0; i < materials.Count (); i++) {
 			if (materials.GetMaterial (i).texture !== null) {
 				hasTextures = true;
@@ -362,7 +357,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 			}
 			
 			if (textureName !== undefined) {
-				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (image) {
+				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
 					if (textureLoadedCallback !== undefined) {
 						textureLoadedCallback ();
 					}
@@ -477,7 +472,7 @@ JSM.JSONFileLoader.prototype.Load = function (fileName)
 	request.send (null);
 };
 
-JSM.JSONFileLoader.prototype.OnReady = function (responseText) 
+JSM.JSONFileLoader.prototype.OnReady = function (responseText)
 {
 	if (this.onReady === null) {
 		return;
@@ -499,7 +494,7 @@ JSM.JSONFileConverter.prototype.Convert = function (fileName)
 	loader.Load (fileName);
 };
 
-JSM.JSONFileConverter.prototype.OnReady = function (jsonData) 
+JSM.JSONFileConverter.prototype.OnReady = function (jsonData)
 {
 	if (this.onReady === null) {
 		return;

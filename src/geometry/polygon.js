@@ -71,7 +71,7 @@ JSM.Polygon2D.prototype.Clear = function ()
 * Returns:
 *	{Polygon2D} a cloned instance
 */
-JSM.Polygon2D.prototype.Clone = function (source)
+JSM.Polygon2D.prototype.Clone = function ()
 {
 	var result = new JSM.Polygon2D ();
 	var i;
@@ -198,7 +198,7 @@ JSM.ContourPolygon2D.prototype.Clear = function ()
 * Returns:
 *	{ContourPolygon2D} a cloned instance
 */
-JSM.ContourPolygon2D.prototype.Clone = function (source)
+JSM.ContourPolygon2D.prototype.Clone = function ()
 {
 	var result = new JSM.ContourPolygon2D ();
 	var i;
@@ -283,7 +283,7 @@ JSM.Polygon.prototype.Clear = function ()
 * Returns:
 *	{Polygon} a cloned instance
 */
-JSM.Polygon.prototype.Clone = function (source)
+JSM.Polygon.prototype.Clone = function ()
 {
 	var result = new JSM.Polygon ();
 	var i;

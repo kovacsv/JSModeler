@@ -64,19 +64,19 @@ JSM.SoftwareViewer.prototype.InitSettings = function (settings)
 	};
 
 	if (settings !== undefined) {
-		if (settings.cameraEyePosition !== undefined) this.settings.cameraEyePosition = settings.cameraEyePosition;
-		if (settings.cameraCenterPosition !== undefined) this.settings.cameraCenterPosition = settings.cameraCenterPosition;
-		if (settings.cameraUpVector !== undefined) this.settings.cameraUpVector = settings.cameraUpVector;
-		if (settings.fieldOfView !== undefined) this.settings.fieldOfView = settings.fieldOfView;
-		if (settings.nearClippingPlane !== undefined) this.settings.nearClippingPlane = settings.nearClippingPlane;
-		if (settings.farClippingPlane !== undefined) this.settings.farClippingPlane = settings.farClippingPlane;
-		if (settings.drawMode !== undefined) this.settings.drawMode = settings.drawMode;
+		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = settings.cameraEyePosition; }
+		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = settings.cameraCenterPosition; }
+		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = settings.cameraUpVector; }
+		if (settings.fieldOfView !== undefined) { this.settings.fieldOfView = settings.fieldOfView; }
+		if (settings.nearClippingPlane !== undefined) { this.settings.nearClippingPlane = settings.nearClippingPlane; }
+		if (settings.farClippingPlane !== undefined) { this.settings.farClippingPlane = settings.farClippingPlane; }
+		if (settings.drawMode !== undefined) { this.settings.drawMode = settings.drawMode; }
 	}
 	
 	return true;
 };
 
-JSM.SoftwareViewer.prototype.InitCamera = function (canvasName)
+JSM.SoftwareViewer.prototype.InitCamera = function ()
 {
 	this.cameraMove = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
 	if (!this.cameraMove) {

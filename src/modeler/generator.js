@@ -142,7 +142,7 @@ JSM.GenerateSegmentedRectangle = function (xSize, ySize, xSegmentation, ySegment
 	{
 		var i, j, coord;
 
-		for (i = 0; i <= ySegmentation; i++) {	
+		for (i = 0; i <= ySegmentation; i++) {
 			for (j = 0; j <= xSegmentation; j++) {
 				coord = new JSM.Coord (j * xSegment - xStart, i * ySegment - yStart, 0.0);
 				result.AddVertex (new JSM.BodyVertex (coord));
@@ -203,7 +203,7 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 
 	function GetLevelSideVertices (level)
 	{
-		var i, j;
+		var i;
 		
 		var vertices = [];
 		var offset = GetLevelOffset (level);
@@ -244,7 +244,7 @@ JSM.GenerateSegmentedCuboid = function (xSize, ySize, zSize, segmentation)
 
 		var zCoord = level * zSegment;
 		if (level === 0 || level === segmentation) {
-			for (i = 0; i <= segmentation; i++) {	
+			for (i = 0; i <= segmentation; i++) {
 				for (j = 0; j <= segmentation; j++) {
 					coord = new JSM.Coord (j * xSegment - xStart, i * ySegment - yStart, zCoord - zStart);
 					result.AddVertex (new JSM.BodyVertex (coord));
@@ -479,7 +479,7 @@ JSM.GenerateSphere = function (radius, segmentation, isCurved)
 */
 JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 {
-	function GenerateIcosahedron (radius) {
+	function GenerateIcosahedron () {
 		var result = new JSM.Body ();
 
 		var a = 1.0;
@@ -555,7 +555,7 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 			currentEdge = adjacencyInfo.edges[i];
 			midCoord = JSM.MidCoord (oldBody.GetVertexPosition (currentEdge.vert1), oldBody.GetVertexPosition (currentEdge.vert2));
 			edgeCoord = JSM.VectorMultiply (JSM.VectorNormalize (midCoord), radius);
-			edgeVertexIndices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));		
+			edgeVertexIndices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));
 		}
 
 		for (i = 0; i < adjacencyInfo.pgons.length; i++) {
@@ -955,10 +955,10 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 				result.AddVertex (new JSM.BodyVertex (basePolygon[i]));
 				result.AddVertex (new JSM.BodyVertex (JSM.CoordOffset (basePolygon[i], direction, height)));
 			}
-		}			
+		}
 	}
 
-	function GetContourEnds (contourIndex)
+	function GetContourEnds ()
 	{
 		var contourCount = 0;
 		var contourEnds = [];
@@ -996,7 +996,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 		var i;
 		for (i = 0; i < contourEnds.length - 1; i++) {
 			AddContourPolygons (i, contourEnds);
-		}	
+		}
 	}
 	
 	function GetVertexMap ()
@@ -1125,7 +1125,8 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 
 	var polygon = new JSM.Polygon ();
 	polygon.vertices = basePolygon;
-	var innerBasePolygon = JSM.OffsetPolygonContour (polygon, width).vertices;
+	var offsetedPolygon = JSM.OffsetPolygonContour (polygon, width);
+	var innerBasePolygon = offsetedPolygon.vertices;
 	for (i = 0; i < count; i++) {
 		result.AddVertex (new JSM.BodyVertex (innerBasePolygon[i]));
 	}
@@ -1272,6 +1273,7 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 		angles.push (angle);
 	}
 
+	var normal = new JSM.Vector (0, 0, 1);
 	var innerBasePolyLine = [];
 	var distance, innerCoord, offsetDirection;
 	for (i = 0; i < count; i++) {
@@ -1286,7 +1288,7 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 		angle = angles[curr];
 		distance = width / Math.sin (angle);
 		innerCoord = JSM.CoordOffset (basePolyLine[curr], offsetDirection, distance);
-		innerCoord = JSM.CoordRotate (innerCoord, direction, -(Math.PI - angle), basePolyLine[curr]);
+		innerCoord = JSM.CoordRotate (innerCoord, normal, -(Math.PI - angle), basePolyLine[curr]);
 		innerBasePolyLine.push (innerCoord);
 	}
 
@@ -1377,7 +1379,7 @@ JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, inner
 {
 	var result = new JSM.Body ();
 	
-	var theta = 2.0 * Math.PI;
+	var theta = 0.0;
 	var step = 2.0 * Math.PI / innerSegmentation;
 	
 	var circle = [];
@@ -1387,7 +1389,7 @@ JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, inner
 		coord2D = JSM.PolarToCartesian (innerRadius, theta);
 		coord = new JSM.Coord (coord2D.x + outerRadius, 0.0, coord2D.y);
 		circle.push (coord);
-		theta -= step;
+		theta += step;
 	}
 
 	var axisDir = new JSM.Coord (0.0, 0.0, 1.0);
@@ -1950,7 +1952,7 @@ JSM.GenerateFunctionSurface = function (function3D, intervalMin, intervalMax, se
 	var bSector = new JSM.Sector (new JSM.Coord (intervalMin.x, intervalMax.y, 0.0), new JSM.Coord (intervalMax.x, intervalMax.y, 0.0));
 	var result = JSM.GenerateRuledFromSectors (aSector, bSector, segmentation, segmentation, isCurved);
 
-	var i, coord, functionValue;
+	var i, coord;
 	for (i = 0; i < result.VertexCount (); i++) {
 		coord = result.GetVertexPosition (i);
 		coord.z = function3D (coord.x, coord.y);
@@ -1986,7 +1988,7 @@ JSM.GenerateFunctionSurfaceSolid = function (function3D, intervalMin, intervalMa
 	var bSector = new JSM.Sector (new JSM.Coord (intervalMax.x, intervalMax.y, 0.0), new JSM.Coord (intervalMin.x, intervalMax.y, 0.0));
 	var result = JSM.GenerateRuledFromSectorsWithHeight (aSector, bSector, segmentation, segmentation, isCurved, bottomZ);
 
-	var i, coord, functionValue;
+	var i, coord;
 	var topVertexCount = (segmentation + 1) * (segmentation + 1);
 	for (i = 0; i < topVertexCount; i++) {
 		coord = result.GetVertexPosition (i);

@@ -1,6 +1,6 @@
 var JSM = {
 	mainVersion : 0,
-	subVersion : 27
+	subVersion : 28
 };
 
 JSM.Eps = 0.00000001;
@@ -209,7 +209,7 @@ JSM.ArcCos = function (value)
 */
 JSM.RandomInt = function (from, to)
 {
-	return Math.floor ((Math.random () * (to - from + 1)) + from); 
+	return Math.floor ((Math.random () * (to - from + 1)) + from);
 };
 
 /**
@@ -225,7 +225,7 @@ JSM.RandomInt = function (from, to)
 JSM.SeededRandomInt = function (from, to, seed)
 {
     var random = ((seed * 9301 + 49297) % 233280) / 233280;
-	return Math.floor ((random * (to - from + 1)) + from); 
+	return Math.floor ((random * (to - from + 1)) + from);
 };
 
 /**

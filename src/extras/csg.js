@@ -131,13 +131,13 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 	var aFrontPolygons = [];
 	var aBackPolygons = [];
 	var aPlanarFrontPolygons = [];
-	var aPlanarBackPolygons = [];	
+	var aPlanarBackPolygons = [];
 	ClipNodePolygonsWithTree (aTree.GetNodes (), bTree, aFrontPolygons, aBackPolygons, aPlanarFrontPolygons, aPlanarBackPolygons);
 
 	var bFrontPolygons = [];
 	var bBackPolygons = [];
 	var bPlanarFrontPolygons = [];
-	var bPlanarBackPolygons = [];	
+	var bPlanarBackPolygons = [];
 	ClipNodePolygonsWithTree (bTree.GetNodes (), aTree, bFrontPolygons, bBackPolygons, bPlanarFrontPolygons, bPlanarBackPolygons);
 
 	if (operation == 'Union') {

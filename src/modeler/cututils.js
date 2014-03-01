@@ -133,7 +133,7 @@ JSM.CutBodyByPlane = function (body, plane)
 	var result = new JSM.Body ();
 
 	var cuttedPolygons = [];
-	var cuttedIndexTables = [];	
+	var cuttedIndexTables = [];
 	
 	var remainsVertex = [];
 	var originalOldToNewIndex = [];

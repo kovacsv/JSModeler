@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/viewertest.css">
+
+	<script type="text/javascript" src="../../build/three.min.js"></script>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../../src/core/timer.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../../src/extras/surfaces.js"></script>
+	<script type="text/javascript" src="../../src/dialogs/basedialog.js"></script>
+	<script type="text/javascript" src="../../src/dialogs/settingscontrols.js"></script>
+	<script type="text/javascript" src="../../src/dialogs/settingsdialog.js"></script>
+	<script type="text/javascript" src="../../src/dialogs/floatingdialog.js"></script>
+	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/converter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
+<!-- JSModeler includes end -->
+
+	<script type="text/javascript" src="include/stephandler.js"></script>
+	<script type="text/javascript" src="include/teststeps.js"></script>
+	<title>JSModeler Camera Test</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+		
+		var testParameters1 = {
+			textControl : new JSM.Parameter ('text parameter', 'text', 'Example Test', 'left'),
+			checkControl : new JSM.Parameter ('check parameter', 'check', true, 'left'),
+			coordControl : new JSM.Parameter ('coord parameter', 'coord', new JSM.Coord (1, 2, 3), 'left'),
+			colorControl : new JSM.Parameter ('color parameter', 'color', 'cc0000', 'left'),
+			selectControl : new JSM.Parameter ('type', 'select', [0, [['option1', 'Option 1'], ['option2', 'Option 2'], ['option3', 'Option 3']]], 'left')
+		};
+		var testParameters2 = {
+			textControl : new JSM.Parameter ('text parameter', 'text', 'Example Test', 'left'),
+			checkControl : new JSM.Parameter ('check parameter', 'check', true, 'left'),
+			coordControl : new JSM.Parameter ('coord parameter', 'coord', new JSM.Coord (1, 2, 3), 'right'),
+			colorControl : new JSM.Parameter ('color parameter', 'color', 'cc0000', 'right')
+		};
+		var testParameters3 = {
+			polygonControl : new JSM.Parameter (null, 'polygon', [1.0, []], 'left'),
+			textControl : new JSM.Parameter ('text parameter', 'text', 'Example Test', 'right'),
+			checkControl : new JSM.Parameter ('check parameter', 'check', true, 'right'),
+			coordControl : new JSM.Parameter ('coord parameter', 'coord', new JSM.Coord (1, 2, 3), 'right'),
+			colorControl : new JSM.Parameter ('color parameter', 'color', 'cc0000', 'right')
+		};
+		
+		function Resize ()
+		{
+			var header = document.getElementById ('header');
+			var test = document.getElementById ('test');
+			
+			test.width = document.body.clientWidth;
+			test.height = document.body.clientHeight - header.clientHeight - 1;
+		}
+
+		function DumpParameters (test, parameters, name)
+		{
+			var padding = '&nbsp;&nbsp;&nbsp;&nbsp;';
+			var result = '';
+			result += '<b>' + name + ':</b><br>';
+			var i;
+			var parName, parameter, parVal;
+			for (parName in parameters) {
+				parameter = parameters[parName];
+				parVal = parameter.value;
+				if (parameter.type == 'coord') {
+					parVal = parameter.value.ToString ();
+				} else if (parameter.type == 'polygon') {
+					parVal = '[';
+					for (i = 0; i < parameter.value[1].length; i++) {
+						parVal += parameter.value[1][i].ToString ();
+						if (i < parameter.value[1].length - 1) {
+							parVal += ', ';
+						}
+					}
+					parVal += ']'
+				}
+				result += padding + parName + ': ' + parameter.name + ', ' +  parameter.type + ', ' +  parVal + ', ' +  parameter.side + '<br>';
+			}
+			result += '<br>'
+			test.innerHTML += result;
+		}
+		
+		function DumpData ()
+		{
+			var test = document.getElementById ('test');
+			test.innerHTML = '';
+			DumpParameters (test, testParameters1, 'testParameters1');
+			DumpParameters (test, testParameters2, 'testParameters2');
+			DumpParameters (test, testParameters3, 'testParameters3');
+		}
+		
+		function CreateDialog (title, parameters)
+		{
+			var settingsDialog = new JSM.SettingsDialog ();
+			settingsDialog.OnClosed (function () {
+				DumpData ();
+			});
+			settingsDialog.Open (title, parameters);
+		}
+		
+		function Test1 ()
+		{
+			CreateDialog ('Test Dialog 1', testParameters1);
+		}
+		
+		function Test2 ()
+		{
+			CreateDialog ('Test Dialog 2', testParameters2);
+		}
+
+		function Test3 ()
+		{
+			CreateDialog ('Test Dialog 3', testParameters3);
+		}
+
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+			DumpData ();
+		}
+
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="header">
+		<div id="buttons">
+			<a class="button" href="javascript:Test1 ()">test dialog 1</a>
+			<a class="button" href="javascript:Test2 ()">test dialog 2</a>
+			<a class="button" href="javascript:Test3 ()">test dialog 3</a>
+		</div>
+		<div id="info"></div>
+	</div>
+	<div class="content" id="test" width="800" height="500">
+	</canvas>
+</body>
+
+</html>

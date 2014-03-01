@@ -1,8 +1,3 @@
-<!--
-	Author:		Kovacs Viktor
-	Homepage:	http://www.kovacsv.hu
--->
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 	 "http://www.w3.org/TR/html4/strict.dtd">
 
@@ -11,219 +6,337 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="include/demo.css">
+	<link rel="stylesheet" type="text/css" href="include/demonstration.css">
+
 	<script type="text/javascript" src="../../build/three.min.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
-	<script type="text/javascript" src="include/editor.js"></script>
-	<script type="text/javascript" src="include/demo.js"></script>
-	<title>JSModeler demonstration</title>
+	<script type="text/javascript" src="include/shapegenerators.js"></script>
+	
+	<title>JSModeler Demonstration</title>
 	<script type="text/javascript">
-		
-		var demo = null;
-		
-		function RunHash ()
+		var viewer = null;
+		var body = null;
+		var materials = null;
+		var currentShape = 'cuboid';
+		var currentColor = '279b61';
+
+		var shapes = {
+			rectangle : { name : 'rectangle', generator : new JSM.RectangleGenerator () },
+			circle : { name : 'circle', generator : new JSM.CircleGenerator () },
+			cuboid : { name : 'cuboid', generator : new JSM.CuboidGenerator () },
+			sphere : { name : 'sphere', generator : new JSM.SphereGenerator () },
+			trisphere : { name : 'trisphere', generator : new JSM.TriSphereGenerator () },
+			cylinder : { name : 'cylinder', generator : new JSM.CylinderGenerator () },
+			pie : { name : 'pie', generator : new JSM.PieGenerator () },
+			cone : { name : 'cone', generator : new JSM.ConeGenerator () },
+			torus : { name : 'torus', generator : new JSM.TorusGenerator () },
+			prism : { name : 'prism', generator : new JSM.PrismGenerator () },
+			prismshell : { name : 'prism shell', generator : new JSM.PrismShellGenerator () },
+			lineshell : { name : 'line shell', generator : new JSM.LineShellGenerator () },
+			cylindershell : { name : 'cylinder shell', generator : new JSM.CylinderShellGenerator () },
+			revolved : { name : 'revolved', generator : new JSM.RevolveGenerator () },
+			polytorus : { name : 'polytorus', generator : new JSM.PolyTorusGenerator () },
+			platonic : { name : 'platonic', generator : new JSM.SolidGenerator ([
+				['Tetrahedron', 'tetrahedron'],
+				['Hexahedron', 'hexahedron'],
+				['Octahedron', 'octahedron'],
+				['Dodecahedron', 'dodecahedron'],
+				['Icosahedron', 'icosahedron']
+			])},
+			archimedean : { name : 'archimedean', generator : new JSM.SolidGenerator ([
+				['TruncatedTetrahedron', 'truncated tetrahedron'],
+				['Cuboctahedron', 'cuboctahedron'],
+				['TruncatedCube', 'truncated cube'],
+				['TruncatedOctahedron', 'truncated octahedron'],
+				['Rhombicuboctahedron', 'rhombicuboctahedron'],
+				['TruncatedCuboctahedron', 'truncated cuboctahedron'],
+				['SnubCube', 'snub cube'],
+				['Icosidodecahedron', 'icosidodecahedron'],
+				['TruncatedDodecahedron', 'truncated dodecahedron'],
+				['Rhombicosidodecahedron', 'rhombicosidodecahedron'],
+				['TruncatedIcosidodecahedron', 'truncated icosidodecahedron'],
+				['SnubDodecahedron', 'snub dodecahedron']
+			])},
+			lego : { name : 'lego brick', generator : new JSM.LegoBrickGenerator () },
+			convexhull : { name : 'convex hull', generator : new JSM.ConvexHullGenerator () }
+		};
+	
+		function ShowHide (divName, show)
 		{
-			var module = window.location.hash.substr (1);
-			switch (module) {
-				case 'cuboid':
-					demo.GenerateCuboidUI ();
-					demo.GenerateCuboid ();
-					break;
-
-				case 'sphere':
-					demo.GenerateSphereUI ();
-					demo.GenerateSphere ();
-					break;
-
-				case 'trisphere':
-					demo.GenerateTriSphereUI ();
-					demo.GenerateTriSphere ();
-					break;
-
-				case 'cylinder':
-					demo.GenerateCylinderUI ();
-					demo.GenerateCylinder ();
-					break;
-
-				case 'pie':
-					demo.GeneratePieUI ();
-					demo.GeneratePie ();
-					break;
-
-					case 'cone':
-					demo.GenerateConeUI ();
-					demo.GenerateCone ();
-					break;
-
-				case 'torus':
-					demo.GenerateTorusUI ();
-					demo.GenerateTorus ();
-					break;
-
-				case 'polytorus':
-					demo.GeneratePolyTorusUI ();
-					demo.GeneratePolyTorus ();
-					break;
-
-				case 'prism':
-					demo.GeneratePrismUI ();
-					demo.GeneratePrism ();
-					break;
-
-				case 'prismshell':
-					demo.GeneratePrismShellUI ();
-					demo.GeneratePrismShell ();
-					break;
-
-				case 'lineshell':
-					demo.GenerateLineShellUI ();
-					demo.GenerateLineShell ();
-					break;
-
-				case 'revolved':
-					demo.GenerateRevolvedUI ();
-					demo.GenerateRevolved ();
-					break;
-
-				case 'solids':
-					demo.GenerateSolidUI ();
-					demo.GenerateSolid ('Tetrahedron');
-					break;
-
-				case 'function':
-					demo.GenerateFunctionUI ();
-					demo.GenerateFunction ('Tetrahedron');
-					break;
-
-				case 'supershape':
-					demo.GenerateSuperShapeUI ();
-					demo.GenerateSuperShape ();
-					break;
-
-				case 'legobrick':
-					demo.GenerateLegoBrickUI ();
-					demo.GenerateLegoBrick ();
-					break;
-
-				default:
-					demo.GenerateCuboidUI ();
-					demo.GenerateCuboid ();
-					break;
-			}
-			
-			demo.Draw ();	
-		}
-
-		function CatmullClarkSubdivision ()
-		{
-			demo.CatmullClarkSubdivision ();
-		}
-		
-		function ExportToStl ()
-		{
-			var floating = document.getElementById ('floating');
-			var exporttext = document.getElementById ('exporttext');
-			var stlContent = JSM.ExportBodyToStl (demo.body, 'JSModelerModel');
-			exporttext.value = stlContent;
-			exporttext.style.display = 'block';
-			floating.style.display = 'block';
-		}
-		
-		function ExportToObj ()
-		{
-			var floating = document.getElementById ('floating');
-			var exporttext = document.getElementById ('exporttext');
-			var stlContent = JSM.ExportBodyToObj (demo.body);
-			exporttext.value = stlContent;
-			exporttext.style.display = 'block';
-			floating.style.display = 'block';
-		}
-		
-		function ExportToSVG ()
-		{
-			var floating = document.getElementById ('floating');
-			var svgcontent = document.getElementById ('svgcontent');
-			var drawSettings = new JSM.DrawSettings (demo.viewer.cameraMove, demo.viewer.settings['fieldOfView'], demo.viewer.settings['nearClippingPlane'], demo.viewer.settings['farClippingPlane'], 'Wireframe', true);
-			var drawer = new JSM.SVGDrawer (svgcontent);
-			JSM.DrawProjectedBody (demo.body, null, drawSettings, drawer);
-			svgcontent.style.display = 'block';
-			floating.style.display = 'block';
-		}
-
-		function DocumentClick (clickEvent)
-		{
-			var floating = document.getElementById ('floating');
-			var exporttext = document.getElementById ('exporttext');
-			var svgcontent = document.getElementById ('svgcontent');
-			var isInFloating = false;
-			
-			var target = clickEvent.target;
-			while (target !== null) {
-				if (target === floating) {
-					isInFloating = true;
-					break;
-				}
-				target = target.parentElement;
-			}
-			
-			if (!isInFloating) {
-				if (floating.style.display !== 'none') {
-					floating.style.display = 'none';
-					exporttext.style.display = 'none';
-					svgcontent.style.display = 'none';
-				}
+			var div = document.getElementById (divName);
+			if (show) {
+				div.style.display = 'block';
+			} else {
+				div.style.display = 'none';
 			}
 		}
-		
+
 		function Resize ()
 		{
-			var margin = 20;
-			var floatingMargin = 100;
-			var canvas = document.getElementById ('demo');
-			var header = document.getElementById ('header');
-			var menu = document.getElementById ('menu');
 			var left = document.getElementById ('left');
+			var right = document.getElementById ('right');
+			var canvas = document.getElementById ('demo');
 			
-			canvas.width = document.body.clientWidth - left.clientWidth - 2.0 * margin;
-			canvas.height = document.body.clientHeight - header.clientHeight - menu.clientHeight - 2.0 * margin;
+			canvas.width = document.body.clientWidth - left.offsetWidth;
+			canvas.height = document.body.clientHeight;
+			if (viewer !== null) {
+				viewer.Resize ();
+			}
+		}
+		
+		function ShowBody ()
+		{
+			function ConvertColor (color) {
+				var resultFormat = '0x' + color;
+				return parseInt (resultFormat);
+			};		
+		
+			materials = new JSM.Materials ();
+			var color = ConvertColor (currentColor);
+			materials.AddMaterial (new JSM.Material (color, color));
 
-			if (demo != null) {
-				demo.Resize ();
+			var isExplorer = (navigator.userAgent.indexOf ('MSIE') !== -1 || navigator.appVersion.indexOf ('Trident') != -1);
+			var doubleSided = !isExplorer;
+			var conversionData = {
+				textureLoadedCallback : null,
+				hasConvexPolygons : false,
+				doubleSided : doubleSided
+			};
+
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
+			viewer.RemoveMeshes ();
+			viewer.AddMeshes (meshes);
+			viewer.Draw ();		
+		}
+		
+		function Generate ()
+		{
+			viewer.RemoveMeshes ();
+			var shape = shapes[currentShape];
+			if (shape === undefined) {
+				return;
+			}
+
+			var check = shape.generator.Check ();
+			ShowHide ('fail', !check);
+			if (!check) {
+				return;
 			}
 			
-			var floating = document.getElementById ('floating');
-			floating.style.left = floatingMargin + 'px';
-			floating.style.top = floatingMargin + 'px';
-			floating.style.width = (document.body.clientWidth - 2.0 * floatingMargin) + 'px';
-			floating.style.height = (document.body.clientHeight - 2.0 * floatingMargin) + 'px';
+			body = shape.generator.Generate ();
+			body.SetPolygonsMaterialIndex (0);
 
-			var svgcontent = document.getElementById ('svgcontent');
-			svgcontent.style.left = floatingMargin + 'px';
-			svgcontent.style.top = floatingMargin + 'px';
-			svgcontent.setAttribute ('width', document.body.clientWidth - 2.0 * floatingMargin);
-			svgcontent.setAttribute ('height', document.body.clientHeight - 2.0 * floatingMargin);
+			ShowBody ();
 		}
 
+		function Settings ()
+		{
+			var shape = shapes[currentShape];
+			if (shape === undefined) {
+				return;
+			}
+			
+			var settingsDialog = new JSM.SettingsDialog ();
+			settingsDialog.OnClosed (function () {
+				Generate ();
+			});
+			settingsDialog.Open ('parameters', shape.generator.GetParameters ());
+		}
+
+		function Info ()
+		{
+			if (body === null) {
+				return;
+			}
+
+			var parameters = {
+				xSize : new JSM.Parameter ('vertex count', 'static', body.VertexCount (), 'left'),
+				ySize : new JSM.Parameter ('polygon count', 'static', body.PolygonCount (), 'left')
+			};
+			
+			var infoDialog = new JSM.InfoDialog ();
+			infoDialog.Open ('information', parameters);
+		}
+
+		function Subdivision ()
+		{
+			var disabledShapes = [
+				'lego'
+			];
+		
+			var errorMessage = null;
+			var maxPolygonCount = 2000;
+			if (disabledShapes.indexOf (currentShape) != -1) {
+				errorMessage = 'You cannot subdivide this body.';
+			} else if (body.PolygonCount () > maxPolygonCount) {
+				errorMessage = 'You cannot subdivide a body with more than ' + maxPolygonCount + ' polygons.';
+			} else if (!JSM.IsSolidBody (body)) {
+				errorMessage = 'You cannot subdivide an opened body.';
+			}
+			
+			if (errorMessage !== null) {
+				var parameters = {
+					xSize : new JSM.Parameter (null, 'static', errorMessage, 'left'),
+				};
+				
+				var infoDialog = new JSM.InfoDialog ();
+				infoDialog.Open ('error', parameters);
+				return;
+			}
+			
+			body = JSM.CatmullClarkSubdivision (body, 1);
+			ShowBody ();
+		}
+		
+		function Export (format)
+		{
+			function AddContent (floatingDialog, contentType)
+			{
+				var dialog = floatingDialog.GetDialog ();
+				var content = null;
+				if (contentType == 'svg') {
+					content = document.createElementNS ('http://www.w3.org/2000/svg', 'svg');
+					content.setAttribute ('width', dialog.clientWidth);
+					content.setAttribute ('height', dialog.clientHeight);
+				} else {
+					content = document.createElement (contentType);
+				}
+
+				dialog.appendChild (content);
+				content.style.color = '#000000';
+				content.style.background = '#ffffff';
+				content.style.width = '100%';
+				content.style.height = '100%';
+				content.style.border = '1px solid #cccccc';
+				return content;
+			}
+		
+			if (body === null) {
+				return;
+			}
+
+			var floatingDialog = new JSM.FloatingDialog ();
+			var content = null;
+			if (format == 'stl') {
+				floatingDialog.Open ();
+				content = AddContent (floatingDialog, 'textarea');
+				content.value = JSM.ExportBodyToStl (body, 'JSModelerBody', false);
+			} else if (format == 'obj') {
+				floatingDialog.Open ();
+				content = AddContent (floatingDialog, 'textarea');
+				content.value = JSM.ExportBodyToObj (body, 'JSModelerBody', false);
+			} else if (format == 'gdl') {
+				floatingDialog.Open ();
+				content = AddContent (floatingDialog, 'textarea');
+				content.value = JSM.ExportBodyToGdl (body, materials);
+			} else if (format == 'svg') {
+				floatingDialog.Open ();
+				content = AddContent (floatingDialog, 'svg');
+				var drawSettings = new JSM.DrawSettings (viewer.cameraMove, viewer.settings['fieldOfView'], viewer.settings['nearClippingPlane'], viewer.settings['farClippingPlane'], 'Wireframe', true);
+				var drawer = new JSM.SVGDrawer (content);
+				JSM.DrawProjectedBody (body, materials, drawSettings, drawer);
+			}
+		}
+
+		function ChangeColor (color)
+		{
+			var currentColorDiv = document.getElementById ('currentcolor');
+			currentColorDiv.style.background = '#' + color;
+			currentColor = color;
+			ShowBody ();
+		}
+		
+		function AddMenuTitle (name)
+		{
+			var menu = document.getElementById ('menu');
+			var menuDiv = document.createElement ('div');
+			menuDiv.className = 'menutitle';
+			menuDiv.innerHTML = name;
+			menu.appendChild (menuDiv);
+		}
+
+		function AddMenuEntry (name)
+		{
+			var shape = shapes[name];
+			if (shape === undefined) {
+				return;
+			}
+			
+			var menu = document.getElementById ('menu');
+			var menuDiv = document.createElement ('div');
+			menuDiv.className = 'menuentry';
+			menuDiv.innerHTML = shape.name;
+			menuDiv.onclick = function (name) {
+				return function () {
+					window.location.hash = name;
+				}
+			} (name);
+			menu.appendChild (menuDiv);
+		}
+
+		function HashChange ()
+		{
+			var hash = window.location.hash.substr (1);
+			if (hash in shapes) {
+				currentShape = hash;
+			}
+			Generate ();
+		}
+		
 		function Load ()
 		{
 			window.onresize = Resize;
 			Resize ();
 
-			demo = new JSMDemo ();
-			if (!demo.Initialize ('demo', 'leftmenu')) {
-				document.getElementById ('header').style.display = 'none';
-				document.getElementById ('menu').style.display = 'none';
-				document.getElementById ('left').style.display = 'none';
-				document.getElementById ('right').style.display = 'none';
-				alert ('Your browser does not support WebGL.');
+			var viewerSettings = {
+				cameraEyePosition : [-4.0, -3.0, 2.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
+
+			viewer = new JSM.Viewer ();
+			if (!viewer.Start ('demo', viewerSettings)) {
+				while (document.body.lastChild) {
+					document.body.removeChild (document.body.lastChild);
+				}
+				document.body.innerHTML = 'No WebGL support.';
 				return;
 			}
+			
+			var demo = document.getElementById ('demo');
+			demo.addEventListener ('dblclick', Settings, false);
 
-			window.onhashchange = RunHash;
-			document.onclick = DocumentClick;
-			RunHash ();
+			AddMenuTitle ('basic shapes');
+			AddMenuEntry ('rectangle');
+			AddMenuEntry ('circle');
+			AddMenuEntry ('cuboid');
+			AddMenuEntry ('sphere');
+			AddMenuEntry ('trisphere');
+			AddMenuEntry ('cylinder');
+			AddMenuEntry ('pie');
+			AddMenuEntry ('cone');
+			AddMenuEntry ('torus');
+			
+			AddMenuTitle ('polygonal shapes');
+			AddMenuEntry ('prism');
+			AddMenuEntry ('prismshell');
+			AddMenuEntry ('lineshell');
+			AddMenuEntry ('cylindershell');
+			AddMenuEntry ('revolved');
+			AddMenuEntry ('polytorus');
+
+			AddMenuTitle ('solids');
+			AddMenuEntry ('platonic');
+			AddMenuEntry ('archimedean');
+
+			AddMenuTitle ('other shapes');
+			AddMenuEntry ('lego');
+			AddMenuEntry ('convexhull');
+
+			window.onhashchange = HashChange;
+			HashChange ();
 		}
-	
+		
 	    window.onload = function ()
 		{
 			Load ();			
@@ -234,50 +347,44 @@
 </head>
 
 <body>
-	<div id="header">
-		<span id="headerbig">JSModeler</span>
-		<span id="headersmall">generator demonstration</span>
-	</div>
-	<div id="menu">
-		<a href="demonstration.html#cuboid">cuboid</a> | 
-		<a href="demonstration.html#sphere">sphere</a> | 
-		<a href="demonstration.html#trisphere">trisphere</a> | 
-		<a href="demonstration.html#cylinder">cylinder</a> | 
-		<a href="demonstration.html#pie">pie</a> | 
-		<a href="demonstration.html#cone">cone</a> | 
-		<a href="demonstration.html#torus">torus</a> | 
-		<a href="demonstration.html#polytorus">polytorus</a> | 
-		<a href="demonstration.html#prism">prism</a> | 
-		<a href="demonstration.html#prismshell">prismshell</a> | 
-		<a href="demonstration.html#lineshell">lineshell</a> | 
-		<a href="demonstration.html#revolved">revolved</a> | 
-		<a href="demonstration.html#solids">solids</a> | 
-		<a href="demonstration.html#function">function</a> |
-		<a href="demonstration.html#supershape">supershape</a> |
-		<a href="demonstration.html#legobrick">legobrick</a>
-	</div>
 	<div id="left">
-		<div id="leftmenu" class="leftbox">
-		</div>
-		<div class="leftbox">
-			<div id="subdivisionoption" style="display:none;" >
-				<a href="javascript:CatmullClarkSubdivision ();">catmull-clark subdivision</a>
+		<div class="content">
+			<div class="title">
+				<div class="maintitle">JSModeler</div>
+				<div class="subtitle">generator demonstration</div>
 			</div>
-			<a href="javascript:ExportToSVG ();">export model to svg</a><br>
-			<a href="javascript:ExportToStl ();">export model to stl</a><br>
-			<a href="javascript:ExportToObj ();">export model to obj</a><br>
-		</div>
-		<div class="leftbox">
-			<a href="https://github.com/kovacsv/JSModeler">go to project home page</a>
+			<div id="menu">
+			</div>
 		</div>
 	</div>
 	<div id="right">
 		<canvas id="demo" width="1000" height="500"></canvas>
 	</div>
-	<div id="floating">
-		<textarea id="exporttext"></textarea>
-		<svg id="svgcontent" xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>
+	<div class="button" id="settings" onclick="Settings ()" title="settings"><img src="include/settings.png" alt="settings" /></div>
+	<div class="button" id="info" onclick="Info ()" title="info"><img src="include/info.png" alt="info" /></div>
+	<div class="button" id="subdivision" onclick="Subdivision ()" title="subdivision"><img src="include/subdivision.png" alt="subdivision" /></div>
+	<div class="button" id="export" title="export" onmouseover="ShowHide ('exportcontent', true);" onmouseout="ShowHide ('exportcontent', false);">
+		<img src="include/export.png" alt="export" />
+		<div class="buttoncontent" id="exportcontent" style="display : none;">
+			<div class="buttoncontententry" onclick="Export ('stl')">stl</div>
+			<div class="buttoncontententry" onclick="Export ('obj')">obj</div>
+			<div class="buttoncontententry" onclick="Export ('gdl')">gdl</div>
+			<div class="buttoncontententry" onclick="Export ('svg')">svg</div>
+		</div>
 	</div>
+	<div class="button" id="color" title="color" onmouseover="ShowHide ('colorcontent', true);" onmouseout="ShowHide ('colorcontent', false);">
+		<div class="color" id="currentcolor" style="background : #279b61;"></div>
+		<div class="buttoncontent" id="colorcontent" style="display : none;">
+			<div class="buttoncontententry" onclick="ChangeColor ('279b61')"><div class="color" style="background : #279b61;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('008ab8')"><div class="color" style="background : #008ab8;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('cc3333')"><div class="color" style="background : #cc3333;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('ffcc33')"><div class="color" style="background : #ffcc33;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('cc6699')"><div class="color" style="background : #cc6699;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('a3e496')"><div class="color" style="background : #a3e496;"></div></div>
+			<div class="buttoncontententry" onclick="ChangeColor ('95cae4')"><div class="color" style="background : #95cae4;"></div></div>
+		</div>
+	</div>
+	<div class="button" id="fail" onclick="Settings ()" title="fail" style="display : none;"><img src="include/fail.png" alt="info" /></div>
 </body>
 
 </html>

@@ -26,7 +26,8 @@ Example applications
 --------------------
 <ul>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/demo/demonstration.html">JSModeler Generator Demonstration</a> is a page which contains examples for generator functions.</li>
-	<li><a href="http://kovacsv.github.com/JSModeler/documentation/demo/triangulation.html">JSModeler Triangulation Demonstration</a> is a page which demonstrates the built-in triangulation algorithm.</li>
+	<li><a href="http://kovacsv.github.com/JSModeler/documentation/olddemo/demonstration.html">JSModeler Generator Demonstration (old version)</a> is a page which contains examples for generator functions.</li>
+	<li><a href="http://kovacsv.github.com/JSModeler/documentation/olddemo/triangulation.html">JSModeler Triangulation Demonstration</a> is a page which demonstrates the built-in triangulation algorithm.</li>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/legobuilder.html">Lego Builder</a> is an interactive lego builder application.</li>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/tictactoe.html">3D Tic-Tac-Toe</a> is a Tic-Tac-Toe game with 3D interface.</li>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/robot/robot.html">Robotic Arm</a> is a realtime robotic arm simulator.</li>

@@ -153,7 +153,7 @@ JSM.CalculateAdjacencyInfo = function (body)
 	for (i = 0; i < body.VertexCount (); i++) {
 		vert = new JSM.VertInfo ();
 		adjacencyInfo.verts.push (vert);
-	}	
+	}
 	
 	var polygon, count, curr, next, pedge;
 	for (i = 0; i < body.PolygonCount (); i++) {
@@ -174,7 +174,7 @@ JSM.CalculateAdjacencyInfo = function (body)
 			adjacencyInfo.verts[curr].pgons.push (i);
 		}
 		adjacencyInfo.pgons.push (pgon);
-	}	
+	}
 	
 	return adjacencyInfo;
 };
