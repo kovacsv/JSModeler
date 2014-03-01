@@ -295,7 +295,13 @@
 			};
 
 			viewer = new JSM.Viewer ();
-			viewer.Start ('demo', viewerSettings);
+			if (!viewer.Start ('demo', viewerSettings)) {
+				while (document.body.lastChild) {
+					document.body.removeChild (document.body.lastChild);
+				}
+				document.body.innerHTML = 'No WebGL support.';
+				return;
+			}
 			
 			var demo = document.getElementById ('demo');
 			demo.addEventListener ('dblclick', Settings, false);
