@@ -1,0 +1,278 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/demo.css">
+	<script type="text/javascript" src="../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
+	<script type="text/javascript" src="include/editor.js"></script>
+	<script type="text/javascript" src="include/demo.js"></script>
+	<title>JSModeler demonstration</title>
+	<script type="text/javascript">
+		
+		var demo = null;
+		
+		function RunHash ()
+		{
+			var module = window.location.hash.substr (1);
+			switch (module) {
+				case 'cuboid':
+					demo.GenerateCuboidUI ();
+					demo.GenerateCuboid ();
+					break;
+
+				case 'sphere':
+					demo.GenerateSphereUI ();
+					demo.GenerateSphere ();
+					break;
+
+				case 'trisphere':
+					demo.GenerateTriSphereUI ();
+					demo.GenerateTriSphere ();
+					break;
+
+				case 'cylinder':
+					demo.GenerateCylinderUI ();
+					demo.GenerateCylinder ();
+					break;
+
+				case 'pie':
+					demo.GeneratePieUI ();
+					demo.GeneratePie ();
+					break;
+
+					case 'cone':
+					demo.GenerateConeUI ();
+					demo.GenerateCone ();
+					break;
+
+				case 'torus':
+					demo.GenerateTorusUI ();
+					demo.GenerateTorus ();
+					break;
+
+				case 'polytorus':
+					demo.GeneratePolyTorusUI ();
+					demo.GeneratePolyTorus ();
+					break;
+
+				case 'prism':
+					demo.GeneratePrismUI ();
+					demo.GeneratePrism ();
+					break;
+
+				case 'prismshell':
+					demo.GeneratePrismShellUI ();
+					demo.GeneratePrismShell ();
+					break;
+
+				case 'lineshell':
+					demo.GenerateLineShellUI ();
+					demo.GenerateLineShell ();
+					break;
+
+				case 'revolved':
+					demo.GenerateRevolvedUI ();
+					demo.GenerateRevolved ();
+					break;
+
+				case 'solids':
+					demo.GenerateSolidUI ();
+					demo.GenerateSolid ('Tetrahedron');
+					break;
+
+				case 'function':
+					demo.GenerateFunctionUI ();
+					demo.GenerateFunction ('Tetrahedron');
+					break;
+
+				case 'supershape':
+					demo.GenerateSuperShapeUI ();
+					demo.GenerateSuperShape ();
+					break;
+
+				case 'legobrick':
+					demo.GenerateLegoBrickUI ();
+					demo.GenerateLegoBrick ();
+					break;
+
+				default:
+					demo.GenerateCuboidUI ();
+					demo.GenerateCuboid ();
+					break;
+			}
+			
+			demo.Draw ();	
+		}
+
+		function CatmullClarkSubdivision ()
+		{
+			demo.CatmullClarkSubdivision ();
+		}
+		
+		function ExportToStl ()
+		{
+			var floating = document.getElementById ('floating');
+			var exporttext = document.getElementById ('exporttext');
+			var stlContent = JSM.ExportBodyToStl (demo.body, 'JSModelerModel');
+			exporttext.value = stlContent;
+			exporttext.style.display = 'block';
+			floating.style.display = 'block';
+		}
+		
+		function ExportToObj ()
+		{
+			var floating = document.getElementById ('floating');
+			var exporttext = document.getElementById ('exporttext');
+			var stlContent = JSM.ExportBodyToObj (demo.body);
+			exporttext.value = stlContent;
+			exporttext.style.display = 'block';
+			floating.style.display = 'block';
+		}
+		
+		function ExportToSVG ()
+		{
+			var floating = document.getElementById ('floating');
+			var svgcontent = document.getElementById ('svgcontent');
+			var drawSettings = new JSM.DrawSettings (demo.viewer.cameraMove, demo.viewer.settings['fieldOfView'], demo.viewer.settings['nearClippingPlane'], demo.viewer.settings['farClippingPlane'], 'Wireframe', true);
+			var drawer = new JSM.SVGDrawer (svgcontent);
+			JSM.DrawProjectedBody (demo.body, null, drawSettings, drawer);
+			svgcontent.style.display = 'block';
+			floating.style.display = 'block';
+		}
+
+		function DocumentClick (clickEvent)
+		{
+			var floating = document.getElementById ('floating');
+			var exporttext = document.getElementById ('exporttext');
+			var svgcontent = document.getElementById ('svgcontent');
+			var isInFloating = false;
+			
+			var target = clickEvent.target;
+			while (target !== null) {
+				if (target === floating) {
+					isInFloating = true;
+					break;
+				}
+				target = target.parentElement;
+			}
+			
+			if (!isInFloating) {
+				if (floating.style.display !== 'none') {
+					floating.style.display = 'none';
+					exporttext.style.display = 'none';
+					svgcontent.style.display = 'none';
+				}
+			}
+		}
+		
+		function Resize ()
+		{
+			var margin = 20;
+			var floatingMargin = 100;
+			var canvas = document.getElementById ('demo');
+			var header = document.getElementById ('header');
+			var menu = document.getElementById ('menu');
+			var left = document.getElementById ('left');
+			
+			canvas.width = document.body.clientWidth - left.clientWidth - 2.0 * margin;
+			canvas.height = document.body.clientHeight - header.clientHeight - menu.clientHeight - 2.0 * margin;
+
+			if (demo != null) {
+				demo.Resize ();
+			}
+			
+			var floating = document.getElementById ('floating');
+			floating.style.left = floatingMargin + 'px';
+			floating.style.top = floatingMargin + 'px';
+			floating.style.width = (document.body.clientWidth - 2.0 * floatingMargin) + 'px';
+			floating.style.height = (document.body.clientHeight - 2.0 * floatingMargin) + 'px';
+
+			var svgcontent = document.getElementById ('svgcontent');
+			svgcontent.style.left = floatingMargin + 'px';
+			svgcontent.style.top = floatingMargin + 'px';
+			svgcontent.setAttribute ('width', document.body.clientWidth - 2.0 * floatingMargin);
+			svgcontent.setAttribute ('height', document.body.clientHeight - 2.0 * floatingMargin);
+		}
+
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+
+			demo = new JSMDemo ();
+			if (!demo.Initialize ('demo', 'leftmenu')) {
+				document.getElementById ('header').style.display = 'none';
+				document.getElementById ('menu').style.display = 'none';
+				document.getElementById ('left').style.display = 'none';
+				document.getElementById ('right').style.display = 'none';
+				alert ('Your browser does not support WebGL.');
+				return;
+			}
+
+			window.onhashchange = RunHash;
+			document.onclick = DocumentClick;
+			RunHash ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+
+	</script>
+
+</head>
+
+<body>
+	<div id="header">
+		<span id="headerbig">JSModeler</span>
+		<span id="headersmall">generator demonstration</span>
+	</div>
+	<div id="menu">
+		<a href="demonstration.html#cuboid">cuboid</a> | 
+		<a href="demonstration.html#sphere">sphere</a> | 
+		<a href="demonstration.html#trisphere">trisphere</a> | 
+		<a href="demonstration.html#cylinder">cylinder</a> | 
+		<a href="demonstration.html#pie">pie</a> | 
+		<a href="demonstration.html#cone">cone</a> | 
+		<a href="demonstration.html#torus">torus</a> | 
+		<a href="demonstration.html#polytorus">polytorus</a> | 
+		<a href="demonstration.html#prism">prism</a> | 
+		<a href="demonstration.html#prismshell">prismshell</a> | 
+		<a href="demonstration.html#lineshell">lineshell</a> | 
+		<a href="demonstration.html#revolved">revolved</a> | 
+		<a href="demonstration.html#solids">solids</a> | 
+		<a href="demonstration.html#function">function</a> |
+		<a href="demonstration.html#supershape">supershape</a> |
+		<a href="demonstration.html#legobrick">legobrick</a>
+	</div>
+	<div id="left">
+		<div id="leftmenu" class="leftbox">
+		</div>
+		<div class="leftbox">
+			<div id="subdivisionoption" style="display:none;" >
+				<a href="javascript:CatmullClarkSubdivision ();">catmull-clark subdivision</a>
+			</div>
+			<a href="javascript:ExportToSVG ();">export model to svg</a><br>
+			<a href="javascript:ExportToStl ();">export model to stl</a><br>
+			<a href="javascript:ExportToObj ();">export model to obj</a><br>
+		</div>
+		<div class="leftbox">
+			<a href="https://github.com/kovacsv/JSModeler">go to project home page</a>
+		</div>
+	</div>
+	<div id="right">
+		<canvas id="demo" width="1000" height="500"></canvas>
+	</div>
+	<div id="floating">
+		<textarea id="exporttext"></textarea>
+		<svg id="svgcontent" xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>
+	</div>
+</body>
+
+</html>
