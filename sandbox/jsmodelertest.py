@@ -155,6 +155,7 @@ def TestDemonstration (browser, path):
 	def CheckInfo (browser):
 		browser.Click (245, 65)
 		browser.Capture ('demonstration');
+		browser.Click (628, 390)
 	
 	def Subdivide (browser):
 		browser.Click (245, 105)
@@ -218,10 +219,12 @@ def TestDemonstration (browser, path):
 	OpenSettings (browser)
 	WriteToField (browser, 384, 195, '0.02')
 	browser.Click (862, 528)
+	browser.Capture ('demonstration');
 
 	OpenSettings (browser)
 	browser.DragDrop (477, 266, 510, 286)
 	browser.Click (862, 528)
+	browser.Capture ('demonstration');
 	
 def TestOldDemonstration (browser, path):
 	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
