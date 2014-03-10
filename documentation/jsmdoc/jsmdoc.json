@@ -2405,6 +2405,17 @@
 						["Body", "the result"]
 					]
 				},
+				"ExplodeBodyToTriangles" : {
+					"description" : "Explodes a body to triangles. The function calls callback functions on geometry start and end, and when a triangle is created.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["materials", "Materials", "the materials"],
+						["explodeData", "Array", "the parameters and callback functions of explode"]
+					],
+					"returns" : [
+						["boolean", "success"]
+					]
+				},
 				"ExportBodyContentToStl" : {
 					"description" : "Exports a body content to stl.",
 					"parameters" : [

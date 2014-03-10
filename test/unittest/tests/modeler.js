@@ -275,6 +275,47 @@ AddTest ('SubdivisionTest', function (test)
 	test.Assert (body.PolygonCount () == 96);
 });
 
+AddTest ('ExplodeTest', function (test)
+{
+	function OnGeometryStart (material)
+	{
+		onGeometryStartCount = onGeometryStartCount + 1;
+	}
+
+	function OnGeometryEnd (material)
+	{
+		onGeometryEndCount = onGeometryEndCount + 1;
+	}
+
+	function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
+	{
+		onTriangleCount = onTriangleCount + 1;
+	}
+	
+	var body = JSM.GenerateCuboid (1, 1, 1);
+	var materials = new JSM.Materials ();
+	materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
+	materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+	body.GetPolygon (0).SetMaterialIndex (0);
+	body.GetPolygon (1).SetMaterialIndex (1);
+	
+	var explodeData = {
+		hasConvexPolygons : false,
+		onGeometryStart : OnGeometryStart,
+		onGeometryEnd : OnGeometryEnd,
+		onTriangle : OnTriangle
+	};
+
+	var onGeometryStartCount = 0;
+	var onGeometryEndCount = 0;
+	var onTriangleCount = 0;
+	JSM.ExplodeBodyToTriangles (body, materials, explodeData);
+	
+	test.Assert (onGeometryStartCount == 3);
+	test.Assert (onGeometryEndCount == 3);
+	test.Assert (onTriangleCount == 12);
+});
+
 AddTest ('ExportTest', function (test)
 {
 	var gdl1Ref = "base\nvert 0, 0, 0 ! 1\nvert 1, 0, 0 ! 2\nvert 0, 1, 0 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";

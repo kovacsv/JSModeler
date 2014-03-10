@@ -29,6 +29,7 @@
 ../src/modeler/cututils.js
 ../src/modeler/generator.js
 ../src/modeler/camera.js
+../src/modeler/explode.js
 ../src/modeler/exporter.js
 ../src/extras/solidgenerator.js
 ../src/extras/extgenerator.js
