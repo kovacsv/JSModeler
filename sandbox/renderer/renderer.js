@@ -88,12 +88,11 @@ JSM.Renderer = function ()
 	this.projectionMatrix = null;
 	this.modelViewMatrix = null;
 	
-	this.triangleVertexBuffer = null;
-	this.triangleNormalBuffer = null;
-	
 	this.eye = null;
 	this.center = null;
 	this.up = null;
+	
+	this.geometries = null;
 };
 
 JSM.Renderer.prototype.Init = function (canvasName)
@@ -124,23 +123,23 @@ JSM.Renderer.prototype.InitContext = function (canvasName)
 	}
 
 	this.canvas = document.getElementById (canvasName);
-	if (!this.canvas) {
+	if (!this.canvas === null) {
 		return false;
 	}
 	
-	if (!this.canvas.getContext) {
+	if (this.canvas.getContext === undefined) {
 		return false;
 	}
 
 	this.context = this.canvas.getContext ('experimental-webgl');
-	if (!this.context) {
+	if (this.context === null) {
 		return false;
 	}
 
 	this.context.viewportWidth = this.canvas.width;
 	this.context.viewportHeight = this.canvas.height;
 
-	this.context.clearColor (0.0, 0.0, 0.0, 1.0);
+	this.context.clearColor (1.0, 1.0, 1.0, 1.0);
 	this.context.enable (this.context.DEPTH_TEST);
 
 	return true;
@@ -161,19 +160,20 @@ JSM.Renderer.prototype.InitShaders = function ()
 
 	var fragmentShaderScript = [
 		'varying highp vec3 vLighting;',
+		'uniform highp vec3 uPolygonColor;',
 		'void main (void) {',
-		'	gl_FragColor = vec4 (vec3 (1, 0, 0) * vLighting, 1.0);',
+		'	gl_FragColor = vec4 (uPolygonColor * vLighting, 1.0);',
 		'}'
 		].join('\n');
 	var vertexShaderScript = [
-		'attribute vec3 aVertexPosition;',
-		'attribute vec3 aVertexNormal;',
-		'uniform vec3 uEyePosition;',
-		'uniform vec3 uAmbientLightColor;',
-		'uniform vec3 uDirectionalLightColor;',
-		'uniform vec3 uLightDirection;',
-		'uniform mat4 uMVMatrix;',
-		'uniform mat4 uPMatrix;',
+		'attribute highp vec3 aVertexPosition;',
+		'attribute highp vec3 aVertexNormal;',
+		'uniform highp vec3 uEyePosition;',
+		'uniform highp vec3 uAmbientLightColor;',
+		'uniform highp vec3 uDirectionalLightColor;',
+		'uniform highp vec3 uLightDirection;',
+		'uniform highp mat4 uMVMatrix;',
+		'uniform highp mat4 uPMatrix;',
 		'varying highp vec3 vLighting;',
 		'void main (void) {',
 		'	highp vec3 directionalVector = normalize (vec3 (uMVMatrix * vec4 (uLightDirection, 0.0)));',
@@ -207,6 +207,7 @@ JSM.Renderer.prototype.InitShaders = function ()
 	this.shader.ambientLightColorUniform = this.context.getUniformLocation (this.shader, 'uAmbientLightColor');
 	this.shader.directionalLightColorUniform = this.context.getUniformLocation (this.shader, 'uDirectionalLightColor');
 	this.shader.lightDirectionUniform = this.context.getUniformLocation (this.shader, 'uLightDirection');
+	this.shader.polygonColorUniform = this.context.getUniformLocation (this.shader, 'uPolygonColor');
 
 	this.shader.pMatrixUniform = this.context.getUniformLocation (this.shader, 'uPMatrix');
 	this.shader.mvMatrixUniform = this.context.getUniformLocation (this.shader, 'uMVMatrix');
@@ -219,8 +220,7 @@ JSM.Renderer.prototype.InitBuffers = function ()
 	this.projectionMatrix = new JSM.RenderMatrix ();
 	this.modelViewMatrix = new JSM.RenderMatrix ();
 
-	this.triangleVertexBuffer = this.context.createBuffer ();
-	this.triangleNormalBuffer = this.context.createBuffer ();
+	this.geometries = [];
 	return true;
 };
 
@@ -239,17 +239,30 @@ JSM.Renderer.prototype.InitView = function ()
 	return true;
 };
 
-JSM.Renderer.prototype.SetGeometry = function (vertices, normals)
+JSM.Renderer.prototype.AddGeometries = function (geometries)
 {
-	this.context.bindBuffer (this.context.ARRAY_BUFFER, this.triangleVertexBuffer);
-	this.context.bufferData (this.context.ARRAY_BUFFER, new Float32Array (vertices), this.context.STATIC_DRAW);
-	this.triangleVertexBuffer.itemSize = 3;
-	this.triangleVertexBuffer.numItems = parseInt (vertices.length / 3, 10);
+	var i, currentVertices, currentNormals, currentVertexBuffer, currentNormalBuffer, currentGeometry;
+	for (i = 0; i < geometries.length; i++) {
+		currentVertices = geometries[i].vertices;
+		currentNormals = geometries[i].normals;
+		
+		currentGeometry = {};
+		currentGeometry.material = geometries[i].material;
 
-	this.context.bindBuffer (this.context.ARRAY_BUFFER, this.triangleNormalBuffer);
-	this.context.bufferData (this.context.ARRAY_BUFFER, new Float32Array (normals), this.context.STATIC_DRAW);
-	this.triangleNormalBuffer.itemSize = 3;
-	this.triangleNormalBuffer.numItems = parseInt (normals.length / 3, 10);
+		currentGeometry.vertexBuffer = this.context.createBuffer ();
+		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentGeometry.vertexBuffer);
+		this.context.bufferData (this.context.ARRAY_BUFFER, new Float32Array (currentVertices), this.context.STATIC_DRAW);
+		currentGeometry.vertexBuffer.itemSize = 3;
+		currentGeometry.vertexBuffer.numItems = parseInt (currentVertices.length / 3, 10);
+
+		currentGeometry.normalBuffer = this.context.createBuffer ();
+		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentGeometry.normalBuffer);
+		this.context.bufferData (this.context.ARRAY_BUFFER, new Float32Array (currentNormals), this.context.STATIC_DRAW);
+		currentGeometry.normalBuffer.itemSize = 3;
+		currentGeometry.normalBuffer.numItems = parseInt (currentNormals.length / 3, 10);
+
+		this.geometries.push (currentGeometry);
+	}
 };
 
 JSM.Renderer.prototype.Draw = function ()
@@ -263,11 +276,17 @@ JSM.Renderer.prototype.Draw = function ()
 	this.modelViewMatrix.ModelView (this.eye, this.center, this.up);
 	this.context.uniformMatrix4fv (this.shader.mvMatrixUniform, false, this.modelViewMatrix.Get ());
 
-	this.context.bindBuffer (this.context.ARRAY_BUFFER, this.triangleVertexBuffer);
-	this.context.vertexAttribPointer (this.shader.vertexPositionAttribute, this.triangleVertexBuffer.itemSize, this.context.FLOAT, false, 0, 0);
-
-	this.context.bindBuffer (this.context.ARRAY_BUFFER, this.triangleNormalBuffer);
-	this.context.vertexAttribPointer (this.shader.vertexNormalAttribute, this.triangleNormalBuffer.itemSize, this.context.FLOAT, false, 0, 0);
-
-	this.context.drawArrays (this.context.TRIANGLES, 0, this.triangleVertexBuffer.numItems);
+	var i, polygonColor, currentVertexBuffer, currentNormalBuffer;
+	for (i = 0; i < this.geometries.length; i++) {
+		polygonColor = this.geometries[i].material.diffuse;
+		this.context.uniform3f (this.shader.polygonColorUniform, polygonColor[0], polygonColor[1], polygonColor[2]);
+		
+		currentVertexBuffer = this.geometries[i].vertexBuffer;
+		currentNormalBuffer = this.geometries[i].normalBuffer;
+		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentVertexBuffer);
+		this.context.vertexAttribPointer (this.shader.vertexPositionAttribute, currentVertexBuffer.itemSize, this.context.FLOAT, false, 0, 0);
+		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentNormalBuffer);
+		this.context.vertexAttribPointer (this.shader.vertexNormalAttribute, currentNormalBuffer.itemSize, this.context.FLOAT, false, 0, 0);
+		this.context.drawArrays (this.context.TRIANGLES, 0, currentVertexBuffer.numItems);
+	}
 };

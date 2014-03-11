@@ -63,11 +63,29 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		JSM.ConvertBodyToArrayBuffers = function (body, materials, vertices, normals)
+		JSM.ConvertBodyToArrayBuffers = function (body, materials, geometries)
 		{
-			function OnGeometryStart ()
+			function OnGeometryStart (material)
 			{
-				
+				function ConvertToShaderRGB (hexColor)
+				{
+					var hexString = hexColor.toString (16);
+					while (hexString.length < 6) {
+						hexString = '0' + hexString;
+					}
+					var r = parseInt (hexString.substr (0, 2), 16) / 255.0;
+					var g = parseInt (hexString.substr (2, 2), 16) / 255.0;
+					var b = parseInt (hexString.substr (4, 2), 16) / 255.0;
+					return [r, g, b];
+				};
+
+				geometries.push ({
+					material : {
+						diffuse : ConvertToShaderRGB (material.diffuse)
+					},
+					vertices : [],
+					normals : []
+				});
 			}
 
 			function OnGeometryEnd (material)
@@ -77,12 +95,13 @@
 
 			function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
 			{
-				vertices.push (vertex1.x, vertex1.y, vertex1.z);
-				vertices.push (vertex2.x, vertex2.y, vertex2.z);
-				vertices.push (vertex3.x, vertex3.y, vertex3.z);
-				normals.push (normal1.x, normal1.y, normal1.z);
-				normals.push (normal2.x, normal2.y, normal2.z);
-				normals.push (normal3.x, normal3.y, normal3.z);
+				var lastGeometry = geometries[geometries.length - 1];
+				lastGeometry.vertices.push (vertex1.x, vertex1.y, vertex1.z);
+				lastGeometry.vertices.push (vertex2.x, vertex2.y, vertex2.z);
+				lastGeometry.vertices.push (vertex3.x, vertex3.y, vertex3.z);
+				lastGeometry.normals.push (normal1.x, normal1.y, normal1.z);
+				lastGeometry.normals.push (normal2.x, normal2.y, normal2.z);
+				lastGeometry.normals.push (normal3.x, normal3.y, normal3.z);
 			}
 			
 			var explodeData = {
@@ -95,6 +114,15 @@
 			JSM.ExplodeBodyToTriangles (body, materials, explodeData);
 		};
 
+		JSM.ConvertModelToArrayBuffers = function (model, materials, geometries)
+		{
+			var i, body;
+			for (i = 0; i < model.BodyCount (); i++) {
+				body = model.GetBody (i);
+				JSM.ConvertBodyToArrayBuffers (body, materials, geometries);
+			}
+		};
+
 		function Load ()
 		{
 			var renderer = new JSM.Renderer ();
@@ -104,13 +132,30 @@
 				//alert ('success');
 			}
 
-			var body = JSM.GenerateCylinder (0.5, 1, 50, true, true);
+			//var body = JSM.GenerateCylinder (0.5, 1, 50, true, true);
 			//var body = JSM.GenerateCuboid (1, 1, 1);
 			var materials = new JSM.Materials ();
-			var vertices = [];
-			var normals = [];
-			JSM.ConvertBodyToArrayBuffers (body, materials, vertices, normals);
-			renderer.SetGeometry (vertices, normals);
+			materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
+			materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+
+			var body1 = JSM.GenerateTorus (1.0, 0.2, 50, 50, 1);
+			
+			var body2 = JSM.GenerateTorus (0.6, 0.1, 50, 50, 1);
+			body2.Transform (JSM.TranslationTransformation (new JSM.Vector (0, -0.5, 1)));
+			body2.SetPolygonsMaterialIndex (0);
+			
+			var body3 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
+			body3.Transform (JSM.TranslationTransformation (new JSM.Vector (0, 1.5, 1)));
+			body3.SetPolygonsMaterialIndex (1);
+
+			var model = new JSM.Model ();
+			model.AddBody (body1);
+			model.AddBody (body2);
+			model.AddBody (body3);
+
+			var geometries = [];
+			JSM.ConvertModelToArrayBuffers (model, materials, geometries);
+			renderer.AddGeometries (geometries);
 			renderer.Draw ();
 		}
 	
