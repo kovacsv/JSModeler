@@ -6,7 +6,7 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
+	<script type="text/javascript" src="../../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../../src/core/timer.js"></script>
@@ -59,77 +59,24 @@
 	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
 	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
 <!-- JSModeler includes end -->
-	<script type="text/javascript" src="renderer.js"></script>
 	<title>Example</title>
 
 	<script type="text/javascript">
-		JSM.ConvertBodyToArrayBuffers = function (body, materials, geometries)
-		{
-			function OnGeometryStart (material)
-			{
-				function ConvertToShaderRGB (hexColor)
-				{
-					var hexString = hexColor.toString (16);
-					while (hexString.length < 6) {
-						hexString = '0' + hexString;
-					}
-					var r = parseInt (hexString.substr (0, 2), 16) / 255.0;
-					var g = parseInt (hexString.substr (2, 2), 16) / 255.0;
-					var b = parseInt (hexString.substr (4, 2), 16) / 255.0;
-					return [r, g, b];
-				};
-
-				geometries.push ({
-					material : {
-						diffuse : ConvertToShaderRGB (material.diffuse)
-					},
-					vertices : [],
-					normals : []
-				});
-			}
-
-			function OnGeometryEnd (material)
-			{
-			
-			}
-
-			function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
-			{
-				var lastGeometry = geometries[geometries.length - 1];
-				lastGeometry.vertices.push (vertex1.x, vertex1.y, vertex1.z);
-				lastGeometry.vertices.push (vertex2.x, vertex2.y, vertex2.z);
-				lastGeometry.vertices.push (vertex3.x, vertex3.y, vertex3.z);
-				lastGeometry.normals.push (normal1.x, normal1.y, normal1.z);
-				lastGeometry.normals.push (normal2.x, normal2.y, normal2.z);
-				lastGeometry.normals.push (normal3.x, normal3.y, normal3.z);
-			}
-			
-			var explodeData = {
-				hasConvexPolygons : false,
-				onGeometryStart : OnGeometryStart,
-				onGeometryEnd : OnGeometryEnd,
-				onTriangle : OnTriangle
-			};
-			
-			JSM.ExplodeBodyToTriangles (body, materials, explodeData);
-		};
-
-		JSM.ConvertModelToArrayBuffers = function (model, materials, geometries)
-		{
-			var i, body;
-			for (i = 0; i < model.BodyCount (); i++) {
-				body = model.GetBody (i);
-				JSM.ConvertBodyToArrayBuffers (body, materials, geometries);
-			}
-		};
-
 		function Load ()
 		{
-			var renderer = new JSM.Renderer ();
-			if (!renderer.Init ('example')) {
-				alert ('error');
-			}
+			var TextureLoaded = function () {
+				viewer.Draw ();
+			};
 
+			var viewerSettings = {
+				cameraEyePosition : [1.0, 3.0, 2.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
+
+			viewer = new JSM.Viewer ();
+			viewer.Start ('example', viewerSettings);
+			
 			var materials = new JSM.Materials ();
 			materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
 			materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
@@ -159,10 +106,12 @@
 			model.AddBody (body4);
 			model.AddBody (body5);
 
-			var geometries = [];
-			JSM.ConvertModelToArrayBuffers (model, materials, geometries);
-			renderer.AddGeometries (geometries);
-			renderer.Draw ();
+			var meshes = JSM.ConvertModelToThreeMeshes (model, materials);
+			for (var i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}
+
+			viewer.Draw ();		
 		}
 	
 	    window.onload = function ()

@@ -30,7 +30,7 @@ JSM.RenderMatrix.prototype.Identity = function ()
 
 JSM.RenderMatrix.prototype.Perspective = function (fieldOfView, aspectRatio, nearPlane, farPlane)
 {
-	var f = 1.0 / Math.tan (fieldOfView / 2);
+	var f = 1.0 / Math.tan (fieldOfView / 2.0);
 	var nf = 1.0 / (nearPlane - farPlane);
 	this.matrix[0] = f / aspectRatio;
 	this.matrix[1] = 0.0;
@@ -123,7 +123,7 @@ JSM.Renderer.prototype.InitContext = function (canvasName)
 	}
 
 	this.canvas = document.getElementById (canvasName);
-	if (!this.canvas === null) {
+	if (this.canvas === null) {
 		return false;
 	}
 	
@@ -230,7 +230,7 @@ JSM.Renderer.prototype.InitView = function ()
 	this.center = new JSM.Coord (0, 0, 0);
 	this.up = new JSM.Coord (0, 0, 1);
 
-	this.projectionMatrix.Perspective (45.0, this.context.viewportWidth / this.context.viewportHeight, 0.1, 100.0);
+	this.projectionMatrix.Perspective (45.0 * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, 0.1, 1000.0);
 	this.context.uniformMatrix4fv (this.shader.pMatrixUniform, false, this.projectionMatrix.Get ());
 
 	this.context.uniform3f (this.shader.ambientLightColorUniform, 0.5, 0.5, 0.5);
@@ -241,21 +241,22 @@ JSM.Renderer.prototype.InitView = function ()
 
 JSM.Renderer.prototype.AddGeometries = function (geometries)
 {
-	var i, currentVertices, currentNormals, currentVertexBuffer, currentNormalBuffer, currentGeometry;
+	var i, currentVertices, currentNormals, currentGeometry;
 	for (i = 0; i < geometries.length; i++) {
 		currentVertices = geometries[i].vertices;
 		currentNormals = geometries[i].normals;
 		
-		currentGeometry = {};
-		currentGeometry.material = geometries[i].material;
+		currentGeometry = {
+			material : geometries[i].material,
+			vertexBuffer : this.context.createBuffer (),
+			normalBuffer : this.context.createBuffer ()
+		};
 
-		currentGeometry.vertexBuffer = this.context.createBuffer ();
 		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentGeometry.vertexBuffer);
 		this.context.bufferData (this.context.ARRAY_BUFFER, new Float32Array (currentVertices), this.context.STATIC_DRAW);
 		currentGeometry.vertexBuffer.itemSize = 3;
 		currentGeometry.vertexBuffer.numItems = parseInt (currentVertices.length / 3, 10);
 
-		currentGeometry.normalBuffer = this.context.createBuffer ();
 		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentGeometry.normalBuffer);
 		this.context.bufferData (this.context.ARRAY_BUFFER, new Float32Array (currentNormals), this.context.STATIC_DRAW);
 		currentGeometry.normalBuffer.itemSize = 3;
