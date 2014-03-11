@@ -163,14 +163,13 @@ JSM.Renderer.prototype.InitShaders = function ()
 		'attribute vec3 aVertexNormal;',
 		'uniform mat4 uMVMatrix;',
 		'uniform mat4 uPMatrix;',
-		'uniform mat4 uNMatrix;',
 		'varying highp vec3 vLighting;',
 		'void main (void) {',
 		'	highp vec3 ambientLight = vec3 (0.5, 0.5, 0.5);',
 		'	highp vec3 directionalLightColor = vec3 (0.5, 0.5, 0.5);',
-		'	highp vec3 directionalVector = vec3 (-1, -3, -2);',
-		'	highp vec4 transformedNormal = uNMatrix * vec4 (aVertexNormal, 1.0);',
-		'	highp float directional = max (dot (transformedNormal.xyz, directionalVector), 0.0);',
+		'	highp vec3 directionalVector = normalize (vec3 (uMVMatrix * vec4 (vec3 (1, 3, 2), 0.0)));',
+		'	highp vec3 transformedNormal = vec3 (uMVMatrix * vec4 (aVertexNormal, 0.0));',
+		'	highp float directional = max (dot (transformedNormal, directionalVector), 0.0);',
 		'	vLighting = ambientLight + (directionalLightColor * directional);',
 		'	gl_Position = uPMatrix * uMVMatrix * vec4 (aVertexPosition, 1.0);',
 		'}'
@@ -199,7 +198,6 @@ JSM.Renderer.prototype.InitShaders = function ()
 
 	this.shader.pMatrixUniform = this.context.getUniformLocation (this.shader, "uPMatrix");
 	this.shader.mvMatrixUniform = this.context.getUniformLocation (this.shader, "uMVMatrix");
-	this.shader.nMatrixUniform = this.context.getUniformLocation (this.shader, "uNMatrix");
 	return true;
 };
 
@@ -207,7 +205,6 @@ JSM.Renderer.prototype.InitBuffers = function ()
 {
 	this.projectionMatrix = new JSM.RenderMatrix ();
 	this.modelViewMatrix = new JSM.RenderMatrix ();
-	this.normalMatrix = new JSM.RenderMatrix ();
 
 	this.triangleVertexBuffer = this.context.createBuffer ();
 	this.triangleNormalBuffer = this.context.createBuffer ();
@@ -234,11 +231,9 @@ JSM.Renderer.prototype.Draw = function ()
 	
 	this.projectionMatrix.Perspective (45.0, this.context.viewportWidth / this.context.viewportHeight, 0.1, 100.0);
 	this.modelViewMatrix.ModelView (new JSM.Coord (1, 3, 2), new JSM.Coord (0, 0, 0), new JSM.Coord (0, 0, 1));
-	this.normalMatrix = this.modelViewMatrix;
 	
 	this.context.uniformMatrix4fv (this.shader.pMatrixUniform, false, this.projectionMatrix.Get ());
 	this.context.uniformMatrix4fv (this.shader.mvMatrixUniform, false, this.modelViewMatrix.Get ());
-	this.context.uniformMatrix4fv (this.shader.nMatrixUniform, false, this.normalMatrix.Get ());
 
 	this.context.bindBuffer (this.context.ARRAY_BUFFER, this.triangleVertexBuffer);
 	this.context.vertexAttribPointer (this.shader.vertexPositionAttribute, this.triangleVertexBuffer.itemSize, this.context.FLOAT, false, 0, 0);
