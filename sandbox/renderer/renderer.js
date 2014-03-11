@@ -90,6 +90,10 @@ JSM.Renderer = function ()
 	
 	this.triangleVertexBuffer = null;
 	this.triangleNormalBuffer = null;
+	
+	this.eye = null;
+	this.center = null;
+	this.up = null;
 };
 
 JSM.Renderer.prototype.Init = function (canvasName)
@@ -103,6 +107,10 @@ JSM.Renderer.prototype.Init = function (canvasName)
 	}
 
 	if (!this.InitBuffers ()) {
+		return false;
+	}
+
+	if (!this.InitView ()) {
 		return false;
 	}
 
@@ -152,7 +160,6 @@ JSM.Renderer.prototype.InitShaders = function ()
 	}
 
 	var fragmentShaderScript = [
-	    'precision mediump float;',
 		'varying highp vec3 vLighting;',
 		'void main (void) {',
 		'	gl_FragColor = vec4 (vec3 (1, 0, 0) * vLighting, 1.0);',
@@ -161,16 +168,18 @@ JSM.Renderer.prototype.InitShaders = function ()
 	var vertexShaderScript = [
 		'attribute vec3 aVertexPosition;',
 		'attribute vec3 aVertexNormal;',
+		'uniform vec3 uEyePosition;',
+		'uniform vec3 uAmbientLightColor;',
+		'uniform vec3 uDirectionalLightColor;',
+		'uniform vec3 uLightDirection;',
 		'uniform mat4 uMVMatrix;',
 		'uniform mat4 uPMatrix;',
 		'varying highp vec3 vLighting;',
 		'void main (void) {',
-		'	highp vec3 ambientLight = vec3 (0.5, 0.5, 0.5);',
-		'	highp vec3 directionalLightColor = vec3 (0.5, 0.5, 0.5);',
-		'	highp vec3 directionalVector = normalize (vec3 (uMVMatrix * vec4 (vec3 (1, 3, 2), 0.0)));',
-		'	highp vec3 transformedNormal = vec3 (uMVMatrix * vec4 (aVertexNormal, 0.0));',
+		'	highp vec3 directionalVector = normalize (vec3 (uMVMatrix * vec4 (uLightDirection, 0.0)));',
+		'	highp vec3 transformedNormal = normalize (vec3 (uMVMatrix * vec4 (aVertexNormal, 0.0)));',
 		'	highp float directional = max (dot (transformedNormal, directionalVector), 0.0);',
-		'	vLighting = ambientLight + (directionalLightColor * directional);',
+		'	vLighting = uAmbientLightColor + (uDirectionalLightColor * directional);',
 		'	gl_Position = uPMatrix * uMVMatrix * vec4 (aVertexPosition, 1.0);',
 		'}'
 		].join('\n');
@@ -190,14 +199,18 @@ JSM.Renderer.prototype.InitShaders = function ()
 	}
 	this.context.useProgram (this.shader);
 
-	this.shader.vertexPositionAttribute = this.context.getAttribLocation (this.shader, "aVertexPosition");
+	this.shader.vertexPositionAttribute = this.context.getAttribLocation (this.shader, 'aVertexPosition');
 	this.context.enableVertexAttribArray (this.shader.vertexPositionAttribute);
-
-	this.shader.vertexNormalAttribute = this.context.getAttribLocation (this.shader, "aVertexNormal");
+	this.shader.vertexNormalAttribute = this.context.getAttribLocation (this.shader, 'aVertexNormal');
 	this.context.enableVertexAttribArray (this.shader.vertexNormalAttribute);
 
-	this.shader.pMatrixUniform = this.context.getUniformLocation (this.shader, "uPMatrix");
-	this.shader.mvMatrixUniform = this.context.getUniformLocation (this.shader, "uMVMatrix");
+	this.shader.ambientLightColorUniform = this.context.getUniformLocation (this.shader, 'uAmbientLightColor');
+	this.shader.directionalLightColorUniform = this.context.getUniformLocation (this.shader, 'uDirectionalLightColor');
+	this.shader.lightDirectionUniform = this.context.getUniformLocation (this.shader, 'uLightDirection');
+
+	this.shader.pMatrixUniform = this.context.getUniformLocation (this.shader, 'uPMatrix');
+	this.shader.mvMatrixUniform = this.context.getUniformLocation (this.shader, 'uMVMatrix');
+
 	return true;
 };
 
@@ -208,6 +221,21 @@ JSM.Renderer.prototype.InitBuffers = function ()
 
 	this.triangleVertexBuffer = this.context.createBuffer ();
 	this.triangleNormalBuffer = this.context.createBuffer ();
+	return true;
+};
+
+JSM.Renderer.prototype.InitView = function ()
+{
+	this.eye = new JSM.Coord (1, 3, 2);
+	this.center = new JSM.Coord (0, 0, 0);
+	this.up = new JSM.Coord (0, 0, 1);
+
+	this.projectionMatrix.Perspective (45.0, this.context.viewportWidth / this.context.viewportHeight, 0.1, 100.0);
+	this.context.uniformMatrix4fv (this.shader.pMatrixUniform, false, this.projectionMatrix.Get ());
+
+	this.context.uniform3f (this.shader.ambientLightColorUniform, 0.5, 0.5, 0.5);
+	this.context.uniform3f (this.shader.directionalLightColorUniform, 0.5, 0.5, 0.5);
+	
 	return true;
 };
 
@@ -229,10 +257,10 @@ JSM.Renderer.prototype.Draw = function ()
 	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	
-	this.projectionMatrix.Perspective (45.0, this.context.viewportWidth / this.context.viewportHeight, 0.1, 100.0);
-	this.modelViewMatrix.ModelView (new JSM.Coord (1, 3, 2), new JSM.Coord (0, 0, 0), new JSM.Coord (0, 0, 1));
+	var lightDirection = JSM.CoordSub (this.eye, this.center);
+	this.context.uniform3f (this.shader.lightDirectionUniform, lightDirection.x, lightDirection.y, lightDirection.z);
 	
-	this.context.uniformMatrix4fv (this.shader.pMatrixUniform, false, this.projectionMatrix.Get ());
+	this.modelViewMatrix.ModelView (this.eye, this.center, this.up);
 	this.context.uniformMatrix4fv (this.shader.mvMatrixUniform, false, this.modelViewMatrix.Get ());
 
 	this.context.bindBuffer (this.context.ARRAY_BUFFER, this.triangleVertexBuffer);
