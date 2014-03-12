@@ -1,5 +1,5 @@
 /**
-* Function: ExampleFunctionInAnotherFile
+* Function: ExampleFunctionWithInAnotherModule
 * Description: This is the description.
 * Parameters:
 * 	exampleParamA {exampleTypeA} example parameter description a
