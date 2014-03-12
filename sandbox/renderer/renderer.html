@@ -162,7 +162,14 @@
 			var geometries = [];
 			JSM.ConvertModelToArrayBuffers (model, materials, geometries);
 			renderer.AddGeometries (geometries);
-			renderer.Draw ();
+
+			var newGeometries = [];
+			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
+			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));
+			JSM.ConvertBodyToArrayBuffers (body6, materials, newGeometries);
+			renderer.AddGeometries (newGeometries);
+
+			renderer.Render ();
 		}
 	
 	    window.onload = function ()

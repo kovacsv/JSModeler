@@ -111,6 +111,14 @@
 				viewer.AddMesh (meshes[i]);
 			}
 
+			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
+			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));			
+			
+			var meshes = JSM.ConvertBodyToThreeMeshes (body6, materials);
+			for (var i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}
+
 			viewer.Draw ();		
 		}
 	

@@ -266,7 +266,7 @@ JSM.Renderer.prototype.AddGeometries = function (geometries)
 	}
 };
 
-JSM.Renderer.prototype.Draw = function ()
+JSM.Renderer.prototype.Render = function ()
 {
 	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
