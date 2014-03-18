@@ -79,13 +79,9 @@
 					return [r, g, b];
 				};
 
-				geometries.push ({
-					material : {
-						diffuse : ConvertToShaderRGB (material.diffuse)
-					},
-					vertices : [],
-					normals : []
-				});
+				var geometry = new JSM.RenderGeometry ();
+				geometry.SetMaterial (ConvertToShaderRGB (material.diffuse));
+				geometries.push (geometry);
 			}
 
 			function OnGeometryEnd (material)
@@ -96,12 +92,12 @@
 			function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
 			{
 				var lastGeometry = geometries[geometries.length - 1];
-				lastGeometry.vertices.push (vertex1.x, vertex1.y, vertex1.z);
-				lastGeometry.vertices.push (vertex2.x, vertex2.y, vertex2.z);
-				lastGeometry.vertices.push (vertex3.x, vertex3.y, vertex3.z);
-				lastGeometry.normals.push (normal1.x, normal1.y, normal1.z);
-				lastGeometry.normals.push (normal2.x, normal2.y, normal2.z);
-				lastGeometry.normals.push (normal3.x, normal3.y, normal3.z);
+				lastGeometry.AddVertex (vertex1.x, vertex1.y, vertex1.z);
+				lastGeometry.AddVertex (vertex2.x, vertex2.y, vertex2.z);
+				lastGeometry.AddVertex (vertex3.x, vertex3.y, vertex3.z);
+				lastGeometry.AddNormal (normal1.x, normal1.y, normal1.z);
+				lastGeometry.AddNormal (normal2.x, normal2.y, normal2.z);
+				lastGeometry.AddNormal (normal3.x, normal3.y, normal3.z);
 			}
 			
 			var explodeData = {
@@ -169,6 +165,8 @@
 			JSM.ConvertBodyToArrayBuffers (body6, materials, newGeometries);
 			renderer.AddGeometries (newGeometries);
 
+			renderer.Render ();
+			renderer.Render ();
 			renderer.Render ();
 		}
 	

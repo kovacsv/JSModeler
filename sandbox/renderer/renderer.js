@@ -79,6 +79,69 @@ JSM.RenderMatrix.prototype.ModelView = function (eye, center, up)
     this.matrix[15] = 1;
 };
 
+JSM.RenderGeometry = function ()
+{
+	this.material = {};
+	this.vertices = [];
+	this.normals = [];
+	this.compiled = false;
+	
+	this.vertexBuffer = null;
+	this.normalBuffer = null;
+	this.vertexArray = null;
+	this.normalArray = null;
+};
+
+JSM.RenderGeometry.prototype.SetMaterial = function (diffuse)
+{
+	this.material.diffuse = diffuse;
+};
+
+JSM.RenderGeometry.prototype.AddVertex = function (x, y, z)
+{
+	this.vertices.push (x, y, z);
+};
+
+JSM.RenderGeometry.prototype.AddNormal = function (x, y, z)
+{
+	this.normals.push (x, y, z);
+};
+
+JSM.RenderGeometry.prototype.Compile = function (context)
+{
+	if (this.compiled) {
+		return;
+	}
+	
+	this.vertexBuffer = context.createBuffer ();
+	this.normalBuffer = context.createBuffer ();
+
+	this.vertexArray = new Float32Array (this.vertices);
+	this.normalArray = new Float32Array (this.normals);
+	
+	context.bindBuffer (context.ARRAY_BUFFER, this.vertexBuffer);
+	context.bufferData (context.ARRAY_BUFFER, this.vertexArray, context.STATIC_DRAW);
+	this.vertexBuffer.itemSize = 3;
+	this.vertexBuffer.numItems = parseInt (this.vertices.length / 3, 10);
+
+	context.bindBuffer (context.ARRAY_BUFFER, this.normalBuffer);
+	context.bufferData (context.ARRAY_BUFFER, this.normalArray, context.STATIC_DRAW);
+	this.normalBuffer.itemSize = 3;
+	this.normalBuffer.numItems = parseInt (this.normals.length / 3, 10);
+	
+	this.compiled = true;
+};
+
+JSM.RenderGeometry.prototype.GetVertexBuffer = function ()
+{
+	return this.vertexBuffer;
+};
+
+JSM.RenderGeometry.prototype.GetNormalBuffer = function ()
+{
+	return this.normalBuffer;
+};
+
 JSM.Renderer = function ()
 {
 	this.canvas = null;
@@ -243,26 +306,7 @@ JSM.Renderer.prototype.AddGeometries = function (geometries)
 {
 	var i, currentVertices, currentNormals, currentGeometry;
 	for (i = 0; i < geometries.length; i++) {
-		currentVertices = geometries[i].vertices;
-		currentNormals = geometries[i].normals;
-		
-		currentGeometry = {
-			material : geometries[i].material,
-			vertexBuffer : this.context.createBuffer (),
-			normalBuffer : this.context.createBuffer ()
-		};
-
-		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentGeometry.vertexBuffer);
-		this.context.bufferData (this.context.ARRAY_BUFFER, new Float32Array (currentVertices), this.context.STATIC_DRAW);
-		currentGeometry.vertexBuffer.itemSize = 3;
-		currentGeometry.vertexBuffer.numItems = parseInt (currentVertices.length / 3, 10);
-
-		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentGeometry.normalBuffer);
-		this.context.bufferData (this.context.ARRAY_BUFFER, new Float32Array (currentNormals), this.context.STATIC_DRAW);
-		currentGeometry.normalBuffer.itemSize = 3;
-		currentGeometry.normalBuffer.numItems = parseInt (currentNormals.length / 3, 10);
-
-		this.geometries.push (currentGeometry);
+		this.geometries.push (geometries[i]);
 	}
 };
 
@@ -277,17 +321,23 @@ JSM.Renderer.prototype.Render = function ()
 	this.modelViewMatrix.ModelView (this.eye, this.center, this.up);
 	this.context.uniformMatrix4fv (this.shader.mvMatrixUniform, false, this.modelViewMatrix.Get ());
 
-	var i, polygonColor, currentVertexBuffer, currentNormalBuffer;
+	var i, polygonColor, currentGeometry, currentVertexBuffer, currentNormalBuffer;
 	for (i = 0; i < this.geometries.length; i++) {
-		polygonColor = this.geometries[i].material.diffuse;
+		currentGeometry = this.geometries[i];
+		currentGeometry.Compile (this.context);
+		
+		polygonColor = currentGeometry.material.diffuse;
 		this.context.uniform3f (this.shader.polygonColorUniform, polygonColor[0], polygonColor[1], polygonColor[2]);
 		
-		currentVertexBuffer = this.geometries[i].vertexBuffer;
-		currentNormalBuffer = this.geometries[i].normalBuffer;
+		currentVertexBuffer = currentGeometry.GetVertexBuffer ();
+		currentNormalBuffer = currentGeometry.GetNormalBuffer ();
+		
 		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentVertexBuffer);
 		this.context.vertexAttribPointer (this.shader.vertexPositionAttribute, currentVertexBuffer.itemSize, this.context.FLOAT, false, 0, 0);
+		
 		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentNormalBuffer);
 		this.context.vertexAttribPointer (this.shader.vertexNormalAttribute, currentNormalBuffer.itemSize, this.context.FLOAT, false, 0, 0);
+		
 		this.context.drawArrays (this.context.TRIANGLES, 0, currentVertexBuffer.numItems);
 	}
 };
