@@ -119,9 +119,23 @@
 			}
 		};
 
+		var renderer = null;
+		var a = 0.0;
+		
+		function Render ()
+		{
+			renderer.geometries[0].transformation.RotationX (a * JSM.DegRad);
+			renderer.geometries[1].transformation.RotationX (a * JSM.DegRad);
+			renderer.geometries[2].transformation.RotationX (a * JSM.DegRad);
+		
+			renderer.Render ();
+			a += 0.5;
+			requestAnimationFrame (Render);
+		}
+		
 		function Load ()
 		{
-			var renderer = new JSM.Renderer ();
+			renderer = new JSM.Renderer ();
 			if (!renderer.Init ('example')) {
 				alert ('error');
 			}
@@ -165,9 +179,7 @@
 			JSM.ConvertBodyToArrayBuffers (body6, materials, newGeometries);
 			renderer.AddGeometries (newGeometries);
 
-			renderer.Render ();
-			renderer.Render ();
-			renderer.Render ();
+			Render ();
 		}
 	
 	    window.onload = function ()
