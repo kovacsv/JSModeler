@@ -119,9 +119,38 @@
 			}
 		};
 
+		JSM.FPSCounter = function ()
+		{
+			this.start = null;
+			this.frames = null;
+			this.current = null;
+		};
+		
+		JSM.FPSCounter.prototype.Get = function ()
+		{
+			var date = new Date ();
+			var end = date.getTime ();
+			if (this.start === null) {
+				this.start = end;
+				this.frames = 0;
+				this.current = 0;
+			}
+
+			this.frames = this.frames + 1;
+			var elapsed = end - this.start;
+			if (elapsed >= 1000) {
+				this.current = 1000 * (this.frames / elapsed);
+				this.start = end;
+				this.frames = 0;
+			}
+
+			return parseInt (this.current);
+		};
+		
 		var renderer = null;
 		var a = 0.0;
 		
+		var fps = new JSM.FPSCounter ();
 		function Render ()
 		{
 			renderer.geometries[0].transformation.RotationX (a * JSM.DegRad);
@@ -131,6 +160,7 @@
 			renderer.Render ();
 			a += 0.5;
 			requestAnimationFrame (Render);
+			document.getElementById ('fps').innerHTML = 'fps: ' + fps.Get ();
 		}
 		
 		function Load ()
@@ -192,6 +222,7 @@
 
 <body>
 	<canvas id="example" width="800" height="500"></canvas>
+	<div id="fps"></div>
 </body>
 
 </html>
