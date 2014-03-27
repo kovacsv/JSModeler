@@ -278,8 +278,8 @@ AddTest ('MatrixTest', function (test) {
 	var matrix1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 	var matrix2 = [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
 	
-	var vector2 = JSM.VectorMatrixMultiply4x4 (vector1, matrix1);
-	var matrix3 = JSM.MatrixMultiply4x4 (matrix1, matrix2);
+	var vector2 = JSM.VectorMatrixMultiply (vector1, matrix1);
+	var matrix3 = JSM.MatrixMultiply (matrix1, matrix2);
 	
 	test.Assert (vector2[0] == 90);
 	test.Assert (vector2[1] == 100);
@@ -302,6 +302,29 @@ AddTest ('MatrixTest', function (test) {
 	test.Assert (matrix3[13] == 1412);
 	test.Assert (matrix3[14] == 1470);
 	test.Assert (matrix3[15] == 1528);
+	
+	var vector = [1, 1, 1, 0];
+	var rotX = JSM.MatrixRotationX (90 * JSM.DegRad);
+	var rotXVec = JSM.VectorMatrixMultiply (vector, rotX);
+	var rotY = JSM.MatrixRotationY (90 * JSM.DegRad);
+	var rotYVec = JSM.VectorMatrixMultiply (vector, rotY);
+	var rotZ = JSM.MatrixRotationZ (90 * JSM.DegRad);
+	var rotZVec = JSM.VectorMatrixMultiply (vector, rotZ);
+
+	test.Assert (JSM.IsEqual (rotXVec[0], 1.0));
+	test.Assert (JSM.IsEqual (rotXVec[1], 1.0));
+	test.Assert (JSM.IsEqual (rotXVec[2], -1.0));
+	test.Assert (JSM.IsEqual (rotXVec[3], 0.0));
+
+	test.Assert (JSM.IsEqual (rotYVec[0], -1.0));
+	test.Assert (JSM.IsEqual (rotYVec[1], 1.0));
+	test.Assert (JSM.IsEqual (rotYVec[2], 1.0));
+	test.Assert (JSM.IsEqual (rotYVec[3], 0.0));
+
+	test.Assert (JSM.IsEqual (rotZVec[0], 1.0));
+	test.Assert (JSM.IsEqual (rotZVec[1], -1.0));
+	test.Assert (JSM.IsEqual (rotZVec[2], 1.0));
+	test.Assert (JSM.IsEqual (rotZVec[3], 0.0));
 });
 
 AddTest ('ArcLengthTest', function (test) {

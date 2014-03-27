@@ -67,9 +67,9 @@
 		var a = 0.0;
 		function Render ()
 		{
-			viewer.GetMesh (0).rotation.y = (-a * JSM.DegRad);
-			viewer.GetMesh (1).rotation.y = (-a * JSM.DegRad);
-			viewer.GetMesh (2).rotation.y = (-a * JSM.DegRad);
+			viewer.GetMesh (0).rotation.z = (-a * JSM.DegRad);
+			viewer.GetMesh (1).rotation.z = (-a * JSM.DegRad);
+			viewer.GetMesh (2).rotation.z = (-a * JSM.DegRad);
 		
 			viewer.Draw ();
 			a += 0.5;
@@ -125,10 +125,6 @@
 				viewer.AddMesh (meshes[i]);
 			}
 
-			meshes[0].rotation.y = -175 * JSM.DegRad;
-			meshes[1].rotation.y = -175 * JSM.DegRad;
-			meshes[2].rotation.y = -175 * JSM.DegRad;
-			
 			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));			
 			

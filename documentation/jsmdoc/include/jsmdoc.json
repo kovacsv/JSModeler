@@ -185,6 +185,20 @@
 							]
 						}
 					}
+				},
+				"FPSCounter" : {
+					"description" : "Utility class for FPS count. It calculates the frames and returns FPS count for the last interval with the given length. The Get function should called in every frame.",
+					"functions" : {
+						"Get" : {
+							"description" : "Returns the FPS count for the last interval with the given length.",
+							"parameters" : [
+								["interval", "integer", "the interval length in milliseconds"]
+							],
+							"returns" : [
+								["integer", "The result."]
+							]
+						}
+					}
 				}
 			}
 		},
@@ -217,7 +231,49 @@
 						["number", "the result"]
 					]
 				},
-				"VectorMatrixMultiply4x4" : {
+				"MatrixIdentity" : {
+					"description" : "Generates an identity matrix.",
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixClone" : {
+					"description" : "Clones a matrix.",
+					"parameters" : [
+						["matrix", "number[16]", "the source matrix"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixRotationX" : {
+					"description" : "Creates a rotation matrix around the x axis.",
+					"parameters" : [
+						["angle", "number", "the angle of rotation"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixRotationY" : {
+					"description" : "Creates a rotation matrix around the y axis.",
+					"parameters" : [
+						["angle", "number", "the angle of rotation"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixRotationZ" : {
+					"description" : "Creates a rotation matrix around the z axis.",
+					"parameters" : [
+						["angle", "number", "the angle of rotation"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"VectorMatrixMultiply" : {
 					"description" : "Multiplies a vector with a matrix.",
 					"parameters" : [
 						["vector", "number[4]", "the vector"],
@@ -227,7 +283,7 @@
 						["number[4]", "the result vector"]
 					]
 				},
-				"MatrixMultiply4x4" : {
+				"MatrixMultiply" : {
 					"description" : "Multiplies a two matrices.",
 					"parameters" : [
 						["matrix1", "number[16]", "first matrix"],

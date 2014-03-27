@@ -63,7 +63,7 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		JSM.ConvertBodyToArrayBuffers = function (body, materials, geometries)
+		JSM.ConvertBodyToRenderGeometries = function (body, materials, geometries)
 		{
 			function OnGeometryStart (material)
 			{
@@ -79,25 +79,28 @@
 					return [r, g, b];
 				};
 
-				var geometry = new JSM.RenderGeometry ();
+				geometry = new JSM.RenderGeometry ();
+				vertices = [];
+				normals = [];
+				
 				geometry.SetMaterial (ConvertToShaderRGB (material.diffuse));
 				geometries.push (geometry);
 			}
 
 			function OnGeometryEnd (material)
 			{
-			
+				geometry.SetVertexArray (vertices);
+				geometry.SetNormalArray (normals);
 			}
 
 			function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
 			{
-				var lastGeometry = geometries[geometries.length - 1];
-				lastGeometry.AddVertex (vertex1.x, vertex1.y, vertex1.z);
-				lastGeometry.AddVertex (vertex2.x, vertex2.y, vertex2.z);
-				lastGeometry.AddVertex (vertex3.x, vertex3.y, vertex3.z);
-				lastGeometry.AddNormal (normal1.x, normal1.y, normal1.z);
-				lastGeometry.AddNormal (normal2.x, normal2.y, normal2.z);
-				lastGeometry.AddNormal (normal3.x, normal3.y, normal3.z);
+				vertices.push (vertex1.x, vertex1.y, vertex1.z);
+				vertices.push (vertex2.x, vertex2.y, vertex2.z);
+				vertices.push (vertex3.x, vertex3.y, vertex3.z);
+				normals.push (normal1.x, normal1.y, normal1.z);
+				normals.push (normal2.x, normal2.y, normal2.z);
+				normals.push (normal3.x, normal3.y, normal3.z);
 			}
 			
 			var explodeData = {
@@ -107,60 +110,35 @@
 				onTriangle : OnTriangle
 			};
 			
+			var geometry = null;
+			var vertices = null;
+			var normals = null;
 			JSM.ExplodeBodyToTriangles (body, materials, explodeData);
 		};
 
-		JSM.ConvertModelToArrayBuffers = function (model, materials, geometries)
+		JSM.ConvertModelToRenderGeometries = function (model, materials, geometries)
 		{
 			var i, body;
 			for (i = 0; i < model.BodyCount (); i++) {
 				body = model.GetBody (i);
-				JSM.ConvertBodyToArrayBuffers (body, materials, geometries);
+				JSM.ConvertBodyToRenderGeometries (body, materials, geometries);
 			}
 		};
 
-		JSM.FPSCounter = function ()
-		{
-			this.start = null;
-			this.frames = null;
-			this.current = null;
-		};
-		
-		JSM.FPSCounter.prototype.Get = function ()
-		{
-			var date = new Date ();
-			var end = date.getTime ();
-			if (this.start === null) {
-				this.start = end;
-				this.frames = 0;
-				this.current = 0;
-			}
-
-			this.frames = this.frames + 1;
-			var elapsed = end - this.start;
-			if (elapsed >= 1000) {
-				this.current = 1000 * (this.frames / elapsed);
-				this.start = end;
-				this.frames = 0;
-			}
-
-			return parseInt (this.current);
-		};
-		
 		var renderer = null;
 		var a = 0.0;
 		
 		var fps = new JSM.FPSCounter ();
 		function Render ()
 		{
-			renderer.geometries[0].transformation.RotationX (a * JSM.DegRad);
-			renderer.geometries[1].transformation.RotationX (a * JSM.DegRad);
-			renderer.geometries[2].transformation.RotationX (a * JSM.DegRad);
+			renderer.geometries[0].transformation.Set (JSM.MatrixRotationZ (a * JSM.DegRad));
+			renderer.geometries[1].transformation.Set (JSM.MatrixRotationZ (a * JSM.DegRad));
+			renderer.geometries[2].transformation.Set (JSM.MatrixRotationZ (a * JSM.DegRad));
 		
 			renderer.Render ();
 			a += 0.5;
 			requestAnimationFrame (Render);
-			document.getElementById ('fps').innerHTML = 'fps: ' + fps.Get ();
+			document.getElementById ('fps').innerHTML = 'fps: ' + fps.Get (500);
 		}
 		
 		function Load ()
@@ -200,13 +178,13 @@
 			model.AddBody (body5);
 
 			var geometries = [];
-			JSM.ConvertModelToArrayBuffers (model, materials, geometries);
+			JSM.ConvertModelToRenderGeometries (model, materials, geometries);
 			renderer.AddGeometries (geometries);
 
 			var newGeometries = [];
 			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));
-			JSM.ConvertBodyToArrayBuffers (body6, materials, newGeometries);
+			JSM.ConvertBodyToRenderGeometries (body6, materials, newGeometries);
 			renderer.AddGeometries (newGeometries);
 
 			Render ();
