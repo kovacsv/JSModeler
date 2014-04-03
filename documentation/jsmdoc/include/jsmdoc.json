@@ -273,6 +273,29 @@
 						["number[16]", "the result matrix"]
 					]
 				},
+				"MatrixView" : {
+					"description" : "Creates a view matrix.",
+					"parameters" : [
+						["eye", "Coord", "eye position"],
+						["center", "Coord", "center position"],
+						["up", "Vector", "up vector"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixPerspective" : {
+					"description" : "Creates a perspective matrix.",
+					"parameters" : [
+						["fieldOfView", "number", "field of view"],
+						["aspectRatio", "number", "aspect ratio"],
+						["nearPlane", "number", "near clipping plane"],
+						["farPlane", "number", "far clipping plane"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
 				"VectorMatrixMultiply" : {
 					"description" : "Multiplies a vector with a matrix.",
 					"parameters" : [
@@ -988,29 +1011,6 @@
 					],
 					"returns" : [
 						["Coord", "the projected coordinate"]
-					]
-				},
-				"CalculateModelViewMatrix" : {
-					"description" : "Calculates a model view matrix.",
-					"parameters" : [
-						["eye", "Coord", "the eye of the camera"],
-						["center", "Coord", "the center of the camera"],
-						["up", "Vector", "the up vector of the camera"]
-					],
-					"returns" : [
-						["number[16]", "the result matrix"]
-					]
-				},
-				"CalculateProjectionMatrix" : {
-					"description" : "Calculates a projection matrix.",
-					"parameters" : [
-						["fieldOfView", "number", "camera field of view"],
-						["aspectRatio", "number", "aspect ratio of the desired image"],
-						["nearPlane", "number", "near cutting plane distance"],
-						["farPlane", "number", "far cutting plane distance"]
-					],
-					"returns" : [
-						["number[16]", "the result matrix"]
 					]
 				},
 				"Project" : {

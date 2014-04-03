@@ -1,109 +1,8 @@
-JSM.RenderMatrix = function ()
-{
-	this.matrix = new Float32Array (16);
-};
-
-JSM.RenderMatrix.prototype.Get = function ()
-{
-	return this.matrix;
-};
-
-JSM.RenderMatrix.prototype.Set = function (matrix)
-{
-	this.matrix = JSM.MatrixClone (matrix);
-};
-
-JSM.RenderMatrix.prototype.Identity = function ()
-{
-	this.matrix = JSM.MatrixIdentity ();
-};
-
-JSM.RenderMatrix.prototype.Clone = function ()
-{
-	var result = new JSM.RenderMatrix ();
-	result.Set (this.matrix);
-	return result;
-};
-
-JSM.RenderMatrix.prototype.Perspective = function (fieldOfView, aspectRatio, nearPlane, farPlane)
-{
-	var f = 1.0 / Math.tan (fieldOfView / 2.0);
-	var nf = 1.0 / (nearPlane - farPlane);
-	this.matrix[0] = f / aspectRatio;
-	this.matrix[1] = 0.0;
-	this.matrix[2] = 0.0;
-	this.matrix[3] = 0.0;
-	this.matrix[4] = 0.0;
-	this.matrix[5] = f;
-	this.matrix[6] = 0.0;
-	this.matrix[7] = 0.0;
-	this.matrix[8] = 0.0;
-	this.matrix[9] = 0.0;
-	this.matrix[10] = (farPlane + nearPlane) * nf;
-	this.matrix[11] = -1.0;
-	this.matrix[12] = 0.0;
-	this.matrix[13] = 0.0;
-	this.matrix[14] = (2.0 * farPlane * nearPlane) * nf;
-	this.matrix[15] = 0.0;
-};
-
-JSM.RenderMatrix.prototype.ModelView = function (eye, center, up)
-{
-	if (JSM.CoordIsEqual (eye, center)) {
-		this.Identity ();
-		return;
-	}
-	
-	var d = JSM.VectorNormalize (JSM.CoordSub (eye, center));
-	var v = JSM.VectorNormalize (JSM.VectorCross (up, d));
-	var u = JSM.VectorNormalize (JSM.VectorCross (d, v));
-
-    this.matrix[0] = v.x;
-    this.matrix[1] = u.x;
-    this.matrix[2] = d.x;
-    this.matrix[3] = 0;
-    this.matrix[4] = v.y;
-    this.matrix[5] = u.y;
-    this.matrix[6] = d.y;
-    this.matrix[7] = 0;
-    this.matrix[8] = v.z;
-    this.matrix[9] = u.z;
-    this.matrix[10] = d.z;
-    this.matrix[11] = 0;
-    this.matrix[12] = -JSM.VectorDot (v, eye);
-    this.matrix[13] = -JSM.VectorDot (u, eye);
-    this.matrix[14] = -JSM.VectorDot (d, eye);
-    this.matrix[15] = 1;
-};
-
-JSM.RenderMatrix.prototype.RotationX = function (angle)
-{
-	this.matrix = JSM.MatrixRotationX (angle);
-};
-
-JSM.RenderMatrix.prototype.RotationY = function (angle)
-{
-	this.matrix = JSM.MatrixRotationY (angle);
-};
-
-JSM.RenderMatrix.prototype.RotationZ = function (angle)
-{
-	this.matrix = JSM.MatrixRotationZ (angle);
-};
-
-JSM.RenderMatrixMultiply = function (a, b, result)
-{
-	var aMatrix = a.Get ();
-	var bMatrix = b.Get ();
-	result.Set (JSM.MatrixMultiply (aMatrix, bMatrix));
-};
-
 JSM.RenderGeometry = function ()
 {
 	this.material = {};
 
-	this.transformation = new JSM.RenderMatrix ();
-	this.transformation.Identity ();
+	this.transformation = JSM.MatrixIdentity ();
 
 	this.vertexArray = null;
 	this.normalArray = null;
@@ -298,8 +197,8 @@ JSM.Renderer.prototype.InitShaders = function ()
 
 JSM.Renderer.prototype.InitBuffers = function ()
 {
-	this.projectionMatrix = new JSM.RenderMatrix ();
-	this.viewMatrix = new JSM.RenderMatrix ();
+	this.projectionMatrix = JSM.MatrixIdentity ();
+	this.viewMatrix = JSM.MatrixIdentity ();
 
 	this.geometries = [];
 	return true;
@@ -311,8 +210,8 @@ JSM.Renderer.prototype.InitView = function ()
 	this.center = new JSM.Coord (0, 0, 0);
 	this.up = new JSM.Coord (0, 0, 1);
 
-	this.projectionMatrix.Perspective (45.0 * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, 0.1, 1000.0);
-	this.context.uniformMatrix4fv (this.shader.pMatrixUniform, false, this.projectionMatrix.Get ());
+	this.projectionMatrix = JSM.MatrixPerspective (45.0 * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, 0.1, 1000.0);
+	this.context.uniformMatrix4fv (this.shader.pMatrixUniform, false, this.projectionMatrix);
 
 	this.context.uniform3f (this.shader.ambientLightColorUniform, 0.5, 0.5, 0.5);
 	this.context.uniform3f (this.shader.directionalLightColorUniform, 0.5, 0.5, 0.5);
@@ -338,16 +237,16 @@ JSM.Renderer.prototype.Render = function ()
 	var lightDirection = JSM.CoordSub (this.eye, this.center);
 	this.context.uniform3f (this.shader.lightDirectionUniform, lightDirection.x, lightDirection.y, lightDirection.z);
 	
-	this.viewMatrix.ModelView (this.eye, this.center, this.up);
-	var modelViewMatrix = new JSM.RenderMatrix ();
+	this.viewMatrix = JSM.MatrixView (this.eye, this.center, this.up);
+	var modelViewMatrix = JSM.MatrixIdentity ();
 	
 	var i, polygonColor, currentGeometry, currentVertexBuffer, currentNormalBuffer;
 	for (i = 0; i < this.geometries.length; i++) {
 		currentGeometry = this.geometries[i];
-		
-		JSM.RenderMatrixMultiply (currentGeometry.GetTransformation (), this.viewMatrix, modelViewMatrix);
-		this.context.uniformMatrix4fv (this.shader.vMatrixUniform, false, this.viewMatrix.Get ());
-		this.context.uniformMatrix4fv (this.shader.mvMatrixUniform, false, modelViewMatrix.Get ());
+	
+		modelViewMatrix = JSM.MatrixMultiply (currentGeometry.GetTransformation (), this.viewMatrix);
+		this.context.uniformMatrix4fv (this.shader.vMatrixUniform, false, this.viewMatrix);
+		this.context.uniformMatrix4fv (this.shader.mvMatrixUniform, false, modelViewMatrix);
 
 		polygonColor = currentGeometry.material.diffuse;
 		this.context.uniform3f (this.shader.polygonColorUniform, polygonColor[0], polygonColor[1], polygonColor[2]);

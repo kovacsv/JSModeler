@@ -798,15 +798,15 @@ AddTest ('ProjectionTest', function (test)
 
 	projected = JSM.Project (new JSM.Coord (0, 0.5, 0), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
-	test.Assert (JSM.IsEqual (projected.x, 220.710678118657) && JSM.IsEqual (projected.y, 50));
+	test.Assert (JSM.IsEqual (projected.x, 160.35533905932851) && JSM.IsEqual (projected.y, 50));
 
 	projected = JSM.Project (new JSM.Coord (0, 0, 0.5), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
-	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 170.710678118657));
+	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 110.3553390593285));
 
 	projected = JSM.Project (new JSM.Coord (0, 0.5, 0.5), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
-	test.Assert (JSM.IsEqual (projected.x, 220.710678118657) && JSM.IsEqual (projected.y, 170.710678118657));
+	test.Assert (JSM.IsEqual (projected.x, 160.35533905932851) && JSM.IsEqual (projected.y, 110.3553390593285));
 });
 
 AddTest ('ConvexHullTest', function (test)
