@@ -60,6 +60,21 @@
 	<script type="text/javascript" src="../src/viewer/spriteviewer.js"></script>
 <!-- JSModeler includes end -->
 	<script type="text/javascript" src="../documentation/examples/tictactoe.js"></script>
+	<style>
+		html, body
+		{
+			margin : 0px;
+			padding : 0px;
+			width : 100%;
+			height : 100%;
+		}
+
+		canvas
+		{
+			display : block;
+		}
+	</style>
+	
 	<title>Example</title>
 
 	<script type="text/javascript">
@@ -148,7 +163,7 @@
 					difficulty = ticTacToe.GetDifficulty ();
 				}
 			}
-			ticTacToe.Initialize (4, difficulty);
+			ticTacToe.Initialize (3, difficulty);
 			
 			viewer.RemovePoints ();
 			
@@ -193,13 +208,26 @@
 			viewer.Draw ();
 		}
 		
+		function Resize ()
+		{
+			var canvas = document.getElementById ('example');
+			canvas.width = document.body.clientWidth;
+			canvas.height = document.body.clientHeight;
+			if (viewer !== null) {
+				viewer.Draw ();
+			}
+		}
+
 		function Load ()
 		{
+			window.onresize = Resize;
+			Resize ();
+
 			ticTacToe = new TicTacToe ();
 		
 			var viewerSettings = {
 				cameraEyePosition : [14.0, -14.0, 16.0],
-				cameraCenterPosition : [4.5, 4.5, 4.5],
+				cameraCenterPosition : [3.0, 3.0, 3.0],
 				cameraUpVector : [0.0, 0.0, 1.0],
 			};
 
