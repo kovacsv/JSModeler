@@ -1,7 +1,7 @@
 JSM.SoftwareViewer = function ()
 {
 	this.canvas = null;
-	this.cameraMove = null;
+	this.camera = null;
 	this.settings = null;
 	this.bodies = null;
 	this.drawer = null;
@@ -78,8 +78,8 @@ JSM.SoftwareViewer.prototype.InitSettings = function (settings)
 
 JSM.SoftwareViewer.prototype.InitCamera = function ()
 {
-	this.cameraMove = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
-	if (!this.cameraMove) {
+	this.camera = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
+	if (!this.camera) {
 		return false;
 	}
 
@@ -135,7 +135,7 @@ JSM.SoftwareViewer.prototype.Resize = function ()
 JSM.SoftwareViewer.prototype.Draw = function ()
 {
 	var i, bodyAndMaterials;
-	var drawSettings = new JSM.DrawSettings (this.cameraMove, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.settings.drawMode, false);
+	var drawSettings = new JSM.DrawSettings (this.camera, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.settings.drawMode, false);
 	this.drawer.Clear ();
 	
 	for (i = 0; i < this.bodies.length; i++) {
@@ -159,7 +159,7 @@ JSM.SoftwareViewer.prototype.OnMouseMove = function (event)
 	}
 	
 	var ratio = -0.5;
-	this.cameraMove.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
+	this.camera.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 	
 	this.Draw ();
 };
@@ -189,7 +189,7 @@ JSM.SoftwareViewer.prototype.OnMouseWheel = function (event)
 	}
 
 	var zoomIn = delta > 0;
-	this.cameraMove.Zoom (zoomIn);
+	this.camera.Zoom (zoomIn);
 	this.Draw ();
 };
 
@@ -206,7 +206,7 @@ JSM.SoftwareViewer.prototype.OnTouchMove = function (event)
 	}
 	
 	var ratio = -0.5;
-	this.cameraMove.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
+	this.camera.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
 	
 	this.Draw ();
 };

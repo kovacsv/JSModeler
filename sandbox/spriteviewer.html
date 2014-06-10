@@ -4,9 +4,8 @@
 <html>
 
 <head>
-
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
@@ -61,127 +60,104 @@
 	<script type="text/javascript" src="../src/viewer/spriteviewer.js"></script>
 <!-- JSModeler includes end -->
 	<title>Example</title>
-	
-	<style>
-		html, body
-		{
-			margin : 0px;
-			padding : 0px;
-			width : 100%;
-			height : 100%;
-		}
-
-		canvas
-		{
-			display : block;
-		}
-	</style>
 
 	<script type="text/javascript">
 		var viewer = null;
-
-		GenerateHeightMap = function (rows, columns, data)
+		var mouseMoved = null;
+		
+		function OnDrawStart (canvas)
 		{
-			function GetSurfacePoint (uIndex, vIndex, u, v, userData)
-			{
-				function GetIndex (i, j)
-				{
-					return j * columns + i
-				}
-			
-				var result = new JSM.Coord (
-					u,
-					v,
-					data[GetIndex (uIndex, vIndex)] / 50
-				);
-				return result;
-			}
-
-			var body = JSM.GenerateSurface ([0, rows], [0, columns], rows - 1, columns - 1, true, false, GetSurfacePoint, null);
-			return body;
-		};
-
-		function Resize ()
-		{
-			var canvas = document.getElementById ('example');
-			canvas.width = document.body.clientWidth;
-			canvas.height = document.body.clientHeight;
-			if (viewer !== null) {
-				viewer.Resize ();
-			}
+			var context = canvas.getContext ('2d');
+			context.clearRect (0, 0, canvas.width, canvas.height);
 		}
 		
+		function OnPointDraw (canvas, index, projected)
+		{
+			var context = canvas.getContext ('2d');
+			var x = projected.x;
+			var y = projected.y;
+			var radius = 30;
+
+			var xBeg = x - radius / 2.0;
+			var yBeg = y - radius / 2.0;
+			
+			context.beginPath ();
+			radialGradient = context.createRadialGradient (xBeg, yBeg, 0, xBeg, yBeg, radius);
+			radialGradient.addColorStop (0, '#ff0000');
+			radialGradient.addColorStop (1, '#aa0000');
+			context.fillStyle = radialGradient;
+			context.arc (xBeg, yBeg, radius, 0.0, 2.0 * Math.PI, false);
+			
+			context.fill ();
+		}
+	
+		function OnDrawEnd (canvas)
+		{
+		}
+
+		function OnMouseDown (event)
+		{
+			mouseMoved = false;
+		}
+		
+		function OnMouseMove (event)
+		{
+			mouseMoved = true;
+		}
+
+		function OnMouseUp (event)
+		{
+			if (!mouseMoved) {
+				alert (viewer.NearestPointUnderMouse (50));
+			}
+			
+			mouseMoved = false;
+		}
+
 		function Load ()
 		{
-			window.onresize = Resize;
-			Resize ();
-		
-			function TextureLoaded () {
-				viewer.Draw ();
-			}
-		
 			var viewerSettings = {
-				cameraEyePosition : [3.0, -3.0, 3.0],
+				cameraEyePosition : [3.0, 3.0, 3.0],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0.0, 0.0, 1.0]
+				cameraUpVector : [0, 0, 1]
 			};
 
-			viewer = new JSM.Viewer ();
-			if (!viewer.Start ('example', viewerSettings)) {
-				return;
+			var viewerCallbacks = {
+				onDrawStart : OnDrawStart,
+				onPointDraw : OnPointDraw,
+				onDrawEnd : OnDrawEnd
+			};
+
+			var canvasName = 'example';
+			var canvas = document.getElementById (canvasName);
+			if (canvas.addEventListener) {
+				canvas.addEventListener ('mousedown', function (event) {OnMouseDown (event);}, false);
+				canvas.addEventListener ('mousemove', function (event) {OnMouseMove (event);}, false);
+				canvas.addEventListener ('mouseup', function (event) {OnMouseUp (event);}, false);
+				//canvas.addEventListener ('touchstart', function (event) {OnTouchStart (event);}, false);
+				//canvas.addEventListener ('touchmove', function (event) {OnTouchMove (event);}, false);
+				//canvas.addEventListener ('touchend', function (event) {OnTouchEnd (event);}, false);
 			}
 
+			mouseMoved = false;
+			
+			viewer = new JSM.SpriteViewer ();
+			var success = viewer.Start (canvasName, viewerSettings, viewerCallbacks);
+
+			viewer.AddPoint (new JSM.Coord (0, 0, 0));
+			viewer.AddPoint (new JSM.Coord (1, 0, 0));
+			viewer.AddPoint (new JSM.Coord (1, 1, 0));
+			viewer.AddPoint (new JSM.Coord (0, 1, 0));
+			viewer.AddPoint (new JSM.Coord (0, 0, 1));
+			viewer.AddPoint (new JSM.Coord (1, 0, 1));
+			viewer.AddPoint (new JSM.Coord (1, 1, 1));
+			viewer.AddPoint (new JSM.Coord (0, 1, 1));
 			viewer.Draw ();
 		}
-	
-		function Loaded (jsonData)
-		{
-			function TextureLoaded () {
-				viewer.Draw ();
-			}
 		
-			
-			var conversionData = {
-				textureLoadedCallback : TextureLoaded,
-				hasConvexPolygons : true,
-				doubleSided : true
-			};
-			//JSM.GenerateRandomMaterials (body, materials, true);
-			var timer = new JSM.Timer ();
-			var body = GenerateHeightMap (jsonData.rows, jsonData.columns, jsonData.data);
-			body.SetTextureProjectionType ('Planar');
-			body.SetTextureProjectionCoords (new JSM.CoordSystem (
-				new JSM.Coord (0.0, 0.0, 0.0),
-				new JSM.Coord (0.0, 1.0, 0.0),
-				new JSM.Coord (-1.0, 0.0, 0.0),
-				new JSM.Coord (0.0, 0.0, 0.0)
-			));			
-
-			var materials = new JSM.Materials ();
-			//materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'hungary.jpg', jsonData.columns, jsonData.rows));
-			//body.SetPolygonsMaterialIndex (0);
-			
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
-
-			viewer.RemoveMeshes ();
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}
-			
-			viewer.FitInWindow ();
-			viewer.Draw ();			
-		}
-		
-		function CreateMap (fileName)
+		window.onload = function ()
 		{
-			var loader = new JSM.JSONFileLoader (Loaded);
-			loader.Load (fileName);
-		}
-	
-	    window.onload = function ()
-		{
-			Load ();
-			CreateMap ('hun_alt.js');
+			Load ();			
 		}
 	</script>
 

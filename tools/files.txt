@@ -48,3 +48,4 @@
 ../src/viewer/converter.js
 ../src/viewer/viewer.js
 ../src/viewer/softwareviewer.js
+../src/viewer/spriteviewer.js

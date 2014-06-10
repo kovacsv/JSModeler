@@ -55,7 +55,24 @@ TicTacToe.prototype =
 		return itemPerRow * dimensions[2] + this.xSize * dimensions[1] + dimensions[0];
 	},
 
-	Step : function (player, i, j, k)
+	GetPlayerWithIndex : function (index)
+	{
+		var ijk = this.IndexToDimensions (index)
+		return this.GetPlayerWithDimensions (ijk[0], ijk[1], ijk[2]);
+	},
+	
+	GetPlayerWithDimensions : function (i, j, k)
+	{
+		return this.table[i][j][k];
+	},
+
+	StepWithIndex : function (player, index)
+	{
+		var ijk = this.IndexToDimensions (index)
+		this.StepWithDimensions (player, ijk[0], ijk[1], ijk[2]);
+	},
+
+	StepWithDimensions : function (player, i, j, k)
 	{
 		this.table[i][j][k] = player;
 	},
@@ -298,58 +315,5 @@ TicTacToe.prototype =
 		}
 
 		return count;
-	},			
-	
-	GetEmptyTableModel : function ()
-	{
-		var model = new JSM.Model ();
-		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0x000000, 0x000000, 0.1));
-		
-		var offset = this.shapeSize * 1.5;
-
-		var i, j, k;
-		var body, transformation;
-		for (k = 0; k < this.zSize; k++) {
-			for (j = 0; j < this.ySize; j++) {
-				for (i = 0; i < this.xSize; i++) {
-					body = JSM.GenerateCircle (this.shapeSize / 2.0, 20);
-					body.SetPolygonsMaterialIndex (0);
-					
-					transformation = JSM.TranslationTransformation (new JSM.Vector (offset * i, offset * j, offset * k));
-					body.Transform (transformation);
-
-					model.AddBody (body);
-				}
-			}
-		}
-		
-		return [model, materials];
-	},
-	
-	GetItemModel : function (i, j, k)
-	{
-		var model = new JSM.Model ();
-		
-		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
-		materials.AddMaterial (new JSM.Material (0xcc3333, 0xcc3333));
-		
-		var offset = this.shapeSize * 1.5;
-
-		var body = JSM.GenerateSphere (this.shapeSize / 2.0, 20, true);
-		var player = this.table[i][j][k];
-		if (player == 1) {
-			body.SetPolygonsMaterialIndex (0);
-		} else {
-			body.SetPolygonsMaterialIndex (1);
-		}
-		
-		transformation = JSM.TranslationTransformation (new JSM.Vector (offset * i, offset * j, offset * k));
-		body.Transform (transformation);
-
-		model.AddBody (body);
-		
-		return [model, materials];			
 	}
 };
