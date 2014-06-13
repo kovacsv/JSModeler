@@ -80,14 +80,13 @@
 
 			var xBeg = x - radius / 2.0;
 			var yBeg = y - radius / 2.0;
-			
+		
 			context.beginPath ();
-			radialGradient = context.createRadialGradient (xBeg, yBeg, 0, xBeg, yBeg, radius);
+			radialGradient = context.createRadialGradient (x, y, 0, x, y, radius);
 			radialGradient.addColorStop (0, '#ff0000');
 			radialGradient.addColorStop (1, '#aa0000');
 			context.fillStyle = radialGradient;
-			context.arc (xBeg, yBeg, radius, 0.0, 2.0 * Math.PI, false);
-			
+			context.arc (x, y, radius, 0.0, 2.0 * Math.PI, false);
 			context.fill ();
 		}
 	
@@ -152,6 +151,8 @@
 			viewer.AddPoint (new JSM.Coord (1, 0, 1));
 			viewer.AddPoint (new JSM.Coord (1, 1, 1));
 			viewer.AddPoint (new JSM.Coord (0, 1, 1));
+			
+			viewer.FitInWindow ();
 			viewer.Draw ();
 		}
 		
@@ -164,7 +165,7 @@
 </head>
 
 <body>
-	<canvas id="example" width="800" height="500"></canvas>
+	<canvas id="example" style="background:#cccccc;" width="800" height="500"></canvas>
 </body>
 
 </html>

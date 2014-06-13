@@ -104,23 +104,20 @@
 			var player = ticTacToe.GetPlayerWithIndex (index);
 			if (player == 1) {
 				radius = 30;
-				var fromColor = '#0000ff';
-				var toColor = '#0000aa';
+				fromColor = '#0000ff';
+				toColor = '#0000aa';
 			} else if (player == 2) {
 				radius = 30;
-				var fromColor = '#ff0000';
-				var toColor = '#aa0000';
+				fromColor = '#ff0000';
+				toColor = '#aa0000';
 			}
 			
-			var xBeg = x - radius / 2.0;
-			var yBeg = y - radius / 2.0;
-			
 			context.beginPath ();
-			radialGradient = context.createRadialGradient (xBeg, yBeg, 0, xBeg, yBeg, radius);
+			radialGradient = context.createRadialGradient (x, y, 0, x, y, radius);
 			radialGradient.addColorStop (0, fromColor);
 			radialGradient.addColorStop (1, toColor);
 			context.fillStyle = radialGradient;
-			context.arc (xBeg, yBeg, radius, 0.0, 2.0 * Math.PI, false);
+			context.arc (x, y, radius, 0.0, 2.0 * Math.PI, false);
 			
 			context.fill ();
 		}

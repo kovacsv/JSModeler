@@ -160,6 +160,72 @@ JSM.SpriteViewer.prototype.NearestPointUnderTouch = function (maxDistance)
 	return this.NearestPointUnderPosition (maxDistance, this.touch.currX, this.touch.currY);
 };
 
+JSM.SpriteViewer.prototype.FitInWindow = function ()
+{
+	var center = this.GetCenter ();
+	var radius = this.GetBoundingSphereRadius ();
+	this.FitInWindowWithCenterAndRadius (center, radius);
+};
+
+JSM.SpriteViewer.prototype.FitInWindowWithCenterAndRadius = function (center, radius)
+{
+	var offsetToOrigo = JSM.CoordSub (this.camera.center, center);
+	this.camera.origo = center;
+	this.camera.center = center;
+	this.camera.eye = JSM.CoordSub (this.camera.eye, offsetToOrigo);
+	var centerEyeDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.eye, this.camera.center));
+	var fieldOfView = this.settings.fieldOfView / 2.0;
+	if (this.canvas.width < this.canvas.height) {
+		fieldOfView = fieldOfView * this.canvas.width / this.canvas.height;
+	}
+	var distance = radius / Math.sin (fieldOfView * JSM.DegRad);
+	this.camera.eye = JSM.CoordOffset (this.camera.center, centerEyeDirection, distance);
+	this.Draw ();
+};
+
+JSM.SpriteViewer.prototype.GetCenter = function ()
+{
+	var boundingBox = this.GetBoundingBox ();
+	var center = JSM.MidCoord (boundingBox[0], boundingBox[1]);
+	return center;
+};
+
+JSM.SpriteViewer.prototype.GetBoundingBox = function ()
+{
+	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
+	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
+	
+	var i, coord;
+	for (i = 0; i < this.points.length; i++) {
+		coord = this.points[i];
+		min.x = JSM.Minimum (min.x, coord.x);
+		min.y = JSM.Minimum (min.y, coord.y);
+		min.z = JSM.Minimum (min.z, coord.z);
+		max.x = JSM.Maximum (max.x, coord.x);
+		max.y = JSM.Maximum (max.y, coord.y);
+		max.z = JSM.Maximum (max.z, coord.z);
+	}
+
+	return [min, max];
+};
+
+JSM.SpriteViewer.prototype.GetBoundingSphereRadius = function ()
+{
+	var center = this.GetCenter ();
+	var radius = 0.0;
+
+	var i, coord, distance;
+	for (i = 0; i < this.points.length; i++) {
+		coord = this.points[i];
+		distance = JSM.CoordDistance (center, coord);
+		if (JSM.IsGreater (distance, radius)) {
+			radius = distance;
+		}
+	}
+
+	return radius;
+};
+
 JSM.SpriteViewer.prototype.Draw = function ()
 {
 	if (this.callbacks.onDrawStart !== null) {
@@ -198,30 +264,29 @@ JSM.SpriteViewer.prototype.Draw = function ()
 
 JSM.SpriteViewer.prototype.OnMouseDown = function (event)
 {
-	this.mouse.Down (event);
+	this.mouse.Down (event, this.canvas);
 };
 
 JSM.SpriteViewer.prototype.OnMouseMove = function (event)
 {
-	this.mouse.Move (event);
+	this.mouse.Move (event, this.canvas);
 	if (!this.mouse.down) {
 		return;
 	}
 	
 	var ratio = -0.5;
 	this.camera.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
-	
 	this.Draw ();
 };
 
 JSM.SpriteViewer.prototype.OnMouseUp = function (event)
 {
-	this.mouse.Up (event);
+	this.mouse.Up (event, this.canvas);
 };
 
 JSM.SpriteViewer.prototype.OnMouseOut = function (event)
 {
-	this.mouse.Out (event);
+	this.mouse.Out (event, this.canvas);
 };
 
 JSM.SpriteViewer.prototype.OnMouseWheel = function (event)
