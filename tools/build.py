@@ -101,10 +101,15 @@ def DeleteFile (fileName):
 	os.remove (fileName)
 	return True
 	
-def Main ():
+def Main (argv):
 	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
 
+	noThree = False
+	if (len (argv) == 2):
+		if argv[1] == 'nothree':
+			noThree = True
+	
 	versionsPath = os.path.abspath (versionFileName)
 	filesFilePath = os.path.abspath (filesFileName)
 	tempFilePath = os.path.abspath (tempFileName)
@@ -124,6 +129,12 @@ def Main ():
 		return 1
 
 	PrintInfo ('Merge files to <' + tempFilePath + '>.')
+	if noThree:
+		originalFileNames = inputFileNames
+		inputFileNames = []
+		for fileName in originalFileNames:
+			if fileName.find ('src/three') == -1:
+				inputFileNames.append (fileName)
 	succeeded = MergeFiles (inputFileNames, tempFilePath)
 	if not succeeded:
 		PrintError ('Not existing file in file list.');
@@ -162,4 +173,4 @@ def Main ():
 	
 	return
 	
-sys.exit (Main ())
+sys.exit (Main (sys.argv))
