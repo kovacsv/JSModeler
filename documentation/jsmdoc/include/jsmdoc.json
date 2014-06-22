@@ -166,6 +166,13 @@
 						["condition", "boolean", "the condition to check"],
 						["message", "string", "error message"]
 					]
+				},
+				"BubbleSort" : {
+					"description" : "Sorts an array with bubble sort.",
+					"parameters" : [
+						["array", "anything[]", "the array to sort"],
+						["compare", "function", "the compare functions"]
+					]
 				}
 			},
 			"classes" : {

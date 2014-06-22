@@ -246,7 +246,7 @@ JSM.SpriteViewer.prototype.Draw = function ()
 		}
 	}
 
-	this.projected.sort (function (a, b) {
+	JSM.BubbleSort (this.projected, function (a, b) {
 		return a.position.z < b.position.z;
 	});
 	

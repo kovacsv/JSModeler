@@ -1,5 +1,6 @@
 ../src/core/jsm.js
 ../src/core/timer.js
+../src/core/algorithm.js
 ../src/geometry/determinant.js
 ../src/geometry/matrix.js
 ../src/geometry/coord.js
