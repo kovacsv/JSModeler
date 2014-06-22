@@ -315,12 +315,12 @@ JSM.SpriteViewer.prototype.OnMouseWheel = function (event)
 
 JSM.SpriteViewer.prototype.OnTouchStart = function (event)
 {
-	this.touch.Start (event);
+	this.touch.Start (event, this.canvas);
 };
 
 JSM.SpriteViewer.prototype.OnTouchMove = function (event)
 {
-	this.touch.Move (event);
+	this.touch.Move (event, this.canvas);
 	if (!this.touch.down) {
 		return;
 	}
@@ -333,5 +333,5 @@ JSM.SpriteViewer.prototype.OnTouchMove = function (event)
 
 JSM.SpriteViewer.prototype.OnTouchEnd = function (event)
 {
-	this.touch.End (event);
+	this.touch.End (event, this.canvas);
 };
