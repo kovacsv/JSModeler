@@ -88,4 +88,10 @@ AddTest ('SortTest', function (test) {
 		return a < b;
 	});
 	test.Assert (array.toString () == [1, 2, 3, 4, 5].toString ());
+
+	array = [5, 3, 3, 3, 1];
+	JSM.BubbleSort (array, function (a, b) {
+		return a < b;
+	});
+	test.Assert (array.toString () == [1, 3, 3, 3, 5].toString ());
 });
