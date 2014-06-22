@@ -171,7 +171,7 @@
 					"description" : "Sorts an array with bubble sort.",
 					"parameters" : [
 						["array", "anything[]", "the array to sort"],
-						["compare", "function", "the compare functions"]
+						["compare", "function", "the compare function"]
 					]
 				}
 			},

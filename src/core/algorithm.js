@@ -3,7 +3,7 @@
 * Description: Sorts an array with bubble sort.
 * Parameters:
 *	array {anything[]} the array to sort
-*	compare {function} the compare functions
+*	compare {function} the compare function
 */
 JSM.BubbleSort = function (array, compare)
 {
