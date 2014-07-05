@@ -40,10 +40,6 @@
 ../src/extras/svgtomodel.js
 ../src/extras/csg.js
 ../src/extras/surfaces.js
-../src/dialogs/basedialog.js
-../src/dialogs/settingscontrols.js
-../src/dialogs/settingsdialog.js
-../src/dialogs/floatingdialog.js
 ../src/viewer/mouse.js
 ../src/viewer/touch.js
 ../src/viewer/softwareviewer.js
