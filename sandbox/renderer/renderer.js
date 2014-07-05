@@ -146,7 +146,6 @@ JSM.Renderer.prototype.InitShaders = function ()
 	var vertexShaderScript = [
 		'attribute highp vec3 aVertexPosition;',
 		'attribute highp vec3 aVertexNormal;',
-		'uniform highp vec3 uEyePosition;',
 		'uniform highp vec3 uAmbientLightColor;',
 		'uniform highp vec3 uDirectionalLightColor;',
 		'uniform highp vec3 uLightDirection;',
