@@ -10,8 +10,9 @@ JSM.RenderGeometry = function ()
 	this.normalBuffer = null;
 };
 
-JSM.RenderGeometry.prototype.SetMaterial = function (diffuse)
+JSM.RenderGeometry.prototype.SetMaterial = function (ambient, diffuse)
 {
+	this.material.ambient = ambient;
 	this.material.diffuse = diffuse;
 };
 

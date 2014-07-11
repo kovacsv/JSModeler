@@ -82,7 +82,7 @@
 				vertices = [];
 				normals = [];
 				
-				geometry.SetMaterial (ConvertToShaderRGB (material.diffuse));
+				geometry.SetMaterial (ConvertToShaderRGB (material.ambient), ConvertToShaderRGB (material.diffuse));
 				geometries.push (geometry);
 			}
 

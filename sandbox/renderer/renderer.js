@@ -78,28 +78,34 @@ JSM.Renderer.prototype.InitShaders = function ()
 	}
 
 	var fragmentShaderScript = [
-		'varying highp vec3 vLighting;',
-		'uniform highp vec3 uPolygonColor;',
+		'varying highp vec3 vColor;',
 		'void main (void) {',
-		'	gl_FragColor = vec4 (uPolygonColor * vLighting, 1.0);',
+		'	gl_FragColor = vec4 (vColor, 1.0);',
 		'}'
 		].join('\n');
 	
 	var vertexShaderScript = [
 		'attribute highp vec3 aVertexPosition;',
 		'attribute highp vec3 aVertexNormal;',
+
 		'uniform highp vec3 uAmbientLightColor;',
 		'uniform highp vec3 uDirectionalLightColor;',
 		'uniform highp vec3 uLightDirection;',
+
 		'uniform highp mat4 uViewMatrix;',
 		'uniform highp mat4 uModelViewMatrix;',
 		'uniform highp mat4 uProjectionMatrix;',
-		'varying highp vec3 vLighting;',
+
+		'uniform highp vec3 uPolygonAmbientColor;',
+		'uniform highp vec3 uPolygonDiffuseColor;',
+		'varying highp vec3 vColor;',
+
 		'void main (void) {',
 		'	highp vec3 directionalVector = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
 		'	highp vec3 transformedNormal = normalize (vec3 (uModelViewMatrix * vec4 (aVertexNormal, 0.0)));',
-		'	highp float directional = max (dot (transformedNormal, directionalVector), 0.0);',
-		'	vLighting = uAmbientLightColor + (uDirectionalLightColor * directional);',
+		'	vec3 ambientComponent = uPolygonAmbientColor * uAmbientLightColor;',
+		'	vec3 diffuseComponent = uPolygonDiffuseColor * uDirectionalLightColor * max (dot (transformedNormal, directionalVector), 0.0);',
+		'	vColor = (ambientComponent + diffuseComponent);',
 		'	gl_Position = uProjectionMatrix * uModelViewMatrix * vec4 (aVertexPosition, 1.0);',
 		'}'
 		].join('\n');
@@ -127,12 +133,14 @@ JSM.Renderer.prototype.InitShaders = function ()
 	this.shader.ambientLightColorUniform = this.context.getUniformLocation (this.shader, 'uAmbientLightColor');
 	this.shader.directionalLightColorUniform = this.context.getUniformLocation (this.shader, 'uDirectionalLightColor');
 	this.shader.lightDirectionUniform = this.context.getUniformLocation (this.shader, 'uLightDirection');
-	this.shader.polygonColorUniform = this.context.getUniformLocation (this.shader, 'uPolygonColor');
 
 	this.shader.pMatrixUniform = this.context.getUniformLocation (this.shader, 'uProjectionMatrix');
 	this.shader.vMatrixUniform = this.context.getUniformLocation (this.shader, 'uViewMatrix');
 	this.shader.mvMatrixUniform = this.context.getUniformLocation (this.shader, 'uModelViewMatrix');
 
+	this.shader.polygonAmbientColorUniform = this.context.getUniformLocation (this.shader, 'uPolygonAmbientColor');
+	this.shader.polygonDiffuseColorUniform = this.context.getUniformLocation (this.shader, 'uPolygonDiffuseColor');
+	
 	return true;
 };
 
@@ -181,7 +189,7 @@ JSM.Renderer.prototype.Render = function ()
 	this.viewMatrix = JSM.MatrixView (this.eye, this.center, this.up);
 	var modelViewMatrix = JSM.MatrixIdentity ();
 	
-	var i, polygonColor, currentGeometry, currentVertexBuffer, currentNormalBuffer;
+	var i, ambientColor, diffuseColor, currentGeometry, currentVertexBuffer, currentNormalBuffer;
 	for (i = 0; i < this.geometries.length; i++) {
 		currentGeometry = this.geometries[i];
 	
@@ -189,8 +197,10 @@ JSM.Renderer.prototype.Render = function ()
 		this.context.uniformMatrix4fv (this.shader.vMatrixUniform, false, this.viewMatrix);
 		this.context.uniformMatrix4fv (this.shader.mvMatrixUniform, false, modelViewMatrix);
 
-		polygonColor = currentGeometry.material.diffuse;
-		this.context.uniform3f (this.shader.polygonColorUniform, polygonColor[0], polygonColor[1], polygonColor[2]);
+		ambientColor = currentGeometry.material.ambient;
+		diffuseColor = currentGeometry.material.diffuse;
+		this.context.uniform3f (this.shader.polygonAmbientColorUniform, ambientColor[0], ambientColor[1], ambientColor[2]);
+		this.context.uniform3f (this.shader.polygonDiffuseColorUniform, diffuseColor[0], diffuseColor[1], diffuseColor[2]);
 		
 		currentVertexBuffer = currentGeometry.GetVertexBuffer ();
 		currentNormalBuffer = currentGeometry.GetNormalBuffer ();
