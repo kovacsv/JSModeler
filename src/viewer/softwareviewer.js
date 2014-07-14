@@ -93,16 +93,6 @@ JSM.SoftwareViewer.prototype.InitCamera = function ()
 
 JSM.SoftwareViewer.prototype.InitEvents = function ()
 {
-	this.mouse = new JSM.Mouse ();
-	if (!this.mouse) {
-		return false;
-	}
-
-	this.touch = new JSM.Touch ();
-	if (!this.touch) {
-		return false;
-	}
-
 	this.navigation = new JSM.Navigation ();
 	var navigationSettings = {
 		cameraFixUp : this.settings.cameraFixUp,

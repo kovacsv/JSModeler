@@ -6,8 +6,7 @@ JSM.SpriteViewer = function ()
 	this.callbacks = null;
 	this.points = null;
 	this.projected = null;
-	this.mouse = null;
-	this.touch = null;
+	this.navigation = null;
 };
 
 JSM.SpriteViewer.prototype.Start = function (canvasName, settings, callbacks)
@@ -48,6 +47,9 @@ JSM.SpriteViewer.prototype.InitSettings = function (settings, callbacks)
 		cameraEyePosition : new JSM.Coord (1.0, 1.0, 1.0),
 		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
 		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
+		cameraFixUp : true,
+		cameraEnableOrbit : true,
+		cameraEnableZoom : true,
 		fieldOfView : 45.0,
 		nearClippingPlane : 0.1,
 		farClippingPlane : 1000.0
@@ -57,6 +59,9 @@ JSM.SpriteViewer.prototype.InitSettings = function (settings, callbacks)
 		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = JSM.CoordFromArray (settings.cameraEyePosition); }
 		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = JSM.CoordFromArray (settings.cameraCenterPosition); }
 		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = JSM.CoordFromArray (settings.cameraUpVector); }
+		if (settings.cameraFixUp !== undefined) { this.settings.cameraFixUp = settings.cameraFixUp; }
+		if (settings.cameraEnableOrbit !== undefined) { this.settings.cameraEnableOrbit = settings.cameraEnableOrbit; }
+		if (settings.cameraEnableZoom !== undefined) { this.settings.cameraEnableZoom = settings.cameraEnableZoom; }
 		if (settings.fieldOfView !== undefined) { this.settings.fieldOfView = settings.fieldOfView; }
 		if (settings.nearClippingPlane !== undefined) { this.settings.nearClippingPlane = settings.nearClippingPlane; }
 		if (settings.farClippingPlane !== undefined) { this.settings.farClippingPlane = settings.farClippingPlane; }
@@ -87,30 +92,14 @@ JSM.SpriteViewer.prototype.InitCamera = function ()
 
 JSM.SpriteViewer.prototype.InitEvents = function ()
 {
-	this.mouse = new JSM.Mouse ();
-	if (!this.mouse) {
+	this.navigation = new JSM.Navigation ();
+	var navigationSettings = {
+		cameraFixUp : this.settings.cameraFixUp,
+		cameraEnableOrbit : this.settings.cameraEnableOrbit,
+		cameraEnableZoom : this.settings.cameraEnableZoom
+	};
+	if (!this.navigation.Init (navigationSettings, this.canvas, this.camera, this.Draw.bind (this))) {
 		return false;
-	}
-
-	this.touch = new JSM.Touch ();
-	if (!this.touch) {
-		return false;
-	}
-
-	var myThis = this;
-	
-	if (document.addEventListener) {
-		document.addEventListener ('mousemove', function (event) {myThis.OnMouseMove (event);});
-		document.addEventListener ('mouseup', function (event) {myThis.OnMouseUp (event);});
-	}
-
-	if (this.canvas.addEventListener) {
-		this.canvas.addEventListener ('mousedown', function (event) {myThis.OnMouseDown (event);}, false);
-		this.canvas.addEventListener ('DOMMouseScroll', function (event) {myThis.OnMouseWheel (event);}, false);
-		this.canvas.addEventListener ('mousewheel', function (event) {myThis.OnMouseWheel (event);}, false);
-		this.canvas.addEventListener ('touchstart', function (event) {myThis.OnTouchStart (event);}, false);
-		this.canvas.addEventListener ('touchmove', function (event) {myThis.OnTouchMove (event);}, false);
-		this.canvas.addEventListener ('touchend', function (event) {myThis.OnTouchEnd (event);}, false);
 	}
 	
 	return true;
@@ -152,12 +141,12 @@ JSM.SpriteViewer.prototype.NearestPointUnderPosition = function (maxDistance, x,
 
 JSM.SpriteViewer.prototype.NearestPointUnderMouse = function (maxDistance)
 {
-	return this.NearestPointUnderPosition (maxDistance, this.mouse.currX, this.mouse.currY);
+	return this.NearestPointUnderPosition (maxDistance, this.navigation.mouse.currX, this.navigation.mouse.currY);
 };
 
 JSM.SpriteViewer.prototype.NearestPointUnderTouch = function (maxDistance)
 {
-	return this.NearestPointUnderPosition (maxDistance, this.touch.currX, this.touch.currY);
+	return this.NearestPointUnderPosition (maxDistance, this.navigation.touch.currX, this.navigation.touch.currY);
 };
 
 JSM.SpriteViewer.prototype.FitInWindow = function ()
@@ -265,73 +254,4 @@ JSM.SpriteViewer.prototype.Draw = function ()
 		this.callbacks.onDrawEnd (this.canvas);
 	}
 	return true;
-};
-
-JSM.SpriteViewer.prototype.OnMouseDown = function (event)
-{
-	this.mouse.Down (event, this.canvas);
-};
-
-JSM.SpriteViewer.prototype.OnMouseMove = function (event)
-{
-	this.mouse.Move (event, this.canvas);
-	if (!this.mouse.down) {
-		return;
-	}
-	
-	var ratio = -0.5;
-	this.camera.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
-	this.Draw ();
-};
-
-JSM.SpriteViewer.prototype.OnMouseUp = function (event)
-{
-	this.mouse.Up (event, this.canvas);
-};
-
-JSM.SpriteViewer.prototype.OnMouseOut = function (event)
-{
-	this.mouse.Out (event, this.canvas);
-};
-
-JSM.SpriteViewer.prototype.OnMouseWheel = function (event)
-{
-	var eventParameters = event;
-	if (eventParameters === null) {
-		eventParameters = window.event;
-	}
-	
-	var delta = 0;
-	if (eventParameters.detail) {
-		delta = -eventParameters.detail;
-	} else if (eventParameters.wheelDelta) {
-		delta = eventParameters.wheelDelta / 40;
-	}
-
-	var zoomIn = delta > 0;
-	this.camera.Zoom (zoomIn);
-	this.Draw ();
-};
-
-JSM.SpriteViewer.prototype.OnTouchStart = function (event)
-{
-	this.touch.Start (event, this.canvas);
-};
-
-JSM.SpriteViewer.prototype.OnTouchMove = function (event)
-{
-	this.touch.Move (event, this.canvas);
-	if (!this.touch.down) {
-		return;
-	}
-	
-	var ratio = -0.5;
-	this.camera.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
-	
-	this.Draw ();
-};
-
-JSM.SpriteViewer.prototype.OnTouchEnd = function (event)
-{
-	this.touch.End (event, this.canvas);
 };
