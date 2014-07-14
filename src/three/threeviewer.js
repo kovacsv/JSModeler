@@ -1,4 +1,4 @@
-JSM.Viewer = function ()
+JSM.ThreeViewer = function ()
 {
 	this.canvas = null;
 	
@@ -17,7 +17,7 @@ JSM.Viewer = function ()
 	this.settings = null;
 };
 
-JSM.Viewer.prototype.Start = function (canvasName, settings)
+JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
 {
 	if (!this.IsWebGLEnabled ()) {
 		return false;
@@ -50,7 +50,7 @@ JSM.Viewer.prototype.Start = function (canvasName, settings)
 	return true;
 };
 
-JSM.Viewer.prototype.IsWebGLEnabled = function ()
+JSM.ThreeViewer.prototype.IsWebGLEnabled = function ()
 {
 	if (!window.WebGLRenderingContext) {
 		return false;
@@ -63,15 +63,15 @@ JSM.Viewer.prototype.IsWebGLEnabled = function ()
 	return true;
 };
 
-JSM.Viewer.prototype.InitSettings = function (settings)
+JSM.ThreeViewer.prototype.InitSettings = function (settings)
 {
 	this.settings = {
-		cameraEyePosition : [1.0, 1.0, 1.0],
-		cameraCenterPosition : [0.0, 0.0, 0.0],
-		cameraUpVector : [0.0, 0.0, 1.0],
+		cameraEyePosition : new JSM.Coord (1.0, 1.0, 1.0),
+		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
+		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
 		cameraFixUp : true,
-		cameraDisableOrbit : false,
-		cameraDisableZoom : false,
+		cameraEnableOrbit : true,
+		cameraEnableZoom : true,
 		fieldOfView : 45.0,
 		nearClippingPlane : 0.1,
 		farClippingPlane : 1000.0,
@@ -81,12 +81,12 @@ JSM.Viewer.prototype.InitSettings = function (settings)
 	};
 
 	if (settings !== undefined) {
-		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = settings.cameraEyePosition; }
-		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = settings.cameraCenterPosition; }
-		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = settings.cameraUpVector; }
+		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = JSM.CoordFromArray (settings.cameraEyePosition); }
+		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = JSM.CoordFromArray (settings.cameraCenterPosition); }
+		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = JSM.CoordFromArray (settings.cameraUpVector); }
 		if (settings.cameraFixUp !== undefined) { this.settings.cameraFixUp = settings.cameraFixUp; }
-		if (settings.cameraDisableOrbit !== undefined) { this.settings.cameraDisableOrbit = settings.cameraDisableOrbit; }
-		if (settings.cameraDisableZoom !== undefined) { this.settings.cameraDisableZoom = settings.cameraDisableZoom; }
+		if (settings.cameraEnableOrbit !== undefined) { this.settings.cameraEnableOrbit = settings.cameraEnableOrbit; }
+		if (settings.cameraEnableZoom !== undefined) { this.settings.cameraEnableZoom = settings.cameraEnableZoom; }
 		if (settings.fieldOfView !== undefined) { this.settings.fieldOfView = settings.fieldOfView; }
 		if (settings.nearClippingPlane !== undefined) { this.settings.nearClippingPlane = settings.nearClippingPlane; }
 		if (settings.farClippingPlane !== undefined) { this.settings.farClippingPlane = settings.farClippingPlane; }
@@ -98,7 +98,7 @@ JSM.Viewer.prototype.InitSettings = function (settings)
 	return true;
 };
 
-JSM.Viewer.prototype.InitThree = function (canvasName)
+JSM.ThreeViewer.prototype.InitThree = function (canvasName)
 {
 	this.canvas = document.getElementById (canvasName);
 	if (!this.canvas || !this.canvas.getContext) {
@@ -123,7 +123,7 @@ JSM.Viewer.prototype.InitThree = function (canvasName)
 	return true;
 };
 
-JSM.Viewer.prototype.InitCamera = function ()
+JSM.ThreeViewer.prototype.InitCamera = function ()
 {
 	this.mouse = new JSM.Mouse ();
 	if (!this.mouse) {
@@ -136,9 +136,6 @@ JSM.Viewer.prototype.InitCamera = function ()
 	}
 
 	this.cameraMove = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
-	this.cameraMove.SetFixUp (this.settings.cameraFixUp);
-	this.cameraMove.SetOrbitEnabled (!this.settings.cameraDisableOrbit);
-	this.cameraMove.SetZoomEnabled (!this.settings.cameraDisableZoom);
 	if (!this.cameraMove) {
 		return false;
 	}
@@ -152,7 +149,7 @@ JSM.Viewer.prototype.InitCamera = function ()
 	return true;
 };
 
-JSM.Viewer.prototype.InitLights = function ()
+JSM.ThreeViewer.prototype.InitLights = function ()
 {
 	var ambientColor = new THREE.Color ();
 	var diffuseColor = new THREE.Color ();
@@ -176,7 +173,7 @@ JSM.Viewer.prototype.InitLights = function ()
 	return true;
 };
 
-JSM.Viewer.prototype.InitEvents = function ()
+JSM.ThreeViewer.prototype.InitEvents = function ()
 {
 	var myThis = this;
 	
@@ -197,23 +194,23 @@ JSM.Viewer.prototype.InitEvents = function ()
 	return true;
 };
 
-JSM.Viewer.prototype.SetRunBeforeRender = function (runBeforeRender)
+JSM.ThreeViewer.prototype.SetRunBeforeRender = function (runBeforeRender)
 {
 	this.runBeforeRender = runBeforeRender;
 };
 
-JSM.Viewer.prototype.SetRunAfterRender = function (runAfterRender)
+JSM.ThreeViewer.prototype.SetRunAfterRender = function (runAfterRender)
 {
 	this.runAfterRender = runAfterRender;
 };
 
-JSM.Viewer.prototype.AddMesh = function (mesh)
+JSM.ThreeViewer.prototype.AddMesh = function (mesh)
 {
 	this.scene.add (mesh);
 	this.DrawIfNeeded ();
 };
 
-JSM.Viewer.prototype.AddMeshes = function (meshes)
+JSM.ThreeViewer.prototype.AddMeshes = function (meshes)
 {
 	var i;
 	for (i = 0; i < meshes.length; i++) {
@@ -222,7 +219,7 @@ JSM.Viewer.prototype.AddMeshes = function (meshes)
 	this.DrawIfNeeded ();
 };
 
-JSM.Viewer.prototype.MeshCount = function ()
+JSM.ThreeViewer.prototype.MeshCount = function ()
 {
 	var count = 0;
 	
@@ -235,7 +232,7 @@ JSM.Viewer.prototype.MeshCount = function ()
 	return count;
 };
 
-JSM.Viewer.prototype.VertexCount = function ()
+JSM.ThreeViewer.prototype.VertexCount = function ()
 {
 	var count = 0;
 	
@@ -248,7 +245,7 @@ JSM.Viewer.prototype.VertexCount = function ()
 	return count;
 };
 
-JSM.Viewer.prototype.FaceCount = function ()
+JSM.ThreeViewer.prototype.FaceCount = function ()
 {
 	var count = 0;
 	
@@ -261,7 +258,7 @@ JSM.Viewer.prototype.FaceCount = function ()
 	return count;
 };
 
-JSM.Viewer.prototype.GetMesh = function (index)
+JSM.ThreeViewer.prototype.GetMesh = function (index)
 {
 	var current = null;
 	var currIndex = 0;
@@ -280,13 +277,13 @@ JSM.Viewer.prototype.GetMesh = function (index)
 	return null;
 };
 
-JSM.Viewer.prototype.RemoveMesh = function (mesh)
+JSM.ThreeViewer.prototype.RemoveMesh = function (mesh)
 {
 	this.scene.remove (mesh);
 	this.DrawIfNeeded ();
 };
 
-JSM.Viewer.prototype.RemoveMeshes = function ()
+JSM.ThreeViewer.prototype.RemoveMeshes = function ()
 {
 	var current;
 	var i;
@@ -301,7 +298,7 @@ JSM.Viewer.prototype.RemoveMeshes = function ()
 	this.DrawIfNeeded ();
 };
 
-JSM.Viewer.prototype.RemoveLastMesh = function ()
+JSM.ThreeViewer.prototype.RemoveLastMesh = function ()
 {
 	var found = null;
 	
@@ -318,29 +315,29 @@ JSM.Viewer.prototype.RemoveLastMesh = function ()
 	this.DrawIfNeeded ();
 };
 
-JSM.Viewer.prototype.SetCamera = function (eye, center, up)
+JSM.ThreeViewer.prototype.SetCamera = function (eye, center, up)
 {
 	this.cameraMove.Set (eye, center, up);
 	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
 	this.DrawIfNeeded ();
 };
 
-JSM.Viewer.prototype.EnableCameraFixUp = function (enable)
+JSM.ThreeViewer.prototype.EnableCameraFixUp = function (enable)
 {
-	this.cameraMove.SetFixUp (enable);
+	this.settings.cameraFixUp = enable;
 };
 
-JSM.Viewer.prototype.EnableCameraOrbit = function (enable)
+JSM.ThreeViewer.prototype.EnableCameraOrbit = function (enable)
 {
-	this.cameraMove.SetOrbitEnabled (enable);
+	this.settings.cameraEnableOrbit = enable;
 };
 
-JSM.Viewer.prototype.EnableCameraZoom = function (enable)
+JSM.ThreeViewer.prototype.EnableCameraZoom = function (enable)
 {
-	this.cameraMove.SetZoomEnabled (enable);
+	this.settings.cameraEnableZoom = enable;
 };
 
-JSM.Viewer.prototype.Resize = function ()
+JSM.ThreeViewer.prototype.Resize = function ()
 {
 	this.camera.aspect = this.canvas.width / this.canvas.height;
 	this.camera.updateProjectionMatrix ();
@@ -348,14 +345,14 @@ JSM.Viewer.prototype.Resize = function ()
 	this.DrawIfNeeded ();
 };
 
-JSM.Viewer.prototype.FitInWindow = function ()
+JSM.ThreeViewer.prototype.FitInWindow = function ()
 {
 	var center = this.GetCenter ();
 	var radius = this.GetBoundingSphereRadius ();
 	this.FitInWindowWithCenterAndRadius (center, radius);
 };
 
-JSM.Viewer.prototype.FitInWindowWithCenterAndRadius = function (center, radius)
+JSM.ThreeViewer.prototype.FitInWindowWithCenterAndRadius = function (center, radius)
 {
 	var offsetToOrigo = JSM.CoordSub (this.cameraMove.center, center);
 	this.cameraMove.origo = center;
@@ -374,14 +371,14 @@ JSM.Viewer.prototype.FitInWindowWithCenterAndRadius = function (center, radius)
 	this.DrawIfNeeded ();
 };
 
-JSM.Viewer.prototype.GetCenter = function ()
+JSM.ThreeViewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
 	var center = JSM.MidCoord (boundingBox[0], boundingBox[1]);
 	return center;
 };
 
-JSM.Viewer.prototype.GetBoundingBox = function ()
+JSM.ThreeViewer.prototype.GetBoundingBox = function ()
 {
 	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
 	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
@@ -407,7 +404,7 @@ JSM.Viewer.prototype.GetBoundingBox = function ()
 	return [min, max];
 };
 
-JSM.Viewer.prototype.GetBoundingSphereRadius = function ()
+JSM.ThreeViewer.prototype.GetBoundingSphereRadius = function ()
 {
 	var center = this.GetCenter ();
 	var radius = 0.0;
@@ -431,7 +428,7 @@ JSM.Viewer.prototype.GetBoundingSphereRadius = function ()
 	return radius;
 };
 
-JSM.Viewer.prototype.GetObjectsUnderPosition = function (x, y)
+JSM.ThreeViewer.prototype.GetObjectsUnderPosition = function (x, y)
 {
 	var mouseX = (x / this.canvas.width) * 2 - 1;
 	var mouseY = -(y / this.canvas.height) * 2 + 1;
@@ -447,17 +444,17 @@ JSM.Viewer.prototype.GetObjectsUnderPosition = function (x, y)
 	return ray.intersectObjects (this.scene.children);
 };
 
-JSM.Viewer.prototype.GetObjectsUnderMouse = function ()
+JSM.ThreeViewer.prototype.GetObjectsUnderMouse = function ()
 {
 	return this.GetObjectsUnderPosition (this.mouse.currX, this.mouse.currY);
 };
 
-JSM.Viewer.prototype.GetObjectsUnderTouch = function ()
+JSM.ThreeViewer.prototype.GetObjectsUnderTouch = function ()
 {
 	return this.GetObjectsUnderPosition (this.touch.currX, this.touch.currY);
 };
 
-JSM.Viewer.prototype.ProjectVector = function (x, y, z)
+JSM.ThreeViewer.prototype.ProjectVector = function (x, y, z)
 {
 	var width = this.canvas.width;
 	var height = this.canvas.height;
@@ -472,7 +469,7 @@ JSM.Viewer.prototype.ProjectVector = function (x, y, z)
 	return vector;
 };
 
-JSM.Viewer.prototype.Draw = function ()
+JSM.ThreeViewer.prototype.Draw = function ()
 {
 	if (this.runBeforeRender !== null) {
 		this.runBeforeRender ();
@@ -488,26 +485,26 @@ JSM.Viewer.prototype.Draw = function ()
 	}
 };
 
-JSM.Viewer.prototype.DrawIfNeeded = function ()
+JSM.ThreeViewer.prototype.DrawIfNeeded = function ()
 {
 	if (!this.settings.autoUpdate) {
 		this.Draw ();
 	}
 };
 
-JSM.Viewer.prototype.AutoUpdate = function ()
+JSM.ThreeViewer.prototype.AutoUpdate = function ()
 {
 	this.Draw ();
 	requestAnimationFrame (this.AutoUpdate.bind (this));
 };
 
-JSM.Viewer.prototype.OnMouseDown = function (event)
+JSM.ThreeViewer.prototype.OnMouseDown = function (event)
 {
 	event.preventDefault ();
 	this.mouse.Down (event, this.canvas);
 };
 
-JSM.Viewer.prototype.OnMouseMove = function (event)
+JSM.ThreeViewer.prototype.OnMouseMove = function (event)
 {
 	event.preventDefault ();
 	this.mouse.Move (event, this.canvas);
@@ -515,30 +512,30 @@ JSM.Viewer.prototype.OnMouseMove = function (event)
 		return;
 	}
 	
-	if (this.settings.cameraDisableOrbit) {
+	if (!this.settings.cameraEnableOrbit) {
 		return;
 	}
 	
 	var ratio = -0.5;
-	this.cameraMove.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
+	this.cameraMove.Orbit (this.settings.cameraFixUp, this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 	
 	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
 	this.DrawIfNeeded ();
 };
 
-JSM.Viewer.prototype.OnMouseUp = function (event)
+JSM.ThreeViewer.prototype.OnMouseUp = function (event)
 {
 	event.preventDefault ();
 	this.mouse.Up (event, this.canvas);
 };
 
-JSM.Viewer.prototype.OnMouseOut = function (event)
+JSM.ThreeViewer.prototype.OnMouseOut = function (event)
 {
 	event.preventDefault ();
 	this.mouse.Out (event, this.canvas);
 };
 
-JSM.Viewer.prototype.OnMouseWheel = function (event)
+JSM.ThreeViewer.prototype.OnMouseWheel = function (event)
 {
 	event.preventDefault ();
 	var eventParameters = event;
@@ -546,7 +543,7 @@ JSM.Viewer.prototype.OnMouseWheel = function (event)
 		eventParameters = window.event;
 	}
 	
-	if (this.settings.cameraDisableZoom) {
+	if (!this.settings.cameraEnableZoom) {
 		return;
 	}
 	
@@ -563,13 +560,13 @@ JSM.Viewer.prototype.OnMouseWheel = function (event)
 	this.DrawIfNeeded ();
 };
 
-JSM.Viewer.prototype.OnTouchStart = function (event)
+JSM.ThreeViewer.prototype.OnTouchStart = function (event)
 {
 	event.preventDefault ();
 	this.touch.Start (event, this.canvas);
 };
 
-JSM.Viewer.prototype.OnTouchMove = function (event)
+JSM.ThreeViewer.prototype.OnTouchMove = function (event)
 {
 	event.preventDefault ();
 	this.touch.Move (event, this.canvas);
@@ -577,18 +574,18 @@ JSM.Viewer.prototype.OnTouchMove = function (event)
 		return;
 	}
 	
-	if (this.settings.cameraDisableOrbit) {
+	if (!this.settings.cameraEnableOrbit) {
 		return;
 	}
 
 	var ratio = -0.5;
-	this.cameraMove.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
+	this.cameraMove.Orbit (this.settings.cameraFixUp, this.touch.diffX * ratio, this.touch.diffY * ratio);
 	
 	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
 	this.DrawIfNeeded ();
 };
 
-JSM.Viewer.prototype.OnTouchEnd = function (event)
+JSM.ThreeViewer.prototype.OnTouchEnd = function (event)
 {
 	event.preventDefault ();
 	this.touch.End (event, this.canvas);

@@ -283,7 +283,7 @@
 				cameraEyePosition : [14.0, -14.0, 16.0],
 				cameraCenterPosition : [4.5, 4.5, 4.5],
 				cameraUpVector : [0.0, 0.0, 1.0],
-				cameraDisableZoom : true
+				cameraEnableZoom : false
 			};
 
 			var canvas = document.getElementById ('example');
@@ -297,7 +297,7 @@
 			}
 			
 			error = false;
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			if (!viewer.Start ('example', viewerSettings)) {
 				document.body.innerHTML = '';
 				alert ('Your browser does not support WebGL.');

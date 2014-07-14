@@ -8,12 +8,9 @@
 */
 JSM.Camera = function (eye, center, up)
 {
-	this.eye = new JSM.Coord (eye[0], eye[1], eye[2]);
-	this.center = new JSM.Coord (center[0], center[1], center[2]);
-	this.up = new JSM.Vector (up[0], up[1], up[2]);
-	this.fixUp = true;
-	this.orbit = true;
-	this.zoom = true;
+	this.eye = eye;
+	this.center = center;
+	this.up = up;
 };
 
 /**
@@ -26,42 +23,9 @@ JSM.Camera = function (eye, center, up)
 */
 JSM.Camera.prototype.Set = function (eye, center, up)
 {
-	this.eye = new JSM.Coord (eye[0], eye[1], eye[2]);
-	this.center = new JSM.Coord (center[0], center[1], center[2]);
-	this.up = new JSM.Coord (up[0], up[1], up[2]);
-};
-
-/**
-* Function: Camera.SetFixUp
-* Description: Sets if the camera has fix up when orbiting.
-* Parameters:
-*	fixUp {boolean} the value
-*/
-JSM.Camera.prototype.SetFixUp = function (fixUp)
-{
-	this.fixUp = fixUp;
-};
-
-/**
-* Function: Camera.SetOrbitEnabled
-* Description: Sets if the orbit is enabled.
-* Parameters:
-*	orbit {boolean} the value
-*/
-JSM.Camera.prototype.SetOrbitEnabled = function (orbit)
-{
-	this.orbit = orbit;
-};
-
-/**
-* Function: Camera.SetZoomEnabled
-* Description: Sets if the zoom is enabled.
-* Parameters:
-*	zoom {boolean} the value
-*/
-JSM.Camera.prototype.SetZoomEnabled = function (zoom)
-{
-	this.zoom = zoom;
+	this.eye = eye;
+	this.center = center;
+	this.up = up;
 };
 
 /**
@@ -72,10 +36,6 @@ JSM.Camera.prototype.SetZoomEnabled = function (zoom)
 */
 JSM.Camera.prototype.Zoom = function (zoomIn)
 {
-	if (!this.zoom) {
-		return;
-	}
-
 	var direction = JSM.CoordSub (this.center, this.eye);
 	var distance = JSM.VectorLength (direction);
 	if (zoomIn && distance < 0.1) {
@@ -94,22 +54,19 @@ JSM.Camera.prototype.Zoom = function (zoomIn)
 * Function: Camera.Orbit
 * Description: Orbits the camera with given angles.
 * Parameters:
+*	fixUp {boolean} do orbit with fixed up vector
 *	angleX {number} x angle of orbit
 *	angleY {number} y angle of orbit
 */
-JSM.Camera.prototype.Orbit = function (angleX, angleY)
+JSM.Camera.prototype.Orbit = function (fixUp, angleX, angleY)
 {
-	if (!this.orbit) {
-		return;
-	}
-
 	var radAngleX = angleX * JSM.DegRad;
 	var radAngleY = angleY * JSM.DegRad;
 	
 	var viewDirection = JSM.VectorNormalize (JSM.CoordSub (this.center, this.eye));
 	var horizontalDirection = JSM.VectorNormalize (JSM.VectorCross (viewDirection, this.up));
 
-	if (this.fixUp) {
+	if (fixUp) {
 		var originalAngle = JSM.GetVectorsAngle (viewDirection, this.up);
 		var angleLimit = 5.0 * JSM.DegRad;
 		var skipVertical = (radAngleY < 0 && originalAngle > Math.PI - angleLimit) || (radAngleY > 0 && originalAngle < angleLimit);
@@ -137,7 +94,5 @@ JSM.Camera.prototype.Clone = function ()
 	result.eye = this.eye;
 	result.center = this.center;
 	result.up = this.up;
-	result.orbit = this.orbit;
-	result.zoom = this.zoom;
 	return result;
 };

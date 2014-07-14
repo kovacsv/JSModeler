@@ -127,7 +127,7 @@ AddTest ('ViewerTest', function (test)
 	canvas.style.display = 'none';
 	document.body.appendChild (canvas);
 	
-	var viewer = new JSM.Viewer ();
+	var viewer = new JSM.ThreeViewer ();
 	var result = viewer.Start ('example', viewerSettings);
 	test.Assert (result);
 	

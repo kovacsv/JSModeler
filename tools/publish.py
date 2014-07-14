@@ -8,6 +8,8 @@ os.chdir (currentPath)
 def Main ():
 	result = 0
 	if result == 0:
+		result = os.system ('checkdependencies.py');
+	if result == 0:
 		result = os.system ('jshint.py');
 	if result == 0:
 		result = os.system ('build.py');

@@ -4,17 +4,11 @@ JSM.Renderer = function ()
 	this.context = null;
 	this.shader = null;
 	
-	this.projectionMatrix = null;
-	this.viewMatrix = null;
-	
-	this.eye = null;
-	this.center = null;
-	this.up = null;
-	
+	this.camera = null;
 	this.geometries = null;
 };
 
-JSM.Renderer.prototype.Init = function (canvasName)
+JSM.Renderer.prototype.Init = function (canvasName, settings)
 {
 	if (!this.InitContext (canvasName)) {
 		return false;
@@ -28,8 +22,39 @@ JSM.Renderer.prototype.Init = function (canvasName)
 		return false;
 	}
 
+	if (!this.InitSettings (settings)) {
+		return false;
+	}
+
 	if (!this.InitView ()) {
 		return false;
+	}
+
+	return true;
+};
+
+JSM.Renderer.prototype.InitSettings = function (settings)
+{
+	this.settings = {
+		cameraEyePosition : new JSM.Coord (1.0, 1.0, 1.0),
+		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
+		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
+		fieldOfView : 45.0,
+		nearClippingPlane : 0.1,
+		farClippingPlane : 1000.0,
+		lightAmbientColor : [0.5, 0.5, 0.5],
+		lightDiffuseColor : [0.5, 0.5, 0.5]
+	};
+
+	if (settings !== undefined) {
+		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = settings.cameraEyePosition; }
+		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = settings.cameraCenterPosition; }
+		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = settings.cameraUpVector; }
+		if (settings.fieldOfView !== undefined) { this.settings.fieldOfView = settings.fieldOfView; }
+		if (settings.nearClippingPlane !== undefined) { this.settings.nearClippingPlane = settings.nearClippingPlane; }
+		if (settings.farClippingPlane !== undefined) { this.settings.farClippingPlane = settings.farClippingPlane; }
+		if (settings.lightAmbientColor !== undefined) { this.settings.lightAmbientColor = settings.lightAmbientColor; }
+		if (settings.lightDiffuseColor !== undefined) { this.settings.lightDiffuseColor = settings.lightDiffuseColor; }
 	}
 
 	return true;
@@ -146,24 +171,16 @@ JSM.Renderer.prototype.InitShaders = function ()
 
 JSM.Renderer.prototype.InitBuffers = function ()
 {
-	this.projectionMatrix = JSM.MatrixIdentity ();
-	this.viewMatrix = JSM.MatrixIdentity ();
-
 	this.geometries = [];
 	return true;
 };
 
 JSM.Renderer.prototype.InitView = function ()
 {
-	this.eye = new JSM.Coord (1, 3, 2);
-	this.center = new JSM.Coord (0, 0, 0);
-	this.up = new JSM.Coord (0, 0, 1);
+	this.camera = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
 
-	this.projectionMatrix = JSM.MatrixPerspective (45.0 * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, 0.1, 1000.0);
-	this.context.uniformMatrix4fv (this.shader.pMatrixUniform, false, this.projectionMatrix);
-
-	this.context.uniform3f (this.shader.ambientLightColorUniform, 0.5, 0.5, 0.5);
-	this.context.uniform3f (this.shader.directionalLightColorUniform, 0.5, 0.5, 0.5);
+	this.context.uniform3f (this.shader.ambientLightColorUniform, this.settings.lightAmbientColor[0], this.settings.lightAmbientColor[1], this.settings.lightAmbientColor[2]);
+	this.context.uniform3f (this.shader.directionalLightColorUniform, this.settings.lightDiffuseColor[0], this.settings.lightDiffuseColor[1], this.settings.lightDiffuseColor[2]);
 	
 	return true;
 };
@@ -183,18 +200,21 @@ JSM.Renderer.prototype.Render = function ()
 	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	
-	var lightDirection = JSM.CoordSub (this.eye, this.center);
+	var lightDirection = JSM.CoordSub (this.camera.eye, this.camera.center);
 	this.context.uniform3f (this.shader.lightDirectionUniform, lightDirection.x, lightDirection.y, lightDirection.z);
 	
-	this.viewMatrix = JSM.MatrixView (this.eye, this.center, this.up);
+	var projectionMatrix = JSM.MatrixPerspective (this.settings.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.settings.nearClippingPlane, this.settings.farClippingPlane);
+	this.context.uniformMatrix4fv (this.shader.pMatrixUniform, false, projectionMatrix);
+
+	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
 	var modelViewMatrix = JSM.MatrixIdentity ();
 	
 	var i, ambientColor, diffuseColor, currentGeometry, currentVertexBuffer, currentNormalBuffer;
 	for (i = 0; i < this.geometries.length; i++) {
 		currentGeometry = this.geometries[i];
 	
-		modelViewMatrix = JSM.MatrixMultiply (currentGeometry.GetTransformation (), this.viewMatrix);
-		this.context.uniformMatrix4fv (this.shader.vMatrixUniform, false, this.viewMatrix);
+		modelViewMatrix = JSM.MatrixMultiply (currentGeometry.GetTransformation (), viewMatrix);
+		this.context.uniformMatrix4fv (this.shader.vMatrixUniform, false, viewMatrix);
 		this.context.uniformMatrix4fv (this.shader.mvMatrixUniform, false, modelViewMatrix);
 
 		ambientColor = currentGeometry.material.ambient;

@@ -13,10 +13,10 @@
 	<script type="text/javascript" src="../../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../../src/core/timer.js"></script>
 	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
-	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
-	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coordsystemutils.js"></script>
 	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
@@ -52,12 +52,17 @@
 	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
 	<script type="text/javascript" src="../../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../../src/extras/surfaces.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/rendergeometry.js"></script>
+	<script type="text/javascript" src="../../src/renderer/converter.js"></script>
 	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/navigation.js"></script>
 	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
 	<script type="text/javascript" src="../../src/viewer/spriteviewer.js"></script>
-	<script type="text/javascript" src="../../src/three/converter.js"></script>
-	<script type="text/javascript" src="../../src/three/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
 
 	<script type="text/javascript" src="include/stephandler.js"></script>
@@ -83,9 +88,9 @@
 		{
 			var info = document.getElementById ('info');
 			info.innerHTML = '';
-			info.innerHTML += 'fixUp: ' + viewer.cameraMove.fixUp + ', ';
-			info.innerHTML += 'orbit: ' + viewer.cameraMove.orbit + ', ';
-			info.innerHTML += 'zoom: ' + viewer.cameraMove.zoom;
+			info.innerHTML += 'fixUp: ' + viewer.settings.cameraFixUp + ', ';
+			info.innerHTML += 'orbit: ' + viewer.settings.cameraEnableOrbit + ', ';
+			info.innerHTML += 'zoom: ' + viewer.settings.cameraEnableZoom;
 		}
 		
 		function Reset1 ()
@@ -108,19 +113,19 @@
 
 		function SwitchFixUp ()
 		{
-			viewer.EnableCameraFixUp (!viewer.cameraMove.fixUp);
+			viewer.EnableCameraFixUp (!viewer.settings.cameraFixUp);
 			WriteCameraInfo ();
 		}
 		
 		function SwitchOrbit ()
 		{
-			viewer.EnableCameraOrbit (!viewer.cameraMove.orbit);
+			viewer.EnableCameraOrbit (!viewer.settings.cameraEnableOrbit);
 			WriteCameraInfo ();
 		}
 
 		function SwitchZoom ()
 		{
-			viewer.EnableCameraZoom (!viewer.cameraMove.zoom);
+			viewer.EnableCameraZoom (!viewer.settings.cameraEnableZoom);
 			WriteCameraInfo ();
 		}
 
@@ -135,7 +140,7 @@
 				cameraUpVector : [0.0, 0.0, 1.0]
 			};
 
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			if (!viewer.Start ('test', viewerSettings)) {
 				return;
 			}

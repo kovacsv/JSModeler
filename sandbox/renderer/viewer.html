@@ -6,10 +6,7 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="framework/test.css">
-
-	<script type="text/javascript" src="framework/test.js"></script>
-	
+	<script type="text/javascript" src="../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../../src/core/timer.js"></script>
@@ -65,16 +62,93 @@
 	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
 	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
-	
-	<script type="text/javascript" src="tests/core.js"></script>
-	<script type="text/javascript" src="tests/geometry.js"></script>
-	<script type="text/javascript" src="tests/modeler.js"></script>
+	<script type="text/javascript" src="rendergeometry.js"></script>
+	<script type="text/javascript" src="renderer.js"></script>
+	<title>Example</title>
 
-	<title>JSModeler Test</title>
+	<script type="text/javascript">
+		var viewer = null;
+		var a = 0.0;
+		
+		var fps = new JSM.FPSCounter ();
+		function Render ()
+		{
+			viewer.renderer.geometries[0].transformation = JSM.MatrixRotationZ (a * JSM.DegRad);
+			viewer.renderer.geometries[1].transformation = JSM.MatrixRotationZ (a * JSM.DegRad);
+			viewer.renderer.geometries[2].transformation = JSM.MatrixRotationZ (a * JSM.DegRad);
+		
+			viewer.Draw ();
+			a += 0.5;
+			requestAnimationFrame (Render);
+			document.getElementById ('fps').innerHTML = 'fps: ' + fps.Get (500);
+		}
+		
+		function Load ()
+		{
+			var settings = {
+				cameraEyePosition : new JSM.Coord (1.0, 3.0, 2.0),
+				cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
+				cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0)
+			};
+
+			viewer = new JSM.Viewer ();
+			if (!viewer.Init ('example', settings)) {
+				alert ('error');
+			}
+
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
+			materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+
+			var body1 = JSM.GenerateCuboid (1.0, 1.0, 1.0);
+			body1.GetPolygon (1).SetMaterialIndex (1);
+			body1.GetPolygon (2).SetMaterialIndex (0);
+			
+			var body2 = JSM.GenerateTorus (0.6, 0.1, 50, 50, 1);
+			body2.Transform (JSM.TranslationTransformation (new JSM.Vector (0, -0.4, 1)));
+			body2.SetPolygonsMaterialIndex (0);
+			
+			var body3 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
+			body3.Transform (JSM.TranslationTransformation (new JSM.Vector (0, 1.4, 1)));
+			body3.SetPolygonsMaterialIndex (1);
+
+			var body4 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
+			body4.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, 1)));
+
+			var body5 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
+			body5.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, 0.5)));
+
+			var model = new JSM.Model ();
+			model.AddBody (body1);
+			model.AddBody (body2);
+			model.AddBody (body3);
+			model.AddBody (body4);
+			model.AddBody (body5);
+
+			var geometries = [];
+			JSM.ConvertModelToRenderGeometries (model, materials, geometries);
+			viewer.AddGeometries (geometries);
+
+			var newGeometries = [];
+			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
+			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));
+			JSM.ConvertBodyToRenderGeometries (body6, materials, newGeometries);
+			viewer.AddGeometries (newGeometries);
+
+			Render ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
 
 </head>
 
 <body>
+	<canvas id="example" width="800" height="500"></canvas>
+	<div id="fps"></div>
 </body>
 
 </html>

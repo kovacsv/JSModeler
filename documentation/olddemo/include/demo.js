@@ -16,7 +16,7 @@ JSMDemo.prototype =
 			cameraUpVector : [0.0, 0.0, 1.0]
 		};
 
-		this.viewer = new JSM.Viewer ();
+		this.viewer = new JSM.ThreeViewer ();
 		this.uiDiv = document.getElementById (uiDivName);
 		this.editor = new Editor ();
 

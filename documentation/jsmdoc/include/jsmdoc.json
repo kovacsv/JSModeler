@@ -238,89 +238,22 @@
 						["number", "the result"]
 					]
 				},
-				"MatrixIdentity" : {
-					"description" : "Generates an identity matrix.",
-					"returns" : [
-						["number[16]", "the result matrix"]
-					]
-				},
-				"MatrixClone" : {
-					"description" : "Clones a matrix.",
+				"CoordFromArray2D" : {
+					"description" : "Returns a coordinate from an array of components.",
 					"parameters" : [
-						["matrix", "number[16]", "the source matrix"]
+						["array", "number[2]", "the array of components"]
 					],
 					"returns" : [
-						["number[16]", "the result matrix"]
+						["Coord2D", "the result"]
 					]
 				},
-				"MatrixRotationX" : {
-					"description" : "Creates a rotation matrix around the x axis.",
+				"CoordFromArray" : {
+					"description" : "Returns a coordinate from an array of components.",
 					"parameters" : [
-						["angle", "number", "the angle of rotation"]
+						["array", "number[3]", "the array of components"]
 					],
 					"returns" : [
-						["number[16]", "the result matrix"]
-					]
-				},
-				"MatrixRotationY" : {
-					"description" : "Creates a rotation matrix around the y axis.",
-					"parameters" : [
-						["angle", "number", "the angle of rotation"]
-					],
-					"returns" : [
-						["number[16]", "the result matrix"]
-					]
-				},
-				"MatrixRotationZ" : {
-					"description" : "Creates a rotation matrix around the z axis.",
-					"parameters" : [
-						["angle", "number", "the angle of rotation"]
-					],
-					"returns" : [
-						["number[16]", "the result matrix"]
-					]
-				},
-				"MatrixView" : {
-					"description" : "Creates a view matrix.",
-					"parameters" : [
-						["eye", "Coord", "eye position"],
-						["center", "Coord", "center position"],
-						["up", "Vector", "up vector"]
-					],
-					"returns" : [
-						["number[16]", "the result matrix"]
-					]
-				},
-				"MatrixPerspective" : {
-					"description" : "Creates a perspective matrix.",
-					"parameters" : [
-						["fieldOfView", "number", "field of view"],
-						["aspectRatio", "number", "aspect ratio"],
-						["nearPlane", "number", "near clipping plane"],
-						["farPlane", "number", "far clipping plane"]
-					],
-					"returns" : [
-						["number[16]", "the result matrix"]
-					]
-				},
-				"VectorMatrixMultiply" : {
-					"description" : "Multiplies a vector with a matrix.",
-					"parameters" : [
-						["vector", "number[4]", "the vector"],
-						["matrix", "number[16]", "the matrix"]
-					],
-					"returns" : [
-						["number[4]", "the result vector"]
-					]
-				},
-				"MatrixMultiply" : {
-					"description" : "Multiplies a two matrices.",
-					"parameters" : [
-						["matrix1", "number[16]", "first matrix"],
-						["matrix2", "number[16]", "second matrix"]
-					],
-					"returns" : [
-						["number[16]", "the result matrix"]
+						["Coord", "the result"]
 					]
 				},
 				"CoordIsEqual2D" : {
@@ -726,6 +659,91 @@
 					],
 					"returns" : [
 						["number", "the result"]
+					]
+				},
+				"MatrixIdentity" : {
+					"description" : "Generates an identity matrix.",
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixClone" : {
+					"description" : "Clones a matrix.",
+					"parameters" : [
+						["matrix", "number[16]", "the source matrix"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixRotationX" : {
+					"description" : "Creates a rotation matrix around the x axis.",
+					"parameters" : [
+						["angle", "number", "the angle of rotation"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixRotationY" : {
+					"description" : "Creates a rotation matrix around the y axis.",
+					"parameters" : [
+						["angle", "number", "the angle of rotation"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixRotationZ" : {
+					"description" : "Creates a rotation matrix around the z axis.",
+					"parameters" : [
+						["angle", "number", "the angle of rotation"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixView" : {
+					"description" : "Creates a view matrix.",
+					"parameters" : [
+						["eye", "Coord", "eye position"],
+						["center", "Coord", "center position"],
+						["up", "Vector", "up vector"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixPerspective" : {
+					"description" : "Creates a perspective matrix.",
+					"parameters" : [
+						["fieldOfView", "number", "field of view"],
+						["aspectRatio", "number", "aspect ratio"],
+						["nearPlane", "number", "near clipping plane"],
+						["farPlane", "number", "far clipping plane"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"VectorMatrixMultiply" : {
+					"description" : "Multiplies a vector with a matrix.",
+					"parameters" : [
+						["vector", "number[4]", "the vector"],
+						["matrix", "number[16]", "the matrix"]
+					],
+					"returns" : [
+						["number[4]", "the result vector"]
+					]
+				},
+				"MatrixMultiply" : {
+					"description" : "Multiplies a two matrices.",
+					"parameters" : [
+						["matrix1", "number[16]", "first matrix"],
+						["matrix2", "number[16]", "second matrix"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
 					]
 				},
 				"CoordSystemToDirectionVectors" : {
@@ -2941,24 +2959,6 @@
 								["up", "Vector", "the up vector"]
 							]
 						},
-						"SetFixUp" : {
-							"description" : "Sets if the camera has fix up when orbiting.",
-							"parameters" : [
-								["fixUp", "boolean", "the value"]
-							]
-						},
-						"SetOrbitEnabled" : {
-							"description" : "Sets if the orbit is enabled.",
-							"parameters" : [
-								["orbit", "boolean", "the value"]
-							]
-						},
-						"SetZoomEnabled" : {
-							"description" : "Sets if the zoom is enabled.",
-							"parameters" : [
-								["zoom", "boolean", "the value"]
-							]
-						},
 						"Zoom" : {
 							"description" : "Moves the camera along the eye-center direction with 10% of the distance.",
 							"parameters" : [
@@ -2968,6 +2968,7 @@
 						"Orbit" : {
 							"description" : "Orbits the camera with given angles.",
 							"parameters" : [
+								["fixUp", "boolean", "do orbit with fixed up vector"],
 								["angleX", "number", "x angle of orbit"],
 								["angleY", "number", "y angle of orbit"]
 							]
@@ -3503,6 +3504,8 @@
 					}
 				}
 			}
+		},
+		"Renderer" : {
 		},
 		"Viewer" : {
 		},
