@@ -11,9 +11,7 @@ JSM.ThreeViewer = function ()
 	this.runAfterRender = null;
 
 	this.cameraMove = null;
-	this.mouse = null;
-	this.touch = null;
-	
+	this.navigation = null;
 	this.settings = null;
 };
 
@@ -39,10 +37,6 @@ JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
 		return false;
 	}
 	
-	if (!this.InitEvents ()) {
-		return false;
-	}
-
 	this.DrawIfNeeded ();
 	if (this.settings.autoUpdate) {
 		this.AutoUpdate ();
@@ -125,18 +119,18 @@ JSM.ThreeViewer.prototype.InitThree = function (canvasName)
 
 JSM.ThreeViewer.prototype.InitCamera = function ()
 {
-	this.mouse = new JSM.Mouse ();
-	if (!this.mouse) {
-		return false;
-	}
-
-	this.touch = new JSM.Touch ();
-	if (!this.touch) {
-		return false;
-	}
-
 	this.cameraMove = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
 	if (!this.cameraMove) {
+		return false;
+	}
+
+	this.navigation = new JSM.Navigation ();
+	var navigationSettings = {
+		cameraFixUp : this.settings.cameraFixUp,
+		cameraEnableOrbit : this.settings.cameraEnableOrbit,
+		cameraEnableZoom : this.settings.cameraEnableZoom
+	};
+	if (!this.navigation.Init (navigationSettings, this.canvas, this.cameraMove, this.DrawIfNeeded.bind (this))) {
 		return false;
 	}
 	
@@ -170,27 +164,6 @@ JSM.ThreeViewer.prototype.InitLights = function ()
 	
 	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
 	this.scene.add (this.directionalLight);
-	return true;
-};
-
-JSM.ThreeViewer.prototype.InitEvents = function ()
-{
-	var myThis = this;
-	
-	if (document.addEventListener) {
-		document.addEventListener ('mousemove', function (event) {myThis.OnMouseMove (event);});
-		document.addEventListener ('mouseup', function (event) {myThis.OnMouseUp (event);});
-	}
-
-	if (this.canvas.addEventListener) {
-		this.canvas.addEventListener ('mousedown', function (event) {myThis.OnMouseDown (event);}, false);
-		this.canvas.addEventListener ('DOMMouseScroll', function (event) {myThis.OnMouseWheel (event);}, false);
-		this.canvas.addEventListener ('mousewheel', function (event) {myThis.OnMouseWheel (event);}, false);
-		this.canvas.addEventListener ('touchstart', function (event) {myThis.OnTouchStart (event);}, false);
-		this.canvas.addEventListener ('touchmove', function (event) {myThis.OnTouchMove (event);}, false);
-		this.canvas.addEventListener ('touchend', function (event) {myThis.OnTouchEnd (event);}, false);
-	}
-	
 	return true;
 };
 
@@ -446,12 +419,12 @@ JSM.ThreeViewer.prototype.GetObjectsUnderPosition = function (x, y)
 
 JSM.ThreeViewer.prototype.GetObjectsUnderMouse = function ()
 {
-	return this.GetObjectsUnderPosition (this.mouse.currX, this.mouse.currY);
+	return this.GetObjectsUnderPosition (this.navigation.mouse.currX, this.navigation.mouse.currY);
 };
 
 JSM.ThreeViewer.prototype.GetObjectsUnderTouch = function ()
 {
-	return this.GetObjectsUnderPosition (this.touch.currX, this.touch.currY);
+	return this.GetObjectsUnderPosition (this.navigation.touch.currX, this.navigation.touch.currY);
 };
 
 JSM.ThreeViewer.prototype.ProjectVector = function (x, y, z)
@@ -496,97 +469,4 @@ JSM.ThreeViewer.prototype.AutoUpdate = function ()
 {
 	this.Draw ();
 	requestAnimationFrame (this.AutoUpdate.bind (this));
-};
-
-JSM.ThreeViewer.prototype.OnMouseDown = function (event)
-{
-	event.preventDefault ();
-	this.mouse.Down (event, this.canvas);
-};
-
-JSM.ThreeViewer.prototype.OnMouseMove = function (event)
-{
-	event.preventDefault ();
-	this.mouse.Move (event, this.canvas);
-	if (!this.mouse.down) {
-		return;
-	}
-	
-	if (!this.settings.cameraEnableOrbit) {
-		return;
-	}
-	
-	var ratio = -0.5;
-	this.cameraMove.Orbit (this.settings.cameraFixUp, this.mouse.diffX * ratio, this.mouse.diffY * ratio);
-	
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
-	this.DrawIfNeeded ();
-};
-
-JSM.ThreeViewer.prototype.OnMouseUp = function (event)
-{
-	event.preventDefault ();
-	this.mouse.Up (event, this.canvas);
-};
-
-JSM.ThreeViewer.prototype.OnMouseOut = function (event)
-{
-	event.preventDefault ();
-	this.mouse.Out (event, this.canvas);
-};
-
-JSM.ThreeViewer.prototype.OnMouseWheel = function (event)
-{
-	event.preventDefault ();
-	var eventParameters = event;
-	if (eventParameters === null) {
-		eventParameters = window.event;
-	}
-	
-	if (!this.settings.cameraEnableZoom) {
-		return;
-	}
-	
-	var delta = 0;
-	if (eventParameters.detail) {
-		delta = -eventParameters.detail;
-	} else if (eventParameters.wheelDelta) {
-		delta = eventParameters.wheelDelta / 40;
-	}
-
-	var zoomIn = delta > 0;
-	this.cameraMove.Zoom (zoomIn);
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
-	this.DrawIfNeeded ();
-};
-
-JSM.ThreeViewer.prototype.OnTouchStart = function (event)
-{
-	event.preventDefault ();
-	this.touch.Start (event, this.canvas);
-};
-
-JSM.ThreeViewer.prototype.OnTouchMove = function (event)
-{
-	event.preventDefault ();
-	this.touch.Move (event, this.canvas);
-	if (!this.touch.down) {
-		return;
-	}
-	
-	if (!this.settings.cameraEnableOrbit) {
-		return;
-	}
-
-	var ratio = -0.5;
-	this.cameraMove.Orbit (this.settings.cameraFixUp, this.touch.diffX * ratio, this.touch.diffY * ratio);
-	
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
-	this.DrawIfNeeded ();
-};
-
-JSM.ThreeViewer.prototype.OnTouchEnd = function (event)
-{
-	event.preventDefault ();
-	this.touch.End (event, this.canvas);
 };
