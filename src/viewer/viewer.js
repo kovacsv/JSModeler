@@ -3,6 +3,7 @@ JSM.Viewer = function ()
 	this.settings = null;
 	this.canvas = null;
 	this.renderer = null;
+	this.navigation = null;
 };
 
 JSM.Viewer.prototype.Init = function (canvasName, settings)
@@ -66,13 +67,13 @@ JSM.Viewer.prototype.InitRenderer = function (canvasName)
 
 JSM.Viewer.prototype.InitNavigation = function ()
 {
-	var navigation = new JSM.Navigation ();
+	this.navigation = new JSM.Navigation ();
 	var navigationSettings = {
-		cameraFixUp : true,
-		cameraEnableOrbit : true,
-		cameraEnableZoom : true
+		cameraFixUp : this.settings.cameraFixUp,
+		cameraEnableOrbit : this.settings.cameraEnableOrbit,
+		cameraEnableZoom : this.settings.cameraEnableZoom
 	};
-	if (!navigation.Init (navigationSettings, this.renderer.canvas, this.renderer.camera, this.Draw.bind (this))) {
+	if (!this.navigation.Init (navigationSettings, this.renderer.canvas, this.renderer.camera, this.Draw.bind (this))) {
 		return false;
 	}
 	return true;
