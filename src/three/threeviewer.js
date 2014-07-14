@@ -291,7 +291,6 @@ JSM.ThreeViewer.prototype.RemoveLastMesh = function ()
 JSM.ThreeViewer.prototype.SetCamera = function (eye, center, up)
 {
 	this.cameraMove.Set (eye, center, up);
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
 	this.DrawIfNeeded ();
 };
 
@@ -340,7 +339,6 @@ JSM.ThreeViewer.prototype.FitInWindowWithCenterAndRadius = function (center, rad
 	var distance = radius / Math.sin (fieldOfView * JSM.DegRad);
 	
 	this.cameraMove.eye = JSM.CoordOffset (this.cameraMove.center, centerEyeDirection, distance);
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
 	this.DrawIfNeeded ();
 };
 
@@ -451,6 +449,7 @@ JSM.ThreeViewer.prototype.Draw = function ()
 	this.camera.position = new THREE.Vector3 (this.cameraMove.eye.x, this.cameraMove.eye.y, this.cameraMove.eye.z);
 	this.camera.up = new THREE.Vector3 (this.cameraMove.up.x, this.cameraMove.up.y, this.cameraMove.up.z);
 	this.camera.lookAt (new THREE.Vector3 (this.cameraMove.center.x, this.cameraMove.center.y, this.cameraMove.center.z));
+	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
 	this.renderer.render (this.scene, this.camera);
 	
 	if (this.runAfterRender !== null) {

@@ -6,8 +6,7 @@ JSM.SoftwareViewer = function ()
 	this.bodies = null;
 	this.drawer = null;
 	this.drawMode = null;
-	this.mouse = null;
-	this.touch = null;
+	this.navigation = null;
 };
 
 JSM.SoftwareViewer.prototype.Start = function (canvasName, settings)
@@ -57,6 +56,9 @@ JSM.SoftwareViewer.prototype.InitSettings = function (settings)
 		cameraEyePosition : new JSM.Coord (1.0, 1.0, 1.0),
 		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
 		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
+		cameraFixUp : true,
+		cameraEnableOrbit : true,
+		cameraEnableZoom : true,
 		fieldOfView : 45.0,
 		nearClippingPlane : 0.1,
 		farClippingPlane : 1000.0,
@@ -67,6 +69,9 @@ JSM.SoftwareViewer.prototype.InitSettings = function (settings)
 		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = JSM.CoordFromArray (settings.cameraEyePosition); }
 		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = JSM.CoordFromArray (settings.cameraCenterPosition); }
 		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = JSM.CoordFromArray (settings.cameraUpVector); }
+		if (settings.cameraFixUp !== undefined) { this.settings.cameraFixUp = settings.cameraFixUp; }
+		if (settings.cameraEnableOrbit !== undefined) { this.settings.cameraEnableOrbit = settings.cameraEnableOrbit; }
+		if (settings.cameraEnableZoom !== undefined) { this.settings.cameraEnableZoom = settings.cameraEnableZoom; }
 		if (settings.fieldOfView !== undefined) { this.settings.fieldOfView = settings.fieldOfView; }
 		if (settings.nearClippingPlane !== undefined) { this.settings.nearClippingPlane = settings.nearClippingPlane; }
 		if (settings.farClippingPlane !== undefined) { this.settings.farClippingPlane = settings.farClippingPlane; }
@@ -98,20 +103,14 @@ JSM.SoftwareViewer.prototype.InitEvents = function ()
 		return false;
 	}
 
-	var myThis = this;
-	
-	if (document.addEventListener) {
-		document.addEventListener ('mousemove', function (event) {myThis.OnMouseMove (event);});
-		document.addEventListener ('mouseup', function (event) {myThis.OnMouseUp (event);});
-	}
-
-	if (this.canvas.addEventListener) {
-		this.canvas.addEventListener ('mousedown', function (event) {myThis.OnMouseDown (event);}, false);
-		this.canvas.addEventListener ('DOMMouseScroll', function (event) {myThis.OnMouseWheel (event);}, false);
-		this.canvas.addEventListener ('mousewheel', function (event) {myThis.OnMouseWheel (event);}, false);
-		this.canvas.addEventListener ('touchstart', function (event) {myThis.OnTouchStart (event);}, false);
-		this.canvas.addEventListener ('touchmove', function (event) {myThis.OnTouchMove (event);}, false);
-		this.canvas.addEventListener ('touchend', function (event) {myThis.OnTouchEnd (event);}, false);
+	this.navigation = new JSM.Navigation ();
+	var navigationSettings = {
+		cameraFixUp : this.settings.cameraFixUp,
+		cameraEnableOrbit : this.settings.cameraEnableOrbit,
+		cameraEnableZoom : this.settings.cameraEnableZoom
+	};
+	if (!this.navigation.Init (navigationSettings, this.canvas, this.camera, this.Draw.bind (this))) {
+		return false;
 	}
 	
 	return true;
@@ -144,74 +143,4 @@ JSM.SoftwareViewer.prototype.Draw = function ()
 	}
 
 	return true;
-};
-
-JSM.SoftwareViewer.prototype.OnMouseDown = function (event)
-{
-	this.mouse.Down (event);
-};
-
-JSM.SoftwareViewer.prototype.OnMouseMove = function (event)
-{
-	this.mouse.Move (event);
-	if (!this.mouse.down) {
-		return;
-	}
-	
-	var ratio = -0.5;
-	this.camera.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
-	
-	this.Draw ();
-};
-
-JSM.SoftwareViewer.prototype.OnMouseUp = function (event)
-{
-	this.mouse.Up (event);
-};
-
-JSM.SoftwareViewer.prototype.OnMouseOut = function (event)
-{
-	this.mouse.Out (event);
-};
-
-JSM.SoftwareViewer.prototype.OnMouseWheel = function (event)
-{
-	var eventParameters = event;
-	if (eventParameters === null) {
-		eventParameters = window.event;
-	}
-	
-	var delta = 0;
-	if (eventParameters.detail) {
-		delta = -eventParameters.detail;
-	} else if (eventParameters.wheelDelta) {
-		delta = eventParameters.wheelDelta / 40;
-	}
-
-	var zoomIn = delta > 0;
-	this.camera.Zoom (zoomIn);
-	this.Draw ();
-};
-
-JSM.SoftwareViewer.prototype.OnTouchStart = function (event)
-{
-	this.touch.Start (event);
-};
-
-JSM.SoftwareViewer.prototype.OnTouchMove = function (event)
-{
-	this.touch.Move (event);
-	if (!this.touch.down) {
-		return;
-	}
-	
-	var ratio = -0.5;
-	this.camera.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
-	
-	this.Draw ();
-};
-
-JSM.SoftwareViewer.prototype.OnTouchEnd = function (event)
-{
-	this.touch.End (event);
 };

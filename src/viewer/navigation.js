@@ -69,7 +69,6 @@ JSM.Navigation.prototype.OnMouseMove = function (event)
 	var ratio = -0.5;
 	this.camera.Orbit (this.settings.cameraFixUp, this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 	
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.camera.eye, this.camera.center);
 	this.callback ();
 };
 
@@ -106,7 +105,6 @@ JSM.Navigation.prototype.OnMouseWheel = function (event)
 
 	var zoomIn = delta > 0;
 	this.camera.Zoom (zoomIn);
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.camera.eye, this.camera.center);
 	this.callback ();
 };
 
@@ -130,8 +128,6 @@ JSM.Navigation.prototype.OnTouchMove = function (event)
 	
 	var ratio = -0.5;
 	this.camera.Orbit (this.settings.cameraFixUp, this.touch.diffX * ratio, this.touch.diffY * ratio);
-	
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.camera.eye, this.camera.center);
 	this.callback ();
 };
 
