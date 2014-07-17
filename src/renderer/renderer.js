@@ -103,9 +103,24 @@ JSM.Renderer.prototype.InitShaders = function ()
 	}
 
 	var fragmentShaderScript = [
-		'varying highp vec3 vColor;',
+		'uniform highp vec3 uAmbientLightColor;',
+		'uniform highp vec3 uDirectionalLightColor;',
+		'uniform highp vec3 uLightDirection;',
+
+		'uniform highp mat4 uViewMatrix;',
+		'uniform highp mat4 uModelViewMatrix;',
+
+		'uniform highp vec3 uPolygonAmbientColor;',
+		'uniform highp vec3 uPolygonDiffuseColor;',
+
+		'varying highp vec3 vNormal;',
+		
 		'void main (void) {',
-		'	gl_FragColor = vec4 (vColor, 1.0);',
+		'	highp vec3 transformedNormal = normalize (vec3 (uModelViewMatrix * vec4 (vNormal, 0.0)));',
+		'	highp vec3 directionalVector = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
+		'	highp vec3 ambientComponent = uPolygonAmbientColor * uAmbientLightColor;',
+		'	highp vec3 diffuseComponent = uPolygonDiffuseColor * uDirectionalLightColor * max (dot (transformedNormal, directionalVector), 0.0);',
+		'	gl_FragColor = vec4 ((ambientComponent + diffuseComponent), 1.0);',
 		'}'
 		].join('\n');
 	
@@ -113,24 +128,13 @@ JSM.Renderer.prototype.InitShaders = function ()
 		'attribute highp vec3 aVertexPosition;',
 		'attribute highp vec3 aVertexNormal;',
 
-		'uniform highp vec3 uAmbientLightColor;',
-		'uniform highp vec3 uDirectionalLightColor;',
-		'uniform highp vec3 uLightDirection;',
-
-		'uniform highp mat4 uViewMatrix;',
 		'uniform highp mat4 uModelViewMatrix;',
 		'uniform highp mat4 uProjectionMatrix;',
 
-		'uniform highp vec3 uPolygonAmbientColor;',
-		'uniform highp vec3 uPolygonDiffuseColor;',
-		'varying highp vec3 vColor;',
+		'varying highp vec3 vNormal;',
 
 		'void main (void) {',
-		'	highp vec3 directionalVector = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
-		'	highp vec3 transformedNormal = normalize (vec3 (uModelViewMatrix * vec4 (aVertexNormal, 0.0)));',
-		'	vec3 ambientComponent = uPolygonAmbientColor * uAmbientLightColor;',
-		'	vec3 diffuseComponent = uPolygonDiffuseColor * uDirectionalLightColor * max (dot (transformedNormal, directionalVector), 0.0);',
-		'	vColor = (ambientComponent + diffuseComponent);',
+		'	vNormal = aVertexNormal;',
 		'	gl_Position = uProjectionMatrix * uModelViewMatrix * vec4 (aVertexPosition, 1.0);',
 		'}'
 		].join('\n');
