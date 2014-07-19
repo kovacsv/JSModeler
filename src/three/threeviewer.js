@@ -29,7 +29,7 @@ JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
 		return false;
 	}
 
-	if (!this.InitCamera ()) {
+	if (!this.InitCamera (settings)) {
 		return false;
 	}
 
@@ -63,9 +63,6 @@ JSM.ThreeViewer.prototype.InitSettings = function (settings)
 		cameraEyePosition : new JSM.Coord (1.0, 1.0, 1.0),
 		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
 		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
-		cameraFixUp : true,
-		cameraEnableOrbit : true,
-		cameraEnableZoom : true,
 		fieldOfView : 45.0,
 		nearClippingPlane : 0.1,
 		farClippingPlane : 1000.0,
@@ -78,9 +75,6 @@ JSM.ThreeViewer.prototype.InitSettings = function (settings)
 		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = JSM.CoordFromArray (settings.cameraEyePosition); }
 		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = JSM.CoordFromArray (settings.cameraCenterPosition); }
 		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = JSM.CoordFromArray (settings.cameraUpVector); }
-		if (settings.cameraFixUp !== undefined) { this.settings.cameraFixUp = settings.cameraFixUp; }
-		if (settings.cameraEnableOrbit !== undefined) { this.settings.cameraEnableOrbit = settings.cameraEnableOrbit; }
-		if (settings.cameraEnableZoom !== undefined) { this.settings.cameraEnableZoom = settings.cameraEnableZoom; }
 		if (settings.fieldOfView !== undefined) { this.settings.fieldOfView = settings.fieldOfView; }
 		if (settings.nearClippingPlane !== undefined) { this.settings.nearClippingPlane = settings.nearClippingPlane; }
 		if (settings.farClippingPlane !== undefined) { this.settings.farClippingPlane = settings.farClippingPlane; }
@@ -117,7 +111,7 @@ JSM.ThreeViewer.prototype.InitThree = function (canvasName)
 	return true;
 };
 
-JSM.ThreeViewer.prototype.InitCamera = function ()
+JSM.ThreeViewer.prototype.InitCamera = function (settings)
 {
 	this.cameraMove = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
 	if (!this.cameraMove) {
@@ -126,10 +120,15 @@ JSM.ThreeViewer.prototype.InitCamera = function ()
 
 	this.navigation = new JSM.Navigation ();
 	var navigationSettings = {
-		cameraFixUp : this.settings.cameraFixUp,
-		cameraEnableOrbit : this.settings.cameraEnableOrbit,
-		cameraEnableZoom : this.settings.cameraEnableZoom
+		cameraFixUp : true,
+		cameraEnableOrbit : true,
+		cameraEnableZoom : true
 	};
+	if (settings !== undefined) {
+		if (settings.cameraFixUp !== undefined) { navigationSettings.cameraFixUp = settings.cameraFixUp; }
+		if (settings.cameraEnableOrbit !== undefined) { navigationSettings.cameraEnableOrbit = settings.cameraEnableOrbit; }
+		if (settings.cameraEnableZoom !== undefined) { navigationSettings.cameraEnableZoom = settings.cameraEnableZoom; }
+	}
 	if (!this.navigation.Init (navigationSettings, this.canvas, this.cameraMove, this.DrawIfNeeded.bind (this))) {
 		return false;
 	}
@@ -292,21 +291,6 @@ JSM.ThreeViewer.prototype.SetCamera = function (eye, center, up)
 {
 	this.cameraMove.Set (eye, center, up);
 	this.DrawIfNeeded ();
-};
-
-JSM.ThreeViewer.prototype.EnableCameraFixUp = function (enable)
-{
-	this.settings.cameraFixUp = enable;
-};
-
-JSM.ThreeViewer.prototype.EnableCameraOrbit = function (enable)
-{
-	this.settings.cameraEnableOrbit = enable;
-};
-
-JSM.ThreeViewer.prototype.EnableCameraZoom = function (enable)
-{
-	this.settings.cameraEnableZoom = enable;
 };
 
 JSM.ThreeViewer.prototype.Resize = function ()

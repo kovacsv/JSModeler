@@ -198,8 +198,8 @@
 				for (j = 0; j <= m; j++) {
 					point = scp.GetControlPoint (i, j);
 					projected = viewer.ProjectVector (point.x, point.y, point.z);
-					if (Math.abs (projected.x - viewer.mouse.currX) < 10 &&
-						Math.abs (projected.y - viewer.mouse.currY) < 10)
+					if (Math.abs (projected.x - viewer.navigation.mouse.currX) < 10 &&
+						Math.abs (projected.y - viewer.navigation.mouse.currY) < 10)
 					{
 						foundIndices = [i, j];
 						break;
@@ -217,9 +217,9 @@
 				foundIndices : foundIndices,
 				foundVertexIndex : foundVertexIndex,
 				originalVertexPos : foundVertex.clone (),
-				originalMousePos : [viewer.mouse.currX, viewer.mouse.currY]
+				originalMousePos : [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY]
 			};
-			viewer.settings.cameraDisableOrbit = true;
+			viewer.navigation.settings.cameraEnableOrbit = false;
 		}
 		
 		function OnMouseUp (event)
@@ -239,7 +239,7 @@
 			AddBezierSurfaceModel (scp);
 
 			mouseData = null;
-			viewer.settings.cameraDisableOrbit = false;
+			viewer.navigation.settings.cameraEnableOrbit = true;
 		}
 		
 		function OnMouseMove (event)
@@ -248,7 +248,7 @@
 				return;
 			}
 			
-			var currentPos = [viewer.mouse.currX, viewer.mouse.currY];
+			var currentPos = [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY];
 			var ratio = 0.005;
 			var diff = (currentPos[1] - mouseData.originalMousePos[1]) * ratio;
 			var foundVertex = controlPointGeometry.vertices[mouseData.foundVertexIndex];

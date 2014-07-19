@@ -2959,20 +2959,6 @@
 								["up", "Vector", "the up vector"]
 							]
 						},
-						"Zoom" : {
-							"description" : "Moves the camera along the eye-center direction with 10% of the distance.",
-							"parameters" : [
-								["zoomIn", "boolean", "zoom in or out"]
-							]
-						},
-						"Orbit" : {
-							"description" : "Orbits the camera with given angles.",
-							"parameters" : [
-								["fixUp", "boolean", "do orbit with fixed up vector"],
-								["angleX", "number", "x angle of orbit"],
-								["angleY", "number", "y angle of orbit"]
-							]
-						},
 						"Clone" : {
 							"description" : "Clones the camera.",
 							"returns" : [

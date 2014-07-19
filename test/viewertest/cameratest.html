@@ -88,44 +88,44 @@
 		{
 			var info = document.getElementById ('info');
 			info.innerHTML = '';
-			info.innerHTML += 'fixUp: ' + viewer.settings.cameraFixUp + ', ';
-			info.innerHTML += 'orbit: ' + viewer.settings.cameraEnableOrbit + ', ';
-			info.innerHTML += 'zoom: ' + viewer.settings.cameraEnableZoom;
+			info.innerHTML += 'fixUp: ' + viewer.navigation.settings.cameraFixUp + ', ';
+			info.innerHTML += 'orbit: ' + viewer.navigation.settings.cameraEnableOrbit + ', ';
+			info.innerHTML += 'zoom: ' + viewer.navigation.settings.cameraEnableZoom;
 		}
 		
 		function Reset1 ()
 		{
-			viewer.SetCamera ([-7.5, -5.0, 4.0], [-1.5, 0.0, 0.0], [0.0, 0.0, 1.0]);
+			viewer.SetCamera (new JSM.Coord (-7.5, -5.0, 4.0), new JSM.Coord (-1.5, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 			viewer.Draw ();
 		}
 		
 		function Reset2 ()
 		{
-			viewer.SetCamera ([-6.0, -5.0, 4.0], [0.0, 0.0, 0.0], [0.0, 0.0, 1.0]);
+			viewer.SetCamera (new JSM.Coord (-6.0, -5.0, 4.0), new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 			viewer.Draw ();
 		}
 
 		function Reset3 ()
 		{
-			viewer.SetCamera ([-4.5, -5.0, 4.0], [1.5, 0.0, 0.0], [0.0, 0.0, 1.0]);
+			viewer.SetCamera (new JSM.Coord (-4.5, -5.0, 4.0), new JSM.Coord (1.5, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 			viewer.Draw ();
 		}
 
 		function SwitchFixUp ()
 		{
-			viewer.EnableCameraFixUp (!viewer.settings.cameraFixUp);
+			viewer.navigation.settings.cameraFixUp = !viewer.navigation.settings.cameraFixUp;
 			WriteCameraInfo ();
 		}
 		
 		function SwitchOrbit ()
 		{
-			viewer.EnableCameraOrbit (!viewer.settings.cameraEnableOrbit);
+			viewer.navigation.settings.cameraEnableOrbit = !viewer.navigation.settings.cameraEnableOrbit;
 			WriteCameraInfo ();
 		}
 
 		function SwitchZoom ()
 		{
-			viewer.EnableCameraZoom (!viewer.settings.cameraEnableZoom);
+			viewer.navigation.settings.cameraEnableZoom = !viewer.navigation.settings.cameraEnableZoom;
 			WriteCameraInfo ();
 		}
 

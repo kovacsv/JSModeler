@@ -78,7 +78,7 @@
 		function OnMouseMove (event)
 		{
 			var logDiv = document.getElementById ('log');
-			logDiv.innerHTML = viewer.mouse.currX + ', ' + viewer.mouse.currY;
+			logDiv.innerHTML = viewer.navigation.mouse.currX + ', ' + viewer.navigation.mouse.currY;
 			mouseMoved = true;
 		}
 
@@ -90,7 +90,7 @@
 
 				var objects;
 				objects = viewer.GetObjectsUnderMouse ();
-				logDiv.innerHTML = viewer.mouse.currX + ', ' + viewer.mouse.currY + '<br>';
+				logDiv.innerHTML = viewer.navigation.mouse.currX + ', ' + viewer.navigation.mouse.currY + '<br>';
 				logDiv.innerHTML += 'GetObjectsUnderMouse: ' + objects + '<br>';
 			}
 			

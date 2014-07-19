@@ -19,11 +19,7 @@ JSM.SoftwareViewer.prototype.Start = function (canvasName, settings)
 		return false;
 	}
 	
-	if (!this.InitCamera ()) {
-		return false;
-	}
-
-	if (!this.InitEvents ()) {
+	if (!this.InitCamera (settings)) {
 		return false;
 	}
 
@@ -56,9 +52,6 @@ JSM.SoftwareViewer.prototype.InitSettings = function (settings)
 		cameraEyePosition : new JSM.Coord (1.0, 1.0, 1.0),
 		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
 		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
-		cameraFixUp : true,
-		cameraEnableOrbit : true,
-		cameraEnableZoom : true,
 		fieldOfView : 45.0,
 		nearClippingPlane : 0.1,
 		farClippingPlane : 1000.0,
@@ -69,9 +62,6 @@ JSM.SoftwareViewer.prototype.InitSettings = function (settings)
 		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = JSM.CoordFromArray (settings.cameraEyePosition); }
 		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = JSM.CoordFromArray (settings.cameraCenterPosition); }
 		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = JSM.CoordFromArray (settings.cameraUpVector); }
-		if (settings.cameraFixUp !== undefined) { this.settings.cameraFixUp = settings.cameraFixUp; }
-		if (settings.cameraEnableOrbit !== undefined) { this.settings.cameraEnableOrbit = settings.cameraEnableOrbit; }
-		if (settings.cameraEnableZoom !== undefined) { this.settings.cameraEnableZoom = settings.cameraEnableZoom; }
 		if (settings.fieldOfView !== undefined) { this.settings.fieldOfView = settings.fieldOfView; }
 		if (settings.nearClippingPlane !== undefined) { this.settings.nearClippingPlane = settings.nearClippingPlane; }
 		if (settings.farClippingPlane !== undefined) { this.settings.farClippingPlane = settings.farClippingPlane; }
@@ -81,28 +71,28 @@ JSM.SoftwareViewer.prototype.InitSettings = function (settings)
 	return true;
 };
 
-JSM.SoftwareViewer.prototype.InitCamera = function ()
+JSM.SoftwareViewer.prototype.InitCamera = function (settings)
 {
 	this.camera = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
 	if (!this.camera) {
 		return false;
 	}
 
-	return true;
-};
-
-JSM.SoftwareViewer.prototype.InitEvents = function ()
-{
 	this.navigation = new JSM.Navigation ();
 	var navigationSettings = {
-		cameraFixUp : this.settings.cameraFixUp,
-		cameraEnableOrbit : this.settings.cameraEnableOrbit,
-		cameraEnableZoom : this.settings.cameraEnableZoom
+		cameraFixUp : true,
+		cameraEnableOrbit : true,
+		cameraEnableZoom : true
 	};
+	if (settings !== undefined) {
+		if (settings.cameraFixUp !== undefined) { navigationSettings.cameraFixUp = settings.cameraFixUp; }
+		if (settings.cameraEnableOrbit !== undefined) { navigationSettings.cameraEnableOrbit = settings.cameraEnableOrbit; }
+		if (settings.cameraEnableZoom !== undefined) { navigationSettings.cameraEnableZoom = settings.cameraEnableZoom; }
+	}
 	if (!this.navigation.Init (navigationSettings, this.canvas, this.camera, this.Draw.bind (this))) {
 		return false;
 	}
-	
+
 	return true;
 };
 

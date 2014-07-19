@@ -48,6 +48,46 @@ JSM.Navigation.prototype.Init = function (settings, canvas, camera, callback)
 	return true;
 };
 
+JSM.Navigation.prototype.Orbit = function (angleX, angleY)
+{
+	var radAngleX = angleX * JSM.DegRad;
+	var radAngleY = angleY * JSM.DegRad;
+	
+	var viewDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.center, this.camera.eye));
+	var horizontalDirection = JSM.VectorNormalize (JSM.VectorCross (viewDirection, this.camera.up));
+
+	if (this.settings.cameraFixUp) {
+		var originalAngle = JSM.GetVectorsAngle (viewDirection, this.camera.up);
+		var angleLimit = 5.0 * JSM.DegRad;
+		var skipVertical = (radAngleY < 0 && originalAngle > Math.PI - angleLimit) || (radAngleY > 0 && originalAngle < angleLimit);
+		if (!skipVertical) {
+			this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, radAngleY, this.camera.center);
+		}
+		this.camera.eye = JSM.CoordRotate (this.camera.eye, this.camera.up, radAngleX, this.camera.center);
+	} else {
+		var verticalDirection = JSM.VectorNormalize (JSM.VectorCross (horizontalDirection, viewDirection));
+		this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, radAngleY, this.camera.center);
+		this.camera.eye = JSM.CoordRotate (this.camera.eye, verticalDirection, radAngleX, this.camera.center);
+		this.camera.up = verticalDirection;
+	}
+};
+
+JSM.Navigation.prototype.Zoom = function (zoomIn)
+{
+	var direction = JSM.CoordSub (this.camera.center, this.camera.eye);
+	var distance = JSM.VectorLength (direction);
+	if (zoomIn && distance < 0.1) {
+		return 0;
+	}
+
+	var move = distance * 0.1;
+	if (!zoomIn) {
+		move = move * -1.0;
+	}
+
+	this.camera.eye = JSM.CoordOffset (this.camera.eye, direction, move);
+};
+
 JSM.Navigation.prototype.OnMouseDown = function (event)
 {
 	event.preventDefault ();
@@ -67,7 +107,7 @@ JSM.Navigation.prototype.OnMouseMove = function (event)
 	}
 	
 	var ratio = -0.5;
-	this.camera.Orbit (this.settings.cameraFixUp, this.mouse.diffX * ratio, this.mouse.diffY * ratio);
+	this.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 	
 	this.callback ();
 };
@@ -104,7 +144,7 @@ JSM.Navigation.prototype.OnMouseWheel = function (event)
 	}
 
 	var zoomIn = delta > 0;
-	this.camera.Zoom (zoomIn);
+	this.Zoom (zoomIn);
 	this.callback ();
 };
 
@@ -127,7 +167,7 @@ JSM.Navigation.prototype.OnTouchMove = function (event)
 	}
 	
 	var ratio = -0.5;
-	this.camera.Orbit (this.settings.cameraFixUp, this.touch.diffX * ratio, this.touch.diffY * ratio);
+	this.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
 	this.callback ();
 };
 
