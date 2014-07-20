@@ -229,14 +229,29 @@
 			
 			if (module.classes !== undefined) {
 				var className;
+				
+				var classNames = [];
 				for (className in module.classes) {
-					AddEntry (module.classes, className, parentDiv, false);
+					classNames.push (className);
+				}
+				classNames.sort ();
+
+				for (i = 0; i < classNames.length; i++) {
+					AddEntry (module.classes, classNames[i], parentDiv, false);
 				}
 			}
 			if (module.functions !== undefined) {
 				var functionName;
+				
+				var functionNames = [];
 				for (functionName in module.functions) {
-					AddEntry (module.functions, functionName, parentDiv, true);
+					functionNames.push (functionName);
+				}
+				functionNames.sort ();
+				
+				var i;
+				for (i = 0; i < functionNames.length; i++) {
+					AddEntry (module.functions, functionNames[i], parentDiv, true);
 				}
 			}
 		}	

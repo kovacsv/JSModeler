@@ -43,10 +43,12 @@
 				<File name="..\src\modeler\body.js" />
 				<File name="..\src\modeler\bodyutils.js" />
 				<File name="..\src\modeler\camera.js" />
+				<File name="..\src\modeler\color.js" />
 				<File name="..\src\modeler\cututils.js" />
 				<File name="..\src\modeler\explode.js" />
 				<File name="..\src\modeler\exporter.js" />
 				<File name="..\src\modeler\generator.js" />
+				<File name="..\src\modeler\light.js" />
 				<File name="..\src\modeler\material.js" />
 				<File name="..\src\modeler\model.js" />
 				<File name="..\src\modeler\textureutils.js" />
