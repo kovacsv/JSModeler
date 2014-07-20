@@ -46,7 +46,7 @@ JSM.Renderer.prototype.InitContext = function (canvasName)
 		return false;
 	}
 
-	this.context = this.canvas.getContext ('experimental-webgl');
+	this.context = this.canvas.getContext ('webgl');
 	if (this.context === null) {
 		return false;
 	}
@@ -153,8 +153,15 @@ JSM.Renderer.prototype.InitBuffers = function ()
 JSM.Renderer.prototype.InitView = function (camera, light)
 {
 	this.camera = JSM.ValueOrDefault (camera, new JSM.Camera ());
-	this.light = JSM.ValueOrDefault (light, new JSM.Light ());
+	if (!this.camera) {
+		return false;
+	}
 
+	this.light = JSM.ValueOrDefault (light, new JSM.Light ());
+	if (!this.light) {
+		return false;
+	}
+	
 	var lightAmbient = JSM.HexColorToNormalizedRGBComponents (this.light.ambient);
 	var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (this.light.diffuse);
 	this.context.uniform3f (this.shader.ambientLightColorUniform, lightAmbient[0], lightAmbient[1], lightAmbient[2]);

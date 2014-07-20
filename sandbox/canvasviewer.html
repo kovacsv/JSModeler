@@ -70,15 +70,15 @@
 	
 		function Load ()
 		{
-			var viewerSettings = {
-				cameraEyePosition : [2.0, 2.0, 2.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1],
-				drawMode : 'HiddenLineFrontFacing'
-			};
-
+			var camera = new JSM.Camera (
+				new JSM.Coord (3.0, 2.0, 3.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0.0, 0.0, 1.0)
+			);
+			
 			viewer = new JSM.SoftwareViewer ();
-			var success = viewer.Start ('example', viewerSettings);
+			var success = viewer.Start ('example', camera);
+			viewer.drawMode = 'HiddenLineFrontFacing';
 
 			//var body = TestBody0 ();
 			//var body = GenerateContourSolid ('Tetrahedron', 0.1);

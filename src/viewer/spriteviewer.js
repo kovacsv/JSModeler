@@ -8,13 +8,13 @@ JSM.SpriteViewer = function ()
 	this.navigation = null;
 };
 
-JSM.SpriteViewer.prototype.Start = function (canvasName, settings, callbacks)
+JSM.SpriteViewer.prototype.Start = function (canvasName, camera, callbacks)
 {
 	if (!this.InitCanvas (canvasName)) {
 		return false;
 	}
 
-	if (!this.InitCamera (settings)) {
+	if (!this.InitCamera (camera)) {
 		return false;
 	}
 
@@ -36,16 +36,9 @@ JSM.SpriteViewer.prototype.InitCanvas = function (canvasName)
 	return true;
 };
 
-JSM.SpriteViewer.prototype.InitCamera = function (settings)
+JSM.SpriteViewer.prototype.InitCamera = function (camera)
 {
-	this.camera = new JSM.Camera (
-		JSM.CoordFromArray (settings.cameraEyePosition),
-		JSM.CoordFromArray (settings.cameraCenterPosition),
-		JSM.CoordFromArray (settings.cameraUpVector),
-		settings.fieldOfView,
-		settings.nearClippingPlane,
-		settings.farClippingPlane
-	);
+	this.camera = JSM.ValueOrDefault (camera, new JSM.Camera ());
 	if (!this.camera) {
 		return false;
 	}

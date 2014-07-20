@@ -119,12 +119,6 @@
 
 		function Load ()
 		{
-			var viewerSettings = {
-				cameraEyePosition : [3.0, 3.0, 3.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1]
-			};
-
 			var viewerCallbacks = {
 				onDrawStart : OnDrawStart,
 				onPointDraw : OnPointDraw,
@@ -144,8 +138,14 @@
 
 			mouseMoved = false;
 			
+			var camera = new JSM.Camera (
+				new JSM.Coord (3.0, 3.0, 3.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0.0, 0.0, 1.0)
+			);
+
 			viewer = new JSM.SpriteViewer ();
-			var success = viewer.Start (canvasName, viewerSettings, viewerCallbacks);
+			var success = viewer.Start (canvasName, camera, viewerCallbacks);
 
 			viewer.AddPoint (new JSM.Coord (0, 0, 0));
 			viewer.AddPoint (new JSM.Coord (1, 0, 0));

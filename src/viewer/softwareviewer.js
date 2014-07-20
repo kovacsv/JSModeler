@@ -2,24 +2,19 @@ JSM.SoftwareViewer = function ()
 {
 	this.canvas = null;
 	this.camera = null;
-	this.settings = null;
 	this.bodies = null;
 	this.drawer = null;
 	this.drawMode = null;
 	this.navigation = null;
 };
 
-JSM.SoftwareViewer.prototype.Start = function (canvasName, settings)
+JSM.SoftwareViewer.prototype.Start = function (canvasName, camera)
 {
 	if (!this.InitCanvas (canvasName)) {
 		return false;
 	}
 
-	if (!this.InitSettings (settings)) {
-		return false;
-	}
-	
-	if (!this.InitCamera (settings)) {
+	if (!this.InitCamera (camera)) {
 		return false;
 	}
 
@@ -43,38 +38,14 @@ JSM.SoftwareViewer.prototype.InitCanvas = function (canvasName)
 	if (!this.drawer) {
 		return false;
 	}
-	return true;
-};
-
-JSM.SoftwareViewer.prototype.InitSettings = function (settings)
-{
-	this.settings = {
-		cameraEyePosition : new JSM.Coord (1.0, 1.0, 1.0),
-		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
-		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
-		drawMode : 'Wireframe'
-	};
-
-	if (settings !== undefined) {
-		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = JSM.CoordFromArray (settings.cameraEyePosition); }
-		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = JSM.CoordFromArray (settings.cameraCenterPosition); }
-		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = JSM.CoordFromArray (settings.cameraUpVector); }
-		if (settings.drawMode !== undefined) { this.settings.drawMode = settings.drawMode; }
-	}
 	
+	this.drawMode = 'Wireframe';
 	return true;
 };
 
-JSM.SoftwareViewer.prototype.InitCamera = function (settings)
+JSM.SoftwareViewer.prototype.InitCamera = function (camera)
 {
-	this.camera = new JSM.Camera (
-		JSM.CoordFromArray (settings.cameraEyePosition),
-		JSM.CoordFromArray (settings.cameraCenterPosition),
-		JSM.CoordFromArray (settings.cameraUpVector),
-		settings.fieldOfView,
-		settings.nearClippingPlane,
-		settings.farClippingPlane
-	);
+	this.camera = JSM.ValueOrDefault (camera, new JSM.Camera ());
 	if (!this.camera) {
 		return false;
 	}
@@ -110,7 +81,7 @@ JSM.SoftwareViewer.prototype.Draw = function ()
 		fieldOfView : this.camera.fieldOfView,
 		nearPlane : this.camera.nearClippingPlane,
 		farPlane : this.camera.farClippingPlane,
-		drawMode : this.settings.drawMode,
+		drawMode : this.drawMode,
 		clear : true
 	};
 	this.drawer.Clear ();

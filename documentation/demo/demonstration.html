@@ -239,9 +239,9 @@
 				content = AddContent (floatingDialog, 'svg');
 				var drawSettings = {
 					camera : viewer.cameraMove,
-					fieldOfView : viewer.settings.fieldOfView,
-					nearPlane : viewer.settings.nearClippingPlane,
-					farPlane : viewer.settings.farClippingPlane,
+					fieldOfView : viewer.cameraMove.fieldOfView,
+					nearPlane : viewer.cameraMove.nearClippingPlane,
+					farPlane : viewer.cameraMove.farClippingPlane,
 					drawMode : 'Wireframe',
 					clear : true
 				};
