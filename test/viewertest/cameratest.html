@@ -35,6 +35,8 @@
 	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
 	<script type="text/javascript" src="../../src/modeler/body.js"></script>
 	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../../src/modeler/light.js"></script>
 	<script type="text/javascript" src="../../src/modeler/material.js"></script>
 	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
@@ -88,9 +90,9 @@
 		{
 			var info = document.getElementById ('info');
 			info.innerHTML = '';
-			info.innerHTML += 'fixUp: ' + viewer.navigation.settings.cameraFixUp + ', ';
-			info.innerHTML += 'orbit: ' + viewer.navigation.settings.cameraEnableOrbit + ', ';
-			info.innerHTML += 'zoom: ' + viewer.navigation.settings.cameraEnableZoom;
+			info.innerHTML += 'fixUp: ' + viewer.navigation.cameraFixUp + ', ';
+			info.innerHTML += 'orbit: ' + viewer.navigation.cameraEnableOrbit + ', ';
+			info.innerHTML += 'zoom: ' + viewer.navigation.cameraEnableZoom;
 		}
 		
 		function Reset1 ()
@@ -113,19 +115,19 @@
 
 		function SwitchFixUp ()
 		{
-			viewer.navigation.settings.cameraFixUp = !viewer.navigation.settings.cameraFixUp;
+			viewer.navigation.cameraFixUp = !viewer.navigation.cameraFixUp;
 			WriteCameraInfo ();
 		}
 		
 		function SwitchOrbit ()
 		{
-			viewer.navigation.settings.cameraEnableOrbit = !viewer.navigation.settings.cameraEnableOrbit;
+			viewer.navigation.cameraEnableOrbit = !viewer.navigation.cameraEnableOrbit;
 			WriteCameraInfo ();
 		}
 
 		function SwitchZoom ()
 		{
-			viewer.navigation.settings.cameraEnableZoom = !viewer.navigation.settings.cameraEnableZoom;
+			viewer.navigation.cameraEnableZoom = !viewer.navigation.cameraEnableZoom;
 			WriteCameraInfo ();
 		}
 

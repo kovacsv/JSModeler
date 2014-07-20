@@ -234,33 +234,12 @@ JSM.SVGDrawer.prototype.DrawPolygon = function (polygon, color)
 };
 
 /**
-* Class: DrawSettings
-* Description: Represents the draw settings.
-* Parameters:
-*	camera {Camera} the camera
-*	fieldOfView {number} camera field of view
-*	aspectRatio {number} aspect ratio of the desired image
-*	nearPlane {number} near cutting plane distance
-*	farPlane {number} far cutting plane distance
-*	clear {boolean} clear the canvas before draw
-*/
-JSM.DrawSettings = function (camera, fieldOfView, nearPlane, farPlane, drawMode, clear)
-{
-	this.camera = camera;
-	this.fieldOfView = fieldOfView;
-	this.nearPlane = nearPlane;
-	this.farPlane = farPlane;
-	this.drawMode = drawMode;
-	this.clear = clear;
-};
-
-/**
 * Function: DrawProjectedBody
 * Description: Draws a projected body.
 * Parameters:
 *	body {Body} the body
 *	materials {Materials} the material container
-*	settings {DrawSettings} the draw settings
+*	settings {array} the draw settings
 *	drawer {drawer object} the drawer object
 */
 JSM.DrawProjectedBody = function (body, materials, settings, drawer)

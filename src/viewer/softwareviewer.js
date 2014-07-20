@@ -52,9 +52,6 @@ JSM.SoftwareViewer.prototype.InitSettings = function (settings)
 		cameraEyePosition : new JSM.Coord (1.0, 1.0, 1.0),
 		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
 		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
-		fieldOfView : 45.0,
-		nearClippingPlane : 0.1,
-		farClippingPlane : 1000.0,
 		drawMode : 'Wireframe'
 	};
 
@@ -62,9 +59,6 @@ JSM.SoftwareViewer.prototype.InitSettings = function (settings)
 		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = JSM.CoordFromArray (settings.cameraEyePosition); }
 		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = JSM.CoordFromArray (settings.cameraCenterPosition); }
 		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = JSM.CoordFromArray (settings.cameraUpVector); }
-		if (settings.fieldOfView !== undefined) { this.settings.fieldOfView = settings.fieldOfView; }
-		if (settings.nearClippingPlane !== undefined) { this.settings.nearClippingPlane = settings.nearClippingPlane; }
-		if (settings.farClippingPlane !== undefined) { this.settings.farClippingPlane = settings.farClippingPlane; }
 		if (settings.drawMode !== undefined) { this.settings.drawMode = settings.drawMode; }
 	}
 	
@@ -73,23 +67,20 @@ JSM.SoftwareViewer.prototype.InitSettings = function (settings)
 
 JSM.SoftwareViewer.prototype.InitCamera = function (settings)
 {
-	this.camera = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
+	this.camera = new JSM.Camera (
+		JSM.CoordFromArray (settings.cameraEyePosition),
+		JSM.CoordFromArray (settings.cameraCenterPosition),
+		JSM.CoordFromArray (settings.cameraUpVector),
+		settings.fieldOfView,
+		settings.nearClippingPlane,
+		settings.farClippingPlane
+	);
 	if (!this.camera) {
 		return false;
 	}
 
 	this.navigation = new JSM.Navigation ();
-	var navigationSettings = {
-		cameraFixUp : true,
-		cameraEnableOrbit : true,
-		cameraEnableZoom : true
-	};
-	if (settings !== undefined) {
-		if (settings.cameraFixUp !== undefined) { navigationSettings.cameraFixUp = settings.cameraFixUp; }
-		if (settings.cameraEnableOrbit !== undefined) { navigationSettings.cameraEnableOrbit = settings.cameraEnableOrbit; }
-		if (settings.cameraEnableZoom !== undefined) { navigationSettings.cameraEnableZoom = settings.cameraEnableZoom; }
-	}
-	if (!this.navigation.Init (navigationSettings, this.canvas, this.camera, this.Draw.bind (this))) {
+	if (!this.navigation.Init (this.canvas, this.camera, this.Draw.bind (this))) {
 		return false;
 	}
 
@@ -114,7 +105,14 @@ JSM.SoftwareViewer.prototype.Resize = function ()
 JSM.SoftwareViewer.prototype.Draw = function ()
 {
 	var i, bodyAndMaterials;
-	var drawSettings = new JSM.DrawSettings (this.camera, this.settings.fieldOfView, this.settings.nearClippingPlane, this.settings.farClippingPlane, this.settings.drawMode, false);
+	var drawSettings = {
+		camera : this.camera,
+		fieldOfView : this.camera.fieldOfView,
+		nearPlane : this.camera.nearClippingPlane,
+		farPlane : this.camera.farClippingPlane,
+		drawMode : this.settings.drawMode,
+		clear : true
+	};
 	this.drawer.Clear ();
 	
 	for (i = 0; i < this.bodies.length; i++) {

@@ -33,6 +33,8 @@
 	<script type="text/javascript" src="../src/geometry/utilities.js"></script>
 	<script type="text/javascript" src="../src/modeler/body.js"></script>
 	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../src/modeler/light.js"></script>
 	<script type="text/javascript" src="../src/modeler/material.js"></script>
 	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/adjacencylist.js"></script>
@@ -156,12 +158,12 @@
 			var viewerSettings = {
 				cameraEyePosition : [3.0, -2.0, 1.0],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1],
-				cameraEnableZoom : false
+				cameraUpVector : [0, 0, 1]
 			};
 
 			viewer = new JSM.ThreeViewer ();
 			viewer.Start ('example', viewerSettings);
+			viewer.navigation.cameraEnableZoom = false;
 			
 			var model = GenerateChart ();
 			var conversionData = {

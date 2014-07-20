@@ -1839,10 +1839,19 @@
 				"HexColorToRGBComponents" : {
 					"description" : "Converts hex color strings to RGB components.",
 					"parameters" : [
-						["hexColor", "string", "the hex color string"]
+						["hexColor", "string", "the hex color"]
 					],
 					"returns" : [
 						["integer[3]", "the RGB components"]
+					]
+				},
+				"HexColorToNormalizedRGBComponents" : {
+					"description" : "Converts hex color strings to normalized (between 0.0 and 1.0) RGB components.",
+					"parameters" : [
+						["hexColor", "string", "the hex color"]
+					],
+					"returns" : [
+						["number[3]", "the RGB components"]
 					]
 				},
 				"HexColorToRGBColor" : {
@@ -2885,6 +2894,14 @@
 						}
 					}
 				},
+				"Light" : {
+					"description" : "Defines a directional light.",
+					"parameters" : [
+						["ambient", "number", "the ambient component"],
+						["diffuse", "number", "the diffuse component"],
+						["direction", "Vector", "the direction of the light"]
+					]
+				},
 				"Material" : {
 					"description" : "Defines a material.",
 					"parameters" : [
@@ -2948,7 +2965,10 @@
 					"parameters" : [
 						["eye", "Coord", "the eye position"],
 						["center", "Coord", "the center position"],
-						["up", "Vector", "the up vector"]
+						["up", "Vector", "the up vector"],
+						["fieldOfView", "number", "field of view in degree"],
+						["nearClippingPlane", "number", "near clipping plane distance"],
+						["farClippingPlane", "number", "far clipping plane distance"]
 					],
 					"functions" : {
 						"Set" : {
@@ -2956,7 +2976,10 @@
 							"parameters" : [
 								["eye", "Coord", "the eye position"],
 								["center", "Coord", "the center position"],
-								["up", "Vector", "the up vector"]
+								["up", "Vector", "the up vector"],
+								["fieldOfView", "number", "field of view in degree"],
+								["nearClippingPlane", "number", "near clipping plane distance"],
+								["farClippingPlane", "number", "far clipping plane distance"]
 							]
 						},
 						"Clone" : {
@@ -3253,7 +3276,7 @@
 					"parameters" : [
 						["body", "Body", "the body"],
 						["materials", "Materials", "the material container"],
-						["settings", "DrawSettings", "the draw settings"],
+						["settings", "array", "the draw settings"],
 						["drawer", "drawer object", "the drawer object"]
 					]
 				},
@@ -3436,17 +3459,6 @@
 							]
 						}
 					}
-				},
-				"DrawSettings" : {
-					"description" : "Represents the draw settings.",
-					"parameters" : [
-						["camera", "Camera", "the camera"],
-						["fieldOfView", "number", "camera field of view"],
-						["aspectRatio", "number", "aspect ratio of the desired image"],
-						["nearPlane", "number", "near cutting plane distance"],
-						["farPlane", "number", "far cutting plane distance"],
-						["clear", "boolean", "clear the canvas before draw"]
-					]
 				},
 				"BSPPolygonUserData" : {
 					"description" : "Class that contains user data for polygons in BSP tree."

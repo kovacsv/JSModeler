@@ -114,7 +114,7 @@
 				}
 				vmd.vertexData = GetSoftMoveVertexData (meshes[0], faceAndVertex[1], vmd.radius);
 				vmd.originalPos = [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY];
-				viewer.navigation.settings.cameraEnableOrbit = false;
+				viewer.navigation.cameraEnableOrbit = false;
 			}
 		}
 		
@@ -135,7 +135,7 @@
 		function OnMouseUp ()
 		{
 			vmd = null;
-			viewer.navigation.settings.cameraEnableOrbit = true;
+			viewer.navigation.cameraEnableOrbit = true;
 		}
 
 		function Resize ()

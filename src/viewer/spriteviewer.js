@@ -2,7 +2,6 @@ JSM.SpriteViewer = function ()
 {
 	this.canvas = null;
 	this.camera = null;
-	this.settings = null;
 	this.callbacks = null;
 	this.points = null;
 	this.projected = null;
@@ -15,14 +14,14 @@ JSM.SpriteViewer.prototype.Start = function (canvasName, settings, callbacks)
 		return false;
 	}
 
-	if (!this.InitSettings (settings, callbacks)) {
-		return false;
-	}
-	
 	if (!this.InitCamera (settings)) {
 		return false;
 	}
 
+	if (!this.InitCallbacks (callbacks)) {
+		return false;
+	}
+	
 	return true;
 };
 
@@ -37,26 +36,30 @@ JSM.SpriteViewer.prototype.InitCanvas = function (canvasName)
 	return true;
 };
 
-JSM.SpriteViewer.prototype.InitSettings = function (settings, callbacks)
+JSM.SpriteViewer.prototype.InitCamera = function (settings)
 {
-	this.settings = {
-		cameraEyePosition : new JSM.Coord (1.0, 1.0, 1.0),
-		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
-		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
-		fieldOfView : 45.0,
-		nearClippingPlane : 0.1,
-		farClippingPlane : 1000.0
-	};
-
-	if (settings !== undefined) {
-		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = JSM.CoordFromArray (settings.cameraEyePosition); }
-		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = JSM.CoordFromArray (settings.cameraCenterPosition); }
-		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = JSM.CoordFromArray (settings.cameraUpVector); }
-		if (settings.fieldOfView !== undefined) { this.settings.fieldOfView = settings.fieldOfView; }
-		if (settings.nearClippingPlane !== undefined) { this.settings.nearClippingPlane = settings.nearClippingPlane; }
-		if (settings.farClippingPlane !== undefined) { this.settings.farClippingPlane = settings.farClippingPlane; }
+	this.camera = new JSM.Camera (
+		JSM.CoordFromArray (settings.cameraEyePosition),
+		JSM.CoordFromArray (settings.cameraCenterPosition),
+		JSM.CoordFromArray (settings.cameraUpVector),
+		settings.fieldOfView,
+		settings.nearClippingPlane,
+		settings.farClippingPlane
+	);
+	if (!this.camera) {
+		return false;
 	}
-	
+
+	this.navigation = new JSM.Navigation ();
+	if (!this.navigation.Init (this.canvas, this.camera, this.Draw.bind (this))) {
+		return false;
+	}
+
+	return true;
+};
+
+JSM.SpriteViewer.prototype.InitCallbacks = function (callbacks)
+{
 	this.callbacks = {
 		onPointDraw : null
 	};
@@ -65,31 +68,6 @@ JSM.SpriteViewer.prototype.InitSettings = function (settings, callbacks)
 		if (callbacks.onDrawStart !== undefined) { this.callbacks.onDrawStart = callbacks.onDrawStart; }
 		if (callbacks.onPointDraw !== undefined) { this.callbacks.onPointDraw = callbacks.onPointDraw; }
 		if (callbacks.onDrawEnd !== undefined) { this.callbacks.onDrawEnd = callbacks.onDrawEnd; }
-	}
-
-	return true;
-};
-
-JSM.SpriteViewer.prototype.InitCamera = function (settings)
-{
-	this.camera = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
-	if (!this.camera) {
-		return false;
-	}
-
-	this.navigation = new JSM.Navigation ();
-	var navigationSettings = {
-		cameraFixUp : true,
-		cameraEnableOrbit : true,
-		cameraEnableZoom : true
-	};
-	if (settings !== undefined) {
-		if (settings.cameraFixUp !== undefined) { navigationSettings.cameraFixUp = settings.cameraFixUp; }
-		if (settings.cameraEnableOrbit !== undefined) { navigationSettings.cameraEnableOrbit = settings.cameraEnableOrbit; }
-		if (settings.cameraEnableZoom !== undefined) { navigationSettings.cameraEnableZoom = settings.cameraEnableZoom; }
-	}
-	if (!this.navigation.Init (navigationSettings, this.canvas, this.camera, this.Draw.bind (this))) {
-		return false;
 	}
 
 	return true;
@@ -153,7 +131,7 @@ JSM.SpriteViewer.prototype.FitInWindowWithCenterAndRadius = function (center, ra
 	this.camera.center = center;
 	this.camera.eye = JSM.CoordSub (this.camera.eye, offsetToOrigo);
 	var centerEyeDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.eye, this.camera.center));
-	var fieldOfView = this.settings.fieldOfView / 2.0;
+	var fieldOfView = this.camera.fieldOfView / 2.0;
 	if (this.canvas.width < this.canvas.height) {
 		fieldOfView = fieldOfView * this.canvas.width / this.canvas.height;
 	}
@@ -218,7 +196,7 @@ JSM.SpriteViewer.prototype.Draw = function ()
 	var i, coord, projected;
 	for (i = 0; i < this.points.length; i++) {
 		coord = this.points[i];
-		projected = JSM.Project (coord, this.camera.eye, this.camera.center, this.camera.up, this.settings.fieldOfView * JSM.DegRad, aspectRatio, this.settings.nearClippingPlane, this.settings.farClippingPlane, viewPort);
+		projected = JSM.Project (coord, this.camera.eye, this.camera.center, this.camera.up, this.camera.fieldOfView * JSM.DegRad, aspectRatio, this.camera.nearClippingPlane, this.camera.farClippingPlane, viewPort);
 		projected.y = this.canvas.height - projected.y;
 		if (projected !== null) {
 			this.projected.push ({position : projected, originalIndex : i});

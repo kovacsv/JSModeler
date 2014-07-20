@@ -63,9 +63,6 @@ JSM.ThreeViewer.prototype.InitSettings = function (settings)
 		cameraEyePosition : new JSM.Coord (1.0, 1.0, 1.0),
 		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
 		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
-		fieldOfView : 45.0,
-		nearClippingPlane : 0.1,
-		farClippingPlane : 1000.0,
 		lightAmbientColor : [0.5, 0.5, 0.5],
 		lightDiffuseColor : [0.5, 0.5, 0.5],
 		autoUpdate : true
@@ -75,9 +72,6 @@ JSM.ThreeViewer.prototype.InitSettings = function (settings)
 		if (settings.cameraEyePosition !== undefined) { this.settings.cameraEyePosition = JSM.CoordFromArray (settings.cameraEyePosition); }
 		if (settings.cameraCenterPosition !== undefined) { this.settings.cameraCenterPosition = JSM.CoordFromArray (settings.cameraCenterPosition); }
 		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = JSM.CoordFromArray (settings.cameraUpVector); }
-		if (settings.fieldOfView !== undefined) { this.settings.fieldOfView = settings.fieldOfView; }
-		if (settings.nearClippingPlane !== undefined) { this.settings.nearClippingPlane = settings.nearClippingPlane; }
-		if (settings.farClippingPlane !== undefined) { this.settings.farClippingPlane = settings.farClippingPlane; }
 		if (settings.lightAmbientColor !== undefined) { this.settings.lightAmbientColor = settings.lightAmbientColor; }
 		if (settings.lightDiffuseColor !== undefined) { this.settings.lightDiffuseColor = settings.lightDiffuseColor; }
 		if (settings.autoUpdate !== undefined) { this.settings.autoUpdate = settings.autoUpdate; }
@@ -113,27 +107,24 @@ JSM.ThreeViewer.prototype.InitThree = function (canvasName)
 
 JSM.ThreeViewer.prototype.InitCamera = function (settings)
 {
-	this.cameraMove = new JSM.Camera (this.settings.cameraEyePosition, this.settings.cameraCenterPosition, this.settings.cameraUpVector);
+	this.cameraMove = new JSM.Camera (
+		JSM.CoordFromArray (settings.cameraEyePosition),
+		JSM.CoordFromArray (settings.cameraCenterPosition),
+		JSM.CoordFromArray (settings.cameraUpVector),
+		settings.fieldOfView,
+		settings.nearClippingPlane,
+		settings.farClippingPlane
+	);
 	if (!this.cameraMove) {
 		return false;
 	}
 
 	this.navigation = new JSM.Navigation ();
-	var navigationSettings = {
-		cameraFixUp : true,
-		cameraEnableOrbit : true,
-		cameraEnableZoom : true
-	};
-	if (settings !== undefined) {
-		if (settings.cameraFixUp !== undefined) { navigationSettings.cameraFixUp = settings.cameraFixUp; }
-		if (settings.cameraEnableOrbit !== undefined) { navigationSettings.cameraEnableOrbit = settings.cameraEnableOrbit; }
-		if (settings.cameraEnableZoom !== undefined) { navigationSettings.cameraEnableZoom = settings.cameraEnableZoom; }
-	}
-	if (!this.navigation.Init (navigationSettings, this.canvas, this.cameraMove, this.DrawIfNeeded.bind (this))) {
+	if (!this.navigation.Init (this.canvas, this.cameraMove, this.DrawIfNeeded.bind (this))) {
 		return false;
 	}
 	
-	this.camera = new THREE.PerspectiveCamera (this.settings.fieldOfView, this.canvas.width / this.canvas.height, this.settings.nearClippingPlane, this.settings.farClippingPlane);
+	this.camera = new THREE.PerspectiveCamera (this.cameraMove.fieldOfView, this.canvas.width / this.canvas.height, this.cameraMove.nearClippingPlane, this.cameraMove.farClippingPlane);
 	if (!this.camera) {
 		return false;
 	}
@@ -316,7 +307,7 @@ JSM.ThreeViewer.prototype.FitInWindowWithCenterAndRadius = function (center, rad
 	this.cameraMove.eye = JSM.CoordSub (this.cameraMove.eye, offsetToOrigo);
 	
 	var centerEyeDirection = JSM.VectorNormalize (JSM.CoordSub (this.cameraMove.eye, this.cameraMove.center));
-	var fieldOfView = this.settings.fieldOfView / 2.0;
+	var fieldOfView = this.cameraMove.fieldOfView / 2.0;
 	if (this.canvas.width < this.canvas.height) {
 		fieldOfView = fieldOfView * this.canvas.width / this.canvas.height;
 	}

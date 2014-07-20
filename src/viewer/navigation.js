@@ -7,22 +7,16 @@ JSM.Navigation = function ()
 	this.mouse = null;
 	this.touch = null;
 	
-	this.settings = null;
+	this.cameraFixUp = null;
+	this.cameraEnableOrbit = null;
+	this.cameraEnableZoom = null;
 };
 
-JSM.Navigation.prototype.Init = function (settings, canvas, camera, callback)
+JSM.Navigation.prototype.Init = function (canvas, camera, callback)
 {
-	this.settings = {
-		cameraFixUp : true,
-		cameraEnableOrbit : true,
-		cameraEnableZoom : true
-	};
-
-	if (settings !== undefined) {
-		if (settings.cameraFixUp !== undefined) { this.settings.cameraFixUp = settings.cameraFixUp; }
-		if (settings.cameraEnableOrbit !== undefined) { this.settings.cameraEnableOrbit = settings.cameraEnableOrbit; }
-		if (settings.cameraEnableZoom !== undefined) { this.settings.cameraEnableZoom = settings.cameraEnableZoom; }
-	}
+	this.cameraFixUp = true;
+	this.cameraEnableOrbit = true;
+	this.cameraEnableZoom = true;
 
 	this.canvas = canvas;
 	this.camera = camera;
@@ -56,7 +50,7 @@ JSM.Navigation.prototype.Orbit = function (angleX, angleY)
 	var viewDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.center, this.camera.eye));
 	var horizontalDirection = JSM.VectorNormalize (JSM.VectorCross (viewDirection, this.camera.up));
 
-	if (this.settings.cameraFixUp) {
+	if (this.cameraFixUp) {
 		var originalAngle = JSM.GetVectorsAngle (viewDirection, this.camera.up);
 		var angleLimit = 5.0 * JSM.DegRad;
 		var skipVertical = (radAngleY < 0 && originalAngle > Math.PI - angleLimit) || (radAngleY > 0 && originalAngle < angleLimit);
@@ -102,7 +96,7 @@ JSM.Navigation.prototype.OnMouseMove = function (event)
 		return;
 	}
 	
-	if (!this.settings.cameraEnableOrbit) {
+	if (!this.cameraEnableOrbit) {
 		return;
 	}
 	
@@ -127,7 +121,7 @@ JSM.Navigation.prototype.OnMouseOut = function (event)
 JSM.Navigation.prototype.OnMouseWheel = function (event)
 {
 	event.preventDefault ();
-	if (!this.settings.cameraEnableZoom) {
+	if (!this.cameraEnableZoom) {
 		return;
 	}
 
@@ -162,7 +156,7 @@ JSM.Navigation.prototype.OnTouchMove = function (event)
 		return;
 	}
 
-	if (!this.settings.cameraEnableOrbit) {
+	if (!this.cameraEnableOrbit) {
 		return;
 	}
 	

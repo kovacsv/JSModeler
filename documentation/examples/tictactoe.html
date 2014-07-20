@@ -282,8 +282,7 @@
 			var viewerSettings = {
 				cameraEyePosition : [14.0, -14.0, 16.0],
 				cameraCenterPosition : [4.5, 4.5, 4.5],
-				cameraUpVector : [0.0, 0.0, 1.0],
-				cameraEnableZoom : false
+				cameraUpVector : [0.0, 0.0, 1.0]
 			};
 
 			var canvas = document.getElementById ('example');
@@ -304,6 +303,7 @@
 				error = true;
 				return;
 			}
+			viewer.navigation.cameraEnableZoom = false;
 			
 			Reset (1);
 		}
