@@ -239,10 +239,12 @@ JSM.SVGDrawer.prototype.DrawPolygon = function (polygon, color)
 * Parameters:
 *	body {Body} the body
 *	materials {Materials} the material container
-*	settings {array} the draw settings
+*	camera {Camera} the camera for projection
+*	drawMode {string} draw mode ('HiddenLinePainter', 'HiddenLineFrontFacing' or 'Wireframe')
+*	needClear {boolean} clear the display before draw
 *	drawer {drawer object} the drawer object
 */
-JSM.DrawProjectedBody = function (body, materials, settings, drawer)
+JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, drawer)
 {
 	function GetProjectedPolygon (polygon)
 	{
@@ -260,23 +262,21 @@ JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 		return projectedPolygon;
 	}
 
-	var clear = settings.clear;
-	if (clear) {
+	if (needClear) {
 		drawer.Clear ();
 	}
 
 	var width = drawer.GetWidth ();
 	var height = drawer.GetHeight ();
 	
-	var eye = settings.camera.eye;
-	var center = settings.camera.center;
-	var up = settings.camera.up;
-	var fieldOfView = settings.fieldOfView;
+	var eye = camera.eye;
+	var center = camera.center;
+	var up = camera.up;
+	var fieldOfView = camera.fieldOfView;
 	var aspectRatio = width / height;
-	var nearPlane = settings.nearPlane;
-	var farPlane = settings.farPlane;
+	var nearPlane = camera.nearClippingPlane;
+	var farPlane = camera.farClippingPlane;
 	var viewPort = [0, 0, width, height];
-	var drawMode = settings.drawMode;
 
 	var i, j, polygon, coord, projected, materialIndex, color;
 	if (drawMode == 'HiddenLinePainter') {

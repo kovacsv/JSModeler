@@ -76,19 +76,11 @@ JSM.SoftwareViewer.prototype.Resize = function ()
 JSM.SoftwareViewer.prototype.Draw = function ()
 {
 	var i, bodyAndMaterials;
-	var drawSettings = {
-		camera : this.camera,
-		fieldOfView : this.camera.fieldOfView,
-		nearPlane : this.camera.nearClippingPlane,
-		farPlane : this.camera.farClippingPlane,
-		drawMode : this.drawMode,
-		clear : true
-	};
 	this.drawer.Clear ();
 	
 	for (i = 0; i < this.bodies.length; i++) {
 		bodyAndMaterials = this.bodies[i];
-		JSM.DrawProjectedBody (bodyAndMaterials[0], bodyAndMaterials[1], drawSettings, this.drawer);
+		JSM.DrawProjectedBody (bodyAndMaterials[0], bodyAndMaterials[1], this.camera, this.drawMode, false, this.drawer);
 	}
 
 	return true;

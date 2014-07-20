@@ -3276,7 +3276,9 @@
 					"parameters" : [
 						["body", "Body", "the body"],
 						["materials", "Materials", "the material container"],
-						["settings", "array", "the draw settings"],
+						["camera", "Camera", "the camera for projection"],
+						["drawMode", "string", "draw mode ('HiddenLinePainter', 'HiddenLineFrontFacing' or 'Wireframe')"],
+						["needClear", "boolean", "clear the display before draw"],
 						["drawer", "drawer object", "the drawer object"]
 					]
 				},

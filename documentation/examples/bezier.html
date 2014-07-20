@@ -327,16 +327,8 @@
 
 		function ExportAsSvg (svgcontent)
 		{
-			var drawSettings = {
-				camera : viewer.cameraMove,
-				fieldOfView : viewer.cameraMove.fieldOfView,
-				nearPlane : viewer.cameraMove.nearClippingPlane,
-				farPlane : viewer.cameraMove.farClippingPlane,
-				drawMode : 'Wireframe',
-				clear : true
-			};
 			var drawer = new JSM.SVGDrawer (svgcontent);
-			JSM.DrawProjectedBody (bezierData.surfaceBody, null, drawSettings, drawer);
+			JSM.DrawProjectedBody (bezierData.surfaceBody, null, viewer.cameraMove, 'Wireframe', true, drawer);
 		}
 		
 		function ViewAsSvg ()

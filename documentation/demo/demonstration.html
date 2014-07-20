@@ -237,16 +237,8 @@
 			} else if (format == 'svg') {
 				floatingDialog.Open ();
 				content = AddContent (floatingDialog, 'svg');
-				var drawSettings = {
-					camera : viewer.cameraMove,
-					fieldOfView : viewer.cameraMove.fieldOfView,
-					nearPlane : viewer.cameraMove.nearClippingPlane,
-					farPlane : viewer.cameraMove.farClippingPlane,
-					drawMode : 'Wireframe',
-					clear : true
-				};
 				var drawer = new JSM.SVGDrawer (content);
-				JSM.DrawProjectedBody (body, materials, drawSettings, drawer);
+				JSM.DrawProjectedBody (body, materials, viewer.cameraMove, 'Wireframe', true, drawer);
 			}
 		}
 
