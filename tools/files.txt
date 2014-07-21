@@ -43,7 +43,7 @@
 ../src/extras/csg.js
 ../src/extras/surfaces.js
 ../src/renderer/renderer.js
-../src/renderer/rendergeometry.js
+../src/renderer/pointcloudrenderer.js
 ../src/renderer/converter.js
 ../src/viewer/mouse.js
 ../src/viewer/touch.js
@@ -51,5 +51,6 @@
 ../src/viewer/softwareviewer.js
 ../src/viewer/spriteviewer.js
 ../src/viewer/viewer.js
+../src/viewer/pointcloudviewer.js
 ../src/three/threeconverter.js
 ../src/three/threeviewer.js

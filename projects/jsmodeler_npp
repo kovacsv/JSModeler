@@ -55,8 +55,8 @@
 			</Folder>
 			<Folder name="renderer">
 				<File name="..\src\renderer\converter.js" />
+				<File name="..\src\renderer\pointcloudrenderer.js" />
 				<File name="..\src\renderer\renderer.js" />
-				<File name="..\src\renderer\rendergeometry.js" />
 			</Folder>
 			<Folder name="three">
 				<File name="..\src\three\threeconverter.js" />
@@ -65,6 +65,7 @@
 			<Folder name="viewer">
 				<File name="..\src\viewer\mouse.js" />
 				<File name="..\src\viewer\navigation.js" />
+				<File name="..\src\viewer\pointcloudviewer.js" />
 				<File name="..\src\viewer\softwareviewer.js" />
 				<File name="..\src\viewer\spriteviewer.js" />
 				<File name="..\src\viewer\touch.js" />

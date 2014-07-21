@@ -4,12 +4,8 @@
 <html>
 
 <head>
-
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="framework/test.css">
-
-	<script type="text/javascript" src="framework/test.js"></script>
-	
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../../src/core/timer.js"></script>
@@ -68,16 +64,113 @@
 	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
 	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
-	
-	<script type="text/javascript" src="tests/core.js"></script>
-	<script type="text/javascript" src="tests/geometry.js"></script>
-	<script type="text/javascript" src="tests/modeler.js"></script>
+	<title>Example</title>
 
-	<title>JSModeler Test</title>
+	<script type="text/javascript">
+		var viewer = null;
+		var mouseMoved = null;
+		
+		function OnDrawStart (canvas)
+		{
+			var context = canvas.getContext ('2d');
+			context.clearRect (0, 0, canvas.width, canvas.height);
+		}
+		
+		function OnPointDraw (canvas, index, projected)
+		{
+			var context = canvas.getContext ('2d');
+			var x = projected.x;
+			var y = projected.y;
+			var radius = 30;
+
+			var xBeg = x - radius / 2.0;
+			var yBeg = y - radius / 2.0;
+		
+			context.beginPath ();
+			radialGradient = context.createRadialGradient (x, y, 0, x, y, radius);
+			radialGradient.addColorStop (0, '#ff0000');
+			radialGradient.addColorStop (1, '#aa0000');
+			context.fillStyle = radialGradient;
+			context.arc (x, y, radius, 0.0, 2.0 * Math.PI, false);
+			context.fill ();
+		}
+	
+		function OnDrawEnd (canvas)
+		{
+		}
+
+		function OnMouseDown (event)
+		{
+			mouseMoved = false;
+		}
+		
+		function OnMouseMove (event)
+		{
+			mouseMoved = true;
+		}
+
+		function OnMouseUp (event)
+		{
+			if (!mouseMoved) {
+				alert (viewer.NearestPointUnderMouse (50));
+			}
+			
+			mouseMoved = false;
+		}
+
+		function Load ()
+		{
+			var viewerCallbacks = {
+				onDrawStart : OnDrawStart,
+				onPointDraw : OnPointDraw,
+				onDrawEnd : OnDrawEnd
+			};
+
+			var canvasName = 'example';
+			var canvas = document.getElementById (canvasName);
+			if (canvas.addEventListener) {
+				canvas.addEventListener ('mousedown', function (event) {OnMouseDown (event);}, false);
+				canvas.addEventListener ('mousemove', function (event) {OnMouseMove (event);}, false);
+				canvas.addEventListener ('mouseup', function (event) {OnMouseUp (event);}, false);
+				//canvas.addEventListener ('touchstart', function (event) {OnTouchStart (event);}, false);
+				//canvas.addEventListener ('touchmove', function (event) {OnTouchMove (event);}, false);
+				//canvas.addEventListener ('touchend', function (event) {OnTouchEnd (event);}, false);
+			}
+
+			mouseMoved = false;
+			
+			var camera = new JSM.Camera (
+				new JSM.Coord (3.0, 3.0, 3.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0.0, 0.0, 1.0)
+			);
+
+			viewer = new JSM.SpriteViewer ();
+			var success = viewer.Start (canvasName, camera, viewerCallbacks);
+
+			viewer.AddPoint (new JSM.Coord (0, 0, 0));
+			viewer.AddPoint (new JSM.Coord (1, 0, 0));
+			viewer.AddPoint (new JSM.Coord (1, 1, 0));
+			viewer.AddPoint (new JSM.Coord (0, 1, 0));
+			viewer.AddPoint (new JSM.Coord (0, 0, 1));
+			viewer.AddPoint (new JSM.Coord (1, 0, 1));
+			viewer.AddPoint (new JSM.Coord (1, 1, 1));
+			viewer.AddPoint (new JSM.Coord (0, 1, 1));
+			
+			viewer.FitInWindow ();
+			viewer.Draw ();
+		}
+		
+		window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
 
 </head>
 
 <body>
+	<canvas id="example" style="background:#cccccc;" width="800" height="500"></canvas>
 </body>
 
 </html>
