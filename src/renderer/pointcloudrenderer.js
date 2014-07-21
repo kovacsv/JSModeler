@@ -158,6 +158,12 @@ JSM.PointCloudRenderer.prototype.AddPoints = function (points, colors)
 	this.points.push ({points : pointBuffer, colors : colorBuffer});
 };
 
+JSM.PointCloudRenderer.prototype.Resize = function ()
+{
+	this.context.viewportWidth = this.canvas.width;
+	this.context.viewportHeight = this.canvas.height;
+};
+
 JSM.PointCloudRenderer.prototype.Render = function ()
 {
 	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);

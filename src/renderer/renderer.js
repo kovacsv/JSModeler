@@ -239,6 +239,12 @@ JSM.Renderer.prototype.AddGeometries = function (geometries)
 	}
 };
 
+JSM.Renderer.prototype.Resize = function ()
+{
+	this.context.viewportWidth = this.canvas.width;
+	this.context.viewportHeight = this.canvas.height;
+};
+
 JSM.Renderer.prototype.Render = function ()
 {
 	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);

@@ -43,6 +43,7 @@ JSM.PointCloudViewer.prototype.AddPoints = function (points, colors)
 
 JSM.PointCloudViewer.prototype.Resize = function ()
 {
+	this.renderer.Resize ();
 	this.Draw ();
 };
 

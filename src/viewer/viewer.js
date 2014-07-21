@@ -43,7 +43,8 @@ JSM.Viewer.prototype.AddGeometries = function (geometries)
 
 JSM.Viewer.prototype.Resize = function ()
 {
-	this.renderer.Render ();
+	this.renderer.Resize ();
+	this.Draw ();
 };
 
 JSM.Viewer.prototype.Draw = function ()
