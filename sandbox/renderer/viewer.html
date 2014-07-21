@@ -130,14 +130,12 @@
 			model.AddBody (body4);
 			model.AddBody (body5);
 
-			var geometries = [];
-			JSM.ConvertModelToRenderGeometries (model, materials, geometries);
+			var geometries = JSM.ConvertModelToRenderGeometries (model, materials);
 			viewer.AddGeometries (geometries);
 
-			var newGeometries = [];
 			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));
-			JSM.ConvertBodyToRenderGeometries (body6, materials, newGeometries);
+			var newGeometries = JSM.ConvertBodyToRenderGeometries (body6, materials);
 			viewer.AddGeometries (newGeometries);
 
 			Render ();

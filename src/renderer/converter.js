@@ -1,4 +1,4 @@
-JSM.ConvertBodyToRenderGeometries = function (body, materials, geometries)
+JSM.ConvertBodyToRenderGeometries = function (body, materials)
 {
 	function OnGeometryStart (material)
 	{
@@ -45,17 +45,25 @@ JSM.ConvertBodyToRenderGeometries = function (body, materials, geometries)
 		onTriangle : OnTriangle
 	};
 	
+	var geometries = [];
 	var geometry = null;
 	var vertices = null;
 	var normals = null;
+	
 	JSM.ExplodeBodyToTriangles (body, materials, explodeData);
+	return geometries;
 };
 
-JSM.ConvertModelToRenderGeometries = function (model, materials, geometries)
+JSM.ConvertModelToRenderGeometries = function (model, materials)
 {
-	var i, body;
+	var geometries = [];
+	var i, j, body;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		JSM.ConvertBodyToRenderGeometries (body, materials, geometries);
+		var currentGeometries = JSM.ConvertBodyToRenderGeometries (body, materials, geometries);
+		for (j = 0; j < currentGeometries.length; j++) {
+			geometries.push (currentGeometries[j]);
+		}
 	}
+	return geometries;
 };
