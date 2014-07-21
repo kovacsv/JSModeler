@@ -120,7 +120,7 @@ JSM.ThreeViewer.prototype.InitCamera = function (settings)
 	}
 
 	this.navigation = new JSM.Navigation ();
-	if (!this.navigation.Init (this.canvas, this.cameraMove, this.DrawIfNeeded.bind (this))) {
+	if (!this.navigation.Init (this.canvas, this.cameraMove, this.DrawIfNeeded.bind (this), this.Resize.bind (this))) {
 		return false;
 	}
 	

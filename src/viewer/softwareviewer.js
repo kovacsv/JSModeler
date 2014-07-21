@@ -51,7 +51,7 @@ JSM.SoftwareViewer.prototype.InitCamera = function (camera)
 	}
 
 	this.navigation = new JSM.Navigation ();
-	if (!this.navigation.Init (this.canvas, this.camera, this.Draw.bind (this))) {
+	if (!this.navigation.Init (this.canvas, this.camera, this.Draw.bind (this), this.Resize.bind (this))) {
 		return false;
 	}
 

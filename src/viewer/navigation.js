@@ -2,7 +2,8 @@ JSM.Navigation = function ()
 {
 	this.canvas = null;
 	this.camera = null;
-	this.callback = null;
+	this.drawCallback = null;
+	this.resizeCallback = null;
 	
 	this.mouse = null;
 	this.touch = null;
@@ -12,7 +13,7 @@ JSM.Navigation = function ()
 	this.cameraEnableZoom = null;
 };
 
-JSM.Navigation.prototype.Init = function (canvas, camera, callback)
+JSM.Navigation.prototype.Init = function (canvas, camera, drawCallback, resizeCallback)
 {
 	this.cameraFixUp = true;
 	this.cameraEnableOrbit = true;
@@ -20,7 +21,8 @@ JSM.Navigation.prototype.Init = function (canvas, camera, callback)
 
 	this.canvas = canvas;
 	this.camera = camera;
-	this.callback = callback;
+	this.drawCallback = drawCallback;
+	this.resizeCallback = resizeCallback;
 
 	this.mouse = new JSM.Mouse ();
 	this.touch = new JSM.Touch ();
@@ -37,6 +39,9 @@ JSM.Navigation.prototype.Init = function (canvas, camera, callback)
 		this.canvas.addEventListener ('touchstart', function (event) {myThis.OnTouchStart (event);}, false);
 		this.canvas.addEventListener ('touchmove', function (event) {myThis.OnTouchMove (event);}, false);
 		this.canvas.addEventListener ('touchend', function (event) {myThis.OnTouchEnd (event);}, false);
+	}
+	if (window.addEventListener) {
+		window.addEventListener ('resize', function (event) {myThis.OnResize (event);}, false);
 	}
 	
 	return true;
@@ -82,6 +87,20 @@ JSM.Navigation.prototype.Zoom = function (zoomIn)
 	this.camera.eye = JSM.CoordOffset (this.camera.eye, direction, move);
 };
 
+JSM.Navigation.prototype.DrawCallback = function ()
+{
+	if (this.drawCallback !== undefined && this.drawCallback !== null) {
+		this.drawCallback ();
+	}
+};
+
+JSM.Navigation.prototype.ResizeCallback = function ()
+{
+	if (this.resizeCallback !== undefined && this.resizeCallback !== null) {
+		this.resizeCallback ();
+	}
+};
+
 JSM.Navigation.prototype.OnMouseDown = function (event)
 {
 	event.preventDefault ();
@@ -103,7 +122,7 @@ JSM.Navigation.prototype.OnMouseMove = function (event)
 	var ratio = -0.5;
 	this.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 	
-	this.callback ();
+	this.DrawCallback ();
 };
 
 JSM.Navigation.prototype.OnMouseUp = function (event)
@@ -139,7 +158,7 @@ JSM.Navigation.prototype.OnMouseWheel = function (event)
 
 	var zoomIn = delta > 0;
 	this.Zoom (zoomIn);
-	this.callback ();
+	this.DrawCallback ();
 };
 
 JSM.Navigation.prototype.OnTouchStart = function (event)
@@ -162,11 +181,17 @@ JSM.Navigation.prototype.OnTouchMove = function (event)
 	
 	var ratio = -0.5;
 	this.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
-	this.callback ();
+	this.DrawCallback ();
 };
 
 JSM.Navigation.prototype.OnTouchEnd = function (event)
 {
 	event.preventDefault ();
 	this.touch.End (event, this.canvas);
+};
+
+JSM.Navigation.prototype.OnResize = function (event)
+{
+	event.preventDefault ();
+	this.ResizeCallback ();
 };

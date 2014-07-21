@@ -180,10 +180,6 @@
 			
 			canvas.width = document.body.clientWidth - left.clientWidth - 2.0 * margin;
 			canvas.height = document.body.clientHeight - header.clientHeight - menu.clientHeight - 2.0 * margin;
-
-			if (demo != null) {
-				demo.Resize ();
-			}
 			
 			var floating = document.getElementById ('floating');
 			floating.style.left = floatingMargin + 'px';

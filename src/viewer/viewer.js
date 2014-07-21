@@ -30,7 +30,7 @@ JSM.Viewer.prototype.InitRenderer = function (canvasName, camera, light)
 JSM.Viewer.prototype.InitNavigation = function ()
 {
 	this.navigation = new JSM.Navigation ();
-	if (!this.navigation.Init (this.renderer.canvas, this.renderer.camera, this.Draw.bind (this))) {
+	if (!this.navigation.Init (this.renderer.canvas, this.renderer.camera, this.Draw.bind (this), this.Resize.bind (this))) {
 		return false;
 	}
 	return true;
@@ -39,6 +39,11 @@ JSM.Viewer.prototype.InitNavigation = function ()
 JSM.Viewer.prototype.AddGeometries = function (geometries)
 {
 	this.renderer.AddGeometries (geometries);
+};
+
+JSM.Viewer.prototype.Resize = function ()
+{
+	this.renderer.Render ();
 };
 
 JSM.Viewer.prototype.Draw = function ()

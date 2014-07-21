@@ -1044,12 +1044,7 @@ JSMDemo.prototype =
 		for (var i = 0; i < meshes.length; i++) {
 			this.viewer.AddMesh (meshes[i]);
 		}
-	},
-	
-	Resize : function ()
-	{
-		this.viewer.Resize ();
-	},
+	}
 	
 	Draw : function ()
 	{
