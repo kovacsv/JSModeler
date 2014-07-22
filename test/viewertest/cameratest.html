@@ -90,6 +90,7 @@
 			info.innerHTML = '';
 			info.innerHTML += 'fixUp: ' + viewer.navigation.cameraFixUp + ', ';
 			info.innerHTML += 'orbit: ' + viewer.navigation.cameraEnableOrbit + ', ';
+			info.innerHTML += 'pan: ' + viewer.navigation.cameraEnablePan + ', ';
 			info.innerHTML += 'zoom: ' + viewer.navigation.cameraEnableZoom;
 		}
 		
@@ -119,13 +120,19 @@
 		
 		function SwitchOrbit ()
 		{
-			viewer.navigation.cameraEnableOrbit = !viewer.navigation.cameraEnableOrbit;
+			viewer.navigation.EnableOrbit (!viewer.navigation.cameraEnableOrbit);
+			WriteCameraInfo ();
+		}
+
+		function SwitchPan ()
+		{
+			viewer.navigation.EnablePan (!viewer.navigation.cameraEnablePan);
 			WriteCameraInfo ();
 		}
 
 		function SwitchZoom ()
 		{
-			viewer.navigation.cameraEnableZoom = !viewer.navigation.cameraEnableZoom;
+			viewer.navigation.EnableZoom (!viewer.navigation.cameraEnableZoom);
 			WriteCameraInfo ();
 		}
 
@@ -180,6 +187,7 @@
 			<a class="button" href="javascript:Reset3 ()">reset 3</a>
 			<a class="button" href="javascript:SwitchFixUp ()">fix up</a>
 			<a class="button" href="javascript:SwitchOrbit ()">orbit</a>
+			<a class="button" href="javascript:SwitchPan ()">pan</a>
 			<a class="button" href="javascript:SwitchZoom ()">zoom</a>
 		</div>
 		<div id="info"></div>

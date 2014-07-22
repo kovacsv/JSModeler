@@ -164,7 +164,8 @@
 
 			viewer = new JSM.ThreeViewer ();
 			viewer.Start ('example', viewerSettings);
-			viewer.navigation.cameraEnableZoom = false;
+			viewer.navigation.EnableZoom (false);
+			viewer.navigation.EnablePan (false);
 			
 			var model = GenerateChart ();
 			var conversionData = {

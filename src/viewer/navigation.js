@@ -10,15 +10,14 @@ JSM.Navigation = function ()
 	
 	this.cameraFixUp = null;
 	this.cameraEnableOrbit = null;
+	this.cameraEnablePan = null;
 	this.cameraEnableZoom = null;
+	
+	this.orbitCenter = null;
 };
 
 JSM.Navigation.prototype.Init = function (canvas, camera, drawCallback, resizeCallback)
 {
-	this.cameraFixUp = true;
-	this.cameraEnableOrbit = true;
-	this.cameraEnableZoom = true;
-
 	this.canvas = canvas;
 	this.camera = camera;
 	this.drawCallback = drawCallback;
@@ -27,6 +26,13 @@ JSM.Navigation.prototype.Init = function (canvas, camera, drawCallback, resizeCa
 	this.mouse = new JSM.Mouse ();
 	this.touch = new JSM.Touch ();
 	
+	this.cameraFixUp = true;
+	this.cameraEnableOrbit = true;
+	this.cameraEnablePan = true;
+	this.cameraEnableZoom = true;
+	
+	this.orbitCenter = this.camera.center.Clone ();
+
 	var myThis = this;
 	if (document.addEventListener) {
 		document.addEventListener ('mousemove', function (event) {myThis.OnMouseMove (event);});
@@ -39,12 +45,39 @@ JSM.Navigation.prototype.Init = function (canvas, camera, drawCallback, resizeCa
 		this.canvas.addEventListener ('touchstart', function (event) {myThis.OnTouchStart (event);}, false);
 		this.canvas.addEventListener ('touchmove', function (event) {myThis.OnTouchMove (event);}, false);
 		this.canvas.addEventListener ('touchend', function (event) {myThis.OnTouchEnd (event);}, false);
+		this.canvas.addEventListener ('contextmenu', function (event) {myThis.OnContextMenu (event);}, false);
 	}
 	if (window.addEventListener) {
 		window.addEventListener ('resize', function (event) {myThis.OnResize (event);}, false);
 	}
 	
 	return true;
+};
+
+JSM.Navigation.prototype.SetCamera = function (eye, center, up)
+{
+	this.camera.Set (eye, center, up);
+	this.orbitCenter = this.camera.center.Clone ();
+};
+
+JSM.Navigation.prototype.EnableOrbit = function (enable)
+{
+	this.cameraEnableOrbit = enable;
+};
+
+JSM.Navigation.prototype.EnablePan = function (enable)
+{
+	this.cameraEnablePan = enable;
+};
+
+JSM.Navigation.prototype.EnableZoom = function (enable)
+{
+	this.cameraEnableZoom = enable;
+};
+
+JSM.Navigation.prototype.SetOrbitCenter = function (orbitCenter)
+{
+	this.orbitCenter = orbitCenter;
 };
 
 JSM.Navigation.prototype.Orbit = function (angleX, angleY)
@@ -54,21 +87,45 @@ JSM.Navigation.prototype.Orbit = function (angleX, angleY)
 	
 	var viewDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.center, this.camera.eye));
 	var horizontalDirection = JSM.VectorNormalize (JSM.VectorCross (viewDirection, this.camera.up));
-
+	var differentCenter = !JSM.CoordIsEqual (this.orbitCenter, this.camera.center);
+	
 	if (this.cameraFixUp) {
 		var originalAngle = JSM.GetVectorsAngle (viewDirection, this.camera.up);
 		var angleLimit = 5.0 * JSM.DegRad;
-		var skipVertical = (radAngleY < 0 && originalAngle > Math.PI - angleLimit) || (radAngleY > 0 && originalAngle < angleLimit);
+		var skipVertical = (radAngleY > 0 && originalAngle > Math.PI - angleLimit) || (radAngleY < 0 && originalAngle < angleLimit);
 		if (!skipVertical) {
-			this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, radAngleY, this.camera.center);
+			this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, -radAngleY, this.orbitCenter);
+			if (differentCenter) {
+				this.camera.center = JSM.CoordRotate (this.camera.center, horizontalDirection, -radAngleY, this.orbitCenter);
+			}
 		}
-		this.camera.eye = JSM.CoordRotate (this.camera.eye, this.camera.up, radAngleX, this.camera.center);
+		this.camera.eye = JSM.CoordRotate (this.camera.eye, this.camera.up, -radAngleX, this.orbitCenter);
+		if (differentCenter) {
+			this.camera.center = JSM.CoordRotate (this.camera.center, this.camera.up, -radAngleX, this.orbitCenter);
+		}
 	} else {
 		var verticalDirection = JSM.VectorNormalize (JSM.VectorCross (horizontalDirection, viewDirection));
-		this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, radAngleY, this.camera.center);
-		this.camera.eye = JSM.CoordRotate (this.camera.eye, verticalDirection, radAngleX, this.camera.center);
+		this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, -radAngleY, this.orbitCenter);
+		this.camera.eye = JSM.CoordRotate (this.camera.eye, verticalDirection, -radAngleX, this.orbitCenter);
+		if (differentCenter) {
+			this.camera.center = JSM.CoordRotate (this.camera.center, horizontalDirection, -radAngleY, this.orbitCenter);
+			this.camera.center = JSM.CoordRotate (this.camera.center, verticalDirection, -radAngleX, this.orbitCenter);
+		}
 		this.camera.up = verticalDirection;
 	}
+};
+
+JSM.Navigation.prototype.Pan = function (moveX, moveY)
+{
+	var viewDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.center, this.camera.eye));
+	var horizontalDirection = JSM.VectorNormalize (JSM.VectorCross (viewDirection, this.camera.up));
+	var verticalDirection = JSM.VectorNormalize (JSM.VectorCross (horizontalDirection, viewDirection));
+	
+	this.camera.eye = JSM.CoordOffset (this.camera.eye, horizontalDirection, -moveX);
+	this.camera.center = JSM.CoordOffset (this.camera.center, horizontalDirection, -moveX);
+
+	this.camera.eye = JSM.CoordOffset (this.camera.eye, verticalDirection, moveY);
+	this.camera.center = JSM.CoordOffset (this.camera.center, verticalDirection, moveY);
 };
 
 JSM.Navigation.prototype.Zoom = function (zoomIn)
@@ -114,15 +171,24 @@ JSM.Navigation.prototype.OnMouseMove = function (event)
 	if (!this.mouse.down) {
 		return;
 	}
-	
-	if (!this.cameraEnableOrbit) {
-		return;
+
+	if (this.mouse.button == 1) {
+		if (!this.cameraEnableOrbit) {
+			return;
+		}
+		
+		var ratio = 0.5;
+		this.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
+		this.DrawCallback ();
+	} else if (this.mouse.button == 3) {
+		if (!this.cameraEnablePan) {
+			return;
+		}
+		
+		var ratio = 0.01;
+		this.Pan (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
+		this.DrawCallback ();
 	}
-	
-	var ratio = -0.5;
-	this.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
-	
-	this.DrawCallback ();
 };
 
 JSM.Navigation.prototype.OnMouseUp = function (event)
@@ -188,6 +254,11 @@ JSM.Navigation.prototype.OnTouchEnd = function (event)
 {
 	event.preventDefault ();
 	this.touch.End (event, this.canvas);
+};
+
+JSM.Navigation.prototype.OnContextMenu = function (event)
+{
+	event.preventDefault ();
 };
 
 JSM.Navigation.prototype.OnResize = function (event)

@@ -280,7 +280,8 @@ JSM.ThreeViewer.prototype.RemoveLastMesh = function ()
 
 JSM.ThreeViewer.prototype.SetCamera = function (eye, center, up)
 {
-	this.cameraMove.Set (eye, center, up);
+	this.navigation.SetCamera (eye, center, up);
+	this.navigation.SetOrbitCenter (center.Clone ());
 	this.DrawIfNeeded ();
 };
 
@@ -314,6 +315,7 @@ JSM.ThreeViewer.prototype.FitInWindowWithCenterAndRadius = function (center, rad
 	var distance = radius / Math.sin (fieldOfView * JSM.DegRad);
 	
 	this.cameraMove.eye = JSM.CoordOffset (this.cameraMove.center, centerEyeDirection, distance);
+	this.navigation.SetOrbitCenter (this.cameraMove.center.Clone ());
 	this.DrawIfNeeded ();
 };
 

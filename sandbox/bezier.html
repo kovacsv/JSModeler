@@ -222,7 +222,7 @@
 				originalVertexPos : foundVertex.clone (),
 				originalMousePos : [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY]
 			};
-			viewer.navigation.cameraEnableOrbit = false;
+			viewer.navigation.EnableOrbit (false);
 		}
 		
 		function OnMouseUp (event)
@@ -242,7 +242,7 @@
 			AddBezierSurfaceModel (scp);
 
 			mouseData = null;
-			viewer.navigation.cameraEnableOrbit = true;
+			viewer.navigation.EnableOrbit (true);
 		}
 		
 		function OnMouseMove (event)

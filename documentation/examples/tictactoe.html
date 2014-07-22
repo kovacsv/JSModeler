@@ -299,7 +299,8 @@
 				error = true;
 				return;
 			}
-			viewer.navigation.cameraEnableZoom = false;
+			viewer.navigation.EnableZoom (false);
+			viewer.navigation.EnablePan (false);
 			
 			Reset (1);
 		}
