@@ -112,7 +112,7 @@ JSM.SoftwareViewer.prototype.GetBoundingSphereRadius = function (center)
 	}
 	var radius = 0.0;
 
-	var i, j, body, vertex;
+	var i, j, body, vertex, distance;
 	for (i = 0; i < this.bodies.length; i++) {
 		body = this.bodies[i][0];
 		for (j = 0; j < body.VertexCount (); j++) {

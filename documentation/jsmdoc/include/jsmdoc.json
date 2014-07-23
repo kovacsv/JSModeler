@@ -676,6 +676,17 @@
 						["number[16]", "the result matrix"]
 					]
 				},
+				"MatrixTranslation" : {
+					"description" : "Creates a translation matrix.",
+					"parameters" : [
+						["x", "number", "x offset of the transformation"],
+						["y", "number", "y offset of the transformation"],
+						["z", "number", "z offset of the transformation"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
 				"MatrixRotationX" : {
 					"description" : "Creates a rotation matrix around the x axis.",
 					"parameters" : [
@@ -744,6 +755,16 @@
 					],
 					"returns" : [
 						["number[16]", "the result matrix"]
+					]
+				},
+				"ApplyTransformation" : {
+					"description" : "Applies a matrix transformation to a coordinate.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["matrix", "number[16]", "the matrix"]
+					],
+					"returns" : [
+						["Coord", "the result"]
 					]
 				},
 				"CoordSystemToDirectionVectors" : {

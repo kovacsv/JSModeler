@@ -85,7 +85,7 @@ JSM.PointCloudViewer.prototype.GetBoundingSphereRadius = function (center)
 	}
 	var radius = 0.0;
 
-	var i, j, points, point;
+	var i, j, points, point, distance;
 	for (i = 0; i < this.renderer.points.length; i++) {
 		points = this.renderer.points[i].pointArray;
 		for (j = 0; j < points.length; j = j + 3) {

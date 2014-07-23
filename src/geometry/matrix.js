@@ -57,6 +57,38 @@ JSM.MatrixClone = function (matrix)
 };
 
 /**
+* Function: MatrixTranslation
+* Description: Creates a translation matrix.
+* Parameters:
+*	x {number} x offset of the transformation
+*	y {number} y offset of the transformation
+*	z {number} z offset of the transformation
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixTranslation = function (x, y, z)
+{
+	var result = [];
+	result[0] = 1.0;
+	result[1] = 0.0;
+	result[2] = 0.0;
+	result[3] = 0.0;
+	result[4] = 0.0;
+	result[5] = 1.0;
+	result[6] = 0.0;
+	result[7] = 0.0;
+	result[8] = 0.0;
+	result[9] = 0.0;
+	result[10] = 1.0;
+	result[11] = 0.0;
+	result[12] = x;
+	result[13] = y;
+	result[14] = z;
+	result[15] = 1.0;
+	return result;
+};
+
+/**
 * Function: MatrixRotationX
 * Description: Creates a rotation matrix around the x axis.
 * Parameters:
@@ -337,5 +369,39 @@ JSM.MatrixMultiply = function (matrix1, matrix2)
 	result[13] = a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31;
 	result[14] = a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32;
 	result[15] = a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33;
+	return result;
+};
+
+/**
+* Function: ApplyTransformation
+* Description: Applies a matrix transformation to a coordinate.
+* Parameters:
+*	coord {Coord} the coordinate
+*	matrix {number[16]} the matrix
+* Returns:
+*	{Coord} the result
+*/
+JSM.ApplyTransformation = function (coord, matrix)
+{
+	var a00 = coord.x;
+	var a01 = coord.y;
+	var a02 = coord.z;
+	var b00 = matrix[0];
+	var b01 = matrix[1];
+	var b02 = matrix[2];
+	var b10 = matrix[4];
+	var b11 = matrix[5];
+	var b12 = matrix[6];
+	var b20 = matrix[8];
+	var b21 = matrix[9];
+	var b22 = matrix[10];
+	var b30 = matrix[12];
+	var b31 = matrix[13];
+	var b32 = matrix[14];
+	
+	var result = new JSM.Coord ();
+	result.x = a00 * b00 + a01 * b10 + a02 * b20 + b30;
+	result.y = a00 * b01 + a01 * b11 + a02 * b21 + b31;
+	result.z = a00 * b02 + a01 * b12 + a02 * b22 + b32;
 	return result;
 };

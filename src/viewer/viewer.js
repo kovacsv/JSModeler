@@ -61,11 +61,13 @@ JSM.Viewer.prototype.GetBoundingBox = function ()
 	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
 	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
 	
-	var i, j, vertexArray, vertex;
+	var i, j, geometry, vertexArray, vertex;
 	for (i = 0; i < this.renderer.geometries.length; i++) {
-		vertexArray = this.renderer.geometries[i].vertexArray;
+		geometry = this.renderer.geometries[i];
+		vertexArray = geometry.vertexArray;
 		for (j = 0; j < vertexArray.length; j = j + 3) {
 			vertex = new JSM.Coord (vertexArray[j], vertexArray[j + 1], vertexArray[j + 2]);
+			vertex = JSM.ApplyTransformation (vertex, geometry.transformation);
 			min.x = JSM.Minimum (min.x, vertex.x);
 			min.y = JSM.Minimum (min.y, vertex.y);
 			min.z = JSM.Minimum (min.z, vertex.z);
@@ -85,11 +87,13 @@ JSM.Viewer.prototype.GetBoundingSphereRadius = function (center)
 	}
 	var radius = 0.0;
 
-	var i, j, vertexArray, vertex;
+	var i, j, geometry, vertexArray, vertex, distance;
 	for (i = 0; i < this.renderer.geometries.length; i++) {
-		vertexArray = this.renderer.geometries[i].vertexArray;
+		geometry = this.renderer.geometries[i];
+		vertexArray = geometry.vertexArray;
 		for (j = 0; j < vertexArray.length; j = j + 3) {
 			vertex = new JSM.Coord (vertexArray[j], vertexArray[j + 1], vertexArray[j + 2]);
+			vertex = JSM.ApplyTransformation (vertex, geometry.transformation);
 			distance = JSM.CoordDistance (center, vertex);
 			if (JSM.IsGreater (distance, radius)) {
 				radius = distance;
