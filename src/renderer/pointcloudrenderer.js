@@ -155,7 +155,7 @@ JSM.PointCloudRenderer.prototype.AddPoints = function (points, colors)
 	colorBuffer.itemSize = 3;
 	colorBuffer.numItems = parseInt (colorArray.length / 3, 10);
 
-	this.points.push ({points : pointBuffer, colors : colorBuffer});
+	this.points.push ({pointArray : pointArray, pointBuffer : pointBuffer, colorBuffer : colorBuffer});
 };
 
 JSM.PointCloudRenderer.prototype.Resize = function ()
@@ -175,14 +175,14 @@ JSM.PointCloudRenderer.prototype.Render = function ()
 	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
 	this.context.uniformMatrix4fv (this.shader.vMatrixUniform, false, viewMatrix);
 
-	var i, currentPoints, currentColors;
+	var i, pointBuffer, colorBuffer;
 	for (i = 0; i < this.points.length; i++) {
-		currentPoints = this.points[i].points;
-		currentColors = this.points[i].colors;
-		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentPoints);
-		this.context.vertexAttribPointer (this.shader.vertexPositionAttribute, currentPoints.itemSize, this.context.FLOAT, false, 0, 0);
-		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentColors);
-		this.context.vertexAttribPointer (this.shader.vertexColorAttribute, currentColors.itemSize, this.context.FLOAT, false, 0, 0);
-		this.context.drawArrays (this.context.POINTS, 0, currentPoints.numItems);
+		pointBuffer = this.points[i].pointBuffer;
+		colorBuffer = this.points[i].colorBuffer;
+		this.context.bindBuffer (this.context.ARRAY_BUFFER, pointBuffer);
+		this.context.vertexAttribPointer (this.shader.vertexPositionAttribute, pointBuffer.itemSize, this.context.FLOAT, false, 0, 0);
+		this.context.bindBuffer (this.context.ARRAY_BUFFER, colorBuffer);
+		this.context.vertexAttribPointer (this.shader.vertexColorAttribute, colorBuffer.itemSize, this.context.FLOAT, false, 0, 0);
+		this.context.drawArrays (this.context.POINTS, 0, pointBuffer.numItems);
 	}
 };

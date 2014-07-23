@@ -296,7 +296,7 @@ JSM.ThreeViewer.prototype.Resize = function ()
 JSM.ThreeViewer.prototype.FitInWindow = function ()
 {
 	var center = this.GetCenter ();
-	var radius = this.GetBoundingSphereRadius ();
+	var radius = this.GetBoundingSphereRadius (center);
 	this.navigation.FitInWindow (center, radius);
 	this.DrawIfNeeded ();
 };
@@ -334,9 +334,11 @@ JSM.ThreeViewer.prototype.GetBoundingBox = function ()
 	return [min, max];
 };
 
-JSM.ThreeViewer.prototype.GetBoundingSphereRadius = function ()
+JSM.ThreeViewer.prototype.GetBoundingSphereRadius = function (center)
 {
-	var center = this.GetCenter ();
+	if (center === undefined || center === null) {
+		center = this.GetCenter ();
+	}
 	var radius = 0.0;
 
 	var geometry, coord, distance;
