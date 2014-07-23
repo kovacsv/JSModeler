@@ -30,7 +30,7 @@ JSM.PointCloudViewer.prototype.InitRenderer = function (canvasName, camera)
 JSM.PointCloudViewer.prototype.InitNavigation = function ()
 {
 	this.navigation = new JSM.Navigation ();
-	if (!this.navigation.Init (this.renderer.canvas, this.renderer.camera, this.Resize.bind (this))) {
+	if (!this.navigation.Init (this.renderer.canvas, this.renderer.camera, this.Draw.bind (this), this.Resize.bind (this))) {
 		return false;
 	}
 	return true;

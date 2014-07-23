@@ -80,6 +80,23 @@ JSM.Navigation.prototype.SetOrbitCenter = function (orbitCenter)
 	this.orbitCenter = orbitCenter;
 };
 
+JSM.Navigation.prototype.FitInWindow = function (center, radius)
+{
+	var offsetToOrigo = JSM.CoordSub (this.camera.center, center);
+	this.camera.center = center;
+	this.camera.eye = JSM.CoordSub (this.camera.eye, offsetToOrigo);
+	
+	var centerEyeDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.eye, this.camera.center));
+	var fieldOfView = this.camera.fieldOfView / 2.0;
+	if (this.canvas.width < this.canvas.height) {
+		fieldOfView = fieldOfView * this.canvas.width / this.canvas.height;
+	}
+	var distance = radius / Math.sin (fieldOfView * JSM.DegRad);
+	
+	this.camera.eye = JSM.CoordOffset (this.camera.center, centerEyeDirection, distance);
+	this.orbitCenter = this.camera.center.Clone ();
+};
+
 JSM.Navigation.prototype.Orbit = function (angleX, angleY)
 {
 	var radAngleX = angleX * JSM.DegRad;
@@ -91,9 +108,8 @@ JSM.Navigation.prototype.Orbit = function (angleX, angleY)
 	
 	if (this.cameraFixUp) {
 		var originalAngle = JSM.GetVectorsAngle (viewDirection, this.camera.up);
-		var angleLimit = 5.0 * JSM.DegRad;
-		var skipVertical = (radAngleY > 0 && originalAngle > Math.PI - angleLimit) || (radAngleY < 0 && originalAngle < angleLimit);
-		if (!skipVertical) {
+		var newAngle = originalAngle + radAngleY;
+		if (newAngle > 0 && newAngle < Math.PI) {
 			this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, -radAngleY, this.orbitCenter);
 			if (differentCenter) {
 				this.camera.center = JSM.CoordRotate (this.camera.center, horizontalDirection, -radAngleY, this.orbitCenter);

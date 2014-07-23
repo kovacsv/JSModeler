@@ -297,25 +297,7 @@ JSM.ThreeViewer.prototype.FitInWindow = function ()
 {
 	var center = this.GetCenter ();
 	var radius = this.GetBoundingSphereRadius ();
-	this.FitInWindowWithCenterAndRadius (center, radius);
-};
-
-JSM.ThreeViewer.prototype.FitInWindowWithCenterAndRadius = function (center, radius)
-{
-	var offsetToOrigo = JSM.CoordSub (this.cameraMove.center, center);
-	this.cameraMove.origo = center;
-	this.cameraMove.center = center;
-	this.cameraMove.eye = JSM.CoordSub (this.cameraMove.eye, offsetToOrigo);
-	
-	var centerEyeDirection = JSM.VectorNormalize (JSM.CoordSub (this.cameraMove.eye, this.cameraMove.center));
-	var fieldOfView = this.cameraMove.fieldOfView / 2.0;
-	if (this.canvas.width < this.canvas.height) {
-		fieldOfView = fieldOfView * this.canvas.width / this.canvas.height;
-	}
-	var distance = radius / Math.sin (fieldOfView * JSM.DegRad);
-	
-	this.cameraMove.eye = JSM.CoordOffset (this.cameraMove.center, centerEyeDirection, distance);
-	this.navigation.SetOrbitCenter (this.cameraMove.center.Clone ());
+	this.navigation.FitInWindow (center, radius);
 	this.DrawIfNeeded ();
 };
 

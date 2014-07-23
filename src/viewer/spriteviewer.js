@@ -114,22 +114,7 @@ JSM.SpriteViewer.prototype.FitInWindow = function ()
 {
 	var center = this.GetCenter ();
 	var radius = this.GetBoundingSphereRadius ();
-	this.FitInWindowWithCenterAndRadius (center, radius);
-};
-
-JSM.SpriteViewer.prototype.FitInWindowWithCenterAndRadius = function (center, radius)
-{
-	var offsetToOrigo = JSM.CoordSub (this.camera.center, center);
-	this.camera.origo = center;
-	this.camera.center = center;
-	this.camera.eye = JSM.CoordSub (this.camera.eye, offsetToOrigo);
-	var centerEyeDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.eye, this.camera.center));
-	var fieldOfView = this.camera.fieldOfView / 2.0;
-	if (this.canvas.width < this.canvas.height) {
-		fieldOfView = fieldOfView * this.canvas.width / this.canvas.height;
-	}
-	var distance = radius / Math.sin (fieldOfView * JSM.DegRad);
-	this.camera.eye = JSM.CoordOffset (this.camera.center, centerEyeDirection, distance);
+	this.navigation.FitInWindow (center, radius);
 	this.Draw ();
 };
 

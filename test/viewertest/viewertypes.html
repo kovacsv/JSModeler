@@ -80,24 +80,46 @@
 		{
 			var header = document.getElementById ('header');
 			var canvas = document.getElementById ('test');
-			if (canvas !== null) {			
-				canvas.width = document.body.clientWidth;
-				canvas.height = document.body.clientHeight - header.clientHeight - 1;
+			if (canvas !== null) {
+				if (canvas instanceof (HTMLCanvasElement)) {
+					canvas.width = document.body.clientWidth;
+					canvas.height = document.body.clientHeight - header.clientHeight - 1;
+				} else if (canvas instanceof (SVGSVGElement)) {
+					canvas.setAttribute ('width', document.body.clientWidth);
+					canvas.setAttribute ('height', document.body.clientHeight - header.clientHeight - 1);
+				}
 			}
 		}
 
 		function SwitchViewer (type)
 		{
-			if (canvas !== null) {
-				document.body.removeChild (canvas);
+			function CreateCanvas ()
+			{
+				if (canvas !== null) {
+					document.body.removeChild (canvas);
+				}
+				
+				canvas = document.createElement ('canvas');
+				canvas.id = 'test';
+				document.body.appendChild (canvas);			
+				Resize ();
 			}
-			
-			canvas = document.createElement ('canvas');
-			canvas.id = 'test';
-			document.body.appendChild (canvas);
-			Resize ();
-			
+
+			function CreateSVGCanvas ()
+			{
+				if (canvas !== null) {
+					document.body.removeChild (canvas);
+				}
+				
+				canvas = document.createElementNS ('http://www.w3.org/2000/svg', 'svg');
+				canvas.id = 'test';
+				document.body.appendChild (canvas);
+				Resize ();
+			}
+
 			if (type == 'three') {
+				CreateCanvas ();
+				
 				var viewerSettings = {
 					cameraEyePosition : [3.0, 4.0, 2.0],
 					cameraCenterPosition : [0.0, 0.0, 0.0],
@@ -106,7 +128,7 @@
 
 				viewer = new JSM.ThreeViewer ();
 				if (!viewer.Start ('test', viewerSettings)) {
-					return;
+					alert ('error');
 				}
 
 				var body = JSM.GenerateCuboid (1, 1, 1);
@@ -122,6 +144,8 @@
 				
 				viewer.Draw ();
 			} else if (type == 'internal') {
+				CreateCanvas ();
+				
 				var camera = new JSM.Camera (
 					new JSM.Coord (3.0, 4.0, 2.0),
 					new JSM.Coord (0.0, 0.0, 0.0),
@@ -130,7 +154,7 @@
 
 				viewer = new JSM.Viewer ();
 				if (!viewer.Init ('test', camera)) {
-					return;
+					alert ('error');
 				}
 
 				var body = JSM.GenerateCuboid (1, 1, 1);
@@ -144,15 +168,156 @@
 			
 				viewer.AddGeometries (JSM.ConvertBodyToRenderGeometries (body, materials));
 				viewer.Draw ();
+			} else if (type == 'pointcloud') {
+				CreateCanvas ();
+				
+				var camera = new JSM.Camera (
+					new JSM.Coord (3.0, 4.0, 2.0),
+					new JSM.Coord (0.0, 0.0, 0.0),
+					new JSM.Vector (0.0, 0.0, 1.0)
+				);
+
+				viewer = new JSM.PointCloudViewer ();
+				if (!viewer.Init ('test', camera)) {
+					alert ('error');
+				}
+
+				var points = [];
+				var colors = [];
+				var i, x, y, z;
+				for (i = 0;  i < 10000; i++) {
+					x = Math.random ();
+					y = Math.random ();
+					z = Math.random ();
+					points.push (x - 0.5, y - 0.5, z - 0.5);
+					colors.push (x, y, z);
+				}
+				viewer.AddPoints (points, colors);
+
+				viewer.Draw ();
+			} else if (type == 'canvas') {
+				CreateCanvas ();
+				
+				var camera = new JSM.Camera (
+					new JSM.Coord (3.0, 4.0, 2.0),
+					new JSM.Coord (0.0, 0.0, 0.0),
+					new JSM.Vector (0.0, 0.0, 1.0)
+				);
+
+				viewer = new JSM.SoftwareViewer ();
+				if (!viewer.Start ('test', camera)) {
+					alert ('error');
+				}
+				viewer.drawMode = 'HiddenLineFrontFacing';
+
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
+				materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+				
+				body.GetPolygon (1).SetMaterialIndex (0);
+				body.GetPolygon (2).SetMaterialIndex (1);
+			
+				viewer.AddBody (body, materials);
+				viewer.Draw ();
+			} else if (type == 'svg') {
+				CreateSVGCanvas ();
+			
+				var camera = new JSM.Camera (
+					new JSM.Coord (3.0, 4.0, 2.0),
+					new JSM.Coord (0.0, 0.0, 0.0),
+					new JSM.Vector (0.0, 0.0, 1.0)
+				);
+
+				viewer = new JSM.SoftwareViewer ();
+				if (!viewer.Start ('test', camera)) {
+					alert ('error');
+				}
+				viewer.drawMode = 'HiddenLineFrontFacing';
+
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
+				materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+				
+				body.GetPolygon (1).SetMaterialIndex (0);
+				body.GetPolygon (2).SetMaterialIndex (1);
+			
+				viewer.AddBody (body, materials);
+				viewer.Draw ();
+			} else if (type == 'sprite') {
+				function OnDrawStart (canvas)
+				{
+					var context = canvas.getContext ('2d');
+					context.clearRect (0, 0, canvas.width, canvas.height);
+				}
+				
+				function OnPointDraw (canvas, index, projected)
+				{
+					var context = canvas.getContext ('2d');
+					var x = projected.x;
+					var y = projected.y;
+					var radius = 20;
+
+					var xBeg = x - radius / 2.0;
+					var yBeg = y - radius / 2.0;
+				
+					context.beginPath ();
+					radialGradient = context.createRadialGradient (x, y, 0, x, y, radius);
+					radialGradient.addColorStop (0, '#ff0000');
+					radialGradient.addColorStop (1, '#aa0000');
+					context.fillStyle = radialGradient;
+					context.arc (x, y, radius, 0.0, 2.0 * Math.PI, false);
+					context.fill ();
+				}
+			
+				function OnDrawEnd (canvas)
+				{
+				}
+
+				CreateCanvas ();
+			
+				var viewerCallbacks = {
+					onDrawStart : OnDrawStart,
+					onPointDraw : OnPointDraw,
+					onDrawEnd : OnDrawEnd
+				};
+
+				var camera = new JSM.Camera (
+					new JSM.Coord (3.0, 3.0, 3.0),
+					new JSM.Coord (0.0, 0.0, 0.0),
+					new JSM.Vector (0.0, 0.0, 1.0)
+				);
+
+				viewer = new JSM.SpriteViewer ();
+				var success = viewer.Start ('test', camera, viewerCallbacks);
+
+				viewer.AddPoint (new JSM.Coord (-0.5, -0.5, -0.5));
+				viewer.AddPoint (new JSM.Coord (0.5, -0.5, -0.5));
+				viewer.AddPoint (new JSM.Coord (0.5, 0.5, -0.5));
+				viewer.AddPoint (new JSM.Coord (-0.5, 0.5, -0.5));
+				viewer.AddPoint (new JSM.Coord (-0.5, -0.5, 0.5));
+				viewer.AddPoint (new JSM.Coord (0.5, -0.5, 0.5));
+				viewer.AddPoint (new JSM.Coord (0.5, 0.5, 0.5));
+				viewer.AddPoint (new JSM.Coord (-0.5, 0.5, 0.5));
+				
+				viewer.Draw ();
 			}
 		}
 
+		function FitInWindow ()
+		{
+			viewer.FitInWindow ();
+		}
+		
 		function Load ()
 		{
 			window.onresize = Resize;
 			Resize ();
 
-			SwitchViewer ('internal');
+			SwitchViewer ('three');
 		}
 
 	    window.onload = function ()
@@ -168,6 +333,11 @@
 		<div id="buttons">
 			<a class="button" href="javascript:SwitchViewer ('three')">three</a>
 			<a class="button" href="javascript:SwitchViewer ('internal')">internal</a>
+			<a class="button" href="javascript:SwitchViewer ('pointcloud')">pointcloud</a>
+			<a class="button" href="javascript:SwitchViewer ('canvas')">canvas</a>
+			<a class="button" href="javascript:SwitchViewer ('svg')">svg</a>
+			<a class="button" href="javascript:SwitchViewer ('sprite')">sprite</a>
+			<a class="button green" href="javascript:FitInWindow ()">fit in window</a>
 		</div>
 	</div>
 </body>
