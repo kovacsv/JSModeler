@@ -117,7 +117,7 @@
 				Resize ();
 			}
 
-			if (type == 'three') {
+			if (type == 'three' || type == 'three2') {
 				CreateCanvas ();
 				
 				var viewerSettings = {
@@ -142,8 +142,17 @@
 			
 				viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body, materials));
 				
+				if (type == 'three2') {
+					var body2 = JSM.GenerateCuboid (1, 1, 1);
+					var renderGeometries2 = JSM.ConvertBodyToThreeMeshes (body2);
+					renderGeometries2[0].position.x += -1.2;
+					renderGeometries2[0].position.y += 1.2;
+					renderGeometries2[0].position.z += 1.2;
+					renderGeometries2[0].rotation.z += 20.0 * JSM.DegRad;
+					viewer.AddMeshes (renderGeometries2);
+				}				
 				viewer.Draw ();
-			} else if (type == 'internal') {
+			} else if (type == 'internal' || type == 'internal2') {
 				CreateCanvas ();
 				
 				var camera = new JSM.Camera (
@@ -167,8 +176,18 @@
 				body.GetPolygon (2).SetMaterialIndex (1);
 			
 				var renderGeometries = JSM.ConvertBodyToRenderGeometries (body, materials);
-				//renderGeometries[0].SetTransformation (JSM.TranslationTransformation (new JSM.Coord (1, 0, 0)));
 				viewer.AddGeometries (renderGeometries);
+				
+				if (type == 'internal2') {
+					var body2 = JSM.GenerateCuboid (1, 1, 1);
+					var renderGeometries2 = JSM.ConvertBodyToRenderGeometries (body2);
+					var transformation = new JSM.Transformation ();
+					transformation.Append (JSM.RotationZTransformation (20.0 * JSM.DegRad));
+					transformation.Append (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
+					renderGeometries2[0].SetTransformation (transformation);
+					viewer.AddGeometries (renderGeometries2);
+				}
+				
 				viewer.Draw ();
 			} else if (type == 'pointcloud') {
 				CreateCanvas ();
@@ -334,7 +353,9 @@
 	<div id="header">
 		<div id="buttons">
 			<a class="button" href="javascript:SwitchViewer ('three')">three</a>
+			<a class="button" href="javascript:SwitchViewer ('three2')">three 2</a>
 			<a class="button" href="javascript:SwitchViewer ('internal')">internal</a>
+			<a class="button" href="javascript:SwitchViewer ('internal2')">internal 2</a>
 			<a class="button" href="javascript:SwitchViewer ('pointcloud')">pointcloud</a>
 			<a class="button" href="javascript:SwitchViewer ('canvas')">canvas</a>
 			<a class="button" href="javascript:SwitchViewer ('svg')">svg</a>
