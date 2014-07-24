@@ -676,12 +676,32 @@
 						["number[16]", "the result matrix"]
 					]
 				},
+				"MatrixTranspose" : {
+					"description" : "Transposes a matrix.",
+					"parameters" : [
+						["matrix", "number[16]", "the source matrix"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
 				"MatrixTranslation" : {
 					"description" : "Creates a translation matrix.",
 					"parameters" : [
 						["x", "number", "x offset of the transformation"],
 						["y", "number", "y offset of the transformation"],
 						["z", "number", "z offset of the transformation"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixRotation" : {
+					"description" : "Creates a rotation matrix around the given axis.",
+					"parameters" : [
+						["axis", "Vector", "the axis of the rotation"],
+						["angle", "number", "the angle of the rotation"],
+						["origo", "Coord", "the origo of the rotation"]
 					],
 					"returns" : [
 						["number[16]", "the result matrix"]
@@ -737,11 +757,11 @@
 						["number[16]", "the result matrix"]
 					]
 				},
-				"VectorMatrixMultiply" : {
-					"description" : "Multiplies a vector with a matrix.",
+				"MatrixVectorMultiply" : {
+					"description" : "Multiplies a matrix with a vector.",
 					"parameters" : [
-						["vector", "number[4]", "the vector"],
-						["matrix", "number[16]", "the matrix"]
+						["matrix", "number[16]", "the matrix"],
+						["vector", "number[4]", "the vector"]
 					],
 					"returns" : [
 						["number[4]", "the result vector"]
@@ -760,8 +780,8 @@
 				"ApplyTransformation" : {
 					"description" : "Applies a matrix transformation to a coordinate.",
 					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["matrix", "number[16]", "the matrix"]
+						["matrix", "number[16]", "the matrix"],
+						["coord", "Coord", "the coordinate"]
 					],
 					"returns" : [
 						["Coord", "the result"]
@@ -1556,6 +1576,21 @@
 				"Transformation" : {
 					"description" : "Represents a transformation matrix.",
 					"functions" : {
+						"GetMatrix" : {
+							"description" : "Returns the matrix of the transformation.",
+							"returns" : [
+								["number[16]", "the matrix"]
+							]
+						},
+						"SetMatrix" : {
+							"description" : "Sets matrix of the transformation.",
+							"parameters" : [
+								["matrix", "number[16]", "the matrix"]
+							]
+						},
+						"Transpose" : {
+							"description" : "Transpose matrix of the transformation."
+						},
 						"Append" : {
 							"description" : "Adds a transformation to the matrix.",
 							"parameters" : [

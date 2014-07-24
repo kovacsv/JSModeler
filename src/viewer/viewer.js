@@ -67,7 +67,7 @@ JSM.Viewer.prototype.GetBoundingBox = function ()
 		vertexArray = geometry.vertexArray;
 		for (j = 0; j < vertexArray.length; j = j + 3) {
 			vertex = new JSM.Coord (vertexArray[j], vertexArray[j + 1], vertexArray[j + 2]);
-			vertex = JSM.ApplyTransformation (vertex, geometry.transformation);
+			vertex = geometry.transformation.Apply (vertex);
 			min.x = JSM.Minimum (min.x, vertex.x);
 			min.y = JSM.Minimum (min.y, vertex.y);
 			min.z = JSM.Minimum (min.z, vertex.z);
@@ -93,7 +93,7 @@ JSM.Viewer.prototype.GetBoundingSphereRadius = function (center)
 		vertexArray = geometry.vertexArray;
 		for (j = 0; j < vertexArray.length; j = j + 3) {
 			vertex = new JSM.Coord (vertexArray[j], vertexArray[j + 1], vertexArray[j + 2]);
-			vertex = JSM.ApplyTransformation (vertex, geometry.transformation);
+			vertex = geometry.transformation.Apply (vertex);
 			distance = JSM.CoordDistance (center, vertex);
 			if (JSM.IsGreater (distance, radius)) {
 				radius = distance;

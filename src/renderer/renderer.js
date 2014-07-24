@@ -2,7 +2,7 @@ JSM.RenderGeometry = function ()
 {
 	this.material = {};
 
-	this.transformation = JSM.MatrixIdentity ();
+	this.transformation = new JSM.Transformation ();
 
 	this.vertexArray = null;
 	this.normalArray = null;
@@ -29,6 +29,16 @@ JSM.RenderGeometry.prototype.SetNormalArray = function (normals)
 JSM.RenderGeometry.prototype.GetTransformation = function ()
 {
 	return this.transformation;
+};
+
+JSM.RenderGeometry.prototype.GetTransformationMatrix = function ()
+{
+	return this.transformation.matrix;
+};
+
+JSM.RenderGeometry.prototype.SetTransformation = function (transformation)
+{
+	this.transformation = transformation;
 };
 
 JSM.RenderGeometry.prototype.GetVertexBuffer = function ()
@@ -262,8 +272,8 @@ JSM.Renderer.prototype.Render = function ()
 	var i, ambientColor, diffuseColor, currentGeometry, currentVertexBuffer, currentNormalBuffer;
 	for (i = 0; i < this.geometries.length; i++) {
 		currentGeometry = this.geometries[i];
-	
-		modelViewMatrix = JSM.MatrixMultiply (currentGeometry.GetTransformation (), viewMatrix);
+		
+		modelViewMatrix = JSM.MatrixMultiply (currentGeometry.GetTransformationMatrix (), viewMatrix);
 		this.context.uniformMatrix4fv (this.shader.vMatrixUniform, false, viewMatrix);
 		this.context.uniformMatrix4fv (this.shader.mvMatrixUniform, false, modelViewMatrix);
 

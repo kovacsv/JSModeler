@@ -28,7 +28,7 @@ JSM.Project = function (coord, eye, center, up, fieldOfView, aspectRatio, nearPl
 		input[2] = coord.z;
 		input[3] = 1.0;
 
-		output = JSM.VectorMatrixMultiply (JSM.VectorMatrixMultiply (input, modelView), projection);
+		output = JSM.MatrixVectorMultiply (projection, JSM.MatrixVectorMultiply (modelView, input));
 		var denom = output[3];
 		if (JSM.IsZero (denom)) {
 			return null;

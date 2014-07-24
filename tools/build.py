@@ -74,23 +74,27 @@ def GetVersion (versionFileName):
 	version[1] = subVersion
 	return version
 	
-def GetAndIncreaseBuildNum ():
+def GetBuildNum ():
 	buildNum = 0
 	if os.path.exists (buildNumFileName):
 		file = open (buildNumFileName, 'rb')
 		buildNum = int (file.read ())
 		file.close ()
+	return buildNum
+	
+def IncreaseBuildNum ():
+	buildNum = GetBuildNum ()
 	file = open (buildNumFileName, 'wb')
 	file.write (str (buildNum + 1))
 	file.close ()
 	return buildNum + 1
 	
 def GetHeader (version, header):
-	buildNum = GetAndIncreaseBuildNum ()
+	buildNum = GetBuildNum ()
 	currentHeader = header
 	currentHeader = currentHeader.replace ('[mainVersion]', version[0])
 	currentHeader = currentHeader.replace ('[subVersion]', version[1])
-	currentHeader = currentHeader.replace ('[buildNum]', str (buildNum))
+	currentHeader = currentHeader.replace ('[buildNum]', str (buildNum + 1))
 	return currentHeader
 	
 def WriteHeader (fileName, header):
@@ -185,6 +189,7 @@ def Main (argv):
 		DeleteFile (tempFilePath)
 		return 1
 	
-	return
+	IncreaseBuildNum ()
+	return 0
 	
 sys.exit (Main (sys.argv))

@@ -74,9 +74,9 @@
 		var fps = new JSM.FPSCounter ();
 		function Render ()
 		{
-			viewer.renderer.geometries[0].transformation = JSM.MatrixRotationZ (a * JSM.DegRad);
-			viewer.renderer.geometries[1].transformation = JSM.MatrixRotationZ (a * JSM.DegRad);
-			viewer.renderer.geometries[2].transformation = JSM.MatrixRotationZ (a * JSM.DegRad);
+			viewer.renderer.geometries[0].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
+			viewer.renderer.geometries[1].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
+			viewer.renderer.geometries[2].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
 		
 			viewer.Draw ();
 			a += 0.5;

@@ -167,6 +167,7 @@
 				body.GetPolygon (2).SetMaterialIndex (1);
 			
 				var renderGeometries = JSM.ConvertBodyToRenderGeometries (body, materials);
+				//renderGeometries[0].SetTransformation (JSM.TranslationTransformation (new JSM.Coord (1, 0, 0)));
 				viewer.AddGeometries (renderGeometries);
 				viewer.Draw ();
 			} else if (type == 'pointcloud') {
