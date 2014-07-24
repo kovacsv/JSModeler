@@ -18,6 +18,23 @@ def TestViewer (browser, path):
 		browser.KeyPress (39, 0)
 		index = index + 1
 
+def TestViewerTypes (browser, path):
+	def TestOneViewer (xCoord):
+		browser.Click (xCoord, 24)
+		browser.Capture ('viewertypes')
+		browser.DragDrop (500, 400, 540, 440)
+		browser.Capture ('viewertypes')
+		browser.Click (550, 24)
+		browser.Capture ('viewertypes')
+
+	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
+		return
+
+	browser.SetURL (os.path.join (path, 'test\\viewertest\\viewertypes.html'))
+	xCoords = [33, 92, 150, 230, 380, 430, 480] # need to add 310
+	for xCoord in xCoords:
+		TestOneViewer (xCoord)
+		
 def UnitTest (browser, path):
 	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
 		return
@@ -461,6 +478,7 @@ def Main (argv):
 		TestSVGTo3D (browser, path)
 		TestCSGApp (browser, path)
 		TestBezier (browser, path)
+		TestViewerTypes (browser, path)
 		browser.Close ()
 	end = time.time ()
 	
