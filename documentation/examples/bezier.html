@@ -173,8 +173,8 @@
 				for (j = 0; j <= m; j++) {
 					point = bezierData.controlPoints.GetControlPoint (i, j);
 					projected = viewer.ProjectVector (point.x, point.y, point.z);
-					if (Math.abs (projected.x - viewer.mouse.currX) < 10 &&
-						Math.abs (projected.y - viewer.mouse.currY) < 10)
+					if (Math.abs (projected.x - viewer.navigation.mouse.currX) < 10 &&
+						Math.abs (projected.y - viewer.navigation.mouse.currY) < 10)
 					{
 						foundIndices = [i, j];
 						break;
@@ -192,9 +192,9 @@
 				foundIndices : foundIndices,
 				foundVertexIndex : foundVertexIndex,
 				originalVertexPos : foundVertex.clone (),
-				originalMousePos : [viewer.mouse.currX, viewer.mouse.currY]
+				originalMousePos : [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY]
 			};
-			viewer.settings.cameraDisableOrbit = true;
+			viewer.navigation.EnableOrbit (false);
 		}
 		
 		function OnMouseUp (event)
@@ -213,7 +213,7 @@
 			AddBezierSurfaceModel (bezierData.controlPoints);
 
 			mouseData = null;
-			viewer.settings.cameraDisableOrbit = false;
+			viewer.navigation.EnableOrbit (true);
 		}
 		
 		function OnMouseMove (event)
@@ -222,7 +222,7 @@
 				return;
 			}
 			
-			var currentPos = [viewer.mouse.currX, viewer.mouse.currY];
+			var currentPos = [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY];
 			var ratio = 0.005;
 			var diff = (currentPos[1] - mouseData.originalMousePos[1]) * ratio;
 			var foundVertex = bezierData.controlPointGeometry.vertices[mouseData.foundVertexIndex];
@@ -327,9 +327,8 @@
 
 		function ExportAsSvg (svgcontent)
 		{
-			var drawSettings = new JSM.DrawSettings (viewer.cameraMove, viewer.settings['fieldOfView'], viewer.settings['nearClippingPlane'], viewer.settings['farClippingPlane'], 'Wireframe', true);
 			var drawer = new JSM.SVGDrawer (svgcontent);
-			JSM.DrawProjectedBody (bezierData.surfaceBody, null, drawSettings, drawer);
+			JSM.DrawProjectedBody (bezierData.surfaceBody, null, viewer.cameraMove, 'Wireframe', true, drawer);
 		}
 		
 		function ViewAsSvg ()
@@ -385,10 +384,6 @@
 			canvas.width = document.body.clientWidth - left.clientWidth - 20;
 			canvas.height = document.body.clientHeight - 20;
 
-			if (viewer !== null) {
-				viewer.Resize ();
-			}		
-
 			var floatingMargin = 100;
 
 			var floating = document.getElementById ('floating');
@@ -416,8 +411,9 @@
 				cameraUpVector : [0, 0, 1]
 			};
 
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			viewer.Start ('example', viewerSettings);
+			viewer.navigation.EnablePan (false);
 			
 			document.addEventListener ('mousemove', OnMouseMove, false);
 			document.addEventListener ('mouseup', OnMouseUp);

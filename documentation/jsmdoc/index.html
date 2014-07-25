@@ -6,7 +6,12 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="jsmdoc.css">
+	<link rel="stylesheet" type="text/css" href="include/jsmdoc.css">
+	
+	<script type="text/javascript" src="include/syntaxhighlighter/shCore.js"></script>
+	<script type="text/javascript" src="include/syntaxhighlighter/shBrushJScript.js"></script>
+	<link rel="stylesheet" type="text/css" href="include/syntaxhighlighter/shCore.css">
+	<link rel="stylesheet" type="text/css" href="include/syntaxhighlighter/shThemeDefault.css">
 	<title>JSModeler Reference Manual</title>
 
 	<script type="text/javascript">
@@ -90,6 +95,12 @@
 				indented.appendChild (CreateElement ('div', isMember ? 'doctitle4' : 'doctitle2', 'returns'));
 				GenerateParameterTable (content.returns, indented);
 			}
+			if (content.example !== undefined) {
+				indented.appendChild (CreateElement ('div', isMember ? 'doctitle4' : 'doctitle2', 'example'));
+				var example = CreateElement ('div', 'moreindented');
+				example.appendChild (CreateElement ('pre', 'example; brush: js; toolbar: false;', content.example));
+				indented.appendChild (example);
+			}
 			parentDiv.appendChild (indented);
 		}
 
@@ -132,7 +143,7 @@
 			}
 		
 			parentDiv.appendChild (CreateElement ('div', 'doctitle1', entryName));
-			var indented = CreateElement ('div', 'moreindented')
+			var indented = CreateElement ('div', 'moreindented');
 			var content = entryArray[entryName];
 			if (content.description !== undefined) {
 				indented.appendChild (CreateElement ('div', 'doccontent', content.description));
@@ -149,6 +160,12 @@
 					GenerateFunctionDoc (content.functions, functionVal, indented2, true);
 				}
 				indented.appendChild (indented2);
+			}
+			if (content.example !== undefined) {
+				indented.appendChild (CreateElement ('div', 'doctitle2', 'example'));
+				var example = CreateElement ('div', 'moreindented');
+				example.appendChild (CreateElement ('pre', 'example; brush: js; toolbar: false;', content.example));
+				indented.appendChild (example);
 			}
 			
 			related = FindRelatedFunctions (entryName);
@@ -204,21 +221,37 @@
 					} else {
 						ShowClass (entryArray, entryName);
 					}
+					SyntaxHighlighter.highlight ();
 				}
 				entryDiv.appendChild (CreateElement ('div', 'entryname', entryName));
-				parentDiv.appendChild (entryDiv);			
+				parentDiv.appendChild (entryDiv);
 			}
 			
 			if (module.classes !== undefined) {
 				var className;
+				
+				var classNames = [];
 				for (className in module.classes) {
-					AddEntry (module.classes, className, parentDiv, false);
+					classNames.push (className);
+				}
+				classNames.sort ();
+
+				for (i = 0; i < classNames.length; i++) {
+					AddEntry (module.classes, classNames[i], parentDiv, false);
 				}
 			}
 			if (module.functions !== undefined) {
 				var functionName;
+				
+				var functionNames = [];
 				for (functionName in module.functions) {
-					AddEntry (module.functions, functionName, parentDiv, true);
+					functionNames.push (functionName);
+				}
+				functionNames.sort ();
+				
+				var i;
+				for (i = 0; i < functionNames.length; i++) {
+					AddEntry (module.functions, functionNames[i], parentDiv, true);
 				}
 			}
 		}	
@@ -303,7 +336,7 @@
 			
 			var request = new XMLHttpRequest ();
 			request.overrideMimeType ('application/json');
-			request.open ('GET', 'jsmdoc.json', true);
+			request.open ('GET', 'include/jsmdoc.json', true);
 			request.onreadystatechange = function () {
 				if (request.readyState == 4) {
 					jsonData = JSON.parse (request.responseText);
