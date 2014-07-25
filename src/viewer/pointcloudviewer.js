@@ -65,7 +65,7 @@ JSM.PointCloudViewer.prototype.GetBoundingBox = function ()
 	for (i = 0; i < this.renderer.points.length; i++) {
 		points = this.renderer.points[i].pointArray;
 		for (j = 0; j < points.length; j = j + 3) {
-			point = new JSM.Coord (points[j], points[j + 1], points[j + 1]);
+			point = new JSM.Coord (points[j], points[j + 1], points[j + 2]);
 			min.x = JSM.Minimum (min.x, point.x);
 			min.y = JSM.Minimum (min.y, point.y);
 			min.z = JSM.Minimum (min.z, point.z);
@@ -89,7 +89,7 @@ JSM.PointCloudViewer.prototype.GetBoundingSphereRadius = function (center)
 	for (i = 0; i < this.renderer.points.length; i++) {
 		points = this.renderer.points[i].pointArray;
 		for (j = 0; j < points.length; j = j + 3) {
-			point = new JSM.Coord (points[j], points[j + 1], points[j + 1]);
+			point = new JSM.Coord (points[j], points[j + 1], points[j + 2]);
 			distance = JSM.CoordDistance (center, point);
 			if (JSM.IsGreater (distance, radius)) {
 				radius = distance;

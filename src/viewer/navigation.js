@@ -60,6 +60,11 @@ JSM.Navigation.prototype.SetCamera = function (eye, center, up)
 	this.orbitCenter = this.camera.center.Clone ();
 };
 
+JSM.Navigation.prototype.EnableFixUp = function (enable)
+{
+	this.cameraFixUp = enable;
+};
+
 JSM.Navigation.prototype.EnableOrbit = function (enable)
 {
 	this.cameraEnableOrbit = enable;

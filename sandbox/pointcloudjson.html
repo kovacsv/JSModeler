@@ -68,131 +68,90 @@
 <!-- JSModeler includes end -->
 	<title>Example</title>
 
+	<style>
+		html, body
+		{
+			color : #000000;
+			background : #ffffff;
+			font-size : 12px;
+			font-family : Arial, cursive;
+			margin : 0px;
+			padding : 0px;
+			width : 100%;
+			height : 100%;
+		}
+	
+		canvas
+		{
+			display : block;
+		}
+		
+		#fps
+		{
+			position : absolute;
+			left : 10px;
+			top : 10px;
+		}
+	</style>
+	
 	<script type="text/javascript">
 		var viewer = null;
-
-		function GenerateChart ()
+		
+		function Resize ()
 		{
-			function GetMaximumCount (chart)
-			{
-				var max = 0;
-				var i, j, current;
-				for (i = 0; i < chart.values.length; i++) {
-					current = chart.values[i];
-					if (current.length > max) {
-						max = current.length;
-					}
-				}
-				return max;
+			var canvas = document.getElementById ('example');
+			if (canvas !== null) {
+				canvas.width = document.body.clientWidth;
+				canvas.height = document.body.clientHeight;
 			}
-			
-			function GenerateBoundingBody (model, materials, chart)
-			{
-				var rowCount = GetMaximumCount (chart);
-				var columnCount = chart.values.length;
-				var xSize = rowCount * chart.itemSize + (rowCount - 1) * chart.itemOffsetX + 2 * chart.itemSize;
-				var ySize = columnCount * chart.itemSize + (columnCount - 1) * chart.itemOffsetY + 2 * chart.itemSize;
-				var offsetX = xSize / 2.0 - 3.0 * chart.itemSize / 2.0;
-				var offsetY = ySize / 2.0 - 3.0 * chart.itemSize / 2.0;
-				var bottom = JSM.GenerateRectangle (xSize, ySize);
-				bottom.Transform (new JSM.TranslationTransformation (new JSM.Vector (offsetX, offsetY, 0.0)));
-				bottom.SetPolygonsMaterialIndex (0);
-				model.AddBody (bottom);
-			}
+		}
 
-			function GenerateOneValueBody (model, materials, chart, i, j)
-			{
-				var height = chart.values[i][j];
-				var offsetX = j * (chart.itemSize + chart.itemOffsetX);
-				var offsetY = i * (chart.itemSize + chart.itemOffsetY);
-				var body = JSM.GenerateCuboidSides (chart.itemSize, chart.itemSize, height, [1, 1, 1, 1, 0, 1]);
-				body.Transform (new JSM.TranslationTransformation (new JSM.Vector (offsetX, offsetY, height / 2.0)));
-				var material = 1 + (i % (materials.Count () - 1));
-				body.SetPolygonsMaterialIndex (material);
-				model.AddBody (body);
-			}
-			
-			function GenerateValueBodies (model, materials, chart)
-			{
-				var i, j;
-				for (i = 0; i < chart.values.length; i++) {
-					for (j = 0; j < chart.values[i].length; j++) {
-						GenerateOneValueBody (model, materials, chart, i, j);
-					}
-				}
-			}
-
-			var chart = {
-				values : [
-					[2, 4, 3, 5, 1, 4, 2],
-					[1, 5, 3, 4],
-					[3, 1, 2, 5, 1, 3]
-				],
-				itemSize : 1.0,
-				itemOffsetX : 0.5,
-				itemOffsetY : 0.5,
-			};
-			
-			var model = new JSM.Model ();
-			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material (0xf0f0f0, 0xf0f0f0));
-			materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
-			materials.AddMaterial (new JSM.Material (0x279b61, 0x279b61));
-			materials.AddMaterial (new JSM.Material (0x993333, 0x993333));
-			materials.AddMaterial (new JSM.Material (0xffcc33, 0xffcc33));
-			materials.AddMaterial (new JSM.Material (0x95cae4, 0x95cae4));
-			materials.AddMaterial (new JSM.Material (0xa3e496, 0xa3e496));
-			materials.AddMaterial (new JSM.Material (0xcc3333, 0xcc3333));
-			materials.AddMaterial (new JSM.Material (0xffff7a, 0xffff7a));
-
-			GenerateBoundingBody (model, materials, chart);
-			GenerateValueBodies (model, materials, chart);
-
-			return [model, materials];
+		var fps = new JSM.FPSCounter ();
+		function Render ()
+		{
+			viewer.Draw ();
+			requestAnimationFrame (Render);
+			document.getElementById ('fps').innerHTML = 'fps: ' + fps.Get (500);
+		}
+		
+		function JSONLoaded (data)
+		{
+			viewer.AddPoints (data.points, data.colors);
 		}
 		
 		function Load ()
 		{
-			var TextureLoaded = function () {
-				viewer.Draw ();
-			};
-
-			var viewerSettings = {
-				cameraEyePosition : [3.0, -2.0, 1.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1]
-			};
-
-			viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
-			viewer.navigation.EnableZoom (false);
-			viewer.navigation.EnablePan (false);
-			
-			var model = GenerateChart ();
-			var conversionData = {
-				textureLoadedCallback : null,
-				hasConvexPolygons : true,
-				doubleSided : true
-			};
-			var meshes = JSM.ConvertModelToThreeMeshes (model[0], model[1], conversionData);
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
+			window.onresize = Resize;
+			Resize ();
+		
+			var camera = new JSM.Camera (
+				new JSM.Coord (1.0, 3.0, 2.0),
+				new JSM.Coord (0.5, 0.5, 0.5),
+				new JSM.Vector (0.0, 0.0, 1.0)
+			);
+					
+			viewer = new JSM.PointCloudViewer ();
+			if (!viewer.Init ('example', camera)) {
+				alert ('error');
 			}
 
-			viewer.FitInWindow ();
-			viewer.Draw ();
+			var jsonLoader = new JSM.JSONFileLoader (JSONLoaded);
+			jsonLoader.Load ('pointcloudjson.js');
+
+			Render ();
 		}
 	
 	    window.onload = function ()
 		{
-			Load ();			
+			Load ();
 		}
 	</script>
 
 </head>
 
 <body>
-	<canvas id="example" width="1000" height="500"></canvas>
+	<canvas id="example" width="800" height="500"></canvas>
+	<div id="fps"></div>
 </body>
 
 </html>

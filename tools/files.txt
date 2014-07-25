@@ -45,6 +45,7 @@
 ../src/renderer/renderer.js
 ../src/renderer/pointcloudrenderer.js
 ../src/renderer/converter.js
+../src/viewer/jsonfileloader.js
 ../src/viewer/mouse.js
 ../src/viewer/touch.js
 ../src/viewer/navigation.js
