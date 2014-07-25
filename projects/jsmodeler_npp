@@ -63,6 +63,7 @@
 				<File name="..\src\three\threeviewer.js" />
 			</Folder>
 			<Folder name="viewer">
+				<File name="..\src\viewer\jsonfileloader.js" />
 				<File name="..\src\viewer\mouse.js" />
 				<File name="..\src\viewer\navigation.js" />
 				<File name="..\src\viewer\pointcloudviewer.js" />
