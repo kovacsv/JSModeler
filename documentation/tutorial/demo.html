@@ -1,8 +1,3 @@
-<!--
-	Author:		Kovacs Viktor
-	Homepage:	http://www.kovacsv.hu
--->
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 	 "http://www.w3.org/TR/html4/strict.dtd">
 
@@ -215,10 +210,6 @@
 				var canvas = document.getElementById ('example');
 				canvas.width = document.body.clientWidth;
 				canvas.height = document.body.clientHeight;
-	
-				if (viewer != null) {
-					viewer.Resize ();
-				}
 			}
 		}
 		
@@ -238,7 +229,7 @@
 			window.onhashchange = RunHash;
 			Resize ();
 
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			viewer.Start ('example', viewerSettings);
 
 			RunHash ();

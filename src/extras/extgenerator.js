@@ -66,7 +66,7 @@ JSM.GenerateLegoBrick = function (rows, columns, isLarge, hasTopCylinders, hasBo
 	var walls = JSM.GeneratePrismShell (basePolygon, normal, unitHeight - wallWidth, wallWidth, true);
 	result.Merge (walls);
 		
-	var i, j, k;
+	var i, j;
 	for (i = 0; i < 4; i++) {
 		basePolygon[i].z = unitHeight - wallWidth;
 	}
@@ -130,6 +130,46 @@ JSM.GenerateLegoBrick = function (rows, columns, isLarge, hasTopCylinders, hasBo
 };
 
 /**
+* Function: GenerateConvexHullBody
+* Description: Generates a convex hull body from the given coordinates.
+* Parameters:
+*	coord {Coord[*]} the coordinates
+* Returns:
+*	{Body} the result
+*/
+JSM.GenerateConvexHullBody = function (coords)
+{
+	var result = new JSM.Body ();
+	var convexHull = JSM.ConvexHull3D (coords);
+	
+	var oldToNewIndexTable = {};
+	var i, j, current, index;
+	for (i = 0; i < convexHull.length; i++) {
+		current = convexHull[i];
+		for (j = 0; j < current.length; j++) {
+			index = current[j];
+			if (!(index in oldToNewIndexTable)) {
+				oldToNewIndexTable[index] = result.VertexCount ();
+				result.AddVertex (new JSM.BodyVertex (coords[index]));
+			}
+		}
+	}
+	
+	var newPolygon;
+	for (i = 0; i < convexHull.length; i++) {
+		current = convexHull[i];
+		newPolygon = [];
+		for (j = 0; j < current.length; j++) {
+			index = current[j];
+			newPolygon.push (oldToNewIndexTable[index]);
+		}
+		result.AddPolygon (new JSM.BodyPolygon (newPolygon));
+	}
+
+	return result;
+};
+
+/**
 * Function: GenerateSuperShape
 * Description: Generates a supershape.
 * Parameters:
@@ -139,8 +179,8 @@ JSM.GenerateLegoBrick = function (rows, columns, isLarge, hasTopCylinders, hasBo
 * Returns:
 *	{Body} the result
 */
-JSM.GenerateSuperShape = function (	a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
-									a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat,
+JSM.GenerateSuperShape = function (	aLon, bLon, mLon, n1Lon, n2Lon, n3Lon,
+									aLat, bLat, mLat, n1Lat, n2Lat, n3Lat,
 									segmentation, isCurved)
 {
 	function CartesianToSpherical (coord)
@@ -161,8 +201,8 @@ JSM.GenerateSuperShape = function (	a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
 	function CalculateSuperFormulaCoordinate (phi, theta)
 	{
 		var coord = new JSM.Coord ();
-		var rPhi = CalculateSuperFormula (phi, a_lat, b_lat, m_lat, n1_lat, n2_lat, n3_lat);
-		var rTheta = CalculateSuperFormula (theta, a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon);
+		var rPhi = CalculateSuperFormula (phi, aLat, bLat, mLat, n1Lat, n2Lat, n3Lat);
+		var rTheta = CalculateSuperFormula (theta, aLon, bLon, mLon, n1Lon, n2Lon, n3Lon);
 		coord.x = rTheta * Math.cos (theta) * rPhi * Math.cos (phi);
 		coord.y = rTheta * Math.sin (theta) * rPhi * Math.cos (phi);
 		coord.z = rPhi * Math.sin (phi);
@@ -171,7 +211,7 @@ JSM.GenerateSuperShape = function (	a_lon, b_lon, m_lon, n1_lon, n2_lon, n3_lon,
 
 	var result = JSM.GenerateSphere (1.0, segmentation, isCurved);
 
-	var i, j, vertex, coord, spherical, newCoord;
+	var i, vertex, coord, spherical, newCoord;
 	for (i = 0; i < result.VertexCount (); i++) {
 		vertex = result.GetVertex (i);
 		coord = vertex.position;

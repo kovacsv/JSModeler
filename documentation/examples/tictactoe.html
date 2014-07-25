@@ -1,8 +1,3 @@
-<!--
-	Author:		Kovacs Viktor
-	Homepage:	http://www.kovacsv.hu
--->
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 	 "http://www.w3.org/TR/html4/strict.dtd">
 
@@ -27,6 +22,32 @@
 
 		function Step (player, index)
 		{
+			function GetItemModel (ticTacToe, i, j, k)
+			{
+				var model = new JSM.Model ();
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
+				materials.AddMaterial (new JSM.Material (0xcc3333, 0xcc3333));
+				
+				var offset = ticTacToe.shapeSize * 1.5;
+
+				var body = JSM.GenerateSphere (ticTacToe.shapeSize / 2.0, 20, true);
+				var player = ticTacToe.table[i][j][k];
+				if (player == 1) {
+					body.SetPolygonsMaterialIndex (0);
+				} else {
+					body.SetPolygonsMaterialIndex (1);
+				}
+				
+				transformation = JSM.TranslationTransformation (new JSM.Vector (offset * i, offset * j, offset * k));
+				body.Transform (transformation);
+
+				model.AddBody (body);
+				
+				return [model, materials];			
+			}
+
 			var mesh = null;
 			
 			viewer.scene.traverse (function (current) {
@@ -41,9 +62,13 @@
 			viewer.RemoveMesh (mesh);
 			var ijk = ticTacToe.IndexToDimensions (index);
 
-			ticTacToe.Step (player, ijk[0], ijk[1], ijk[2]);
-			var model = ticTacToe.GetItemModel (ijk[0], ijk[1], ijk[2]);
-			var conversionData = new JSM.ConversionData (null, true, true);
+			ticTacToe.StepWithDimensions (player, ijk[0], ijk[1], ijk[2]);
+			var model = GetItemModel (ticTacToe, ijk[0], ijk[1], ijk[2]);
+			var conversionData = {
+				textureLoadedCallback : null,
+				hasConvexPolygons : true,
+				doubleSided : true
+			};
 			var meshes = JSM.ConvertModelToThreeMeshes (model[0], model[1], conversionData);
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);
@@ -138,6 +163,33 @@
 
 		function Reset (difficulty)
 		{
+			function GetEmptyTableModel (ticTacToe)
+			{
+				var model = new JSM.Model ();
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material (0x000000, 0x000000, 0.1));
+				
+				var offset = ticTacToe.shapeSize * 1.5;
+
+				var i, j, k;
+				var body, transformation;
+				for (k = 0; k < ticTacToe.zSize; k++) {
+					for (j = 0; j < ticTacToe.ySize; j++) {
+						for (i = 0; i < ticTacToe.xSize; i++) {
+							body = JSM.GenerateCircle (ticTacToe.shapeSize / 2.0, 20);
+							body.SetPolygonsMaterialIndex (0);
+							
+							transformation = JSM.TranslationTransformation (new JSM.Vector (offset * i, offset * j, offset * k));
+							body.Transform (transformation);
+
+							model.AddBody (body);
+						}
+					}
+				}
+				
+				return [model, materials];
+			}
+
 			if (error) {
 				return;
 			}
@@ -154,8 +206,12 @@
 			viewer.RemoveMeshes ();
 			CloseWinnerDialog ();
 		
-			var model = ticTacToe.GetEmptyTableModel ();
-			var conversionData = new JSM.ConversionData (null, true, true);
+			var model = GetEmptyTableModel (ticTacToe);
+			var conversionData = {
+				textureLoadedCallback : null,
+				hasConvexPolygons : true,
+				doubleSided : true
+			};
 			var meshes = JSM.ConvertModelToThreeMeshes (model[0], model[1], conversionData);
 			for (var i = 0; i < meshes.length; i++) {
 				meshes[i].ticTacToeId = i;
@@ -210,10 +266,6 @@
 			var controls = document.getElementById ('controls');
 			canvas.width = window.innerWidth;
 			canvas.height = window.innerHeight - controls.clientHeight - margin;
-
-			if (viewer != null) {
-				viewer.Resize ();
-			}
 		}
 
 		function Load ()
@@ -226,8 +278,7 @@
 			var viewerSettings = {
 				cameraEyePosition : [14.0, -14.0, 16.0],
 				cameraCenterPosition : [4.5, 4.5, 4.5],
-				cameraUpVector : [0.0, 0.0, 1.0],
-				cameraDisableZoom : true
+				cameraUpVector : [0.0, 0.0, 1.0]
 			};
 
 			var canvas = document.getElementById ('example');
@@ -241,13 +292,15 @@
 			}
 			
 			error = false;
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			if (!viewer.Start ('example', viewerSettings)) {
 				document.body.innerHTML = '';
 				alert ('Your browser does not support WebGL.');
 				error = true;
 				return;
 			}
+			viewer.navigation.EnableZoom (false);
+			viewer.navigation.EnablePan (false);
 			
 			Reset (1);
 		}

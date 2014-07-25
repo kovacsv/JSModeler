@@ -18,6 +18,23 @@ def TestViewer (browser, path):
 		browser.KeyPress (39, 0)
 		index = index + 1
 
+def TestViewerTypes (browser, path):
+	def TestOneViewer (xCoord):
+		browser.Click (xCoord, 24)
+		browser.Capture ('viewertypes')
+		browser.DragDrop (500, 400, 540, 440)
+		browser.Capture ('viewertypes')
+		browser.Click (550, 24)
+		browser.Capture ('viewertypes')
+
+	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
+		return
+
+	browser.SetURL (os.path.join (path, 'test\\viewertest\\viewertypes.html'))
+	xCoords = [33, 92, 150, 230, 380, 430, 480] # need to add 310
+	for xCoord in xCoords:
+		TestOneViewer (xCoord)
+		
 def UnitTest (browser, path):
 	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
 		return
@@ -48,7 +65,7 @@ def TestCSG (browser, path):
 		browser.Capture ('csgtest_' + str (index))
 		browser.KeyPress (39, 0)
 		index = index + 1
-		
+
 def TestCamera (browser, path):
 	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
 		return
@@ -90,16 +107,99 @@ def TestCamera (browser, path):
 			browser.Capture ('camera')
 
 def TestDemonstration (browser, path):
+	def WriteToField (browser, x, y, text):
+		browser.DragDrop (x, y, x - 50, y)
+		browser.TextWrite (text)	
+	
+	def OpenSettings (browser):
+		browser.Click (245, 22)
+		browser.Capture ('demonstration');
+
+	def CheckInfo (browser):
+		browser.Click (245, 65)
+		browser.Capture ('demonstration');
+		browser.Click (628, 390)
+	
+	def Subdivide (browser):
+		browser.Click (245, 105)
+		browser.Capture ('demonstration');
+
 	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
 		return
 
 	browser.SetURL (os.path.join (path, 'documentation\\demo\\demonstration.html'))
 	
+	yClicks = [112, 132, 151, 173, 193, 212, 232, 255, 273, 318, 339, 356, 376, 398, 415, 462, 481, 527]
+	for yClick in yClicks:
+		browser.Click (35, yClick)
+		browser.Capture ('demonstration');
+	
+	browser.Click (35, 151);
+	OpenSettings (browser)
+	
+	WriteToField (browser, 540, 305, '0.5')
+	WriteToField (browser, 540, 336, '1.5')
+	WriteToField (browser, 540, 374, '2.5')
+	browser.Click (693, 414)
+	browser.Capture ('demonstration');
+	
+	CheckInfo (browser)
+	Subdivide (browser)
+	Subdivide (browser)
+	Subdivide (browser)
+	
+	for i in range (0, 4):
+		if i == 0 or i == 1:
+			browser.Click (35, 318)
+		elif i == 2:
+			browser.Click (35, 339)
+		else:
+			browser.Click (35, 356)
+		OpenSettings (browser)
+		start = [380, 280]
+		end = [380, 280]
+		if i == 1:
+			browser.Click (500, 195)
+			start = [361, 241]
+			end = [361, 241]
+		elif i == 3:
+			end = [454, 244]
+		
+		browser.Click (start[0], start[1])
+		browser.Click (361, 402)
+		browser.Click (523, 363)
+		browser.Click (411, 358)
+		browser.Click (428, 300)
+		browser.Click (476, 266)
+		browser.Click (454, 244)
+		browser.Click (end[0], end[1])
+		browser.Capture ('demonstration');
+		
+		browser.Click (862, 528)
+		browser.Capture ('demonstration');
+	
+	browser.Click (35, 318)
+	OpenSettings (browser)
+	WriteToField (browser, 384, 195, '0.02')
+	browser.Click (862, 528)
+	browser.Capture ('demonstration');
+
+	OpenSettings (browser)
+	browser.DragDrop (477, 266, 510, 286)
+	browser.Click (862, 528)
+	browser.Capture ('demonstration');
+	
+def TestOldDemonstration (browser, path):
+	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
+		return
+
+	browser.SetURL (os.path.join (path, 'documentation\\olddemo\\demonstration.html'))
+	
 	xClicks = [30, 80, 130, 190, 230, 260, 290, 340, 390, 450, 510, 570, 610, 660, 720, 780]
 	index = 1
 	for xClick in xClicks:
 		browser.Click (xClick, 60)
-		browser.Capture ('demonstration_' + str (index));
+		browser.Capture ('olddemonstration_' + str (index));
 		index = index + 1	
 
 def TestLegoBuilder (browser, path):
@@ -329,10 +429,10 @@ def TestBezier (browser, path):
 	browser.Click (172, 160)
 	browser.Capture ('bezier')
 	
-	MoveControlPoint (browser, 912, 430, -40)
-	MoveControlPoint (browser, 986, 368, 70)
-	MoveControlPoint (browser, 758, 382, -80)
-	MoveControlPoint (browser, 843, 334, -100)
+	MoveControlPoint (browser, 897, 418, -40)
+	MoveControlPoint (browser, 966, 357, 70)
+	MoveControlPoint (browser, 748, 371, -80)
+	MoveControlPoint (browser, 831, 324, -100)
 	
 	browser.Click (60, 316)
 	browser.Capture ('bezier')
@@ -368,6 +468,7 @@ def Main (argv):
 		TestSVGToModel (browser, path)
 		TestCSG (browser, path)
 		TestDemonstration (browser, path)
+		TestOldDemonstration (browser, path)
 		TestLegoBuilder (browser, path)
 		TestTicTacToe (browser, path)
 		TestDeform (browser, path)
@@ -377,6 +478,7 @@ def Main (argv):
 		TestSVGTo3D (browser, path)
 		TestCSGApp (browser, path)
 		TestBezier (browser, path)
+		TestViewerTypes (browser, path)
 		browser.Close ()
 	end = time.time ()
 	

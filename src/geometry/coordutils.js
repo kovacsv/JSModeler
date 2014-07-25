@@ -1,4 +1,30 @@
 /**
+* Function: CoordFromArray2D
+* Description: Returns a coordinate from an array of components.
+* Parameters:
+*	array {number[2]} the array of components
+* Returns:
+*	{Coord2D} the result
+*/
+JSM.CoordFromArray2D = function (array)
+{
+	return new JSM.Coord2D (array[0], array[1]);
+};
+
+/**
+* Function: CoordFromArray
+* Description: Returns a coordinate from an array of components.
+* Parameters:
+*	array {number[3]} the array of components
+* Returns:
+*	{Coord} the result
+*/
+JSM.CoordFromArray = function (array)
+{
+	return new JSM.Coord (array[0], array[1], array[2]);
+};
+
+/**
 * Function: CoordIsEqual2D
 * Description: Determines if the given coordinates are equal.
 * Parameters:

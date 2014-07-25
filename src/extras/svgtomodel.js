@@ -35,14 +35,14 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 
 		function SegmentCurve (dummySVG, originalPath, segmentLength, lastCoord, items, result, currentContour)
 		{
-			function CreatePath (items, result, currentContour)
+			function CreatePath (items)
 			{
 				function GenerateMoveCommand (x, y)
 				{
-					return 'M ' + x + ' ' + y;
+					return 'M ' + x + ' ' + y + ' ';
 				}
 			
-				var svgNameSpace = "http://www.w3.org/2000/svg";
+				var svgNameSpace = 'http://www.w3.org/2000/svg';
 				var path = document.createElementNS (svgNameSpace, 'path');
 
 				var commandString = GenerateMoveCommand (lastCoord.x, lastCoord.y);
@@ -76,7 +76,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 				return path;
 			}
 		
-			var path = CreatePath (items, result, currentContour);
+			var path = CreatePath (items);
 			var pathLength = path.getTotalLength ();
 
 			var segmentation = 0;
@@ -127,7 +127,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			if (JSM.CoordIsEqual2DWithEps (firstCoord, lastCoord, 0.1)) {
 				polygon.GetContour (contour).vertices.pop ();
 			}
-		}				
+		}
 	
 		function StartNewContour (result, contour)
 		{
@@ -179,7 +179,6 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 	
 		var result = new JSM.ContourPolygon2D ();
 
-		var svgNameSpace = "http://www.w3.org/2000/svg";
 		var dummySVG = document.createElementNS ('http://www.w3.org/2000/svg', 'svg');
 
 		var i, j;

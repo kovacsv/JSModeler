@@ -1,4 +1,25 @@
 /**
+* Function: CreatePolygonFromVertices
+* Description: Creates a cloned polygon from the given vertices.
+* Parameters:
+*	vertices {Coord2D[*]} the vertices
+* Returns:
+*	{Polygon2D} the result
+*/
+JSM.CreatePolygonFromVertices = function (vertices)
+{
+	var polygon = new JSM.Polygon2D ();
+
+	var i, current;
+	for (i = 0; i < vertices.length; i++) {
+		current = vertices[i];
+		polygon.AddVertex (current.x, current.y);
+	}
+	
+	return polygon;
+};
+
+/**
 * Function: PolygonSignedArea2D
 * Description:
 *	Calculates the signed area of a polygon. The result is positive if the polygon has
@@ -73,6 +94,23 @@ JSM.ChangePolygonOrientation2D = function (polygon)
 		oldVertex = oldPolygon.GetVertex (i);
 		polygon.AddVertex (oldVertex.x, oldVertex.y);
 	}
+};
+
+/**
+* Function: CreateCCWPolygonFromVertices
+* Description: Creates a cloned polygon from the given vertices with couter clockwise orientation.
+* Parameters:
+*	vertices {Coord2D[*]} the vertices
+* Returns:
+*	{Polygon2D} the result
+*/
+JSM.CreateCCWPolygonFromVertices = function (vertices)
+{
+	var polygon = JSM.CreatePolygonFromVertices (vertices);
+	if (JSM.PolygonOrientation2D (polygon) != 'CounterClockwise') {
+		JSM.ChangePolygonOrientation2D (polygon);
+	}
+	return polygon;
 };
 
 /**
@@ -279,7 +317,7 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 	{
 		var originalPolygon = new JSM.Polygon2D ();
 		var contourPolygon = new JSM.Polygon2D ();
-		var i, j, k, vertex;
+		var i, j, vertex;
 		for (i = 0; i < result.length; i++) {
 			vertex = vertices[result[i]];
 			originalPolygon.AddVertex (vertex.x, vertex.y);
@@ -368,8 +406,6 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 	}
 
 	var result = [];
-	var count = vertices.length;
-	
 	var contourEnds = [];
 	var contourCount = 0;
 	
@@ -568,7 +604,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 		}
 	}
 
-	return GetResult ();	
+	return GetResult ();
 };
 
 /**
@@ -761,7 +797,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 			{
 				var currVertex = polygon.GetVertex (currIndex);
 				cutPolygon.AddVertex (currVertex.x, currVertex.y, currVertex.z);
-				vertexTypes.push (currType);				
+				vertexTypes.push (currType);
 			}
 		
 			var firstVertex = (index === 0);

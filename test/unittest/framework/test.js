@@ -258,11 +258,11 @@ TestRunner.prototype =
 		nameSpan.innerHTML = '<a href="' + currentLocation + '#' + testSuiteName + '@' + testName + '">' + testName + '</a>';
 
 		var invalidTest = false;
-		try {
+		//try {
 			test.Run ();
-		} catch (e) {
-			invalidTest = true;
-		}
+		//} catch (e) {
+		//	invalidTest = true;
+		//}
 		
 		var result = true;
 		var resultSpan = document.createElement ('span');

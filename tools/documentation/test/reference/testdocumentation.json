@@ -34,7 +34,7 @@
 						["exampleTypeC", "example return value description c"]
 					]
 				},
-				"ExampleFunctionWithInAnotherFile" : {
+				"ExampleFunctionInAnotherFile" : {
 					"description" : "This is the description.",
 					"parameters" : [
 						["exampleParamA", "exampleTypeA", "example parameter description a"],
@@ -43,6 +43,17 @@
 					"returns" : [
 						["exampleTypeC", "example return value description c"]
 					]
+				},
+				"ExampleFunctionWithExample" : {
+					"description" : "This is the description.",
+					"parameters" : [
+						["exampleParamA", "exampleTypeA", "example parameter description a"],
+						["exampleParamB", "exampleTypeB", "example parameter description a"]
+					],
+					"returns" : [
+						["exampleTypeC", "example return value description c"]
+					],
+					"example" : "var result = ExampleFunctionWithExample (a, b);\nvar result2 = ExampleFunctionWithExample (a2, b2);\nvar result3 = ExampleFunctionWithExample (a3, b3);\nif (ExampleFunctionWithExample (a3, b3) == 5) {\n\talert ('success');\n}"
 				}
 			},
 			"classes" : {
@@ -86,6 +97,39 @@
 							]
 						}
 					}
+				},
+				"ExampleClassWithExample" : {
+					"description" : "This class has a lot of functions.",
+					"parameters" : [
+						["exampleParamA", "exampleTypeA", "example parameter description a"],
+						["exampleParamB", "exampleTypeB", "example parameter description a"]
+					],
+					"functions" : {
+						"Function1" : {
+							"description" : "This is a member function for ExampleClass",
+							"parameters" : [
+								["exampleParamA", "exampleTypeA", "example parameter description a"],
+								["exampleParamB", "exampleTypeB", "example parameter description a"]
+							],
+							"example" : "var class = new ExampleClassWithExample ();\nexample.Function1 ();"
+						},
+						"Function2" : {
+							"description" : "This is a member function for ExampleClass",
+							"parameters" : [
+								["exampleParamA", "exampleTypeA", "example parameter description a"],
+								["exampleParamB", "exampleTypeB", "example parameter description a"]
+							],
+							"example" : "var class = new ExampleClassWithExample ();\nexample.Function2 ();"
+						},
+						"Function3" : {
+							"description" : "This is a member function for ExampleClass",
+							"parameters" : [
+								["exampleParamA", "exampleTypeA", "example parameter description a"],
+								["exampleParamB", "exampleTypeB", "example parameter description a"]
+							]
+						}
+					},
+					"example" : "var class = new ExampleClassWithExample ();\nexample.Function1 ();\nexample.Function2 ();"
 				}
 			}
 		},

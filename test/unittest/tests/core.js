@@ -49,3 +49,49 @@ AddTest ('CoreTest', function (test) {
 	test.Assert (GetAValue (null) == 2);
 	test.Assert (GetAValue () == 2);
 });
+
+AddTest ('SortTest', function (test) {
+	var array = null;
+	
+	array = [];
+	JSM.BubbleSort (array, function (a, b) {
+		return a < b;
+	});
+	test.Assert (array.toString () == [].toString ());
+
+	array = [1];
+	JSM.BubbleSort (array, function (a, b) {
+		return a < b;
+	});
+	test.Assert (array.toString () == [1].toString ());
+
+	array = [2, 1];
+	JSM.BubbleSort (array, function (a, b) {
+		return a < b;
+	});
+	test.Assert (array.toString () == [1, 2].toString ());
+
+	array = [1, 2, 3, 4, 5];
+	JSM.BubbleSort (array, function (a, b) {
+		return a < b;
+	});
+	test.Assert (array.toString () == [1, 2, 3, 4, 5].toString ());
+
+	array = [5, 4, 3, 2, 1];
+	JSM.BubbleSort (array, function (a, b) {
+		return a < b;
+	});
+	test.Assert (array.toString () == [1, 2, 3, 4, 5].toString ());
+
+	array = [5, 3, 1, 4, 2];
+	JSM.BubbleSort (array, function (a, b) {
+		return a < b;
+	});
+	test.Assert (array.toString () == [1, 2, 3, 4, 5].toString ());
+
+	array = [5, 3, 3, 3, 1];
+	JSM.BubbleSort (array, function (a, b) {
+		return a < b;
+	});
+	test.Assert (array.toString () == [1, 3, 3, 3, 5].toString ());
+});

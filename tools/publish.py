@@ -1,12 +1,14 @@
 import os
 import sys
 import re
-	
-def Main ():
-	currentPath = os.path.dirname (os.path.abspath (__file__))
-	os.chdir (currentPath)
 
+currentPath = os.path.dirname (os.path.abspath (__file__))
+os.chdir (currentPath)
+
+def Main ():
 	result = 0
+	if result == 0:
+		result = os.system ('checkdependencies.py');
 	if result == 0:
 		result = os.system ('jshint.py');
 	if result == 0:

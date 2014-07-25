@@ -18,7 +18,7 @@ JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, us
 	function AddVertices ()
 	{
 		var i, j, u, v, coord;
-		for (i = 0; i <= ySegmentation; i++) {	
+		for (i = 0; i <= ySegmentation; i++) {
 			for (j = 0; j <= xSegmentation; j++) {
 				u = xStart + j * xSegment;
 				v = yStart + i * ySegment;
@@ -45,18 +45,18 @@ JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, us
 					polygon = new JSM.BodyPolygon ([current, next, ntop]);
 					if (isCurved) {
 						polygon.SetCurveGroup (0);
-					}				
+					}
 					result.AddPolygon (polygon);
 					polygon = new JSM.BodyPolygon ([current, ntop, top]);
 					if (isCurved) {
 						polygon.SetCurveGroup (0);
-					}				
+					}
 					result.AddPolygon (polygon);
 				} else {
 					polygon = new JSM.BodyPolygon ([current, next, ntop, top]);
 					if (isCurved) {
 						polygon.SetCurveGroup (0);
-					}				
+					}
 					result.AddPolygon (polygon);
 				}
 			}
@@ -225,7 +225,7 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 */
 JSM.GenerateMobiusStrip = function (a, xSegmentation, ySegmentation, isCurved)
 {
-	function GetSurfacePoint (uIndex, vIndex, u, v, userData)
+	function GetSurfacePoint (uIndex, vIndex, u, v)
 	{
 		var result = new JSM.Coord (
 			(a - v * Math.sin (u / 2.0)) * Math.sin (u),

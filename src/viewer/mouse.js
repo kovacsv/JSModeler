@@ -75,8 +75,8 @@ JSM.Mouse.prototype.SetCurrent = function (eventParameters, div)
 {
 	this.currX = eventParameters.clientX;
 	this.currY = eventParameters.clientY;
-	if (div !== undefined) {
+	if (div !== undefined && div.offsetLeft !== undefined && div.offsetTop !== undefined) {
 		this.currX = this.currX - div.offsetLeft;
 		this.currY = this.currY - div.offsetTop;
-	}	
+	}
 };

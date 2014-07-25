@@ -5,16 +5,10 @@
 *	body {Body} the body
 *	eye {Coord} the camera eye position
 *	center {Coord} the camera center position
-*	up {Vector} the camera up vector
-*	fieldOfView {number} camera field of view
-*	aspectRatio {number} aspect ratio of the desired image
-*	nearPlane {number} near cutting plane distance
-*	farPlane {number} far cutting plane distance
-*	viewPort {number[4]} view port coordinates in pixels
 * Returns:
 *	{integer[]} the ordered polygon indices
 */
-JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort)
+JSM.OrderPolygons = function (body, eye, center)
 {
 	function SwapArrayValues (array, from, to)
 	{
@@ -35,7 +29,7 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 		}
 		
 		result = JSM.VectorMultiply (result, 1.0 / polygon.VertexIndexCount ());
-		return result;	
+		return result;
 	}
 	
 	function CalculatePolygonValues ()
@@ -179,7 +173,7 @@ JSM.OrderPolygons = function (body, eye, center, up, fieldOfView, aspectRatio, n
 					SwapArrayValues (ordered, j, j + 1);
 				}
 			}
-		}		
+		}
 	}
 	
 	var result = [];

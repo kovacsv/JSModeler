@@ -35,9 +35,6 @@ JSM.ExportBodyContentToStl = function (body, name, hasConvexPolygons)
 		}
 		
 		var vertex1, vertex2, vertex3;
-		var normal1, normal2, normal3;
-		var uv1, uv2, uv3;
-
 		var normal = null;
 		if (count === 3) {
 			normal = JSM.CalculateBodyPolygonNormal (body, index);
@@ -154,8 +151,8 @@ JSM.ExportModelToStl = function (model, name, hasConvexPolygons)
 * Description: Exports a body content to obj.
 * Parameters:
 *	body {Body} the body
-*	name {string} name the body
-*	hasConvexPolygons {boolean} the body has only convex polygons
+*	vertexOffset {integer} vertex index offset
+*	normalOffset {integer} normal index offset
 * Returns:
 *	{string} the result
 */
@@ -220,8 +217,6 @@ JSM.ExportBodyContentToObj = function (body, vertexOffset, normalOffset)
 * Description: Exports a body to obj.
 * Parameters:
 *	body {Body} the body
-*	name {string} name the body
-*	hasConvexPolygons {boolean} the body has only convex polygons
 * Returns:
 *	{string} the result
 */
@@ -235,12 +230,10 @@ JSM.ExportBodyToObj = function (body)
 * Description: Exports a model to obj.
 * Parameters:
 *	model {Model} the model
-*	name {string} name the model
-*	hasConvexPolygons {boolean} the model has only convex polygons
 * Returns:
 *	{string} the result
 */
-JSM.ExportModelToObj = function (model, name, hasConvexPolygons)
+JSM.ExportModelToObj = function (model)
 {
 	var objContent = '';
 	
@@ -348,18 +341,33 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 	function AddEdge (index)
 	{
 		var edge = al.edges[index];
-		AddLineToContent ('edge ' + (edge.vert1 + 1) + ', ' + (edge.vert2 + 1) + ', -1, -1, 0' + ' ! ' + (index + 1));
+		var status = 0;
+		if (edge.pgon1 != -1 && edge.pgon2 != -1) {
+			if (body.GetPolygon (edge.pgon1).HasCurveGroup () && body.GetPolygon (edge.pgon2).HasCurveGroup ()) {
+				if (body.GetPolygon (edge.pgon1).GetCurveGroup () == body.GetPolygon (edge.pgon2).GetCurveGroup ()) {
+					status = 2;
+				}
+			}
+		}
+		AddLineToContent ('edge ' + (edge.vert1 + 1) + ', ' + (edge.vert2 + 1) + ', -1, -1, ' + status + ' ! ' + (index + 1));
 	}
 
-	function AddPolygon (index)
+	function AddPolygon (index, lastMaterialIndex)
 	{
+		var materialIndex = -1;
 		if (writeMaterials) {
-			var materialIndex = body.GetPolygon (index).GetMaterialIndex () + 2;
-			AddLineToContent ('set material "material' + materialIndex + '"');
+			materialIndex = body.GetPolygon (index).GetMaterialIndex () + 2;
+			if (materialIndex != lastMaterialIndex) {
+				AddLineToContent ('set material "material' + materialIndex + '"');
+			}
 		}
 	
 		var pgon = al.pgons[index];
-		AddToContent ('pgon ' + pgon.pedges.length + ', 0, 0, ');
+		var status = 0;
+		if (body.GetPolygon (index).HasCurveGroup ()) {
+			status = 2;
+		}
+		AddToContent ('pgon ' + pgon.pedges.length + ', 0, ' + status + ', ');
 		var pedgeList = '';
 		var i, pedge;
 		for (i = 0; i < pgon.pedges.length; i++) {
@@ -376,6 +384,8 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 		AddToContent (pedgeList);
 		AddToContent (' ! ' + (index + 1));
 		AddLineToContent ('');
+		
+		return materialIndex;
 	}
 
 	var gdlContent = '';
@@ -392,8 +402,9 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 		AddEdge (i);
 	}
 	
+	var lastMaterialIndex = -1;
 	for (i = 0; i < al.pgons.length; i++) {
-		AddPolygon (i);
+		lastMaterialIndex = AddPolygon (i, lastMaterialIndex);
 	}
 
 	AddLineToContent ('body -1');

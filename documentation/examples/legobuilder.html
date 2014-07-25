@@ -1,8 +1,3 @@
-<!--
-	Author:		Kovacs Viktor
-	Homepage:	http://www.kovacsv.hu
--->
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 	 "http://www.w3.org/TR/html4/strict.dtd">
 
@@ -185,7 +180,7 @@
 			SetEditorDefaultColor (2);
 			SetEditorDefaultIsLarge ();
 
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			if (!viewer.Start ('example', viewerSettings)) {
 				Error ();
 				return;

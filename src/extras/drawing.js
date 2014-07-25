@@ -104,7 +104,7 @@ JSM.CanvasDrawer.prototype.DrawPolygon = function (polygon, color)
 	}
 
 	this.context.closePath ();
-	this.context.fill ();			
+	this.context.fill ();
 
 	this.BeginPath ();
 	for (i = 0; i < polygon.VertexCount (); i++) {
@@ -124,7 +124,7 @@ JSM.CanvasDrawer.prototype.DrawPolygon = function (polygon, color)
 JSM.SVGDrawer = function (svgObject)
 {
 	this.svgObject = svgObject;
-	this.svgNameSpace = "http://www.w3.org/2000/svg";
+	this.svgNameSpace = 'http://www.w3.org/2000/svg';
 };
 
 /**
@@ -194,7 +194,7 @@ JSM.SVGDrawer.prototype.DrawLine = function (from, to)
 	svgLine.setAttributeNS (null, 'y1', height - from.y);
 	svgLine.setAttributeNS (null, 'x2', to.x);
 	svgLine.setAttributeNS (null, 'y2', height - to.y);
-	this.svgObject.appendChild (svgLine);		
+	this.svgObject.appendChild (svgLine);
 };
 
 /**
@@ -230,28 +230,7 @@ JSM.SVGDrawer.prototype.DrawPolygon = function (polygon, color)
 	svgPolyon.setAttributeNS (null, 'fill', HexColorToHTMLColor (color));
 	svgPolyon.setAttributeNS (null, 'fill-opacity', '1.0');
 	svgPolyon.setAttributeNS (null, 'stroke', 'black');
-	this.svgObject.appendChild (svgPolyon);		
-};
-
-/**
-* Class: DrawSettings
-* Description: Represents the draw settings.
-* Parameters:
-*	camera {Camera} the camera
-*	fieldOfView {number} camera field of view
-*	aspectRatio {number} aspect ratio of the desired image
-*	nearPlane {number} near cutting plane distance
-*	farPlane {number} far cutting plane distance
-*	clear {boolean} clear the canvas before draw
-*/
-JSM.DrawSettings = function (camera, fieldOfView, nearPlane, farPlane, drawMode, clear)
-{
-	this.camera = camera;
-	this.fieldOfView = fieldOfView;
-	this.nearPlane = nearPlane;
-	this.farPlane = farPlane;
-	this.drawMode = drawMode;
-	this.clear = clear;
+	this.svgObject.appendChild (svgPolyon);
 };
 
 /**
@@ -260,10 +239,12 @@ JSM.DrawSettings = function (camera, fieldOfView, nearPlane, farPlane, drawMode,
 * Parameters:
 *	body {Body} the body
 *	materials {Materials} the material container
-*	settings {DrawSettings} the draw settings
+*	camera {Camera} the camera for projection
+*	drawMode {string} draw mode ('HiddenLinePainter', 'HiddenLineFrontFacing' or 'Wireframe')
+*	needClear {boolean} clear the display before draw
 *	drawer {drawer object} the drawer object
 */
-JSM.DrawProjectedBody = function (body, materials, settings, drawer)
+JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, drawer)
 {
 	function GetProjectedPolygon (polygon)
 	{
@@ -281,27 +262,25 @@ JSM.DrawProjectedBody = function (body, materials, settings, drawer)
 		return projectedPolygon;
 	}
 
-	var clear = settings.clear;
-	if (clear) {
+	if (needClear) {
 		drawer.Clear ();
 	}
 
 	var width = drawer.GetWidth ();
 	var height = drawer.GetHeight ();
 	
-	var eye = settings.camera.eye;
-	var center = settings.camera.center;
-	var up = settings.camera.up;
-	var fieldOfView = settings.fieldOfView;
+	var eye = camera.eye;
+	var center = camera.center;
+	var up = camera.up;
+	var fieldOfView = camera.fieldOfView;
 	var aspectRatio = width / height;
-	var nearPlane = settings.nearPlane;
-	var farPlane = settings.farPlane;
+	var nearPlane = camera.nearClippingPlane;
+	var farPlane = camera.farClippingPlane;
 	var viewPort = [0, 0, width, height];
-	var drawMode = settings.drawMode;
 
 	var i, j, polygon, coord, projected, materialIndex, color;
 	if (drawMode == 'HiddenLinePainter') {
-		var orderedPolygons = JSM.OrderPolygons (body, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort);
+		var orderedPolygons = JSM.OrderPolygons (body, eye, center);
 		if (materials === undefined || materials === null) {
 			materials = new JSM.Materials ();
 		}
