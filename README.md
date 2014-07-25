@@ -55,7 +55,7 @@ Main capabilities
 		<li>Catmull-Clark subdivision for 3D bodies.</li>
 		<li>Convex hull calculation for 2D and 3D point sets.</li>
 	</ul>
-	<li>Built-in Three.js based model viewer with rotation and zoom functionality.</li>
+	<li>Built-in Three.js based model viewer with rotation, pan and zoom functionality.</li>
 	<li>Automatic conversion to Three.js geometry format.</li>
 	<ul>
 		<li>Convex and concave polygons are automatically triangulated during the conversion.</li>
