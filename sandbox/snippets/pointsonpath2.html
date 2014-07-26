@@ -35,9 +35,9 @@
 			var path = document.getElementById ('examplePath');
 
 			var log = document.getElementById ('log');
-			log.innerHTML = 'getTotalLength: ' + path.getTotalLength ();
+			log.innerHTML += 'getTotalLength: ' + path.getTotalLength ();
 
-			DrawPointsOnPath (svgObject, path, 30);
+			DrawPointsOnPath (svgObject, path, 10);
 		}
 	</script>
 
@@ -45,7 +45,7 @@
 
 <body>
 	<svg id="exampleSvg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="200">
-		<path id="examplePath" d="m 53.278202,36.394506 c -20.347346,0.465296 -40.727994,14.508279 -40.9375,40.875 0.253284,49.615044 78.25,77.750004 78.25,77.750004 0,0 73.906908,-27.91298 74.624998,-78.406254 0.58038,-40.810493 -57.1135,-54.210053 -73.999998,-16.0625 -6.298063,-16.662192 -22.111786,-24.518147 -37.9375,-24.15625 z">
+		<path id="examplePath" d="M 88.849925,113.80428 C 47.819071,126.15153 50.098511,75.623731 50.098511,75.623731 78.418648,70.527686 87.026905,91.589058 88.849925,113.80428 z">
 	</svg>
 	<div id="log"></div>
 </body>
