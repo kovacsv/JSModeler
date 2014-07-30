@@ -114,7 +114,7 @@ JSM.Navigation.prototype.Orbit = function (angleX, angleY)
 	if (this.cameraFixUp) {
 		var originalAngle = JSM.GetVectorsAngle (viewDirection, this.camera.up);
 		var newAngle = originalAngle + radAngleY;
-		if (newAngle > 0 && newAngle < Math.PI) {
+		if (JSM.IsGreater (newAngle, 0.0) && JSM.IsLower (newAngle, Math.PI)) {
 			this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, -radAngleY, this.orbitCenter);
 			if (differentCenter) {
 				this.camera.center = JSM.CoordRotate (this.camera.center, horizontalDirection, -radAngleY, this.orbitCenter);

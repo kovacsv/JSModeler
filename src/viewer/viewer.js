@@ -41,6 +41,11 @@ JSM.Viewer.prototype.AddGeometries = function (geometries)
 	this.renderer.AddGeometries (geometries);
 };
 
+JSM.Viewer.prototype.RemoveGeometries = function ()
+{
+	this.renderer.RemoveGeometries ();
+};
+
 JSM.Viewer.prototype.FitInWindow = function ()
 {
 	var center = this.GetCenter ();

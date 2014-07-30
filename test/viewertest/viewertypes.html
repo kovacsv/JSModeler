@@ -118,7 +118,7 @@
 				Resize ();
 			}
 
-			if (type == 'three' || type == 'three2') {
+			if (type == 'three' || type == 'three2' || type == 'three3') {
 				CreateCanvas ();
 				
 				var viewerSettings = {
@@ -136,7 +136,11 @@
 				
 				var materials = new JSM.Materials ();
 				materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
-				materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+				if (type == 'three3') {
+					materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png', 1.0, 1.0));
+				} else {
+					materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+				}
 				
 				body.GetPolygon (1).SetMaterialIndex (0);
 				body.GetPolygon (2).SetMaterialIndex (1);
@@ -153,7 +157,7 @@
 					viewer.AddMeshes (renderGeometries2);
 				}				
 				viewer.Draw ();
-			} else if (type == 'internal' || type == 'internal2') {
+			} else if (type == 'internal' || type == 'internal2' || type == 'internal3') {
 				CreateCanvas ();
 				
 				var camera = new JSM.Camera (
@@ -171,7 +175,11 @@
 				
 				var materials = new JSM.Materials ();
 				materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
-				materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+				if (type == 'internal3') {
+					materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc, 1.0, 'texture.png', 1.0, 1.0));
+				} else {
+					materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+				}
 				
 				body.GetPolygon (1).SetMaterialIndex (0);
 				body.GetPolygon (2).SetMaterialIndex (1);
@@ -355,8 +363,10 @@
 		<div id="buttons">
 			<a class="button" href="javascript:SwitchViewer ('three')">three</a>
 			<a class="button" href="javascript:SwitchViewer ('three2')">three 2</a>
+			<a class="button" href="javascript:SwitchViewer ('three3')">three 3</a>
 			<a class="button" href="javascript:SwitchViewer ('internal')">internal</a>
 			<a class="button" href="javascript:SwitchViewer ('internal2')">internal 2</a>
+			<a class="button" href="javascript:SwitchViewer ('internal3')">internal 3</a>
 			<a class="button" href="javascript:SwitchViewer ('pointcloud')">pointcloud</a>
 			<a class="button" href="javascript:SwitchViewer ('canvas')">canvas</a>
 			<a class="button" href="javascript:SwitchViewer ('svg')">svg</a>

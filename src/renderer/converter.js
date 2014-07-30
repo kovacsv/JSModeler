@@ -2,40 +2,43 @@ JSM.ConvertBodyToRenderGeometries = function (body, materials)
 {
 	function OnGeometryStart (material)
 	{
-		function ConvertToShaderRGB (hexColor)
-		{
-			var hexString = hexColor.toString (16);
-			while (hexString.length < 6) {
-				hexString = '0' + hexString;
-			}
-			var r = parseInt (hexString.substr (0, 2), 16) / 255.0;
-			var g = parseInt (hexString.substr (2, 2), 16) / 255.0;
-			var b = parseInt (hexString.substr (4, 2), 16) / 255.0;
-			return [r, g, b];
-		}
-
-		geometry = new JSM.RenderGeometry ();
 		vertices = [];
 		normals = [];
-		
-		geometry.SetMaterial (ConvertToShaderRGB (material.ambient), ConvertToShaderRGB (material.diffuse));
+		uvs = [];
+
+		var renderAmbient = JSM.HexColorToNormalizedRGBComponents (material.ambient);
+		var renderDiffuse = JSM.HexColorToNormalizedRGBComponents (material.diffuse);
+		var renderMaterial = new JSM.RenderMaterial (renderAmbient, renderDiffuse, material.texture, material.textureWidth, material.textureHeight);
+
+		geometry = new JSM.RenderGeometry ();
+		geometry.SetMaterial (renderMaterial);
 		geometries.push (geometry);
 	}
 
-	function OnGeometryEnd (/*material*/)
+	function OnGeometryEnd (material)
 	{
 		geometry.SetVertexArray (vertices);
 		geometry.SetNormalArray (normals);
+		if (material.texture !== null) {
+			geometry.SetUVArray (uvs);
+		}
 	}
 
-	function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3/*, uv1, uv2, uv3*/)
+	function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
 	{
 		vertices.push (vertex1.x, vertex1.y, vertex1.z);
 		vertices.push (vertex2.x, vertex2.y, vertex2.z);
 		vertices.push (vertex3.x, vertex3.y, vertex3.z);
+		
 		normals.push (normal1.x, normal1.y, normal1.z);
 		normals.push (normal2.x, normal2.y, normal2.z);
 		normals.push (normal3.x, normal3.y, normal3.z);
+		
+		if (uv1 !== null && uv2 !== null && uv3 !== null) {
+			uvs.push (uv1.x, uv1.y);
+			uvs.push (uv2.x, uv2.y);
+			uvs.push (uv3.x, uv3.y);
+		}
 	}
 	
 	var explodeData = {
@@ -47,8 +50,10 @@ JSM.ConvertBodyToRenderGeometries = function (body, materials)
 	
 	var geometries = [];
 	var geometry = null;
+	
 	var vertices = null;
 	var normals = null;
+	var uvs = null;
 	
 	JSM.ExplodeBodyToTriangles (body, materials, explodeData);
 	return geometries;

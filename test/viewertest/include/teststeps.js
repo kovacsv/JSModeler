@@ -1,54 +1,71 @@
-function ClearViewer (viewer, info)
+function ClearViewer (viewer, mode, info)
 {
-	viewer.RemoveMeshes ();
+	if (mode == 'three') {
+		viewer.RemoveMeshes ();
+	} else if (mode == 'internal') {
+		viewer.RemoveGeometries ();
+	}
 	info.innerHTML = '';
+	viewer.Draw ();
 }
 
 function SetViewer (viewer, info)
 {
 	info.innerHTML = '';
-	
-	var meshCount = viewer.MeshCount ();
-	var vertexCount = viewer.VertexCount ();
-	var faceCount = viewer.FaceCount ();
-	
-	info.innerHTML += meshCount + (meshCount < 2 ? ' mesh' : ' meshes') + ', ';
-	info.innerHTML += vertexCount + (vertexCount < 2 ? ' vertex' : ' vertices') + ', ';
-	info.innerHTML += faceCount + (faceCount < 2 ? ' face' : ' faces');
+	if (mode == 'three') {
+		var meshCount = viewer.MeshCount ();
+		var vertexCount = viewer.VertexCount ();
+		var faceCount = viewer.FaceCount ();
+		
+		info.innerHTML += meshCount + (meshCount < 2 ? ' mesh' : ' meshes') + ', ';
+		info.innerHTML += vertexCount + (vertexCount < 2 ? ' vertex' : ' vertices') + ', ';
+		info.innerHTML += faceCount + (faceCount < 2 ? ' face' : ' faces');
+	}
 }
 
-function AddBodyToViewer (viewer, body, materials, info)
+function AddBodyToViewer (viewer, mode, body, materials, info)
 {
 	function TextureLoaded () {
 		viewer.Draw ();
 	}
 
-	var conversionData = {
-		textureLoadedCallback : TextureLoaded,
-		hasConvexPolygons : false,
-		doubleSided : true
-	};
-	var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
-	viewer.AddMeshes (meshes);
+	if (mode == 'three') {
+		var conversionData = {
+			textureLoadedCallback : TextureLoaded,
+			hasConvexPolygons : false,
+			doubleSided : true
+		};
+		var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
+		viewer.AddMeshes (meshes);
+	} else if (mode == 'internal') {
+		var renderGeometries = JSM.ConvertBodyToRenderGeometries (body, materials);
+		viewer.AddGeometries (renderGeometries);	
+	}
 	SetViewer (viewer, info);
 
 	viewer.FitInWindow ();
 	viewer.Draw ();
 }
 
-function AddModelToViewer (viewer, model, materials, info)
+function AddModelToViewer (viewer, mode, model, materials, info)
 {
 	function TextureLoaded () {
 		viewer.Draw ();
 	}
 
-	var conversionData = {
-		textureLoadedCallback : TextureLoaded,
-		hasConvexPolygons : false,
-		doubleSided : true
-	};
-	var meshes = JSM.ConvertModelToThreeMeshes (model, materials, conversionData);
-	viewer.AddMeshes (meshes);
+	if (mode == 'three') {
+		var conversionData = {
+			textureLoadedCallback : TextureLoaded,
+			hasConvexPolygons : false,
+			doubleSided : true
+		};
+		var meshes = JSM.ConvertModelToThreeMeshes (model, materials, conversionData);
+		viewer.AddMeshes (meshes);
+	} else if (mode == 'internal') {
+		var renderGeometries = JSM.ConvertModelToRenderGeometries (model, materials);
+		viewer.AddGeometries (renderGeometries);	
+	}	
+
 	SetViewer (viewer, info);
 
 	viewer.FitInWindow ();
@@ -66,14 +83,14 @@ function OffsetTwoBodies (body1, body2, offsetX, offsetY, offsetZ)
 	OffsetOneBody (body2, offsetX, offsetY, offsetZ);
 }
 
-function TestStep (viewer, step, info)
+function TestStep (viewer, mode, step, info)
 {
 	var current = 0;
-	ClearViewer (viewer, info);
+	ClearViewer (viewer, mode, info);
 	
 	if (step == current++) {
 		var body = JSM.GenerateCuboid (1, 1, 1);
-		AddBodyToViewer (viewer, body, null, info);
+		AddBodyToViewer (viewer, mode, body, null, info);
 	}
 	
 	if (step == current++) {
@@ -83,7 +100,7 @@ function TestStep (viewer, step, info)
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);		
 
-		AddBodyToViewer (viewer, body, materials, info);
+		AddBodyToViewer (viewer, mode, body, materials, info);
 	}
 	
 	if (step == current++) {
@@ -93,7 +110,7 @@ function TestStep (viewer, step, info)
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);		
 
-		AddBodyToViewer (viewer, body, materials, info);
+		AddBodyToViewer (viewer, mode, body, materials, info);
 	}
 	
 	if (step == current++) {
@@ -103,7 +120,7 @@ function TestStep (viewer, step, info)
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);		
 
-		AddBodyToViewer (viewer, body, materials, info);
+		AddBodyToViewer (viewer, mode, body, materials, info);
 	}
 	
 	if (step == current++) {
@@ -115,7 +132,7 @@ function TestStep (viewer, step, info)
 		body.GetPolygon (3).SetMaterialIndex (0);	
 		body.GetPolygon (5).SetMaterialIndex (1);	
 
-		AddBodyToViewer (viewer, body, materials, info);
+		AddBodyToViewer (viewer, mode, body, materials, info);
 	}
 	
 	if (step == current++) {
@@ -131,7 +148,7 @@ function TestStep (viewer, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, materials, info);
+		AddModelToViewer (viewer, mode, model, materials, info);
 	}
 	
 	if (step == current++) {
@@ -148,7 +165,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, materials, info);
+		AddModelToViewer (viewer, mode, model, materials, info);
 	}
 	
 	if (step == current++) {
@@ -171,7 +188,7 @@ function TestStep (viewer, step, info)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		model.AddBody (body3);
-		AddModelToViewer (viewer, model, materials, info);
+		AddModelToViewer (viewer, mode, model, materials, info);
 	}
 
 	if (step == current++) {
@@ -183,7 +200,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 	
 	if (step == current++) {
@@ -195,7 +212,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -207,7 +224,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -219,7 +236,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -231,7 +248,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -243,7 +260,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -255,7 +272,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -277,7 +294,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 	
 	if (step == current++) {
@@ -332,7 +349,7 @@ function TestStep (viewer, step, info)
 		body1.OffsetToOrigo ();
 		
 		model.AddBody (body1);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -354,7 +371,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -366,7 +383,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -388,7 +405,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -400,7 +417,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 	
 	if (step == current++) {
@@ -421,7 +438,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 	
 	if (step == current++) {
@@ -444,7 +461,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -467,7 +484,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 	
 	if (step == current++) {
@@ -486,7 +503,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -505,7 +522,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 	
 	if (step == current++) {
@@ -528,7 +545,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}	
 
 	if (step == current++) {
@@ -551,7 +568,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}	
 
 	if (step == current++) {
@@ -596,7 +613,7 @@ function TestStep (viewer, step, info)
 			}
 		}
 
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}	
 
 	if (step == current++) {
@@ -633,7 +650,7 @@ function TestStep (viewer, step, info)
 		model.AddBody (body2);
 		model.AddBody (body3);
 		model.AddBody (body4);
-		AddModelToViewer (viewer, model, materials, info);
+		AddModelToViewer (viewer, mode, model, materials, info);
 	}
 
 	if (step == current++) {
@@ -670,7 +687,7 @@ function TestStep (viewer, step, info)
 		model.AddBody (body2);
 		model.AddBody (body3);
 		model.AddBody (body4);
-		AddModelToViewer (viewer, model, materials, info);
+		AddModelToViewer (viewer, mode, model, materials, info);
 	}
 
 	if (step == current++) {
@@ -717,7 +734,7 @@ function TestStep (viewer, step, info)
 		model.AddBody (body2);
 		model.AddBody (body3);
 		model.AddBody (body4);
-		AddModelToViewer (viewer, model, materials, info);
+		AddModelToViewer (viewer, mode, model, materials, info);
 	}
 
 	if (step == current++) {
@@ -728,7 +745,7 @@ function TestStep (viewer, step, info)
 		JSM.SoftMoveBodyVertex (body, 1800, 0.5, new JSM.Vector (0.0, 0.0, -1.0), 0.1);
 
 		model.AddBody (body);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}	
 	
 	if (step == current++) {
@@ -746,7 +763,7 @@ function TestStep (viewer, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 	
 	if (step == current++) {
@@ -794,7 +811,7 @@ function TestStep (viewer, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 
 	if (step == current++) {
@@ -813,7 +830,7 @@ function TestStep (viewer, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, materials, info);
+		AddModelToViewer (viewer, mode, model, materials, info);
 	}
 	
 	if (step == current++) {
@@ -834,7 +851,7 @@ function TestStep (viewer, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, materials, info);
+		AddModelToViewer (viewer, mode, model, materials, info);
 	}	
 
 	if (step == current++) {
@@ -878,7 +895,7 @@ function TestStep (viewer, step, info)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		model.AddBody (body3);
-		AddModelToViewer (viewer, model, materials, info);
+		AddModelToViewer (viewer, mode, model, materials, info);
 	}
 
 	if (step == current++) {
@@ -922,7 +939,7 @@ function TestStep (viewer, step, info)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		model.AddBody (body3);
-		AddModelToViewer (viewer, model, materials, info);
+		AddModelToViewer (viewer, mode, model, materials, info);
 	}
 
 	if (step == current++) {
@@ -966,7 +983,7 @@ function TestStep (viewer, step, info)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		model.AddBody (body3);
-		AddModelToViewer (viewer, model, materials, info);
+		AddModelToViewer (viewer, mode, model, materials, info);
 	}
 
 	if (step == current++) {
@@ -979,7 +996,7 @@ function TestStep (viewer, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 	
 	if (step == current++) {
@@ -1057,6 +1074,6 @@ function TestStep (viewer, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, model, null, info);
+		AddModelToViewer (viewer, mode, model, null, info);
 	}
 }
