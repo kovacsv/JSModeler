@@ -198,7 +198,7 @@ JSM.Renderer.prototype.InitContext = function (canvasName)
 
 JSM.Renderer.prototype.InitShaders = function ()
 {
-	function CreateShaderFromScript (context, script, type)
+	function CompileShader (context, script, type)
 	{
 		var shader = context.createShader (type);
 		context.shaderSource (shader, script);
@@ -211,8 +211,8 @@ JSM.Renderer.prototype.InitShaders = function ()
 	
 	function CreateShader (context, fragmentShaderScript, vertexShaderScript)
 	{
-		var fragmentShader = CreateShaderFromScript (context, fragmentShaderScript, context.FRAGMENT_SHADER);
-		var vertexShader = CreateShaderFromScript (context, vertexShaderScript, context.VERTEX_SHADER);
+		var fragmentShader = CompileShader (context, fragmentShaderScript, context.FRAGMENT_SHADER);
+		var vertexShader = CompileShader (context, vertexShaderScript, context.VERTEX_SHADER);
 		if (fragmentShader === null || vertexShader === null) {
 			return null;
 		}
