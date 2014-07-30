@@ -24,14 +24,14 @@ def TestViewerTypes (browser, path):
 		browser.Capture ('viewertypes')
 		browser.DragDrop (500, 400, 540, 440)
 		browser.Capture ('viewertypes')
-		browser.Click (550, 24)
+		browser.Click (690, 24)
 		browser.Capture ('viewertypes')
 
 	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
 		return
 
 	browser.SetURL (os.path.join (path, 'test\\viewertest\\viewertypes.html'))
-	xCoords = [33, 92, 150, 230, 380, 430, 480] # need to add 310
+	xCoords = [33, 92, 155, 215, 290, 365, 520, 570, 620] # need to add 444
 	for xCoord in xCoords:
 		TestOneViewer (xCoord)
 		
