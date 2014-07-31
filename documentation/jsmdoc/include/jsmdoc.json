@@ -469,11 +469,11 @@
 					]
 				},
 				"GetVectorsFullAngle" : {
-					"description" : "Calculates the angle of two vectors relative to a given reference vector.",
+					"description" : "Calculates the full angle (0 to pi) of two vectors with the given normal vector.",
 					"parameters" : [
 						["a", "Vector", "the first vector"],
 						["b", "Vector", "the second vector"],
-						["reference", "Vector", "the reference vector"]
+						["normal", "Vector", "the normal vector"]
 					],
 					"returns" : [
 						["number", "the result"]
@@ -650,12 +650,12 @@
 					]
 				},
 				"GetFullArcLength" : {
-					"description" : "Calculates arc length between two vectors relative to a given reference vector.",
+					"description" : "Calculates arc length between two vectors with the given normal vector.",
 					"parameters" : [
 						["a", "Vector", "the first vector"],
 						["b", "Vector", "the second vector"],
 						["radius", "number", "the radius component"],
-						["reference", "Vector", "the reference vector"]
+						["normal", "Vector", "the normal vector"]
 					],
 					"returns" : [
 						["number", "the result"]
@@ -2092,16 +2092,6 @@
 						["Coord2D", "the result"]
 					]
 				},
-				"CalculatePolygonPlanarTextureCoords" : {
-					"description" : "Calculates the planar texture coordinates for a polygon.",
-					"parameters" : [
-						["body", "Body", "the body"],
-						["index", "integer", "the polygon index"]
-					],
-					"returns" : [
-						["Coord2D[*]", "the result"]
-					]
-				},
 				"CalculateCubicTextureCoord" : {
 					"description" : "Calculates the cubic texture coordinate for a coordinate.",
 					"parameters" : [
@@ -2113,17 +2103,6 @@
 						["Coord2D", "the result"]
 					]
 				},
-				"CalculatePolygonCubicTextureCoords" : {
-					"description" : "Calculates the cubic texture coordinates for a polygon.",
-					"parameters" : [
-						["body", "Body", "the body"],
-						["index", "integer", "the polygon index"],
-						["normal", "Vector", "the normal vector for calculation"]
-					],
-					"returns" : [
-						["Coord2D[*]", "the result"]
-					]
-				},
 				"CalculateCylindricalTextureCoord" : {
 					"description" : "Calculates the cylindrical texture coordinate for a coordinate.",
 					"parameters" : [
@@ -2133,6 +2112,27 @@
 					],
 					"returns" : [
 						["Coord2D", "the result"]
+					]
+				},
+				"CalculatePolygonPlanarTextureCoords" : {
+					"description" : "Calculates the planar texture coordinates for a polygon.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["index", "integer", "the polygon index"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result"]
+					]
+				},
+				"CalculatePolygonCubicTextureCoords" : {
+					"description" : "Calculates the cubic texture coordinates for a polygon.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["index", "integer", "the polygon index"],
+						["normal", "Vector", "the normal vector for calculation"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result"]
 					]
 				},
 				"CalculatePolygonCylindricalTextureCoords" : {

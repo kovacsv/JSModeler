@@ -378,23 +378,32 @@ AddTest ('ArcLengthTest', function (test) {
 	test.Assert (JSM.IsEqual (JSM.GetArcLength (a4, b1, radius2), circ2 / 8.0));
 	test.Assert (JSM.IsEqual (JSM.GetArcLength (a5, b1, radius2), circ2 / 8.0));
 	
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius1, normal1), circ1 * 3.0 / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius1, normal1), circ1 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius1, normal1), circ1 * 1.0 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius1, normal1), circ1 * 3.0 / 4.0));
 	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a3, b1, radius1, normal1), circ1 / 2.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius1, normal1), circ1 * 7.0 / 8.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius1, normal1), circ1 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius1, normal1), circ1 * 1.0 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius1, normal1), circ1 * 7.0 / 8.0));
 
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius2, normal1), circ2 * 3.0 / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius2, normal1), circ2 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius2, normal1), circ2 * 1.0 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius2, normal1), circ2 * 3.0 / 4.0));
 	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a3, b1, radius2, normal1), circ2 / 2.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius2, normal1), circ2 * 7.0 / 8.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius2, normal1), circ2 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius2, normal1), circ2 * 1.0 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius2, normal1), circ2 * 7.0 / 8.0));
 
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius1, normal2), circ1 / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius1, normal2), circ1 * 3.0 / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a3, b1, radius1, normal2), circ1 / 2.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius1, normal2), circ1 / 8.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius1, normal2), circ1 * 7.0 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius2, normal2), circ2 * 3.0 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius2, normal2), circ2 * 1.0 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a3, b1, radius2, normal2), circ2 / 2.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius2, normal2), circ2 * 7.0 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius2, normal2), circ2 * 1.0 / 8.0));
+
+	var v1 = new JSM.Vector (1.0, 0.0, 0.0);
+	var v2 = new JSM.Vector (1.0, 0.0, 0.0);
+	var normal = new JSM.Vector (0.0, 0.0, 1.0);
+	var origo = new JSM.Coord (0.0, 0.0, 0.0);
+	test.Assert (JSM.IsEqual (JSM.GetVectorsFullAngle (v1, v2, normal), 0.0));
+	for (var i = 0.0; i < Math.PI; i = i + 5.0 * JSM.DegRad) {
+		test.Assert (JSM.IsEqual (JSM.GetVectorsFullAngle (JSM.CoordRotate (v1, normal, i, origo), v2, normal), i));
+	}
 });
 
 AddTest ('TransformationTest', function (test) {
