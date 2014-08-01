@@ -2871,6 +2871,32 @@
 								["coords", "CoordSystem", "the new texture projection coordinate system"]
 							]
 						},
+						"SetPlanarTextureProjection" : {
+							"description" : "Sets the texture projection to planar with the given parameters.",
+							"parameters" : [
+								["origo", "Coord", "origo of the projection"],
+								["xDirection", "Vector", "x direction (start point along other axis) of the projection"],
+								["zDirection", "Vector", "z direction (normal vector) of the projection"]
+							]
+						},
+						"SetCubicTextureProjection" : {
+							"description" : "Sets the texture projection to cubic with the given parameters.",
+							"parameters" : [
+								["origo", "Coord", "origo of the projection"],
+								["xDirection", "Vector", "x direction (edge of the cube) of the projection"],
+								["yDirection", "Vector", "y direction (edge of the cube) of the projection"],
+								["zDirection", "Vector", "z direction (edge of the cube) of the projection"]
+							]
+						},
+						"SetCylindricalTextureProjection" : {
+							"description" : "Sets the texture projection to cylindrical with the given parameters.",
+							"parameters" : [
+								["origo", "Coord", "origo of the projection"],
+								["radius", "number", "radius of the cylinder"],
+								["xDirection", "Vector", "x direction (start point along perimeter) of the projection"],
+								["zDirection", "Vector", "z direction (normal vector) of the projection"]
+							]
+						},
 						"Transform" : {
 							"description" : "Transforms the body.",
 							"parameters" : [

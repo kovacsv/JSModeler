@@ -21,14 +21,7 @@ JSM.GenerateRectangle = function (xSize, ySize)
 
 	result.AddPolygon (new JSM.BodyPolygon ([0, 1, 2, 3]));
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (-x, -y, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (-x, -y, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -66,14 +59,7 @@ JSM.GenerateCuboid = function (xSize, ySize, zSize)
 	result.AddPolygon (new JSM.BodyPolygon ([0, 4, 5, 1]));
 	result.AddPolygon (new JSM.BodyPolygon ([3, 2, 6, 7]));
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (-x, -y, -z),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (-x, -y, -z), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -114,14 +100,7 @@ JSM.GenerateCuboidSides = function (xSize, ySize, zSize, sides)
 	if (sides[4]) { result.AddPolygon (new JSM.BodyPolygon ([0, 4, 5, 1])); }
 	if (sides[5]) { result.AddPolygon (new JSM.BodyPolygon ([3, 2, 6, 7])); }
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (-x, -y, -z),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (-x, -y, -z), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -359,14 +338,7 @@ JSM.GenerateCircle = function (radius, segmentation)
 	}
 	result.AddPolygon (topPolygon);
 
-	result.SetTextureProjectionType ('Cylindrical');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (radius, 0.0, 0.0),
-		new JSM.Coord (0.0, radius, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCylindricalTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), radius, new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -456,14 +428,7 @@ JSM.GenerateSphere = function (radius, segmentation, isCurved)
 		}
 	}
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -580,14 +545,7 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 		}
 	}
 	
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -643,14 +601,7 @@ JSM.GenerateCylinder = function (radius, height, segmentation, withTopAndBottom,
 		result.AddPolygon (bottomPolygon);
 	}
 
-	result.SetTextureProjectionType ('Cylindrical');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, -(height / 2.0)),
-		new JSM.Coord (radius, 0.0, 0.0),
-		new JSM.Coord (0.0, radius, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCylindricalTextureProjection (new JSM.Coord (0.0, 0.0, -(height / 2.0)), radius, new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -709,14 +660,7 @@ JSM.GeneratePie = function (radius, height, angle, segmentation, withTopAndBotto
 		result.AddPolygon (bottomPolygon);
 	}
 
-	result.SetTextureProjectionType ('Cylindrical');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, -(height / 2.0)),
-		new JSM.Coord (radius, 0.0, 0.0),
-		new JSM.Coord (0.0, radius, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCylindricalTextureProjection (new JSM.Coord (0.0, 0.0, -(height / 2.0)), radius, new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -827,14 +771,7 @@ JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, with
 	}
 
 	var avgRadius = (topRadius + bottomRadius) / 2.0;
-	result.SetTextureProjectionType ('Cylindrical');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, -(height / 2.0)),
-		new JSM.Coord (avgRadius, 0.0, 0.0),
-		new JSM.Coord (0.0, avgRadius, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCylindricalTextureProjection (new JSM.Coord (0.0, 0.0, -(height / 2.0)), avgRadius, new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -889,14 +826,7 @@ JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		origo,
-		e1,
-		e2,
-		e3
-	));
-
+	result.SetCubicTextureProjection (origo, e1, e2, e3);
 	return result;
 };
 
@@ -1055,14 +985,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		origo,
-		e1,
-		e2,
-		e3
-	));
-
+	result.SetCubicTextureProjection (origo, e1, e2, e3);
 	return result;
 };
 
@@ -1177,14 +1100,7 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		origo,
-		e1,
-		e2,
-		e3
-	));
-
+	result.SetCubicTextureProjection (origo, e1, e2, e3);
 	return result;
 };
 
@@ -1352,14 +1268,7 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		origo,
-		e1,
-		e2,
-		e3
-	));
-
+	result.SetCubicTextureProjection (origo, e1, e2, e3);
 	return result;
 };
 
@@ -1434,14 +1343,7 @@ JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, inner
 		}
 	}
 	
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -1516,14 +1418,7 @@ JSM.GeneratePolyTorus = function (basePolygon, outerRadius, outerSegmentation, i
 		}
 	}
 	
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -1567,14 +1462,7 @@ JSM.GenerateRuledFromSectors = function (aSector, bSector, lineSegmentation, mes
 		result.AddPolygon (polygon);
 	}
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -1715,14 +1603,7 @@ JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegment
 		result.AddPolygon (polygon);
 	}
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -1762,14 +1643,7 @@ JSM.GenerateRuledFromCoords = function (aCoords, bCoords, meshSegmentation, isCu
 		result.AddPolygon (polygon);
 	}
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -1857,20 +1731,12 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 	avgRadius = avgRadius / count;
 	
 	var origo = new JSM.Coord (axis.beg.x, axis.beg.y, axis.beg.z);
-	var e3 = JSM.VectorNormalize (axisDir);
+	var cylinderNormal = JSM.VectorNormalize (axisDir);
 	var baseLine = new JSM.Line (origo, axisDir);
 	var projectedToBaseLine = JSM.ProjectCoordToLine (polyLine[0], baseLine);
-	var e1 = JSM.VectorSetLength (JSM.CoordSub (polyLine[0], projectedToBaseLine), avgRadius);
-	var e2 = JSM.VectorSetLength (JSM.VectorCross (e3, e1), avgRadius);
+	var xDirection = JSM.VectorNormalize (JSM.CoordSub (polyLine[0], projectedToBaseLine));
 	
-	result.SetTextureProjectionType ('Cylindrical');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		origo,
-		e1,
-		e2,
-		e3
-	));
-
+	result.SetCylindricalTextureProjection (origo, avgRadius, xDirection, cylinderNormal);
 	return result;
 };
 
@@ -1923,14 +1789,7 @@ JSM.GenerateTube = function (basePolygons, withStartAndEnd)
 		result.AddPolygon (bottomPolygon);
 	}
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -1958,14 +1817,7 @@ JSM.GenerateFunctionSurface = function (function3D, intervalMin, intervalMax, se
 		coord.z = function3D (coord.x, coord.y);
 	}
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 
@@ -1995,13 +1847,6 @@ JSM.GenerateFunctionSurfaceSolid = function (function3D, intervalMin, intervalMa
 		coord.z = function3D (coord.x, coord.y);
 	}
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	result.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };

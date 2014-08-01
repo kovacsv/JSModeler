@@ -175,13 +175,7 @@
 			var materials = new JSM.Materials ();
 
 			surfaceBody = JSM.GenerateBezierSurface (scp, 20, 20, false);
-			surfaceBody.SetTextureProjectionType ('Planar');
-			surfaceBody.SetTextureProjectionCoords (new JSM.CoordSystem (
-				new JSM.Coord (0.0, 0.0, 0.0),
-				new JSM.Coord (1.0, 0.0, 0.0),
-				new JSM.Coord (0.0, 1.0, 0.0),
-				new JSM.Coord (0.0, 0.0, 0.0)
-			));			
+			surfaceBody.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));
 			
 			//JSM.GenerateRandomMaterials (surfaceBody, materials, true);
 			var meshes = JSM.ConvertBodyToThreeMeshes (surfaceBody, materials);

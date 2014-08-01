@@ -820,33 +820,15 @@ function TestStep (viewer, mode, step, info)
 		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png'));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
-		body1.SetTextureProjectionType ('Cubic');
-		body1.SetTextureProjectionCoords (new JSM.CoordSystem (
-			new JSM.Coord (0.0, 0.0, 0.0),
-			new JSM.Coord (1.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 1.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0)
-		));
+		body1.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 		body1.SetPolygonsMaterialIndex (0);
 
 		var body2 = JSM.GenerateCuboid (1, 1, 1);
-		body2.SetTextureProjectionType ('Cubic');
-		body2.SetTextureProjectionCoords (new JSM.CoordSystem (
-			new JSM.Coord (0.2, 0.3, 0.4),
-			new JSM.Coord (1.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 1.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0)
-		));
+		body2.SetCubicTextureProjection (new JSM.Coord (0.2, 0.3, 0.4), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 		body2.SetPolygonsMaterialIndex (0);
 		
 		var body3 = JSM.GenerateCuboid (1, 1, 1);
-		body3.SetTextureProjectionType ('Cubic');
-		body3.SetTextureProjectionCoords (new JSM.CoordSystem (
-			new JSM.Coord (-0.5, -0.5, -0.5),
-			new JSM.Coord (1.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 1.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0)
-		));
+		body3.SetCubicTextureProjection (new JSM.Coord (-0.5, -0.5, -0.5), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));		
 		body3.SetPolygonsMaterialIndex (0);		
 
 		OffsetTwoBodies (body1, body3, 1.2, 0.0, 0.0);
@@ -864,33 +846,15 @@ function TestStep (viewer, mode, step, info)
 		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png'));
 
 		var body1 = JSM.GenerateCylinder (0.5, 1.0, 30, true, true);
-		body1.SetTextureProjectionType ('Cylindrical');
-		body1.SetTextureProjectionCoords (new JSM.CoordSystem (
-			new JSM.Coord (0.0, 0.0, 0.0),
-			new JSM.Coord (0.5, 0.0, 0.0),
-			new JSM.Coord (0.0, 0.5, 0.0),
-			new JSM.Coord (0.0, 0.0, 0.5)
-		));
+		body1.SetCylindricalTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), 0.5, new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 		body1.SetPolygonsMaterialIndex (0);
 
 		var body2 = JSM.GenerateCylinder (0.5, 1.0, 30, true, true);
-		body2.SetTextureProjectionType ('Cylindrical');
-		body2.SetTextureProjectionCoords (new JSM.CoordSystem (
-			new JSM.Coord (0.0, 0.0, -0.5),
-			new JSM.Coord (0.5, 0.0, 0.0),
-			new JSM.Coord (0.0, 0.5, 0.0),
-			new JSM.Coord (0.0, 0.0, 0.5)
-		));
+		body2.SetCylindricalTextureProjection (new JSM.Coord (0.0, 0.0, -0.5), 0.5, new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 		body2.SetPolygonsMaterialIndex (0);
 		
 		var body3 = JSM.GenerateCylinder (0.5, 1.0, 30, true, true);
-		body3.SetTextureProjectionType ('Cylindrical');
-		body3.SetTextureProjectionCoords (new JSM.CoordSystem (
-			new JSM.Coord (0.0, 0.0, 0.0),
-			new JSM.Coord (1.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 1.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0)
-		));
+		body3.SetCylindricalTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), 1.0, new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 		body3.SetPolygonsMaterialIndex (0);		
 
 		OffsetTwoBodies (body1, body3, 1.2, 0.0, 0.0);
