@@ -1,0 +1,40 @@
+/**
+* Function: CalculateSphericalTextureCoord
+* Description: Calculates the spherical texture coordinate for a coordinate.
+* Parameters:
+*	coord {Coord} the coordinate
+*	normal {Vector} the normal vector for calculation
+*	system {CoordSystem} the coordinate system
+* Returns:
+*	{Coord2D} the result
+*/
+JSM.CalculateSphericalTextureCoord = function (coord, normal, system)
+{
+	var result = new JSM.Coord2D ();
+
+	var e3Direction = JSM.VectorNormalize (system.e3);
+	if (JSM.VectorsAreCollinear (e3Direction, normal)) {
+		result = JSM.CalculateCubicTextureCoord (coord, normal, system);
+		return [result, 0.0];
+	}
+
+	var baseLine = new JSM.Line (system.origo, e3Direction);
+	var projectedCoord = JSM.ProjectCoordToLine (coord, baseLine);
+	var radius = JSM.VectorLength (system.e1);
+
+	if (!JSM.CoordIsEqual (coord, projectedCoord)) {
+		var coordDirection = JSM.CoordSub (coord, projectedCoord);
+		var e1Direction = JSM.VectorNormalize (system.e1);
+		var longitudeAngle = JSM.GetVectorsFullAngle (coordDirection, e1Direction, e3Direction);
+		result.x = longitudeAngle * radius;
+	} else {
+		result.x = null;
+	}
+
+	var projectedDistance = JSM.CoordSignedDistance (system.origo, projectedCoord, e3Direction);
+	var coordDistance = JSM.CoordDistance (system.origo, coord);
+	var latitudeAngle = JSM.ArcCos (projectedDistance / coordDistance);
+	result.y = -latitudeAngle * radius;
+	
+	return [result, longitudeAngle];
+};
