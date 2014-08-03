@@ -137,6 +137,11 @@ JSM.PointCloudRenderer.prototype.InitView = function (camera)
 	return true;
 };
 
+JSM.PointCloudRenderer.prototype.SetClearColor = function (red, green, blue)
+{
+	this.context.clearColor (red, green, blue, 1.0);
+};
+
 JSM.PointCloudRenderer.prototype.AddPoints = function (points, colors)
 {
 	var pointBuffer = this.context.createBuffer ();

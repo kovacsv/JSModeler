@@ -396,6 +396,11 @@ JSM.Renderer.prototype.InitView = function (camera, light)
 	return true;
 };
 
+JSM.Renderer.prototype.SetClearColor = function (red, green, blue)
+{
+	this.context.clearColor (red, green, blue, 1.0);
+};
+
 JSM.Renderer.prototype.AddGeometries = function (geometries)
 {
 	var i, currentGeometry;

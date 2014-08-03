@@ -113,6 +113,26 @@
 			requestAnimationFrame (Render);
 			document.getElementById ('fps').innerHTML = 'fps: ' + fps.Get (500);
 		}
+
+		function GetRandomCoord2D (xRange, yRange)
+		{
+			var result = new JSM.Coord2D ();
+			result.x = JSM.RandomNumber (xRange[0], xRange[1]);
+			result.y = JSM.RandomNumber (yRange[0], yRange[1]);
+			return result;
+		}
+
+		function GetSurfacePoint (u, v)
+		{
+			var a = 0.2, b = 1.0, c = 0.1, n = 2;
+			var result = new JSM.Coord (
+				a * (1.0 - (v / (2.0 * Math.PI))) * Math.cos (n * v) * (1.0 + Math.cos (u)) + c * Math.cos (n * v),
+				a * (1.0 - (v / (2.0 * Math.PI))) * Math.sin (n * v) * (1.0 + Math.cos (u)) + c * Math.sin (n * v),
+				(b * v + (a * (1.0 - (v / (2.0 * Math.PI))) * Math.sin (u))) / (2.0 * Math.PI)
+			);
+			
+			return result;
+		}
 		
 		function Load ()
 		{
@@ -130,18 +150,20 @@
 				alert ('error');
 			}
 
+			viewer.SetClearColor (0.0, 0.0, 0.0);
+			
 			var points = [];
 			var colors = [];
-			var i, x, y, z;
-			for (i = 0; i < 10000; i++) {
-				x = Math.random ();
-				y = Math.random ();
-				z = Math.random ();
-				points.push (x, y, z);
-				colors.push (x, y, z);
+			var i, point, surfacePoint;
+			for (i = 0; i < 100000; i++) {
+				point = GetRandomCoord2D ([0, 2 * Math.PI], [0, 2 * Math.PI]);
+				surfacePoint = GetSurfacePoint (point.x, point.y);
+				points.push (surfacePoint.x, surfacePoint.y, surfacePoint.z);
+				colors.push (point.x / (2.0 * Math.PI), point.y / (2.0 * Math.PI), 0);
 			}
 			viewer.AddPoints (points, colors);
-
+			viewer.FitInWindow ();
+			
 			Render ();
 		}
 	

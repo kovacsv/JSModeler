@@ -36,6 +36,11 @@ JSM.PointCloudViewer.prototype.InitNavigation = function ()
 	return true;
 };
 
+JSM.PointCloudViewer.prototype.SetClearColor = function (red, green, blue)
+{
+	this.renderer.SetClearColor (red, green, blue);
+};
+
 JSM.PointCloudViewer.prototype.AddPoints = function (points, colors)
 {
 	this.renderer.AddPoints (points, colors);

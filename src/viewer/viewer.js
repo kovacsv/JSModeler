@@ -36,6 +36,11 @@ JSM.Viewer.prototype.InitNavigation = function ()
 	return true;
 };
 
+JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
+{
+	this.renderer.SetClearColor (red, green, blue);
+};
+
 JSM.Viewer.prototype.AddGeometries = function (geometries)
 {
 	this.renderer.AddGeometries (geometries);
