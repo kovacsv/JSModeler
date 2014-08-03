@@ -199,6 +199,20 @@ JSM.ArcCos = function (value)
 };
 
 /**
+* Function: RandomNumber
+* Description: Generates a random number between two numbers.
+* Parameters:
+*	from {number} lowest random result
+*	to {number} highest random result
+* Returns:
+*	{number} the result
+*/
+JSM.RandomNumber = function (from, to)
+{
+	return Math.random () * (to - from) + from;
+};
+
+/**
 * Function: RandomInt
 * Description: Generates a random integer between two integers.
 * Parameters:
