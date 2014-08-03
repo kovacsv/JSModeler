@@ -129,6 +129,16 @@
 						["number", "the result"]
 					]
 				},
+				"RandomNumber" : {
+					"description" : "Generates a random number between two numbers.",
+					"parameters" : [
+						["from", "number", "lowest random result"],
+						["to", "number", "highest random result"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
 				"RandomInt" : {
 					"description" : "Generates a random integer between two integers.",
 					"parameters" : [

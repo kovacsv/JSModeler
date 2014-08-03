@@ -228,6 +228,82 @@ JSM.Renderer.prototype.InitShaders = function ()
 		return shader;
 	}
 	
+	function GetFragmentShaderScript (isTextureShader)
+	{
+		var defineString = '';
+		if (isTextureShader) {
+			defineString = '#define USETEXTURE';
+		}
+		
+		var script = [
+			defineString,
+			'uniform highp vec3 uAmbientLightColor;',
+			'uniform highp vec3 uDirectionalLightColor;',
+			'uniform highp vec3 uLightDirection;',
+
+			'uniform highp mat4 uViewMatrix;',
+			'uniform highp mat4 uModelViewMatrix;',
+
+			'varying highp vec3 vNormal;',
+			'#ifdef USETEXTURE',
+			'varying highp vec2 vUV;',
+			'uniform sampler2D uSampler;',
+			'#else',
+			'uniform highp vec3 uPolygonAmbientColor;',
+			'uniform highp vec3 uPolygonDiffuseColor;',
+			'#endif',
+			
+			'void main (void) {',
+			'	highp vec3 transformedNormal = normalize (vec3 (uModelViewMatrix * vec4 (vNormal, 0.0)));',
+			'	highp vec3 transformedLightDirection = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
+			'	highp float diffuseIntensity = abs (dot (transformedNormal, transformedLightDirection));',
+			'#ifdef USETEXTURE',
+			'	highp vec4 textureColor = texture2D (uSampler, vec2 (vUV.s, vUV.t));',
+			'	highp vec3 ambientComponent = textureColor.xyz * uAmbientLightColor;',
+			'	highp vec3 diffuseComponent = textureColor.xyz * uDirectionalLightColor * diffuseIntensity;',
+			'#else',
+			'	highp vec3 ambientComponent = uPolygonAmbientColor * uAmbientLightColor;',
+			'	highp vec3 diffuseComponent = uPolygonDiffuseColor * uDirectionalLightColor * diffuseIntensity;',
+			'#endif',
+			'	gl_FragColor = vec4 ((ambientComponent + diffuseComponent), 1.0);',
+			'}'
+		].join('\n');
+		return script;
+	}
+	
+	function GetVertexShaderScript (isTextureShader)
+	{
+		var defineString = '';
+		if (isTextureShader) {
+			defineString = '#define USETEXTURE';
+		}
+		
+		var script = [
+			defineString,
+			'attribute highp vec3 aVertexPosition;',
+			'attribute highp vec3 aVertexNormal;',
+
+			'uniform highp mat4 uModelViewMatrix;',
+			'uniform highp mat4 uProjectionMatrix;',
+
+			'varying highp vec3 vNormal;',
+
+			'#ifdef USETEXTURE',
+			'attribute highp vec2 aVertexUV;',
+			'varying highp vec2 vUV;',
+			'#endif',
+
+			'void main (void) {',
+			'	vNormal = aVertexNormal;',
+			'#ifdef USETEXTURE',
+			'	vUV = aVertexUV;',
+			'#endif',
+			'	gl_Position = uProjectionMatrix * uModelViewMatrix * vec4 (aVertexPosition, 1.0);',
+			'}'
+		].join('\n');
+		return script;
+	}
+
 	function InitShaderCommon (context, shader, light)
 	{
 		shader.vertexPositionAttribute = context.getAttribLocation (shader, 'aVertexPosition');
@@ -252,44 +328,8 @@ JSM.Renderer.prototype.InitShaders = function ()
 	
 	function InitMainShader (context, light)
 	{
-		var fragmentShaderScript = [
-			'uniform highp vec3 uAmbientLightColor;',
-			'uniform highp vec3 uDirectionalLightColor;',
-			'uniform highp vec3 uLightDirection;',
-
-			'uniform highp mat4 uViewMatrix;',
-			'uniform highp mat4 uModelViewMatrix;',
-
-			'uniform highp vec3 uPolygonAmbientColor;',
-			'uniform highp vec3 uPolygonDiffuseColor;',
-
-			'varying highp vec3 vNormal;',
-			
-			'void main (void) {',
-			'	highp vec3 transformedNormal = normalize (vec3 (uModelViewMatrix * vec4 (vNormal, 0.0)));',
-			'	highp vec3 directionalVector = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
-			'	highp vec3 ambientComponent = uPolygonAmbientColor * uAmbientLightColor;',
-			'	highp float normalDirectionProduct = abs (dot (transformedNormal, directionalVector));',
-			'	highp vec3 diffuseComponent = uPolygonDiffuseColor * uDirectionalLightColor * normalDirectionProduct;',
-			'	gl_FragColor = vec4 ((ambientComponent + diffuseComponent), 1.0);',
-			'}'
-			].join('\n');
-		
-		var vertexShaderScript = [
-			'attribute highp vec3 aVertexPosition;',
-			'attribute highp vec3 aVertexNormal;',
-
-			'uniform highp mat4 uModelViewMatrix;',
-			'uniform highp mat4 uProjectionMatrix;',
-
-			'varying highp vec3 vNormal;',
-
-			'void main (void) {',
-			'	vNormal = aVertexNormal;',
-			'	gl_Position = uProjectionMatrix * uModelViewMatrix * vec4 (aVertexPosition, 1.0);',
-			'}'
-			].join('\n');
-		
+		var fragmentShaderScript = GetFragmentShaderScript (false);
+		var vertexShaderScript = GetVertexShaderScript (false);
 		var shader = CreateShader (context, fragmentShaderScript, vertexShaderScript);
 		if (shader === null) {
 			return null;
@@ -306,48 +346,8 @@ JSM.Renderer.prototype.InitShaders = function ()
 
 	function InitTextureShader (context, light)
 	{
-		var fragmentShaderScript = [
-			'uniform highp vec3 uAmbientLightColor;',
-			'uniform highp vec3 uDirectionalLightColor;',
-			'uniform highp vec3 uLightDirection;',
-
-			'uniform highp mat4 uViewMatrix;',
-			'uniform highp mat4 uModelViewMatrix;',
-
-			'varying highp vec3 vNormal;',
-			'varying highp vec2 vUV;',
-			
-			'uniform sampler2D uSampler;',
-			
-			'void main (void) {',
-			'	highp vec3 transformedNormal = normalize (vec3 (uModelViewMatrix * vec4 (vNormal, 0.0)));',
-			'	highp vec3 directionalVector = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
-			'	highp vec4 textureColor = texture2D (uSampler, vec2 (vUV.s, vUV.t));',
-			'	highp vec3 ambientComponent = textureColor.xyz * uAmbientLightColor;',
-			'	highp float normalDirectionProduct = abs (dot (transformedNormal, directionalVector));',
-			'	highp vec3 diffuseComponent = textureColor.xyz * uDirectionalLightColor * normalDirectionProduct;',
-			'	gl_FragColor = vec4 ((ambientComponent + diffuseComponent), 1.0);',
-			'}'
-			].join('\n');
-		
-		var vertexShaderScript = [
-			'attribute highp vec3 aVertexPosition;',
-			'attribute highp vec3 aVertexNormal;',
-			'attribute highp vec2 aVertexUV;',
-
-			'uniform highp mat4 uModelViewMatrix;',
-			'uniform highp mat4 uProjectionMatrix;',
-
-			'varying highp vec3 vNormal;',
-			'varying highp vec2 vUV;',
-
-			'void main (void) {',
-			'	vNormal = aVertexNormal;',
-			'	vUV = aVertexUV;',
-			'	gl_Position = uProjectionMatrix * uModelViewMatrix * vec4 (aVertexPosition, 1.0);',
-			'}'
-			].join('\n');
-		
+		var fragmentShaderScript = GetFragmentShaderScript (true);
+		var vertexShaderScript = GetVertexShaderScript (true);
 		var shader = CreateShader (context, fragmentShaderScript, vertexShaderScript);
 		if (shader === null) {
 			return null;
