@@ -134,6 +134,8 @@
 			if (!viewer.Init ('example', camera)) {
 				alert ('error');
 			}
+			
+			viewer.SetPointSize (2.0);
 
 			var jsonLoader = new JSM.JSONFileLoader (JSONLoaded);
 			jsonLoader.Load ('pointcloudjson.js');

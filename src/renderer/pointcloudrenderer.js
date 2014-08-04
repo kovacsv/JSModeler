@@ -6,6 +6,7 @@ JSM.PointCloudRenderer = function ()
 	
 	this.camera = null;
 	this.points = null;
+	this.pointSize = null;
 };
 
 JSM.PointCloudRenderer.prototype.Init = function (canvasName, camera)
@@ -85,11 +86,13 @@ JSM.PointCloudRenderer.prototype.InitShaders = function ()
 		'uniform highp mat4 uViewMatrix;',
 		'uniform highp mat4 uProjectionMatrix;',
 
+		'uniform highp float uPointSize;',
+		
 		'varying highp vec3 vColor;',
 		
 		'void main (void) {',
 		'	vColor = aVertexColor;',
-		'	gl_PointSize = 2.0;',
+		'	gl_PointSize = uPointSize;',
 		'	gl_Position = uProjectionMatrix * uViewMatrix * vec4 (aVertexPosition, 1.0);',
 		'}'
 		].join('\n');
@@ -117,6 +120,8 @@ JSM.PointCloudRenderer.prototype.InitShaders = function ()
 
 	this.shader.pMatrixUniform = this.context.getUniformLocation (this.shader, 'uProjectionMatrix');
 	this.shader.vMatrixUniform = this.context.getUniformLocation (this.shader, 'uViewMatrix');
+	
+	this.shader.pointSizeUniform = this.context.getUniformLocation (this.shader, 'uPointSize');
 
 	return true;
 };
@@ -124,6 +129,7 @@ JSM.PointCloudRenderer.prototype.InitShaders = function ()
 JSM.PointCloudRenderer.prototype.InitBuffers = function ()
 {
 	this.points = [];
+	this.pointSize = 1.0;
 	return true;
 };
 
@@ -140,6 +146,11 @@ JSM.PointCloudRenderer.prototype.InitView = function (camera)
 JSM.PointCloudRenderer.prototype.SetClearColor = function (red, green, blue)
 {
 	this.context.clearColor (red, green, blue, 1.0);
+};
+
+JSM.PointCloudRenderer.prototype.SetPointSize = function (pointSize)
+{
+	this.pointSize = pointSize;
 };
 
 JSM.PointCloudRenderer.prototype.AddPoints = function (points, colors)
@@ -185,6 +196,8 @@ JSM.PointCloudRenderer.prototype.Render = function ()
 	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
 	this.context.uniformMatrix4fv (this.shader.vMatrixUniform, false, viewMatrix);
 
+	this.context.uniform1f (this.shader.pointSizeUniform, this.pointSize);
+	
 	var i, pointBuffer, colorBuffer;
 	for (i = 0; i < this.points.length; i++) {
 		pointBuffer = this.points[i].pointBuffer;

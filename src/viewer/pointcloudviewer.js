@@ -41,6 +41,11 @@ JSM.PointCloudViewer.prototype.SetClearColor = function (red, green, blue)
 	this.renderer.SetClearColor (red, green, blue);
 };
 
+JSM.PointCloudViewer.prototype.SetPointSize = function (pointSize)
+{
+	this.renderer.SetPointSize (pointSize);
+};
+
 JSM.PointCloudViewer.prototype.AddPoints = function (points, colors)
 {
 	this.renderer.AddPoints (points, colors);
