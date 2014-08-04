@@ -163,6 +163,11 @@ JSM.PointCloudRenderer.prototype.AddPoints = function (points, colors)
 	this.points.push ({pointArray : pointArray, pointBuffer : pointBuffer, colorBuffer : colorBuffer});
 };
 
+JSM.PointCloudRenderer.prototype.RemovePoints = function ()
+{
+	this.points = [];
+};
+
 JSM.PointCloudRenderer.prototype.Resize = function ()
 {
 	this.context.viewportWidth = this.canvas.width;

@@ -1,0 +1,24 @@
+html, body
+{
+	color : #000000;
+	background : #ffffff;
+	font-size : 12px;
+	font-family : Arial, cursive;
+	margin : 0px;
+	padding : 0px;
+	width : 100%;
+	height : 100%;
+}
+
+canvas
+{
+	display : block;
+}
+
+#fps
+{
+	color : #dddddd;
+	position : absolute;
+	left : 10px;
+	top : 10px;
+}

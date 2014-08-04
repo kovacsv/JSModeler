@@ -46,6 +46,11 @@ JSM.PointCloudViewer.prototype.AddPoints = function (points, colors)
 	this.renderer.AddPoints (points, colors);
 };
 
+JSM.PointCloudViewer.prototype.RemovePoints = function ()
+{
+	this.renderer.RemovePoints ();
+};
+
 JSM.PointCloudViewer.prototype.FitInWindow = function ()
 {
 	var center = this.GetCenter ();
