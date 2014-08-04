@@ -182,7 +182,7 @@ JSM.Renderer.prototype.InitContext = function (canvasName)
 		return false;
 	}
 
-	this.context = this.canvas.getContext ('webgl');
+	this.context = this.canvas.getContext ('experimental-webgl');
 	if (this.context === null) {
 		return false;
 	}
