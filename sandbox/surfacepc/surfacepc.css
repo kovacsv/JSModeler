@@ -2,7 +2,7 @@ html, body
 {
 	color : #000000;
 	background : #ffffff;
-	font-size : 12px;
+	font-size : 11px;
 	font-family : Arial, cursive;
 	margin : 0px;
 	padding : 0px;
@@ -15,10 +15,37 @@ canvas
 	display : block;
 }
 
-#fps
+#menu
 {
-	color : #dddddd;
+	color : #ffffff;
+	background : transparent;
+	opacity : 0.8;
+	width : 150px;
 	position : absolute;
-	left : 10px;
 	top : 10px;
+	right : 10px;
+	border : 1px solid #666666;
+}
+
+#menu a
+{
+	color : #ffffff;
+	background : transparent;
+	text-decoration : none;
+}
+
+div.menutitle
+{
+	color : #ffffff;
+	background : #666666;
+	text-align : center;
+	padding: 5px;
+}
+
+div.menuitem
+{
+	color : #ffffff;
+	background : #333333;
+	text-align : center;
+	padding : 5px;
 }
