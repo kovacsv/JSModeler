@@ -155,7 +155,7 @@ PointCloudGenerator.prototype.GenerateDinisSurface = function ()
 		);
 		return result;
 	}
-	return this.Generate ([0.0, 4.0 * Math.PI], [0.01, 1.0], GetSurfacePoint);
+	return this.Generate ([0.0, 4.0 * Math.PI], [0.01, 2.0], GetSurfacePoint);
 };
 
 PointCloudGenerator.prototype.GenerateSphere = function ()
