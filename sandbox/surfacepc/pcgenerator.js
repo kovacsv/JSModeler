@@ -98,23 +98,6 @@ PointCloudGenerator.prototype.GenerateSeaShell = function ()
 	return this.Generate ([0.0, 6.0 * Math.PI], [0.0, 2.0 * Math.PI], GetSurfacePoint);
 };
 
-PointCloudGenerator.prototype.GenerateConicSpiral = function ()
-{
-	function GetSurfacePoint (u, v)
-	{
-		var a = 0.2, b = 1.0, c = 0.1, n = 2;
-		var result = new JSM.Coord (
-			a * (1.0 - (v / (2.0 * Math.PI))) * Math.cos (n * v) * (1.0 + Math.cos (u)) + c * Math.cos (n * v),
-			a * (1.0 - (v / (2.0 * Math.PI))) * Math.sin (n * v) * (1.0 + Math.cos (u)) + c * Math.sin (n * v),
-			(b * v + (a * (1.0 - (v / (2.0 * Math.PI))) * Math.sin (u))) / (2.0 * Math.PI)
-		);
-		
-		return result;
-	}
-	
-	return this.Generate ([0.0, 2.0 * Math.PI], [0.0, 2.0 * Math.PI], GetSurfacePoint);
-};
-
 PointCloudGenerator.prototype.GenerateMobiusStrip = function ()
 {
 	function GetSurfacePoint (u, v)
@@ -172,7 +155,7 @@ PointCloudGenerator.prototype.GenerateDinisSurface = function ()
 		);
 		return result;
 	}
-	return this.Generate ([0.0, 4.0 * Math.PI], [0.01, 2.0], GetSurfacePoint);
+	return this.Generate ([0.0, 4.0 * Math.PI], [0.01, 1.0], GetSurfacePoint);
 };
 
 PointCloudGenerator.prototype.GenerateSphere = function ()
