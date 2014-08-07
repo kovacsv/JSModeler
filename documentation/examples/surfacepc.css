@@ -1,0 +1,51 @@
+html, body
+{
+	color : #000000;
+	background : #ffffff;
+	font-size : 11px;
+	font-family : Arial, cursive;
+	margin : 0px;
+	padding : 0px;
+	width : 100%;
+	height : 100%;
+}
+
+canvas
+{
+	display : block;
+}
+
+#menu
+{
+	color : #ffffff;
+	background : transparent;
+	opacity : 0.8;
+	width : 150px;
+	position : absolute;
+	top : 10px;
+	right : 10px;
+	border : 1px solid #666666;
+}
+
+#menu a
+{
+	color : #ffffff;
+	background : transparent;
+	text-decoration : none;
+}
+
+div.menutitle
+{
+	color : #ffffff;
+	background : #666666;
+	text-align : center;
+	padding: 5px;
+}
+
+div.menuitem
+{
+	color : #ffffff;
+	background : #333333;
+	text-align : center;
+	padding : 5px;
+}

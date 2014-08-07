@@ -143,10 +143,6 @@
 			var canvas = document.getElementById ('example');
 			canvas.width = window.innerWidth - left.clientWidth - 3 * margin;
 			canvas.height = window.innerHeight - 3 * margin;
-
-			if (viewer != null) {
-				viewer.Resize ();
-			}
 		}
 
 		function Load ()
@@ -159,15 +155,16 @@
 				cameraEyePosition : [-4, -4, 4],
 				cameraCenterPosition : [0.0, 0.0, 1.5],
 				cameraUpVector : [0.0, 0.0, 1.0],
-				cameraDisableZoom : true
 			};
 
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			if (!viewer.Start ('example', viewerSettings)) {
 				alert ('Viewer initialization failed.');
 				return;
 			}
-
+			viewer.navigation.EnableZoom (false);
+			viewer.navigation.EnablePan (false);
+			
 			robot = new JSM.Robot ();
 			var meshes = robot.CreateMeshes ();
 			for (var i = 0; i < meshes.length; i++) {

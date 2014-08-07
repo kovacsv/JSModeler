@@ -113,15 +113,15 @@
 					vmd.radius = 1.0 / 100.0;
 				}
 				vmd.vertexData = GetSoftMoveVertexData (meshes[0], faceAndVertex[1], vmd.radius);
-				vmd.originalPos = [viewer.mouse.currX, viewer.mouse.currY];
-				viewer.settings['cameraDisableOrbit'] = true;
+				vmd.originalPos = [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY];
+				viewer.navigation.EnableOrbit (false);
 			}
 		}
 		
 		function OnMouseMove ()
 		{
 			if (vmd != null) {
-				var pos = [viewer.mouse.currX, viewer.mouse.currY];
+				var pos = [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY];
 				var offset = vmd.originalPos[1] - pos[1];
 				offset /= 250.0;
 				var normal = new THREE.Vector3 (0, 0, 1);
@@ -135,7 +135,7 @@
 		function OnMouseUp ()
 		{
 			vmd = null;
-			viewer.settings['cameraDisableOrbit'] = false;
+			viewer.navigation.EnableOrbit (true);
 		}
 
 		function Resize ()
@@ -145,10 +145,6 @@
 			var canvas = document.getElementById ('example');
 			canvas.setAttribute ('width', window.innerWidth - left.clientWidth - 3 * margin);
 			canvas.setAttribute ('height', window.innerHeight - 3 * margin);
-
-			if (viewer != null) {
-				viewer.Resize ();
-			}
 		}
 		
 		function Load ()
@@ -166,12 +162,13 @@
 				cameraUpVector : [0.0, 0.0, 1.0]
 			};
 
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			if (!viewer.Start ('example', viewerSettings)) {
 				alert ('Viewer initialization failed.');
 				return;
 			}
-
+			viewer.navigation.EnablePan (false);
+			
 			var segmentation = 100;
 			body = JSM.GenerateSegmentedRectangle (1, 1, segmentation, segmentation);
 			

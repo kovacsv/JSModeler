@@ -10,6 +10,10 @@
 
 	<script type="text/javascript" src="../../build/three.min.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
+	<script type="text/javascript" src="include/basedialog.js"></script>
+	<script type="text/javascript" src="include/settingscontrols.js"></script>
+	<script type="text/javascript" src="include/settingsdialog.js"></script>
+	<script type="text/javascript" src="include/floatingdialog.js"></script>
 	<script type="text/javascript" src="include/shapegenerators.js"></script>
 	
 	<title>JSModeler Demonstration</title>
@@ -53,6 +57,7 @@
 				['SnubCube', 'snub cube'],
 				['Icosidodecahedron', 'icosidodecahedron'],
 				['TruncatedDodecahedron', 'truncated dodecahedron'],
+				['TruncatedIcosahedron', 'truncated icosahedron'],
 				['Rhombicosidodecahedron', 'rhombicosidodecahedron'],
 				['TruncatedIcosidodecahedron', 'truncated icosidodecahedron'],
 				['SnubDodecahedron', 'snub dodecahedron']
@@ -79,9 +84,6 @@
 			
 			canvas.width = document.body.clientWidth - left.offsetWidth;
 			canvas.height = document.body.clientHeight;
-			if (viewer !== null) {
-				viewer.Resize ();
-			}
 		}
 		
 		function ShowBody ()
@@ -232,9 +234,8 @@
 			} else if (format == 'svg') {
 				floatingDialog.Open ();
 				content = AddContent (floatingDialog, 'svg');
-				var drawSettings = new JSM.DrawSettings (viewer.cameraMove, viewer.settings['fieldOfView'], viewer.settings['nearClippingPlane'], viewer.settings['farClippingPlane'], 'Wireframe', true);
 				var drawer = new JSM.SVGDrawer (content);
-				JSM.DrawProjectedBody (body, materials, drawSettings, drawer);
+				JSM.DrawProjectedBody (body, materials, viewer.cameraMove, 'Wireframe', true, drawer);
 			}
 		}
 
@@ -294,7 +295,7 @@
 				cameraUpVector : [0, 0, 1]
 			};
 
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			if (!viewer.Start ('demo', viewerSettings)) {
 				while (document.body.lastChild) {
 					document.body.removeChild (document.body.lastChild);
