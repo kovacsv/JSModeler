@@ -7,12 +7,12 @@ PointCloudGenerator = function ()
 PointCloudGenerator.prototype.SetPointNum = function (pointNum)
 {
 	this.pointNum = pointNum;
-}
+};
 
 PointCloudGenerator.prototype.SetColorScheme = function (colorScheme)
 {
 	this.colorScheme = colorScheme;
-}
+};
 
 PointCloudGenerator.prototype.Generate = function (xRange, yRange, callbackFunction)
 {
@@ -41,7 +41,7 @@ PointCloudGenerator.prototype.Generate = function (xRange, yRange, callbackFunct
 		
 		function GetColorComponent (number, fromColor, toColor, component)
 		{
-			return fromColor[component] + number * (toColor[component] - fromColor[component])
+			return fromColor[component] + number * (toColor[component] - fromColor[component]);
 		}
 		
 		var normalizedX = NormalizeNumber (point.x, xRange);
