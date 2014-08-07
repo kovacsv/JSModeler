@@ -112,10 +112,14 @@
 			
 			switch (index) {
 				case 0: pc = pcGenerator.GenerateSeaShell (); break;
-				case 1: pc = pcGenerator.GenerateMobiusStrip (); break;
-				case 2: pc = pcGenerator.GenerateKleinBottle (); break;
-				case 3: pc = pcGenerator.GenerateSteinerSurface (); break;
-				case 4: pc = pcGenerator.GenerateDinisSurface (); break;
+				case 1: pc = pcGenerator.GenerateNautilus (); break;
+				case 2: pc = pcGenerator.GenerateMobiusStrip (); break;
+				case 3: pc = pcGenerator.GenerateKleinBottle (); break;
+				case 4: pc = pcGenerator.GenerateSteinerSurface (); break;
+				case 5: pc = pcGenerator.GenerateDinisSurface (); break;
+				case 6: pc = pcGenerator.GenerateTrefoilKnot (); break;
+				case 7: pc = pcGenerator.GenerateSpiral (); break;
+				case 8: pc = pcGenerator.GenerateTorus (); break;
 			}
 
 			if (pc !== null) {
@@ -177,10 +181,14 @@
 		<div class="menutitle"><a href="javascript:ShowHideDiv ('surfacelist')">surfaces</a></div>
 		<div id="surfacelist">
 			<div class="menuitem"><a href="javascript:UpdatePointCloud (0, true)">seashell</a></div>
-			<div class="menuitem"><a href="javascript:UpdatePointCloud (1, true)">mobius strip</a></div>
-			<div class="menuitem"><a href="javascript:UpdatePointCloud (2, true)">klein bottle</a></div>
-			<div class="menuitem"><a href="javascript:UpdatePointCloud (3, true)">steiner surface</a></div>
-			<div class="menuitem"><a href="javascript:UpdatePointCloud (4, true)">dini's surface</a></div>
+			<div class="menuitem"><a href="javascript:UpdatePointCloud (1, true)">nautilus</a></div>
+			<div class="menuitem"><a href="javascript:UpdatePointCloud (2, true)">mobius strip</a></div>
+			<div class="menuitem"><a href="javascript:UpdatePointCloud (3, true)">klein bottle</a></div>
+			<div class="menuitem"><a href="javascript:UpdatePointCloud (4, true)">steiner surface</a></div>
+			<div class="menuitem"><a href="javascript:UpdatePointCloud (5, true)">dini's surface</a></div>
+			<div class="menuitem"><a href="javascript:UpdatePointCloud (6, true)">trefoil knot</a></div>
+			<div class="menuitem"><a href="javascript:UpdatePointCloud (7, true)">spiral</a></div>
+			<div class="menuitem"><a href="javascript:UpdatePointCloud (8, true)">torus</a></div>
 		</div>
 		<div class="menutitle"><a href="javascript:ShowHideDiv ('settingslist')">settings</a></div>
 		<div id="settingslist">

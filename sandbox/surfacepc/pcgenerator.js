@@ -98,6 +98,22 @@ PointCloudGenerator.prototype.GenerateSeaShell = function ()
 	return this.Generate ([0.0, 6.0 * Math.PI], [0.0, 2.0 * Math.PI], GetSurfacePoint);
 };
 
+PointCloudGenerator.prototype.GenerateNautilus = function ()
+{
+	function GetSurfacePoint (u, v)
+	{
+		var result = new JSM.Coord (
+			u * Math.cos (u) * (Math.cos (v) + 1.0),
+			u * Math.sin (u) * (Math.cos (v) + 1.0),
+			u * Math.sin(v)
+		);
+
+		return result;
+	}
+	
+	return this.Generate ([0.0, 3.0 * Math.PI], [-Math.PI, Math.PI], GetSurfacePoint);
+};
+
 PointCloudGenerator.prototype.GenerateMobiusStrip = function ()
 {
 	function GetSurfacePoint (u, v)
@@ -125,7 +141,7 @@ PointCloudGenerator.prototype.GenerateKleinBottle = function ()
 		);
 		return result;
 	}
-	return this.Generate ([0.0, 2 * Math.PI], [0.0 + JSM.Eps, 2.0 * Math.PI], GetSurfacePoint);
+	return this.Generate ([0.0, 2 * Math.PI], [0.0, 2.0 * Math.PI], GetSurfacePoint);
 };
 
 PointCloudGenerator.prototype.GenerateSteinerSurface = function ()
@@ -158,18 +174,49 @@ PointCloudGenerator.prototype.GenerateDinisSurface = function ()
 	return this.Generate ([0.0, 4.0 * Math.PI], [0.01, 2.0], GetSurfacePoint);
 };
 
-PointCloudGenerator.prototype.GenerateSphere = function ()
+PointCloudGenerator.prototype.GenerateTrefoilKnot = function ()
 {
 	function GetSurfacePoint (u, v)
 	{
 		var result = new JSM.Coord (
-			Math.sin (u) * Math.cos (v),
-			Math.sin (u) * Math.sin (v),
-			Math.cos (u)
+			Math.cos (u) * Math.cos (v) + 3.0 * Math.cos (u) * (1.5 + Math.sin (1.5 * u) / 2.0),
+			Math.sin (u) * Math.cos (v) + 3.0 * Math.sin (u) * (1.5 + Math.sin (1.5 * u) / 2.0),
+			Math.sin (v) + 2.0 * Math.cos (1.5 * u)
+		);
+		return result;
+	}
+	return this.Generate ([-2.0 * Math.PI, 2.0 * Math.PI], [-Math.PI, Math.PI], GetSurfacePoint);
+};
+
+PointCloudGenerator.prototype.GenerateSpiral = function ()
+{
+	function GetSurfacePoint (u, v)
+	{
+		var r = 2.5;
+		var result = new JSM.Coord (
+			Math.cos (u) * (Math.cos (v) + r),
+			Math.sin (u) * (Math.cos (v) + r),
+			Math.sin (v) + u
 		);
 		return result;
 	}
 
-	return this.Generate ([0, 2 * Math.PI], [0.0, Math.PI], GetSurfacePoint);
+	return this.Generate ([-2.0 * Math.PI, 2.0 * Math.PI], [-Math.PI, Math.PI], GetSurfacePoint);
+};
+
+PointCloudGenerator.prototype.GenerateTorus = function ()
+{
+	function GetSurfacePoint (u, v)
+	{
+		var r = 2.5;
+		var result = new JSM.Coord (
+			Math.cos (u) * (Math.cos (v) + r),
+			Math.sin (u) * (Math.cos (v) + r),
+			Math.sin (v)
+		);
+		return result;
+	}
+
+	return this.Generate ([-Math.PI, Math.PI], [-Math.PI, Math.PI], GetSurfacePoint);
 };
 

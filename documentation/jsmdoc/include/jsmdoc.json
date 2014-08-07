@@ -3450,18 +3450,6 @@
 					"returns" : [
 						["Body", "the result"]
 					]
-				},
-				"GenerateMobiusStrip" : {
-					"description" : "Generates a mobius strip.",
-					"parameters" : [
-						["a", "number", "the parameter of mobius strip"],
-						["xSegmentation", "integer", "the segmentation along the x axis"],
-						["ySegmentation", "integer", "the segmentation along the y axis"],
-						["isCurved", "boolean", "create smooth surfaces"]
-					],
-					"returns" : [
-						["Body", "the result"]
-					]
 				}
 			},
 			"classes" : {
