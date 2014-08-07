@@ -1,16 +1,382 @@
 /**
-* Function: VectorMatrixMultiply4x4
-* Description: Multiplies a vector with a matrix.
+* Function: MatrixIdentity
+* Description: Generates an identity matrix.
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixIdentity = function ()
+{
+	var result = [];
+	result[0] = 1.0;
+	result[1] = 0.0;
+	result[2] = 0.0;
+	result[3] = 0.0;
+	result[4] = 0.0;
+	result[5] = 1.0;
+	result[6] = 0.0;
+	result[7] = 0.0;
+	result[8] = 0.0;
+	result[9] = 0.0;
+	result[10] = 1.0;
+	result[11] = 0.0;
+	result[12] = 0.0;
+	result[13] = 0.0;
+	result[14] = 0.0;
+	result[15] = 1.0;
+	return result;
+};
+
+/**
+* Function: MatrixClone
+* Description: Clones a matrix.
 * Parameters:
-*	vector {number[4]} the vector
+*	matrix {number[16]} the source matrix
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixClone = function (matrix)
+{
+	var result = [];
+	result[0] = matrix[0];
+	result[1] = matrix[1];
+	result[2] = matrix[2];
+	result[3] = matrix[3];
+	result[4] = matrix[4];
+	result[5] = matrix[5];
+	result[6] = matrix[6];
+	result[7] = matrix[7];
+	result[8] = matrix[8];
+	result[9] = matrix[9];
+	result[10] = matrix[10];
+	result[11] = matrix[11];
+	result[12] = matrix[12];
+	result[13] = matrix[13];
+	result[14] = matrix[14];
+	result[15] = matrix[15];
+	return result;
+};
+
+/**
+* Function: MatrixTranspose
+* Description: Transposes a matrix.
+* Parameters:
+*	matrix {number[16]} the source matrix
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixTranspose = function (matrix)
+{
+	var result = [];
+	result[0] = matrix[0];
+	result[1] = matrix[4];
+	result[2] = matrix[8];
+	result[3] = matrix[12];
+	result[4] = matrix[1];
+	result[5] = matrix[5];
+	result[6] = matrix[9];
+	result[7] = matrix[13];
+	result[8] = matrix[2];
+	result[9] = matrix[6];
+	result[10] = matrix[10];
+	result[11] = matrix[14];
+	result[12] = matrix[3];
+	result[13] = matrix[7];
+	result[14] = matrix[11];
+	result[15] = matrix[15];
+	return result;
+};
+
+/**
+* Function: MatrixTranslation
+* Description: Creates a translation matrix.
+* Parameters:
+*	x {number} x offset of the transformation
+*	y {number} y offset of the transformation
+*	z {number} z offset of the transformation
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixTranslation = function (x, y, z)
+{
+	var result = [];
+	result[0] = 1.0;
+	result[1] = 0.0;
+	result[2] = 0.0;
+	result[3] = 0.0;
+	result[4] = 0.0;
+	result[5] = 1.0;
+	result[6] = 0.0;
+	result[7] = 0.0;
+	result[8] = 0.0;
+	result[9] = 0.0;
+	result[10] = 1.0;
+	result[11] = 0.0;
+	result[12] = x;
+	result[13] = y;
+	result[14] = z;
+	result[15] = 1.0;
+	return result;
+};
+
+/**
+* Function: MatrixRotation
+* Description: Creates a rotation matrix around the given axis.
+* Parameters:
+*	axis {Vector} the axis of the rotation
+*	angle {number} the angle of the rotation
+*	origo {Coord} the origo of the rotation
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixRotation = function (axis, angle, origo)
+{
+	var normal = JSM.VectorNormalize (axis);
+
+	var u = normal.x;
+	var v = normal.y;
+	var w = normal.z;
+
+	var u2 = u * u;
+	var v2 = v * v;
+	var w2 = w * w;
+
+	var si = Math.sin (angle);
+	var co = Math.cos (angle);
+	
+	var result = [];
+	if (origo === undefined || origo === null) {
+		result[0] = u2 + (v2 + w2) * co;
+		result[1] = u * v * (1.0 - co) + w * si;
+		result[2] = u * w * (1.0 - co) - v * si;
+		result[3] = 0.0;
+		result[4] = u * v * (1.0 - co) - w * si;
+		result[5] = v2 + (u2 + w2) * co;
+		result[6] = v * w * (1.0 - co) + u * si;
+		result[7] = 0.0;
+		result[8] = u * w * (1.0 - co) + v * si;
+		result[9] = v * w * (1.0 - co) - u * si;
+		result[10] = w2 + (u2 + v2) * co;
+		result[11] = 0.0;
+		result[12] = 0.0;
+		result[13] = 0.0;
+		result[14] = 0.0;
+		result[15] = 1.0;
+	} else {
+		var a = origo.x;
+		var b = origo.y;
+		var c = origo.z;
+	
+		result[0] = u2 + (v2 + w2) * co;
+		result[1] = u * v * (1.0 - co) + w * si;
+		result[2] = u * w * (1.0 - co) - v * si;
+		result[3] = 0.0;
+		result[4] = u * v * (1.0 - co) - w * si;
+		result[5] = v2 + (u2 + w2) * co;
+		result[6] = v * w * (1.0 - co) + u * si;
+		result[7] = 0.0;
+		result[8] = u * w * (1.0 - co) + v * si;
+		result[9] = v * w * (1.0 - co) - u * si;
+		result[10] = w2 + (u2 + v2) * co;
+		result[11] = 0.0;
+		result[12] = (a * (v2 + w2) - u * (b * v + c * w)) * (1.0 - co) + (b * w - c * v) * si;
+		result[13] = (b * (u2 + w2) - v * (a * u + c * w)) * (1.0 - co) + (c * u - a * w) * si;
+		result[14] = (c * (u2 + v2) - w * (a * u + b * v)) * (1.0 - co) + (a * v - b * u) * si;
+		result[15] = 1.0;
+	}
+
+	return result;
+};
+
+/**
+* Function: MatrixRotationX
+* Description: Creates a rotation matrix around the x axis.
+* Parameters:
+*	angle {number} the angle of rotation
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixRotationX = function (angle)
+{
+	var si = Math.sin (angle);
+	var co = Math.cos (angle);
+
+	var result = [];
+	result[0] = 1.0;
+	result[1] = 0.0;
+	result[2] = 0.0;
+	result[3] = 0.0;
+	result[4] = 0.0;
+	result[5] = co;
+	result[6] = si;
+	result[7] = 0.0;
+	result[8] = 0.0;
+	result[9] = -si;
+	result[10] = co;
+	result[11] = 0.0;
+	result[12] = 0.0;
+	result[13] = 0.0;
+	result[14] = 0.0;
+	result[15] = 1.0;
+	return result;
+};
+
+/**
+* Function: MatrixRotationY
+* Description: Creates a rotation matrix around the y axis.
+* Parameters:
+*	angle {number} the angle of rotation
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixRotationY = function (angle)
+{
+	var si = Math.sin (angle);
+	var co = Math.cos (angle);
+
+	var result = [];
+	result[0] = co;
+	result[1] = 0.0;
+	result[2] = -si;
+	result[3] = 0.0;
+	result[4] = 0.0;
+	result[5] = 1.0;
+	result[6] = 0.0;
+	result[7] = 0.0;
+	result[8] = si;
+	result[9] = 0.0;
+	result[10] = co;
+	result[11] = 0.0;
+	result[12] = 0.0;
+	result[13] = 0.0;
+	result[14] = 0.0;
+	result[15] = 1.0;
+	return result;
+};
+
+/**
+* Function: MatrixRotationZ
+* Description: Creates a rotation matrix around the z axis.
+* Parameters:
+*	angle {number} the angle of rotation
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixRotationZ = function (angle)
+{
+	var si = Math.sin (angle);
+	var co = Math.cos (angle);
+
+	var result = [];
+	result[0] = co;
+	result[1] = si;
+	result[2] = 0.0;
+	result[3] = 0.0;
+	result[4] = -si;
+	result[5] = co;
+	result[6] = 0.0;
+	result[7] = 0.0;
+	result[8] = 0.0;
+	result[9] = 0.0;
+	result[10] = 1.0;
+	result[11] = 0.0;
+	result[12] = 0.0;
+	result[13] = 0.0;
+	result[14] = 0.0;
+	result[15] = 1.0;
+	return result;
+};
+
+/**
+* Function: MatrixView
+* Description: Creates a view matrix.
+* Parameters:
+*	eye {Coord} eye position
+*	center {Coord} center position
+*	up {Vector} up vector
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixView = function (eye, center, up)
+{
+	if (JSM.CoordIsEqual (eye, center)) {
+		return JSM.MatrixIdentity ();
+	}
+	
+	var result = [];
+
+	var d = JSM.VectorNormalize (JSM.CoordSub (eye, center));
+	var v = JSM.VectorNormalize (JSM.VectorCross (up, d));
+	var u = JSM.VectorNormalize (JSM.VectorCross (d, v));
+
+	result[0] = v.x;
+	result[1] = u.x;
+	result[2] = d.x;
+	result[3] = 0;
+	result[4] = v.y;
+	result[5] = u.y;
+	result[6] = d.y;
+	result[7] = 0;
+	result[8] = v.z;
+	result[9] = u.z;
+	result[10] = d.z;
+	result[11] = 0;
+	result[12] = -JSM.VectorDot (v, eye);
+	result[13] = -JSM.VectorDot (u, eye);
+	result[14] = -JSM.VectorDot (d, eye);
+	result[15] = 1;
+	
+	return result;
+};
+
+/**
+* Function: MatrixPerspective
+* Description: Creates a perspective matrix.
+* Parameters:
+*	fieldOfView {number} field of view
+*	aspectRatio {number} aspect ratio
+*	nearPlane {number} near clipping plane
+*	farPlane {number} far clipping plane
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixPerspective = function (fieldOfView, aspectRatio, nearPlane, farPlane)
+{
+	var result = [];
+	
+	var f = 1.0 / Math.tan (fieldOfView / 2.0);
+	var nf = 1.0 / (nearPlane - farPlane);
+	
+	result[0] = f / aspectRatio;
+	result[1] = 0.0;
+	result[2] = 0.0;
+	result[3] = 0.0;
+	result[4] = 0.0;
+	result[5] = f;
+	result[6] = 0.0;
+	result[7] = 0.0;
+	result[8] = 0.0;
+	result[9] = 0.0;
+	result[10] = (farPlane + nearPlane) * nf;
+	result[11] = -1.0;
+	result[12] = 0.0;
+	result[13] = 0.0;
+	result[14] = (2.0 * farPlane * nearPlane) * nf;
+	result[15] = 0.0;
+	
+	return result;
+};
+
+/**
+* Function: MatrixVectorMultiply
+* Description: Multiplies a matrix with a vector.
+* Parameters:
 *	matrix {number[16]} the matrix
+*	vector {number[4]} the vector
 * Returns:
 *	{number[4]} the result vector
 */
-JSM.VectorMatrixMultiply4x4 = function (vector, matrix)
+JSM.MatrixVectorMultiply = function (matrix, vector)
 {
-	var result = [];
-
 	var a00 = vector[0];
 	var a01 = vector[1];
 	var a02 = vector[2];
@@ -31,17 +397,17 @@ JSM.VectorMatrixMultiply4x4 = function (vector, matrix)
 	var b31 = matrix[13];
 	var b32 = matrix[14];
 	var b33 = matrix[15];
-		
+
+	var result = [];
 	result[0] = a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30;
 	result[1] = a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31;
 	result[2] = a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32;
 	result[3] = a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33;
-
 	return result;
 };
 
 /**
-* Function: MatrixMultiply4x4
+* Function: MatrixMultiply
 * Description: Multiplies a two matrices.
 * Parameters:
 *	matrix1 {number[16]} first matrix
@@ -49,10 +415,8 @@ JSM.VectorMatrixMultiply4x4 = function (vector, matrix)
 * Returns:
 *	{number[16]} the result matrix
 */
-JSM.MatrixMultiply4x4 = function (matrix1, matrix2)
+JSM.MatrixMultiply = function (matrix1, matrix2)
 {
-	var result = [];
-
 	var a00 = matrix1[0];
 	var a01 = matrix1[1];
 	var a02 = matrix1[2];
@@ -69,6 +433,7 @@ JSM.MatrixMultiply4x4 = function (matrix1, matrix2)
 	var a31 = matrix1[13];
 	var a32 = matrix1[14];
 	var a33 = matrix1[15];
+	
 	var b00 = matrix2[0];
 	var b01 = matrix2[1];
 	var b02 = matrix2[2];
@@ -86,6 +451,7 @@ JSM.MatrixMultiply4x4 = function (matrix1, matrix2)
 	var b32 = matrix2[14];
 	var b33 = matrix2[15];
 		
+	var result = [];
 	result[0] = a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30;
 	result[1] = a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31;
 	result[2] = a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32;
@@ -102,6 +468,27 @@ JSM.MatrixMultiply4x4 = function (matrix1, matrix2)
 	result[13] = a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31;
 	result[14] = a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32;
 	result[15] = a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33;
+	return result;
+};
+
+/**
+* Function: ApplyTransformation
+* Description: Applies a matrix transformation to a coordinate.
+* Parameters:
+*	matrix {number[16]} the matrix
+*	coord {Coord} the coordinate
+* Returns:
+*	{Coord} the result
+*/
+JSM.ApplyTransformation = function (matrix, coord)
+{
+	var vector = [];
+	vector[0] = coord.x;
+	vector[1] = coord.y;
+	vector[2] = coord.z;
+	vector[3] = 1.0;
 	
+	var resultVector = JSM.MatrixVectorMultiply (matrix, vector);
+	var result = new JSM.Coord (resultVector[0], resultVector[1], resultVector[2]);
 	return result;
 };

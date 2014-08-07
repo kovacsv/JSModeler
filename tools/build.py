@@ -2,8 +2,9 @@ import os
 import sys
 import re
 
-header = '/* JSModeler [mainVersion].[subVersion] - http://www.github.com/kovacsv/JSModeler */ ';
+header = '/* JSModeler [mainVersion].[subVersion].[buildNum] - http://www.github.com/kovacsv/JSModeler */ ';
 versionFileName = '../src/core/jsm.js'
+buildNumFileName = 'buildnum.txt'
 filesFileName = 'files.txt'
 
 tempFileName = 'temp.js'
@@ -73,10 +74,27 @@ def GetVersion (versionFileName):
 	version[1] = subVersion
 	return version
 	
+def GetBuildNum ():
+	buildNum = 0
+	if os.path.exists (buildNumFileName):
+		file = open (buildNumFileName, 'rb')
+		buildNum = int (file.read ())
+		file.close ()
+	return buildNum
+	
+def IncreaseBuildNum ():
+	buildNum = GetBuildNum ()
+	file = open (buildNumFileName, 'wb')
+	file.write (str (buildNum + 1))
+	file.close ()
+	return buildNum + 1
+	
 def GetHeader (version, header):
+	buildNum = GetBuildNum ()
 	currentHeader = header
 	currentHeader = currentHeader.replace ('[mainVersion]', version[0])
 	currentHeader = currentHeader.replace ('[subVersion]', version[1])
+	currentHeader = currentHeader.replace ('[buildNum]', str (buildNum + 1))
 	return currentHeader
 	
 def WriteHeader (fileName, header):
@@ -101,10 +119,15 @@ def DeleteFile (fileName):
 	os.remove (fileName)
 	return True
 	
-def Main ():
+def Main (argv):
 	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
 
+	noThree = False
+	if (len (argv) == 2):
+		if argv[1] == 'nothree':
+			noThree = True
+	
 	versionsPath = os.path.abspath (versionFileName)
 	filesFilePath = os.path.abspath (filesFileName)
 	tempFilePath = os.path.abspath (tempFileName)
@@ -124,6 +147,12 @@ def Main ():
 		return 1
 
 	PrintInfo ('Merge files to <' + tempFilePath + '>.')
+	if noThree:
+		originalFileNames = inputFileNames
+		inputFileNames = []
+		for fileName in originalFileNames:
+			if fileName.find ('src/three') == -1:
+				inputFileNames.append (fileName)
 	succeeded = MergeFiles (inputFileNames, tempFilePath)
 	if not succeeded:
 		PrintError ('Not existing file in file list.');
@@ -160,6 +189,7 @@ def Main ():
 		DeleteFile (tempFilePath)
 		return 1
 	
-	return
+	IncreaseBuildNum ()
+	return 0
 	
-sys.exit (Main ())
+sys.exit (Main (sys.argv))

@@ -18,6 +18,23 @@ def TestViewer (browser, path):
 		browser.KeyPress (39, 0)
 		index = index + 1
 
+def TestViewerTypes (browser, path):
+	def TestOneViewer (xCoord):
+		browser.Click (xCoord, 24)
+		browser.Capture ('viewertypes')
+		browser.DragDrop (500, 400, 540, 440)
+		browser.Capture ('viewertypes')
+		browser.Click (690, 24)
+		browser.Capture ('viewertypes')
+
+	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
+		return
+
+	browser.SetURL (os.path.join (path, 'test\\viewertest\\viewertypes.html'))
+	xCoords = [33, 92, 155, 215, 290, 365, 520, 570, 620] # need to add 444
+	for xCoord in xCoords:
+		TestOneViewer (xCoord)
+		
 def UnitTest (browser, path):
 	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
 		return
@@ -49,60 +66,6 @@ def TestCSG (browser, path):
 		browser.KeyPress (39, 0)
 		index = index + 1
 
-def TestDialogs (browser, path):
-	def WriteToField (browser, x, y, text):
-		browser.DragDrop (x, y, x - 200, y)
-		browser.TextWrite (text)
-
-	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
-		return
-
-	browser.SetURL (os.path.join (path, 'test\\viewertest\\dialogtest.html'))
-	browser.Capture ('dialogtest')
-	
-	browser.Click (50, 20)
-	browser.Capture ('dialogtest')
-	WriteToField (browser, 627, 272, 'Modified Text')
-	browser.Click (543, 307)
-	WriteToField (browser, 550, 338, '5')
-	WriteToField (browser, 620, 338, '6')
-	WriteToField (browser, 680, 338, '7')
-	WriteToField (browser, 577, 373, '00cc00')
-	browser.Click (595, 405)
-	browser.Click (745, 438)
-	browser.Capture ('dialogtest')
-	browser.Click (745, 446)
-
-	browser.Click (50, 20)
-	browser.Capture ('dialogtest')
-	WriteToField (browser, 627, 272, 'Another Modified Text')
-	browser.Click (690, 446)
-	
-	browser.Click (50, 20)
-	browser.Capture ('dialogtest')
-	browser.Click (745, 446)
-
-	browser.Click (140, 20)
-	browser.Capture ('dialogtest')
-	browser.Click (877, 401)
-	
-	browser.Click (230, 20)
-	browser.Capture ('dialogtest')
-	browser.Click (390, 274)
-	browser.Click (412, 381)
-	browser.Click (495, 195)
-	browser.Click (482, 420)
-	browser.Click (495, 195)
-	browser.Click (489, 262)
-	browser.Click (390, 274)
-	browser.Click (868, 531)
-	
-	browser.Click (230, 20)
-	browser.Capture ('dialogtest')
-	browser.Click (868, 531)
-
-	browser.Capture ('dialogtest')
-		
 def TestCamera (browser, path):
 	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
 		return
@@ -504,7 +467,6 @@ def Main (argv):
 		UnitTest (browser, path)
 		TestSVGToModel (browser, path)
 		TestCSG (browser, path)
-		TestDialogs (browser, path)
 		TestDemonstration (browser, path)
 		TestOldDemonstration (browser, path)
 		TestLegoBuilder (browser, path)
@@ -516,6 +478,7 @@ def Main (argv):
 		TestSVGTo3D (browser, path)
 		TestCSGApp (browser, path)
 		TestBezier (browser, path)
+		TestViewerTypes (browser, path)
 		browser.Close ()
 	end = time.time ()
 	

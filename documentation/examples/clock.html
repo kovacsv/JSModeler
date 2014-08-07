@@ -66,10 +66,6 @@
 			var canvas = document.getElementById ('example');
 			canvas.width = window.innerWidth;
 			canvas.height = window.innerHeight;
-
-			if (viewer != null) {
-				viewer.Resize ();
-			}
 		}
 
 		function Load ()
@@ -87,7 +83,7 @@
 			window.onresize = Resize;
 			Resize ();
 
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			viewer.Start ('example', viewerSettings);
 			
 			var modelAndMaterials = JSM.GenerateClock (1.0, 100);

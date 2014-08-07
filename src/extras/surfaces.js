@@ -211,30 +211,3 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 	var body = JSM.GenerateSurface ([0, 1], [0, 1], xSegmentation, ySegmentation, false, isCurved, GetBezierSurfacePoint, surfaceControlPoints);
 	return body;
 };
-
-/**
-* Function: GenerateMobiusStrip
-* Description: Generates a mobius strip.
-* Parameters:
-*	a {number} the parameter of mobius strip
-*	xSegmentation {integer} the segmentation along the x axis
-*	ySegmentation {integer} the segmentation along the y axis
-*	isCurved {boolean} create smooth surfaces
-* Returns:
-*	{Body} the result
-*/
-JSM.GenerateMobiusStrip = function (a, xSegmentation, ySegmentation, isCurved)
-{
-	function GetSurfacePoint (uIndex, vIndex, u, v)
-	{
-		var result = new JSM.Coord (
-			(a - v * Math.sin (u / 2.0)) * Math.sin (u),
-			(a - v * Math.sin (u / 2.0)) * Math.cos (u),
-			v * Math.cos (u / 2.0)
-		);
-		return result;
-	}
-
-	var body = JSM.GenerateSurface ([0, 2 * Math.PI], [-1.0, 1.0], xSegmentation, ySegmentation, false, isCurved, GetSurfacePoint, null);
-	return body;
-};

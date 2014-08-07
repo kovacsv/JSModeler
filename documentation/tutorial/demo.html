@@ -210,10 +210,6 @@
 				var canvas = document.getElementById ('example');
 				canvas.width = document.body.clientWidth;
 				canvas.height = document.body.clientHeight;
-	
-				if (viewer != null) {
-					viewer.Resize ();
-				}
 			}
 		}
 		
@@ -233,7 +229,7 @@
 			window.onhashchange = RunHash;
 			Resize ();
 
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			viewer.Start ('example', viewerSettings);
 
 			RunHash ();

@@ -12,10 +12,11 @@
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../../src/core/timer.js"></script>
-	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
-	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coordsystemutils.js"></script>
 	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
@@ -34,6 +35,8 @@
 	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
 	<script type="text/javascript" src="../../src/modeler/body.js"></script>
 	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../../src/modeler/light.js"></script>
 	<script type="text/javascript" src="../../src/modeler/material.js"></script>
 	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
@@ -41,6 +44,7 @@
 	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
 	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../../src/modeler/explode.js"></script>
 	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
 	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
 	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
@@ -50,23 +54,30 @@
 	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
 	<script type="text/javascript" src="../../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../../src/extras/surfaces.js"></script>
-	<script type="text/javascript" src="../../src/dialogs/basedialog.js"></script>
-	<script type="text/javascript" src="../../src/dialogs/settingscontrols.js"></script>
-	<script type="text/javascript" src="../../src/dialogs/settingsdialog.js"></script>
-	<script type="text/javascript" src="../../src/dialogs/floatingdialog.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/converter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/jsonfileloader.js"></script>
 	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
-	<script type="text/javascript" src="../../src/viewer/converter.js"></script>
-	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/navigation.js"></script>
 	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
 
 	<script type="text/javascript" src="include/stephandler.js"></script>
+	<script type="text/javascript" src="include/testhandler.js"></script>
 	<script type="text/javascript" src="include/teststeps.js"></script>
 	<title>JSModeler Viewer Test</title>
 
 	<script type="text/javascript">
 		var viewer = null;
+		var mode = 'three';
+		//var mode = 'internal';
 		var stepHandler = null;
 
 		function Previous ()
@@ -83,7 +94,7 @@
 		{
 			var step = stepHandler.GetStep ();
 			var info = document.getElementById ('info');
-			TestStep (viewer, step, info);
+			TestStep (viewer, mode, step, info);
 		}
 		
 		function KeyDown (event)
@@ -103,9 +114,6 @@
 			
 			canvas.width = document.body.clientWidth;
 			canvas.height = document.body.clientHeight - header.clientHeight - 1;
-			if (viewer != null) {
-				viewer.Resize ();
-			}
 		}
 
 		function Load ()
@@ -115,18 +123,33 @@
 			window.onkeydown = KeyDown;
 			Resize ();
 
-			var viewerSettings = {
-				cameraEyePosition : [-4.0, -3.0, 5.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0.0, 0.0, 1.0]
-			};
+			if (mode == 'three') {
+				var viewerSettings = {
+					cameraEyePosition : [-4.0, -3.0, 5.0],
+					cameraCenterPosition : [0.0, 0.0, 0.0],
+					cameraUpVector : [0.0, 0.0, 1.0]
+				};
 
-			viewer = new JSM.Viewer ();
-			if (!viewer.Start ('test', viewerSettings)) {
-				return;
+				viewer = new JSM.ThreeViewer ();
+				if (!viewer.Start ('test', viewerSettings)) {
+					return;
+				}
+
+				viewer.Draw ();
+			} else if (mode == 'internal') {
+				var camera = new JSM.Camera (
+					new JSM.Coord (-4.0, -3.0, 5.0),
+					new JSM.Coord (0.0, 0.0, 0.0),
+					new JSM.Vector (0.0, 0.0, 1.0)
+				);
+
+				viewer = new JSM.Viewer ();
+				if (!viewer.Init ('test', camera)) {
+					return;
+				}
+
+				viewer.Draw ();				
 			}
-
-			viewer.Draw ();
 			
 			stepHandler = new StepHandler ();
 			Step ();

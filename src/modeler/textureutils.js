@@ -27,30 +27,6 @@ JSM.CalculatePlanarTextureCoord = function (coord, system)
 };
 
 /**
-* Function: CalculatePolygonPlanarTextureCoords
-* Description: Calculates the planar texture coordinates for a polygon.
-* Parameters:
-*	body {Body} the body
-*	index {integer} the polygon index
-* Returns:
-*	{Coord2D[*]} the result
-*/
-JSM.CalculatePolygonPlanarTextureCoords = function (body, index)
-{
-	var result = [];
-	var polygon = body.GetPolygon (index);
-	var system = body.GetTextureProjectionCoords ();
-
-	var i, coord;
-	for (i = 0; i < polygon.VertexIndexCount (); i++) {
-		coord = body.GetVertexPosition (polygon.GetVertexIndex (i));
-		result.push (JSM.CalculatePlanarTextureCoord (coord, system));
-	}
-	
-	return result;
-};
-
-/**
 * Function: CalculateCubicTextureCoord
 * Description: Calculates the cubic texture coordinate for a coordinate.
 * Parameters:
@@ -98,21 +74,21 @@ JSM.CalculateCubicTextureCoord = function (coord, normal, system)
 			system.origo,
 			e2,
 			e3,
-			null
+			new JSM.Coord ()
 		);
 	} else if (correctPlane === 1) {
 		planeSystem = new JSM.CoordSystem (
 			system.origo,
 			e1,
 			e3,
-			null
+			new JSM.Coord ()
 		);
 	} else if (correctPlane === 2) {
 		planeSystem = new JSM.CoordSystem (
 			system.origo,
 			e1,
 			e2,
-			null
+			new JSM.Coord ()
 		);
 	}
 	
@@ -121,6 +97,64 @@ JSM.CalculateCubicTextureCoord = function (coord, normal, system)
 	}
 
 	return JSM.CalculatePlanarTextureCoord (coord, planeSystem);
+};
+
+/**
+* Function: CalculateCylindricalTextureCoord
+* Description: Calculates the cylindrical texture coordinate for a coordinate.
+* Parameters:
+*	coord {Coord} the coordinate
+*	normal {Vector} the normal vector for calculation
+*	system {CoordSystem} the coordinate system
+* Returns:
+*	{Coord2D} the result
+*/
+JSM.CalculateCylindricalTextureCoord = function (coord, normal, system)
+{
+	var result = new JSM.Coord2D ();
+
+	var e3Direction = JSM.VectorNormalize (system.e3);
+	if (JSM.VectorsAreCollinear (e3Direction, normal)) {
+		result = JSM.CalculateCubicTextureCoord (coord, normal, system);
+		return [result, 0.0];
+	}
+
+	var baseLine = new JSM.Line (system.origo, e3Direction);
+	var projectedCoord = JSM.ProjectCoordToLine (coord, baseLine);
+	var projectedDistance = JSM.CoordSignedDistance (system.origo, projectedCoord, e3Direction);
+
+	var e1Direction = JSM.VectorNormalize (system.e1);
+	var coordDirection = JSM.CoordSub (coord, projectedCoord);
+	var angle = JSM.GetVectorsFullAngle (coordDirection, e1Direction, e3Direction);
+	var radius = JSM.VectorLength (system.e1);
+
+	result.x = angle * radius;
+	result.y = projectedDistance;
+	return [result, angle];
+};
+
+/**
+* Function: CalculatePolygonPlanarTextureCoords
+* Description: Calculates the planar texture coordinates for a polygon.
+* Parameters:
+*	body {Body} the body
+*	index {integer} the polygon index
+* Returns:
+*	{Coord2D[*]} the result
+*/
+JSM.CalculatePolygonPlanarTextureCoords = function (body, index)
+{
+	var result = [];
+	var polygon = body.GetPolygon (index);
+	var system = body.GetTextureProjectionCoords ();
+
+	var i, coord;
+	for (i = 0; i < polygon.VertexIndexCount (); i++) {
+		coord = body.GetVertexPosition (polygon.GetVertexIndex (i));
+		result.push (JSM.CalculatePlanarTextureCoord (coord, system));
+	}
+	
+	return result;
 };
 
 /**
@@ -146,40 +180,6 @@ JSM.CalculatePolygonCubicTextureCoords = function (body, index, normal)
 	}
 	
 	return result;
-};
-
-/**
-* Function: CalculateCylindricalTextureCoord
-* Description: Calculates the cylindrical texture coordinate for a coordinate.
-* Parameters:
-*	coord {Coord} the coordinate
-*	normal {Vector} the normal vector for calculation
-*	system {CoordSystem} the coordinate system
-* Returns:
-*	{Coord2D} the result
-*/
-JSM.CalculateCylindricalTextureCoord = function (coord, normal, system)
-{
-	var result = new JSM.Coord2D ();
-
-	var e3Direction = JSM.VectorNormalize (system.e3);
-	if (JSM.VectorsAreCollinear (e3Direction, normal)) {
-		result = JSM.CalculateCubicTextureCoord (coord, normal, system);
-		return [result, 0.0];
-	}
-
-	var baseLine = new JSM.Line (system.origo, e3Direction);
-	var projectedCoord = JSM.ProjectCoordToLine (coord, baseLine);
-	var projectedDistance = JSM.CoordSignedDistance (system.origo, projectedCoord, system.e3);
-
-	var e1Direction = JSM.VectorNormalize (system.e1);
-	var coordDirection = JSM.CoordSub (coord, projectedCoord);
-	var angle = JSM.GetVectorsFullAngle (e1Direction, coordDirection, e3Direction);
-	var radius = JSM.VectorLength (system.e1);
-
-	result.x = angle * radius;
-	result.y = projectedDistance;
-	return [result, angle];
 };
 
 /**

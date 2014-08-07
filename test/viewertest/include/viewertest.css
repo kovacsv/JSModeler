@@ -36,6 +36,12 @@ a.button
 	float : left;
 }
 
+a.button.green
+{
+	color : #ffffff;
+	background : #279b61;
+}
+
 #info
 {
 	padding : 5px;
@@ -48,6 +54,11 @@ div.content
 }
 
 canvas
+{
+	display : block;
+}
+
+svg
 {
 	display : block;
 }

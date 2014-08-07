@@ -1,6 +1,6 @@
 var JSM = {
 	mainVersion : 0,
-	subVersion : 28
+	subVersion : 30
 };
 
 JSM.Eps = 0.00000001;
@@ -196,6 +196,20 @@ JSM.ArcCos = function (value)
 	}
 	
 	return Math.acos (value);
+};
+
+/**
+* Function: RandomNumber
+* Description: Generates a random number between two numbers.
+* Parameters:
+*	from {number} lowest random result
+*	to {number} highest random result
+* Returns:
+*	{number} the result
+*/
+JSM.RandomNumber = function (from, to)
+{
+	return Math.random () * (to - from) + from;
 };
 
 /**

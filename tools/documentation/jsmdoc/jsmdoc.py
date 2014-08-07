@@ -7,7 +7,8 @@ keywords = [
 	'Class:',
 	'Description:',
 	'Parameters:',
-	'Returns:'
+	'Returns:',
+	'Example:'
 ]
 
 classFunctionSeparator = '.'
@@ -17,6 +18,7 @@ classKeyword = keywords[1]
 descriptionKeyword = keywords[2]
 parametersKeyword = keywords[3]
 returnsKeyword = keywords[4]
+exampleKeyword = keywords[5]
 
 class SourceFileParser:
 	def __init__ (self, fileName):
@@ -35,10 +37,13 @@ class SourceFileParser:
 		docParts = []
 		for docString in docStrings:
 			docPart = self.ParseDocString (docString)
+			current = {}
 			if functionKeyword in docPart.keys ():
-				docParts.append ([functionKeyword, docPart])
+				current['partType'] = functionKeyword
 			elif classKeyword in docPart.keys ():
-				docParts.append ([classKeyword, docPart])
+				current['partType'] = classKeyword
+			current['partContent'] = docPart
+			docParts.append (current)
 		return docParts
 
 	def ParseDocString (self, docString):
@@ -46,7 +51,7 @@ class SourceFileParser:
 			sectionContent = []
 			index = index + 1
 			while index < len (lines):
-				sectionLine = lines[index]
+				sectionLine = lines[index].strip ()
 				if self.GetKeyword (sectionLine) != None:
 					index = index - 1
 					break
@@ -73,11 +78,27 @@ class SourceFileParser:
 			sections[keyword] = sectionContent
 			return index
 	
-		def ProcessNormalLine (keyword, line, lines, index, sections):
-			sectionContent = line [len (keyword) :].strip () + ' '
+		def ProcessExampleLine (keyword, line, lines, index, sections):
+			endOfLine = '\\n'
+			sectionContent = ''
 			index = index + 1
 			while index < len (lines):
-				sectionLine = lines[index]
+				sectionLine = lines[index].replace ('\t', '\\t')
+				if self.GetKeyword (sectionLine) != None:
+					index = index - 1
+					break
+				
+				sectionContent += sectionLine + endOfLine
+				index = index + 1
+			sectionContent = sectionContent.strip (endOfLine)
+			sections[keyword] = sectionContent
+			return index
+
+		def ProcessNormalLine (keyword, line, lines, index, sections):
+			sectionContent = line[len (keyword) :].strip () + ' '
+			index = index + 1
+			while index < len (lines):
+				sectionLine = lines[index].strip ()
 				if self.GetKeyword (sectionLine) != None:
 					index = index - 1
 					break
@@ -95,17 +116,21 @@ class SourceFileParser:
 			if len (line) == 0:
 				continue
 			if line[0] == '*':
-				line = line [1 :].strip ()
+				line = line [1 :]
+			if line[0] == '\t':
+				line = line [1 :]
 			lines.append (line)
 		
 		sections = {}
 		i = 0
 		while i < len (lines):
-			line = lines[i]
+			line = lines[i].strip ()
 			keyword = self.GetKeyword (line)
 			if keyword != None:
 				if keyword == parametersKeyword or keyword == returnsKeyword:
 					i = ProcessParameterLine (keyword, line, lines, i, sections)
+				elif keyword == exampleKeyword:
+					i = ProcessExampleLine (keyword, line, lines, i, sections)
 				else:
 					i = ProcessNormalLine (keyword, line, lines, i, sections)
 			i = i + 1
@@ -166,6 +191,7 @@ class Function:
 		self.description = ''
 		self.parameters = []
 		self.returns = []
+		self.example = ''
 
 	def GetName (self):
 		return self.name
@@ -179,6 +205,9 @@ class Function:
 	def HasReturns (self):
 		return len (self.returns) > 0
 
+	def HasExample (self):
+		return self.example != ''
+
 	def SetDescription (self, description):
 		self.description = description
 
@@ -188,22 +217,27 @@ class Function:
 	def AddReturn (self, retVal):
 		self.returns.append (retVal)
 		
+	def SetExample (self, example):
+		self.example = example
+
 	def WriteJSON (self, tabs, file, comma):
 		file.Write (tabs, '"' + self.name + '" : {', False)
 		if self.HasDescription ():
-			file.Write (tabs + 1, '"description" : "' + self.description + '"', self.HasParameters () or self.HasReturns ())
+			file.Write (tabs + 1, '"description" : "' + self.description + '"', self.HasParameters () or self.HasReturns () or self.HasExample ())
 		if self.HasParameters ():
 			file.Write (tabs + 1, '"parameters" : [', False)
 			for i in range (0, len (self.parameters)):
 				parameter = self.parameters[i]
 				parameter.WriteJSON (tabs + 2, file, i < len (self.parameters) - 1)
-			file.Write (tabs + 1, ']', self.HasReturns ())
+			file.Write (tabs + 1, ']', self.HasReturns () or self.HasExample ())
 		if self.HasReturns ():
 			file.Write (tabs + 1, '"returns" : [', False)
 			for i in range (0, len (self.returns)):
 				parameter = self.returns[i]
 				parameter.WriteJSON (tabs + 2, file, i < len (self.returns) - 1)
-			file.Write (tabs + 1, ']', False)
+			file.Write (tabs + 1, ']', self.HasExample ())
+		if self.HasExample ():
+			file.Write (tabs + 1, '"example" : "' + self.example + '"', False)
 		file.Write (tabs, '}', comma)
 
 class Class:
@@ -212,6 +246,7 @@ class Class:
 		self.description = ''
 		self.parameters = []
 		self.functions = []
+		self.example = ''
 
 	def GetName (self):
 		return self.name
@@ -225,6 +260,9 @@ class Class:
 	def HasFunctions (self):
 		return len (self.functions) > 0
 
+	def HasExample (self):
+		return self.example != ''
+
 	def SetDescription (self, description):
 		self.description = description
 
@@ -234,22 +272,27 @@ class Class:
 	def AddFunction (self, function):
 		self.functions.append (function)
 
+	def SetExample (self, example):
+		self.example = example
+
 	def WriteJSON (self, tabs, file, comma):
 		file.Write (tabs, '"' + self.name + '" : {', False)
 		if self.HasDescription ():
-			file.Write (tabs + 1, '"description" : "' + self.description + '"', self.HasParameters () or self.HasFunctions ())
+			file.Write (tabs + 1, '"description" : "' + self.description + '"', self.HasParameters () or self.HasFunctions () or self.HasExample ())
 		if self.HasParameters ():
 			file.Write (tabs + 1, '"parameters" : [', False)
 			for i in range (0, len (self.parameters)):
 				parameter = self.parameters[i]
 				parameter.WriteJSON (tabs + 2, file, i < len (self.parameters) - 1)
-			file.Write (tabs + 1, ']', self.HasFunctions ())
+			file.Write (tabs + 1, ']', self.HasFunctions () or self.HasExample ())
 		if self.HasFunctions ():
 			file.Write (tabs + 1, '"functions" : {', False)
 			for i in range (0, len (self.functions)):
 				function = self.functions[i]
 				function.WriteJSON (tabs + 2, file, i < len (self.functions) - 1)
-			file.Write (tabs + 1, '}', False)
+			file.Write (tabs + 1, '}', self.HasExample ())
+		if self.HasExample ():
+			file.Write (tabs + 1, '"example" : "' + self.example + '"', False)
 		file.Write (tabs, '}', comma)
 		
 class Module:
@@ -318,8 +361,8 @@ class Documentation:
 	def ProcessDocParts (self, docParts, module):
 		currentModule = Module (None)
 		for docPart in docParts:
-			partType = docPart[0]
-			partContent = docPart[1]
+			partType = docPart['partType']
+			partContent = docPart['partContent']
 			partName = partContent[partType]
 			if partType == functionKeyword:
 				className = ''
@@ -344,6 +387,8 @@ class Documentation:
 					for parameters in partContent[returnsKeyword]:
 						theReturn = Return (parameters[0], parameters[1])
 						theFunction.AddReturn (theReturn)
+				if exampleKeyword in partContent.keys ():
+					theFunction.SetExample (partContent[exampleKeyword])
 				if len (className) == 0:
 					module.AddFunction (theFunction)
 				else:
@@ -356,6 +401,8 @@ class Documentation:
 					for parameters in partContent[parametersKeyword]:
 						theParameter = Parameter (parameters[0], parameters[1], parameters[2])
 						theClass.AddParameter (theParameter)
+				if exampleKeyword in partContent.keys ():
+					theClass.SetExample (partContent[exampleKeyword])
 				module.AddClass (theClass)
 				
 	def WriteJSON (self, fileName):

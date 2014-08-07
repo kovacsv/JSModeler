@@ -37,13 +37,7 @@ JSM.Body = function ()
 {
 	this.vertices = [];
 	this.polygons = [];
-	this.projection = 'Cubic';
-	this.coords = new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	);
+	this.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 };
 
 /**
@@ -381,6 +375,65 @@ JSM.Body.prototype.GetTextureProjectionCoords = function ()
 JSM.Body.prototype.SetTextureProjectionCoords = function (coords)
 {
 	this.coords = coords;
+};
+
+/**
+* Function: Body.SetPlanarTextureProjection
+* Description: Sets the texture projection to planar with the given parameters.
+* Parameters:
+*	origo {Coord} origo of the projection
+*	xDirection {Vector} x direction (start point along other axis) of the projection
+*	zDirection {Vector} z direction (normal vector) of the projection
+*/
+JSM.Body.prototype.SetPlanarTextureProjection = function (origo, xDirection, zDirection)
+{
+	this.SetTextureProjectionType ('Planar');
+	this.SetTextureProjectionCoords (new JSM.CoordSystem (
+		origo,
+		xDirection,
+		JSM.VectorCross (xDirection, zDirection),
+		new JSM.Coord ()
+	));
+};
+
+/**
+* Function: Body.SetCubicTextureProjection
+* Description: Sets the texture projection to cubic with the given parameters.
+* Parameters:
+*	origo {Coord} origo of the projection
+*	xDirection {Vector} x direction (edge of the cube) of the projection
+*	yDirection {Vector} y direction (edge of the cube) of the projection
+*	zDirection {Vector} z direction (edge of the cube) of the projection
+*/
+JSM.Body.prototype.SetCubicTextureProjection = function (origo, xDirection, yDirection, zDirection)
+{
+	this.SetTextureProjectionType ('Cubic');
+	this.SetTextureProjectionCoords (new JSM.CoordSystem (
+		origo,
+		xDirection,
+		yDirection,
+		zDirection
+	));
+};
+
+/**
+* Function: Body.SetCylindricalTextureProjection
+* Description: Sets the texture projection to cylindrical with the given parameters.
+* Parameters:
+*	origo {Coord} origo of the projection
+*	radius {number} radius of the cylinder
+*	xDirection {Vector} x direction (start point along perimeter) of the projection
+*	zDirection {Vector} z direction (normal vector) of the projection
+*/
+JSM.Body.prototype.SetCylindricalTextureProjection = function (origo, radius, xDirection, zDirection)
+{
+	this.SetTextureProjectionType ('Cylindrical');
+	this.SetTextureProjectionCoords (new JSM.CoordSystem (
+		origo,
+		JSM.VectorSetLength (xDirection, radius),
+		JSM.VectorSetLength (JSM.VectorCross (zDirection, xDirection), radius),
+		zDirection
+	));
 };
 
 /**

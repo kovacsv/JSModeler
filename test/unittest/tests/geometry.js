@@ -26,6 +26,10 @@ AddTest ('VectorTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (JSM.CoordSub (coord1, coord2), new JSM.Coord (-3, -3, -3)));
 	test.Assert (JSM.CoordIsEqual (JSM.CoordOffset (coord2, coord1, 5.0), new JSM.Coord (5.3363062095, 7.672612419, 10.0089186285)));
 	
+	test.Assert (JSM.CoordIsEqual (JSM.CoordOffset (coord1, new JSM.Coord (1.0, 0.0, 0.0), 5.0), new JSM.Coord (6.0, 2.0, 3.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.CoordOffset (coord1, new JSM.Coord (0.0, 1.0, 0.0), 5.0), new JSM.Coord (1.0, 7.0, 3.0)));
+	test.Assert (JSM.CoordIsEqual (JSM.CoordOffset (coord1, new JSM.Coord (0.0, 0.0, 1.0), 5.0), new JSM.Coord (1.0, 2.0, 8.0)));
+
 	var coord = new JSM.Coord (1.0, 1.0, 1.0);
 	var direction = new JSM.Vector (1.0, 0.0, 0.0);
 	test.Assert (JSM.CoordIsEqual (JSM.CoordOffset (coord, direction, 1.0), new JSM.Coord (2.0, 1.0, 1.0)));
@@ -278,8 +282,8 @@ AddTest ('MatrixTest', function (test) {
 	var matrix1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 	var matrix2 = [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
 	
-	var vector2 = JSM.VectorMatrixMultiply4x4 (vector1, matrix1);
-	var matrix3 = JSM.MatrixMultiply4x4 (matrix1, matrix2);
+	var vector2 = JSM.MatrixVectorMultiply (matrix1, vector1);
+	var matrix3 = JSM.MatrixMultiply (matrix1, matrix2);
 	
 	test.Assert (vector2[0] == 90);
 	test.Assert (vector2[1] == 100);
@@ -302,6 +306,44 @@ AddTest ('MatrixTest', function (test) {
 	test.Assert (matrix3[13] == 1412);
 	test.Assert (matrix3[14] == 1470);
 	test.Assert (matrix3[15] == 1528);
+	
+	var vector = [1, 1, 1, 0];
+	var rotX = JSM.MatrixRotationX (90 * JSM.DegRad);
+	var rotXVec = JSM.MatrixVectorMultiply (rotX, vector);
+	var rotXVec2 = JSM.ApplyTransformation (rotX, JSM.CoordFromArray (vector));
+	var rotY = JSM.MatrixRotationY (90 * JSM.DegRad);
+	var rotYVec = JSM.MatrixVectorMultiply (rotY, vector);
+	var rotYVec2 = JSM.ApplyTransformation (rotY, JSM.CoordFromArray (vector));
+	var rotZ = JSM.MatrixRotationZ (90 * JSM.DegRad);
+	var rotZVec = JSM.MatrixVectorMultiply (rotZ, vector);
+	var rotZVec2 = JSM.ApplyTransformation (rotZ, JSM.CoordFromArray (vector));
+
+	test.Assert (JSM.IsEqual (rotXVec[0], 1.0));
+	test.Assert (JSM.IsEqual (rotXVec[1], -1.0));
+	test.Assert (JSM.IsEqual (rotXVec[2], 1.0));
+	test.Assert (JSM.IsEqual (rotXVec[3], 0.0));
+
+	test.Assert (JSM.IsEqual (rotXVec2.x, 1.0));
+	test.Assert (JSM.IsEqual (rotXVec2.y, -1.0));
+	test.Assert (JSM.IsEqual (rotXVec2.z, 1.0));
+
+	test.Assert (JSM.IsEqual (rotYVec[0], 1.0));
+	test.Assert (JSM.IsEqual (rotYVec[1], 1.0));
+	test.Assert (JSM.IsEqual (rotYVec[2], -1.0));
+	test.Assert (JSM.IsEqual (rotYVec[3], 0.0));
+
+	test.Assert (JSM.IsEqual (rotYVec2.x, 1.0));
+	test.Assert (JSM.IsEqual (rotYVec2.y, 1.0));
+	test.Assert (JSM.IsEqual (rotYVec2.z, -1.0));
+
+	test.Assert (JSM.IsEqual (rotZVec[0], -1.0));
+	test.Assert (JSM.IsEqual (rotZVec[1], 1.0));
+	test.Assert (JSM.IsEqual (rotZVec[2], 1.0));
+	test.Assert (JSM.IsEqual (rotZVec[3], 0.0));
+
+	test.Assert (JSM.IsEqual (rotZVec2.x, -1.0));
+	test.Assert (JSM.IsEqual (rotZVec2.y, 1.0));
+	test.Assert (JSM.IsEqual (rotZVec2.z, 1.0));
 });
 
 AddTest ('ArcLengthTest', function (test) {
@@ -336,23 +378,32 @@ AddTest ('ArcLengthTest', function (test) {
 	test.Assert (JSM.IsEqual (JSM.GetArcLength (a4, b1, radius2), circ2 / 8.0));
 	test.Assert (JSM.IsEqual (JSM.GetArcLength (a5, b1, radius2), circ2 / 8.0));
 	
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius1, normal1), circ1 * 3.0 / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius1, normal1), circ1 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius1, normal1), circ1 * 1.0 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius1, normal1), circ1 * 3.0 / 4.0));
 	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a3, b1, radius1, normal1), circ1 / 2.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius1, normal1), circ1 * 7.0 / 8.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius1, normal1), circ1 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius1, normal1), circ1 * 1.0 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius1, normal1), circ1 * 7.0 / 8.0));
 
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius2, normal1), circ2 * 3.0 / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius2, normal1), circ2 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius2, normal1), circ2 * 1.0 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius2, normal1), circ2 * 3.0 / 4.0));
 	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a3, b1, radius2, normal1), circ2 / 2.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius2, normal1), circ2 * 7.0 / 8.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius2, normal1), circ2 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius2, normal1), circ2 * 1.0 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius2, normal1), circ2 * 7.0 / 8.0));
 
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius1, normal2), circ1 / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius1, normal2), circ1 * 3.0 / 4.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a3, b1, radius1, normal2), circ1 / 2.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius1, normal2), circ1 / 8.0));
-	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius1, normal2), circ1 * 7.0 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a1, b1, radius2, normal2), circ2 * 3.0 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a2, b1, radius2, normal2), circ2 * 1.0 / 4.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a3, b1, radius2, normal2), circ2 / 2.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a4, b1, radius2, normal2), circ2 * 7.0 / 8.0));
+	test.Assert (JSM.IsEqual (JSM.GetFullArcLength (a5, b1, radius2, normal2), circ2 * 1.0 / 8.0));
+
+	var v1 = new JSM.Vector (1.0, 0.0, 0.0);
+	var v2 = new JSM.Vector (1.0, 0.0, 0.0);
+	var normal = new JSM.Vector (0.0, 0.0, 1.0);
+	var origo = new JSM.Coord (0.0, 0.0, 0.0);
+	test.Assert (JSM.IsEqual (JSM.GetVectorsFullAngle (v1, v2, normal), 0.0));
+	for (var i = 0.0; i < Math.PI; i = i + 5.0 * JSM.DegRad) {
+		test.Assert (JSM.IsEqual (JSM.GetVectorsFullAngle (JSM.CoordRotate (v1, normal, i, origo), v2, normal), i));
+	}
 });
 
 AddTest ('TransformationTest', function (test) {
@@ -368,9 +419,26 @@ AddTest ('TransformationTest', function (test) {
 	transformation = JSM.TranslationTransformation (new JSM.Coord (1.0, 2.0, 3.0));
 	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (2.0, 3.0, 4.0)));
 
+	transformation = JSM.TranslationTransformation (new JSM.Coord (1.0, 0.0, 0.0));
+	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (2.0, 1.0, 1.0)));
+	transformation = JSM.TranslationTransformation (new JSM.Coord (-1.0, 0.0, 0.0));
+	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (0.0, 1.0, 1.0)));
+
+	transformation = JSM.TranslationTransformation (new JSM.Coord (0.0, 1.0, 0.0));
+	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (1.0, 2.0, 1.0)));
+	transformation = JSM.TranslationTransformation (new JSM.Coord (0.0, -1.0, 0.0));
+	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (1.0, 0.0, 1.0)));
+
+	transformation = JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 1.0));
+	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (1.0, 1.0, 2.0)));
+	transformation = JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, -1.0));
+	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (1.0, 1.0, 0.0)));
+
 	var axis = new JSM.Vector (0.0, 0.0, 1.0);
 	var angle = 90.0 * JSM.DegRad;
 	transformation = JSM.RotationTransformation (axis, angle);
+	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (-1.0, 1.0, 1.0)));
+	transformation = JSM.RotationZTransformation (angle);
 	test.Assert (JSM.CoordIsEqual (transformation.Apply (coord), new JSM.Coord (-1.0, 1.0, 1.0)));
 	
 	var trX = new JSM.RotationXTransformation (angle);
@@ -428,7 +496,7 @@ AddTest ('TransformationTest', function (test) {
 	var direction = new JSM.Coord (4.0, 5.0, 6.0);
 	var axis = new JSM.Vector (4.0, 5.0, 6.0);
 	var angle = 7.0 * JSM.DegRad;
-	var origo = new JSM.Coord (8.0, 9.0, 10.0);
+	var origo = new JSM.Coord ();
 	var result1 = coord;
 	result1 = JSM.CoordOffset (result1, direction, 11.0);
 	result1 = JSM.CoordRotate (result1, axis, angle, origo);
@@ -453,7 +521,7 @@ AddTest ('TransformationTest', function (test) {
 	coord = trY.Apply (coord);
 	coord = trZ.Apply (coord);
 	
-	test.Assert (JSM.CoordIsEqual (trXYZ.Apply (new JSM.Coord (1.0, 2.0, 3.0)), coord));		
+	test.Assert (JSM.CoordIsEqual (trXYZ.Apply (new JSM.Coord (1.0, 2.0, 3.0)), coord));
 });
 
 AddTest ('SectorTest', function (test) {
@@ -775,15 +843,15 @@ AddTest ('ProjectionTest', function (test)
 
 	projected = JSM.Project (new JSM.Coord (0, 0.5, 0), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
-	test.Assert (JSM.IsEqual (projected.x, 220.710678118657) && JSM.IsEqual (projected.y, 50));
+	test.Assert (JSM.IsEqual (projected.x, 160.35533905932851) && JSM.IsEqual (projected.y, 50));
 
 	projected = JSM.Project (new JSM.Coord (0, 0, 0.5), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
-	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 170.710678118657));
+	test.Assert (JSM.IsEqual (projected.x, 100) && JSM.IsEqual (projected.y, 110.3553390593285));
 
 	projected = JSM.Project (new JSM.Coord (0, 0.5, 0.5), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);
-	test.Assert (JSM.IsEqual (projected.x, 220.710678118657) && JSM.IsEqual (projected.y, 170.710678118657));
+	test.Assert (JSM.IsEqual (projected.x, 160.35533905932851) && JSM.IsEqual (projected.y, 110.3553390593285));
 });
 
 AddTest ('ConvexHullTest', function (test)

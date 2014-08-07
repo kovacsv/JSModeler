@@ -1,4 +1,30 @@
 /**
+* Function: CoordFromArray2D
+* Description: Returns a coordinate from an array of components.
+* Parameters:
+*	array {number[2]} the array of components
+* Returns:
+*	{Coord2D} the result
+*/
+JSM.CoordFromArray2D = function (array)
+{
+	return new JSM.Coord2D (array[0], array[1]);
+};
+
+/**
+* Function: CoordFromArray
+* Description: Returns a coordinate from an array of components.
+* Parameters:
+*	array {number[3]} the array of components
+* Returns:
+*	{Coord} the result
+*/
+JSM.CoordFromArray = function (array)
+{
+	return new JSM.Coord (array[0], array[1], array[2]);
+};
+
+/**
 * Function: CoordIsEqual2D
 * Description: Determines if the given coordinates are equal.
 * Parameters:
@@ -221,7 +247,7 @@ JSM.CoordSignedDistance = function (a, b, direction)
 	var distance = JSM.CoordDistance (a, b);
 	
 	var angle = JSM.GetVectorsAngle (abDirection, direction);
-	if (JSM.IsEqual (angle, Math.PI)) {
+	if (JSM.IsPositive (angle)) {
 		distance = -distance;
 	}
 
@@ -366,20 +392,20 @@ JSM.GetVectorsAngle = function (a, b)
 
 /**
 * Function: GetVectorsFullAngle
-* Description: Calculates the angle of two vectors relative to a given reference vector.
+* Description: Calculates the full angle (0 to pi) of two vectors with the given normal vector.
 * Parameters:
 *	a {Vector} the first vector
 *	b {Vector} the second vector
-*	reference {Vector} the reference vector
+*	normal {Vector} the normal vector
 * Returns:
 *	{number} the result
 */
-JSM.GetVectorsFullAngle = function (a, b, reference)
+JSM.GetVectorsFullAngle = function (a, b, normal)
 {
 	var angle = JSM.GetVectorsAngle (a, b);
 	var origo = new JSM.Coord (0.0, 0.0, 0.0);
 	
-	if (JSM.CoordTurnType (b, origo, a, reference) == 'Clockwise') {
+	if (JSM.CoordTurnType (a, origo, b, normal) == 'Clockwise') {
 		angle = 2.0 * Math.PI - angle;
 	}
 	
@@ -719,17 +745,17 @@ JSM.GetArcLength = function (a, b, radius)
 
 /**
 * Function: GetFullArcLength
-* Description: Calculates arc length between two vectors relative to a given reference vector.
+* Description: Calculates arc length between two vectors with the given normal vector.
 * Parameters:
 *	a {Vector} the first vector
 *	b {Vector} the second vector
 *	radius {number} the radius component
-*	reference {Vector} the reference vector
+*	normal {Vector} the normal vector
 * Returns:
 *	{number} the result
 */
-JSM.GetFullArcLength = function (a, b, radius, reference)
+JSM.GetFullArcLength = function (a, b, radius, normal)
 {
-	var angle = JSM.GetVectorsFullAngle (a, b, reference);
+	var angle = JSM.GetVectorsFullAngle (a, b, normal);
 	return angle * radius;
 };

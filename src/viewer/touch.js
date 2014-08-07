@@ -51,7 +51,7 @@ JSM.Touch.prototype.SetCurrent = function (touch, div)
 {
 	this.currX = touch.pageX;
 	this.currY = touch.pageY;
-	if (div !== undefined) {
+	if (div !== undefined && div.offsetLeft !== undefined && div.offsetTop !== undefined) {
 		this.currX = touch.pageX - div.offsetLeft;
 		this.currY = touch.pageY - div.offsetTop;
 	}

@@ -12,10 +12,11 @@
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../../src/core/timer.js"></script>
-	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
-	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coordsystemutils.js"></script>
 	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
@@ -34,6 +35,8 @@
 	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
 	<script type="text/javascript" src="../../src/modeler/body.js"></script>
 	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../../src/modeler/light.js"></script>
 	<script type="text/javascript" src="../../src/modeler/material.js"></script>
 	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
@@ -41,6 +44,7 @@
 	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
 	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../../src/modeler/explode.js"></script>
 	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
 	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
 	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
@@ -50,15 +54,19 @@
 	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
 	<script type="text/javascript" src="../../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../../src/extras/surfaces.js"></script>
-	<script type="text/javascript" src="../../src/dialogs/basedialog.js"></script>
-	<script type="text/javascript" src="../../src/dialogs/settingscontrols.js"></script>
-	<script type="text/javascript" src="../../src/dialogs/settingsdialog.js"></script>
-	<script type="text/javascript" src="../../src/dialogs/floatingdialog.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/converter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/jsonfileloader.js"></script>
 	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
-	<script type="text/javascript" src="../../src/viewer/converter.js"></script>
-	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/navigation.js"></script>
 	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
 
 	<script type="text/javascript" src="include/stephandler.js"></script>
@@ -75,53 +83,57 @@
 			
 			canvas.width = document.body.clientWidth;
 			canvas.height = document.body.clientHeight - header.clientHeight - 1;
-			if (viewer != null) {
-				viewer.Resize ();
-			}
 		}
 
 		function WriteCameraInfo ()
 		{
 			var info = document.getElementById ('info');
 			info.innerHTML = '';
-			info.innerHTML += 'fixUp: ' + viewer.cameraMove.fixUp + ', ';
-			info.innerHTML += 'orbit: ' + viewer.cameraMove.orbit + ', ';
-			info.innerHTML += 'zoom: ' + viewer.cameraMove.zoom;
+			info.innerHTML += 'fixUp: ' + viewer.navigation.cameraFixUp + ', ';
+			info.innerHTML += 'orbit: ' + viewer.navigation.cameraEnableOrbit + ', ';
+			info.innerHTML += 'pan: ' + viewer.navigation.cameraEnablePan + ', ';
+			info.innerHTML += 'zoom: ' + viewer.navigation.cameraEnableZoom;
 		}
 		
 		function Reset1 ()
 		{
-			viewer.SetCamera ([-7.5, -5.0, 4.0], [-1.5, 0.0, 0.0], [0.0, 0.0, 1.0]);
+			viewer.SetCamera (new JSM.Coord (-7.5, -5.0, 4.0), new JSM.Coord (-1.5, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 			viewer.Draw ();
 		}
 		
 		function Reset2 ()
 		{
-			viewer.SetCamera ([-6.0, -5.0, 4.0], [0.0, 0.0, 0.0], [0.0, 0.0, 1.0]);
+			viewer.SetCamera (new JSM.Coord (-6.0, -5.0, 4.0), new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 			viewer.Draw ();
 		}
 
 		function Reset3 ()
 		{
-			viewer.SetCamera ([-4.5, -5.0, 4.0], [1.5, 0.0, 0.0], [0.0, 0.0, 1.0]);
+			viewer.SetCamera (new JSM.Coord (-4.5, -5.0, 4.0), new JSM.Coord (1.5, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 			viewer.Draw ();
 		}
 
 		function SwitchFixUp ()
 		{
-			viewer.EnableCameraFixUp (!viewer.cameraMove.fixUp);
+			viewer.navigation.cameraFixUp = !viewer.navigation.cameraFixUp;
 			WriteCameraInfo ();
 		}
 		
 		function SwitchOrbit ()
 		{
-			viewer.EnableCameraOrbit (!viewer.cameraMove.orbit);
+			viewer.navigation.EnableOrbit (!viewer.navigation.cameraEnableOrbit);
+			WriteCameraInfo ();
+		}
+
+		function SwitchPan ()
+		{
+			viewer.navigation.EnablePan (!viewer.navigation.cameraEnablePan);
 			WriteCameraInfo ();
 		}
 
 		function SwitchZoom ()
 		{
-			viewer.EnableCameraZoom (!viewer.cameraMove.zoom);
+			viewer.navigation.EnableZoom (!viewer.navigation.cameraEnableZoom);
 			WriteCameraInfo ();
 		}
 
@@ -136,7 +148,7 @@
 				cameraUpVector : [0.0, 0.0, 1.0]
 			};
 
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			if (!viewer.Start ('test', viewerSettings)) {
 				return;
 			}
@@ -176,6 +188,7 @@
 			<a class="button" href="javascript:Reset3 ()">reset 3</a>
 			<a class="button" href="javascript:SwitchFixUp ()">fix up</a>
 			<a class="button" href="javascript:SwitchOrbit ()">orbit</a>
+			<a class="button" href="javascript:SwitchPan ()">pan</a>
 			<a class="button" href="javascript:SwitchZoom ()">zoom</a>
 		</div>
 		<div id="info"></div>

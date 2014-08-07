@@ -39,7 +39,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			{
 				function GenerateMoveCommand (x, y)
 				{
-					return 'M ' + x + ' ' + y;
+					return 'M ' + x + ' ' + y + ' ';
 				}
 			
 				var svgNameSpace = 'http://www.w3.org/2000/svg';

@@ -1,0 +1,29 @@
+------
+
+By columns:
+
+				b00	b10	b20	b30
+				b01	b11	b21	b31
+				b02	b12	b22	b32
+				b03	b13	b23	b33
+a00	a01	a02	a03
+
+result[0] = a00 * b00 + a01 * b01 + a02 * b02 + a03 * b03;
+result[1] = a00 * b10 + a01 * b11 + a02 * b12 + a03 * b13;
+result[2] = a00 * b20 + a01 * b21 + a02 * b22 + a03 * b23;
+result[3] = a00 * b30 + a01 * b31 + a02 * b32 + a03 * b33;
+
+------
+
+By rows:
+
+				b00	b01	b02	b03
+				b10	b11	b12	b13
+				b20	b21	b22	b23
+				b30	b31	b32	b33
+a00	a01	a02	a03
+
+result[0] = a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30;
+result[1] = a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31;
+result[2] = a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32;
+result[3] = a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33;

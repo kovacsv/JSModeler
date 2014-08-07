@@ -22,7 +22,7 @@
 				farClippingPlane : 100000.0
 			};
 
-			var viewer = new JSM.Viewer ();
+			var viewer = new JSM.ThreeViewer ();
 			if (!viewer.Start ('svgcanvas', viewerSettings)) {
 				viewer = null;
 				return;
@@ -96,7 +96,7 @@ var viewerSettings = {
 	farClippingPlane : 100000.0
 };
 
-var viewer = new JSM.Viewer ();
+var viewer = new JSM.ThreeViewer ();
 if (!viewer.Start ('svgcanvas', viewerSettings)) {
 	viewer = null;
 	return;

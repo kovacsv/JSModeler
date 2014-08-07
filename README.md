@@ -31,6 +31,7 @@ Example applications
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/legobuilder.html">Lego Builder</a> is an interactive lego builder application.</li>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/tictactoe.html">3D Tic-Tac-Toe</a> is a Tic-Tac-Toe game with 3D interface.</li>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/robot/robot.html">Robotic Arm</a> is a realtime robotic arm simulator.</li>
+	<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/surfacepc.html">Surface Point Clouds</a> is an example of the point cloud viewer.</li>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/csg.html">CSG Example</a> contains constructive solid geometry examples.</li>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/svgto3d.html">SVGTo3D</a> contains examples of using SVG to model converter.</li>
 	<li><a href="http://kovacsv.github.com/JSModeler/documentation/examples/bezier.html">Bezier Surface Generator</a> is an interactive surface generator.</li>
@@ -55,7 +56,7 @@ Main capabilities
 		<li>Catmull-Clark subdivision for 3D bodies.</li>
 		<li>Convex hull calculation for 2D and 3D point sets.</li>
 	</ul>
-	<li>Built-in Three.js based model viewer with rotation and zoom functionality.</li>
+	<li>Built-in Three.js based model viewer with rotation, pan and zoom functionality.</li>
 	<li>Automatic conversion to Three.js geometry format.</li>
 	<ul>
 		<li>Convex and concave polygons are automatically triangulated during the conversion.</li>

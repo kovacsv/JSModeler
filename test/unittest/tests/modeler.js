@@ -275,6 +275,47 @@ AddTest ('SubdivisionTest', function (test)
 	test.Assert (body.PolygonCount () == 96);
 });
 
+AddTest ('ExplodeTest', function (test)
+{
+	function OnGeometryStart (material)
+	{
+		onGeometryStartCount = onGeometryStartCount + 1;
+	}
+
+	function OnGeometryEnd (material)
+	{
+		onGeometryEndCount = onGeometryEndCount + 1;
+	}
+
+	function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
+	{
+		onTriangleCount = onTriangleCount + 1;
+	}
+	
+	var body = JSM.GenerateCuboid (1, 1, 1);
+	var materials = new JSM.Materials ();
+	materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
+	materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+	body.GetPolygon (0).SetMaterialIndex (0);
+	body.GetPolygon (1).SetMaterialIndex (1);
+	
+	var explodeData = {
+		hasConvexPolygons : false,
+		onGeometryStart : OnGeometryStart,
+		onGeometryEnd : OnGeometryEnd,
+		onTriangle : OnTriangle
+	};
+
+	var onGeometryStartCount = 0;
+	var onGeometryEndCount = 0;
+	var onTriangleCount = 0;
+	JSM.ExplodeBodyToTriangles (body, materials, explodeData);
+	
+	test.Assert (onGeometryStartCount == 3);
+	test.Assert (onGeometryEndCount == 3);
+	test.Assert (onTriangleCount == 12);
+});
+
 AddTest ('ExportTest', function (test)
 {
 	var gdl1Ref = "base\nvert 0, 0, 0 ! 1\nvert 1, 0, 0 ! 2\nvert 0, 1, 0 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
@@ -1315,13 +1356,7 @@ AddTest ('BodyPlanarTextureCoordTest', function (test)
 	
 	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2, 3]));
 
-	body.SetTextureProjectionType ('Planar');
-	body.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0),
-		new JSM.Coord (0.0, 0.0, 0.0)
-	));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
 	
 	var textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -1331,13 +1366,8 @@ AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
 
-	body.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.2, 0.0, 0.2),
-		new JSM.Coord (0.0, 0.0, 1.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 0.0)
-	));
-	
+	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.0, 0.2), new JSM.Coord (0.0, 0.0, 1.0), new JSM.Coord (0.0, -1.0, 0.0));
+
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
@@ -1346,12 +1376,7 @@ AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (0.8, 0.8)));
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0.8, -0.2)));
 
-	body.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0),
-		new JSM.Coord (0.0, 0.0, 0.0)
-	));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
 
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, 0.0)));
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, 1.0)));
@@ -1381,13 +1406,7 @@ AddTest ('BodyPlanarTextureCoordTest', function (test)
 	
 	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2, 3]));
 	
-	body.projection = 'Planar';
-	body.coords = new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (100.0, 200.0, 300.0)
-	);
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -1398,13 +1417,7 @@ AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
 
-	body.projection = 'Planar';
-	body.coords = new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (10.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 20.0, 0.0),
-		new JSM.Coord (100.0, 200.0, 300.0)
-	);
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (10.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -20.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -1415,12 +1428,7 @@ AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
 
-	body.coords = new JSM.CoordSystem (
-		new JSM.Coord (0.2, 0.2, 1.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (100.0, 200.0, 300.0)
-	);
+	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -1431,12 +1439,7 @@ AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (0.8, 0.8)));
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (-0.2, 0.8)));
 
-	body.coords = new JSM.CoordSystem (
-		new JSM.Coord (0.2, 0.3, 1.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		null
-	);
+	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.3, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));	
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -1466,14 +1469,7 @@ AddTest ('BodyCubicTextureCoordTest', function (test)
 	body.AddPolygon (new JSM.BodyPolygon ([0, 3, 4, 5]));
 	body.AddPolygon (new JSM.BodyPolygon ([3, 2, 6, 4]));
 	
-	body.SetTextureProjectionType ('Cubic');
-	body.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-
+	body.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	var textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 3);
 	test.Assert (textureCoords[0].length == 4);
@@ -1495,14 +1491,8 @@ AddTest ('BodyCubicTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][2], new JSM.Coord2D (1, 1)));
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][3], new JSM.Coord2D (0, 1)));
 
-	body.SetTextureProjectionType ('Cubic');
-	body.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (10.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 20.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 30.0)
-	));
-
+	body.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (10.0, 0.0, 0.0), new JSM.Coord (0.0, 12.0, 0.0), new JSM.Coord (0.0, 0.0, 30.0));	
+	
 	var textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 3);
 	test.Assert (textureCoords[0].length == 4);

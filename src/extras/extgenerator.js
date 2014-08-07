@@ -118,14 +118,7 @@ JSM.GenerateLegoBrick = function (rows, columns, isLarge, hasTopCylinders, hasBo
 		}
 	}
 
-	result.SetTextureProjectionType ('Cubic');
-	result.SetTextureProjectionCoords (new JSM.CoordSystem (
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 0.0, 0.0),
-		new JSM.Coord (0.0, 1.0, 0.0),
-		new JSM.Coord (0.0, 0.0, 1.0)
-	));
-	
+	result.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	return result;
 };
 

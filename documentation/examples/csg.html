@@ -350,10 +350,6 @@
 			var canvas = document.getElementById ('example');
 			canvas.width = document.body.clientWidth - left.clientWidth;
 			canvas.height = document.body.clientHeight;
-
-			if (viewer !== null) {
-				viewer.Resize ();
-			}
 		}
 
 		function Load ()
@@ -367,7 +363,7 @@
 				cameraUpVector : [0.0, 0.0, 1.0]
 			};
 
-			viewer = new JSM.Viewer ();
+			viewer = new JSM.ThreeViewer ();
 			if (!viewer.Start ('example', viewerSettings)) {
 				Error ();
 				return;
