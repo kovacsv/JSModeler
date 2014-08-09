@@ -266,7 +266,7 @@ JSM.Navigation.prototype.OnTouchMove = function (event)
 		return;
 	}
 	
-	var ratio = -0.5;
+	var ratio = 0.5;
 	this.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
 	this.DrawCallback ();
 };
