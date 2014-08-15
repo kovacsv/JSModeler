@@ -139,7 +139,7 @@
 			var floating = document.getElementById ('floating');
 			var svgcontent = document.getElementById ('svgcontent');
 			var drawer = new JSM.SVGDrawer (svgcontent);
-			JSM.DrawProjectedBody (demo.body, null, demo.viewer.cameraMove, 'Wireframe', true, drawer);
+			JSM.DrawProjectedBody (demo.body, null, demo.viewer.renderer.camera, 'Wireframe', true, drawer);
 			svgcontent.style.display = 'block';
 			floating.style.display = 'block';
 		}
