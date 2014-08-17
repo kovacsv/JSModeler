@@ -254,9 +254,9 @@ JSM.Renderer.prototype.InitShaders = function ()
 			'#endif',
 			
 			'void main (void) {',
-			'	highp vec3 transformedNormal = normalize (vec3 (uModelViewMatrix * vec4 (vNormal, 0.0)));',
-			'	highp vec3 transformedLightDirection = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
-			'	highp float diffuseIntensity = dot (transformedNormal, transformedLightDirection);',
+			'	highp vec3 transformedNormal = normalize (vec3 (uViewMatrix * vec4 (vNormal, 0.0)));',
+			'	highp vec3 transformedLightDirection = normalize (vec3 (uModelViewMatrix * vec4 (uLightDirection, 0.0)));',
+			'	highp float diffuseIntensity = max (dot (transformedNormal, transformedLightDirection), 0.0);',
 			'#ifdef USETEXTURE',
 			'	highp vec4 textureColor = texture2D (uSampler, vec2 (vUV.s, vUV.t));',
 			'	highp vec3 ambientComponent = textureColor.xyz * uAmbientLightColor;',
