@@ -239,12 +239,11 @@ JSM.Renderer.prototype.InitShaders = function ()
 			defineString,
 			'uniform highp vec3 uAmbientLightColor;',
 			'uniform highp vec3 uDirectionalLightColor;',
-			'uniform highp vec3 uLightDirection;',
 
-			'uniform highp mat4 uViewMatrix;',
-			'uniform highp mat4 uModelViewMatrix;',
-
+			'varying highp vec3 vVertex;',
 			'varying highp vec3 vNormal;',
+			'varying highp vec3 vLight;',
+			
 			'#ifdef USETEXTURE',
 			'varying highp vec2 vUV;',
 			'uniform sampler2D uSampler;',
@@ -254,17 +253,19 @@ JSM.Renderer.prototype.InitShaders = function ()
 			'#endif',
 			
 			'void main (void) {',
-			'	highp vec3 transformedNormal = normalize (vec3 (uViewMatrix * vec4 (vNormal, 0.0)));',
-			'	highp vec3 transformedLightDirection = normalize (vec3 (uModelViewMatrix * vec4 (uLightDirection, 0.0)));',
-			'	highp float diffuseIntensity = max (dot (transformedNormal, transformedLightDirection), 0.0);',
+			'	highp vec3 L = normalize (-vLight);',
+			'	highp vec3 E = normalize (-vVertex);',
+			'	highp vec3 R = normalize (-reflect (L, vNormal));',
 			'#ifdef USETEXTURE',
 			'	highp vec4 textureColor = texture2D (uSampler, vec2 (vUV.s, vUV.t));',
 			'	highp vec3 ambientComponent = textureColor.xyz * uAmbientLightColor;',
-			'	highp vec3 diffuseComponent = textureColor.xyz * uDirectionalLightColor * diffuseIntensity;',
+			'	highp vec3 diffuseComponent = textureColor.xyz * uDirectionalLightColor * max (dot (vNormal, L), 0.0);',
 			'#else',
 			'	highp vec3 ambientComponent = uPolygonAmbientColor * uAmbientLightColor;',
-			'	highp vec3 diffuseComponent = uPolygonDiffuseColor * uDirectionalLightColor * diffuseIntensity;',
+			'	highp vec3 diffuseComponent = uPolygonDiffuseColor * uDirectionalLightColor * max (dot (vNormal, L), 0.0);',
 			'#endif',
+			'	ambientComponent = clamp (ambientComponent, 0.0, 1.0);',
+			'	diffuseComponent = clamp (diffuseComponent, 0.0, 1.0);',
 			'	gl_FragColor = vec4 ((ambientComponent + diffuseComponent), 1.0);',
 			'}'
 		].join('\n');
@@ -285,8 +286,11 @@ JSM.Renderer.prototype.InitShaders = function ()
 
 			'uniform highp mat4 uModelViewMatrix;',
 			'uniform highp mat4 uProjectionMatrix;',
+			'uniform highp vec3 uLightDirection;',
 
+			'varying highp vec3 vVertex;',
 			'varying highp vec3 vNormal;',
+			'varying highp vec3 vLight;',
 
 			'#ifdef USETEXTURE',
 			'attribute highp vec2 aVertexUV;',
@@ -294,11 +298,13 @@ JSM.Renderer.prototype.InitShaders = function ()
 			'#endif',
 
 			'void main (void) {',
-			'	vNormal = aVertexNormal;',
+			'	vVertex = vec3 (uModelViewMatrix * vec4 (aVertexPosition, 1.0));',
+			'	vNormal = normalize (vec3 (uModelViewMatrix * vec4 (aVertexNormal, 0.0)));',
+			'	vLight = normalize (vec3 (uModelViewMatrix * vec4 (uLightDirection, 0.0)));',
 			'#ifdef USETEXTURE',
 			'	vUV = aVertexUV;',
 			'#endif',
-			'	gl_Position = uProjectionMatrix * uModelViewMatrix * vec4 (aVertexPosition, 1.0);',
+			'	gl_Position = uProjectionMatrix * vec4 (vVertex, 1.0);',
 			'}'
 		].join('\n');
 		return script;
@@ -314,7 +320,6 @@ JSM.Renderer.prototype.InitShaders = function ()
 		shader.lightDirectionUniform = context.getUniformLocation (shader, 'uLightDirection');
 
 		shader.pMatrixUniform = context.getUniformLocation (shader, 'uProjectionMatrix');
-		shader.vMatrixUniform = context.getUniformLocation (shader, 'uViewMatrix');
 		shader.mvMatrixUniform = context.getUniformLocation (shader, 'uModelViewMatrix');
 
 		shader.polygonAmbientColorUniform = context.getUniformLocation (shader, 'uPolygonAmbientColor');
@@ -439,7 +444,7 @@ JSM.Renderer.prototype.Render = function ()
 	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
 	var modelViewMatrix = JSM.MatrixIdentity ();
 
-	this.light.direction = JSM.CoordSub (this.camera.eye, this.camera.center);
+	this.light.direction = JSM.VectorNormalize (JSM.CoordSub (this.camera.center, this.camera.eye));
 	
 	var i, ambientColor, diffuseColor;
 	var currentGeometry, currentVertexBuffer, currentNormalBuffer, currentUVBuffer;
@@ -457,7 +462,6 @@ JSM.Renderer.prototype.Render = function ()
 			currentShader = newShader;
 			this.context.useProgram (currentShader);
 			this.context.uniformMatrix4fv (currentShader.pMatrixUniform, false, projectionMatrix);
-			this.context.uniformMatrix4fv (currentShader.vMatrixUniform, false, viewMatrix);
 			this.context.uniform3f (currentShader.lightDirectionUniform, this.light.direction.x, this.light.direction.y, this.light.direction.z);
 		}
 		
