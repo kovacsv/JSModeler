@@ -73,20 +73,26 @@
 
 		function Load ()
 		{
-			var body = JSM.GenerateTorus (0.8, 0.2, 50, 50, true);
+			//var body = JSM.GenerateCylinder (0.5, 1.0, 20, false, true);
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material (0x00cc00, 0x00cc00, 0x333333, 5.0));
+			var body = JSM.GenerateTorus (0.8, 0.3, 50, 50, true);
+			body.SetPolygonsMaterialIndex (0);
 
-			var internal = true;
+			var internal = 1;
 			if (internal) {
 				var camera = new JSM.Camera (
 					new JSM.Coord (-2.0, -1.5, 1.0),
 					new JSM.Coord (0.0, 0.0, 0.0),
 					new JSM.Coord (0, 0, 1)
 				);
+				
+				var light = new JSM.Light (0x7f7f7f, 0x7f7f7f, 0xffffff);
 
 				viewer = new JSM.Viewer ();
-				viewer.Init ('example', camera);
+				viewer.Init ('example', camera, light);
 				
-				var meshes = JSM.ConvertBodyToRenderGeometries (body);
+				var meshes = JSM.ConvertBodyToRenderGeometries (body, materials);
 				viewer.AddGeometries (meshes);
 
 				viewer.Draw ();
@@ -100,7 +106,7 @@
 				viewer = new JSM.ThreeViewer ();
 				viewer.Start ('example', viewerSettings);
 				
-				var meshes = JSM.ConvertBodyToThreeMeshes (body);
+				var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
 				for (var i = 0; i < meshes.length; i++) {
 					viewer.AddMesh (meshes[i]);
 				}

@@ -8,7 +8,8 @@ JSM.ConvertBodyToRenderGeometries = function (body, materials)
 
 		var renderAmbient = JSM.HexColorToNormalizedRGBComponents (material.ambient);
 		var renderDiffuse = JSM.HexColorToNormalizedRGBComponents (material.diffuse);
-		var renderMaterial = new JSM.RenderMaterial (renderAmbient, renderDiffuse, material.texture, material.textureWidth, material.textureHeight);
+		var renderSpecular = JSM.HexColorToNormalizedRGBComponents (material.specular);
+		var renderMaterial = new JSM.RenderMaterial (renderAmbient, renderDiffuse, renderSpecular, material.shininess, material.texture, material.textureWidth, material.textureHeight);
 
 		geometry = new JSM.RenderGeometry ();
 		geometry.SetMaterial (renderMaterial);

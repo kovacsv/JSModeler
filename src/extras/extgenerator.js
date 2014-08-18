@@ -42,7 +42,7 @@ JSM.GenerateLegoBrick = function (rows, columns, isLarge, hasTopCylinders, hasBo
 	
 	var legoDimensions = new JSM.LegoDimensions ();
 
-	var normal = new THREE.Vector3 (0.0, 0.0, 1.0);
+	var normal = new JSM.Vector (0.0, 0.0, 1.0);
 	var unitWidth = legoDimensions.legoWidth;
 	var unitHeight = legoDimensions.legoLargeHeight;
 	if (!isLarge) {

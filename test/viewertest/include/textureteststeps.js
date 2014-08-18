@@ -5,7 +5,7 @@ function TestStep (viewer, mode, step, info)
 
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png'));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png'));
 	
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
@@ -14,7 +14,7 @@ function TestStep (viewer, mode, step, info)
 
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png'));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png'));
 	
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
@@ -31,7 +31,7 @@ function TestStep (viewer, mode, step, info)
 
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png'));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png'));
 	
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
@@ -48,7 +48,7 @@ function TestStep (viewer, mode, step, info)
 
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png', 0.2, 0.2));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png', 0.2, 0.2));
 	
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
@@ -65,7 +65,7 @@ function TestStep (viewer, mode, step, info)
 	
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png', 0.5, 0.5));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png', 0.5, 0.5));
 	
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
@@ -74,7 +74,7 @@ function TestStep (viewer, mode, step, info)
 	
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png', 1.0, 1.0));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png', 1.0, 1.0));
 	
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
@@ -85,7 +85,7 @@ function TestStep (viewer, mode, step, info)
 
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png', 1.0, 1.0));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png', 1.0, 1.0));
 	
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
@@ -98,7 +98,7 @@ function TestStep (viewer, mode, step, info)
 	
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png', 0.5, 0.5));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png', 0.5, 0.5));
 	
 		var body = JSM.GenerateCylinder (0.5, 1.0, 50, true, true);
 		body.SetPolygonsMaterialIndex (0);
@@ -107,7 +107,7 @@ function TestStep (viewer, mode, step, info)
 	
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png', 0.5, 0.5));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png', 0.5, 0.5));
 	
 		var body = JSM.GenerateCylinder (0.5, 1.0, 50, true, true);
 		body.SetPolygonsMaterialIndex (0);
@@ -118,7 +118,7 @@ function TestStep (viewer, mode, step, info)
 
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png', 0.5, 0.5));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png', 0.5, 0.5));
 	
 		var body = JSM.GenerateCylinder (0.5, 1.0, 50, true, true);
 		body.SetPolygonsMaterialIndex (0);
@@ -129,7 +129,7 @@ function TestStep (viewer, mode, step, info)
 	
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png', 0.5, 0.5));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png', 0.5, 0.5));
 	
 		var body = JSM.GenerateCylinder (0.5, 1.0, 50, true, true);
 		body.SetPolygonsMaterialIndex (0);
@@ -140,7 +140,7 @@ function TestStep (viewer, mode, step, info)
 
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png', 0.5, 0.5));
+		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png', 0.5, 0.5));
 	
 		var body = JSM.GenerateCylinder (0.5, 1.0, 50, true, true);
 		body.SetPolygonsMaterialIndex (0);

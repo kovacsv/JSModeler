@@ -4,15 +4,19 @@
 * Parameters:
 *	ambient {number} the ambient component
 *	diffuse {number} the diffuse component
+*	specular {number} the specular component
+*	shininess {number} the shininess
 *	opacity {number} the opacity component
 *	texture {string} the name of the texture file
 *	textureWidth {number} the width of the texture
 *	textureHeight {number} the height of the texture
 */
-JSM.Material = function (ambient, diffuse, opacity, texture, textureWidth, textureHeight)
+JSM.Material = function (ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight)
 {
 	this.ambient = JSM.ValueOrDefault (ambient, 0x00cc00);
 	this.diffuse = JSM.ValueOrDefault (diffuse, 0x00cc00);
+	this.specular = JSM.ValueOrDefault (specular, 0x000000);
+	this.shininess = JSM.ValueOrDefault (shininess, 0.0);
 	this.opacity = JSM.ValueOrDefault (opacity, 1.0);
 	this.texture = JSM.ValueOrDefault (texture, null);
 	this.textureWidth = JSM.ValueOrDefault (textureWidth, 1.0);

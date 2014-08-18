@@ -2991,6 +2991,7 @@
 					"parameters" : [
 						["ambient", "number", "the ambient component"],
 						["diffuse", "number", "the diffuse component"],
+						["specular", "number", "the specular component"],
 						["direction", "Vector", "the direction of the light"]
 					]
 				},
@@ -2999,6 +3000,8 @@
 					"parameters" : [
 						["ambient", "number", "the ambient component"],
 						["diffuse", "number", "the diffuse component"],
+						["specular", "number", "the specular component"],
+						["shininess", "number", "the shininess"],
 						["opacity", "number", "the opacity component"],
 						["texture", "string", "the name of the texture file"],
 						["textureWidth", "number", "the width of the texture"],
