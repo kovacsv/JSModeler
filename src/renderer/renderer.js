@@ -255,6 +255,11 @@ JSM.Renderer.prototype.InitShaders = function ()
 		
 		var script = [
 			defineString,
+			'uniform highp vec3 uPolygonAmbientColor;',
+			'uniform highp vec3 uPolygonDiffuseColor;',
+			'uniform highp vec3 uPolygonSpecularColor;',
+			'uniform highp float uPolygonShininess;',
+			
 			'uniform highp vec3 uAmbientLightColor;',
 			'uniform highp vec3 uDiffuseLightColor;',
 			'uniform highp vec3 uSpecularLightColor;',
@@ -266,12 +271,7 @@ JSM.Renderer.prototype.InitShaders = function ()
 			'#ifdef USETEXTURE',
 			'varying highp vec2 vUV;',
 			'uniform sampler2D uSampler;',
-			'#else',
-			'uniform highp vec3 uPolygonAmbientColor;',
-			'uniform highp vec3 uPolygonDiffuseColor;',
-			'uniform highp vec3 uPolygonSpecularColor;',
 			'#endif',
-			'uniform highp float uPolygonShininess;',
 			
 			'void main (void) {',
 			'	highp vec3 N = normalize (vNormal);',
@@ -282,15 +282,13 @@ JSM.Renderer.prototype.InitShaders = function ()
 			'	highp vec3 E = normalize (-vVertex);',
 			'	highp vec3 R = normalize (-reflect (L, N));',
 			'#ifdef USETEXTURE',
-			'	highp vec4 textureColor = texture2D (uSampler, vec2 (vUV.s, vUV.t));',
-			'	highp vec3 ambientComponent = textureColor.xyz * uAmbientLightColor;',
-			'	highp vec3 diffuseComponent = textureColor.xyz * uDiffuseLightColor * max (dot (N, L), 0.0);',
-			'	highp vec3 specularComponent = textureColor.xyz * uSpecularLightColor * pow (max (dot (R, E), 0.0), uPolygonShininess);',
+			'	highp vec3 textureColor = texture2D (uSampler, vec2 (vUV.s, vUV.t)).xyz;',
 			'#else',
-			'	highp vec3 ambientComponent = uPolygonAmbientColor * uAmbientLightColor;',
-			'	highp vec3 diffuseComponent = uPolygonDiffuseColor * uDiffuseLightColor * max (dot (N, L), 0.0);',
-			'	highp vec3 specularComponent = uPolygonSpecularColor * uSpecularLightColor * pow (max (dot (R, E), 0.0), uPolygonShininess);',
+			'	highp vec3 textureColor = vec3 (1, 1, 1);',
 			'#endif',
+			'	highp vec3 ambientComponent = textureColor * uPolygonAmbientColor * uAmbientLightColor;',
+			'	highp vec3 diffuseComponent = textureColor * uPolygonDiffuseColor * uDiffuseLightColor * max (dot (N, L), 0.0);',
+			'	highp vec3 specularComponent = textureColor * uPolygonSpecularColor * uSpecularLightColor * pow (max (dot (R, E), 0.0), uPolygonShininess);',
 			'	ambientComponent = clamp (ambientComponent, 0.0, 1.0);',
 			'	diffuseComponent = clamp (diffuseComponent, 0.0, 1.0);',
 			'	specularComponent = clamp (specularComponent, 0.0, 1.0);',
@@ -347,12 +345,16 @@ JSM.Renderer.prototype.InitShaders = function ()
 		shader.ambientLightColorUniform = context.getUniformLocation (shader, 'uAmbientLightColor');
 		shader.diffuseLightColorUniform = context.getUniformLocation (shader, 'uDiffuseLightColor');
 		shader.specularLightColorUniform = context.getUniformLocation (shader, 'uSpecularLightColor');
-		shader.lightDirectionUniform = context.getUniformLocation (shader, 'uLightDirection');
 		shader.polygonShininessUniform = context.getUniformLocation (shader, 'uPolygonShininess');
+		shader.lightDirectionUniform = context.getUniformLocation (shader, 'uLightDirection');
 		
 		shader.vMatrixUniform = context.getUniformLocation (shader, 'uViewMatrix');
 		shader.mvMatrixUniform = context.getUniformLocation (shader, 'uModelViewMatrix');
 		shader.pMatrixUniform = context.getUniformLocation (shader, 'uProjectionMatrix');
+
+		shader.polygonAmbientColorUniform = context.getUniformLocation (shader, 'uPolygonAmbientColor');
+		shader.polygonDiffuseColorUniform = context.getUniformLocation (shader, 'uPolygonDiffuseColor');
+		shader.polygonSpecularColorUniform = context.getUniformLocation (shader, 'uPolygonSpecularColor');
 
 		var lightAmbient = JSM.HexColorToNormalizedRGBComponents (light.ambient);
 		var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (light.diffuse);
@@ -373,10 +375,6 @@ JSM.Renderer.prototype.InitShaders = function ()
 		
 		context.useProgram (shader);
 		InitShaderCommon (context, shader, light);
-
-		shader.polygonAmbientColorUniform = context.getUniformLocation (shader, 'uPolygonAmbientColor');
-		shader.polygonDiffuseColorUniform = context.getUniformLocation (shader, 'uPolygonDiffuseColor');
-		shader.polygonSpecularColorUniform = context.getUniformLocation (shader, 'uPolygonSpecularColor');
 
 		return shader;
 	}
@@ -498,14 +496,16 @@ JSM.Renderer.prototype.Render = function ()
 			this.context.uniform3f (currentShader.lightDirectionUniform, this.light.direction.x, this.light.direction.y, this.light.direction.z);
 		}
 		
-		if (currentShader == this.shader) {
-			ambientColor = currentGeometry.material.ambient;
-			diffuseColor = currentGeometry.material.diffuse;
-			specularColor = currentGeometry.material.specular;
-			this.context.uniform3f (currentShader.polygonAmbientColorUniform, ambientColor[0], ambientColor[1], ambientColor[2]);
-			this.context.uniform3f (currentShader.polygonDiffuseColorUniform, diffuseColor[0], diffuseColor[1], diffuseColor[2]);
-			this.context.uniform3f (currentShader.polygonSpecularColorUniform, specularColor[0], specularColor[1], specularColor[2]);
-		} else if (currentShader == this.texShader) {
+		ambientColor = currentGeometry.material.ambient;
+		diffuseColor = currentGeometry.material.diffuse;
+		specularColor = currentGeometry.material.specular;
+		shininess = currentGeometry.material.shininess;
+		this.context.uniform3f (currentShader.polygonAmbientColorUniform, ambientColor[0], ambientColor[1], ambientColor[2]);
+		this.context.uniform3f (currentShader.polygonDiffuseColorUniform, diffuseColor[0], diffuseColor[1], diffuseColor[2]);
+		this.context.uniform3f (currentShader.polygonSpecularColorUniform, specularColor[0], specularColor[1], specularColor[2]);
+		this.context.uniform1f (currentShader.polygonShininessUniform, shininess);
+		
+		if (currentShader == this.texShader) {
 			this.context.activeTexture (this.context.TEXTURE0);
 			this.context.bindTexture (this.context.TEXTURE_2D, currentGeometry.material.textureBuffer);
 			this.context.bindBuffer (this.context.ARRAY_BUFFER, currentUVBuffer);
@@ -513,9 +513,7 @@ JSM.Renderer.prototype.Render = function ()
 			this.context.enableVertexAttribArray (currentShader.vertexUVAttribute);
 			this.context.uniform1i (currentShader.samplerUniform, 0);
 		}
-		shininess = currentGeometry.material.shininess;
-		this.context.uniform1f (currentShader.polygonShininessUniform, shininess);
-		
+
 		modelViewMatrix = JSM.MatrixMultiply (currentGeometry.GetTransformationMatrix (), viewMatrix);
 		this.context.uniformMatrix4fv (currentShader.mvMatrixUniform, false, modelViewMatrix);
 
