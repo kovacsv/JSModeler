@@ -209,8 +209,6 @@ JSM.Renderer.prototype.InitContext = function (canvasName)
 	this.context.viewportHeight = this.canvas.height;
 
 	this.context.clearColor (1.0, 1.0, 1.0, 1.0);
-	this.context.clearDepth (1);
-	this.context.clearStencil (0);
 	
 	this.context.enable (this.context.DEPTH_TEST);
 	this.context.depthFunc (this.context.LEQUAL);
