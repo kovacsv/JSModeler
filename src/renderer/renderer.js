@@ -200,18 +200,21 @@ JSM.Renderer.prototype.InitContext = function (canvasName)
 		return false;
 	}
 
-	this.context = this.canvas.getContext ('experimental-webgl');
+	var contextParameters = {
+		antialias: true
+	};
+	
+	this.context = this.canvas.getContext ('experimental-webgl', contextParameters);
 	if (this.context === null) {
 		return false;
 	}
 
 	this.context.viewportWidth = this.canvas.width;
 	this.context.viewportHeight = this.canvas.height;
+	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 
 	this.context.clearColor (1.0, 1.0, 1.0, 1.0);
-	
 	this.context.enable (this.context.DEPTH_TEST);
-	this.context.depthFunc (this.context.LEQUAL);
 	
 	return true;
 };
@@ -451,6 +454,7 @@ JSM.Renderer.prototype.Resize = function ()
 {
 	this.context.viewportWidth = this.canvas.width;
 	this.context.viewportHeight = this.canvas.height;
+	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 };
 
 JSM.Renderer.prototype.Render = function ()
@@ -463,7 +467,6 @@ JSM.Renderer.prototype.Render = function ()
 		return renderer.shader;
 	}
 
-	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	
 	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
@@ -474,7 +477,7 @@ JSM.Renderer.prototype.Render = function ()
 	var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (this.light.diffuse);
 	var lightSpecular = JSM.HexColorToNormalizedRGBComponents (this.light.specular);
 	this.light.direction = JSM.VectorNormalize (JSM.CoordSub (this.camera.center, this.camera.eye));
-	
+
 	var i, ambientColor, diffuseColor, specularColor, shininess;
 	var currentGeometry, currentVertexBuffer, currentNormalBuffer, currentUVBuffer;
 	var currentShader, newShader;
