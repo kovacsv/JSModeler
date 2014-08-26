@@ -200,11 +200,7 @@ JSM.Renderer.prototype.InitContext = function (canvasName)
 		return false;
 	}
 
-	var contextParameters = {
-		antialias: true
-	};
-	
-	this.context = this.canvas.getContext ('experimental-webgl', contextParameters);
+	this.context = this.canvas.getContext ('webgl') || this.canvas.getContext ('experimental-webgl');
 	if (this.context === null) {
 		return false;
 	}
