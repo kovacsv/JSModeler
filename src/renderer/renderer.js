@@ -211,10 +211,17 @@ JSM.Renderer.prototype.InitContext = function (canvasName)
 
 	this.context.viewportWidth = this.canvas.width;
 	this.context.viewportHeight = this.canvas.height;
+	
 	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 
 	this.context.clearColor (1.0, 1.0, 1.0, 1.0);
+	
 	this.context.enable (this.context.DEPTH_TEST);
+	this.context.depthFunc (this.context.LEQUAL);
+	
+	this.context.enable (this.context.BLEND);
+	this.context.blendEquation (this.context.FUNC_ADD);
+	this.context.blendFunc (this.context.SRC_ALPHA, this.context.ONE_MINUS_SRC_ALPHA);
 	
 	return true;
 };
