@@ -101,10 +101,5 @@ int main ()
 	bw.Write ((double) 12345.6789);
 	bw.Write ((double) -12345.6789);
 
-	bw.Write ((long double) 42);
-	bw.Write ((long double) -42);
-	bw.Write ((long double) 12345.6789);
-	bw.Write ((long double) -12345.6789);
-
 	return 0;
 }

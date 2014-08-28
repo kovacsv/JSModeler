@@ -80,16 +80,16 @@
 				log.innerHTML += line + '<br>';
 			}
 			
-			JSM.LoadFileToArrayBuffer ('binarywriter/result.bin', function (byteBuffer) {
-				var br = new JSM.BinaryReader (new Uint8Array (byteBuffer));
+			JSM.LoadFileToArrayBuffer ('binarywriter/result.bin', function (arrayBuffer) {
+				var br = new JSM.BinaryReader (arrayBuffer, true);
 				
 				AddLogLine (br.ReadBoolean () + ' (boolean)');
 				AddLogLine (br.ReadBoolean () + ' (boolean)');
 				
 				AddLogLine (br.ReadCharacter () + ' (character)');
 				AddLogLine (br.ReadCharacter () + ' (character)');
-				AddLogLine (br.ReadCharacter () + ' (character)');
-				AddLogLine (br.ReadCharacter () + ' (character)');
+				AddLogLine (br.ReadUnsignedCharacter () + ' (unsigned character)');
+				AddLogLine (br.ReadUnsignedCharacter () + ' (unsigned character)');
 
 				AddLogLine (br.ReadInteger16 () + ' (short)');
 				AddLogLine (br.ReadInteger16 () + ' (short)');
@@ -128,6 +128,16 @@
 				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned long)');
 				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned long)');
 				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned long)');
+
+				AddLogLine (br.ReadFloat32 () + ' (float)');
+				AddLogLine (br.ReadFloat32 () + ' (float)');
+				AddLogLine (br.ReadFloat32 () + ' (float)');
+				AddLogLine (br.ReadFloat32 () + ' (float)');
+
+				AddLogLine (br.ReadDouble64 () + ' (double)');
+				AddLogLine (br.ReadDouble64 () + ' (double)');
+				AddLogLine (br.ReadDouble64 () + ' (double)');
+				AddLogLine (br.ReadDouble64 () + ' (double)');
 			});
 			return;
 			/*
