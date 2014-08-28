@@ -80,7 +80,7 @@
 			}
 			
 			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.jpg', 3.0, 3.0));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.jpg', textureWidth : 3.0, textureHeight : 3.0}));
 			var body = JSM.GenerateConvexHullBody (coords);
 			body.SetPolygonsMaterialIndex (0);
 			if (!JSM.CheckSolidBody (body)) {

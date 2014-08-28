@@ -77,7 +77,7 @@
 			viewer.RemoveMeshes ();
 			
 			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 			body.SetPolygonsMaterialIndex (0);
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
 			viewer.AddMeshes (meshes);

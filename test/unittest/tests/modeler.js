@@ -294,8 +294,8 @@ AddTest ('ExplodeTest', function (test)
 	
 	var body = JSM.GenerateCuboid (1, 1, 1);
 	var materials = new JSM.Materials ();
-	materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
-	materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+	materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+	materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 	body.GetPolygon (0).SetMaterialIndex (0);
 	body.GetPolygon (1).SetMaterialIndex (1);
 	
@@ -366,8 +366,8 @@ AddTest ('ExportTest', function (test)
 	model.AddBody (body2);
 	
 	var materials = new JSM.Materials ();
-	materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
-	materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+	materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+	materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 	
 	var gdl1 = JSM.ExportBodyToGdl (body1);
 	test.Assert (gdl1 == gdl1Ref);

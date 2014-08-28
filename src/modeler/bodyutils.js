@@ -343,7 +343,7 @@ JSM.GenerateRandomMaterials = function (body, materials, seeded)
 		} else {
 			color = JSM.RandomInt (minColor, maxColor);
 		}
-		materials.AddMaterial (new JSM.Material (color, color));
+		materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
 		material = materials.Count () - 1;
 		body.GetPolygon (i).SetMaterialIndex (material);
 	}

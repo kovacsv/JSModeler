@@ -93,7 +93,7 @@
 			var i, color;
 			for (i = 0; i < body.PolygonCount (); i++) {
 				color = JSM.RandomInt (0, 16777215);
-				materials.AddMaterial (new JSM.Material (color, color));
+				materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
 				body.GetPolygon (i).SetMaterialIndex (i);
 			}
 			

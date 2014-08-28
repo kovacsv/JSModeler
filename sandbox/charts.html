@@ -135,15 +135,15 @@
 			
 			var model = new JSM.Model ();
 			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material (0xf0f0f0, 0xf0f0f0));
-			materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
-			materials.AddMaterial (new JSM.Material (0x279b61, 0x279b61));
-			materials.AddMaterial (new JSM.Material (0x993333, 0x993333));
-			materials.AddMaterial (new JSM.Material (0xffcc33, 0xffcc33));
-			materials.AddMaterial (new JSM.Material (0x95cae4, 0x95cae4));
-			materials.AddMaterial (new JSM.Material (0xa3e496, 0xa3e496));
-			materials.AddMaterial (new JSM.Material (0xcc3333, 0xcc3333));
-			materials.AddMaterial (new JSM.Material (0xffff7a, 0xffff7a));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xf0f0f0, diffuse : 0xf0f0f0}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x279b61, diffuse : 0x279b61}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xffcc33, diffuse : 0xffcc33}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x95cae4, diffuse : 0x95cae4}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xa3e496, diffuse : 0xa3e496}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xcc3333, diffuse : 0xcc3333}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xffff7a, diffuse : 0xffff7a}));
 
 			GenerateBoundingBody (model, materials, chart);
 			GenerateValueBodies (model, materials, chart);

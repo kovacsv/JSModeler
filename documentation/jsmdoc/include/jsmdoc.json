@@ -2996,16 +2996,9 @@
 					]
 				},
 				"Material" : {
-					"description" : "Defines a material.",
+					"description" : "Defines a material. The parameter structure can contain the following values: ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight.",
 					"parameters" : [
-						["ambient", "number", "the ambient component"],
-						["diffuse", "number", "the diffuse component"],
-						["specular", "number", "the specular component"],
-						["shininess", "number", "the shininess"],
-						["opacity", "number", "the opacity component"],
-						["texture", "string", "the name of the texture file"],
-						["textureWidth", "number", "the width of the texture"],
-						["textureHeight", "number", "the height of the texture"]
+						["parameters", "array", "parameters of the material"]
 					]
 				},
 				"Materials" : {

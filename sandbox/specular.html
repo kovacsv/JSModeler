@@ -75,8 +75,8 @@
 		{
 			//var body = JSM.GenerateCylinder (0.5, 1.0, 20, false, true);
 			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material (0x00cc00, 0x00cc00, 0x333333, 5.0));
-			//materials.AddMaterial (new JSM.Material (0x00cc00, 0x00cc00, 0x333333, 5.0, 1.0, 'texture.jpg', 1.0, 1.0));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, specular : 0x333333, shininess : 5.0}));
+			//materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, specular : 0x333333, shininess : 5.0, opacity : 1.0, texture : 'texture.jpg', textureWidth : 1.0, textureHeight : 1.0}));
 			var body = JSM.GenerateTorus (0.8, 0.3, 50, 50, true);
 			body.SetPolygonsMaterialIndex (0);
 

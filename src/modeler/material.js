@@ -1,26 +1,43 @@
 /**
 * Class: Material
-* Description: Defines a material.
+* Description:
+*	Defines a material. The parameter structure can contain the following values:
+*	ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight.
 * Parameters:
-*	ambient {number} the ambient component
-*	diffuse {number} the diffuse component
-*	specular {number} the specular component
-*	shininess {number} the shininess
-*	opacity {number} the opacity component
-*	texture {string} the name of the texture file
-*	textureWidth {number} the width of the texture
-*	textureHeight {number} the height of the texture
+*	parameters {array} parameters of the material
 */
-JSM.Material = function (ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight)
+JSM.Material = function (parameters)
 {
-	this.ambient = JSM.ValueOrDefault (ambient, 0x00cc00);
-	this.diffuse = JSM.ValueOrDefault (diffuse, 0x00cc00);
-	this.specular = JSM.ValueOrDefault (specular, 0x000000);
-	this.shininess = JSM.ValueOrDefault (shininess, 0.0);
-	this.opacity = JSM.ValueOrDefault (opacity, 1.0);
-	this.texture = JSM.ValueOrDefault (texture, null);
-	this.textureWidth = JSM.ValueOrDefault (textureWidth, 1.0);
-	this.textureHeight = JSM.ValueOrDefault (textureHeight, 1.0);
+	var theParameters = {
+		ambient : 0x00cc00,
+		diffuse : 0x00cc00,
+		specular : 0x000000,
+		shininess : 0.0,
+		opacity : 1.0,
+		texture : null,
+		textureWidth : 1.0,
+		textureHeight : 1.0
+	};
+	
+	if (parameters !== undefined && parameters != null) {
+		theParameters.ambient = JSM.ValueOrDefault (parameters.ambient, 0x00cc00);
+		theParameters.diffuse = JSM.ValueOrDefault (parameters.diffuse, 0x00cc00);
+		theParameters.specular = JSM.ValueOrDefault (parameters.specular, 0x000000);
+		theParameters.shininess = JSM.ValueOrDefault (parameters.shininess, 0.0);
+		theParameters.opacity = JSM.ValueOrDefault (parameters.opacity, 1.0);
+		theParameters.texture = JSM.ValueOrDefault (parameters.texture, null);
+		theParameters.textureWidth = JSM.ValueOrDefault (parameters.textureWidth, 1.0);
+		theParameters.textureHeight = JSM.ValueOrDefault (parameters.textureHeight, 1.0);
+	}
+	
+	this.ambient = theParameters.ambient;
+	this.diffuse = theParameters.diffuse;
+	this.specular = theParameters.specular;
+	this.shininess = theParameters.shininess;
+	this.opacity = theParameters.opacity;
+	this.texture = theParameters.texture;
+	this.textureWidth = theParameters.textureWidth;
+	this.textureHeight = theParameters.textureHeight;
 };
 
 /**

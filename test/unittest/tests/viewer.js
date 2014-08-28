@@ -32,8 +32,8 @@ AddTest ('ConverterTest', function (test)
 	test.Assert (mesh.geometry.faces.length == 4);
 	
 	var materials = new JSM.Materials ();
-	materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
-	materials.AddMaterial (new JSM.Material (0x00cc00, 0x00cc00));
+	materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+	materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
 	body.GetPolygon (0).SetMaterialIndex (0);
 
 	var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);

@@ -10,7 +10,7 @@ function TestStep (viewer, mode, step, info)
 	
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);		
@@ -20,7 +20,7 @@ function TestStep (viewer, mode, step, info)
 	
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png'));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.png'}));
 
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);		
@@ -30,7 +30,7 @@ function TestStep (viewer, mode, step, info)
 	
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png', 0.5, 0.3));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.png', textureWidth : 0.5, textureHeight : 0.3}));
 
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);		
@@ -40,8 +40,8 @@ function TestStep (viewer, mode, step, info)
 	
 	if (step == current++) {
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0x993333, 0x993333));
-		materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.GetPolygon (3).SetMaterialIndex (0);	
@@ -54,7 +54,7 @@ function TestStep (viewer, mode, step, info)
 		var model = new JSM.Model ();
 
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		var body2 = JSM.GenerateCuboid (1, 1, 1);
@@ -70,7 +70,7 @@ function TestStep (viewer, mode, step, info)
 		var model = new JSM.Model ();
 
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		var body2 = JSM.GenerateCuboid (1, 1, 1);
@@ -87,8 +87,8 @@ function TestStep (viewer, mode, step, info)
 		var model = new JSM.Model ();
 	
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png'));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 
@@ -535,8 +535,8 @@ function TestStep (viewer, mode, step, info)
 		var model = new JSM.Model ();
 
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0x993333, 0x993333));
-		materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		body1.GetPolygon (3).SetMaterialIndex (0);	
@@ -572,8 +572,8 @@ function TestStep (viewer, mode, step, info)
 		var model = new JSM.Model ();
 
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0x993333, 0x993333));
-		materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (0.5, 1.0, 1.5);
 		body1.GetPolygon (3).SetMaterialIndex (0);	
@@ -609,8 +609,8 @@ function TestStep (viewer, mode, step, info)
 		var model = new JSM.Model ();
 
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0x993333, 0x993333));
-		materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var basePolygon = [
 			new JSM.Coord (-0.5, -0.5, 0.0),
@@ -733,7 +733,7 @@ function TestStep (viewer, mode, step, info)
 		var model = new JSM.Model ();
 	
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png'));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		body1.SetPolygonsMaterialIndex (0);
@@ -752,7 +752,7 @@ function TestStep (viewer, mode, step, info)
 		var model = new JSM.Model ();
 	
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png'));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		body1.Transform (new JSM.RotationXTransformation (-30.0 * JSM.DegRad));
@@ -773,7 +773,7 @@ function TestStep (viewer, mode, step, info)
 		var model = new JSM.Model ();
 	
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png'));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		body1.SetTextureProjectionType ('Planar');
@@ -817,7 +817,7 @@ function TestStep (viewer, mode, step, info)
 		var model = new JSM.Model ();
 	
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png'));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		body1.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
@@ -843,7 +843,7 @@ function TestStep (viewer, mode, step, info)
 		var model = new JSM.Model ();
 	
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 0x000000, 0.0, 1.0, 'texture.png'));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.png'}));
 
 		var body1 = JSM.GenerateCylinder (0.5, 1.0, 30, true, true);
 		body1.SetCylindricalTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), 0.5, new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));

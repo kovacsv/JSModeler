@@ -362,7 +362,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			}
 		}
 		
-		var material = new JSM.Material (polygon.color, polygon.color);
+		var material = new JSM.Material ({ambient : polygon.color, diffuse : polygon.color});
 		return [prisms, material];
 	}
 	
