@@ -8,6 +8,7 @@
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="include/demonstration.css">
 
+	<script type="text/javascript" src="../../build/three.min.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
 	<script type="text/javascript" src="include/basedialog.js"></script>
 	<script type="text/javascript" src="include/settingscontrols.js"></script>
@@ -96,15 +97,23 @@
 			var color = ConvertColor (currentColor);
 			materials.AddMaterial (new JSM.Material (color, color));
 
-			var geometries = JSM.ConvertBodyToRenderGeometries (body, materials);
-			viewer.RemoveGeometries ();
-			viewer.AddGeometries (geometries);
+			var isExplorer = (navigator.userAgent.indexOf ('MSIE') !== -1 || navigator.appVersion.indexOf ('Trident') != -1);
+			var doubleSided = !isExplorer;
+			var conversionData = {
+				textureLoadedCallback : null,
+				hasConvexPolygons : false,
+				doubleSided : doubleSided
+			};
+
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
+			viewer.RemoveMeshes ();
+			viewer.AddMeshes (meshes);
 			viewer.Draw ();		
 		}
 		
 		function Generate ()
 		{
-			viewer.RemoveGeometries ();
+			viewer.RemoveMeshes ();
 			var shape = shapes[currentShape];
 			if (shape === undefined) {
 				return;
@@ -226,7 +235,7 @@
 				floatingDialog.Open ();
 				content = AddContent (floatingDialog, 'svg');
 				var drawer = new JSM.SVGDrawer (content);
-				JSM.DrawProjectedBody (body, materials, viewer.renderer.camera, 'Wireframe', true, drawer);
+				JSM.DrawProjectedBody (body, materials, viewer.cameraMove, 'Wireframe', true, drawer);
 			}
 		}
 
@@ -280,14 +289,14 @@
 			window.onresize = Resize;
 			Resize ();
 
-			var camera = new JSM.Camera (
-				new JSM.Coord (-4.0, -3.0, 2.0),
-				new JSM.Coord (0.0, 0.0, 0.0),
-				new JSM.Coord (0.0, 0.0, 1.0)
-			);
+			var viewerSettings = {
+				cameraEyePosition : [-4.0, -3.0, 2.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
 
-			viewer = new JSM.Viewer ();
-			if (!viewer.Init ('demo', camera)) {
+			viewer = new JSM.ThreeViewer ();
+			if (!viewer.Start ('demo', viewerSettings)) {
 				while (document.body.lastChild) {
 					document.body.removeChild (document.body.lastChild);
 				}

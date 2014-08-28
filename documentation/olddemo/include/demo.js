@@ -10,17 +10,17 @@ JSMDemo.prototype =
 {
 	Initialize : function (canvasName, uiDivName)
 	{
-		var camera = new JSM.Camera (
-			new JSM.Coord (-3.0, -2.5, 2.0),
-			new JSM.Coord (0.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0)
-		);
+		var viewerSettings = {
+			cameraEyePosition : [-3.0, -2.5, 2.0],
+			cameraCenterPosition : [0.0, 0.0, 0.0],
+			cameraUpVector : [0.0, 0.0, 1.0]
+		};
 
-		this.viewer = new JSM.Viewer ();
+		this.viewer = new JSM.ThreeViewer ();
 		this.uiDiv = document.getElementById (uiDivName);
 		this.editor = new Editor ();
 
-		if (!this.viewer.Init (canvasName, camera)) {
+		if (!this.viewer.Start (canvasName, viewerSettings)) {
 			return false;
 		}
 
@@ -1038,11 +1038,12 @@ JSMDemo.prototype =
 	
 	AddBodyToViewer : function (body)
 	{
-		var geometries = JSM.ConvertBodyToRenderGeometries (body);
+		var meshes = JSM.ConvertBodyToThreeMeshes (body);
 		
-		this.viewer.RemoveGeometries ();
-		this.viewer.AddGeometries (geometries);
-		this.viewer.Draw ();
+		this.viewer.RemoveMeshes ();
+		for (var i = 0; i < meshes.length; i++) {
+			this.viewer.AddMesh (meshes[i]);
+		}
 	},
 	
 	Draw : function ()

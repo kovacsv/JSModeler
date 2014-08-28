@@ -7,6 +7,7 @@
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="include/demo.css">
+	<script type="text/javascript" src="../../build/three.min.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
 	<script type="text/javascript" src="include/editor.js"></script>
 	<script type="text/javascript" src="include/demo.js"></script>
@@ -138,7 +139,7 @@
 			var floating = document.getElementById ('floating');
 			var svgcontent = document.getElementById ('svgcontent');
 			var drawer = new JSM.SVGDrawer (svgcontent);
-			JSM.DrawProjectedBody (demo.body, null, demo.viewer.renderer.camera, 'Wireframe', true, drawer);
+			JSM.DrawProjectedBody (demo.body, null, demo.viewer.cameraMove, 'Wireframe', true, drawer);
 			svgcontent.style.display = 'block';
 			floating.style.display = 'block';
 		}
