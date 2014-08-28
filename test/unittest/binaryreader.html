@@ -139,59 +139,6 @@
 				AddLogLine (br.ReadDouble64 () + ' (double)');
 				AddLogLine (br.ReadDouble64 () + ' (double)');
 			});
-			return;
-			/*
-			var br = new JSM.BinaryReader ();
-			if (!br.Init (file)) {
-				return;
-			}
-			AddLogLine ('file opened');
-			br.ReadBoolean (function (result) { AddLogLine (result + ' (boolean)'); });
-			br.ReadBoolean (function (result) { AddLogLine (result + ' (boolean)'); });
-
-			br.ReadCharacter (function (result) { AddLogLine (result + ' (character)'); });
-			br.ReadCharacter (function (result) { AddLogLine (result + ' (character)'); });
-			br.ReadCharacter (function (result) { AddLogLine (result + ' (character)'); });
-			br.ReadCharacter (function (result) { AddLogLine (result + ' (character)'); });
-
-			br.ReadInteger16 (function (result) { AddLogLine (result + ' (short)'); });
-			br.ReadInteger16 (function (result) { AddLogLine (result + ' (short)'); });
-			br.ReadInteger16 (function (result) { AddLogLine (result + ' (short)'); });
-			br.ReadInteger16 (function (result) { AddLogLine (result + ' (short)'); });
-
-			br.ReadUnsignedInteger16 (function (result) { AddLogLine (result + ' (unsigned short)'); });
-			br.ReadUnsignedInteger16 (function (result) { AddLogLine (result + ' (unsigned short)'); });
-			br.ReadUnsignedInteger16 (function (result) { AddLogLine (result + ' (unsigned short)'); });
-			br.ReadUnsignedInteger16 (function (result) { AddLogLine (result + ' (unsigned short)'); });
-
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (int)'); });
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (int)'); });
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (int)'); });
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (int)'); });
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (int)'); });
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (int)'); });
-
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned int)'); });
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned int)'); });
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned int)'); });
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned int)'); });
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned int)'); });
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned int)'); });
-
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (long)'); });
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (long)'); });
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (long)'); });
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (long)'); });
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (long)'); });
-			br.ReadInteger32 (function (result) { AddLogLine (result + ' (long)'); });
-
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned long)'); });
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned long)'); });
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned long)'); });
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned long)'); });
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned long)'); });
-			br.ReadUnsignedInteger32 (function (result) { AddLogLine (result + ' (unsigned long)'); });
-			*/
 		}
 	
 		window.onload = function ()
