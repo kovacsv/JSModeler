@@ -20,14 +20,14 @@ JSM.Material = function (parameters)
 	};
 	
 	if (parameters !== undefined && parameters != null) {
-		theParameters.ambient = JSM.ValueOrDefault (parameters.ambient, 0x00cc00);
-		theParameters.diffuse = JSM.ValueOrDefault (parameters.diffuse, 0x00cc00);
-		theParameters.specular = JSM.ValueOrDefault (parameters.specular, 0x000000);
-		theParameters.shininess = JSM.ValueOrDefault (parameters.shininess, 0.0);
-		theParameters.opacity = JSM.ValueOrDefault (parameters.opacity, 1.0);
-		theParameters.texture = JSM.ValueOrDefault (parameters.texture, null);
-		theParameters.textureWidth = JSM.ValueOrDefault (parameters.textureWidth, 1.0);
-		theParameters.textureHeight = JSM.ValueOrDefault (parameters.textureHeight, 1.0);
+		theParameters.ambient = JSM.ValueOrDefault (parameters.ambient, theParameters.ambient);
+		theParameters.diffuse = JSM.ValueOrDefault (parameters.diffuse, theParameters.diffuse);
+		theParameters.specular = JSM.ValueOrDefault (parameters.specular, theParameters.specular);
+		theParameters.shininess = JSM.ValueOrDefault (parameters.shininess, theParameters.shininess);
+		theParameters.opacity = JSM.ValueOrDefault (parameters.opacity, theParameters.opacity);
+		theParameters.texture = JSM.ValueOrDefault (parameters.texture, theParameters.texture);
+		theParameters.textureWidth = JSM.ValueOrDefault (parameters.textureWidth, theParameters.textureWidth);
+		theParameters.textureHeight = JSM.ValueOrDefault (parameters.textureHeight, theParameters.textureHeight);
 	}
 	
 	this.ambient = theParameters.ambient;

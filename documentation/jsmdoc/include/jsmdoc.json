@@ -2987,12 +2987,9 @@
 					}
 				},
 				"Light" : {
-					"description" : "Defines a directional light.",
+					"description" : "Defines a directional light. The parameter structure can contain the following values: ambient, diffuse, specular, direction.",
 					"parameters" : [
-						["ambient", "number", "the ambient component"],
-						["diffuse", "number", "the diffuse component"],
-						["specular", "number", "the specular component"],
-						["direction", "Vector", "the direction of the light"]
+						["parameters", "array", "parameters of the light"]
 					]
 				},
 				"Material" : {
