@@ -58,32 +58,53 @@ int main ()
 	
 	bw.Write ((short) 42);
 	bw.Write ((short) -42);
+	bw.Write ((short) 32000);
+	bw.Write ((short) -32000);
 	bw.Write ((unsigned short) 42);
 	bw.Write ((unsigned short) -42);
+	bw.Write ((unsigned short) 32000);
+	bw.Write ((unsigned short) -32000);
 	
 	bw.Write ((int) 42);
 	bw.Write ((int) -42);
+	bw.Write ((int) 32000);
+	bw.Write ((int) -32000);
+	bw.Write ((int) 2000000000);
+	bw.Write ((int) -2000000000);
 	bw.Write ((unsigned int) 42);
 	bw.Write ((unsigned int) -42);
+	bw.Write ((unsigned int) 32000);
+	bw.Write ((unsigned int) -32000);
+	bw.Write ((unsigned int) 2000000000);
+	bw.Write ((unsigned int) -2000000000);
 
 	bw.Write ((long) 42);
 	bw.Write ((long) -42);
+	bw.Write ((long) 32000);
+	bw.Write ((long) -32000);
+	bw.Write ((long) 2000000000);
+	bw.Write ((long) -2000000000);
 	bw.Write ((unsigned long) 42);
 	bw.Write ((unsigned long) -42);
-
-	bw.Write ((long long) 42);
-	bw.Write ((long long) -42);
-	bw.Write ((unsigned long long) 42);
-	bw.Write ((unsigned long long) -42);
+	bw.Write ((unsigned long) 32000);
+	bw.Write ((unsigned long) -32000);
+	bw.Write ((unsigned long) 2000000000);
+	bw.Write ((unsigned long) -2000000000);
 
 	bw.Write ((float) 42);
 	bw.Write ((float) -42);
+	bw.Write ((float) 12345.6789);
+	bw.Write ((float) -12345.6789);
 
 	bw.Write ((double) 42);
 	bw.Write ((double) -42);
+	bw.Write ((double) 12345.6789);
+	bw.Write ((double) -12345.6789);
 
 	bw.Write ((long double) 42);
 	bw.Write ((long double) -42);
+	bw.Write ((long double) 12345.6789);
+	bw.Write ((long double) -12345.6789);
 
 	return 0;
 }
