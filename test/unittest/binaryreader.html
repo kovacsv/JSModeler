@@ -67,6 +67,7 @@
 	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
 	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
 	<script type="text/javascript" src="../../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../../src/import/import.js"></script>
 <!-- JSModeler includes end -->
 	
 	<title>JSModeler Test</title>
@@ -93,7 +94,7 @@
 			}
 		}
 	
-		function RunURLTest (url)
+		function RunURLTestExample (url)
 		{
 			AddLogLine ('url test (' + url + '):');
 			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
@@ -101,10 +102,10 @@
 				Assert (br.ReadBoolean () == true);
 				Assert (br.ReadBoolean () == false);
 				
-				Assert (br.ReadCharacter () == 'a');
-				Assert (br.ReadCharacter () == 'A');
-				Assert (br.ReadUnsignedCharacter () == 'a');
-				Assert (br.ReadUnsignedCharacter () == 'A');
+				Assert (String.fromCharCode (br.ReadCharacter ()) == 'a');
+				Assert (String.fromCharCode (br.ReadCharacter ()) == 'A');
+				Assert (String.fromCharCode (br.ReadUnsignedCharacter ()) == 'a');
+				Assert (String.fromCharCode (br.ReadUnsignedCharacter ()) == 'A');
 
 				Assert (br.ReadInteger16 () == 42);
 				Assert (br.ReadInteger16 () == -42);
@@ -158,7 +159,22 @@
 			});
 		}
 	
-		function RunFileTest (file)
+		function RunURLTest3ds (url)
+		{
+			AddLogLine ('url test (' + url + '):');
+			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
+				JSM.Read3dsFile (arrayBuffer, callbacks = {		
+					onLog: function (logText) {
+						AddLogLine (logText);
+					},
+					onError: function () {
+						alert ('something is wrong');
+					}
+				});
+			});
+		}
+
+		function RunFileTestExample (file)
 		{
 			AddLogLine ('file test (' + file.name + '):');
 			JSM.GetArrayBufferFromFile (file, function (arrayBuffer) {
@@ -226,13 +242,16 @@
 		function FileSelected (event)
 		{
 			var file = event.target.files[0];
-			RunFileTest (file);
+			if (file.name == 'result.bin') {
+				RunFileTestExample (file);
+			}
 		}
 		
 		window.onload = function ()
 		{
-			document.getElementById ('file').addEventListener ('change', FileSelected, false);
-			RunURLTest ('binarywriter/result.bin');
+			//document.getElementById ('file').addEventListener ('change', FileSelected, false);
+			//RunURLTestExample ('testfiles/result.bin');
+			RunURLTest3ds ('testfiles/cube.3ds');
 		}
 	</script>
 	

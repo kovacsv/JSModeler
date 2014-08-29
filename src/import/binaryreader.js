@@ -29,9 +29,30 @@ JSM.GetArrayBufferFromFile = function (file, onReady)
 
 JSM.BinaryReader = function (arrayBuffer, isLittleEndian)
 {
+	this.arrayBuffer = arrayBuffer;
 	this.dataView = new DataView (arrayBuffer);
 	this.isLittleEndian = isLittleEndian;
 	this.position = 0;
+};
+
+JSM.BinaryReader.prototype.GetPosition = function ()
+{
+	return this.position;
+};
+
+JSM.BinaryReader.prototype.GetByteLength = function ()
+{
+	return this.arrayBuffer.byteLength;
+};
+
+JSM.BinaryReader.prototype.Skip = function (bytes)
+{
+	this.position = this.position + bytes;
+};
+
+JSM.BinaryReader.prototype.End = function ()
+{
+	return this.position >= this.arrayBuffer.byteLength;
 };
 
 JSM.BinaryReader.prototype.ReadBoolean = function (onReady)
@@ -45,14 +66,14 @@ JSM.BinaryReader.prototype.ReadCharacter = function (onReady)
 {
 	var result = this.dataView.getInt8 (this.position, this.isLittleEndian);
 	this.position = this.position + 1;
-	return String.fromCharCode (result);
+	return result;
 };
 
 JSM.BinaryReader.prototype.ReadUnsignedCharacter = function (onReady)
 {
 	var result = this.dataView.getUint8 (this.position, this.isLittleEndian);
 	this.position = this.position + 1;
-	return String.fromCharCode (result);
+	return result;
 };
 
 JSM.BinaryReader.prototype.ReadInteger16 = function (onReady)
