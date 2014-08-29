@@ -164,12 +164,22 @@
 			AddLogLine ('url test (' + url + '):');
 			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
 				JSM.Read3dsFile (arrayBuffer, callbacks = {		
-					onLog: function (logText) {
-						AddLogLine (logText);
+					onLog: function (logText, logLevel) {
+						var logDiv = document.getElementById ('log');
+						logDiv.innerHTML += '<div style="margin-left:' + (logLevel * 20) + 'px;">' + logText + '</div>';
 					},
 					onError: function () {
 						alert ('something is wrong');
-					}
+					},
+					onMesh : function () {
+						
+					},
+					onVertex : function (x, y, z) {
+						
+					},
+					onFace : function (v0, v1, v2) {
+						
+					}					
 				});
 			});
 		}

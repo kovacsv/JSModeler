@@ -1,16 +1,37 @@
 JSM.Read3dsFile = function (arrayBuffer, callbacks)
 {
-	function Log (logText)
+	function OnLog (logText, logLevel)
 	{
 		if (callbacks.onLog !== undefined && callbacks.onLog !== null) {
-			callbacks.onLog (logText);
+			callbacks.onLog (logText, logLevel);
 		}
 	}
 
-	function Error ()
+	function OnError ()
 	{
 		if (callbacks.onError !== undefined && callbacks.onError !== null) {
 			callbacks.onError ();
+		}
+	}
+
+	function OnMesh ()
+	{
+		if (callbacks.onMesh !== undefined && callbacks.onMesh !== null) {
+			callbacks.onMesh ();
+		}
+	}
+
+	function OnVertex (x, y, z)
+	{
+		if (callbacks.onVertex !== undefined && callbacks.onVertex !== null) {
+			callbacks.onVertex (x, y, z);
+		}
+	}
+
+	function OnFace (v0, v1, v2)
+	{
+		if (callbacks.onFace !== undefined && callbacks.onFace !== null) {
+			callbacks.onFace (v0, v1, v2);
 		}
 	}
 
@@ -54,33 +75,57 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		
 		function ReadMaterialChunk (reader, id, length)
 		{
-			Log ('---Read material chunk (' + id.toString (16) + ', ' + length + ')');
+			OnLog ('Read material chunk (' + id.toString (16) + ', ' + length + ')', 2);
 			SkipChunk (reader, length);
 		}
 
 		function ReadVerticesChunk (reader, id, length)
 		{
-			Log ('-----Read vertices chunk (' + id.toString (16) + ', ' + length + ')');
-			//SkipChunk (reader, length);
+			OnLog ('Read vertices chunk (' + id.toString (16) + ', ' + length + ')', 4);
 			var vertexCount = reader.ReadUnsignedInteger16 ();
 			var i, x, y, z;
 			for (i = 0; i < vertexCount; i++) {
 				x = reader.ReadFloat32 ();
 				y = reader.ReadFloat32 ();
 				z = reader.ReadFloat32 ();
-				Log ('------Vertex found (' + [x, y, z] + ')');
+				OnVertex (x, y, z);
 			}
 		}	
 		
+		function ReadFacesChunk (reader, id, length)
+		{
+			OnLog ('Read faces chunk (' + id.toString (16) + ', ' + length + ')', 4);
+			
+			var endByte = reader.GetPosition () + length - 6;
+			var faceCount = reader.ReadUnsignedInteger16 ();
+			var i, v0, v1, v2, dummy;
+			for (i = 0; i < faceCount; i++) {
+				v0 = reader.ReadUnsignedInteger16 ();
+				v1 = reader.ReadUnsignedInteger16 ();
+				v2 = reader.ReadUnsignedInteger16 ();
+				dummy = reader.ReadUnsignedInteger16 ();
+				OnFace (v0, v1, v2);
+			}
+
+			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+				OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 5);
+				SkipChunk (reader, chunkLength);
+			});
+		}
+
 		function ReadMeshChunk (reader, name, id, length)
 		{
-			Log ('----Read mesh chunk (' + name + ', ' +  id.toString (16) + ', ' + length + ')');
+			OnLog ('Read mesh chunk (' + name + ', ' +  id.toString (16) + ', ' + length + ')', 3);
+			
+			OnMesh ();
 			var endByte = reader.GetPosition () + length - 6;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == 0x4110) {
 					ReadVerticesChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == 0x4120) {
+					ReadFacesChunk (reader, chunkId, chunkLength);
 				} else {
-					Log ('-----Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')');
+					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 4);
 					SkipChunk (reader, chunkLength);
 				}
 			});
@@ -88,21 +133,24 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 
 		function ReadLightChunk (reader, name, id, length)
 		{
-			Log ('----Read light chunk (' + name + ', ' + id.toString (16) + ', ' + length + ')');
+			OnLog ('Read light chunk (' + name + ', ' + id.toString (16) + ', ' + length + ')', 3);
+			
 			SkipChunk (reader, length);
 		}
 
 		function ReadCameraChunk (reader, name, id, length)
 		{
-			Log ('----Read camera chunk (' + name + ', ' +  id.toString (16) + ', ' + length + ')');
+			OnLog ('Read camera chunk (' + name + ', ' +  id.toString (16) + ', ' + length + ')', 3);
+			
 			SkipChunk (reader, length);
 		}
 
 		function ReadObjectChunk (reader, id, length)
 		{
-			Log ('---Read object chunk (' + id.toString (16) + ', ' + length + ')');
+			OnLog ('Read object chunk (' + id.toString (16) + ', ' + length + ')', 2);
+			
+			var endByte = reader.GetPosition () + length - 6;
 			var name = ReadName (reader);
-			var endByte = reader.GetPosition () + length - 6 - name.length - 1;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == 0x4100) {
 					ReadMeshChunk (reader, name, chunkId, chunkLength);
@@ -111,7 +159,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				} else if (chunkId == 0x4700) {
 					ReadCameraChunk (reader, name, chunkId, chunkLength);
 				} else {
-					Log ('----Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')');
+					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 3);
 					SkipChunk (reader, chunkLength);
 				}
 			});
@@ -119,7 +167,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 
 		function ReadEditorChunk (reader, id, length)
 		{
-			Log ('--Read editor chunk (' + id.toString (16) + ', ' + length + ')');
+			OnLog ('Read editor chunk (' + id.toString (16) + ', ' + length + ')', 1);
 			
 			var endByte = reader.GetPosition () + length - 6;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
@@ -128,7 +176,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				} else if (chunkId == 0x4000) {
 					ReadObjectChunk (reader, chunkId, chunkLength);
 				} else {
-					Log ('---Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')');
+					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 2);
 					SkipChunk (reader, chunkLength);
 				}
 			});
@@ -136,14 +184,14 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		
 		function ReadMainChunk (reader, id, length)
 		{
-			Log ('-Read main chunk (' + id.toString (16) + ', ' + length + ')');
+			OnLog ('Read main chunk (' + id.toString (16) + ', ' + length + ')', 0);
 			
 			var endByte = reader.GetPosition () + length - 6;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == 0x3D3D) {
 					ReadEditorChunk (reader, chunkId, chunkLength);
 				} else {
-					Log ('--Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')');
+					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 1);
 					SkipChunk (reader, chunkLength);
 				}
 			});
@@ -154,7 +202,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			if (chunkId == 0x4D4D) {
 				ReadMainChunk (reader, chunkId, chunkLength);
 			} else {
-				Log ('Skip chunk (' + chunkId.toString (16) + ', ' + length + ')');
+				OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + length + ')', 0);
 				SkipChunk (reader, chunkLength);
 			}			
 		});
