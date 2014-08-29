@@ -72,78 +72,167 @@
 	<title>JSModeler Test</title>
 
 	<script type="text/javascript">
-		function RunTest (file)
+		function AddLogContent (content)
 		{
-			function AddLogLine (line)
-			{
-				var logDiv = document.getElementById ('log');
-				log.innerHTML += line + '<br>';
+			var logDiv = document.getElementById ('log');
+			log.innerHTML += content;
+		}		
+	
+		function AddLogLine (line)
+		{
+			var logDiv = document.getElementById ('log');
+			log.innerHTML += line + '<br>';
+		}
+		
+		function Assert (condition)
+		{
+			if (condition) {
+				AddLogContent ('<span style="color: #00aa00;">success</a> ');
+			} else {
+				AddLogContent ('<span style="color: #aa0000;">failed</a> ');
 			}
-			
-			JSM.LoadFileToArrayBuffer ('binarywriter/result.bin', function (arrayBuffer) {
+		}
+	
+		function RunURLTest (url)
+		{
+			AddLogLine ('url test (' + url + '):');
+			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
 				var br = new JSM.BinaryReader (arrayBuffer, true);
+				Assert (br.ReadBoolean () == true);
+				Assert (br.ReadBoolean () == false);
 				
-				AddLogLine (br.ReadBoolean () + ' (boolean)');
-				AddLogLine (br.ReadBoolean () + ' (boolean)');
+				Assert (br.ReadCharacter () == 'a');
+				Assert (br.ReadCharacter () == 'A');
+				Assert (br.ReadUnsignedCharacter () == 'a');
+				Assert (br.ReadUnsignedCharacter () == 'A');
+
+				Assert (br.ReadInteger16 () == 42);
+				Assert (br.ReadInteger16 () == -42);
+				Assert (br.ReadInteger16 () == 32000);
+				Assert (br.ReadInteger16 () == -32000);
+
+				Assert (br.ReadUnsignedInteger16 () == 42);
+				Assert (br.ReadUnsignedInteger16 () == 65494);
+				Assert (br.ReadUnsignedInteger16 () == 32000);
+				Assert (br.ReadUnsignedInteger16 () == 33536);
+
+				Assert (br.ReadInteger32 () == 42);
+				Assert (br.ReadInteger32 () == -42);
+				Assert (br.ReadInteger32 () == 32000);
+				Assert (br.ReadInteger32 () == -32000);
+				Assert (br.ReadInteger32 () == 2000000000);
+				Assert (br.ReadInteger32 () == -2000000000);
+
+				Assert (br.ReadUnsignedInteger32 () == 42);
+				Assert (br.ReadUnsignedInteger32 () == 4294967254);
+				Assert (br.ReadUnsignedInteger32 () == 32000);
+				Assert (br.ReadUnsignedInteger32 () == 4294935296);
+				Assert (br.ReadUnsignedInteger32 () == 2000000000);
+				Assert (br.ReadUnsignedInteger32 () == 2294967296);
+
+				Assert (br.ReadInteger32 () == 42);
+				Assert (br.ReadInteger32 () == -42);
+				Assert (br.ReadInteger32 () == 32000);
+				Assert (br.ReadInteger32 () == -32000);
+				Assert (br.ReadInteger32 () == 2000000000);
+				Assert (br.ReadInteger32 () == -2000000000);
+
+				Assert (br.ReadUnsignedInteger32 () == 42);
+				Assert (br.ReadUnsignedInteger32 () == 4294967254);
+				Assert (br.ReadUnsignedInteger32 () == 32000);
+				Assert (br.ReadUnsignedInteger32 () == 4294935296);
+				Assert (br.ReadUnsignedInteger32 () == 2000000000);
+				Assert (br.ReadUnsignedInteger32 () == 2294967296);
+
+				Assert (JSM.IsEqual (br.ReadFloat32 (), 42.0));
+				Assert (JSM.IsEqual (br.ReadFloat32 (), -42.0));
+				Assert (JSM.IsEqual (br.ReadFloat32 (), 12345.6787109375));
+				Assert (JSM.IsEqual (br.ReadFloat32 (), -12345.6787109375));
+
+				Assert (JSM.IsEqual (br.ReadDouble64 (), 42.0));
+				Assert (JSM.IsEqual (br.ReadDouble64 (), -42.0));
+				Assert (JSM.IsEqual (br.ReadDouble64 (), 12345.6789));
+				Assert (JSM.IsEqual (br.ReadDouble64 (), -12345.6789));
 				
-				AddLogLine (br.ReadCharacter () + ' (character)');
-				AddLogLine (br.ReadCharacter () + ' (character)');
-				AddLogLine (br.ReadUnsignedCharacter () + ' (unsigned character)');
-				AddLogLine (br.ReadUnsignedCharacter () + ' (unsigned character)');
-
-				AddLogLine (br.ReadInteger16 () + ' (short)');
-				AddLogLine (br.ReadInteger16 () + ' (short)');
-				AddLogLine (br.ReadInteger16 () + ' (short)');
-				AddLogLine (br.ReadInteger16 () + ' (short)');
-
-				AddLogLine (br.ReadUnsignedInteger16 () + ' (unsigned short)');
-				AddLogLine (br.ReadUnsignedInteger16 () + ' (unsigned short)');
-				AddLogLine (br.ReadUnsignedInteger16 () + ' (unsigned short)');
-				AddLogLine (br.ReadUnsignedInteger16 () + ' (unsigned short)');
-
-				AddLogLine (br.ReadInteger32 () + ' (int)');
-				AddLogLine (br.ReadInteger32 () + ' (int)');
-				AddLogLine (br.ReadInteger32 () + ' (int)');
-				AddLogLine (br.ReadInteger32 () + ' (int)');
-				AddLogLine (br.ReadInteger32 () + ' (int)');
-				AddLogLine (br.ReadInteger32 () + ' (int)');
-
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned int)');
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned int)');
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned int)');
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned int)');
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned int)');
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned int)');
-
-				AddLogLine (br.ReadInteger32 () + ' (long)');
-				AddLogLine (br.ReadInteger32 () + ' (long)');
-				AddLogLine (br.ReadInteger32 () + ' (long)');
-				AddLogLine (br.ReadInteger32 () + ' (long)');
-				AddLogLine (br.ReadInteger32 () + ' (long)');
-				AddLogLine (br.ReadInteger32 () + ' (long)');
-
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned long)');
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned long)');
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned long)');
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned long)');
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned long)');
-				AddLogLine (br.ReadUnsignedInteger32 () + ' (unsigned long)');
-
-				AddLogLine (br.ReadFloat32 () + ' (float)');
-				AddLogLine (br.ReadFloat32 () + ' (float)');
-				AddLogLine (br.ReadFloat32 () + ' (float)');
-				AddLogLine (br.ReadFloat32 () + ' (float)');
-
-				AddLogLine (br.ReadDouble64 () + ' (double)');
-				AddLogLine (br.ReadDouble64 () + ' (double)');
-				AddLogLine (br.ReadDouble64 () + ' (double)');
-				AddLogLine (br.ReadDouble64 () + ' (double)');
+				AddLogLine ('');
 			});
 		}
 	
+		function RunFileTest (file)
+		{
+			AddLogLine ('file test (' + file.name + '):');
+			JSM.GetArrayBufferFromFile (file, function (arrayBuffer) {
+				var br = new JSM.BinaryReader (arrayBuffer, true);
+				Assert (br.ReadBoolean () == true);
+				Assert (br.ReadBoolean () == false);
+				
+				Assert (br.ReadCharacter () == 'a');
+				Assert (br.ReadCharacter () == 'A');
+				Assert (br.ReadUnsignedCharacter () == 'a');
+				Assert (br.ReadUnsignedCharacter () == 'A');
+
+				Assert (br.ReadInteger16 () == 42);
+				Assert (br.ReadInteger16 () == -42);
+				Assert (br.ReadInteger16 () == 32000);
+				Assert (br.ReadInteger16 () == -32000);
+
+				Assert (br.ReadUnsignedInteger16 () == 42);
+				Assert (br.ReadUnsignedInteger16 () == 65494);
+				Assert (br.ReadUnsignedInteger16 () == 32000);
+				Assert (br.ReadUnsignedInteger16 () == 33536);
+
+				Assert (br.ReadInteger32 () == 42);
+				Assert (br.ReadInteger32 () == -42);
+				Assert (br.ReadInteger32 () == 32000);
+				Assert (br.ReadInteger32 () == -32000);
+				Assert (br.ReadInteger32 () == 2000000000);
+				Assert (br.ReadInteger32 () == -2000000000);
+
+				Assert (br.ReadUnsignedInteger32 () == 42);
+				Assert (br.ReadUnsignedInteger32 () == 4294967254);
+				Assert (br.ReadUnsignedInteger32 () == 32000);
+				Assert (br.ReadUnsignedInteger32 () == 4294935296);
+				Assert (br.ReadUnsignedInteger32 () == 2000000000);
+				Assert (br.ReadUnsignedInteger32 () == 2294967296);
+
+				Assert (br.ReadInteger32 () == 42);
+				Assert (br.ReadInteger32 () == -42);
+				Assert (br.ReadInteger32 () == 32000);
+				Assert (br.ReadInteger32 () == -32000);
+				Assert (br.ReadInteger32 () == 2000000000);
+				Assert (br.ReadInteger32 () == -2000000000);
+
+				Assert (br.ReadUnsignedInteger32 () == 42);
+				Assert (br.ReadUnsignedInteger32 () == 4294967254);
+				Assert (br.ReadUnsignedInteger32 () == 32000);
+				Assert (br.ReadUnsignedInteger32 () == 4294935296);
+				Assert (br.ReadUnsignedInteger32 () == 2000000000);
+				Assert (br.ReadUnsignedInteger32 () == 2294967296);
+
+				Assert (JSM.IsEqual (br.ReadFloat32 (), 42.0));
+				Assert (JSM.IsEqual (br.ReadFloat32 (), -42.0));
+				Assert (JSM.IsEqual (br.ReadFloat32 (), 12345.6787109375));
+				Assert (JSM.IsEqual (br.ReadFloat32 (), -12345.6787109375));
+
+				Assert (JSM.IsEqual (br.ReadDouble64 (), 42.0));
+				Assert (JSM.IsEqual (br.ReadDouble64 (), -42.0));
+				Assert (JSM.IsEqual (br.ReadDouble64 (), 12345.6789));
+				Assert (JSM.IsEqual (br.ReadDouble64 (), -12345.6789));
+				
+				AddLogLine ('');
+			});
+		}
+
+		function FileSelected (event)
+		{
+			var file = event.target.files[0];
+			RunFileTest (file);
+		}
+		
 		window.onload = function ()
 		{
-			RunTest ();
+			document.getElementById ('file').addEventListener ('change', FileSelected, false);
+			RunURLTest ('binarywriter/result.bin');
 		}
 	</script>
 	
@@ -151,6 +240,7 @@
 
 <body>
 
+	<input type="file" id="file" name="file"/>
 	<div id="log"></div>
 
 </body>

@@ -1,7 +1,7 @@
-JSM.LoadFileToArrayBuffer = function (fileName, onReady)
+JSM.GetArrayBufferFromURL = function (url, onReady)
 {
 	var request = new XMLHttpRequest ();
-	request.open ('GET', fileName, true);
+	request.open ('GET', url, true);
 	request.responseType = 'arraybuffer';
 
 	request.onload = function (event) {
@@ -12,6 +12,19 @@ JSM.LoadFileToArrayBuffer = function (fileName, onReady)
 	};
 
 	request.send (null);
+};
+
+JSM.GetArrayBufferFromFile = function (file, onReady)
+{
+	var reader = new FileReader ();
+
+	reader.onloadend = (function (event) {
+		if (event.target.readyState == FileReader.DONE) {
+			onReady (event.target.result);
+		}
+	});
+
+	reader.readAsArrayBuffer (file);
 };
 
 JSM.BinaryReader = function (arrayBuffer, isLittleEndian)
