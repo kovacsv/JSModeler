@@ -91,6 +91,23 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				OnVertex (x, y, z);
 			}
 		}	
+
+		function ReadFaceMaterialsChunk (reader, id, length)
+		{
+			OnLog ('Read face materials chunk (' + id.toString (16) + ', ' + length + ')', 5);
+			
+			var endByte = reader.GetPosition () + length - 6;
+			var name = ReadName (reader);
+
+			// todo: identify material by name
+			var faces = [];
+			var faceCount = reader.ReadUnsignedInteger16 ();
+			var i, faceIndex;
+			for (i = 0; i < faceCount; i++) {
+				faceIndex = reader.ReadUnsignedInteger16 ();
+				faces.push (faceIndex);
+			}
+		}
 		
 		function ReadFacesChunk (reader, id, length)
 		{
@@ -98,18 +115,22 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			
 			var endByte = reader.GetPosition () + length - 6;
 			var faceCount = reader.ReadUnsignedInteger16 ();
-			var i, v0, v1, v2, dummy;
+			var i, v0, v1, v2, flags;
 			for (i = 0; i < faceCount; i++) {
 				v0 = reader.ReadUnsignedInteger16 ();
 				v1 = reader.ReadUnsignedInteger16 ();
 				v2 = reader.ReadUnsignedInteger16 ();
-				dummy = reader.ReadUnsignedInteger16 ();
+				flags = reader.ReadUnsignedInteger16 ();
 				OnFace (v0, v1, v2);
 			}
 
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
-				OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 5);
-				SkipChunk (reader, chunkLength);
+				if (chunkId == 0x4130) {
+					ReadFaceMaterialsChunk (reader, chunkId, chunkLength);
+				} else {
+					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 5);
+					SkipChunk (reader, chunkLength);
+				}
 			});
 		}
 
@@ -133,14 +154,14 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 
 		function ReadLightChunk (reader, name, id, length)
 		{
-			OnLog ('Read light chunk (' + name + ', ' + id.toString (16) + ', ' + length + ')', 3);
+			OnLog ('Skip light chunk (' + name + ', ' + id.toString (16) + ', ' + length + ')', 3);
 			
 			SkipChunk (reader, length);
 		}
 
 		function ReadCameraChunk (reader, name, id, length)
 		{
-			OnLog ('Read camera chunk (' + name + ', ' +  id.toString (16) + ', ' + length + ')', 3);
+			OnLog ('Skip camera chunk (' + name + ', ' +  id.toString (16) + ', ' + length + ')', 3);
 			
 			SkipChunk (reader, length);
 		}
