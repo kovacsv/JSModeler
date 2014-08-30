@@ -7,6 +7,13 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		}
 	}
 
+	function OnMaterial (material)
+	{
+		if (callbacks.onMaterial !== undefined && callbacks.onMaterial !== null) {
+			callbacks.onMaterial (material);
+		}
+	}
+
 	function OnMesh (objectName)
 	{
 		if (callbacks.onMesh !== undefined && callbacks.onMesh !== null) {
@@ -32,6 +39,13 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 	{
 		if (callbacks.onFaceMaterial !== undefined && callbacks.onFaceMaterial !== null) {
 			callbacks.onFaceMaterial (v0, v1, v2);
+		}
+	}
+
+	function OnFaceSmoothingGroup (faceIndex, smoothingGroup)
+	{
+		if (callbacks.onFaceSmoothingGroup !== undefined && callbacks.onFaceSmoothingGroup !== null) {
+			callbacks.onFaceSmoothingGroup (faceIndex, smoothingGroup);
 		}
 	}
 
@@ -72,15 +86,89 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			return name;
 		}
 		
+		function ReadColorChunk (reader, id, length)
+		{
+			var color = {};
+			var endByte = reader.GetPosition () + length - 6;
+			var hasLinColor = false;
+			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+				if (chunkId == chunks['MAT_COLOR']) {
+					if (!hasLinColor) {
+						color.r = reader.ReadUnsignedCharacter () / 255.0;
+						color.g = reader.ReadUnsignedCharacter () / 255.0;
+						color.b = reader.ReadUnsignedCharacter () / 255.0;
+					}
+				} else if (chunkId == chunks['MAT_LIN_COLOR']) {
+					color.r = reader.ReadUnsignedCharacter () / 255.0;
+					color.g = reader.ReadUnsignedCharacter () / 255.0;
+					color.b = reader.ReadUnsignedCharacter () / 255.0;
+					hasLinColor = true;
+				} else if (chunkId == chunks['MAT_COLOR_F']) {
+					if (!hasLinColor) {
+						color.r = reader.ReadFloat32 ();
+						color.g = reader.ReadFloat32 ();
+						color.b = reader.ReadFloat32 ();
+					}
+				} else if (chunkId == chunks['MAT_LIN_COLOR_F']) {
+					color.r = reader.ReadFloat32 ();
+					color.g = reader.ReadFloat32 ();
+					color.b = reader.ReadFloat32 ();
+					hasLinColor = true;
+				} else {
+					SkipChunk (reader, chunkLength);
+				}
+			});
+			return color;
+		}
+		
+		function ReadPercentageChunk (reader, id, length)
+		{
+			var percentage = 0.0;
+			var endByte = reader.GetPosition () + length - 6;
+			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+				if (chunkId == chunks['PERCENTAGE']) {
+					percentage = reader.ReadUnsignedInteger16 () / 100.0;
+				} else if (chunkId == chunks['PERCENTAGE_F']) {
+					percentage = reader.ReadFloat32 ();
+				} else {
+					SkipChunk (reader, chunkLength);
+				}
+			});
+			return percentage;
+		}
+		
 		function ReadMaterialChunk (reader, id, length)
 		{
 			OnLog ('Read material chunk (' + id.toString (16) + ', ' + length + ')', 2);
 			
+			var material = {};
 			var endByte = reader.GetPosition () + length - 6;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
-				OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 3);
-				SkipChunk (reader, chunkLength);
+				if (chunkId == chunks['MAT_NAME']) {
+					OnLog ('Read material name chunk (' + id.toString (16) + ', ' + length + ')', 3);
+					material.name = ReadName (reader);
+				} else if (chunkId == chunks['MAT_AMBIENT']) {
+					OnLog ('Read material ambient chunk (' + id.toString (16) + ', ' + length + ')', 3);
+					material.ambient = ReadColorChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == chunks['MAT_DIFFUSE']) {
+					OnLog ('Read material diffuse chunk (' + id.toString (16) + ', ' + length + ')', 3);
+					material.diffuse = ReadColorChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == chunks['MAT_SPECULAR']) {
+					OnLog ('Read material specular chunk (' + id.toString (16) + ', ' + length + ')', 3);
+					material.specular = ReadColorChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == chunks['MAT_SHININESS']) {
+					OnLog ('Read material shininess chunk (' + id.toString (16) + ', ' + length + ')', 3);
+					material.shininess = ReadPercentageChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == chunks['MAT_TRANSPARENCY']) {
+					OnLog ('Read material transparency chunk (' + id.toString (16) + ', ' + length + ')', 3);
+					material.transparency = ReadPercentageChunk (reader, chunkId, chunkLength);
+				} else {
+					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 3);
+					SkipChunk (reader, chunkLength);
+				}
 			});
+			
+			OnMaterial (material);
 		}
 
 		function ReadVerticesChunk (reader, id, length)
@@ -110,6 +198,17 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			}
 		}
 		
+		function ReadFaceSmoothingGroupsChunk (reader, faceCount, id, length)
+		{
+			OnLog ('Read face smoothing groups chunk (' + id.toString (16) + ', ' + length + ')', 5);
+			
+			var i, smoothingGroup;
+			for (i = 0; i < faceCount; i++) {
+				smoothingGroup = reader.ReadUnsignedInteger32 ();
+				OnFaceSmoothingGroup (i, smoothingGroup);
+			}
+		}
+
 		function ReadFacesChunk (reader, id, length)
 		{
 			OnLog ('Read faces chunk (' + id.toString (16) + ', ' + length + ')', 4);
@@ -126,8 +225,10 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			}
 
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
-				if (chunkId == 0x4130) {
+				if (chunkId == chunks['TRI_MATERIAL']) {
 					ReadFaceMaterialsChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == chunks['TRI_SMOOTH']) {
+					ReadFaceSmoothingGroupsChunk (reader, faceCount,  chunkId, chunkLength);
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 5);
 					SkipChunk (reader, chunkLength);
@@ -142,9 +243,9 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			OnMesh (objectName);
 			var endByte = reader.GetPosition () + length - 6;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
-				if (chunkId == 0x4110) {
+				if (chunkId == chunks['TRI_VERTEXL']) {
 					ReadVerticesChunk (reader, chunkId, chunkLength);
-				} else if (chunkId == 0x4120) {
+				} else if (chunkId == chunks['TRI_FACEL1']) {
 					ReadFacesChunk (reader, chunkId, chunkLength);
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 4);
@@ -174,11 +275,11 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			var endByte = reader.GetPosition () + length - 6;
 			var objectName = ReadName (reader);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
-				if (chunkId == 0x4100) {
+				if (chunkId == chunks['OBJ_TRIMESH']) {
 					ReadMeshChunk (reader, objectName, chunkId, chunkLength);
-				} else if (chunkId == 0x4600) {
+				} else if (chunkId == chunks['OBJ_LIGHT']) {
 					ReadLightChunk (reader, objectName, chunkId, chunkLength);
-				} else if (chunkId == 0x4700) {
+				} else if (chunkId == chunks['OBJ_CAMERA']) {
 					ReadCameraChunk (reader, objectName, chunkId, chunkLength);
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 3);
@@ -193,9 +294,9 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			
 			var endByte = reader.GetPosition () + length - 6;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
-				if (chunkId == 0xAFFF) {
+				if (chunkId == chunks['EDIT_MATERIAL']) {
 					ReadMaterialChunk (reader, chunkId, chunkLength);
-				} else if (chunkId == 0x4000) {
+				} else if (chunkId == chunks['EDIT_OBJECT']) {
 					ReadObjectChunk (reader, chunkId, chunkLength);
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 2);
@@ -210,7 +311,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			
 			var endByte = reader.GetPosition () + length - 6;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
-				if (chunkId == 0x3D3D) {
+				if (chunkId == chunks['EDIT3DS']) {
 					ReadEditorChunk (reader, chunkId, chunkLength);
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 1);
@@ -235,7 +336,29 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 	}
 
 	var chunks = {
-		'MAIN3DS' : 0x4D4D
+		'MAIN3DS' : 0x4D4D,
+		'EDIT3DS' : 0x3D3D,
+		'EDIT_MATERIAL' : 0xAFFF,
+		'MAT_NAME' : 0xA000,
+		'MAT_AMBIENT' : 0xA010,
+		'MAT_DIFFUSE' : 0xA020,
+		'MAT_SPECULAR' : 0xA030,
+		'MAT_SHININESS' : 0xA040,
+		'MAT_TRANSPARENCY' : 0xA050,
+		'MAT_COLOR_F' : 0x0010,
+		'MAT_COLOR' : 0x0011,
+		'MAT_LIN_COLOR' : 0x0012,
+		'MAT_LIN_COLOR_F' : 0x0013,
+		'PERCENTAGE' : 0x0030,
+		'PERCENTAGE_F' : 0x0031,
+		'EDIT_OBJECT' : 0x4000,
+		'OBJ_TRIMESH' : 0x4100,
+		'OBJ_LIGHT' : 0x4600,
+		'OBJ_CAMERA' : 0x4700,
+		'TRI_VERTEXL' : 0x4110,
+		'TRI_FACEL1' : 0x4120,
+		'TRI_MATERIAL' : 0x4130,
+		'TRI_SMOOTH' : 0x4150
 	};
 	
 	var reader = new JSM.BinaryReader (arrayBuffer, true);

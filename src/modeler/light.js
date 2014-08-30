@@ -15,7 +15,7 @@ JSM.Light = function (parameters)
 		direction : new JSM.Vector (1.0, 0.0, 0.0)
 	};
 
-	if (parameters !== undefined && parameters != null) {
+	if (parameters !== undefined && parameters !== null) {
 		theParameters.ambient = JSM.ValueOrDefault (parameters.ambient, theParameters.ambient);
 		theParameters.diffuse = JSM.ValueOrDefault (parameters.diffuse, theParameters.diffuse);
 		theParameters.specular = JSM.ValueOrDefault (parameters.specular, theParameters.specular);

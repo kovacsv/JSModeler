@@ -168,8 +168,8 @@
 						var logDiv = document.getElementById ('log');
 						logDiv.innerHTML += '<div style="margin-left:' + (logLevel * 20) + 'px;">' + logText + '</div>';
 					},
-					onError: function () {
-						alert ('something is wrong');
+					onMaterial : function (material) {
+
 					},
 					onMesh : function (meshName) {
 
@@ -182,7 +182,10 @@
 					},
 					onFaceMaterial : function (materialName, faceIndex) {
 						
-					}					
+					},
+					onFaceSmoothingGroup : function (faceIndex, smoothingGroup) {
+
+					}
 				});
 			});
 		}
