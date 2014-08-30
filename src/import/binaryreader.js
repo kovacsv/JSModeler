@@ -4,7 +4,7 @@ JSM.GetArrayBufferFromURL = function (url, onReady)
 	request.open ('GET', url, true);
 	request.responseType = 'arraybuffer';
 
-	request.onload = function (event) {
+	request.onload = function () {
 		var arrayBuffer = request.response;
 		if (arrayBuffer) {
 			onReady (arrayBuffer);
@@ -18,11 +18,11 @@ JSM.GetArrayBufferFromFile = function (file, onReady)
 {
 	var reader = new FileReader ();
 
-	reader.onloadend = (function (event) {
+	reader.onloadend = function (event) {
 		if (event.target.readyState == FileReader.DONE) {
 			onReady (event.target.result);
 		}
-	});
+	};
 
 	reader.readAsArrayBuffer (file);
 };
@@ -55,63 +55,63 @@ JSM.BinaryReader.prototype.End = function ()
 	return this.position >= this.arrayBuffer.byteLength;
 };
 
-JSM.BinaryReader.prototype.ReadBoolean = function (onReady)
+JSM.BinaryReader.prototype.ReadBoolean = function ()
 {
 	var result = this.dataView.getInt8 (this.position, this.isLittleEndian);
 	this.position = this.position + 1;
 	return result ? true : false;
 };
 
-JSM.BinaryReader.prototype.ReadCharacter = function (onReady)
+JSM.BinaryReader.prototype.ReadCharacter = function ()
 {
 	var result = this.dataView.getInt8 (this.position, this.isLittleEndian);
 	this.position = this.position + 1;
 	return result;
 };
 
-JSM.BinaryReader.prototype.ReadUnsignedCharacter = function (onReady)
+JSM.BinaryReader.prototype.ReadUnsignedCharacter = function ()
 {
 	var result = this.dataView.getUint8 (this.position, this.isLittleEndian);
 	this.position = this.position + 1;
 	return result;
 };
 
-JSM.BinaryReader.prototype.ReadInteger16 = function (onReady)
+JSM.BinaryReader.prototype.ReadInteger16 = function ()
 {
 	var result = this.dataView.getInt16 (this.position, this.isLittleEndian);
 	this.position = this.position + 2;
 	return result;
 };
 
-JSM.BinaryReader.prototype.ReadUnsignedInteger16 = function (onReady)
+JSM.BinaryReader.prototype.ReadUnsignedInteger16 = function ()
 {
 	var result = this.dataView.getUint16 (this.position, this.isLittleEndian);
 	this.position = this.position + 2;
 	return result;
 };
 
-JSM.BinaryReader.prototype.ReadInteger32 = function (onReady)
+JSM.BinaryReader.prototype.ReadInteger32 = function ()
 {
 	var result = this.dataView.getInt32 (this.position, this.isLittleEndian);
 	this.position = this.position + 4;
 	return result;
 };
 
-JSM.BinaryReader.prototype.ReadUnsignedInteger32 = function (onReady)
+JSM.BinaryReader.prototype.ReadUnsignedInteger32 = function ()
 {
 	var result = this.dataView.getUint32 (this.position, this.isLittleEndian);
 	this.position = this.position + 4;
 	return result;
 };
 
-JSM.BinaryReader.prototype.ReadFloat32 = function (onReady)
+JSM.BinaryReader.prototype.ReadFloat32 = function ()
 {
 	var result = this.dataView.getFloat32 (this.position, this.isLittleEndian);
 	this.position = this.position + 4;
 	return result;
 };
 
-JSM.BinaryReader.prototype.ReadDouble64 = function (onReady)
+JSM.BinaryReader.prototype.ReadDouble64 = function ()
 {
 	var result = this.dataView.getFloat64 (this.position, this.isLittleEndian);
 	this.position = this.position + 8;

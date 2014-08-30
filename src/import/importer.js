@@ -7,13 +7,6 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		}
 	}
 
-	function OnError ()
-	{
-		if (callbacks.onError !== undefined && callbacks.onError !== null) {
-			callbacks.onError ();
-		}
-	}
-
 	function OnMesh (objectName)
 	{
 		if (callbacks.onMesh !== undefined && callbacks.onMesh !== null) {
@@ -46,15 +39,14 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 	{
 		var chunkId = reader.ReadUnsignedInteger16 ();
 		var chunkLength = reader.ReadUnsignedInteger32 ();
-		onReady (chunkId, chunkLength);	
+		onReady (chunkId, chunkLength);
 	}
 	
 	function ReadChunks (reader, endByte, onReady)
 	{
-		var chunkId, chunkLength;
 		while (reader.GetPosition () < endByte) {
 			ReadChunk (reader, onReady);
-		}	
+		}
 	}
 	
 	function ReadFile (reader)
@@ -103,15 +95,13 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				z = reader.ReadFloat32 ();
 				OnVertex (x, y, z);
 			}
-		}	
+		}
 
 		function ReadFaceMaterialsChunk (reader, id, length)
 		{
 			OnLog ('Read face materials chunk (' + id.toString (16) + ', ' + length + ')', 5);
 			
-			var endByte = reader.GetPosition () + length - 6;
 			var materialName = ReadName (reader);
-
 			var faceCount = reader.ReadUnsignedInteger16 ();
 			var i, faceIndex;
 			for (i = 0; i < faceCount; i++) {
@@ -236,12 +226,12 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			} else {
 				OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + length + ')', 0);
 				SkipChunk (reader, chunkLength);
-			}			
+			}
 		});
 	}
 	
 	if (callbacks === undefined || callbacks === null) {
-		callbacks = {}
+		callbacks = {};
 	}
 
 	var chunks = {
