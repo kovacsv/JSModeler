@@ -67,7 +67,7 @@
 	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
 	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
 	<script type="text/javascript" src="../../src/import/binaryreader.js"></script>
-	<script type="text/javascript" src="../../src/import/import.js"></script>
+	<script type="text/javascript" src="../../src/import/importer.js"></script>
 <!-- JSModeler includes end -->
 	
 	<title>JSModeler Test</title>
@@ -171,13 +171,16 @@
 					onError: function () {
 						alert ('something is wrong');
 					},
-					onMesh : function () {
-						
+					onMesh : function (meshName) {
+
 					},
 					onVertex : function (x, y, z) {
 						
 					},
-					onFace : function (v0, v1, v2) {
+					onFace : function (v0, v1, v2, flags) {
+						
+					},
+					onFaceMaterial : function (materialName, faceIndex) {
 						
 					}					
 				});
