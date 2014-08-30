@@ -34,6 +34,8 @@
 ../src/modeler/camera.js
 ../src/modeler/explode.js
 ../src/modeler/exporter.js
+../src/import/binaryreader.js
+../src/import/importer.js
 ../src/extras/solidgenerator.js
 ../src/extras/extgenerator.js
 ../src/extras/painter.js

@@ -28,17 +28,17 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		}
 	}
 
-	function OnFace (v0, v1, v2)
+	function OnFace (v0, v1, v2, flags)
 	{
 		if (callbacks.onFace !== undefined && callbacks.onFace !== null) {
-			callbacks.onFace (v0, v1, v2);
+			callbacks.onFace (v0, v1, v2, flags);
 		}
 	}
 
-	function OnFaceMaterial (v0, v1, v2)
+	function OnFaceMaterial (faceIndex, materialName)
 	{
 		if (callbacks.onFaceMaterial !== undefined && callbacks.onFaceMaterial !== null) {
-			callbacks.onFaceMaterial (v0, v1, v2);
+			callbacks.onFaceMaterial (faceIndex, materialName);
 		}
 	}
 
@@ -194,7 +194,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			var i, faceIndex;
 			for (i = 0; i < faceCount; i++) {
 				faceIndex = reader.ReadUnsignedInteger16 ();
-				OnFaceMaterial (materialName, faceIndex);
+				OnFaceMaterial (faceIndex, materialName);
 			}
 		}
 		
@@ -325,7 +325,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			if (chunkId == chunks['MAIN3DS']) {
 				ReadMainChunk (reader, chunkId, chunkLength);
 			} else {
-				OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + length + ')', 0);
+				OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 0);
 				SkipChunk (reader, chunkLength);
 			}
 		});

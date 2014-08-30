@@ -96,8 +96,8 @@
 	
 		function RunURLTestExample (url)
 		{
-			AddLogLine ('url test (' + url + '):');
 			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
+				AddLogLine ('url test (' + url + '):');
 				var br = new JSM.BinaryReader (arrayBuffer, true);
 				Assert (br.ReadBoolean () == true);
 				Assert (br.ReadBoolean () == false);
@@ -161,32 +161,118 @@
 	
 		function RunURLTest3ds (url)
 		{
-			AddLogLine ('url test (' + url + '):');
+			var materialIndex = 0;
+			var vertexIndex = 0;
+			var faceIndex = 0;
+			var faceMaterialIndex = 0;
+			var faceSmoothingIndex = 0;
 			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
+				AddLogLine ('url test (' + url + '):');
 				JSM.Read3dsFile (arrayBuffer, callbacks = {		
 					onLog: function (logText, logLevel) {
-						var logDiv = document.getElementById ('log');
-						logDiv.innerHTML += '<div style="margin-left:' + (logLevel * 20) + 'px;">' + logText + '</div>';
+						//var logDiv = document.getElementById ('log');
+						//logDiv.innerHTML += '<div style="margin-left:' + (logLevel * 20) + 'px;">' + logText + '</div>';
 					},
 					onMaterial : function (material) {
-
+						if (materialIndex == 0) {
+							Assert (material.name == 'Color_A0');
+							Assert (material.ambient.r == 0 && material.ambient.g == 0 && material.ambient.b == 0);
+							Assert (material.diffuse.r == 1 && material.diffuse.g == 0 && material.diffuse.b == 0);
+							Assert (material.specular.r == 0.32941176470588235 && material.specular.g == 0.32941176470588235 && material.specular.b == 0.32941176470588235);
+							Assert (material.shininess == 0);
+							Assert (material.transparency == 0);
+						} else if (materialIndex == 1) {
+							Assert (material.name == 'Color_G0');
+							Assert (material.ambient.r == 0 && material.ambient.g == 0 && material.ambient.b == 0);
+							Assert (material.diffuse.r == 0 && material.diffuse.g == 1 && material.diffuse.b == 0);
+							Assert (material.specular.r == 0.32941176470588235 && material.specular.g == 0.32941176470588235 && material.specular.b == 0.32941176470588235);
+							Assert (material.shininess == 0);
+							Assert (material.transparency == 0);
+						} else if (materialIndex == 2) {
+							Assert (material.name == 'Color_I0');
+							Assert (material.ambient.r == 0 && material.ambient.g == 0 && material.ambient.b == 0);
+							Assert (material.diffuse.r == 0 && material.diffuse.g == 0 && material.diffuse.b == 1);
+							Assert (material.specular.r == 0.32941176470588235 && material.specular.g == 0.32941176470588235 && material.specular.b == 0.32941176470588235);
+							Assert (material.shininess == 0);
+							Assert (material.transparency == 0);
+						} else if (materialIndex == 3) {
+							Assert (material.name == 'FrontCol');
+							Assert (material.ambient.r == 0 && material.ambient.g == 0 && material.ambient.b == 0);
+							Assert (material.diffuse.r == 1 && material.diffuse.g == 1 && material.diffuse.b == 1);
+							Assert (material.specular.r == 0.32941176470588235 && material.specular.g == 0.32941176470588235 && material.specular.b == 0.32941176470588235);
+							Assert (material.shininess == 0);
+							Assert (material.transparency == 0);
+						}
+						materialIndex++;
 					},
 					onMesh : function (meshName) {
-
+						Assert (meshName == 'Model');
 					},
 					onVertex : function (x, y, z) {
-						
+						if (vertexIndex == 0)       {Assert (x == 1 && y == 2 && z == 0);}
+						else if (vertexIndex == 1)  {Assert (x == 0 && y == 0 && z == 0);}
+						else if (vertexIndex == 2)  {Assert (x == 0 && y == 2 && z == 0);}
+						else if (vertexIndex == 3)  {Assert (x == 1 && y == 0 && z == 0);}
+						else if (vertexIndex == 4)  {Assert (x == 1 && y == 2 && z == 0);}
+						else if (vertexIndex == 5)  {Assert (x == 1 && y == 0 && z == 3);}
+						else if (vertexIndex == 6)  {Assert (x == 1 && y == 0 && z == 0);}
+						else if (vertexIndex == 7)  {Assert (x == 1 && y == 2 && z == 3);}
+						else if (vertexIndex == 8)  {Assert (x == 1 && y == 2 && z == 0);}
+						else if (vertexIndex == 9)  {Assert (x == 0 && y == 2 && z == 3);}
+						else if (vertexIndex == 10) {Assert (x == 1 && y == 2 && z == 3);}
+						else if (vertexIndex == 11) {Assert (x == 0 && y == 2 && z == 0);}
+						else if (vertexIndex == 12) {Assert (x == 0 && y == 2 && z == 3);}
+						else if (vertexIndex == 13) {Assert (x == 0 && y == 2 && z == 0);}
+						else if (vertexIndex == 14) {Assert (x == 0 && y == 0 && z == 3);}
+						else if (vertexIndex == 15) {Assert (x == 1 && y == 0 && z == 3);}
+						else if (vertexIndex == 16) {Assert (x == 1 && y == 0 && z == 0);}
+						else if (vertexIndex == 17) {Assert (x == 1 && y == 0 && z == 3);}
+						else if (vertexIndex == 18) {Assert (x == 0 && y == 2 && z == 3);}
+						else if (vertexIndex == 19) {Assert (x == 0 && y == 0 && z == 3);}
+						else if (vertexIndex == 20) {Assert (x == 1 && y == 2 && z == 3);}
+						vertexIndex++;
 					},
 					onFace : function (v0, v1, v2, flags) {
-						
+						if (faceIndex == 0)       {Assert (v0 == 0 && v1 == 1 && v2 == 2 && flags == 3);}
+						else if (faceIndex == 1)  {Assert (v0 == 1 && v1 == 0 && v2 == 3 && flags == 3);}
+						else if (faceIndex == 2)  {Assert (v0 == 4 && v1 == 5 && v2 == 6 && flags == 3);}
+						else if (faceIndex == 3)  {Assert (v0 == 5 && v1 == 4 && v2 == 7 && flags == 3);}
+						else if (faceIndex == 4)  {Assert (v0 == 8 && v1 == 9 && v2 == 10 && flags == 3);}
+						else if (faceIndex == 5)  {Assert (v0 == 9 && v1 == 8 && v2 == 11 && flags == 3);}
+						else if (faceIndex == 6)  {Assert (v0 == 1 && v1 == 12 && v2 == 13 && flags == 3);}
+						else if (faceIndex == 7)  {Assert (v0 == 12 && v1 == 1 && v2 == 14 && flags == 3);}
+						else if (faceIndex == 8)  {Assert (v0 == 1 && v1 == 15 && v2 == 14 && flags == 3);}
+						else if (faceIndex == 9)  {Assert (v0 == 15 && v1 == 1 && v2 == 16 && flags == 3);}
+						else if (faceIndex == 10) {Assert (v0 == 17 && v1 == 18 && v2 == 19 && flags == 3);}
+						else if (faceIndex == 11) {Assert (v0 == 18 && v1 == 17 && v2 == 20 && flags == 3);}
+						faceIndex++;
 					},
-					onFaceMaterial : function (materialName, faceIndex) {
-						
+					onFaceMaterial : function (faceIndex, materialName) {
+						if (faceMaterialIndex == 0)       {Assert (faceIndex == 0 && materialName == 'FrontCol');}
+						else if (faceMaterialIndex == 1)  {Assert (faceIndex == 1 && materialName == 'FrontCol');}
+						else if (faceMaterialIndex == 2)  {Assert (faceIndex == 4 && materialName == 'FrontCol');}
+						else if (faceMaterialIndex == 3)  {Assert (faceIndex == 5 && materialName == 'FrontCol');}
+						else if (faceMaterialIndex == 4)  {Assert (faceIndex == 6 && materialName == 'FrontCol');}
+						else if (faceMaterialIndex == 5)  {Assert (faceIndex == 7 && materialName == 'FrontCol');}
+						else if (faceMaterialIndex == 6)  {Assert (faceIndex == 2 && materialName == 'Color_I0');}
+						else if (faceMaterialIndex == 7)  {Assert (faceIndex == 3 && materialName == 'Color_I0');}
+						else if (faceMaterialIndex == 8)  {Assert (faceIndex == 8 && materialName == 'Color_A0');}
+						else if (faceMaterialIndex == 9)  {Assert (faceIndex == 9 && materialName == 'Color_A0');}
+						else if (faceMaterialIndex == 10) {Assert (faceIndex == 10 && materialName == 'Color_G0');}
+						else if (faceMaterialIndex == 11) {Assert (faceIndex == 11 && materialName == 'Color_G0');}
+						faceMaterialIndex++;
 					},
 					onFaceSmoothingGroup : function (faceIndex, smoothingGroup) {
-
+						Assert (faceIndex == faceSmoothingIndex && smoothingGroup == 0);
+						faceSmoothingIndex++;
 					}
 				});
+				
+				Assert (materialIndex == 4);
+				Assert (vertexIndex == 21);
+				Assert (faceIndex == 12);
+				Assert (faceMaterialIndex == 12);
+				Assert (faceSmoothingIndex == 12);
 			});
 		}
 
@@ -266,7 +352,7 @@
 		window.onload = function ()
 		{
 			//document.getElementById ('file').addEventListener ('change', FileSelected, false);
-			//RunURLTestExample ('testfiles/result.bin');
+			RunURLTestExample ('testfiles/result.bin');
 			RunURLTest3ds ('testfiles/cube.3ds');
 		}
 	</script>
