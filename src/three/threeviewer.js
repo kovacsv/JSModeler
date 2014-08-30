@@ -101,6 +101,7 @@ JSM.ThreeViewer.prototype.InitThree = function (canvasName)
 		return false;
 	}
 	
+	this.renderer.setClearColor (new THREE.Color (0xffffff));
 	this.renderer.setSize (this.canvas.width, this.canvas.height);
 	return true;
 };
@@ -152,7 +153,9 @@ JSM.ThreeViewer.prototype.InitLights = function ()
 		return false;
 	}
 	
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+	var lightPosition = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+	this.directionalLight.position.set (lightPosition.x, lightPosition.y, lightPosition.z);
+
 	this.scene.add (this.directionalLight);
 	return true;
 };
@@ -406,11 +409,14 @@ JSM.ThreeViewer.prototype.Draw = function ()
 	if (this.runBeforeRender !== null) {
 		this.runBeforeRender ();
 	}
-	
-	this.camera.position = new THREE.Vector3 (this.cameraMove.eye.x, this.cameraMove.eye.y, this.cameraMove.eye.z);
-	this.camera.up = new THREE.Vector3 (this.cameraMove.up.x, this.cameraMove.up.y, this.cameraMove.up.z);
+
+	this.camera.position.set (this.cameraMove.eye.x, this.cameraMove.eye.y, this.cameraMove.eye.z);
+	this.camera.up.set (this.cameraMove.up.x, this.cameraMove.up.y, this.cameraMove.up.z);
 	this.camera.lookAt (new THREE.Vector3 (this.cameraMove.center.x, this.cameraMove.center.y, this.cameraMove.center.z));
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+
+	var lightPosition = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+	this.directionalLight.position.set (lightPosition.x, lightPosition.y, lightPosition.z);
+
 	this.renderer.render (this.scene, this.camera);
 	
 	if (this.runAfterRender !== null) {

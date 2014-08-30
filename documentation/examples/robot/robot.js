@@ -43,7 +43,7 @@ JSM.RobotModule.prototype =
 	{
 		var i;
 		for (i = 0; i < this.meshes.length; i++) {
-			this.meshes[i].position = position.clone ();
+			this.meshes[i].position.set (position.x, position.y, position.z);
 		}
 	},
 
