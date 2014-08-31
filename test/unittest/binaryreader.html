@@ -168,6 +168,7 @@
 			var faceSmoothingIndex = 0;
 			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
 				AddLogLine ('url test (' + url + '):');
+				
 				JSM.Read3dsFile (arrayBuffer, callbacks = {		
 					onLog: function (logText, logLevel) {
 						//var logDiv = document.getElementById ('log');
@@ -273,21 +274,24 @@
 				Assert (faceIndex == 12);
 				Assert (faceMaterialIndex == 12);
 				Assert (faceSmoothingIndex == 12);
+				
+				AddLogLine ('');
 			});
 		}
 
 		function RunFileTestExample (file)
 		{
-			AddLogLine ('file test (' + file.name + '):');
 			JSM.GetArrayBufferFromFile (file, function (arrayBuffer) {
+				AddLogLine ('file test (' + file.name + '):');
+				
 				var br = new JSM.BinaryReader (arrayBuffer, true);
 				Assert (br.ReadBoolean () == true);
 				Assert (br.ReadBoolean () == false);
 				
-				Assert (br.ReadCharacter () == 'a');
-				Assert (br.ReadCharacter () == 'A');
-				Assert (br.ReadUnsignedCharacter () == 'a');
-				Assert (br.ReadUnsignedCharacter () == 'A');
+				Assert (String.fromCharCode (br.ReadCharacter ()) == 'a');
+				Assert (String.fromCharCode (br.ReadCharacter ()) == 'A');
+				Assert (String.fromCharCode (br.ReadUnsignedCharacter ()) == 'a');
+				Assert (String.fromCharCode (br.ReadUnsignedCharacter ()) == 'A');
 
 				Assert (br.ReadInteger16 () == 42);
 				Assert (br.ReadInteger16 () == -42);
@@ -351,7 +355,7 @@
 		
 		window.onload = function ()
 		{
-			//document.getElementById ('file').addEventListener ('change', FileSelected, false);
+			document.getElementById ('file').addEventListener ('change', FileSelected, false);
 			RunURLTestExample ('testfiles/result.bin');
 			RunURLTest3ds ('testfiles/cube.3ds');
 		}
