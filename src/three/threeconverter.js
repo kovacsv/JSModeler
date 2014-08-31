@@ -35,7 +35,6 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 			threeMaterial.map = texture;
 		}
 
-		geometry.computeCentroids ();
 		geometry.computeFaceNormals ();
 
 		var mesh = new THREE.Mesh (geometry, threeMaterial);
