@@ -368,15 +368,46 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 JSM.Convert3dsToJsonData = function (arrayBuffer)
 {
 	function ConvertRawDataToJsonData (rawMeshData, result)
-	{	
-		var i, j, k;
+	{
+		function ConvertRawMeshToJsonMesh (rawMesh, jsonMesh, materialNameToIndex)
+		{
+			function ConvertFacesByMaterial (rawMesh, facesByMaterialIndex, jsonFaces)
+			{
+				var i, face;
+				var facesByMaterial = rawMesh.facesByMaterial[facesByMaterialIndex];
+				for (i = 0; i < facesByMaterial.length; i++) {
+					face = rawMesh.faces[facesByMaterial[i]];
+					jsonFaces.parameters.push (face[0], face[1], face[2]);
+					jsonFaces.parameters.push (0, 0, 0);
+					jsonFaces.parameters.push (0, 0, 0);
+				}
+
+			}
+		
+			// todo: normals, uvs
+			var i, materialIndex, jsonFaces;
+			for (i = 0; i < rawMesh.facesByMaterial.length; i++) {
+				materialIndex = materialNameToIndex[rawMesh.materialIndexToName[i]];
+				if (materialIndex === undefined) {
+					continue;
+				}
+
+				jsonFaces = {
+					material : materialIndex,
+					parameters : []
+				};
+				ConvertFacesByMaterial (rawMesh, i, jsonFaces);
+				jsonMesh.triangles.push (jsonFaces);
+			}
+		}
+	
+		var i;
 		var materialNameToIndex = {};
 		for (i = 0; i < result.materials.length; i++) {
 			materialNameToIndex[result.materials[i].name] = i;
 		}
 	
 		var rawMesh, jsonMesh;
-		var face, faces, jsonFaces, materialIndex;
 		for (i = 0; i < rawMeshData.length; i++) {
 			rawMesh = rawMeshData[i];
 			jsonMesh = {
@@ -386,27 +417,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				uvs : [0, 0],
 				triangles : []
 			};
-			// todo: normals, uvs
-			for (j = 0; j < rawMesh.facesByMaterial.length; j++) {
-				materialIndex = materialNameToIndex[rawMesh.materialIndexToName[j]];
-				if (materialIndex === undefined) {
-					continue;
-				}
-				
-				faces = rawMesh.facesByMaterial[j];
-				jsonFaces = {
-					material : materialIndex,
-					parameters : []
-				};
-				for (k = 0; k < faces.length; k++) {
-					face = rawMesh.faces[faces[k]];
-					jsonFaces.parameters.push (face[0], face[1], face[2]);
-					jsonFaces.parameters.push (0, 0, 0);
-					jsonFaces.parameters.push (0, 0, 0);
-				}
-				
-				jsonMesh.triangles.push (jsonFaces);
-			}
+			ConvertRawMeshToJsonMesh (rawMesh, jsonMesh, materialNameToIndex);
 			result.meshes.push (jsonMesh);
 		}
 	}

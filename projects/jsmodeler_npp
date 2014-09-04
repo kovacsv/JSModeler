@@ -38,6 +38,10 @@
 				<File name="..\src\geometry\transformationutils.js" />
 				<File name="..\src\geometry\utilities.js" />
 			</Folder>
+			<Folder name="import">
+				<File name="..\src\import\binaryreader.js" />
+				<File name="..\src\import\importer.js" />
+			</Folder>
 			<Folder name="modeler">
 				<File name="..\src\modeler\adjacencylist.js" />
 				<File name="..\src\modeler\body.js" />
