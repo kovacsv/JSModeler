@@ -584,6 +584,30 @@ JSM.CalculateCentroid = function (coords)
 };
 
 /**
+* Function: CalculateTriangleNormal
+* Description: Calculates normal vector for the given triangle vertices.
+* Parameters:
+*	v1 {Coord} the first vertex of the triangle
+*	v2 {Coord} the second vertex of the triangle
+*	v3 {Coord} the third vertex of the triangle
+* Returns:
+*	{Vector} the result
+*/
+JSM.CalculateTriangleNormal = function (v1, v2, v3)
+{
+	var v = JSM.CoordSub (v2, v1);
+	var w = JSM.CoordSub (v3, v1);
+	
+	var normal = new JSM.Vector ();
+	normal.x = (v.y * w.z - v.z * w.y);
+	normal.y = (v.z * w.x - v.x * w.z);
+	normal.z = (v.x * w.y - v.y * w.x);
+
+	var normalized = JSM.VectorNormalize (normal);
+	return normalized;
+};
+
+/**
 * Function: CalculateNormal
 * Description: Calculates normal vector for the given coordinates.
 * Parameters:

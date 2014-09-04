@@ -364,3 +364,130 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 	var reader = new JSM.BinaryReader (arrayBuffer, true);
 	ReadFile (reader);
 };
+
+JSM.Convert3dsToJsonData = function (arrayBuffer)
+{
+	function ConvertRawDataToJsonData (rawMeshData, result)
+	{	
+		var i, j, k;
+		var materialNameToIndex = {};
+		for (i = 0; i < result.materials.length; i++) {
+			materialNameToIndex[result.materials[i].name] = i;
+		}
+	
+		var rawMesh, jsonMesh;
+		var face, faces, jsonFaces, materialIndex;
+		for (i = 0; i < rawMeshData.length; i++) {
+			rawMesh = rawMeshData[i];
+			jsonMesh = {
+				name : rawMesh.name,
+				vertices : rawMesh.vertices,
+				normals : [0, 0, 1],
+				uvs : [0, 0],
+				triangles : []
+			};
+			// todo: normals, uvs
+			for (j = 0; j < rawMesh.facesByMaterial.length; j++) {
+				materialIndex = materialNameToIndex[rawMesh.materialIndexToName[j]];
+				if (materialIndex === undefined) {
+					continue;
+				}
+				
+				faces = rawMesh.facesByMaterial[j];
+				jsonFaces = {
+					material : materialIndex,
+					parameters : []
+				};
+				for (k = 0; k < faces.length; k++) {
+					face = rawMesh.faces[faces[k]];
+					jsonFaces.parameters.push (face[0], face[1], face[2]);
+					jsonFaces.parameters.push (0, 0, 0);
+					jsonFaces.parameters.push (0, 0, 0);
+				}
+				
+				jsonMesh.triangles.push (jsonFaces);
+			}
+			result.meshes.push (jsonMesh);
+		}
+	}
+
+	var result = {};
+	result.version = 1;
+	result.materials = [];
+	result.meshes = [];
+
+	var rawMeshData = [];
+	var currentMesh = null;
+	
+	JSM.Read3dsFile (arrayBuffer, {
+		onLog: function (/*logText, logLevel*/) {
+		},
+		onMaterial : function (material) {
+			function GetColor (color)
+			{
+				if (color === undefined || color === null) {
+					return [0.0, 0.0, 0.0];
+				}
+				return [color.r, color.g, color.b];
+			}
+
+			function GetOpacity (transparency)
+			{
+				if (transparency === undefined || transparency === null) {
+					return 1.0;
+				}
+				return 1.0 - transparency;
+			}
+			
+			result.materials.push ({
+				name : material.name,
+				ambient : GetColor (material.ambient),
+				diffuse : GetColor (material.diffuse),
+				specular : GetColor (material.specular),
+				opacity : GetOpacity (material.transparency)
+			});
+		},
+		onMesh : function (meshName) {
+			rawMeshData.push ({
+				name : meshName,
+				vertices : [],
+				faces : [],
+				facesByMaterial : [],
+				materialNameToIndex : {},
+				materialIndexToName : {}
+			});
+			currentMesh = rawMeshData[rawMeshData.length - 1];
+		},
+		onVertex : function (x, y, z) {
+			if (currentMesh === null) {
+				return;
+			}
+			currentMesh.vertices.push (x, y, z);
+		},
+		onFace : function (v0, v1, v2/*, flags*/) {
+			if (currentMesh === null) {
+				return;
+			}
+			currentMesh.faces.push ([v0, v1, v2]);
+		},
+		onFaceMaterial : function (faceIndex, materialName) {
+			if (currentMesh === null) {
+				return;
+			}
+			var faceGroupIndex = currentMesh.materialNameToIndex[materialName];
+			if (faceGroupIndex === undefined) {
+				currentMesh.facesByMaterial.push ([]);
+				faceGroupIndex = currentMesh.facesByMaterial.length - 1;
+				currentMesh.materialNameToIndex[materialName] = faceGroupIndex;
+				currentMesh.materialIndexToName[faceGroupIndex] = materialName;
+			}
+			currentMesh.facesByMaterial[faceGroupIndex].push (faceIndex);
+		},
+		onFaceSmoothingGroup : function (/*faceIndex, smoothingGroup*/) {
+			// todo
+		}
+	});
+	
+	ConvertRawDataToJsonData (rawMeshData, result);
+	return result;
+};
