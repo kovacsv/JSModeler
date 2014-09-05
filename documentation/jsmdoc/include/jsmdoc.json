@@ -577,9 +577,9 @@
 				"CalculateTriangleNormal" : {
 					"description" : "Calculates normal vector for the given triangle vertices.",
 					"parameters" : [
-						["v1", "Coord", "the first vertex of the triangle"],
-						["v2", "Coord", "the second vertex of the triangle"],
-						["v3", "Coord", "the third vertex of the triangle"]
+						["v0", "Coord", "the first vertex of the triangle"],
+						["v1", "Coord", "the second vertex of the triangle"],
+						["v2", "Coord", "the third vertex of the triangle"]
 					],
 					"returns" : [
 						["Vector", "the result"]

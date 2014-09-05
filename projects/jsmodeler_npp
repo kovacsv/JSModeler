@@ -41,6 +41,7 @@
 			<Folder name="import">
 				<File name="..\src\import\binaryreader.js" />
 				<File name="..\src\import\importer.js" />
+				<File name="..\src\import\trianglemodel.js" />
 			</Folder>
 			<Folder name="modeler">
 				<File name="..\src\modeler\adjacencylist.js" />

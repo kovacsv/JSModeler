@@ -12,35 +12,6 @@ JSM.BodyVertex = function (position)
 };
 
 /**
-* Class: BodyPolygon
-* Description:
-*	Represents a polygon of a 3D body. The polygon contains vertex indices of vertices stored
-*	in its 3D body, material indices of materials defined outside of the body, and a curve
-*	group index which defines its normal vector calculation in case of smooth surfaces.
-* Parameters:
-*	vertices {integer[*]} array of vertex indices stored in the body
-*/
-JSM.BodyPolygon = function (vertices)
-{
-	this.vertices = JSM.ValueOrDefault (vertices, []);
-	this.material = -1;
-	this.curved = -1;
-};
-
-/**
-* Class: Body
-* Description:
-*	Represents a 3D body. The body contains vertices, polygons,
-*	and a texture coordinate system.
-*/
-JSM.Body = function ()
-{
-	this.vertices = [];
-	this.polygons = [];
-	this.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
-};
-
-/**
 * Function: BodyVertex.GetPosition
 * Description: Returns the position of the vertex.
 * Returns:
@@ -71,6 +42,22 @@ JSM.BodyVertex.prototype.SetPosition = function (position)
 JSM.BodyVertex.prototype.Clone = function ()
 {
 	return new JSM.BodyVertex (this.position.Clone ());
+};
+
+/**
+* Class: BodyPolygon
+* Description:
+*	Represents a polygon of a 3D body. The polygon contains vertex indices of vertices stored
+*	in its 3D body, material indices of materials defined outside of the body, and a curve
+*	group index which defines its normal vector calculation in case of smooth surfaces.
+* Parameters:
+*	vertices {integer[*]} array of vertex indices stored in the body
+*/
+JSM.BodyPolygon = function (vertices)
+{
+	this.vertices = JSM.ValueOrDefault (vertices, []);
+	this.material = -1;
+	this.curved = -1;
 };
 
 /**
@@ -202,6 +189,19 @@ JSM.BodyPolygon.prototype.Clone = function ()
 	result.material = this.material;
 	result.curved = this.curved;
 	return result;
+};
+
+/**
+* Class: Body
+* Description:
+*	Represents a 3D body. The body contains vertices, polygons,
+*	and a texture coordinate system.
+*/
+JSM.Body = function ()
+{
+	this.vertices = [];
+	this.polygons = [];
+	this.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 };
 
 /**

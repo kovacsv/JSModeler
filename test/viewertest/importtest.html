@@ -6,10 +6,9 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="framework/test.css">
+	<link rel="stylesheet" type="text/css" href="include/viewertest.css">
 
-	<script type="text/javascript" src="framework/test.js"></script>
-	
+	<script type="text/javascript" src="../../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../../src/core/timer.js"></script>
@@ -72,16 +71,73 @@
 	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
 	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
-	
-	<script type="text/javascript" src="tests/core.js"></script>
-	<script type="text/javascript" src="tests/geometry.js"></script>
-	<script type="text/javascript" src="tests/modeler.js"></script>
 
-	<title>JSModeler Test</title>
+	<script type="text/javascript" src="include/stephandler.js"></script>
+	<script type="text/javascript" src="include/teststeps.js"></script>
+	<title>JSModeler Import Test</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+
+		function Load3ds (url)
+		{
+			viewer.RemoveMeshes ();
+			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
+				var jsonData = JSM.Convert3dsToJsonData (arrayBuffer);
+				var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
+				for (var i = 0; i < meshes.length; i++) {
+					viewer.AddMesh (meshes[i]);
+				}
+				viewer.FitInWindow ();
+				viewer.Draw ();
+			});
+		}
+		
+		function Resize ()
+		{
+			var header = document.getElementById ('header');
+			var canvas = document.getElementById ('test');
+			
+			canvas.width = document.body.clientWidth;
+			canvas.height = document.body.clientHeight - header.clientHeight - 1;
+		}
+
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+
+			var viewerSettings = {
+				cameraEyePosition : [6.0, -5.0, 4.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0.0, 0.0, 1.0]
+			};
+
+			viewer = new JSM.ThreeViewer ();
+			if (!viewer.Start ('test', viewerSettings)) {
+				return;
+			}
+
+			Load3ds ('testfiles/cube.3ds');
+			viewer.Draw ();
+		}
+
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
 
 </head>
 
 <body>
+	<div id="header">
+		<div id="buttons">
+			<a class="button" href="javascript:Load3ds ('testfiles/cube.3ds')">cube.3ds</a>
+		</div>
+		<div id="info"></div>
+	</div>
+	<canvas id="test" width="800" height="500"></canvas>
 </body>
 
 </html>

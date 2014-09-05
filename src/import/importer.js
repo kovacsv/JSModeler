@@ -365,70 +365,113 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 	ReadFile (reader);
 };
 
-JSM.Convert3dsToJsonData = function (arrayBuffer)
+JSM.ConvertTriangleModelToJsonData = function (model)
 {
-	function ConvertRawDataToJsonData (rawMeshData, result)
+	function ConvertMaterials (model, materials)
 	{
-		function ConvertRawMeshToJsonMesh (rawMesh, jsonMesh, materialNameToIndex)
+		function ColorToArray (color)
 		{
-			function ConvertFacesByMaterial (rawMesh, facesByMaterialIndex, jsonFaces)
-			{
-				var i, face;
-				var facesByMaterial = rawMesh.facesByMaterial[facesByMaterialIndex];
-				for (i = 0; i < facesByMaterial.length; i++) {
-					face = rawMesh.faces[facesByMaterial[i]];
-					jsonFaces.parameters.push (face[0], face[1], face[2]);
-					jsonFaces.parameters.push (0, 0, 0);
-					jsonFaces.parameters.push (0, 0, 0);
-				}
-
-			}
-		
-			// todo: normals, uvs
-			var i, materialIndex, jsonFaces;
-			for (i = 0; i < rawMesh.facesByMaterial.length; i++) {
-				materialIndex = materialNameToIndex[rawMesh.materialIndexToName[i]];
-				if (materialIndex === undefined) {
-					continue;
-				}
-
-				jsonFaces = {
-					material : materialIndex,
-					parameters : []
-				};
-				ConvertFacesByMaterial (rawMesh, i, jsonFaces);
-				jsonMesh.triangles.push (jsonFaces);
-			}
+			return [color.r, color.g, color.b];
 		}
 	
-		var i;
-		var materialNameToIndex = {};
-		for (i = 0; i < result.materials.length; i++) {
-			materialNameToIndex[result.materials[i].name] = i;
-		}
-	
-		var rawMesh, jsonMesh;
-		for (i = 0; i < rawMeshData.length; i++) {
-			rawMesh = rawMeshData[i];
-			jsonMesh = {
-				name : rawMesh.name,
-				vertices : rawMesh.vertices,
-				normals : [0, 0, 1],
-				uvs : [0, 0],
-				triangles : []
-			};
-			ConvertRawMeshToJsonMesh (rawMesh, jsonMesh, materialNameToIndex);
-			result.meshes.push (jsonMesh);
+		var i, material;
+		for (i = 0; i < model.MaterialCount (); i++) {
+			material = model.GetMaterial (i);
+			materials.push ({
+				ambient : ColorToArray (material.ambient),
+				diffuse : ColorToArray (material.diffuse),
+				specular : ColorToArray (material.specular),
+				opacity : material.opacity
+			});
 		}
 	}
 
-	var result = {};
-	result.version = 1;
-	result.materials = [];
-	result.meshes = [];
+	function ConvertBody (model, body, mesh)
+	{
+		var trianglesByMaterial = [];
+		var materialCount = model.MaterialCount ();
+		
+		var i, j, coord;
+		for (i = 0; i < body.VertexCount (); i++) {
+			coord = body.GetVertex (i);
+			mesh.vertices.push (coord.x, coord.y, coord.z);
+		}
+		
+		for (i = 0; i < body.NormalCount (); i++) {
+			coord = body.GetNormal (i);
+			mesh.normals.push (coord.x, coord.y, coord.z);
+		}
 
-	var rawMeshData = [];
-	var currentMesh = null;
+		for (i = 0; i < body.UVCount (); i++) {
+			coord = body.GetUV (i);
+			mesh.uvs.push (coord.x, coord.y);
+		}
+
+		for (i = 0; i < materialCount; i++) {
+			trianglesByMaterial.push ([]);
+		}
+
+		var triangle;
+		for (i = 0; i < body.TriangleCount (); i++) {
+			triangle = body.GetTriangle (i);
+			if (triangle.mat < 0 || triangle.mat >= materialCount) {
+				continue;
+			}
+			trianglesByMaterial[triangle.mat].push (i);
+		}
+
+		var triangles, jsonTriangles;
+		for (i = 0; i < trianglesByMaterial.length; i++) {
+			triangles = trianglesByMaterial[i];
+			if (triangles.length === 0) {
+				continue;
+			}
+			
+			jsonTriangles =  {
+				material : i,
+				parameters : []
+			};
+			for (j = 0; j < triangles.length; j++) {
+				triangle = body.GetTriangle (triangles[j]);
+				jsonTriangles.parameters.push (
+					triangle.v0, triangle.v1, triangle.v2,
+					triangle.n0, triangle.n1, triangle.n2,
+					triangle.u0, triangle.u1, triangle.u2
+				);
+			}
+			mesh.triangles.push (jsonTriangles);
+		}
+	}
+	
+	var result = {
+		version : 1,
+		materials : [],
+		meshes : []
+	};
+	
+	ConvertMaterials (model, result.materials);
+	
+	var i, body, mesh;
+	for (i = 0; i < model.BodyCount (); i++) {
+		mesh = {
+			vertices : [],
+			normals : [],
+			uvs : [],
+			triangles : []
+		};
+		body = model.GetBody (i);
+		ConvertBody (model, body, mesh);
+		result.meshes.push (mesh);
+	}
+	
+	return result;
+};
+
+JSM.Convert3dsToJsonData = function (arrayBuffer)
+{
+	var triangleModel = new JSM.TriangleModel ();
+	var currentBody = null;
+	var materialNameToIndex = {};
 	
 	JSM.Read3dsFile (arrayBuffer, {
 		onLog: function (/*logText, logLevel*/) {
@@ -437,9 +480,9 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			function GetColor (color)
 			{
 				if (color === undefined || color === null) {
-					return [0.0, 0.0, 0.0];
+					return {r : 0.0, g : 0.0, b : 0.0};
 				}
-				return [color.r, color.g, color.b];
+				return color;
 			}
 
 			function GetOpacity (transparency)
@@ -450,55 +493,52 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				return 1.0 - transparency;
 			}
 			
-			result.materials.push ({
-				name : material.name,
-				ambient : GetColor (material.ambient),
-				diffuse : GetColor (material.diffuse),
-				specular : GetColor (material.specular),
-				opacity : GetOpacity (material.transparency)
-			});
+			var index = triangleModel.AddMaterial (
+				GetColor (material.ambient),
+				GetColor (material.diffuse),
+				GetColor (material.specular),
+				GetOpacity (material.transparency)
+			);
+			materialNameToIndex[material.name] = index;
 		},
-		onMesh : function (meshName) {
-			rawMeshData.push ({
-				name : meshName,
-				vertices : [],
-				faces : [],
-				facesByMaterial : [],
-				materialNameToIndex : {},
-				materialIndexToName : {}
-			});
-			currentMesh = rawMeshData[rawMeshData.length - 1];
+		onMesh : function (/*meshName*/) {
+			var index = triangleModel.AddBody (new JSM.TriangleBody ());
+			currentBody = triangleModel.GetBody (index);
 		},
 		onVertex : function (x, y, z) {
-			if (currentMesh === null) {
+			if (currentBody === null) {
 				return;
 			}
-			currentMesh.vertices.push (x, y, z);
+			currentBody.AddVertex (x, y, z);
 		},
 		onFace : function (v0, v1, v2/*, flags*/) {
-			if (currentMesh === null) {
+			if (currentBody === null) {
 				return;
 			}
-			currentMesh.faces.push ([v0, v1, v2]);
+			currentBody.AddTriangle (v0, v1, v2);
 		},
 		onFaceMaterial : function (faceIndex, materialName) {
-			if (currentMesh === null) {
+			if (currentBody === null) {
 				return;
 			}
-			var faceGroupIndex = currentMesh.materialNameToIndex[materialName];
-			if (faceGroupIndex === undefined) {
-				currentMesh.facesByMaterial.push ([]);
-				faceGroupIndex = currentMesh.facesByMaterial.length - 1;
-				currentMesh.materialNameToIndex[materialName] = faceGroupIndex;
-				currentMesh.materialIndexToName[faceGroupIndex] = materialName;
+			
+			if (materialNameToIndex[materialName] === undefined) {
+				return;
 			}
-			currentMesh.facesByMaterial[faceGroupIndex].push (faceIndex);
+
+			var triangle = currentBody.GetTriangle (faceIndex);
+			triangle.mat = materialNameToIndex[materialName];
 		},
-		onFaceSmoothingGroup : function (/*faceIndex, smoothingGroup*/) {
-			// todo
+		onFaceSmoothingGroup : function (faceIndex, smoothingGroup) {
+			if (currentBody === null) {
+				return;
+			}
+			
+			var triangle = currentBody.GetTriangle (faceIndex);
+			triangle.curve = smoothingGroup;
 		}
 	});
 	
-	ConvertRawDataToJsonData (rawMeshData, result);
-	return result;
+	triangleModel.Finalize ();
+	return JSM.ConvertTriangleModelToJsonData (triangleModel);
 };
