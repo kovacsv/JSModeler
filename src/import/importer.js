@@ -378,6 +378,7 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 		for (i = 0; i < model.MaterialCount (); i++) {
 			material = model.GetMaterial (i);
 			materials.push ({
+				name : material.name,
 				ambient : ColorToArray (material.ambient),
 				diffuse : ColorToArray (material.diffuse),
 				specular : ColorToArray (material.specular),
@@ -453,13 +454,14 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 	
 	var i, body, mesh;
 	for (i = 0; i < model.BodyCount (); i++) {
+		body = model.GetBody (i);
 		mesh = {
+			name : body.GetName (),
 			vertices : [],
 			normals : [],
 			uvs : [],
 			triangles : []
 		};
-		body = model.GetBody (i);
 		ConvertBody (model, body, mesh);
 		result.meshes.push (mesh);
 	}
@@ -494,6 +496,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			}
 			
 			var index = triangleModel.AddMaterial (
+				material.name,
 				GetColor (material.ambient),
 				GetColor (material.diffuse),
 				GetColor (material.specular),
@@ -501,8 +504,8 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			);
 			materialNameToIndex[material.name] = index;
 		},
-		onMesh : function (/*meshName*/) {
-			var index = triangleModel.AddBody (new JSM.TriangleBody ());
+		onMesh : function (meshName) {
+			var index = triangleModel.AddBody (new JSM.TriangleBody (meshName));
 			currentBody = triangleModel.GetBody (index);
 		},
 		onVertex : function (x, y, z) {

@@ -1,9 +1,15 @@
-JSM.TriangleBody = function ()
+JSM.TriangleBody = function (name)
 {
+	this.name = name;
 	this.vertices = [];
 	this.normals = [];
 	this.uvs = [];
 	this.triangles = [];
+};
+
+JSM.TriangleBody.prototype.GetName = function ()
+{
+	return this.name;
 };
 
 JSM.TriangleBody.prototype.AddVertex = function (x, y, z)
@@ -117,9 +123,10 @@ JSM.TriangleModel = function ()
 	this.bodies = [];
 };
 
-JSM.TriangleModel.prototype.AddMaterial = function (ambient, diffuse, specular, opacity)
+JSM.TriangleModel.prototype.AddMaterial = function (name, ambient, diffuse, specular, opacity)
 {
 	this.materials.push ({
+		name : name,
 		ambient : ambient,
 		diffuse : diffuse,
 		specular : specular,
