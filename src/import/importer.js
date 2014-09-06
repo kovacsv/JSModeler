@@ -354,7 +354,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				} else if (chunkId == chunks['OBJECT_PIVOT']) {
 					pivotPoint[0] = reader.ReadFloat32 ();
 					pivotPoint[1] = reader.ReadFloat32 ();
-					pivotPoint[2] = reader.ReadFloat32 ();					
+					pivotPoint[2] = reader.ReadFloat32 ();
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 3);
 					SkipChunk (reader, chunkLength);
@@ -646,11 +646,24 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 		currentMeshData = meshData[i];
 		
 		// todo: need the pivot point, and should apply transformation around it
+		//lib3ds_matrix_copy(M, node->base.matrix);
+		//lib3ds_matrix_translate(M, -node->pivot[0], -node->pivot[1], -node->pivot[2]);
+		//lib3ds_matrix_copy(inv_matrix, mesh->matrix);
+		//lib3ds_matrix_inv(inv_matrix);
+		//lib3ds_matrix_mult(M, M, inv_matrix);
 		
-		//if (currentMeshData.transformation !== undefined) {
+		//if (currentMeshData.transformation !== undefined || currentMeshData.pivotPoint !== undefined) {
+		//	var pivot = new JSM.Coord (0.0, 0.0, 0.0);
+		//	if (currentMeshData.pivotPoint !== undefined) {
+		//		pivot.x = currentMeshData.pivotPoint[0];
+		//		pivot.y = currentMeshData.pivotPoint[1];
+		//		pivot.z = currentMeshData.pivotPoint[2];
+		//	}
 		//	for (j = 0; j < currentBody.VertexCount (); j++) {
 		//		vertex = currentBody.GetVertex (j);
+		//		vertex = JSM.CoordSub (vertex, pivot);
 		//		transformedVertex = JSM.ApplyTransformation (currentMeshData.transformation, vertex);
+		//		transformedVertex = JSM.CoordAdd (transformedVertex, pivot);
 		//		currentBody.SetVertex (j, transformedVertex.x, transformedVertex.y, transformedVertex.z);
 		//	}
 		//}
