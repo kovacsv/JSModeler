@@ -21,6 +21,20 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		}
 	}
 
+	function OnTransformation (matrix)
+	{
+		if (callbacks.onTransformation !== undefined && callbacks.onTransformation !== null) {
+			callbacks.onTransformation (matrix);
+		}
+	}
+	
+	function OnPivotPoint (meshId, pivotPoint)
+	{
+		if (callbacks.onPivotPoint !== undefined && callbacks.onPivotPoint !== null) {
+			callbacks.onPivotPoint (meshId, pivotPoint);
+		}
+	}
+
 	function OnVertex (x, y, z)
 	{
 		if (callbacks.onVertex !== undefined && callbacks.onVertex !== null) {
@@ -236,6 +250,25 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			});
 		}
 
+		function ReadTransformationChunk (reader, id, length)
+		{
+			OnLog ('Read transformation chunk (' + id.toString (16) + ', ' + length + ')', 4);
+			var matrix = [];
+			var i, j;
+			for (i = 0; i < 4; i++) {
+				for (j = 0; j < 3; j++) {
+					matrix.push (reader.ReadFloat32 ());
+				}
+				if (i < 3) {
+					matrix.push (0);
+				} else {
+					matrix.push (1);
+				}
+			}
+
+			OnTransformation (matrix);
+		}
+
 		function ReadMeshChunk (reader, objectName, id, length)
 		{
 			OnLog ('Read mesh chunk (' + objectName + ', ' +  id.toString (16) + ', ' + length + ')', 3);
@@ -247,6 +280,8 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 					ReadVerticesChunk (reader, chunkId, chunkLength);
 				} else if (chunkId == chunks['TRI_FACEL1']) {
 					ReadFacesChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == chunks['TRI_TRANSFORMATION']) {
+					ReadTransformationChunk (reader, chunkId, chunkLength);
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 4);
 					SkipChunk (reader, chunkLength);
@@ -304,6 +339,48 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				}
 			});
 		}
+
+		function ReadObjectNodeChunk (reader, id, length)
+		{
+			OnLog ('Read object node chunk (' + id.toString (16) + ', ' + length + ')', 2);
+			
+			var meshId = -1;
+			var pivotPoint = [0.0, 0.0, 0.0];
+			
+			var endByte = reader.GetPosition () + length - 6;
+			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+				if (chunkId == chunks['OBJECT_ID']) {
+					meshId = reader.ReadInteger16 ();
+				} else if (chunkId == chunks['OBJECT_PIVOT']) {
+					pivotPoint[0] = reader.ReadFloat32 ();
+					pivotPoint[1] = reader.ReadFloat32 ();
+					pivotPoint[2] = reader.ReadFloat32 ();					
+				} else {
+					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 3);
+					SkipChunk (reader, chunkLength);
+				}
+			});
+			
+			if (meshId == -1) {
+				return;
+			}
+			OnPivotPoint (meshId, pivotPoint);
+		}
+		
+		function ReadKeyFrameChunk (reader, id, length)
+		{
+			OnLog ('Read keyframe chunk (' + id.toString (16) + ', ' + length + ')', 1);
+			
+			var endByte = reader.GetPosition () + length - 6;
+			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+				if (chunkId == chunks['OBJECT_NODE']) {
+					ReadObjectNodeChunk (reader, chunkId, chunkLength);
+				} else {
+					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 2);
+					SkipChunk (reader, chunkLength);
+				}
+			});
+		}
 		
 		function ReadMainChunk (reader, id, length)
 		{
@@ -313,6 +390,8 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['EDIT3DS']) {
 					ReadEditorChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == chunks['KF3DS']) {
+					ReadKeyFrameChunk (reader, chunkId, chunkLength);
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 1);
 					SkipChunk (reader, chunkLength);
@@ -357,8 +436,13 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		'OBJ_CAMERA' : 0x4700,
 		'TRI_VERTEXL' : 0x4110,
 		'TRI_FACEL1' : 0x4120,
+		'TRI_TRANSFORMATION' : 0x4160,
 		'TRI_MATERIAL' : 0x4130,
-		'TRI_SMOOTH' : 0x4150
+		'TRI_SMOOTH' : 0x4150,
+		'KF3DS' : 0xB000,
+		'OBJECT_NODE' : 0xB002,
+		'OBJECT_PIVOT' : 0xB013,
+		'OBJECT_ID' : 0xB030
 	};
 	
 	var reader = new JSM.BinaryReader (arrayBuffer, true);
@@ -473,7 +557,10 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 {
 	var triangleModel = new JSM.TriangleModel ();
 	var currentBody = null;
+	
 	var materialNameToIndex = {};
+	var meshData = [];
+	var currentMeshData = null;
 	
 	JSM.Read3dsFile (arrayBuffer, {
 		onLog: function (/*logText, logLevel*/) {
@@ -507,40 +594,84 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 		onMesh : function (meshName) {
 			var index = triangleModel.AddBody (new JSM.TriangleBody (meshName));
 			currentBody = triangleModel.GetBody (index);
+			meshData.push ({
+				faceToMaterial : {},
+				faceToSmoothingGroup : {}
+			});
+			currentMeshData = meshData[meshData.length - 1];
+		},
+		onTransformation : function (matrix) {
+			if (currentBody === null || currentMeshData === null) {
+				return;
+			}
+			currentMeshData.transformation = matrix;
+		},
+		onPivotPoint : function (meshId, pivotPoint) {
+			if (meshId < 0 || meshId >= meshData.length) {
+				return;
+			}
+			meshData[meshId].pivotPoint = pivotPoint;
 		},
 		onVertex : function (x, y, z) {
-			if (currentBody === null) {
+			if (currentBody === null || currentMeshData === null) {
 				return;
 			}
 			currentBody.AddVertex (x, y, z);
 		},
 		onFace : function (v0, v1, v2/*, flags*/) {
-			if (currentBody === null) {
+			if (currentBody === null || currentMeshData === null) {
 				return;
 			}
 			currentBody.AddTriangle (v0, v1, v2);
 		},
 		onFaceMaterial : function (faceIndex, materialName) {
-			if (currentBody === null) {
+			if (currentBody === null || currentMeshData === null) {
 				return;
 			}
-			
-			if (materialNameToIndex[materialName] === undefined) {
-				return;
-			}
-
-			var triangle = currentBody.GetTriangle (faceIndex);
-			triangle.mat = materialNameToIndex[materialName];
+			currentMeshData.faceToMaterial[faceIndex] = materialName;
 		},
 		onFaceSmoothingGroup : function (faceIndex, smoothingGroup) {
-			if (currentBody === null) {
+			if (currentBody === null || currentMeshData === null) {
 				return;
 			}
-			
-			var triangle = currentBody.GetTriangle (faceIndex);
-			triangle.curve = smoothingGroup;
+			currentMeshData.faceToSmoothingGroup[faceIndex] = smoothingGroup;
 		}
 	});
+	
+	var i, j, triangle;
+	var vertex, transformedVertex;
+	var materialName, materialIndex, smoothingGroup;
+	for (i = 0; i < triangleModel.BodyCount (); i++) {
+		currentBody = triangleModel.GetBody (i);
+		currentMeshData = meshData[i];
+		
+		// todo: need the pivot point, and should apply transformation around it
+		
+		//if (currentMeshData.transformation !== undefined) {
+		//	for (j = 0; j < currentBody.VertexCount (); j++) {
+		//		vertex = currentBody.GetVertex (j);
+		//		transformedVertex = JSM.ApplyTransformation (currentMeshData.transformation, vertex);
+		//		currentBody.SetVertex (j, transformedVertex.x, transformedVertex.y, transformedVertex.z);
+		//	}
+		//}
+
+		for (j = 0; j < currentBody.TriangleCount (); j++) {
+			triangle = currentBody.GetTriangle (j);
+			
+			materialName = currentMeshData.faceToMaterial[j];
+			if (materialName !== undefined) {
+				materialIndex = materialNameToIndex[materialName];
+				if (materialIndex !== undefined) {
+					triangle.mat = materialIndex;
+				}
+			}
+			
+			smoothingGroup = currentMeshData.faceToSmoothingGroup[j];
+			if (smoothingGroup !== undefined) {
+				triangle.curve = smoothingGroup;
+			}
+		}
+	}
 	
 	triangleModel.Finalize ();
 	return JSM.ConvertTriangleModelToJsonData (triangleModel);

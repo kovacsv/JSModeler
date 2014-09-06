@@ -210,6 +210,13 @@
 					onMesh : function (meshName) {
 						Assert (meshName == 'Model');
 					},
+					onTransformation : function (matrix) {
+						Assert (matrix.toString () == [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1].toString ());
+					},
+					onPivotPoint : function (meshId, pivotPoint) {
+						Assert (meshId == 0);
+						Assert (pivotPoint.toString () == [0, 0, 0].toString ());
+					},
 					onVertex : function (x, y, z) {
 						if (vertexIndex == 0)       {Assert (x == 1 && y == 2 && z == 0);}
 						else if (vertexIndex == 1)  {Assert (x == 0 && y == 0 && z == 0);}

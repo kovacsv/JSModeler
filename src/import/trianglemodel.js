@@ -23,6 +23,11 @@ JSM.TriangleBody.prototype.GetVertex = function (index)
 	return this.vertices[index];
 };
 
+JSM.TriangleBody.prototype.SetVertex = function (index, x, y, z)
+{
+	this.vertices[index] = new JSM.Coord (x, y, z);
+};
+
 JSM.TriangleBody.prototype.VertexCount = function ()
 {
 	return this.vertices.length;
