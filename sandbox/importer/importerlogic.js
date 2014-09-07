@@ -15,13 +15,17 @@ Importer.prototype.Init = function (canvasName, callbacks)
 	};
 
 	this.viewer = new JSM.ThreeViewer ();
-	this.viewer.Start (canvasName, viewerSettings);
+	if (!this.viewer.Start (canvasName, viewerSettings)) {
+		return false;
+	}
+	this.viewer.SetClearColor (0x222222);
 	this.viewer.Draw ();
 	
 	window.addEventListener ('dragover', this.DragOver.bind (this), false);
 	window.addEventListener ('drop', this.Drop.bind (this), false);
 	
 	this.callbacks = callbacks;
+	return true;
 };
 
 Importer.prototype.DragOver = function (event)

@@ -170,6 +170,11 @@ JSM.ThreeViewer.prototype.SetRunAfterRender = function (runAfterRender)
 	this.runAfterRender = runAfterRender;
 };
 
+JSM.ThreeViewer.prototype.SetClearColor = function (color)
+{
+	this.renderer.setClearColor (new THREE.Color (color));
+};
+
 JSM.ThreeViewer.prototype.AddMesh = function (mesh)
 {
 	this.scene.add (mesh);

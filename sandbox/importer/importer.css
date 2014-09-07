@@ -1,7 +1,7 @@
 html, body
 {
-	color : #000000;
-	background : #ffffff;
+	color : #dddddd;
+	background : #222222;
 	font-size : 12px;
 	font-family : Arial, cursive;
 	margin : 0px;
@@ -12,11 +12,8 @@ html, body
 
 #left
 {
-	color : #000000;
-	background : #f5f5f5;
 	width : 320px;
 	height : 100%;
-	border-right : 1px solid #c6c6c6;
 	float : left;
 }
 
