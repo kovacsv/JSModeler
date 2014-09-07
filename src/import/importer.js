@@ -28,10 +28,10 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		}
 	}
 	
-	function OnPivotPoint (meshId, pivotPoint)
+	function OnPivotPoint (objectId, pivotPoint)
 	{
 		if (callbacks.onPivotPoint !== undefined && callbacks.onPivotPoint !== null) {
-			callbacks.onPivotPoint (meshId, pivotPoint);
+			callbacks.onPivotPoint (objectId, pivotPoint);
 		}
 	}
 
@@ -344,13 +344,13 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		{
 			OnLog ('Read object node chunk (' + id.toString (16) + ', ' + length + ')', 2);
 			
-			var meshId = -1;
+			var objectId = -1;
 			var pivotPoint = [0.0, 0.0, 0.0];
 			
 			var endByte = reader.GetPosition () + length - 6;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['OBJECT_ID']) {
-					meshId = reader.ReadInteger16 ();
+					objectId = reader.ReadInteger16 ();
 				} else if (chunkId == chunks['OBJECT_PIVOT']) {
 					pivotPoint[0] = reader.ReadFloat32 ();
 					pivotPoint[1] = reader.ReadFloat32 ();
@@ -361,10 +361,11 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				}
 			});
 			
-			if (meshId == -1) {
+			if (objectId == -1) {
 				return;
 			}
-			OnPivotPoint (meshId, pivotPoint);
+
+			OnPivotPoint (objectId, pivotPoint);
 		}
 		
 		function ReadKeyFrameChunk (reader, id, length)
@@ -555,6 +556,13 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 
 JSM.Convert3dsToJsonData = function (arrayBuffer)
 {
+	function AppendMatrixTranslation (matrix, x, y, z)
+	{
+		matrix[12] += matrix[0] * x + matrix[4] * y + matrix[8] * z;
+		matrix[13] += matrix[1] * x + matrix[5] * y + matrix[9] * z;
+		matrix[14] += matrix[2] * x + matrix[6] * y + matrix[10] * z;
+	}
+
 	var triangleModel = new JSM.TriangleModel ();
 	var currentBody = null;
 	
@@ -606,11 +614,11 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			}
 			currentMeshData.transformation = matrix;
 		},
-		onPivotPoint : function (meshId, pivotPoint) {
-			if (meshId < 0 || meshId >= meshData.length) {
+		onPivotPoint : function (objectId, pivotPoint) {
+			if (objectId < 0 || objectId >= meshData.length) {
 				return;
 			}
-			meshData[meshId].pivotPoint = pivotPoint;
+			meshData[objectId].pivotPoint = pivotPoint;
 		},
 		onVertex : function (x, y, z) {
 			if (currentBody === null || currentMeshData === null) {
@@ -639,34 +647,27 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 	});
 	
 	var i, j, triangle;
-	var vertex, transformedVertex;
+	var matrix, invMatrix, vertex, transformedVertex;
 	var materialName, materialIndex, smoothingGroup;
 	for (i = 0; i < triangleModel.BodyCount (); i++) {
 		currentBody = triangleModel.GetBody (i);
 		currentMeshData = meshData[i];
 		
-		// todo: need the pivot point, and should apply transformation around it
-		//lib3ds_matrix_copy(M, node->base.matrix);
-		//lib3ds_matrix_translate(M, -node->pivot[0], -node->pivot[1], -node->pivot[2]);
-		//lib3ds_matrix_copy(inv_matrix, mesh->matrix);
-		//lib3ds_matrix_inv(inv_matrix);
-		//lib3ds_matrix_mult(M, M, inv_matrix);
-		
-		//if (currentMeshData.transformation !== undefined || currentMeshData.pivotPoint !== undefined) {
-		//	var pivot = new JSM.Coord (0.0, 0.0, 0.0);
-		//	if (currentMeshData.pivotPoint !== undefined) {
-		//		pivot.x = currentMeshData.pivotPoint[0];
-		//		pivot.y = currentMeshData.pivotPoint[1];
-		//		pivot.z = currentMeshData.pivotPoint[2];
-		//	}
-		//	for (j = 0; j < currentBody.VertexCount (); j++) {
-		//		vertex = currentBody.GetVertex (j);
-		//		vertex = JSM.CoordSub (vertex, pivot);
-		//		transformedVertex = JSM.ApplyTransformation (currentMeshData.transformation, vertex);
-		//		transformedVertex = JSM.CoordAdd (transformedVertex, pivot);
-		//		currentBody.SetVertex (j, transformedVertex.x, transformedVertex.y, transformedVertex.z);
-		//	}
-		//}
+		if (currentMeshData.transformation !== undefined) {
+			matrix = JSM.MatrixClone (currentMeshData.transformation);
+			if (currentMeshData.pivotPoint !== undefined) {
+				AppendMatrixTranslation (matrix, -currentMeshData.pivotPoint[0], -currentMeshData.pivotPoint[1], -currentMeshData.pivotPoint[2]);
+			}
+			invMatrix = JSM.MatrixInvert (currentMeshData.transformation);
+			if (invMatrix !== null) {
+				matrix = JSM.MatrixMultiply (invMatrix, matrix);
+				for (j = 0; j < currentBody.VertexCount (); j++) {
+					vertex = currentBody.GetVertex (j);
+					transformedVertex = JSM.ApplyTransformation (matrix, vertex);
+					currentBody.SetVertex (j, transformedVertex.x, transformedVertex.y, transformedVertex.z);
+				}
+			}
+		}
 
 		for (j = 0; j < currentBody.TriangleCount (); j++) {
 			triangle = currentBody.GetTriangle (j);

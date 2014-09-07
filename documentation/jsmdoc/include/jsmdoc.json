@@ -706,6 +706,35 @@
 						["number[16]", "the result matrix"]
 					]
 				},
+				"MatrixVectorMultiply" : {
+					"description" : "Multiplies a matrix with a vector.",
+					"parameters" : [
+						["matrix", "number[16]", "the matrix"],
+						["vector", "number[4]", "the vector"]
+					],
+					"returns" : [
+						["number[4]", "the result vector"]
+					]
+				},
+				"MatrixMultiply" : {
+					"description" : "Multiplies a two matrices.",
+					"parameters" : [
+						["matrix1", "number[16]", "first matrix"],
+						["matrix2", "number[16]", "second matrix"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixInvert" : {
+					"description" : "Inverts a matrix.",
+					"parameters" : [
+						["matrix", "number[16]", "the source matrix"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
 				"MatrixTranslation" : {
 					"description" : "Creates a translation matrix.",
 					"parameters" : [
@@ -773,26 +802,6 @@
 						["aspectRatio", "number", "aspect ratio"],
 						["nearPlane", "number", "near clipping plane"],
 						["farPlane", "number", "far clipping plane"]
-					],
-					"returns" : [
-						["number[16]", "the result matrix"]
-					]
-				},
-				"MatrixVectorMultiply" : {
-					"description" : "Multiplies a matrix with a vector.",
-					"parameters" : [
-						["matrix", "number[16]", "the matrix"],
-						["vector", "number[4]", "the vector"]
-					],
-					"returns" : [
-						["number[4]", "the result vector"]
-					]
-				},
-				"MatrixMultiply" : {
-					"description" : "Multiplies a two matrices.",
-					"parameters" : [
-						["matrix1", "number[16]", "first matrix"],
-						["matrix2", "number[16]", "second matrix"]
 					],
 					"returns" : [
 						["number[16]", "the result matrix"]

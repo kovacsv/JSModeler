@@ -355,6 +355,21 @@ AddTest ('MatrixTest', function (test) {
 	test.Assert (JSM.IsEqual (rotZVec2.x, -1.0));
 	test.Assert (JSM.IsEqual (rotZVec2.y, 1.0));
 	test.Assert (JSM.IsEqual (rotZVec2.z, 1.0));
+	
+	var matrix = [
+		1, 0, 0, 1,
+		0, 2, 1, 2,
+		2, 1, 0, 1,
+		2, 0, 1, 4
+	];
+	
+	var inverse = JSM.MatrixInvert (matrix);
+	test.Assert (inverse.toString () == [
+		-2, -0.5, 1, 0.5,
+		1, 0.5, 0, -0.5,
+		-8, -1, 2, 2,
+		3, 0.5, -1, -0.5
+	].toString ());
 });
 
 AddTest ('ArcLengthTest', function (test) {
