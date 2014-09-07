@@ -20,6 +20,16 @@ html, body
 	float : left;
 }
 
+#menu
+{
+	padding : 10px;
+}
+
+div.menuitem
+{
+	padding : 2px;
+}
+
 canvas
 {
 	display : block;
