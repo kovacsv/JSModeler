@@ -171,7 +171,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 					return result;
 				}
 				
-				result = JSM.RGBComponentsToRGBColor (rgb[0], rgb[1], rgb[2]);
+				result = JSM.RGBComponentsToHexColor (rgb[0], rgb[1], rgb[2]);
 			}
 			
 			return result;

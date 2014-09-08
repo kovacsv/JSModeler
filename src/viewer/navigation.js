@@ -206,7 +206,8 @@ JSM.Navigation.prototype.OnMouseMove = function (event)
 			return;
 		}
 		
-		var ratio = 0.01;
+		var eyeCenterDistance = JSM.CoordDistance (this.camera.eye, this.camera.center);
+		var ratio = 0.001 * eyeCenterDistance;
 		this.Pan (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 		this.DrawCallback ();
 	}

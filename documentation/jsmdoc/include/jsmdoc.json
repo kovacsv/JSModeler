@@ -1949,15 +1949,15 @@
 						["integer", "the RGB value"]
 					]
 				},
-				"RGBComponentsToRGBColor" : {
-					"description" : "Converts RGB components to RGB color.",
+				"RGBComponentsToHexColor" : {
+					"description" : "Converts RGB components to hex color.",
 					"parameters" : [
 						["red", "integer", "the red component"],
 						["green", "integer", "the green component"],
 						["blue", "integer", "the blue component"]
 					],
 					"returns" : [
-						["integer", "the RGB value"]
+						["integer", "the hex value"]
 					]
 				},
 				"AddVertexToBody" : {

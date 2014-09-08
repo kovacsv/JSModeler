@@ -25,7 +25,7 @@ html, body
 
 div.menuitem
 {
-	padding : 3px;
+	padding : 2px;
 	overflow : auto;
 }
 
@@ -34,24 +34,27 @@ div.menugroup
 	margin-left : 15px;
 }
 
-div.menubutton
+div.colorbutton
 {
-	text-align : center;
-	padding : 2px;
-	border-radius : 2px;
 	width : 15px;
+	height : 15px;
+	border-radius : 2px;
 	float : left;
-	cursor : pointer;
 }
 
-img.menuimg
+img.menubutton
 {
-	
+	padding : 2px;
+	float : left;
+	cursor : pointer;
+	border : 0px;
+	display : block;
 }
 
 div.menutext
 {
-	margin-left : 5px;
+	padding : 2px;
+	margin-left : 3px;
 	float : left;
 }
 

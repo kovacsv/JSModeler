@@ -47,16 +47,16 @@ JSM.HexColorToRGBColor = function (hexColor)
 };
 
 /**
-* Function: RGBComponentsToRGBColor
-* Description: Converts RGB components to RGB color.
+* Function: RGBComponentsToHexColor
+* Description: Converts RGB components to hex color.
 * Parameters:
 *	red {integer} the red component
 *	green {integer} the green component
 *	blue {integer} the blue component
 * Returns:
-*	{integer} the RGB value
+*	{integer} the hex value
 */
-JSM.RGBComponentsToRGBColor = function (red, green, blue)
+JSM.RGBComponentsToHexColor = function (red, green, blue)
 {
 	function IntegerToHex (intString)
 	{

@@ -48,63 +48,84 @@ ImporterApp.prototype.JsonLoaded = function (jsonData)
 			var title = document.createElement ('div');
 			title.className = 'menuitem';
 			title.innerHTML = name;
+			parent.appendChild (title);
+			
 			var content = document.createElement ('div');
 			content.className = 'menugroup';
-			parent.appendChild (title);
 			parent.appendChild (content);
+
 			return content;
 		}	
 
 		function GenerateMaterials (parent, materials)
 		{
-			function AddMaterialItem (name, level)
+			function AddMaterialItem (parent, material)
 			{
 				var div = document.createElement ('div');
 				div.className = 'menuitem';
-				div.innerHTML = name.substr (0, 30);
+
+				var colorDiv = document.createElement ('div');
+				colorDiv.className = 'colorbutton';
+				
+				var color = JSM.RGBComponentsToHexColor (material.diffuse[0] * 255, material.diffuse[1] * 255, material.diffuse[2] * 255);
+				var colorString = color.toString (16);
+				while (colorString.length < 6) {
+					colorString = '0' + colorString;
+				}
+				colorDiv.style.background = '#' + colorString;
+				div.appendChild (colorDiv);
+				
+				var text = document.createElement ('div');
+				text.className = 'menutext';
+				text.innerHTML = material.name.substr (0, 20);
+				div.appendChild (text);
+
 				parent.appendChild (div);
 			}
 
 			var i, material;
 			for (i = 0; i < materials.length; i++) {
 				material = materials[i];
-				AddMaterialItem (material.name, 1);
+				AddMaterialItem (parent, material);
 			}
 		}
 		
 		function GenerateMeshes (parent, meshes)
 		{
-			function AddMeshItem (parent, name, meshIndex)
+			function AddMeshItem (parent, mesh, meshIndex)
 			{
 				var div = document.createElement ('div');
 				div.className = 'menuitem';
 
-				var button = document.createElement ('div');
-				button.className = 'menubutton';
-				
-				var img = document.createElement ('img');
-				img.className = 'menuimg';
-				img.src = 'images/visible.png';
-				button.appendChild (img);
-				
-				button.onclick = function (i) {
+				var infoImage = document.createElement ('img');
+				infoImage.className = 'menubutton';
+				infoImage.src = 'images/info.png';
+				infoImage.onclick = function (i) {
+					return function () {
+						
+					};
+				} (i);
+				div.appendChild (infoImage);
+
+				var visibleImage = document.createElement ('img');
+				visibleImage.className = 'menubutton';
+				visibleImage.src = 'images/visible.png';
+				visibleImage.onclick = function (i) {
 					return function () {
 						app.meshVisibility[i] = !app.meshVisibility[i];
 						if (app.meshVisibility[i]) {
-							img.src = 'images/visible.png';
+							visibleImage.src = 'images/visible.png';
 						} else {
-							img.src = 'images/hidden.png';
+							visibleImage.src = 'images/hidden.png';
 						}
 						app.Generate ();
 					};
 				} (i);
-
-
-				div.appendChild (button);
+				div.appendChild (visibleImage);
 				
 				var text = document.createElement ('div');
 				text.className = 'menutext';
-				text.innerHTML = name.substr (0, 30);
+				text.innerHTML = mesh.name.substr (0, 20);
 				div.appendChild (text);
 
 				parent.appendChild (div);
@@ -113,7 +134,7 @@ ImporterApp.prototype.JsonLoaded = function (jsonData)
 			var i, mesh;
 			for (i = 0; i < meshes.length; i++) {
 				mesh = meshes[i];
-				AddMeshItem (parent, mesh.name, i);
+				AddMeshItem (parent, mesh, i);
 			}
 		}
 		
@@ -123,7 +144,7 @@ ImporterApp.prototype.JsonLoaded = function (jsonData)
 		var materialsGroup = AddGroup (menu, 'Materials');
 		GenerateMaterials (materialsGroup, jsonData.materials);
 
-		var meshesGroup = AddGroup (menu, 'Materials');
+		var meshesGroup = AddGroup (menu, 'Meshes');
 		GenerateMeshes (meshesGroup, jsonData.meshes);
 	}
 
