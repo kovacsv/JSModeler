@@ -44,16 +44,9 @@ div.menubutton
 	cursor : pointer;
 }
 
-div.menubutton.plus
+img.menuimg
 {
-	color : #ffffff;
-	background : #279b61;
-}
-
-div.menubutton.minus
-{
-	color : #ffffff;
-	background : #cc3333;
+	
 }
 
 div.menutext
@@ -66,3 +59,4 @@ canvas
 {
 	display : block;
 }
+

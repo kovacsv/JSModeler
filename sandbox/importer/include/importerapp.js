@@ -80,21 +80,26 @@ ImporterApp.prototype.JsonLoaded = function (jsonData)
 				div.className = 'menuitem';
 
 				var button = document.createElement ('div');
-				button.className = 'menubutton plus';
-				button.innerHTML = '+';
+				button.className = 'menubutton';
+				
+				var img = document.createElement ('img');
+				img.className = 'menuimg';
+				img.src = 'images/visible.png';
+				button.appendChild (img);
+				
 				button.onclick = function (i) {
 					return function () {
 						app.meshVisibility[i] = !app.meshVisibility[i];
 						if (app.meshVisibility[i]) {
-							button.className = 'menubutton plus';
-							button.innerHTML = '+';
+							img.src = 'images/visible.png';
 						} else {
-							button.className = 'menubutton minus';
-							button.innerHTML = '-';
+							img.src = 'images/hidden.png';
 						}
 						app.Generate ();
 					};
 				} (i);
+
+
 				div.appendChild (button);
 				
 				var text = document.createElement ('div');
