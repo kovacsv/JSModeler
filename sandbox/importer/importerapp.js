@@ -34,36 +34,35 @@ ImporterApp.prototype.Resize = function ()
 
 ImporterApp.prototype.JsonLoaded = function (jsonData)
 {
-	function ClearMenu ()
-	{
-		var menu = document.getElementById ('menu');
-		while (menu.lastChild) {
-			menu.removeChild (menu.lastChild);
-		}	
-	}
-
-	function AddTitleItem (name, level)
-	{
-		var menu = document.getElementById ('menu');
-		var div = document.createElement ('div');
-		div.className = 'menuitem';
-		div.style.marginLeft = (level * 15) + 'px';
-		div.innerHTML = name;
-		menu.appendChild (div);
-	}	
-
 	function GenerateMenu (jsonData, app)
 	{
-		function GenerateMaterials (materials)
+		function ClearMenu (parent)
+		{
+			while (parent.lastChild) {
+				parent.removeChild (parent.lastChild);
+			}	
+		}
+
+		function AddGroup (parent, name)
+		{
+			var title = document.createElement ('div');
+			title.className = 'menuitem';
+			title.innerHTML = name;
+			var content = document.createElement ('div');
+			content.className = 'menugroup';
+			parent.appendChild (title);
+			parent.appendChild (content);
+			return content;
+		}	
+
+		function GenerateMaterials (parent, materials)
 		{
 			function AddMaterialItem (name, level)
 			{
-				var menu = document.getElementById ('menu');
 				var div = document.createElement ('div');
 				div.className = 'menuitem';
-				div.style.marginLeft = (level * 15) + 'px';
-				div.innerHTML = name.substr (0, 16);
-				menu.appendChild (div);
+				div.innerHTML = name.substr (0, 30);
+				parent.appendChild (div);
 			}
 
 			var i, material;
@@ -73,15 +72,12 @@ ImporterApp.prototype.JsonLoaded = function (jsonData)
 			}
 		}
 		
-		function GenerateMeshes (meshes)
+		function GenerateMeshes (parent, meshes)
 		{
-			function AddMeshItem (name, level, meshIndex)
+			function AddMeshItem (parent, name, meshIndex)
 			{
-				var menu = document.getElementById ('menu');
-
 				var div = document.createElement ('div');
 				div.className = 'menuitem';
-				div.style.marginLeft = (level * 15) + 'px';
 
 				var button = document.createElement ('div');
 				button.className = 'menubutton plus';
@@ -103,24 +99,27 @@ ImporterApp.prototype.JsonLoaded = function (jsonData)
 				
 				var text = document.createElement ('div');
 				text.className = 'menutext';
-				text.innerHTML = name.substr (0, 16);
+				text.innerHTML = name.substr (0, 30);
 				div.appendChild (text);
 
-				menu.appendChild (div);
+				parent.appendChild (div);
 			}
 
 			var i, mesh;
 			for (i = 0; i < meshes.length; i++) {
 				mesh = meshes[i];
-				AddMeshItem (mesh.name, 1, i);
+				AddMeshItem (parent, mesh.name, i);
 			}
 		}
 		
-		ClearMenu ();
-		AddTitleItem ('Materials', 0);
-		GenerateMaterials (jsonData.materials);
-		AddTitleItem ('Meshes', 0);
-		GenerateMeshes (jsonData.meshes);
+		var menu = document.getElementById ('menu');
+		ClearMenu (menu);
+
+		var materialsGroup = AddGroup (menu, 'Materials');
+		GenerateMaterials (materialsGroup, jsonData.materials);
+
+		var meshesGroup = AddGroup (menu, 'Materials');
+		GenerateMeshes (meshesGroup, jsonData.meshes);
 	}
 
 	this.meshVisibility = {};

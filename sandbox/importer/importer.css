@@ -25,8 +25,13 @@ html, body
 
 div.menuitem
 {
-	padding : 2px;
+	padding : 3px;
 	overflow : auto;
+}
+
+div.menugroup
+{
+	margin-left : 15px;
 }
 
 div.menubutton
