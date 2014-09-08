@@ -1,10 +1,10 @@
-ImporterLogic = function ()
+ImporterGenerator = function ()
 {
 	this.viewer = null;
 	this.jsonData = null;
 };
 
-ImporterLogic.prototype.Init = function (canvasName)
+ImporterGenerator.prototype.Init = function (canvasName)
 {
 	var viewerSettings = {
 		cameraEyePosition : [8.0, 6.0, 4.0],
@@ -18,19 +18,19 @@ ImporterLogic.prototype.Init = function (canvasName)
 	if (!this.viewer.Start (canvasName, viewerSettings)) {
 		return false;
 	}
-	this.viewer.SetClearColor (0xeeeeee);
+	this.viewer.SetClearColor (0x222222);
 	this.viewer.Draw ();
 	
 	return true;
 };
 
-ImporterLogic.prototype.LoadArrayBuffer = function (arrayBuffer)
+ImporterGenerator.prototype.LoadArrayBuffer = function (arrayBuffer)
 {
 	this.jsonData = JSM.Convert3dsToJsonData (arrayBuffer);
 	return this.jsonData;
 };
 
-ImporterLogic.prototype.LoadJsonData = function (meshVisibility)
+ImporterGenerator.prototype.LoadJsonData = function (meshVisibility)
 {
 	var i;
 
@@ -60,7 +60,7 @@ ImporterLogic.prototype.LoadJsonData = function (meshVisibility)
 	this.viewer.Draw ();
 };
 
-ImporterLogic.prototype.FitInWindow = function (meshVisibility)
+ImporterGenerator.prototype.FitInWindow = function (meshVisibility)
 {
 	this.viewer.FitInWindow ();
 };

@@ -1,6 +1,6 @@
 ImporterApp = function ()
 {
-	this.importer = null;
+	this.generator = null;
 	this.meshVisibility = null;
 };
 
@@ -9,8 +9,8 @@ ImporterApp.prototype.Init = function (canvasName, callbacks)
 	window.onresize = this.Resize.bind (this);
 	this.Resize ();
 
-	this.importer = new ImporterLogic ();
-	this.importer.Init ('example');
+	this.generator = new ImporterGenerator ();
+	this.generator.Init ('example');
 
 	window.addEventListener ('dragover', this.DragOver.bind (this), false);
 	window.addEventListener ('drop', this.Drop.bind (this), false);
@@ -18,9 +18,9 @@ ImporterApp.prototype.Init = function (canvasName, callbacks)
 	// debug
 	var myThis = this;
 	JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
-		var jsonData = myThis.importer.LoadArrayBuffer (arrayBuffer);
+		var jsonData = myThis.generator.LoadArrayBuffer (arrayBuffer);
 		myThis.JsonLoaded (jsonData);
-		myThis.importer.LoadJsonData ();
+		myThis.generator.LoadJsonData ();
 	});
 };
 
@@ -151,16 +151,16 @@ ImporterApp.prototype.Drop = function (event)
 	
 	var myThis = this;
 	JSM.GetArrayBufferFromFile (files[0], function (arrayBuffer) {
-		var jsonData = myThis.importer.LoadArrayBuffer (arrayBuffer);
+		var jsonData = myThis.generator.LoadArrayBuffer (arrayBuffer);
 		myThis.JsonLoaded (jsonData);
 		myThis.Generate ();
-		myThis.importer.FitInWindow ();
+		myThis.generator.FitInWindow ();
 	});		
 };
 
 ImporterApp.prototype.Generate = function ()
 {
-	this.importer.LoadJsonData (this.meshVisibility);
+	this.generator.LoadJsonData (this.meshVisibility);
 };
 
 window.onload = function ()
