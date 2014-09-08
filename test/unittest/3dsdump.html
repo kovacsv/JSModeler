@@ -74,14 +74,9 @@
 	<title>JSModeler Test</title>
 
 	<script type="text/javascript">
-		function RunURLTest3ds (url)
+		function RunFileTestExample (file)
 		{
-			var materialIndex = 0;
-			var vertexIndex = 0;
-			var faceIndex = 0;
-			var faceMaterialIndex = 0;
-			var faceSmoothingIndex = 0;
-			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
+			JSM.GetArrayBufferFromFile (file, function (arrayBuffer) {
 				
 				JSM.Read3dsFile (arrayBuffer, callbacks = {		
 					onLog: function (logText, logLevel) {
@@ -92,9 +87,15 @@
 			});
 		}
 
+		function FileSelected (event)
+		{
+			var file = event.target.files[0];
+			RunFileTestExample (file);
+		}
+
 		window.onload = function ()
 		{
-			RunURLTest3ds ('testfiles/cube.3ds');
+			document.getElementById ('file').addEventListener ('change', FileSelected, false);
 		}
 	</script>
 	

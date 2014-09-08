@@ -95,15 +95,45 @@ JSM.TriangleBody.prototype.TriangleCount = function ()
 
 JSM.TriangleBody.prototype.Finalize = function ()
 {
-	function FinalizeTriangle (body, triangle)
+	function FinalizeTriangle (body, triangleIndex, triangleNormals, vertexToTriangles)
 	{
+		function AddAverageNormal (body, vertexIndex, triangleIndex, triangleNormals, vertexToTriangles)
+		{
+			var averageNormal = new JSM.Vector (0.0, 0.0, 0.0);
+			var averageCount = 0;
+			
+			var triangle = body.GetTriangle (triangleIndex);
+			var neighbourTriangles = vertexToTriangles[vertexIndex];
+			var i, neighbourTriangleIndex, neighbourTriangle;
+			for (i = 0; i < neighbourTriangles.length; i++) {
+				neighbourTriangleIndex = neighbourTriangles[i];
+				neighbourTriangle = body.GetTriangle (neighbourTriangleIndex);
+				if (triangle.curve == neighbourTriangle.curve) {
+					averageNormal = JSM.CoordAdd (averageNormal, triangleNormals[neighbourTriangleIndex]);
+					averageCount = averageCount + 1;
+				}
+			}
+			
+			averageNormal = JSM.VectorMultiply (averageNormal, 1.0 / averageCount);
+			averageNormal = JSM.VectorNormalize (averageNormal);
+			return body.AddNormal (averageNormal.x, averageNormal.y, averageNormal.z);
+		}
+	
+		var triangle = body.triangles[i];
+	
 		var normal, normalIndex;
 		if (triangle.n0 == -1 || triangle.n1 == -1 || triangle.n2 == -1) {
-			normal = JSM.CalculateTriangleNormal (body.vertices[triangle.v0], body.vertices[triangle.v1], body.vertices[triangle.v2]);
-			normalIndex = body.AddNormal (normal.x, normal.y, normal.z);
-			triangle.n0 = normalIndex;
-			triangle.n1 = normalIndex;
-			triangle.n2 = normalIndex;
+			if (triangle.curve === -1 || triangle.curve === 0) {
+				normal = triangleNormals[i];
+				normalIndex = body.AddNormal (normal.x, normal.y, normal.z);
+				triangle.n0 = normalIndex;
+				triangle.n1 = normalIndex;
+				triangle.n2 = normalIndex;
+			} else {
+				triangle.n0 = AddAverageNormal (body, triangle.v0, triangleIndex, triangleNormals, vertexToTriangles);
+				triangle.n1 = AddAverageNormal (body, triangle.v1, triangleIndex, triangleNormals, vertexToTriangles);
+				triangle.n2 = AddAverageNormal (body, triangle.v2, triangleIndex, triangleNormals, vertexToTriangles);
+			}
 		}
 		
 		var uvIndex;
@@ -115,10 +145,26 @@ JSM.TriangleBody.prototype.Finalize = function ()
 		}
 	}
 
-	var i, triangle;
+	var triangleNormals = [];
+	var vertexToTriangles = {};
+
+	var i;
+	for (i = 0; i < this.vertices.length; i++) {
+		vertexToTriangles[i] = [];
+	}
+	
+	var triangle, normal;
 	for (i = 0; i < this.triangles.length; i++) {
 		triangle = this.triangles[i];
-		FinalizeTriangle (this, triangle);
+		normal = JSM.CalculateTriangleNormal (this.vertices[triangle.v0], this.vertices[triangle.v1], this.vertices[triangle.v2]);
+		triangleNormals.push (normal);
+		vertexToTriangles[triangle.v0].push (i);
+		vertexToTriangles[triangle.v1].push (i);
+		vertexToTriangles[triangle.v2].push (i);
+	}
+
+	for (i = 0; i < this.triangles.length; i++) {
+		FinalizeTriangle (this, i, triangleNormals, vertexToTriangles);
 	}
 };
 

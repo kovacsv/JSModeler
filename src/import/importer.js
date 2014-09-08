@@ -28,10 +28,10 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		}
 	}
 	
-	function OnPivotPoint (objectId, pivotPoint)
+	function OnPivotPoint (objectName, pivotPoint)
 	{
 		if (callbacks.onPivotPoint !== undefined && callbacks.onPivotPoint !== null) {
-			callbacks.onPivotPoint (objectId, pivotPoint);
+			callbacks.onPivotPoint (objectName, pivotPoint);
 		}
 	}
 
@@ -344,13 +344,14 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		{
 			OnLog ('Read object node chunk (' + id.toString (16) + ', ' + length + ')', 2);
 			
-			var objectId = -1;
+			var objectName = '';
 			var pivotPoint = [0.0, 0.0, 0.0];
 			
 			var endByte = reader.GetPosition () + length - 6;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
-				if (chunkId == chunks['OBJECT_ID']) {
-					objectId = reader.ReadInteger16 ();
+				if (chunkId == chunks['OBJECT_HIERARCHY']) {
+					objectName = ReadName (reader);
+					SkipChunk (reader, chunkLength - objectName.length - 1);
 				} else if (chunkId == chunks['OBJECT_PIVOT']) {
 					pivotPoint[0] = reader.ReadFloat32 ();
 					pivotPoint[1] = reader.ReadFloat32 ();
@@ -360,12 +361,8 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 					SkipChunk (reader, chunkLength);
 				}
 			});
-			
-			if (objectId == -1) {
-				return;
-			}
 
-			OnPivotPoint (objectId, pivotPoint);
+			OnPivotPoint (objectName, pivotPoint);
 		}
 		
 		function ReadKeyFrameChunk (reader, id, length)
@@ -442,6 +439,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		'TRI_SMOOTH' : 0x4150,
 		'KF3DS' : 0xB000,
 		'OBJECT_NODE' : 0xB002,
+		'OBJECT_HIERARCHY' : 0xB010,
 		'OBJECT_PIVOT' : 0xB013,
 		'OBJECT_ID' : 0xB030
 	};
@@ -540,6 +538,9 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 	var i, body, mesh;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
+		if (body.VertexCount () === 0) {
+			continue;
+		}
 		mesh = {
 			name : body.GetName (),
 			vertices : [],
@@ -567,6 +568,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 	var currentBody = null;
 	
 	var materialNameToIndex = {};
+	var meshNameToIndex = {};
 	var meshData = [];
 	var currentMeshData = null;
 	
@@ -607,6 +609,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				faceToSmoothingGroup : {}
 			});
 			currentMeshData = meshData[meshData.length - 1];
+			meshNameToIndex[meshName] = index;
 		},
 		onTransformation : function (matrix) {
 			if (currentBody === null || currentMeshData === null) {
@@ -614,11 +617,12 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			}
 			currentMeshData.transformation = matrix;
 		},
-		onPivotPoint : function (objectId, pivotPoint) {
-			if (objectId < 0 || objectId >= meshData.length) {
+		onPivotPoint : function (objectName, pivotPoint) {
+			var meshIndex = meshNameToIndex[objectName];
+			if (meshIndex === undefined) {
 				return;
 			}
-			meshData[objectId].pivotPoint = pivotPoint;
+			meshData[meshIndex].pivotPoint = pivotPoint;
 		},
 		onVertex : function (x, y, z) {
 			if (currentBody === null || currentMeshData === null) {

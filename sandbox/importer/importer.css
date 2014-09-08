@@ -1,7 +1,7 @@
 html, body
 {
 	color : #dddddd;
-	background : #222222;
+	background : #333333;
 	font-size : 12px;
 	font-family : Arial, cursive;
 	margin : 0px;
@@ -12,9 +12,10 @@ html, body
 
 #left
 {
-	width : 320px;
+	width : 220px;
 	height : 100%;
 	float : left;
+	overflow : auto;
 }
 
 #menu
@@ -25,6 +26,35 @@ html, body
 div.menuitem
 {
 	padding : 2px;
+	overflow : auto;
+}
+
+div.menubutton
+{
+	text-align : center;
+	padding : 2px;
+	border-radius : 2px;
+	width : 15px;
+	float : left;
+	cursor : pointer;
+}
+
+div.menubutton.plus
+{
+	color : #ffffff;
+	background : #279b61;
+}
+
+div.menubutton.minus
+{
+	color : #ffffff;
+	background : #cc3333;
+}
+
+div.menutext
+{
+	margin-left : 5px;
+	float : left;
 }
 
 canvas

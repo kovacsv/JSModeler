@@ -1,74 +1,66 @@
-Importer = function ()
+ImporterLogic = function ()
 {
 	this.viewer = null;
-	this.callbacks = null;
+	this.jsonData = null;
 };
 
-Importer.prototype.Init = function (canvasName, callbacks)
+ImporterLogic.prototype.Init = function (canvasName)
 {
 	var viewerSettings = {
 		cameraEyePosition : [8.0, 6.0, 4.0],
 		cameraCenterPosition : [0.0, 0.0, 0.0],
 		cameraUpVector : [0, 0, 1],
 		nearClippingPlane : 1.0,
-		farClippingPlane : 100000
+		farClippingPlane : 100000000
 	};
 
 	this.viewer = new JSM.ThreeViewer ();
 	if (!this.viewer.Start (canvasName, viewerSettings)) {
 		return false;
 	}
-	this.viewer.SetClearColor (0x222222);
+	this.viewer.SetClearColor (0xeeeeee);
 	this.viewer.Draw ();
 	
-	window.addEventListener ('dragover', this.DragOver.bind (this), false);
-	window.addEventListener ('drop', this.Drop.bind (this), false);
-	
-	this.callbacks = callbacks;
 	return true;
 };
 
-Importer.prototype.DragOver = function (event)
+ImporterLogic.prototype.LoadArrayBuffer = function (arrayBuffer)
 {
-	event.stopPropagation ();
-	event.preventDefault ();
-	event.dataTransfer.dropEffect = 'copy';	
+	this.jsonData = JSM.Convert3dsToJsonData (arrayBuffer);
+	return this.jsonData;
 };
+
+ImporterLogic.prototype.LoadJsonData = function (meshVisibility)
+{
+	var i;
+
+	var workJsonData = null;
+	if (meshVisibility === undefined || meshVisibility === null) {
+		workJsonData = this.jsonData;
+	} else {
+		workJsonData = {
+			version : this.jsonData.version,
+			materials : this.jsonData.materials,
+			meshes : []
+		};
 		
-Importer.prototype.Drop = function (event)
-{
-	event.stopPropagation ();
-	event.preventDefault ();
-	
-	var files = event.dataTransfer.files;
-	if (files.length == 0) {
-		return;
+		for (i = 0; i < this.jsonData.meshes.length; i++) {
+			if (meshVisibility[i]) {
+				workJsonData.meshes.push (this.jsonData.meshes[i]);
+			}
+		}
 	}
 	
-	this.LoadFile (files[0]);
-};
-
-Importer.prototype.LoadFile = function (file)
-{
-	var myThis = this;
 	this.viewer.RemoveMeshes ();
-	JSM.GetArrayBufferFromFile (file, function (arrayBuffer) {
-		myThis.LoadModel (arrayBuffer);
-	});		
-};
-
-Importer.prototype.LoadModel = function (arrayBuffer)
-{
-	var jsonData = JSM.Convert3dsToJsonData (arrayBuffer);
-	if (this.callbacks.jsonLoaded !== undefined) {
-		this.callbacks.jsonLoaded (jsonData);
-	}
-	
-	var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
-	for (var i = 0; i < meshes.length; i++) {
+	var meshes = JSM.ConvertJSONDataToThreeMeshes (workJsonData);
+	for (i = 0; i < meshes.length; i++) {
 		this.viewer.AddMesh (meshes[i]);
 	}
 	
-	this.viewer.FitInWindow ();
 	this.viewer.Draw ();
+};
+
+ImporterLogic.prototype.FitInWindow = function (meshVisibility)
+{
+	this.viewer.FitInWindow ();
 };
