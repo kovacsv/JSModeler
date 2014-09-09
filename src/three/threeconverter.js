@@ -10,9 +10,10 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		var hasTexture = (material.texture !== null);
 		var hasOpacity = (material.opacity !== 1.0);
 
-		var threeMaterial = new THREE.MeshLambertMaterial ({
+		var threeMaterial = new THREE.MeshPhongMaterial ({
 			ambient : material.ambient,
-			color : material.diffuse
+			color : material.diffuse,
+			specular : material.specular
 		});
 		
 		if (conversionData.doubleSided) {
