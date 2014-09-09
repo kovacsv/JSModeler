@@ -12,7 +12,7 @@ html, body
 
 #left
 {
-	width : 220px;
+	width : 250px;
 	height : 100%;
 	float : left;
 	overflow : auto;
@@ -36,9 +36,9 @@ div.menugroup
 
 div.colorbutton
 {
-	width : 15px;
-	height : 15px;
-	border-radius : 2px;
+	width : 14px;
+	height : 14px;
+	border : 1px solid #dddddd;
 	float : left;
 }
 
@@ -56,6 +56,11 @@ div.menutext
 	padding : 2px;
 	margin-left : 3px;
 	float : left;
+}
+
+table.infotable td
+{
+	padding : 1px 5px;
 }
 
 canvas

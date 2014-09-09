@@ -504,6 +504,7 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 			trianglesByMaterial[triangle.mat].push (i);
 		}
 
+		var triangleCount = 0;
 		var triangles, jsonTriangles;
 		for (i = 0; i < trianglesByMaterial.length; i++) {
 			triangles = trianglesByMaterial[i];
@@ -523,8 +524,12 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 					triangle.u0, triangle.u1, triangle.u2
 				);
 			}
+			triangleCount = triangleCount + triangles.length;
 			mesh.triangles.push (jsonTriangles);
 		}
+		
+		mesh.additionalInfo.push ({name : 'vertexCount', value : mesh.vertices.length / 3});
+		mesh.additionalInfo.push ({name : 'triangleCount', value : triangleCount});
 	}
 	
 	var result = {
@@ -546,7 +551,8 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 			vertices : [],
 			normals : [],
 			uvs : [],
-			triangles : []
+			triangles : [],
+			additionalInfo : []
 		};
 		ConvertBody (model, body, mesh);
 		result.meshes.push (mesh);

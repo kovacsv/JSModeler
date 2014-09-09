@@ -1,16 +1,17 @@
 ImporterApp = function ()
 {
-	this.generator = null;
+	this.viewer = null;
+	this.files = null;
 	this.meshVisibility = null;
 };
 
-ImporterApp.prototype.Init = function (canvasName, callbacks)
+ImporterApp.prototype.Init = function ()
 {
 	window.onresize = this.Resize.bind (this);
 	this.Resize ();
 
-	this.generator = new ImporterGenerator ();
-	this.generator.Init ('example');
+	this.viewer = new ImporterViewer ();
+	this.viewer.Init ('example');
 
 	window.addEventListener ('dragover', this.DragOver.bind (this), false);
 	window.addEventListener ('drop', this.Drop.bind (this), false);
@@ -18,9 +19,8 @@ ImporterApp.prototype.Init = function (canvasName, callbacks)
 	// debug
 	var myThis = this;
 	JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
-		var jsonData = myThis.generator.LoadArrayBuffer (arrayBuffer);
-		myThis.JsonLoaded (jsonData);
-		myThis.generator.LoadJsonData ();
+		myThis.viewer.LoadArrayBuffer (arrayBuffer);
+		myThis.JsonLoaded ();
 	});
 };
 
@@ -32,136 +32,135 @@ ImporterApp.prototype.Resize = function ()
 	canvas.height = document.body.clientHeight;
 };
 
-ImporterApp.prototype.JsonLoaded = function (jsonData)
+ImporterApp.prototype.JsonLoaded = function ()
 {
-	function GenerateMenu (jsonData, app)
-	{
-		function ClearMenu (parent)
-		{
-			while (parent.lastChild) {
-				parent.removeChild (parent.lastChild);
-			}	
-		}
-
-		function AddGroup (parent, name)
-		{
-			var title = document.createElement ('div');
-			title.className = 'menuitem';
-			title.innerHTML = name;
-			parent.appendChild (title);
-			
-			var content = document.createElement ('div');
-			content.className = 'menugroup';
-			parent.appendChild (content);
-
-			return content;
-		}	
-
-		function GenerateMaterials (parent, materials)
-		{
-			function AddMaterialItem (parent, material)
-			{
-				var div = document.createElement ('div');
-				div.className = 'menuitem';
-
-				var colorDiv = document.createElement ('div');
-				colorDiv.className = 'colorbutton';
-				
-				var color = JSM.RGBComponentsToHexColor (material.diffuse[0] * 255, material.diffuse[1] * 255, material.diffuse[2] * 255);
-				var colorString = color.toString (16);
-				while (colorString.length < 6) {
-					colorString = '0' + colorString;
-				}
-				colorDiv.style.background = '#' + colorString;
-				div.appendChild (colorDiv);
-				
-				var text = document.createElement ('div');
-				text.className = 'menutext';
-				text.innerHTML = material.name.substr (0, 20);
-				div.appendChild (text);
-
-				parent.appendChild (div);
-			}
-
-			var i, material;
-			for (i = 0; i < materials.length; i++) {
-				material = materials[i];
-				AddMaterialItem (parent, material);
-			}
-		}
-		
-		function GenerateMeshes (parent, meshes)
-		{
-			function AddMeshItem (parent, mesh, meshIndex)
-			{
-				var div = document.createElement ('div');
-				div.className = 'menuitem';
-
-				var infoImage = document.createElement ('img');
-				infoImage.className = 'menubutton';
-				infoImage.src = 'images/info.png';
-				infoImage.onclick = function (i) {
-					return function () {
-						
-					};
-				} (i);
-				div.appendChild (infoImage);
-
-				var visibleImage = document.createElement ('img');
-				visibleImage.className = 'menubutton';
-				visibleImage.src = 'images/visible.png';
-				visibleImage.onclick = function (i) {
-					return function () {
-						app.meshVisibility[i] = !app.meshVisibility[i];
-						if (app.meshVisibility[i]) {
-							visibleImage.src = 'images/visible.png';
-						} else {
-							visibleImage.src = 'images/hidden.png';
-						}
-						app.Generate ();
-					};
-				} (i);
-				div.appendChild (visibleImage);
-				
-				var text = document.createElement ('div');
-				text.className = 'menutext';
-				text.innerHTML = mesh.name.substr (0, 20);
-				div.appendChild (text);
-
-				parent.appendChild (div);
-			}
-
-			var i, mesh;
-			for (i = 0; i < meshes.length; i++) {
-				mesh = meshes[i];
-				AddMeshItem (parent, mesh, i);
-			}
-		}
-		
-		var menu = document.getElementById ('menu');
-		ClearMenu (menu);
-
-		var materialsGroup = AddGroup (menu, 'Materials');
-		GenerateMaterials (materialsGroup, jsonData.materials);
-
-		var meshesGroup = AddGroup (menu, 'Meshes');
-		GenerateMeshes (meshesGroup, jsonData.meshes);
-	}
+	var jsonData = this.viewer.GetJsonData ();
 
 	this.meshVisibility = {};
 	var i;
 	for (i = 0; i < jsonData.meshes.length; i++) {
 		this.meshVisibility[i] = true;
 	}
+
+	this.GenerateMenu (jsonData, this);
+	this.Generate (true);
+};
+
+ImporterApp.prototype.GenerateMenu = function ()
+{
+	function AddMaterial (importerMenu, material)
+	{
+		importerMenu.AddSubGroup (materialsGroup, material.name, {
+			button : {
+				visible : false,
+				open : 'images/info.png',
+				close : 'images/info.png',
+				onOpen : function (content, material) {
+					var table = new InfoTable (content);
+					table.AddColorRow ('Ambient', material.ambient);
+					table.AddColorRow ('Diffuse', material.diffuse);
+					table.AddColorRow ('Specular', material.specular);
+					table.AddRow ('Opacity', material.opacity.toFixed (2));
+				},
+				userData : material
+			}
+		});
+	}
+
+	function AddMesh (importerApp, importerMenu, mesh, meshIndex)
+	{
+		importerMenu.AddSubGroup (meshesGroup, mesh.name, {
+			button : {
+				visible : false,
+				open : 'images/info.png',
+				close : 'images/info.png',
+				onOpen : function (content, mesh) {
+					function GetVisibleName (name)
+					{
+						if (name == 'vertexCount') {
+							return 'Vertex count';
+						} else if (name == 'triangleCount') {
+							return 'Triangle count';
+						}
+						return name;
+					}
+
+					var table = new InfoTable (content);
+					var i, additionalInfo;
+					for (i = 0; i < mesh.additionalInfo.length; i++) {
+						additionalInfo = mesh.additionalInfo[i];
+						table.AddRow (GetVisibleName (additionalInfo.name), additionalInfo.value);
+					}
+				},
+				userData : mesh
+			},
+			userButton : {
+				visible : true,
+				onCreate : function (image) {
+					image.src = 'images/visible.png';
+				},
+				onClick : function (image, meshIndex) {
+					importerApp.meshVisibility[meshIndex] = !importerApp.meshVisibility[meshIndex];
+					image.src = importerApp.meshVisibility[meshIndex] ? 'images/visible.png' : 'images/hidden.png';
+					importerApp.Generate (false);
+				},
+				userData : meshIndex
+			}
+		});
+	}
 	
-	GenerateMenu (jsonData, this);
+	var jsonData = this.viewer.GetJsonData ();
+	var menu = document.getElementById ('menu');
+	while (menu.lastChild) {
+		menu.removeChild (menu.lastChild);
+	}
+
+	var importerMenu = new ImporterMenu (menu);
+	var materialsGroup = importerMenu.AddGroup ('Materials', {
+		button : {
+			visible : true,
+			open : 'images/opened.png',
+			close : 'images/closed.png'
+		}
+	});
+
+	var i, material;
+	for (i = 0; i < jsonData.materials.length; i++) {
+		material = jsonData.materials[i];
+		AddMaterial (importerMenu, material);
+	}
+	
+	var meshesGroup = importerMenu.AddGroup ('Meshes', {
+		button : {
+			visible : true,
+			open : 'images/opened.png',
+			close : 'images/closed.png'
+		}
+	});
+	
+	var mesh;
+	for (i = 0; i < jsonData.meshes.length; i++) {
+		mesh = jsonData.meshes[i];
+		AddMesh (this, importerMenu, mesh, i);
+	}
+};
+
+ImporterApp.prototype.Generate = function (withFitInWindow)
+{
+	if (!this.viewer.LoadJsonData (this.meshVisibility)) {
+		return;
+	}
+
+	if (withFitInWindow) {
+		this.viewer.FitInWindow ();
+	}
 };
 
 ImporterApp.prototype.DragOver = function (event)
 {
 	event.stopPropagation ();
 	event.preventDefault ();
-	event.dataTransfer.dropEffect = 'copy';	
+	event.dataTransfer.dropEffect = 'copy';
 };
 		
 ImporterApp.prototype.Drop = function (event)
@@ -169,23 +168,37 @@ ImporterApp.prototype.Drop = function (event)
 	event.stopPropagation ();
 	event.preventDefault ();
 	
-	var files = event.dataTransfer.files;
-	if (files.length === 0) {
+	this.files = event.dataTransfer.files;
+	if (this.files.length === 0) {
+		return;
+	}
+	
+	var mainFile = null;
+	var i, file, fileName, firstPoint, extension;
+	for (i = 0; i < this.files.length; i++) {
+		file = this.files[i];
+		fileName = file.name;
+		firstPoint = fileName.lastIndexOf ('.');
+		if (firstPoint == -1) {
+			continue;
+		}
+		extension = fileName.substr (firstPoint);
+		extension = extension.toUpperCase ();
+		if (extension == '.3DS') {
+			mainFile = file;
+			break;
+		}
+	}
+	
+	if (mainFile === null) {
 		return;
 	}
 	
 	var myThis = this;
-	JSM.GetArrayBufferFromFile (files[0], function (arrayBuffer) {
-		var jsonData = myThis.generator.LoadArrayBuffer (arrayBuffer);
-		myThis.JsonLoaded (jsonData);
-		myThis.Generate ();
-		myThis.generator.FitInWindow ();
-	});		
-};
-
-ImporterApp.prototype.Generate = function ()
-{
-	this.generator.LoadJsonData (this.meshVisibility);
+	JSM.GetArrayBufferFromFile (mainFile, function (arrayBuffer) {
+		myThis.viewer.LoadArrayBuffer (arrayBuffer);
+		myThis.JsonLoaded ();
+	});
 };
 
 window.onload = function ()

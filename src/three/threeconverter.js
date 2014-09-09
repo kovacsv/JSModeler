@@ -142,9 +142,10 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 				}
 			}
 			
-			var material = new THREE.MeshLambertMaterial ({
+			var material = new THREE.MeshPhongMaterial ({
 					ambient : diffuseColor.getHex (),
 					color : diffuseColor.getHex (),
+					specular : specularColor.getHex (),
 					side : THREE.DoubleSide
 				}
 			);

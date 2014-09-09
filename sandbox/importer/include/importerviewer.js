@@ -1,10 +1,10 @@
-ImporterGenerator = function ()
+ImporterViewer = function ()
 {
 	this.viewer = null;
 	this.jsonData = null;
 };
 
-ImporterGenerator.prototype.Init = function (canvasName)
+ImporterViewer.prototype.Init = function (canvasName)
 {
 	var viewerSettings = {
 		cameraEyePosition : [8.0, 6.0, 4.0],
@@ -24,16 +24,24 @@ ImporterGenerator.prototype.Init = function (canvasName)
 	return true;
 };
 
-ImporterGenerator.prototype.LoadArrayBuffer = function (arrayBuffer)
+ImporterViewer.prototype.LoadArrayBuffer = function (arrayBuffer)
 {
 	this.jsonData = JSM.Convert3dsToJsonData (arrayBuffer);
+};
+
+ImporterViewer.prototype.GetJsonData = function ()
+{
 	return this.jsonData;
 };
 
-ImporterGenerator.prototype.LoadJsonData = function (meshVisibility)
+ImporterViewer.prototype.LoadJsonData = function (meshVisibility)
 {
-	var i;
+	this.viewer.RemoveMeshes ();
+	if (this.jsonData.materials.length === 0 || this.jsonData.meshes.length === 0) {
+		return false;
+	}
 
+	var i;
 	var workJsonData = null;
 	if (meshVisibility === undefined || meshVisibility === null) {
 		workJsonData = this.jsonData;
@@ -51,16 +59,16 @@ ImporterGenerator.prototype.LoadJsonData = function (meshVisibility)
 		}
 	}
 	
-	this.viewer.RemoveMeshes ();
 	var meshes = JSM.ConvertJSONDataToThreeMeshes (workJsonData);
 	for (i = 0; i < meshes.length; i++) {
 		this.viewer.AddMesh (meshes[i]);
 	}
 	
 	this.viewer.Draw ();
+	return true;
 };
 
-ImporterGenerator.prototype.FitInWindow = function (meshVisibility)
+ImporterViewer.prototype.FitInWindow = function ()
 {
 	this.viewer.FitInWindow ();
 };
