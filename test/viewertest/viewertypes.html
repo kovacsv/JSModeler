@@ -122,6 +122,11 @@
 			}
 
 			if (type == 'three' || type == 'three2' || type == 'three3') {
+				function TextureLoaded ()
+				{
+					viewer.Draw ();
+				}
+			
 				CreateCanvas ();
 				
 				var viewerSettings = {
@@ -147,8 +152,11 @@
 				
 				body.GetPolygon (1).SetMaterialIndex (0);
 				body.GetPolygon (2).SetMaterialIndex (1);
-			
-				viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body, materials));
+				
+				var conversionData = {
+					textureLoadedCallback : TextureLoaded
+				}
+				viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body, materials, conversionData));
 				
 				if (type == 'three2') {
 					var body2 = JSM.GenerateCuboid (1, 1, 1);
