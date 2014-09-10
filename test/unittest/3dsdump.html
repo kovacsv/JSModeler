@@ -77,7 +77,6 @@
 		function RunFileTestExample (file)
 		{
 			JSM.GetArrayBufferFromFile (file, function (arrayBuffer) {
-				
 				JSM.Read3dsFile (arrayBuffer, callbacks = {		
 					onLog: function (logText, logLevel) {
 						var logDiv = document.getElementById ('log');

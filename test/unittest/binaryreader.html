@@ -213,8 +213,8 @@
 					onTransformation : function (matrix) {
 						Assert (matrix.toString () == [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1].toString ());
 					},
-					onPivotPoint : function (meshId, pivotPoint) {
-						Assert (meshId == 0);
+					onPivotPoint : function (objectName, pivotPoint) {
+						Assert (objectName == 'Model');
 						Assert (pivotPoint.toString () == [0, 0, 0].toString ());
 					},
 					onVertex : function (x, y, z) {
@@ -353,17 +353,8 @@
 			});
 		}
 
-		function FileSelected (event)
-		{
-			var file = event.target.files[0];
-			if (file.name == 'result.bin') {
-				RunFileTestExample (file);
-			}
-		}
-		
 		window.onload = function ()
 		{
-			document.getElementById ('file').addEventListener ('change', FileSelected, false);
 			RunURLTestExample ('testfiles/result.bin');
 			RunURLTest3ds ('testfiles/cube.3ds');
 		}
@@ -373,7 +364,6 @@
 
 <body>
 
-	<input type="file" id="file" name="file"/>
 	<div id="log"></div>
 
 </body>
