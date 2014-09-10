@@ -60,18 +60,29 @@ ImporterMenu.prototype.AddGroup = function (name, parameters)
 
 ImporterMenu.prototype.AddSubGroup = function (parent, name, parameters)
 {
+	function GetTruncatedName (name)
+	{
+		var maxLength = 20;
+		if (name.length > maxLength) {
+			return name.substr (0, maxLength) + '...';
+		}
+		return name;
+	};
+
 	var menuItem = document.createElement ('div');
 	menuItem.className = 'menuitem';
 	parent.appendChild (menuItem);
 
 	var openCloseImage = document.createElement ('img');
 	openCloseImage.className = 'menubutton';
+	openCloseImage.title = parameters.button.title;
 	openCloseImage.src = parameters.button.visible ? parameters.button.open : parameters.button.close;
 	menuItem.appendChild (openCloseImage);
 
 	if (parameters.userButton !== undefined && parameters.userButton !== null) {
 		var userImage = document.createElement ('img');
 		userImage.className = 'menubutton';
+		userImage.title = parameters.userButton.title;
 		menuItem.appendChild (userImage);
 		if (parameters.userButton.onCreate !== undefined && parameters.userButton.onCreate !== null) {
 			parameters.userButton.onCreate (userImage, parameters.userButton.userData);
@@ -85,7 +96,8 @@ ImporterMenu.prototype.AddSubGroup = function (parent, name, parameters)
 
 	var title = document.createElement ('div');
 	title.className = 'menuitem';
-	title.innerHTML = this.GetMenuName (name);
+	title.innerHTML = GetTruncatedName (name);
+	title.title = name;
 	menuItem.appendChild (title);
 
 	var content = document.createElement ('div');
@@ -110,9 +122,4 @@ ImporterMenu.prototype.AddSubGroup = function (parent, name, parameters)
 	};
 
 	return content;
-};
-
-ImporterMenu.prototype.GetMenuName = function (name)
-{
-	return name.substr (0, 30);
 };

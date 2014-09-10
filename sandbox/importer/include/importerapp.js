@@ -62,6 +62,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 					table.AddColorRow ('Specular', material.specular);
 					table.AddRow ('Opacity', material.opacity.toFixed (2));
 				},
+				title : 'Show/Hide Information',
 				userData : material
 			}
 		});
@@ -92,6 +93,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 						table.AddRow (GetVisibleName (additionalInfo.name), additionalInfo.value);
 					}
 				},
+				title : 'Show/Hide Information',
 				userData : mesh
 			},
 			userButton : {
@@ -104,6 +106,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 					image.src = importerApp.meshVisibility[meshIndex] ? 'images/visible.png' : 'images/hidden.png';
 					importerApp.Generate (false);
 				},
+				title : 'Show/Hide Mesh',
 				userData : meshIndex
 			}
 		});
@@ -120,7 +123,8 @@ ImporterApp.prototype.GenerateMenu = function ()
 		button : {
 			visible : true,
 			open : 'images/opened.png',
-			close : 'images/closed.png'
+			close : 'images/closed.png',
+			title : 'Show/Hide Materials'
 		}
 	});
 
@@ -134,7 +138,8 @@ ImporterApp.prototype.GenerateMenu = function ()
 		button : {
 			visible : true,
 			open : 'images/opened.png',
-			close : 'images/closed.png'
+			close : 'images/closed.png',
+			title : 'Show/Hide Meshes'			
 		}
 	});
 	
