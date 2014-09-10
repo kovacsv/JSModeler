@@ -114,5 +114,5 @@ ImporterMenu.prototype.AddSubGroup = function (parent, name, parameters)
 
 ImporterMenu.prototype.GetMenuName = function (name)
 {
-	return name.substr (0, 20);
+	return name.substr (0, 30);
 };

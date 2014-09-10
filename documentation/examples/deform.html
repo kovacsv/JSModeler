@@ -128,7 +128,6 @@
 				if (offset != 0.0) {
 					SoftMoveMeshVertex (meshes[0], vmd.vertexData, vmd.faceAndVertex[1], vmd.radius, normal, offset);
 				}
-				viewer.Draw ();
 			}
 		}
 		
@@ -149,10 +148,6 @@
 		
 		function Load ()
 		{
-			function TextureLoaded () {
-				viewer.Draw ();
-			}
-		
 			window.onresize = Resize;
 			Resize ();
 
@@ -177,16 +172,14 @@
 			body.SetPolygonsMaterialIndex (0);
 
 			var conversionData = {
-				textureLoadedCallback : TextureLoaded,
-				hasConvexPolygons : true,
-				doubleSided : true
+				hasConvexPolygons : true
 			};
 			meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);
 			}
 			viewer.FitInWindow ();
-			viewer.Draw ();
+			viewer.StartDrawLoop ();
 
 			window.onmousedown = OnMouseDown;
 			window.onmousemove = OnMouseMove;

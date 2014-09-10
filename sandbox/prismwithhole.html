@@ -119,8 +119,7 @@
 			var prism = JSM.GeneratePrismWithHole (basePoints, direction, 0.3, true);
 			var conversionData = {
 				textureLoadedCallback : TextureLoaded,
-				hasConvexPolygons : false,
-				doubleSided : false
+				hasConvexPolygons : false
 			};
 			var meshes = JSM.ConvertBodyToThreeMeshes (prism /*, null, conversionData*/);
 			for (var i = 0; i < meshes.length; i++) {

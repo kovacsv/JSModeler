@@ -66,8 +66,7 @@
 			var model = GetItemModel (ticTacToe, ijk[0], ijk[1], ijk[2]);
 			var conversionData = {
 				textureLoadedCallback : null,
-				hasConvexPolygons : true,
-				doubleSided : true
+				hasConvexPolygons : true
 			};
 			var meshes = JSM.ConvertModelToThreeMeshes (model[0], model[1], conversionData);
 			for (var i = 0; i < meshes.length; i++) {
@@ -209,8 +208,7 @@
 			var model = GetEmptyTableModel (ticTacToe);
 			var conversionData = {
 				textureLoadedCallback : null,
-				hasConvexPolygons : true,
-				doubleSided : true
+				hasConvexPolygons : true
 			};
 			var meshes = JSM.ConvertModelToThreeMeshes (model[0], model[1], conversionData);
 			for (var i = 0; i < meshes.length; i++) {

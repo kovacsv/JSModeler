@@ -39,16 +39,19 @@ JSM.Viewer.prototype.InitNavigation = function ()
 JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 {
 	this.renderer.SetClearColor (red, green, blue);
+	this.Draw ();
 };
 
 JSM.Viewer.prototype.AddGeometries = function (geometries)
 {
 	this.renderer.AddGeometries (geometries);
+	this.Draw ();
 };
 
 JSM.Viewer.prototype.RemoveGeometries = function ()
 {
 	this.renderer.RemoveGeometries ();
+	this.Draw ();
 };
 
 JSM.Viewer.prototype.FitInWindow = function ()

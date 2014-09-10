@@ -112,8 +112,7 @@
 			//alert (JSM.ExportBodyToGdl (bodyAndMaterials[0]));
 			var conversionData = {
 				textureLoadedCallback : TextureLoaded,
-				hasConvexPolygons : true,
-				doubleSided : true
+				hasConvexPolygons : true
 			};
 			var meshes = JSM.ConvertBodyToThreeMeshes (bodyAndMaterials[0], bodyAndMaterials[1], conversionData);
 			for (var i = 0; i < meshes.length; i++) {

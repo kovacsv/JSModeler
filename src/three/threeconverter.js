@@ -16,7 +16,7 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 			specular : material.specular
 		});
 		
-		if (conversionData.doubleSided) {
+		if (theConversionData.doubleSided) {
 			threeMaterial.side = THREE.DoubleSide;
 		}
 		
@@ -27,8 +27,8 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		if (hasTexture) {
 			var textureName = material.texture;
 			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
-				if (conversionData.textureLoadedCallback !== null) {
-					conversionData.textureLoadedCallback ();
+				if (theConversionData.textureLoadedCallback !== null) {
+					theConversionData.textureLoadedCallback ();
 				}
 			});
 			texture.wrapS = THREE.RepeatWrapping;
@@ -68,24 +68,24 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		}
 	}
 	
-	var explodeData = {
+	var theConversionData = {
+		textureLoadedCallback : null,
 		hasConvexPolygons : false,
+		doubleSided : true
+	};
+
+	if (conversionData !== undefined && conversionData !== null) {
+		theConversionData.textureLoadedCallback = JSM.ValueOrDefault (conversionData.textureLoadedCallback, theConversionData.textureLoadedCallback);
+		theConversionData.hasConvexPolygons = JSM.ValueOrDefault (conversionData.hasConvexPolygons, theConversionData.hasConvexPolygons);
+		theConversionData.doubleSided = JSM.ValueOrDefault (conversionData.doubleSided, theConversionData.doubleSided);
+	}
+	
+	var explodeData = {
+		hasConvexPolygons : theConversionData.hasConvexPolygons,
 		onGeometryStart : OnGeometryStart,
 		onGeometryEnd : OnGeometryEnd,
 		onTriangle : OnTriangle
 	};
-	
-	if (conversionData === undefined || conversionData === null) {
-		conversionData = {
-			textureLoadedCallback : null,
-			hasConvexPolygons : false,
-			doubleSided : true
-		};
-	}
-	
-	if (conversionData.hasConvexPolygons !== undefined && conversionData.hasConvexPolygons !== null) {
-		explodeData.hasConvexPolygons = conversionData.hasConvexPolygons;
-	}
 
 	var meshes = [];
 	var geometry = null;

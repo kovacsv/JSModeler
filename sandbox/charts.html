@@ -174,8 +174,7 @@
 			var model = GenerateChart ();
 			var conversionData = {
 				textureLoadedCallback : null,
-				hasConvexPolygons : true,
-				doubleSided : true
+				hasConvexPolygons : true
 			};
 			var meshes = JSM.ConvertModelToThreeMeshes (model[0], model[1], conversionData);
 			for (var i = 0; i < meshes.length; i++) {

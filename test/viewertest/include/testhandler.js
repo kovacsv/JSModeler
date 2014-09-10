@@ -32,8 +32,7 @@ function AddBodyToViewer (viewer, mode, body, materials, info)
 	if (mode == 'three') {
 		var conversionData = {
 			textureLoadedCallback : TextureLoaded,
-			hasConvexPolygons : false,
-			doubleSided : true
+			hasConvexPolygons : false
 		};
 		var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
 		viewer.AddMeshes (meshes);
@@ -56,8 +55,7 @@ function AddModelToViewer (viewer, mode, model, materials, info)
 	if (mode == 'three') {
 		var conversionData = {
 			textureLoadedCallback : TextureLoaded,
-			hasConvexPolygons : false,
-			doubleSided : true
+			hasConvexPolygons : false
 		};
 		var meshes = JSM.ConvertModelToThreeMeshes (model, materials, conversionData);
 		viewer.AddMeshes (meshes);

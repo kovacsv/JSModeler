@@ -13,6 +13,7 @@ JSM.ThreeViewer = function ()
 	this.cameraMove = null;
 	this.navigation = null;
 	this.settings = null;
+	this.drawLoop = null;
 };
 
 JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
@@ -37,10 +38,8 @@ JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
 		return false;
 	}
 	
+	this.drawLoop = false;
 	this.DrawIfNeeded ();
-	if (this.settings.autoUpdate) {
-		this.AutoUpdate ();
-	}
 	return true;
 };
 
@@ -64,8 +63,7 @@ JSM.ThreeViewer.prototype.InitSettings = function (settings)
 		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
 		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
 		lightAmbientColor : [0.5, 0.5, 0.5],
-		lightDiffuseColor : [0.5, 0.5, 0.5],
-		autoUpdate : true
+		lightDiffuseColor : [0.5, 0.5, 0.5]
 	};
 
 	if (settings !== undefined) {
@@ -74,7 +72,6 @@ JSM.ThreeViewer.prototype.InitSettings = function (settings)
 		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = JSM.CoordFromArray (settings.cameraUpVector); }
 		if (settings.lightAmbientColor !== undefined) { this.settings.lightAmbientColor = settings.lightAmbientColor; }
 		if (settings.lightDiffuseColor !== undefined) { this.settings.lightDiffuseColor = settings.lightDiffuseColor; }
-		if (settings.autoUpdate !== undefined) { this.settings.autoUpdate = settings.autoUpdate; }
 	}
 
 	return true;
@@ -173,6 +170,7 @@ JSM.ThreeViewer.prototype.SetRunAfterRender = function (runAfterRender)
 JSM.ThreeViewer.prototype.SetClearColor = function (color)
 {
 	this.renderer.setClearColor (new THREE.Color (color));
+	this.DrawIfNeeded ();
 };
 
 JSM.ThreeViewer.prototype.AddMesh = function (mesh)
@@ -265,7 +263,6 @@ JSM.ThreeViewer.prototype.RemoveMeshes = function ()
 			i--;
 		}
 	}
-	
 	this.DrawIfNeeded ();
 };
 
@@ -427,17 +424,21 @@ JSM.ThreeViewer.prototype.Draw = function ()
 	if (this.runAfterRender !== null) {
 		this.runAfterRender ();
 	}
+	
+	if (this.drawLoop) {
+		requestAnimationFrame (this.Draw.bind (this));
+	}
 };
 
 JSM.ThreeViewer.prototype.DrawIfNeeded = function ()
 {
-	if (!this.settings.autoUpdate) {
+	if (!this.drawLoop) {
 		this.Draw ();
 	}
 };
 
-JSM.ThreeViewer.prototype.AutoUpdate = function ()
+JSM.ThreeViewer.prototype.StartDrawLoop = function ()
 {
+	this.drawLoop = true;
 	this.Draw ();
-	requestAnimationFrame (this.AutoUpdate.bind (this));
 };
