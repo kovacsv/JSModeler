@@ -70,40 +70,45 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		onReady (chunkId, chunkLength);
 	}
 	
+	function SkipChunk (reader, length)
+	{
+		reader.Skip (length - 6);
+	}
+	
+	function GetChunkEnd (reader, length)
+	{
+		return reader.GetPosition () + length - 6;
+	}
+	
+	function ReadName (reader)
+	{
+		var name = '';
+		var letter = 0;
+		var count = 0;
+		while (count < 64) {
+			letter = reader.ReadCharacter ();
+			if (letter === 0) {
+				break;
+			}
+			name = name + String.fromCharCode (letter);
+			count = count + 1;
+		}
+		return name;
+	}
+
 	function ReadChunks (reader, endByte, onReady)
 	{
 		while (reader.GetPosition () < endByte) {
 			ReadChunk (reader, onReady);
 		}
 	}
-	
+
 	function ReadFile (reader)
 	{
-		function SkipChunk (reader, length)
-		{
-			reader.Skip (length - 6);
-		}
-
-		function ReadName (reader)
-		{
-			var name = '';
-			var letter = 0;
-			var count = 0;
-			while (count < 64) {
-				letter = reader.ReadCharacter ();
-				if (letter === 0) {
-					break;
-				}
-				name = name + String.fromCharCode (letter);
-				count = count + 1;
-			}
-			return name;
-		}
-		
 		function ReadColorChunk (reader, id, length)
 		{
 			var color = {};
-			var endByte = reader.GetPosition () + length - 6;
+			var endByte = GetChunkEnd (reader, length);
 			var hasLinColor = false;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['MAT_COLOR']) {
@@ -138,7 +143,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		function ReadPercentageChunk (reader, id, length)
 		{
 			var percentage = 0.0;
-			var endByte = reader.GetPosition () + length - 6;
+			var endByte = GetChunkEnd (reader, length);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['PERCENTAGE']) {
 					percentage = reader.ReadUnsignedInteger16 () / 100.0;
@@ -150,13 +155,43 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			});
 			return percentage;
 		}
+
+		function ReadMaterialTextureMapChunk (reader, id, length)
+		{
+			OnLog ('Read material texture map chunk (' + id.toString (16) + ', ' + length + ')', 3);
+			
+			var textureData = {
+				name : '',
+				offset : [0.0, 0.0],
+				scale : [1.0, 1.0]
+			};
+			var endByte = GetChunkEnd (reader, length);
+			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+				if (chunkId == chunks['MAT_TEXTUREMAP_NAME']) {
+					textureData.name = ReadName (reader);
+				} else if (chunkId == chunks['MAT_TEXTUREMAP_UOFFSET']) {
+					textureData.offset[0] = reader.ReadFloat32 ();
+				} else if (chunkId == chunks['MAT_TEXTUREMAP_VOFFSET']) {
+					textureData.offset[1] = reader.ReadFloat32 ();
+				} else if (chunkId == chunks['MAT_TEXTUREMAP_USCALE']) {
+					textureData.scale[0] = reader.ReadFloat32 ();
+				} else if (chunkId == chunks['MAT_TEXTUREMAP_VSCALE']) {
+					textureData.scale[1] = reader.ReadFloat32 ();
+				} else {
+					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 4);
+					SkipChunk (reader, chunkLength);
+				}
+			});
+			
+			return textureData;
+		}
 		
 		function ReadMaterialChunk (reader, id, length)
 		{
 			OnLog ('Read material chunk (' + id.toString (16) + ', ' + length + ')', 2);
 			
 			var material = {};
-			var endByte = reader.GetPosition () + length - 6;
+			var endByte = GetChunkEnd (reader, length);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['MAT_NAME']) {
 					OnLog ('Read material name chunk (' + id.toString (16) + ', ' + length + ')', 3);
@@ -176,6 +211,13 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				} else if (chunkId == chunks['MAT_TRANSPARENCY']) {
 					OnLog ('Read material transparency chunk (' + id.toString (16) + ', ' + length + ')', 3);
 					material.transparency = ReadPercentageChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == chunks['MAT_TEXTUREMAP']) {
+					var textureData = ReadMaterialTextureMapChunk (reader, chunkId, chunkLength);
+					if (textureData.name !== '') {
+						material.texture = textureData.name;
+						material.offset = textureData.offset;
+						material.scale = textureData.offset;
+					}
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 3);
 					SkipChunk (reader, chunkLength);
@@ -227,7 +269,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		{
 			OnLog ('Read faces chunk (' + id.toString (16) + ', ' + length + ')', 4);
 			
-			var endByte = reader.GetPosition () + length - 6;
+			var endByte = GetChunkEnd (reader, length);
 			var faceCount = reader.ReadUnsignedInteger16 ();
 			var i, v0, v1, v2, flags;
 			for (i = 0; i < faceCount; i++) {
@@ -274,7 +316,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			OnLog ('Read mesh chunk (' + objectName + ', ' +  id.toString (16) + ', ' + length + ')', 3);
 
 			OnMesh (objectName);
-			var endByte = reader.GetPosition () + length - 6;
+			var endByte = GetChunkEnd (reader, length);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['TRI_VERTEXL']) {
 					ReadVerticesChunk (reader, chunkId, chunkLength);
@@ -292,14 +334,12 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		function ReadLightChunk (reader, objectName, id, length)
 		{
 			OnLog ('Skip light chunk (' + objectName + ', ' + id.toString (16) + ', ' + length + ')', 3);
-			
 			SkipChunk (reader, length);
 		}
 
 		function ReadCameraChunk (reader, objectName, id, length)
 		{
 			OnLog ('Skip camera chunk (' + objectName + ', ' +  id.toString (16) + ', ' + length + ')', 3);
-			
 			SkipChunk (reader, length);
 		}
 
@@ -307,7 +347,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		{
 			OnLog ('Read object chunk (' + id.toString (16) + ', ' + length + ')', 2);
 			
-			var endByte = reader.GetPosition () + length - 6;
+			var endByte = GetChunkEnd (reader, length);
 			var objectName = ReadName (reader);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['OBJ_TRIMESH']) {
@@ -327,7 +367,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		{
 			OnLog ('Read editor chunk (' + id.toString (16) + ', ' + length + ')', 1);
 			
-			var endByte = reader.GetPosition () + length - 6;
+			var endByte = GetChunkEnd (reader, length);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['EDIT_MATERIAL']) {
 					ReadMaterialChunk (reader, chunkId, chunkLength);
@@ -347,7 +387,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			var objectName = '';
 			var pivotPoint = [0.0, 0.0, 0.0];
 			
-			var endByte = reader.GetPosition () + length - 6;
+			var endByte = GetChunkEnd (reader, length);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['OBJECT_HIERARCHY']) {
 					objectName = ReadName (reader);
@@ -369,7 +409,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		{
 			OnLog ('Read keyframe chunk (' + id.toString (16) + ', ' + length + ')', 1);
 			
-			var endByte = reader.GetPosition () + length - 6;
+			var endByte = GetChunkEnd (reader, length);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['OBJECT_NODE']) {
 					ReadObjectNodeChunk (reader, chunkId, chunkLength);
@@ -384,7 +424,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		{
 			OnLog ('Read main chunk (' + id.toString (16) + ', ' + length + ')', 0);
 			
-			var endByte = reader.GetPosition () + length - 6;
+			var endByte = GetChunkEnd (reader, length);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['EDIT3DS']) {
 					ReadEditorChunk (reader, chunkId, chunkLength);
@@ -426,6 +466,12 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		'MAT_COLOR' : 0x0011,
 		'MAT_LIN_COLOR' : 0x0012,
 		'MAT_LIN_COLOR_F' : 0x0013,
+		'MAT_TEXTUREMAP' : 0xA200,
+		'MAT_TEXTUREMAP_NAME' : 0xA300,
+		'MAT_TEXTUREMAP_USCALE' : 0xA354,
+		'MAT_TEXTUREMAP_VSCALE' : 0xA356,
+		'MAT_TEXTUREMAP_UOFFSET' : 0xA358,
+		'MAT_TEXTUREMAP_VOFFSET' : 0xA35A,
 		'PERCENTAGE' : 0x0030,
 		'PERCENTAGE_F' : 0x0031,
 		'EDIT_OBJECT' : 0x4000,

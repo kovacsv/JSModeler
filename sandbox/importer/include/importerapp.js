@@ -1,7 +1,8 @@
 ImporterApp = function ()
 {
 	this.viewer = null;
-	this.files = null;
+	this.userFiles = null;
+	this.mainFile = null;
 	this.meshVisibility = null;
 };
 
@@ -20,6 +21,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
 		myThis.viewer.LoadArrayBuffer (arrayBuffer);
+		myThis.mainFile = {name : 'cube.3ds'};
 		myThis.JsonLoaded ();
 	});
 };
@@ -50,8 +52,8 @@ ImporterApp.prototype.GenerateMenu = function ()
 {
 	function AddMaterial (importerMenu, material)
 	{
-		importerMenu.AddSubGroup (materialsGroup, material.name, {
-			button : {
+		importerMenu.AddSubItem (materialsGroup, material.name, {
+			openCloseButton : {
 				visible : false,
 				open : 'images/info.png',
 				close : 'images/info.png',
@@ -70,8 +72,8 @@ ImporterApp.prototype.GenerateMenu = function ()
 
 	function AddMesh (importerApp, importerMenu, mesh, meshIndex)
 	{
-		importerMenu.AddSubGroup (meshesGroup, mesh.name, {
-			button : {
+		importerMenu.AddSubItem (meshesGroup, mesh.name, {
+			openCloseButton : {
 				visible : false,
 				open : 'images/info.png',
 				close : 'images/info.png',
@@ -119,8 +121,20 @@ ImporterApp.prototype.GenerateMenu = function ()
 	}
 
 	var importerMenu = new ImporterMenu (menu);
+
+	var filesGroup = importerMenu.AddGroup ('Files', {
+		openCloseButton : {
+			visible : true,
+			open : 'images/opened.png',
+			close : 'images/closed.png',
+			title : 'Show/Hide Files'
+		}
+	});	
+	
+	importerMenu.AddSubItem (filesGroup, this.mainFile.name);
+	
 	var materialsGroup = importerMenu.AddGroup ('Materials', {
-		button : {
+		openCloseButton : {
 			visible : true,
 			open : 'images/opened.png',
 			close : 'images/closed.png',
@@ -135,7 +149,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	}
 	
 	var meshesGroup = importerMenu.AddGroup ('Meshes', {
-		button : {
+		openCloseButton : {
 			visible : true,
 			open : 'images/opened.png',
 			close : 'images/closed.png',
@@ -173,15 +187,15 @@ ImporterApp.prototype.Drop = function (event)
 	event.stopPropagation ();
 	event.preventDefault ();
 	
-	this.files = event.dataTransfer.files;
-	if (this.files.length === 0) {
+	this.userFiles = event.dataTransfer.files;
+	if (this.userFiles.length === 0) {
 		return;
 	}
 	
-	var mainFile = null;
+	this.mainFile = null;
 	var i, file, fileName, firstPoint, extension;
-	for (i = 0; i < this.files.length; i++) {
-		file = this.files[i];
+	for (i = 0; i < this.userFiles.length; i++) {
+		file = this.userFiles[i];
 		fileName = file.name;
 		firstPoint = fileName.lastIndexOf ('.');
 		if (firstPoint == -1) {
@@ -190,17 +204,17 @@ ImporterApp.prototype.Drop = function (event)
 		extension = fileName.substr (firstPoint);
 		extension = extension.toUpperCase ();
 		if (extension == '.3DS') {
-			mainFile = file;
+			this.mainFile = file;
 			break;
 		}
 	}
 	
-	if (mainFile === null) {
+	if (this.mainFile === null) {
 		return;
 	}
 	
 	var myThis = this;
-	JSM.GetArrayBufferFromFile (mainFile, function (arrayBuffer) {
+	JSM.GetArrayBufferFromFile (this.mainFile, function (arrayBuffer) {
 		myThis.viewer.LoadArrayBuffer (arrayBuffer);
 		myThis.JsonLoaded ();
 	});

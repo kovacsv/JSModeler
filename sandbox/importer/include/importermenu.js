@@ -55,10 +55,10 @@ ImporterMenu = function (parent)
 
 ImporterMenu.prototype.AddGroup = function (name, parameters)
 {
-	return this.AddSubGroup (this.parent, name, parameters);
+	return this.AddSubItem (this.parent, name, parameters);
 };
 
-ImporterMenu.prototype.AddSubGroup = function (parent, name, parameters)
+ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 {
 	function GetTruncatedName (name)
 	{
@@ -71,55 +71,71 @@ ImporterMenu.prototype.AddSubGroup = function (parent, name, parameters)
 
 	var menuItem = document.createElement ('div');
 	menuItem.className = 'menuitem';
-	parent.appendChild (menuItem);
 
-	var openCloseImage = document.createElement ('img');
-	openCloseImage.className = 'menubutton';
-	openCloseImage.title = parameters.button.title;
-	openCloseImage.src = parameters.button.visible ? parameters.button.open : parameters.button.close;
-	menuItem.appendChild (openCloseImage);
+	var menuText = null;
+	menuText = document.createElement ('div');
+	menuText.className = 'menuitem';
+	menuText.innerHTML = GetTruncatedName (name);
+	menuText.title = name;
 
-	if (parameters.userButton !== undefined && parameters.userButton !== null) {
-		var userImage = document.createElement ('img');
-		userImage.className = 'menubutton';
-		userImage.title = parameters.userButton.title;
-		menuItem.appendChild (userImage);
-		if (parameters.userButton.onCreate !== undefined && parameters.userButton.onCreate !== null) {
-			parameters.userButton.onCreate (userImage, parameters.userButton.userData);
+	var menuContent = null;
+	var openCloseImage = null;
+	var userImage = null;
+		
+	if (parameters !== undefined && parameters !== null) {
+		if (parameters.openCloseButton !== undefined && parameters.openCloseButton !== null) {
+			menuContent = document.createElement ('div');
+			menuContent.className = 'menugroup';
+			menuContent.style.display = parameters.openCloseButton.visible ? 'block' : 'none';
+			
+			openCloseImage = document.createElement ('img');
+			openCloseImage.className = 'menubutton';
+			openCloseImage.title = parameters.openCloseButton.title;
+			openCloseImage.src = parameters.openCloseButton.visible ? parameters.openCloseButton.open : parameters.openCloseButton.close;
+			openCloseImage.onclick = function () {
+				if (menuContent.style.display == 'none') {
+					menuContent.style.display = 'block';
+					openCloseImage.src = parameters.openCloseButton.open;
+					if (parameters.openCloseButton.onOpen !== undefined && parameters.openCloseButton.onOpen !== null) {
+						parameters.openCloseButton.onOpen (menuContent, parameters.openCloseButton.userData);
+					}
+				} else {
+					menuContent.style.display = 'none';
+					openCloseImage.src = parameters.openCloseButton.close;
+					if (parameters.openCloseButton.onClose !== undefined && parameters.openCloseButton.onClose !== null) {
+						parameters.openCloseButton.onClose (menuContent, parameters.openCloseButton.userData);
+					}
+				}
+			};
 		}
-		userImage.onclick = function () {
-			if (parameters.userButton.onClick !== undefined && parameters.userButton.onClick !== null) {
-				parameters.userButton.onClick (userImage, parameters.userButton.userData);
+
+		if (parameters.userButton !== undefined && parameters.userButton !== null) {
+			userImage = document.createElement ('img');
+			userImage.className = 'menubutton';
+			userImage.title = parameters.userButton.title;
+			if (parameters.userButton.onCreate !== undefined && parameters.userButton.onCreate !== null) {
+				parameters.userButton.onCreate (userImage, parameters.userButton.userData);
 			}
-		};
+			userImage.onclick = function () {
+				if (parameters.userButton.onClick !== undefined && parameters.userButton.onClick !== null) {
+					parameters.userButton.onClick (userImage, parameters.userButton.userData);
+				}
+			};
+		}
 	}
 
-	var title = document.createElement ('div');
-	title.className = 'menuitem';
-	title.innerHTML = GetTruncatedName (name);
-	title.title = name;
-	menuItem.appendChild (title);
+	if (openCloseImage !== null) {
+		menuItem.appendChild (openCloseImage);
+	}
+	if (userImage !== null) {
+		menuItem.appendChild (userImage);
+	}
+	menuItem.appendChild (menuText);
 
-	var content = document.createElement ('div');
-	content.className = 'menugroup';
-	content.style.display = parameters.button.visible ? 'block' : 'none';
-	parent.appendChild (content);
-	
-	openCloseImage.onclick = function () {
-		if (content.style.display == 'none') {
-			content.style.display = 'block';
-			openCloseImage.src = parameters.button.open;
-			if (parameters.button.onOpen !== undefined && parameters.button.onOpen !== null) {
-				parameters.button.onOpen (content, parameters.button.userData);
-			}
-		} else {
-			content.style.display = 'none';
-			openCloseImage.src = parameters.button.close;
-			if (parameters.button.onClose !== undefined && parameters.button.onClose !== null) {
-				parameters.button.onClose (content, parameters.button.userData);
-			}
-		}
-	};
+	parent.appendChild (menuItem);
+	if (menuContent !== null) {
+		parent.appendChild (menuContent);
+	}
 
-	return content;
+	return menuContent;
 };
