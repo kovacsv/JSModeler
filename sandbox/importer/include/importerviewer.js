@@ -26,7 +26,10 @@ ImporterViewer.prototype.Init = function (canvasName)
 
 ImporterViewer.prototype.LoadArrayBuffer = function (arrayBuffer)
 {
+	var timer = new JSM.Timer ();
+	timer.Start ();
 	this.jsonData = JSM.Convert3dsToJsonData (arrayBuffer);
+	timer.Stop ();
 };
 
 ImporterViewer.prototype.GetJsonData = function ()

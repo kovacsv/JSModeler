@@ -97,7 +97,7 @@ JSM.MidCoord2D = function (a, b)
 */
 JSM.PolarToCartesian = function (radius, theta)
 {
-	var result = new JSM.Coord2D ();
+	var result = new JSM.Coord2D (0.0, 0.0);
 	result.x = radius * Math.cos (theta);
 	result.y = radius * Math.sin (theta);
 	return result;
@@ -279,7 +279,7 @@ JSM.MidCoord = function (a, b)
 */
 JSM.VectorMultiply = function (vector, scalar)
 {
-	var result = new JSM.Vector ();
+	var result = new JSM.Vector (0.0, 0.0, 0.0);
 	result.x = vector.x * scalar;
 	result.y = vector.y * scalar;
 	result.z = vector.z * scalar;
@@ -311,7 +311,7 @@ JSM.VectorDot = function (a, b)
 */
 JSM.VectorCross = function (a, b)
 {
-	var result = new JSM.Vector ();
+	var result = new JSM.Vector (0.0, 0.0, 0.0);
 	result.x = a.y * b.z - a.z * b.y;
 	result.y = a.z * b.x - a.x * b.z;
 	result.z = a.x * b.y - a.y * b.x;
@@ -468,7 +468,7 @@ JSM.CoordSub = function (a, b)
 JSM.CoordOffset = function (coord, direction, distance)
 {
 	var normal = JSM.VectorNormalize (direction);
-	var result = new JSM.Coord ();
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
 	result.x = coord.x + normal.x * distance;
 	result.y = coord.y + normal.y * distance;
 	result.z = coord.z + normal.z * distance;
@@ -499,7 +499,7 @@ JSM.CoordRotate = function (coord, axis, angle, origo)
 	var y = offseted.y;
 	var z = offseted.z;
 
-	var result = new JSM.Coord ();
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
 	result.x = - u * (- u * x - v * y - w * z) * (1 - Math.cos (angle)) + x * Math.cos (angle) + (- w * y + v * z) * Math.sin (angle);
 	result.y = - v * (- u * x - v * y - w * z) * (1 - Math.cos (angle)) + y * Math.cos (angle) + (w * x - u * z) * Math.sin (angle);
 	result.z = - w * (- u * x - v * y - w * z) * (1 - Math.cos (angle)) + z * Math.cos (angle) + (- v * x + u * y) * Math.sin (angle);
@@ -598,7 +598,7 @@ JSM.CalculateTriangleNormal = function (v0, v1, v2)
 	var v = JSM.CoordSub (v1, v0);
 	var w = JSM.CoordSub (v2, v0);
 	
-	var normal = new JSM.Vector ();
+	var normal = new JSM.Vector (0.0, 0.0, 0.0);
 	normal.x = (v.y * w.z - v.z * w.y);
 	normal.y = (v.z * w.x - v.x * w.z);
 	normal.z = (v.x * w.y - v.y * w.x);
@@ -651,7 +651,7 @@ JSM.CalculateNormal = function (coords)
 */
 JSM.SphericalToCartesian = function (radius, theta, phi)
 {
-	var result = new JSM.Coord ();
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
 	result.x = radius * Math.sin (theta) * Math.cos (phi);
 	result.y = radius * Math.sin (theta) * Math.sin (phi);
 	result.z = radius * Math.cos (theta);
@@ -670,7 +670,7 @@ JSM.SphericalToCartesian = function (radius, theta, phi)
 */
 JSM.CartesianToSpherical = function (x, y, z)
 {
-	var result = new JSM.SphericalCoord ();
+	var result = new JSM.SphericalCoord (0.0, 0.0, 0.0);
 	result.radius = Math.sqrt (x * x + y * y + z * z);
 	if (JSM.IsZero (result.radius)) {
 		return result;
@@ -744,7 +744,7 @@ JSM.MoveCoordOnSphere = function (coord, origo, thetaAngle, phiAngle)
 */
 JSM.CylindricalToCartesian = function (radius, height, theta)
 {
-	var result = new JSM.Coord ();
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
 	result.x = radius * Math.cos (theta);
 	result.y = radius * Math.sin (theta);
 	result.z = height;

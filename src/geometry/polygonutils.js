@@ -199,7 +199,7 @@ JSM.CoordPolygonPosition2D = function (coord, polygon)
 		next = polygon.GetVertex ((i + 1) % count);
 
 		sector = new JSM.Sector2D (current, next);
-		intersection = new JSM.Coord2D ();
+		intersection = new JSM.Coord2D (0.0, 0.0);
 		ssp = JSM.SectorSectorPosition2D (ray, sector, intersection);
 		if (ssp === 'SectorsDontIntersects') {
 			continue;
@@ -784,7 +784,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 					var prevVertex = polygon.GetVertex (prevIndex);
 					var currVertex = polygon.GetVertex (currIndex);
 					var line = new JSM.Line (currVertex, JSM.CoordSub (currVertex, prevVertex));
-					var intersection = new JSM.Coord ();
+					var intersection = new JSM.Coord (0.0, 0.0, 0.0);
 					var linePlanePosition = JSM.LinePlanePosition (line, plane, intersection);
 					if (linePlanePosition == 'LineIntersectsPlane') {
 						cutPolygon.AddVertex (intersection.x, intersection.y, intersection.z);

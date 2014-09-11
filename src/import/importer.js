@@ -544,7 +544,7 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 		var triangle;
 		for (i = 0; i < body.TriangleCount (); i++) {
 			triangle = body.GetTriangle (i);
-			if (triangle.mat < 0 || triangle.mat >= materialCount) {
+			if (triangle.mat === undefined || triangle.mat < 0 || triangle.mat >= materialCount) {
 				continue;
 			}
 			trianglesByMaterial[triangle.mat].push (i);

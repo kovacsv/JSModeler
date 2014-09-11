@@ -522,7 +522,7 @@ AddTest ('TransformationTest', function (test) {
 	var direction = new JSM.Coord (4.0, 5.0, 6.0);
 	var axis = new JSM.Vector (4.0, 5.0, 6.0);
 	var angle = 7.0 * JSM.DegRad;
-	var origo = new JSM.Coord ();
+	var origo = new JSM.Coord (0.0, 0.0, 0.0);
 	var result1 = coord;
 	result1 = JSM.CoordOffset (result1, direction, 11.0);
 	result1 = JSM.CoordRotate (result1, axis, angle, origo);
@@ -587,7 +587,7 @@ AddTest ('CoordLinePositionTest', function (test)
 	var direction = new JSM.Coord (1.0, 0.0, 0.0);
 	var line = new JSM.Line (start, direction);
 
-	var projected = new JSM.Coord ();
+	var projected = new JSM.Coord (0.0, 0.0, 0.0);
 	test.Assert (JSM.CoordLinePosition (new JSM.Coord (0.0, 0.0, 0.0), line, projected) == 'CoordOutsideOfLine');
 	test.Assert (JSM.CoordIsEqual (projected, new JSM.Coord (0.0, 1.0, 1.0)));
 	test.Assert (JSM.CoordLinePosition (new JSM.Coord (1.0, 1.0, 1.0), line, projected) == 'CoordOnLine');
@@ -609,7 +609,7 @@ AddTest ('CoordLinePositionTest', function (test)
 	var line8 = new JSM.Line (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 1.0, 1.0));
 	var line9 = new JSM.Line (new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (-1.0, 1.0, 1.0));
 	
-	var intersection = new JSM.Coord ();
+	var intersection = new JSM.Coord (0.0, 0.0, 0.0);
 	test.Assert (JSM.LineLinePosition (line1, line1, intersection) == 'LinesIntersectsCoincident');
 	test.Assert (JSM.LineLinePosition (line1, line2, intersection) == 'LinesIntersectsCoincident');
 	test.Assert (JSM.LineLinePosition (line1, line7, intersection) == 'LinesIntersectsCoincident');
@@ -696,7 +696,7 @@ AddTest ('SectorSectorPositionTest', function (test)
 	var sector3 = new JSM.Sector2D (new JSM.Coord2D (1.0, 1.0), new JSM.Coord2D (3.0, 1.0));
 	var sector4 = new JSM.Sector2D (new JSM.Coord2D (0.0, 1.0), new JSM.Coord2D (1.0, 1.0));
 
-	var intersection = new JSM.Coord2D ();
+	var intersection = new JSM.Coord2D (0.0, 0.0);
 	test.Assert (JSM.SectorSectorPosition2D (sector3, GetSector2D (0.0, 0.0, 0.0, 1.0)) == 'SectorsDontIntersects');
 	test.Assert (JSM.SectorSectorPosition2D (sector3, GetSector2D (0.0, 0.0, 1.0, 0.0)) == 'SectorsDontIntersects');
 	test.Assert (JSM.SectorSectorPosition2D (sector3, GetSector2D (0.0, 0.0, 1.0, 1.0), intersection) == 'SectorsIntersectsEndPoint');
@@ -822,7 +822,7 @@ AddTest ('PlaneTest', function (test)
 		test.Assert (JSM.LinePlanePosition (line1, plane1) == 'LineParallelToPlane');
 		test.Assert (JSM.LinePlanePosition (line2, plane1) == 'LineIntersectsPlane');
 		
-		var intersection = new JSM.Coord ();
+		var intersection = new JSM.Coord (0.0, 0.0, 0.0);
 		test.Assert (JSM.LinePlanePosition (line3, plane1, intersection) == 'LineIntersectsPlane');
 		test.Assert (JSM.CoordIsEqual (intersection, new JSM.Coord (1.0, 2.0, 0.0)));
 		test.Assert (JSM.CoordIsEqual (JSM.LinePlaneIntersection (line3, plane1), new JSM.Coord (1.0, 2.0, 0.0)));
@@ -842,7 +842,7 @@ AddTest ('ProjectionTest', function (test)
 	var farPlane = 100;
 	var viewPort = [0, 0, width, height];
 
-	var projected = new JSM.Coord ();
+	var projected = new JSM.Coord (0.0, 0.0, 0.0);
 
 	projected = JSM.Project (new JSM.Coord (0, 0, 0), eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
 	test.Assert (projected != null);

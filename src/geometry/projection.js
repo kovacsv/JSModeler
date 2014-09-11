@@ -18,7 +18,7 @@ JSM.Project = function (coord, eye, center, up, fieldOfView, aspectRatio, nearPl
 {
 	function ProjectWithMatrices (coord, modelView, projection, viewPort)
 	{
-		var result = new JSM.Coord ();
+		var result = new JSM.Coord (0.0, 0.0, 0.0);
 		
 		var input = [];
 		var output = [];

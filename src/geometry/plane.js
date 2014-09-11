@@ -9,10 +9,10 @@
 */
 JSM.Plane = function (a, b, c, d)
 {
-	this.a = JSM.ValueOrDefault (a, 0.0);
-	this.b = JSM.ValueOrDefault (b, 0.0);
-	this.c = JSM.ValueOrDefault (c, 0.0);
-	this.d = JSM.ValueOrDefault (d, 0.0);
+	this.a = a;
+	this.b = b;
+	this.c = c;
+	this.d = d;
 };
 
 /**
@@ -26,10 +26,10 @@ JSM.Plane = function (a, b, c, d)
 */
 JSM.Plane.prototype.Set = function (a, b, c, d)
 {
-	this.a = JSM.ValueOrDefault (a, 0.0);
-	this.b = JSM.ValueOrDefault (b, 0.0);
-	this.c = JSM.ValueOrDefault (c, 0.0);
-	this.d = JSM.ValueOrDefault (d, 0.0);
+	this.a = a;
+	this.b = b;
+	this.c = c;
+	this.d = d;
 };
 
 /**

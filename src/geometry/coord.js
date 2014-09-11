@@ -7,8 +7,8 @@
 */
 JSM.Coord2D = function (x, y)
 {
-	this.x = JSM.ValueOrDefault (x, 0.0);
-	this.y = JSM.ValueOrDefault (y, 0.0);
+	this.x = x;
+	this.y = y;
 };
 
 /**
@@ -20,8 +20,8 @@ JSM.Coord2D = function (x, y)
 */
 JSM.Coord2D.prototype.Set = function (x, y)
 {
-	this.x = JSM.ValueOrDefault (x, 0.0);
-	this.y = JSM.ValueOrDefault (y, 0.0);
+	this.x = x;
+	this.y = y;
 };
 
 /**
@@ -55,8 +55,8 @@ JSM.Coord2D.prototype.Clone = function ()
 */
 JSM.PolarCoord = function (radius, angle)
 {
-	this.radius = JSM.ValueOrDefault (radius, 1.0);
-	this.angle = JSM.ValueOrDefault (angle, 0.0);
+	this.radius = radius;
+	this.angle = angle;
 };
 
 /**
@@ -68,8 +68,8 @@ JSM.PolarCoord = function (radius, angle)
 */
 JSM.PolarCoord.prototype.Set = function (radius, angle)
 {
-	this.radius = JSM.ValueOrDefault (radius, 1.0);
-	this.angle = JSM.ValueOrDefault (angle, 0.0);
+	this.radius = radius;
+	this.angle = angle;
 };
 
 /**
@@ -104,9 +104,9 @@ JSM.PolarCoord.prototype.Clone = function ()
 */
 JSM.Coord = function (x, y, z)
 {
-	this.x = JSM.ValueOrDefault (x, 0.0);
-	this.y = JSM.ValueOrDefault (y, 0.0);
-	this.z = JSM.ValueOrDefault (z, 0.0);
+	this.x = x;
+	this.y = y;
+	this.z = z;
 };
 
 /**
@@ -119,9 +119,9 @@ JSM.Coord = function (x, y, z)
 */
 JSM.Coord.prototype.Set = function (x, y, z)
 {
-	this.x = JSM.ValueOrDefault (x, 0.0);
-	this.y = JSM.ValueOrDefault (y, 0.0);
-	this.z = JSM.ValueOrDefault (z, 0.0);
+	this.x = x;
+	this.y = y;
+	this.z = z;
 };
 
 /**
@@ -156,9 +156,9 @@ JSM.Coord.prototype.Clone = function ()
 */
 JSM.SphericalCoord = function (radius, theta, phi)
 {
-	this.radius = JSM.ValueOrDefault (radius, 0.0);
-	this.theta = JSM.ValueOrDefault (theta, 0.0);
-	this.phi = JSM.ValueOrDefault (phi, 0.0);
+	this.radius = radius;
+	this.theta = theta;
+	this.phi = phi;
 };
 
 /**
@@ -171,9 +171,9 @@ JSM.SphericalCoord = function (radius, theta, phi)
 */
 JSM.SphericalCoord.prototype.Set = function (radius, theta, phi)
 {
-	this.radius = JSM.ValueOrDefault (radius, 0.0);
-	this.theta = JSM.ValueOrDefault (theta, 0.0);
-	this.phi = JSM.ValueOrDefault (phi, 0.0);
+	this.radius = radius;
+	this.theta = theta;
+	this.phi = phi;
 };
 
 /**

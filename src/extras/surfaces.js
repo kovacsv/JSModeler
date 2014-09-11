@@ -95,7 +95,7 @@ JSM.SurfaceControlPoints = function (n, m)
 	for (i = 0; i <= this.n; i++) {
 		this.points.push ([]);
 		for (j = 0; j <= this.m; j++) {
-			this.points[i].push (new JSM.Coord ());
+			this.points[i].push (new JSM.Coord (0.0, 0.0, 0.0));
 		}
 	}
 };
@@ -195,9 +195,9 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 		var n = surfaceControlPoints.GetNValue ();
 		var m = surfaceControlPoints.GetMValue ();
 		
-		result = new JSM.Coord ();
+		result = new JSM.Coord (0.0, 0.0, 0.0);
 		for (i = 0; i <= n; i++) {
-			tmp1 = new JSM.Coord ();
+			tmp1 = new JSM.Coord (0.0, 0.0, 0.0);
 			for (j = 0; j <= m; j++) {
 				scalar = BernsteinPolynomial (i, n, u) * BernsteinPolynomial (j, m, v);
 				tmp2 = JSM.VectorMultiply (surfaceControlPoints.GetControlPoint (i, j), scalar);

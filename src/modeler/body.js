@@ -8,7 +8,7 @@
 */
 JSM.BodyVertex = function (position)
 {
-	this.position = JSM.ValueOrDefault (position, new JSM.Coord ());
+	this.position = position;
 };
 
 /**
@@ -55,7 +55,7 @@ JSM.BodyVertex.prototype.Clone = function ()
 */
 JSM.BodyPolygon = function (vertices)
 {
-	this.vertices = JSM.ValueOrDefault (vertices, []);
+	this.vertices = vertices;
 	this.material = -1;
 	this.curved = -1;
 };
@@ -181,7 +181,7 @@ JSM.BodyPolygon.prototype.InheritAttributes = function (source)
 */
 JSM.BodyPolygon.prototype.Clone = function ()
 {
-	var result = new JSM.BodyPolygon ();
+	var result = new JSM.BodyPolygon ([]);
 	var i;
 	for (i = 0; i < this.vertices.length; i++) {
 		result.vertices.push (this.vertices[i]);
@@ -392,7 +392,7 @@ JSM.Body.prototype.SetPlanarTextureProjection = function (origo, xDirection, zDi
 		origo,
 		xDirection,
 		JSM.VectorCross (xDirection, zDirection),
-		new JSM.Coord ()
+		new JSM.Coord (0.0, 0.0, 0.0)
 	));
 };
 

@@ -71,14 +71,14 @@ JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, u0, u
 		v0 : v0,
 		v1 : v1,
 		v2 : v2,
-		n0 : JSM.ValueOrDefault (n0, -1),
-		n1 : JSM.ValueOrDefault (n1, -1),
-		n2 : JSM.ValueOrDefault (n2, -1),
-		u0 : JSM.ValueOrDefault (u0, -1),
-		u1 : JSM.ValueOrDefault (u1, -1),
-		u2 : JSM.ValueOrDefault (u2, -1),
-		mat : JSM.ValueOrDefault (mat, -1),
-		curve : JSM.ValueOrDefault (curve, -1)
+		n0 : n0,
+		n1 : n1,
+		n2 : n2,
+		u0 : u0,
+		u1 : u1,
+		u2 : u2,
+		mat : mat,
+		curve : curve
 	});
 	return this.triangles.length - 1;
 };
@@ -122,8 +122,8 @@ JSM.TriangleBody.prototype.Finalize = function ()
 		var triangle = body.triangles[i];
 	
 		var normal, normalIndex;
-		if (triangle.n0 == -1 || triangle.n1 == -1 || triangle.n2 == -1) {
-			if (triangle.curve === -1 || triangle.curve === 0) {
+		if (triangle.n0 === undefined || triangle.n1 === undefined || triangle.n2 === undefined) {
+			if (triangle.curve === undefined || triangle.curve === 0) {
 				normal = triangleNormals[i];
 				normalIndex = body.AddNormal (normal.x, normal.y, normal.z);
 				triangle.n0 = normalIndex;
@@ -137,7 +137,7 @@ JSM.TriangleBody.prototype.Finalize = function ()
 		}
 		
 		var uvIndex;
-		if (triangle.u0 == -1 || triangle.u1 == -1 || triangle.u2 == -1) {
+		if (triangle.u0 === undefined || triangle.u1 === undefined || triangle.u2 === undefined) {
 			uvIndex = body.AddUV (0.0, 0.0);
 			triangle.u0 = uvIndex;
 			triangle.u1 = uvIndex;

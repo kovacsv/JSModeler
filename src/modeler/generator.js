@@ -332,7 +332,7 @@ JSM.GenerateCircle = function (radius, segmentation)
 		theta += step;
 	}
 
-	var topPolygon = new JSM.BodyPolygon ();
+	var topPolygon = new JSM.BodyPolygon ([]);
 	for (i = 0; i < segments; i++) {
 		topPolygon.AddVertexIndex (i);
 	}
@@ -591,8 +591,8 @@ JSM.GenerateCylinder = function (radius, height, segmentation, withTopAndBottom,
 	}
 
 	if (withTopAndBottom) {
-		var topPolygon = new JSM.BodyPolygon ();
-		var bottomPolygon = new JSM.BodyPolygon ();
+		var topPolygon = new JSM.BodyPolygon ([]);
+		var bottomPolygon = new JSM.BodyPolygon ([]);
 		for (i = 0; i < segments; i++) {
 			topPolygon.AddVertexIndex (2 * (segments - i - 1));
 			bottomPolygon.AddVertexIndex (2 * i + 1);
@@ -650,8 +650,8 @@ JSM.GeneratePie = function (radius, height, angle, segmentation, withTopAndBotto
 	}
 
 	if (withTopAndBottom) {
-		var topPolygon = new JSM.BodyPolygon ();
-		var bottomPolygon = new JSM.BodyPolygon ();
+		var topPolygon = new JSM.BodyPolygon ([]);
+		var bottomPolygon = new JSM.BodyPolygon ([]);
 		for (i = 0; i <= segments; i++) {
 			topPolygon.AddVertexIndex (2 * (segments - i));
 			bottomPolygon.AddVertexIndex (2 * i + 1);
@@ -747,20 +747,20 @@ JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, with
 	var topPolygon, bottomPolygon;
 	if (withTopAndBottom) {
 		if (topDegenerated) {
-			bottomPolygon = new JSM.BodyPolygon ();
+			bottomPolygon = new JSM.BodyPolygon ([]);
 			for (i = 0; i < segments; i++) {
 				bottomPolygon.AddVertexIndex (i + 1);
 			}
 			result.AddPolygon (bottomPolygon);
 		} else if (bottomDegenerated) {
-			topPolygon = new JSM.BodyPolygon ();
+			topPolygon = new JSM.BodyPolygon ([]);
 			for (i = 0; i < segments; i++) {
 				topPolygon.AddVertexIndex (segments - i - 1);
 			}
 			result.AddPolygon (topPolygon);
 		} else {
-			topPolygon = new JSM.BodyPolygon ();
-			bottomPolygon = new JSM.BodyPolygon ();
+			topPolygon = new JSM.BodyPolygon ([]);
+			bottomPolygon = new JSM.BodyPolygon ([]);
 			for (i = 0; i < segments; i++) {
 				topPolygon.AddVertexIndex (2 * (segments - i - 1));
 				bottomPolygon.AddVertexIndex (2 * i + 1);
@@ -810,8 +810,8 @@ JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
 	}
 
 	if (withTopAndBottom) {
-		var topPolygon = new JSM.BodyPolygon ();
-		var bottomPolygon = new JSM.BodyPolygon ();
+		var topPolygon = new JSM.BodyPolygon ([]);
+		var bottomPolygon = new JSM.BodyPolygon ([]);
 		for (i = 0; i < count; i++) {
 			topPolygon.AddVertexIndex (2 * i + 1);
 			bottomPolygon.AddVertexIndex (2 * (count - i - 1));
@@ -960,8 +960,8 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 		var triangle, topTriangle, bottomTriangle;
 		for (i = 0; i < triangles.length; i++) {
 			triangle = triangles[i];
-			topTriangle = new JSM.BodyPolygon ();
-			bottomTriangle = new JSM.BodyPolygon ();
+			topTriangle = new JSM.BodyPolygon ([]);
+			bottomTriangle = new JSM.BodyPolygon ([]);
 			for (j = 0; j < 3; j++) {
 				topTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[j]]] + 1);
 				bottomTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[3 - j - 1]]]);
@@ -1315,7 +1315,7 @@ JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, inner
 
 	var polygon, current, top, next, ntop;
 	for (i = 0; i < outerSegmentation; i++) {
-		polygon = new JSM.BodyPolygon ();
+		polygon = new JSM.BodyPolygon ([]);
 		for (j = 0; j < innerSegmentation; j++) {
 			current = i * innerSegmentation + j;
 			next = current + innerSegmentation;
@@ -1390,7 +1390,7 @@ JSM.GeneratePolyTorus = function (basePolygon, outerRadius, outerSegmentation, i
 
 	var polygon, current, top, next, ntop;
 	for (i = 0; i < outerSegmentation; i++) {
-		polygon = new JSM.BodyPolygon ();
+		polygon = new JSM.BodyPolygon ([]);
 		for (j = 0; j < innerSegmentation; j++) {
 			current = i * innerSegmentation + j;
 			next = current + innerSegmentation;
@@ -1711,8 +1711,8 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 	}
 
 	if (circular && withTopAndBottom) {
-		var topPolygon = new JSM.BodyPolygon ();
-		var bottomPolygon = new JSM.BodyPolygon ();
+		var topPolygon = new JSM.BodyPolygon ([]);
+		var bottomPolygon = new JSM.BodyPolygon ([]);
 		for (i = 0; i < segmentation; i++) {
 			topPolygon.AddVertexIndex (segmentation * (count - 1) + i);
 			bottomPolygon.AddVertexIndex (segmentation - i - 1);
@@ -1777,8 +1777,8 @@ JSM.GenerateTube = function (basePolygons, withStartAndEnd)
 	}
 
 	if (withStartAndEnd) {
-		var topPolygon = new JSM.BodyPolygon ();
-		var bottomPolygon = new JSM.BodyPolygon ();
+		var topPolygon = new JSM.BodyPolygon ([]);
+		var bottomPolygon = new JSM.BodyPolygon ([]);
 		for (i = 0; i < count; i++) {
 			topPolygon.AddVertexIndex (contourCount * i + contourCount - 1);
 		}
