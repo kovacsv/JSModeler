@@ -30,7 +30,7 @@ ImporterApp.prototype.Resize = function ()
 {
 	var left = document.getElementById ('left');
 	var canvas = document.getElementById ('example');
-	canvas.width = document.body.clientWidth - left.clientWidth - 1;
+	canvas.width = document.body.clientWidth - left.offsetWidth;
 	canvas.height = document.body.clientHeight;
 };
 
