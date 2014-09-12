@@ -45,7 +45,7 @@ ImporterApp.prototype.JsonLoaded = function ()
 	}
 
 	this.GenerateMenu (jsonData, this);
-	this.Generate (true);
+	this.Generate ();
 };
 
 ImporterApp.prototype.GenerateMenu = function ()
@@ -163,15 +163,13 @@ ImporterApp.prototype.GenerateMenu = function ()
 	}
 };
 
-ImporterApp.prototype.Generate = function (withFitInWindow)
+ImporterApp.prototype.Generate = function ()
 {
 	if (!this.viewer.ShowAllMeshes ()) {
 		return;
 	}
 
-	if (withFitInWindow) {
-		this.viewer.FitInWindow ();
-	}
+	this.viewer.FitInWindow ();
 };
 
 ImporterApp.prototype.ShowHideMesh = function (meshIndex)
