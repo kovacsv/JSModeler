@@ -156,36 +156,6 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			return percentage;
 		}
 
-		function ReadMaterialTextureMapChunk (reader, id, length)
-		{
-			OnLog ('Read material texture map chunk (' + id.toString (16) + ', ' + length + ')', 3);
-			
-			var textureData = {
-				name : '',
-				offset : [0.0, 0.0],
-				scale : [1.0, 1.0]
-			};
-			var endByte = GetChunkEnd (reader, length);
-			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
-				if (chunkId == chunks['MAT_TEXTUREMAP_NAME']) {
-					textureData.name = ReadName (reader);
-				} else if (chunkId == chunks['MAT_TEXTUREMAP_UOFFSET']) {
-					textureData.offset[0] = reader.ReadFloat32 ();
-				} else if (chunkId == chunks['MAT_TEXTUREMAP_VOFFSET']) {
-					textureData.offset[1] = reader.ReadFloat32 ();
-				} else if (chunkId == chunks['MAT_TEXTUREMAP_USCALE']) {
-					textureData.scale[0] = reader.ReadFloat32 ();
-				} else if (chunkId == chunks['MAT_TEXTUREMAP_VSCALE']) {
-					textureData.scale[1] = reader.ReadFloat32 ();
-				} else {
-					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 4);
-					SkipChunk (reader, chunkLength);
-				}
-			});
-			
-			return textureData;
-		}
-		
 		function ReadMaterialChunk (reader, id, length)
 		{
 			OnLog ('Read material chunk (' + id.toString (16) + ', ' + length + ')', 2);
@@ -211,13 +181,6 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				} else if (chunkId == chunks['MAT_TRANSPARENCY']) {
 					OnLog ('Read material transparency chunk (' + id.toString (16) + ', ' + length + ')', 3);
 					material.transparency = ReadPercentageChunk (reader, chunkId, chunkLength);
-				} else if (chunkId == chunks['MAT_TEXTUREMAP']) {
-					var textureData = ReadMaterialTextureMapChunk (reader, chunkId, chunkLength);
-					if (textureData.name !== '') {
-						material.texture = textureData.name;
-						material.offset = textureData.offset;
-						material.scale = textureData.offset;
-					}
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 3);
 					SkipChunk (reader, chunkLength);
@@ -466,12 +429,6 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		'MAT_COLOR' : 0x0011,
 		'MAT_LIN_COLOR' : 0x0012,
 		'MAT_LIN_COLOR_F' : 0x0013,
-		'MAT_TEXTUREMAP' : 0xA200,
-		'MAT_TEXTUREMAP_NAME' : 0xA300,
-		'MAT_TEXTUREMAP_USCALE' : 0xA354,
-		'MAT_TEXTUREMAP_VSCALE' : 0xA356,
-		'MAT_TEXTUREMAP_UOFFSET' : 0xA358,
-		'MAT_TEXTUREMAP_VOFFSET' : 0xA35A,
 		'PERCENTAGE' : 0x0030,
 		'PERCENTAGE_F' : 0x0031,
 		'EDIT_OBJECT' : 0x4000,

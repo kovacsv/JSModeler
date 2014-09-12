@@ -104,9 +104,8 @@ ImporterApp.prototype.GenerateMenu = function ()
 					image.src = 'images/visible.png';
 				},
 				onClick : function (image, meshIndex) {
-					importerApp.meshVisibility[meshIndex] = !importerApp.meshVisibility[meshIndex];
-					image.src = importerApp.meshVisibility[meshIndex] ? 'images/visible.png' : 'images/hidden.png';
-					importerApp.Generate (false);
+					var visible = importerApp.ShowHideMesh (meshIndex);
+					image.src = visible ? 'images/visible.png' : 'images/hidden.png';
 				},
 				title : 'Show/Hide Mesh',
 				userData : meshIndex
@@ -166,13 +165,24 @@ ImporterApp.prototype.GenerateMenu = function ()
 
 ImporterApp.prototype.Generate = function (withFitInWindow)
 {
-	if (!this.viewer.LoadJsonData (this.meshVisibility)) {
+	if (!this.viewer.ShowAllMeshes ()) {
 		return;
 	}
 
 	if (withFitInWindow) {
 		this.viewer.FitInWindow ();
 	}
+};
+
+ImporterApp.prototype.ShowHideMesh = function (meshIndex)
+{
+	this.meshVisibility[meshIndex] = !this.meshVisibility[meshIndex];
+	if (this.meshVisibility[meshIndex]) {
+		this.viewer.ShowMesh (meshIndex);
+	} else {
+		this.viewer.HideMesh (meshIndex);
+	}
+	return this.meshVisibility[meshIndex];
 };
 
 ImporterApp.prototype.DragOver = function (event)

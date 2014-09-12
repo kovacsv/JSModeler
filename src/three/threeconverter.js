@@ -111,7 +111,7 @@ JSM.ConvertModelToThreeMeshes = function (model, materials, conversionData)
 
 JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 {
-	function AddMesh (mesh)
+	function AddMesh (mesh, meshIndex)
 	{
 		function AddTriangles (currentTriangles)
 		{
@@ -208,6 +208,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 			}
 
 			var mesh = new THREE.Mesh (geometry, material);
+			mesh.originalJsonIndex = meshIndex;
 			result.push (mesh);
 		}
 
@@ -247,7 +248,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 	
 	var i;
 	for (i = 0; i < meshes.length; i++) {
-		AddMesh (meshes[i]);
+		AddMesh (meshes[i], i);
 	}
 
 	return result;
