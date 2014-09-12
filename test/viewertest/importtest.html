@@ -93,6 +93,20 @@
 			});
 		}
 		
+		function LoadObj (url)
+		{
+			viewer.RemoveMeshes ();
+			JSM.GetStringBufferFromURL (url, function (stringBuffer) {
+				var jsonData = JSM.ConvertObjToJsonData (stringBuffer);
+				var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
+				for (var i = 0; i < meshes.length; i++) {
+					viewer.AddMesh (meshes[i]);
+				}
+				viewer.FitInWindow ();
+				viewer.Draw ();
+			});
+		}
+
 		function Resize ()
 		{
 			var header = document.getElementById ('header');
@@ -118,7 +132,8 @@
 				return;
 			}
 
-			Load3ds ('testfiles/cube.3ds');
+			//Load3ds ('testfiles/cube.3ds');
+			LoadObj ('testfiles/cubeobj.obj')
 			viewer.Draw ();
 		}
 
@@ -136,6 +151,8 @@
 			<a class="button" href="javascript:Load3ds ('testfiles/cube.3ds')">cube.3ds</a>
 			<a class="button" href="javascript:Load3ds ('testfiles/objects.3ds')">objects.3ds</a>
 			<a class="button" href="javascript:Load3ds ('testfiles/complex.3ds')">complex.3ds</a>
+			<a class="button" href="javascript:LoadObj ('testfiles/cubeobj.obj')">cubeobj.obj</a>
+			<a class="button" href="javascript:LoadObj ('testfiles/meshesobj.obj')">meshesobj.obj</a>
 		</div>
 		<div id="info"></div>
 	</div>

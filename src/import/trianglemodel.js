@@ -52,7 +52,7 @@ JSM.TriangleBody.prototype.NormalCount = function ()
 JSM.TriangleBody.prototype.AddUV = function (x, y)
 {
 	this.uvs.push (new JSM.Coord2D (x, y));
-	return this.vertices.length - 1;
+	return this.uvs.length - 1;
 };
 
 JSM.TriangleBody.prototype.GetUV = function (index)

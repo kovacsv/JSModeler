@@ -27,6 +27,34 @@ JSM.GetArrayBufferFromFile = function (file, onReady)
 	reader.readAsArrayBuffer (file);
 };
 
+JSM.GetStringBufferFromURL = function (url, onReady)
+{
+	var request = new XMLHttpRequest ();
+	request.open ('GET', url, true);
+
+	request.onload = function () {
+		var stringBuffer = request.response;
+		if (stringBuffer) {
+			onReady (stringBuffer);
+		}
+	};
+
+	request.send (null);
+};
+
+JSM.GetStringBufferFromFile = function (file, onReady)
+{
+	var reader = new FileReader ();
+
+	reader.onloadend = function (event) {
+		if (event.target.readyState == FileReader.DONE) {
+			onReady (event.target.result);
+		}
+	};
+
+	reader.readAsText (file);
+};
+
 JSM.Read3dsFile = function (arrayBuffer, callbacks)
 {
 	function OnLog (logText, logLevel)
@@ -480,6 +508,99 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 	ReadFile (reader);
 };
 
+JSM.ReadObjFile = function (stringBuffer, callbacks)
+{
+	function OnVertex (x, y, z)
+	{
+		if (callbacks.onVertex !== undefined && callbacks.onVertex !== null) {
+			callbacks.onVertex (x, y, z);
+		}
+	}
+
+	function OnNormal (x, y, z)
+	{
+		if (callbacks.onNormal !== undefined && callbacks.onNormal !== null) {
+			callbacks.onNormal (x, y, z);
+		}
+	}
+
+	function OnFace (vertices, normals)
+	{
+		if (callbacks.onFace !== undefined && callbacks.onFace !== null) {
+			callbacks.onFace (vertices, normals);
+		}
+	}
+
+	function OnFileRequested (fileName)
+	{
+		if (callbacks.onFileRequested !== undefined && callbacks.onFileRequested !== null) {
+			return callbacks.onFileRequested (fileName);
+		}
+		return '';
+	}
+
+	function ProcessLine (line)
+	{
+		if (line.length === 0) {
+			return;
+		}
+		
+		if (line[0] == '#') {
+			return;
+		}
+		
+		var lineParts = line.split (' ');
+		if (lineParts.length === 0) {
+			return;
+		}
+		if (lineParts[0] == 'v') {
+			if (lineParts.length < 4) {
+				return;
+			}
+			OnVertex (parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3]));
+		} else if (lineParts[0] == 'vn') {
+			if (lineParts.length < 4) {
+				return;
+			}
+			OnNormal (parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3]));
+		} else if (lineParts[0] == 'f') {
+			if (lineParts.length < 4) {
+				return;
+			}
+			
+			var vertices = [];
+			var normals = [];
+			
+			var i, partSplitted;
+			for (i = 1; i < lineParts.length; i++) {
+				partSplitted = lineParts[i].split ('/');
+				vertices.push (parseInt (partSplitted[0], 10) - 1);
+				if (partSplitted.length == 3) {
+					normals.push (partSplitted[2] - 1);
+				}
+			}
+			OnFace (vertices, normals);
+		} else if (lineParts[0] == 'mtllib') {
+			if (lineParts.length < 2) {
+				return;
+			}
+			
+			var fileName = lineParts[1];
+			var fileStringBuffer = OnFileRequested (fileName);
+			if (fileStringBuffer === '') {
+				return;
+			}
+		}
+	}
+	
+	var lines = stringBuffer.split ('\n');
+	var i, line;
+	for (i = 0; i < lines.length; i++) {
+		line = lines[i].trim ();
+		ProcessLine (line);
+	}
+};
+
 JSM.ConvertTriangleModelToJsonData = function (model)
 {
 	function ConvertMaterials (model, materials)
@@ -611,8 +732,6 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 	var currentMeshData = null;
 	
 	JSM.Read3dsFile (arrayBuffer, {
-		onLog: function (/*logText, logLevel*/) {
-		},
 		onMaterial : function (material) {
 			function GetColor (color)
 			{
@@ -730,5 +849,62 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 	}
 	
 	triangleModel.Finalize ();
-	return JSM.ConvertTriangleModelToJsonData (triangleModel);
+	var jsonData = JSM.ConvertTriangleModelToJsonData (triangleModel);
+	alert (JSON.stringify (jsonData, null, '\t'));
+	return jsonData;
+};
+
+JSM.ConvertObjToJsonData = function (stringBuffer)
+{
+	var triangleModel = new JSM.TriangleModel ();
+	var index = triangleModel.AddBody (new JSM.TriangleBody ('alma'));
+	var currentBody = triangleModel.GetBody (index);
+
+	JSM.ReadObjFile (stringBuffer, {
+		onVertex : function (x, y, z) {
+			if (currentBody === null) {
+				return;
+			}
+			currentBody.AddVertex (x, y, z);
+		},
+		onNormal : function (x, y, z) {
+			if (currentBody === null) {
+				return;
+			}
+			currentBody.AddNormal (x, y, z);
+		},
+		onFace : function (vertices, normals) {
+			if (currentBody === null) {
+				return;
+			}
+			var i;
+			var hasNormals = (vertices.length == normals.length);
+			var count = vertices.length;
+			for (i = 0; i < count - 2; i++) {
+				if (hasNormals) {
+					currentBody.AddTriangle (
+						vertices[0], vertices[(i + 1) % count], vertices[(i + 2) % count],
+						normals[0], normals[(i + 1) % count], normals[(i + 2) % count]
+					);
+				} else {
+					currentBody.AddTriangle (
+						vertices[0], vertices[(i + 1) % count], vertices[(i + 2) % count]
+					);
+				}
+				currentBody.GetTriangle (currentBody.TriangleCount () - 1).mat = 0;
+			}
+		}
+	});
+
+	triangleModel.AddMaterial (
+		'aaa',
+		{r : 0.5, b : 0.5, g : 0.5},
+		{r : 0.5, b : 0.5, g : 0.5},
+		{r : 0.5, b : 0.5, g : 0.5},
+		1.0
+	);
+	
+	triangleModel.Finalize ();
+	var jsonData = JSM.ConvertTriangleModelToJsonData (triangleModel);
+	return jsonData;
 };
