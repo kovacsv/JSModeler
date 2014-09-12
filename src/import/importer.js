@@ -1,3 +1,32 @@
+JSM.GetArrayBufferFromURL = function (url, onReady)
+{
+	var request = new XMLHttpRequest ();
+	request.open ('GET', url, true);
+	request.responseType = 'arraybuffer';
+
+	request.onload = function () {
+		var arrayBuffer = request.response;
+		if (arrayBuffer) {
+			onReady (arrayBuffer);
+		}
+	};
+
+	request.send (null);
+};
+
+JSM.GetArrayBufferFromFile = function (file, onReady)
+{
+	var reader = new FileReader ();
+
+	reader.onloadend = function (event) {
+		if (event.target.readyState == FileReader.DONE) {
+			onReady (event.target.result);
+		}
+	};
+
+	reader.readAsArrayBuffer (file);
+};
+
 JSM.Read3dsFile = function (arrayBuffer, callbacks)
 {
 	function OnLog (logText, logLevel)
