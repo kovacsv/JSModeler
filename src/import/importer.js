@@ -850,14 +850,13 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 	
 	triangleModel.Finalize ();
 	var jsonData = JSM.ConvertTriangleModelToJsonData (triangleModel);
-	alert (JSON.stringify (jsonData, null, '\t'));
 	return jsonData;
 };
 
 JSM.ConvertObjToJsonData = function (stringBuffer)
 {
 	var triangleModel = new JSM.TriangleModel ();
-	var index = triangleModel.AddBody (new JSM.TriangleBody ('alma'));
+	var index = triangleModel.AddBody (new JSM.TriangleBody ('Name'));
 	var currentBody = triangleModel.GetBody (index);
 
 	JSM.ReadObjFile (stringBuffer, {
@@ -897,7 +896,7 @@ JSM.ConvertObjToJsonData = function (stringBuffer)
 	});
 
 	triangleModel.AddMaterial (
-		'aaa',
+		'Name',
 		{r : 0.5, b : 0.5, g : 0.5},
 		{r : 0.5, b : 0.5, g : 0.5},
 		{r : 0.5, b : 0.5, g : 0.5},
