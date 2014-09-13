@@ -96,15 +96,40 @@
 		function LoadObj (url)
 		{
 			viewer.RemoveMeshes ();
-			JSM.GetStringBufferFromURL (url, function (stringBuffer) {
-				var jsonData = JSM.ConvertObjToJsonData (stringBuffer);
+			var urls = [
+				url,
+				'testfiles/cubeobj.mtl',
+				'testfiles/meshesobj.mtl'
+			];
+			JSM.GetStringBufferFromURLList (urls, function (stringBuffers) {
+				var jsonData = JSM.ConvertObjToJsonData (stringBuffers[0].stringBuffer, {
+					onFileRequested : function (fileName) {
+						var i, current;
+						for (i = 0; i < stringBuffers.length; i++) {
+							current = stringBuffers[i];
+							if (current.fileName == fileName) {
+								return current.stringBuffer;
+							}
+						}
+						return null;
+					}
+				});
 				var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
 				for (var i = 0; i < meshes.length; i++) {
 					viewer.AddMesh (meshes[i]);
 				}
 				viewer.FitInWindow ();
 				viewer.Draw ();
-			});
+			});			
+			//JSM.GetStringBufferFromURL (url, function (stringBuffer) {
+			//	var jsonData = JSM.ConvertObjToJsonData (stringBuffer);
+			//	var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
+			//	for (var i = 0; i < meshes.length; i++) {
+			//		viewer.AddMesh (meshes[i]);
+			//	}
+			//	viewer.FitInWindow ();
+			//	viewer.Draw ();
+			//});
 		}
 
 		function Resize ()

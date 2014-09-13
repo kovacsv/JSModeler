@@ -43,6 +43,39 @@ JSM.GetStringBufferFromURL = function (url, onReady)
 	request.send (null);
 };
 
+JSM.GetStringBufferFromURLList = function (urlList, onReady)
+{
+	function LoadURLList (result, index, onReady)
+	{
+		if (index >= result.length) {
+			onReady (result);
+			return;
+		}
+		var currentResult = result[index];
+		JSM.GetStringBufferFromURL (currentResult.url, function (stringBuffer) {
+			currentResult.stringBuffer = stringBuffer;
+			LoadURLList (result, index + 1, onReady);
+		});
+	}
+
+	var result = [];
+	
+	var i, url, splitted;
+	for (i = 0; i < urlList.length; i++) {
+		url = urlList[i];
+		splitted = url.split ('/');
+		result.push ({
+			url : url,
+			fileName : splitted[splitted.length - 1],
+			stringBuffer : null
+		});
+	}
+	
+	LoadURLList (result, 0, function (result) {
+		onReady (result);
+	});
+};
+
 JSM.GetStringBufferFromFile = function (file, onReady)
 {
 	var reader = new FileReader ();
@@ -511,6 +544,27 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 
 JSM.ReadObjFile = function (stringBuffer, callbacks)
 {
+	function OnNewMaterial (name)
+	{
+		if (callbacks.onNewMaterial !== undefined && callbacks.onNewMaterial !== null) {
+			callbacks.onNewMaterial (name);
+		}
+	}
+
+	function OnMaterialComponent (name, red, green, blue)
+	{
+		if (callbacks.onMaterialComponent !== undefined && callbacks.onMaterialComponent !== null) {
+			callbacks.onMaterialComponent (name, red, green, blue);
+		}
+	}
+
+	function OnUseMaterial (name)
+	{
+		if (callbacks.onUseMaterial !== undefined && callbacks.onUseMaterial !== null) {
+			callbacks.onUseMaterial (name);
+		}
+	}
+
 	function OnVertex (x, y, z)
 	{
 		if (callbacks.onVertex !== undefined && callbacks.onVertex !== null) {
@@ -537,7 +591,7 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 		if (callbacks.onFileRequested !== undefined && callbacks.onFileRequested !== null) {
 			return callbacks.onFileRequested (fileName);
 		}
-		return '';
+		return null;
 	}
 
 	function ProcessLine (line)
@@ -582,6 +636,24 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 				}
 			}
 			OnFace (vertices, normals);
+		} else if (lineParts[0] == 'usemtl') {
+			if (lineParts.length < 2) {
+				return;
+			}
+			
+			OnUseMaterial (lineParts[1]);
+		} else if (lineParts[0] == 'newmtl') {
+			if (lineParts.length < 2) {
+				return;
+			}
+			
+			OnNewMaterial (lineParts[1]);
+		} else if (lineParts[0] == 'Ka' || lineParts[0] == 'Kd' || lineParts[0] == 'Ks') {
+			if (lineParts.length < 4) {
+				return;
+			}
+			
+			OnMaterialComponent (lineParts[0], parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3]));
 		} else if (lineParts[0] == 'mtllib') {
 			if (lineParts.length < 2) {
 				return;
@@ -589,18 +661,24 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 			
 			var fileName = lineParts[1];
 			var fileStringBuffer = OnFileRequested (fileName);
-			if (fileStringBuffer === '') {
+			if (fileStringBuffer === null) {
 				return;
 			}
+			ProcessFile (fileStringBuffer);
 		}
 	}
 	
-	var lines = stringBuffer.split ('\n');
-	var i, line;
-	for (i = 0; i < lines.length; i++) {
-		line = lines[i].trim ();
-		ProcessLine (line);
+	function ProcessFile (stringBuffer)
+	{
+		var lines = stringBuffer.split ('\n');
+		var i, line;
+		for (i = 0; i < lines.length; i++) {
+			line = lines[i].trim ();
+			ProcessLine (line);
+		}
 	}
+	
+	ProcessFile (stringBuffer);
 };
 
 JSM.ConvertTriangleModelToJsonData = function (model)
@@ -855,45 +933,88 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 	return jsonData;
 };
 
-JSM.ConvertObjToJsonData = function (stringBuffer)
+JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 {
+	function OnFileRequested (fileName)
+	{
+		if (callbacks.onFileRequested !== undefined && callbacks.onFileRequested !== null) {
+			return callbacks.onFileRequested (fileName);
+		}
+		return null;
+	}
+
 	var triangleModel = new JSM.TriangleModel ();
 	var index = triangleModel.AddBody (new JSM.TriangleBody ('Model'));
 	var currentBody = triangleModel.GetBody (index);
+	var materialNameToIndex = {};
+	var currentMaterial = null;
+	var currentMaterialIndex = null;
 	
 	JSM.ReadObjFile (stringBuffer, {
-		onVertex : function (x, y, z) {
-			if (currentBody === null) {
+		onNewMaterial : function (name) {
+			var index = triangleModel.AddMaterial (
+				name,
+				{r : 1.0, g : 0.0, b : 0.0},
+				{r : 1.0, g : 0.0, b : 0.0},
+				{r : 0.0, g : 0.0, b : 0.0},
+				1.0
+			);
+			currentMaterial = triangleModel.GetMaterial (index);
+			materialNameToIndex[name] = index;
+		},
+		onMaterialComponent : function (name, red, green, blue) {
+			function SetMaterialColor (color, r, g, b)
+			{
+				color.r = r;
+				color.g = g;
+				color.b = b;
+			}
+			
+			if (currentMaterial === null) {
 				return;
 			}
+			if (name == 'Ka') {
+				SetMaterialColor (currentMaterial.ambient, red, green, blue);
+			} else if (name == 'Kd') {
+				SetMaterialColor (currentMaterial.diffuse, red, green, blue);
+			} else if (name == 'Ks') {
+				SetMaterialColor (currentMaterial.specular, red, green, blue);
+			}
+		},
+		onUseMaterial : function (name) {
+			var materialIndex = materialNameToIndex[name];
+			if (materialIndex !== undefined) {
+				currentMaterialIndex = materialIndex;
+			}
+		},
+		onVertex : function (x, y, z) {
 			currentBody.AddVertex (x, y, z);
 		},
 		onNormal : function (x, y, z) {
-			if (currentBody === null) {
-				return;
-			}
 			currentBody.AddNormal (x, y, z);
 		},
 		onFace : function (vertices, normals) {
-			if (currentBody === null) {
-				return;
-			}
-			var i;
+			var i, triangle, triangleIndex;
 			var hasNormals = (vertices.length == normals.length);
 			var count = vertices.length;
 			for (i = 0; i < count - 2; i++) {
 				if (hasNormals) {
-					currentBody.AddTriangle (
+					triangleIndex = currentBody.AddTriangle (
 						vertices[0], vertices[(i + 1) % count], vertices[(i + 2) % count],
 						normals[0], normals[(i + 1) % count], normals[(i + 2) % count]
 					);
 				} else {
-					currentBody.AddTriangle (
+					triangleIndex = currentBody.AddTriangle (
 						vertices[0], vertices[(i + 1) % count], vertices[(i + 2) % count]
 					);
 				}
+				if (currentMaterialIndex !== null) {
+					triangle = currentBody.GetTriangle (triangleIndex);
+					triangle.mat = currentMaterialIndex;
+				}
 			}
-		}
+		},
+		onFileRequested : OnFileRequested
 	});
 
 	triangleModel.Finalize ();
