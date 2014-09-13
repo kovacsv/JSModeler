@@ -604,7 +604,7 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 			return;
 		}
 		
-		var lineParts = line.split (' ');
+		var lineParts = line.split (/\s+/);
 		if (lineParts.length === 0) {
 			return;
 		}
