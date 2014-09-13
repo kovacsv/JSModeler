@@ -53,6 +53,19 @@ ImporterApp.prototype.JsonLoaded = function ()
 
 ImporterApp.prototype.GenerateMenu = function ()
 {
+	function AddDefaultGroup (menu, name)
+	{
+		var group = menu.AddGroup (name, {
+			openCloseButton : {
+				visible : true,
+				open : 'images/opened.png',
+				close : 'images/closed.png',
+				title : 'Show/Hide ' + name
+			}
+		});
+		return group;
+	}
+
 	function AddMaterial (importerMenu, material)
 	{
 		importerMenu.AddSubItem (materialsGroup, material.name, {
@@ -124,15 +137,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 
 	var importerMenu = new ImporterMenu (menu);
 
-	var filesGroup = importerMenu.AddGroup ('Files', {
-		openCloseButton : {
-			visible : true,
-			open : 'images/opened.png',
-			close : 'images/closed.png',
-			title : 'Show/Hide Files'
-		}
-	});	
-	
+	var filesGroup = AddDefaultGroup (importerMenu, 'Files');
 	importerMenu.AddSubItem (filesGroup, this.mainFile.name);
 	var i;
 	for (i = 0; i < this.requestedFiles.length; i++) {
@@ -140,44 +145,20 @@ ImporterApp.prototype.GenerateMenu = function ()
 	}
 	
 	if (this.missingFiles.length > 0) {
-		var missingFilesGroup = importerMenu.AddGroup ('Missing Files', {
-			openCloseButton : {
-				visible : true,
-				open : 'images/opened.png',
-				close : 'images/closed.png',
-				title : 'Show/Hide Missing Files'
-			}
-		});
-		
+		var missingFilesGroup = AddDefaultGroup (importerMenu, 'Missing Files');
 		for (i = 0; i < this.missingFiles.length; i++) {
 			importerMenu.AddSubItem (missingFilesGroup, this.missingFiles[i].name);
 		}
 	}
 	
-	var materialsGroup = importerMenu.AddGroup ('Materials', {
-		openCloseButton : {
-			visible : true,
-			open : 'images/opened.png',
-			close : 'images/closed.png',
-			title : 'Show/Hide Materials'
-		}
-	});
-
+	var materialsGroup = AddDefaultGroup (importerMenu, 'Materials');
 	var i, material;
 	for (i = 0; i < jsonData.materials.length; i++) {
 		material = jsonData.materials[i];
 		AddMaterial (importerMenu, material);
 	}
 	
-	var meshesGroup = importerMenu.AddGroup ('Meshes', {
-		openCloseButton : {
-			visible : true,
-			open : 'images/opened.png',
-			close : 'images/closed.png',
-			title : 'Show/Hide Meshes'			
-		}
-	});
-	
+	var meshesGroup = AddDefaultGroup (importerMenu, 'Meshes');
 	var mesh;
 	for (i = 0; i < jsonData.meshes.length; i++) {
 		mesh = jsonData.meshes[i];
@@ -260,6 +241,7 @@ ImporterApp.prototype.Drop = function (event)
 				currentBuffer = stringBuffers[i];
 				fileNameToBuffer[currentBuffer.originalObject.name] = currentBuffer;
 			}
+			
 			var mainFileBuffer = fileNameToBuffer[myThis.mainFile.name];
 			if (mainFileBuffer === undefined) {
 				return;
