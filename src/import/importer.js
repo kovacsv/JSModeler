@@ -719,10 +719,7 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 			mesh.normals.push (coord.x, coord.y, coord.z);
 		}
 
-		for (i = 0; i < body.UVCount (); i++) {
-			coord = body.GetUV (i);
-			mesh.uvs.push (coord.x, coord.y);
-		}
+		mesh.uvs.push (0.0, 0.0);
 
 		for (i = 0; i < materialCount; i++) {
 			trianglesByMaterial.push ([]);
@@ -754,7 +751,7 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 				jsonTriangles.parameters.push (
 					triangle.v0, triangle.v1, triangle.v2,
 					triangle.n0, triangle.n1, triangle.n2,
-					triangle.u0, triangle.u1, triangle.u2
+					0, 0, 0
 				);
 			}
 			triangleCount = triangleCount + triangles.length;
@@ -988,10 +985,10 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 			}
 		},
 		onVertex : function (x, y, z) {
-			currentBody.AddVertex (x, y, z);
+			currentBody.AddVertex (z, x, y);
 		},
 		onNormal : function (x, y, z) {
-			currentBody.AddNormal (x, y, z);
+			currentBody.AddNormal (z, x, y);
 		},
 		onFace : function (vertices, normals) {
 			var i, triangle, triangleIndex;

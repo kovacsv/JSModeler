@@ -3,7 +3,6 @@ JSM.TriangleBody = function (name)
 	this.name = name;
 	this.vertices = [];
 	this.normals = [];
-	this.uvs = [];
 	this.triangles = [];
 };
 
@@ -49,23 +48,7 @@ JSM.TriangleBody.prototype.NormalCount = function ()
 	return this.normals.length;
 };
 
-JSM.TriangleBody.prototype.AddUV = function (x, y)
-{
-	this.uvs.push (new JSM.Coord2D (x, y));
-	return this.uvs.length - 1;
-};
-
-JSM.TriangleBody.prototype.GetUV = function (index)
-{
-	return this.uvs[index];
-};
-
-JSM.TriangleBody.prototype.UVCount = function ()
-{
-	return this.uvs.length;
-};
-
-JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, u0, u1, u2, mat, curve)
+JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, mat, curve)
 {
 	this.triangles.push ({
 		v0 : v0,
@@ -74,9 +57,6 @@ JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, u0, u
 		n0 : n0,
 		n1 : n1,
 		n2 : n2,
-		u0 : u0,
-		u1 : u1,
-		u2 : u2,
 		mat : mat,
 		curve : curve
 	});
@@ -138,14 +118,6 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 				triangle.n2 = AddAverageNormal (body, triangle.v2, triangleIndex, triangleNormals, vertexToTriangles);
 			}
 		}
-		
-		var uvIndex;
-		if (triangle.u0 === undefined || triangle.u1 === undefined || triangle.u2 === undefined) {
-			uvIndex = body.AddUV (0.0, 0.0);
-			triangle.u0 = uvIndex;
-			triangle.u1 = uvIndex;
-			triangle.u2 = uvIndex;
-		}
 	}
 
 	var triangleNormals = [];
@@ -200,8 +172,8 @@ JSM.TriangleModel.prototype.AddDefaultMaterial = function ()
 	if (this.defaultMaterial == -1) {
 		this.materials.push ({
 			name : 'Default',
-			ambient : {r : 1.0, g : 0.0, b : 0.0},
-			diffuse : {r : 1.0, g : 0.0, b : 0.0},
+			ambient : {r : 0.5, g : 0.5, b : 0.5},
+			diffuse : {r : 0.5, g : 0.5, b : 0.5},
 			specular : {r : 0.0, g : 0.0, b : 0.0},
 			opacity : 1.0
 		});
