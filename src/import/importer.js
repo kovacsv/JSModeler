@@ -793,13 +793,6 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 
 JSM.Convert3dsToJsonData = function (arrayBuffer)
 {
-	function AppendMatrixTranslation (matrix, x, y, z)
-	{
-		matrix[12] += matrix[0] * x + matrix[4] * y + matrix[8] * z;
-		matrix[13] += matrix[1] * x + matrix[5] * y + matrix[9] * z;
-		matrix[14] += matrix[2] * x + matrix[6] * y + matrix[10] * z;
-	}
-
 	var triangleModel = new JSM.TriangleModel ();
 	var currentBody = null;
 	
@@ -893,10 +886,12 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 		
 		if (currentMeshData.transformation !== undefined) {
 			matrix = JSM.MatrixClone (currentMeshData.transformation);
-			if (currentMeshData.pivotPoint !== undefined) {
-				AppendMatrixTranslation (matrix, -currentMeshData.pivotPoint[0], -currentMeshData.pivotPoint[1], -currentMeshData.pivotPoint[2]);
-			}
 			invMatrix = JSM.MatrixInvert (currentMeshData.transformation);
+			if (currentMeshData.pivotPoint !== undefined) {
+				invMatrix[12] -= currentMeshData.pivotPoint[0];
+				invMatrix[13] -= currentMeshData.pivotPoint[1];
+				invMatrix[14] -= currentMeshData.pivotPoint[2];
+			}
 			if (invMatrix !== null) {
 				matrix = JSM.MatrixMultiply (invMatrix, matrix);
 				for (j = 0; j < currentBody.VertexCount (); j++) {

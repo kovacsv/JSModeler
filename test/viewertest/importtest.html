@@ -121,16 +121,7 @@
 				}
 				viewer.FitInWindow ();
 				viewer.Draw ();
-			});			
-			//JSM.GetStringBufferFromURL (url, function (stringBuffer) {
-			//	var jsonData = JSM.ConvertObjToJsonData (stringBuffer);
-			//	var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
-			//	for (var i = 0; i < meshes.length; i++) {
-			//		viewer.AddMesh (meshes[i]);
-			//	}
-			//	viewer.FitInWindow ();
-			//	viewer.Draw ();
-			//});
+			});
 		}
 
 		function Resize ()
@@ -159,7 +150,7 @@
 			}
 
 			//Load3ds ('testfiles/cube.3ds');
-			LoadObj ('testfiles/cubeobj.obj')
+			Load3ds ('testfiles/objects.3ds')
 			viewer.Draw ();
 		}
 
