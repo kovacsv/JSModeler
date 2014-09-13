@@ -67,7 +67,7 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 			return name.substr (0, maxLength) + '...';
 		}
 		return name;
-	};
+	}
 
 	var menuItem = document.createElement ('div');
 	menuItem.className = 'menuitem';

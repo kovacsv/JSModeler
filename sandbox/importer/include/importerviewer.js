@@ -24,12 +24,14 @@ ImporterViewer.prototype.Init = function (canvasName)
 	return true;
 };
 
-ImporterViewer.prototype.LoadArrayBuffer = function (arrayBuffer)
+ImporterViewer.prototype.Load3dsBuffer = function (arrayBuffer)
 {
-	var timer = new JSM.Timer ();
-	timer.Start ();
 	this.jsonData = JSM.Convert3dsToJsonData (arrayBuffer);
-	timer.Stop ();
+};
+
+ImporterViewer.prototype.LoadObjBuffer = function (stringBuffer, onFileRequested)
+{
+	this.jsonData = JSM.ConvertObjToJsonData (stringBuffer, {onFileRequested : onFileRequested});
 };
 
 ImporterViewer.prototype.GetJsonData = function ()
@@ -45,6 +47,7 @@ ImporterViewer.prototype.ShowAllMeshes = function ()
 	}
 
 	var meshes = JSM.ConvertJSONDataToThreeMeshes (this.jsonData);
+	var i;
 	for (i = 0; i < meshes.length; i++) {
 		this.viewer.AddMesh (meshes[i]);
 	}

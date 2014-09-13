@@ -101,14 +101,15 @@
 				'testfiles/cubeobj.mtl',
 				'testfiles/meshesobj.mtl'
 			];
-			JSM.GetStringBufferFromURLList (urls, function (stringBuffers) {
-				var jsonData = JSM.ConvertObjToJsonData (stringBuffers[0].stringBuffer, {
+			JSM.GetStringBuffersFromURLList (urls, function (stringBuffers) {
+				var jsonData = JSM.ConvertObjToJsonData (stringBuffers[0].resultBuffer, {
 					onFileRequested : function (fileName) {
-						var i, current;
+						var i, current, splitted;
 						for (i = 0; i < stringBuffers.length; i++) {
 							current = stringBuffers[i];
-							if (current.fileName == fileName) {
-								return current.stringBuffer;
+							splitted = current.originalObject.split ('/');
+							if (splitted[splitted.length - 1] == fileName) {
+								return current.resultBuffer;
 							}
 						}
 						return null;

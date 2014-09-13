@@ -43,36 +43,20 @@ JSM.GetStringBufferFromURL = function (url, onReady)
 	request.send (null);
 };
 
-JSM.GetStringBufferFromURLList = function (urlList, onReady)
+JSM.LoadMultipleBuffers = function (inputList, result, index, loaderFunction, onReady)
 {
-	function LoadURLList (result, index, onReady)
-	{
-		if (index >= result.length) {
-			onReady (result);
-			return;
-		}
-		var currentResult = result[index];
-		JSM.GetStringBufferFromURL (currentResult.url, function (stringBuffer) {
-			currentResult.stringBuffer = stringBuffer;
-			LoadURLList (result, index + 1, onReady);
-		});
-	}
-
-	var result = [];
-	
-	var i, url, splitted;
-	for (i = 0; i < urlList.length; i++) {
-		url = urlList[i];
-		splitted = url.split ('/');
-		result.push ({
-			url : url,
-			fileName : splitted[splitted.length - 1],
-			stringBuffer : null
-		});
-	}
-	
-	LoadURLList (result, 0, function (result) {
+	if (index >= inputList.length) {
 		onReady (result);
+		return;
+	}
+	
+	var originalObject = inputList[index];
+	loaderFunction (originalObject, function (resultBuffer) {
+		result.push ({
+			originalObject : originalObject,
+			resultBuffer : resultBuffer
+		});
+		JSM.LoadMultipleBuffers (inputList, result, index + 1, loaderFunction, onReady);
 	});
 };
 
@@ -87,6 +71,22 @@ JSM.GetStringBufferFromFile = function (file, onReady)
 	};
 
 	reader.readAsText (file);
+};
+
+JSM.GetStringBuffersFromURLList = function (urlList, onReady)
+{
+	var result = [];
+	JSM.LoadMultipleBuffers (urlList, result, 0, JSM.GetStringBufferFromURL, function (result) {
+		onReady (result);
+	});
+};
+
+JSM.GetStringBuffersFromFileList = function (fileList, onReady)
+{
+	var result = [];
+	JSM.LoadMultipleBuffers (fileList, result, 0, JSM.GetStringBufferFromFile, function (result) {
+		onReady (result);
+	});
 };
 
 JSM.Read3dsFile = function (arrayBuffer, callbacks)

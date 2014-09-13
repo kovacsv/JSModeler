@@ -3,6 +3,7 @@ ImporterApp = function ()
 	this.viewer = null;
 	this.userFiles = null;
 	this.mainFile = null;
+	this.requestedFiles = null;
 	this.meshVisibility = null;
 };
 
@@ -20,8 +21,10 @@ ImporterApp.prototype.Init = function ()
 	// debug
 	var myThis = this;
 	JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
-		myThis.viewer.LoadArrayBuffer (arrayBuffer);
+		myThis.viewer.Load3dsBuffer (arrayBuffer);
 		myThis.mainFile = {name : 'cube.3ds'};
+		myThis.requestedFiles = [];
+		myThis.missingFiles = [];
 		myThis.JsonLoaded ();
 	});
 };
@@ -131,6 +134,25 @@ ImporterApp.prototype.GenerateMenu = function ()
 	});	
 	
 	importerMenu.AddSubItem (filesGroup, this.mainFile.name);
+	var i;
+	for (i = 0; i < this.requestedFiles.length; i++) {
+		importerMenu.AddSubItem (filesGroup, this.requestedFiles[i].name);
+	}
+	
+	if (this.missingFiles.length > 0) {
+		var missingFilesGroup = importerMenu.AddGroup ('Missing Files', {
+			openCloseButton : {
+				visible : true,
+				open : 'images/opened.png',
+				close : 'images/closed.png',
+				title : 'Show/Hide Missing Files'
+			}
+		});
+		
+		for (i = 0; i < this.missingFiles.length; i++) {
+			importerMenu.AddSubItem (missingFilesGroup, this.missingFiles[i].name);
+		}
+	}
 	
 	var materialsGroup = importerMenu.AddGroup ('Materials', {
 		openCloseButton : {
@@ -201,6 +223,9 @@ ImporterApp.prototype.Drop = function (event)
 	}
 	
 	this.mainFile = null;
+	this.requestedFiles = [];
+	this.missingFiles = [];
+
 	var i, file, fileName, firstPoint, extension;
 	for (i = 0; i < this.userFiles.length; i++) {
 		file = this.userFiles[i];
@@ -211,7 +236,7 @@ ImporterApp.prototype.Drop = function (event)
 		}
 		extension = fileName.substr (firstPoint);
 		extension = extension.toUpperCase ();
-		if (extension == '.3DS') {
+		if (extension == '.3DS' || extension == '.OBJ') {
 			this.mainFile = file;
 			break;
 		}
@@ -222,10 +247,36 @@ ImporterApp.prototype.Drop = function (event)
 	}
 	
 	var myThis = this;
-	JSM.GetArrayBufferFromFile (this.mainFile, function (arrayBuffer) {
-		myThis.viewer.LoadArrayBuffer (arrayBuffer);
-		myThis.JsonLoaded ();
-	});
+	if (extension == '.3DS') {
+		JSM.GetArrayBufferFromFile (this.mainFile, function (arrayBuffer) {
+			myThis.viewer.Load3dsBuffer (arrayBuffer);
+			myThis.JsonLoaded ();
+		});
+	} else if (extension == '.OBJ') {
+		JSM.GetStringBuffersFromFileList (this.userFiles, function (stringBuffers) {
+			var fileNameToBuffer = {};
+			var i, currentBuffer;
+			for (i = 0; i < stringBuffers.length; i++) {
+				currentBuffer = stringBuffers[i];
+				fileNameToBuffer[currentBuffer.originalObject.name] = currentBuffer;
+			}
+			var mainFileBuffer = fileNameToBuffer[myThis.mainFile.name];
+			if (mainFileBuffer === undefined) {
+				return;
+			}
+			
+			myThis.viewer.LoadObjBuffer (mainFileBuffer.resultBuffer, function (fileName) {
+				var requestedBuffer = fileNameToBuffer[fileName];
+				if (requestedBuffer === undefined) {
+					myThis.missingFiles.push ({name : fileName});
+					return null;
+				}
+				myThis.requestedFiles.push (requestedBuffer.originalObject);
+				return requestedBuffer.resultBuffer;
+			});
+			myThis.JsonLoaded ();
+		});		
+	}
 };
 
 window.onload = function ()
