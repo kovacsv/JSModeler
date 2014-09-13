@@ -139,3 +139,26 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 
 	return menuContent;
 };
+
+ImporterButtons = function (xPosition)
+{
+	this.xPosition = xPosition;
+	this.yPosition = 10;
+};
+
+ImporterButtons.prototype.AddButton = function (image, title, onClick)
+{
+	var buttonDiv = document.createElement ('div');
+	buttonDiv.className = 'button';
+	buttonDiv.title = title;
+	buttonDiv.style.left = this.xPosition + 'px';
+	buttonDiv.style.top = this.yPosition + 'px';
+	buttonDiv.onclick = onClick;
+	this.yPosition += 30;
+
+	var buttonImage = document.createElement ('img');
+	buttonImage.src = image;
+	
+	buttonDiv.appendChild (buttonImage);
+	document.body.appendChild (buttonDiv);
+};

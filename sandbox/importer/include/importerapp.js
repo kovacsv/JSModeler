@@ -9,7 +9,7 @@ ImporterApp = function ()
 
 ImporterApp.prototype.Init = function ()
 {
-	window.onresize = this.Resize.bind (this);
+	window.addEventListener ('resize', this.Resize.bind (this), false);
 	this.Resize ();
 
 	this.viewer = new ImporterViewer ();
@@ -17,6 +17,12 @@ ImporterApp.prototype.Init = function ()
 
 	window.addEventListener ('dragover', this.DragOver.bind (this), false);
 	window.addEventListener ('drop', this.Drop.bind (this), false);
+	
+	var myThis = this;
+	var importerButtons = new ImporterButtons (260);
+	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () {
+		myThis.FitInWindow ();
+	});
 	
 	// debug
 	var myThis = this;
@@ -172,7 +178,17 @@ ImporterApp.prototype.Generate = function ()
 		return;
 	}
 
+	this.FitInWindow ();
+};
+
+ImporterApp.prototype.FitInWindow = function ()
+{
 	this.viewer.FitInWindow ();
+};
+
+ImporterApp.prototype.SetView = function (viewType)
+{
+	this.viewer.SetView (viewType);
 };
 
 ImporterApp.prototype.ShowHideMesh = function (meshIndex)

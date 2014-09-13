@@ -300,6 +300,10 @@ JSM.ThreeViewer.prototype.Resize = function ()
 
 JSM.ThreeViewer.prototype.FitInWindow = function ()
 {
+	if (this.MeshCount () == 0) {
+		return;
+	}
+	
 	var center = this.GetCenter ();
 	var radius = this.GetBoundingSphereRadius (center);
 	this.navigation.FitInWindow (center, radius);

@@ -51,6 +51,14 @@ img.menubutton
 	display : block;
 }
 
+div.button
+{
+	width : 25px;
+	height : 25px;
+	cursor : pointer;
+	position : absolute;
+}
+
 div.menutext
 {
 	padding : 2px;
