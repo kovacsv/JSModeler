@@ -31,6 +31,7 @@ JSM.GetStringBufferFromURL = function (url, onReady)
 {
 	var request = new XMLHttpRequest ();
 	request.open ('GET', url, true);
+	request.responseType = 'text';
 
 	request.onload = function () {
 		var stringBuffer = request.response;
@@ -553,6 +554,7 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 		if (lineParts.length === 0) {
 			return;
 		}
+
 		if (lineParts[0] == 'v') {
 			if (lineParts.length < 4) {
 				return;
@@ -696,7 +698,7 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 	var i, body, mesh;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		if (body.VertexCount () === 0) {
+		if (body.TriangleCount () === 0) {
 			continue;
 		}
 		mesh = {
@@ -856,9 +858,9 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 JSM.ConvertObjToJsonData = function (stringBuffer)
 {
 	var triangleModel = new JSM.TriangleModel ();
-	var index = triangleModel.AddBody (new JSM.TriangleBody ('Name'));
+	var index = triangleModel.AddBody (new JSM.TriangleBody ('Model'));
 	var currentBody = triangleModel.GetBody (index);
-
+	
 	JSM.ReadObjFile (stringBuffer, {
 		onVertex : function (x, y, z) {
 			if (currentBody === null) {
@@ -890,19 +892,10 @@ JSM.ConvertObjToJsonData = function (stringBuffer)
 						vertices[0], vertices[(i + 1) % count], vertices[(i + 2) % count]
 					);
 				}
-				currentBody.GetTriangle (currentBody.TriangleCount () - 1).mat = 0;
 			}
 		}
 	});
 
-	triangleModel.AddMaterial (
-		'Name',
-		{r : 0.5, b : 0.5, g : 0.5},
-		{r : 0.5, b : 0.5, g : 0.5},
-		{r : 0.5, b : 0.5, g : 0.5},
-		1.0
-	);
-	
 	triangleModel.Finalize ();
 	var jsonData = JSM.ConvertTriangleModelToJsonData (triangleModel);
 	return jsonData;

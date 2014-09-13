@@ -93,7 +93,7 @@ JSM.TriangleBody.prototype.TriangleCount = function ()
 	return this.triangles.length;
 };
 
-JSM.TriangleBody.prototype.Finalize = function ()
+JSM.TriangleBody.prototype.Finalize = function (model)
 {
 	function FinalizeTriangle (body, triangleIndex, triangleNormals, vertexToTriangles)
 	{
@@ -120,7 +120,10 @@ JSM.TriangleBody.prototype.Finalize = function ()
 		}
 	
 		var triangle = body.triangles[i];
-	
+		if (triangle.mat === undefined) {
+			triangle.mat = model.AddDefaultMaterial ();
+		}
+		
 		var normal, normalIndex;
 		if (triangle.n0 === undefined || triangle.n1 === undefined || triangle.n2 === undefined) {
 			if (triangle.curve === undefined || triangle.curve === 0) {
@@ -172,6 +175,7 @@ JSM.TriangleModel = function ()
 {
 	this.materials = [];
 	this.bodies = [];
+	this.defaultMaterial = -1;
 };
 
 JSM.TriangleModel.prototype.AddMaterial = function (name, ambient, diffuse, specular, opacity)
@@ -189,6 +193,26 @@ JSM.TriangleModel.prototype.AddMaterial = function (name, ambient, diffuse, spec
 JSM.TriangleModel.prototype.GetMaterial = function (index)
 {
 	return this.materials[index];
+};
+
+JSM.TriangleModel.prototype.AddDefaultMaterial = function ()
+{
+	if (this.defaultMaterial == -1) {
+		this.materials.push ({
+			name : 'Default',
+			ambient : {r : 1.0, g : 0.0, b : 0.0},
+			diffuse : {r : 1.0, g : 0.0, b : 0.0},
+			specular : {r : 0.0, g : 0.0, b : 0.0},
+			opacity : 1.0
+		});
+		this.defaultMaterial = this.materials.length - 1;
+	}
+	return this.defaultMaterial;
+};
+
+JSM.TriangleModel.prototype.GetDefaultMaterialIndex = function ()
+{
+	return this.AddDefaultMaterial ();
 };
 
 JSM.TriangleModel.prototype.MaterialCount = function ()
@@ -222,6 +246,6 @@ JSM.TriangleModel.prototype.Finalize = function ()
 	var i, body;
 	for (i = 0; i < this.bodies.length; i++) {
 		body = this.bodies[i];
-		body.Finalize ();
+		body.Finalize (this);
 	}
 };
