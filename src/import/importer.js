@@ -887,12 +887,12 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 		if (currentMeshData.transformation !== undefined) {
 			matrix = JSM.MatrixClone (currentMeshData.transformation);
 			invMatrix = JSM.MatrixInvert (currentMeshData.transformation);
-			if (currentMeshData.pivotPoint !== undefined) {
-				invMatrix[12] -= currentMeshData.pivotPoint[0];
-				invMatrix[13] -= currentMeshData.pivotPoint[1];
-				invMatrix[14] -= currentMeshData.pivotPoint[2];
-			}
 			if (invMatrix !== null) {
+				if (currentMeshData.pivotPoint !== undefined) {
+					invMatrix[12] -= currentMeshData.pivotPoint[0];
+					invMatrix[13] -= currentMeshData.pivotPoint[1];
+					invMatrix[14] -= currentMeshData.pivotPoint[2];
+				}
 				matrix = JSM.MatrixMultiply (invMatrix, matrix);
 				for (j = 0; j < currentBody.VertexCount (); j++) {
 					vertex = currentBody.GetVertex (j);
