@@ -878,7 +878,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 	});
 	
 	var i, j, triangle;
-	var matrix, invMatrix, vertex, transformedVertex;
+	var matrix, invMatrix, determinant, flipY, vertex, transformedVertex;
 	var materialName, materialIndex, smoothingGroup;
 	for (i = 0; i < triangleModel.BodyCount (); i++) {
 		currentBody = triangleModel.GetBody (i);
@@ -887,6 +887,8 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 		if (currentMeshData.transformation !== undefined) {
 			matrix = JSM.MatrixClone (currentMeshData.transformation);
 			invMatrix = JSM.MatrixInvert (currentMeshData.transformation);
+			determinant = JSM.MatrixDeterminant (currentMeshData.transformation);
+			flipY = JSM.IsNegative (determinant);
 			if (invMatrix !== null) {
 				if (currentMeshData.pivotPoint !== undefined) {
 					invMatrix[12] -= currentMeshData.pivotPoint[0];
@@ -896,6 +898,9 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				matrix = JSM.MatrixMultiply (invMatrix, matrix);
 				for (j = 0; j < currentBody.VertexCount (); j++) {
 					vertex = currentBody.GetVertex (j);
+					if (flipY) {
+						vertex.y = 2.0 * currentMeshData.transformation[13] - vertex.y;
+					}
 					transformedVertex = JSM.ApplyTransformation (matrix, vertex);
 					currentBody.SetVertex (j, transformedVertex.x, transformedVertex.y, transformedVertex.z);
 				}
