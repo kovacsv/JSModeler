@@ -20,9 +20,13 @@ ImporterApp.prototype.Init = function ()
 	
 	var myThis = this;
 	var importerButtons = new ImporterButtons (260);
-	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () {
-		myThis.FitInWindow ();
-	});
+	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
+	importerButtons.AddButton ('images/front.png', 'Front View', function () { myThis.SetNamedView ('front'); });
+	importerButtons.AddButton ('images/back.png', 'Back View', function () { myThis.SetNamedView ('back'); });
+	importerButtons.AddButton ('images/left.png', 'Left View', function () { myThis.SetNamedView ('left'); });
+	importerButtons.AddButton ('images/right.png', 'Right View', function () { myThis.SetNamedView ('right'); });
+	importerButtons.AddButton ('images/top.png', 'Top View', function () { myThis.SetNamedView ('top'); });
+	importerButtons.AddButton ('images/bottom.png', 'Bottom View', function () { myThis.SetNamedView ('bottom'); });
 	
 	// debug
 	var myThis = this;
@@ -184,6 +188,11 @@ ImporterApp.prototype.Generate = function ()
 ImporterApp.prototype.FitInWindow = function ()
 {
 	this.viewer.FitInWindow ();
+};
+
+ImporterApp.prototype.SetNamedView = function (viewName)
+{
+	this.viewer.SetNamedView (viewName);
 };
 
 ImporterApp.prototype.SetView = function (viewType)

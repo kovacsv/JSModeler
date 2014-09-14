@@ -726,6 +726,15 @@
 						["number[16]", "the result matrix"]
 					]
 				},
+				"MatrixDeterminant" : {
+					"description" : "Calculates the determinant of a matrix.",
+					"parameters" : [
+						["matrix", "number[16]", "the source matrix"]
+					],
+					"returns" : [
+						["number", "the determinant"]
+					]
+				},
 				"MatrixInvert" : {
 					"description" : "Inverts a matrix.",
 					"parameters" : [

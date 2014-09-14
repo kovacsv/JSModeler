@@ -10,7 +10,7 @@ ImporterViewer.prototype.Init = function (canvasName)
 		cameraEyePosition : [8.0, 6.0, 4.0],
 		cameraCenterPosition : [0.0, 0.0, 0.0],
 		cameraUpVector : [0, 0, 1],
-		nearClippingPlane : 1.0,
+		nearClippingPlane : 10.0,
 		farClippingPlane : 100000000
 	};
 
@@ -18,6 +18,7 @@ ImporterViewer.prototype.Init = function (canvasName)
 	if (!this.viewer.Start (canvasName, viewerSettings)) {
 		return false;
 	}
+	this.viewer.navigation.EnableFixUp (false);
 	this.viewer.SetClearColor (0xdddddd);
 	this.viewer.Draw ();
 	
@@ -52,6 +53,7 @@ ImporterViewer.prototype.ShowAllMeshes = function ()
 		this.viewer.AddMesh (meshes[i]);
 	}
 	
+	this.viewer.AdjustClippingPlanes ();
 	this.viewer.Draw ();
 	return true;
 };
@@ -100,4 +102,9 @@ ImporterViewer.prototype.HideMesh = function (index)
 ImporterViewer.prototype.FitInWindow = function ()
 {
 	this.viewer.FitInWindow ();
+};
+
+ImporterViewer.prototype.SetNamedView = function (viewName)
+{
+	this.viewer.SetNamedView (viewName);
 };
