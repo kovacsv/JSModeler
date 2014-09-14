@@ -119,10 +119,10 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		}
 	}
 	
-	function OnPivotPoint (objectName, pivotPoint)
+	function OnObjectNode (objectNode)
 	{
-		if (callbacks.onPivotPoint !== undefined && callbacks.onPivotPoint !== null) {
-			callbacks.onPivotPoint (objectName, pivotPoint);
+		if (callbacks.onObjectNode !== undefined && callbacks.onObjectNode !== null) {
+			callbacks.onObjectNode (objectNode);
 		}
 	}
 
@@ -438,25 +438,33 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		{
 			OnLog ('Read object node chunk (' + id.toString (16) + ', ' + length + ')', 2);
 			
-			var objectName = '';
-			var pivotPoint = [0.0, 0.0, 0.0];
+			var objectNode = {
+				name : '',
+				id : -1,
+				flags : -1,
+				parent : -1,
+				pivot : [0.0, 0.0, 0.0]
+			};
 			
 			var endByte = GetChunkEnd (reader, length);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks['OBJECT_HIERARCHY']) {
-					objectName = ReadName (reader);
-					SkipChunk (reader, chunkLength - objectName.length - 1);
+					objectNode.name = ReadName (reader);
+					objectNode.flags =reader.ReadUnsignedInteger32 ();
+					objectNode.parent =reader.ReadUnsignedInteger16 ();
 				} else if (chunkId == chunks['OBJECT_PIVOT']) {
-					pivotPoint[0] = reader.ReadFloat32 ();
-					pivotPoint[1] = reader.ReadFloat32 ();
-					pivotPoint[2] = reader.ReadFloat32 ();
+					objectNode.pivot[0] = reader.ReadFloat32 ();
+					objectNode.pivot[1] = reader.ReadFloat32 ();
+					objectNode.pivot[2] = reader.ReadFloat32 ();
+				} else if (chunkId == chunks['OBJECT_ID']) {
+					id = reader.ReadUnsignedInteger16 ();
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 3);
 					SkipChunk (reader, chunkLength);
 				}
 			});
 
-			OnPivotPoint (objectName, pivotPoint);
+			OnObjectNode (objectNode);
 		}
 		
 		function ReadKeyFrameChunk (reader, id, length)
@@ -844,12 +852,14 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			}
 			currentMeshData.transformation = matrix;
 		},
-		onPivotPoint : function (objectName, pivotPoint) {
-			var meshIndex = meshNameToIndex[objectName];
+		onObjectNode : function (objectNode) {
+			var meshIndex = meshNameToIndex[objectNode.name];
 			if (meshIndex === undefined) {
 				return;
 			}
-			meshData[meshIndex].pivotPoint = pivotPoint;
+			meshData[meshIndex].id = objectNode.id;
+			meshData[meshIndex].parent = objectNode.parent;
+			meshData[meshIndex].pivot = objectNode.pivot;
 		},
 		onVertex : function (x, y, z) {
 			if (currentBody === null || currentMeshData === null) {
@@ -896,10 +906,10 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			
 			invMatrix = JSM.MatrixInvert (currentMeshData.transformation);
 			if (invMatrix !== null) {
-				if (currentMeshData.pivotPoint !== undefined) {
-					invMatrix[12] -= currentMeshData.pivotPoint[0];
-					invMatrix[13] -= currentMeshData.pivotPoint[1];
-					invMatrix[14] -= currentMeshData.pivotPoint[2];
+				if (currentMeshData.pivot !== undefined) {
+					invMatrix[12] -= currentMeshData.pivot[0];
+					invMatrix[13] -= currentMeshData.pivot[1];
+					invMatrix[14] -= currentMeshData.pivot[2];
 				}
 				matrix = JSM.MatrixMultiply (invMatrix, matrix);
 				for (j = 0; j < currentBody.VertexCount (); j++) {

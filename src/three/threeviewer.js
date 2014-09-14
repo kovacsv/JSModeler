@@ -205,7 +205,7 @@ JSM.ThreeViewer.prototype.AdjustClippingPlanes = function ()
 {
 	var center = this.GetCenter ();
 	var radius = this.GetBoundingSphereRadius (center);
-	if (radius < 100.0) {	
+	if (radius < 100.0) {
 		this.camera.near = 0.1;
 		this.camera.far = 1000.0;
 	} else {
