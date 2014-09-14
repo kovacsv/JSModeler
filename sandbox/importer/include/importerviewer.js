@@ -18,7 +18,7 @@ ImporterViewer.prototype.Init = function (canvasName)
 	if (!this.viewer.Start (canvasName, viewerSettings)) {
 		return false;
 	}
-	this.viewer.navigation.EnableFixUp (false);
+	//this.viewer.navigation.EnableFixUp (false);
 	this.viewer.SetClearColor (0xdddddd);
 	this.viewer.Draw ();
 	
