@@ -37,6 +37,8 @@
 ../src/import/trianglemodel.js
 ../src/import/binaryreader.js
 ../src/import/importer.js
+../src/import/importer3ds.js
+../src/import/importerobj.js
 ../src/extras/solidgenerator.js
 ../src/extras/extgenerator.js
 ../src/extras/painter.js
