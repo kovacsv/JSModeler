@@ -21,6 +21,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var importerButtons = new ImporterButtons (260);
 	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
+	importerButtons.AddButton ('images/fixup.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
 	importerButtons.AddButton ('images/front.png', 'Front View', function () { myThis.SetNamedView ('front'); });
 	importerButtons.AddButton ('images/back.png', 'Back View', function () { myThis.SetNamedView ('back'); });
 	importerButtons.AddButton ('images/left.png', 'Left View', function () { myThis.SetNamedView ('left'); });
@@ -188,6 +189,11 @@ ImporterApp.prototype.Generate = function ()
 ImporterApp.prototype.FitInWindow = function ()
 {
 	this.viewer.FitInWindow ();
+};
+
+ImporterApp.prototype.SetFixUp = function ()
+{
+	this.viewer.SetFixUp ();
 };
 
 ImporterApp.prototype.SetNamedView = function (viewName)

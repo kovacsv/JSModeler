@@ -37,6 +37,7 @@ InfoTable.prototype.AddColorRow = function (name, color)
 	
 	var colorDiv = document.createElement ('div');
 	colorDiv.className = 'colorbutton';
+	colorDiv.title = '(' + color[0] + ', ' + color[1] + ', ' + color[2] + ')';
 	var hexColor = JSM.RGBComponentsToHexColor (color[0] * 255.0, color[1] * 255.0, color[2] * 255.0);
 	var colorString = hexColor.toString (16);
 	while (colorString.length < 6) {
