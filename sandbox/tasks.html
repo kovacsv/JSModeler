@@ -9,152 +9,103 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		TaskRunner = function ()
-		{
-			this.taskFunctions = []
-			this.timeout = null;
-			this.finish = null;
-			this.current = null;
-		};
-
-		TaskRunner.prototype =
-		{
-			AddTask : function (taskFunction, runCount)
-			{
-				var count = 1;
-				if (runCount !== undefined && runCount != null) {
-					count = runCount;
-				}
-				
-				var i;
-				for (i = 0; i < count; i++) {
-					this.taskFunctions.push (taskFunction);
-				}
-			},
-			
-			RunTasks : function (timeout, finish)
-			{
-				this.timeout = 0;
-				if (timeout !== undefined && timeout != null) {
-					this.timeout = timeout;
-				}
-				
-				this.finish = null;
-				if (finish !== undefined && finish != null) {
-					this.finish = finish;
-				}
-
-				this.current = 0;
-				this.RunTask ();
-			},
-			
-			RunTask : function ()
-			{
-				if (this.current < this.taskFunctions.length) {
-					var task = this.taskFunctions[this.current];
-					task (this.Finished.bind (this));
-				} else {
-					if (this.finish !== null) {
-						this.finish ();
-					}
-				}
-			},
-			
-			Finished : function ()
-			{
-				this.current = this.current + 1;
-				setTimeout (this.RunTask.bind (this), this.timeout);
-			}
-		};
-	
 		function AddToLog (text)
 		{
 			var log = document.getElementById ('log');
 			log.innerHTML += text + ' ';
 		}
+
+		var JSM = {};
 		
-		function All ()
+		JSM.AsyncEnvironment = function (parameters)
 		{
-			function A (onFinish)
+			this.parameters = parameters;
+		};
+
+		JSM.AsyncEnvironment.prototype.OnStart = function (taskCount)
+		{
+			if (this.parameters !== undefined && this.parameters.onStart !== undefined) {
+				this.parameters.onStart (taskCount);
+			}
+		};
+
+		JSM.AsyncEnvironment.prototype.OnProcess = function (currentTask)
+		{
+			if (this.parameters !== undefined && this.parameters.onProcess !== undefined) {
+				this.parameters.onProcess (currentTask);
+			}
+		};
+
+		JSM.AsyncEnvironment.prototype.OnFinish = function ()
+		{
+			if (this.parameters !== undefined && this.parameters.onFinish !== undefined) {
+				this.parameters.onFinish ();
+			}
+		};
+
+		JSM.AsyncRunTasks = function (parameters)
+		{
+			function GetTimeout ()
 			{
-				function A1 (onFinish)
-				{
-					globVar++;
-					AddToLog ('A1 (' + globVar + ')');
-					onFinish ();
+				if (parameters.timeout !== undefined) {
+					return parameters.timeout;
 				}
-				
-				function A2 (onFinish)
-				{
-					globVar++;
-					AddToLog ('A2 (' + globVar + ')');
-					onFinish ();
+				return 0;
+			}
+
+			function RunTask (environment, counter)
+			{
+				var needContinue = parameters.taskFunction ();
+				environment.OnProcess (counter);
+				if (needContinue && counter < parameters.runCount - 1) {
+					setTimeout (function () {
+						RunTask (environment, counter + 1);
+					}, GetTimeout ());
+					return;
 				}
-				
-				function A3 (onFinish)
-				{
-					globVar++;
-					AddToLog ('A3 (' + globVar + ')');
-					onFinish ();
-				}
-			
-				globVar++;
-				AddToLog ('A (' + globVar + ')');
-				var taskRunner = new TaskRunner ();
-				taskRunner.AddTask (A1, 5);
-				taskRunner.AddTask (A2);
-				taskRunner.AddTask (A3);
-				taskRunner.RunTasks (100, function () {onFinish ();});
+				environment.OnFinish ();
 			}
 			
-			function B (onFinish)
-			{
-				globVar++;
-				AddToLog ('B (' + globVar + ')');
-				onFinish ();
+			if (parameters === undefined || parameters.taskFunction === undefined || parameters.runCount === undefined) {
+				return;
 			}
 
-			function C (onFinish)
-			{
-				globVar++;
-				AddToLog ('C (' + globVar + ')');
-				onFinish ();
-			}
-
-			function D (onFinish)
-			{
-				globVar++;
-				AddToLog ('D (' + globVar + ')');
-				onFinish ();
-			}
-
-			function E (onFinish)
-			{
-				globVar++;
-				AddToLog ('E (' + globVar + ')');
-				onFinish ();
-			}
-
-			function F ()
-			{
-				globVar++;
-				AddToLog ('F (' + globVar + ')');
+			var environment = parameters.environment;
+			if (environment === undefined) {
+				environment = new JSM.AsyncEnvironment ();
 			}
 			
-			var globVar = 0;
-			
-			var taskRunner = new TaskRunner ();
-			taskRunner.AddTask (A);
-			taskRunner.AddTask (B);
-			taskRunner.AddTask (C, 10);
-			taskRunner.AddTask (D);
-			taskRunner.AddTask (E);
-			taskRunner.RunTasks (300, F);
-		}
-		
+			environment.OnStart (parameters.runCount);
+			RunTask (environment, 0);
+		};
+
 		function Load ()
 		{
-			All ();
+			var myCounter = 0;
+			var environment = new JSM.AsyncEnvironment ({
+				onStart : function (runCount) {
+					AddToLog ('start' + runCount);
+				},				
+				onProcess : function (counter) {
+					AddToLog ('task' + counter);
+				},	
+				onFinish : function () {
+					AddToLog ('finish');
+				}
+			});
+			JSM.AsyncRunTasks ({
+				taskFunction : function () {
+					for (var i = 0; i < 100000; i++) {
+						var j = Math.sqrt (i);
+						j = j + 1;
+					}
+					myCounter++;
+					return true;
+				},
+				environment : environment,
+				runCount : 100,
+				timeout : 0
+			});
 		}
 	
 	    window.onload = function ()
