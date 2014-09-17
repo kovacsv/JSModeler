@@ -2,9 +2,7 @@ ImporterApp = function ()
 {
 	this.viewer = null;
 	this.userFiles = null;
-	this.mainFile = null;
-	this.requestedFiles = null;
-	this.meshVisibility = null;
+	this.fileNames = null;
 };
 
 ImporterApp.prototype.Init = function ()
@@ -33,9 +31,11 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
 		myThis.viewer.Load3dsBuffer (arrayBuffer);
-		myThis.mainFile = {name : 'cube.3ds'};
-		myThis.requestedFiles = [];
-		myThis.missingFiles = [];
+		myThis.fileNames = {
+			main : 'cube.3ds',
+			requested : [],
+			missing : []
+		};
 		myThis.JsonLoaded ();
 	});
 };
@@ -149,16 +149,16 @@ ImporterApp.prototype.GenerateMenu = function ()
 	var importerMenu = new ImporterMenu (menu);
 
 	var filesGroup = AddDefaultGroup (importerMenu, 'Files');
-	importerMenu.AddSubItem (filesGroup, this.mainFile.name);
+	importerMenu.AddSubItem (filesGroup, this.fileNames.main);
 	var i;
-	for (i = 0; i < this.requestedFiles.length; i++) {
-		importerMenu.AddSubItem (filesGroup, this.requestedFiles[i].name);
+	for (i = 0; i < this.fileNames.requested.length; i++) {
+		importerMenu.AddSubItem (filesGroup, this.fileNames.requested[i]);
 	}
 	
-	if (this.missingFiles.length > 0) {
+	if (this.fileNames.missing.length > 0) {
 		var missingFilesGroup = AddDefaultGroup (importerMenu, 'Missing Files');
-		for (i = 0; i < this.missingFiles.length; i++) {
-			importerMenu.AddSubItem (missingFilesGroup, this.missingFiles[i].name);
+		for (i = 0; i < this.fileNames.missing.length; i++) {
+			importerMenu.AddSubItem (missingFilesGroup, this.fileNames.missing[i]);
 		}
 	}
 	
@@ -234,9 +234,13 @@ ImporterApp.prototype.Drop = function (event)
 		return;
 	}
 	
-	this.mainFile = null;
-	this.requestedFiles = [];
-	this.missingFiles = [];
+	this.fileNames = {
+		main : null,
+		requested : [],
+		missing : []
+	};
+	
+	var mainFile = null;
 
 	var i, file, fileName, firstPoint, extension;
 	for (i = 0; i < this.userFiles.length; i++) {
@@ -249,31 +253,34 @@ ImporterApp.prototype.Drop = function (event)
 		extension = fileName.substr (firstPoint);
 		extension = extension.toUpperCase ();
 		if (extension == '.3DS' || extension == '.OBJ') {
-			this.mainFile = file;
+			mainFile = file;
 			break;
 		}
 	}
 	
-	if (this.mainFile === null) {
+	if (mainFile === null) {
 		return;
 	}
 	
+	this.fileNames.main = mainFile.name;
+	
 	var myThis = this;
 	if (extension == '.3DS') {
-		JSM.GetArrayBufferFromFile (this.mainFile, function (arrayBuffer) {
+		JSM.GetArrayBufferFromFile (mainFile, function (arrayBuffer) {
 			myThis.viewer.Load3dsBuffer (arrayBuffer);
 			myThis.JsonLoaded ();
 		});
 	} else if (extension == '.OBJ') {
 		JSM.GetStringBuffersFromFileList (this.userFiles, function (stringBuffers) {
 			var fileNameToBuffer = {};
+			
 			var i, currentBuffer;
 			for (i = 0; i < stringBuffers.length; i++) {
 				currentBuffer = stringBuffers[i];
 				fileNameToBuffer[currentBuffer.originalObject.name] = currentBuffer;
 			}
 			
-			var mainFileBuffer = fileNameToBuffer[myThis.mainFile.name];
+			var mainFileBuffer = fileNameToBuffer[mainFile.name];
 			if (mainFileBuffer === undefined) {
 				return;
 			}
@@ -281,14 +288,14 @@ ImporterApp.prototype.Drop = function (event)
 			myThis.viewer.LoadObjBuffer (mainFileBuffer.resultBuffer, function (fileName) {
 				var requestedBuffer = fileNameToBuffer[fileName];
 				if (requestedBuffer === undefined) {
-					myThis.missingFiles.push ({name : fileName});
+					myThis.fileNames.missing.push (fileName);
 					return null;
 				}
-				myThis.requestedFiles.push (requestedBuffer.originalObject);
+				myThis.fileNames.requested.push (requestedBuffer.originalObject.name);
 				return requestedBuffer.resultBuffer;
 			});
 			myThis.JsonLoaded ();
-		});		
+		});
 	}
 };
 
