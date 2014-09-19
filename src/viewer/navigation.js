@@ -110,35 +110,27 @@ JSM.Navigation.prototype.Orbit = function (angleX, angleY)
 	var viewDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.center, this.camera.eye));
 	var horizontalDirection = JSM.VectorNormalize (JSM.VectorCross (viewDirection, this.camera.up));
 	var differentCenter = !JSM.CoordIsEqual (this.orbitCenter, this.camera.center);
-	var horizontal = Math.abs (radAngleX) >= Math.abs (radAngleY);
 	
 	if (this.cameraFixUp) {
 		var originalAngle = JSM.GetVectorsAngle (viewDirection, this.camera.up);
 		var newAngle = originalAngle + radAngleY;
-		if (horizontal) {
-			this.camera.eye = JSM.CoordRotate (this.camera.eye, this.camera.up, -radAngleX, this.orbitCenter);
-			if (differentCenter) {
-				this.camera.center = JSM.CoordRotate (this.camera.center, this.camera.up, -radAngleX, this.orbitCenter);
-			}
-		} else if (JSM.IsGreater (newAngle, 0.0) && JSM.IsLower (newAngle, Math.PI)) {
+		if (JSM.IsGreater (newAngle, 0.0) && JSM.IsLower (newAngle, Math.PI)) {
 			this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, -radAngleY, this.orbitCenter);
 			if (differentCenter) {
 				this.camera.center = JSM.CoordRotate (this.camera.center, horizontalDirection, -radAngleY, this.orbitCenter);
 			}
+		}
+		this.camera.eye = JSM.CoordRotate (this.camera.eye, this.camera.up, -radAngleX, this.orbitCenter);
+		if (differentCenter) {
+			this.camera.center = JSM.CoordRotate (this.camera.center, this.camera.up, -radAngleX, this.orbitCenter);
 		}
 	} else {
 		var verticalDirection = JSM.VectorNormalize (JSM.VectorCross (horizontalDirection, viewDirection));
-		if (horizontal) {
-			this.camera.eye = JSM.CoordRotate (this.camera.eye, verticalDirection, -radAngleX, this.orbitCenter);
-		} else {
-			this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, -radAngleY, this.orbitCenter);
-		}
+		this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, -radAngleY, this.orbitCenter);
+		this.camera.eye = JSM.CoordRotate (this.camera.eye, verticalDirection, -radAngleX, this.orbitCenter);
 		if (differentCenter) {
-			if (horizontal) {
-				this.camera.center = JSM.CoordRotate (this.camera.center, verticalDirection, -radAngleX, this.orbitCenter);
-			} else {
-				this.camera.center = JSM.CoordRotate (this.camera.center, horizontalDirection, -radAngleY, this.orbitCenter);
-			}
+			this.camera.center = JSM.CoordRotate (this.camera.center, horizontalDirection, -radAngleY, this.orbitCenter);
+			this.camera.center = JSM.CoordRotate (this.camera.center, verticalDirection, -radAngleX, this.orbitCenter);
 		}
 		this.camera.up = verticalDirection;
 	}
