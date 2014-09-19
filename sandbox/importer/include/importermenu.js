@@ -52,6 +52,9 @@ InfoTable.prototype.AddColorRow = function (name, color)
 ImporterMenu = function (parent)
 {
 	this.parent = parent;
+	while (this.parent.lastChild) {
+		this.parent.removeChild (this.parent.lastChild);
+	}
 };
 
 ImporterMenu.prototype.AddGroup = function (name, parameters)
@@ -162,4 +165,42 @@ ImporterButtons.prototype.AddButton = function (image, title, onClick)
 	
 	buttonDiv.appendChild (buttonImage);
 	document.body.appendChild (buttonDiv);
+};
+
+ImporterProgressBar = function (parent)
+{
+	this.parent = parent;
+	while (this.parent.lastChild) {
+		this.parent.removeChild (this.parent.lastChild);
+	}
+	this.borderDiv = null;
+	this.contentDiv = null;
+	this.maxCount = null;
+	this.maxWidth = null;
+};
+
+ImporterProgressBar.prototype.Init = function (maxCount)
+{
+	this.borderDiv = document.createElement ('div');
+	this.borderDiv.className = 'progressbarborder';
+
+	this.contentDiv = document.createElement ('div');
+	this.contentDiv.className = 'progressbarcontent';
+
+	this.borderDiv.appendChild (this.contentDiv);
+	this.parent.appendChild (this.borderDiv);
+	
+	this.maxCount = maxCount;
+	this.maxWidth = this.borderDiv.offsetWidth;
+	this.Step (0);
+};
+
+ImporterProgressBar.prototype.Step = function (count)
+{
+	var step = this.maxWidth / this.maxCount;
+	var width = count * step;
+	if (count == this.maxCount) {
+		width = this.maxWidth - 2;
+	}
+	this.contentDiv.style.width = width + 'px';
 };

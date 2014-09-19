@@ -109,7 +109,7 @@ JSM.ConvertModelToThreeMeshes = function (model, materials, conversionData)
 	return meshes;
 };
 
-JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
+JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, environment)
 {
 	function AddMesh (mesh, meshIndex)
 	{
@@ -158,7 +158,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 			
 			if (textureName !== undefined) {
 				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
-					if (textureLoadedCallback !== undefined) {
+					if (textureLoadedCallback !== undefined && textureLoadedCallback !== null) {
 						textureLoadedCallback ();
 					}
 				});
@@ -246,10 +246,13 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 		return result;
 	}
 	
-	var i;
-	for (i = 0; i < meshes.length; i++) {
-		AddMesh (meshes[i], i);
-	}
+	var i = 0;
+	JSM.AsyncRunTask (function () {
+			AddMesh (meshes[i], i);
+			i = i + 1;
+			return true;
+		}, environment, meshes.length, 0, result
+	);
 
 	return result;
 };

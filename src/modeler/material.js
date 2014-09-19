@@ -4,7 +4,7 @@
 *	Defines a material. The parameter structure can contain the following values:
 *	ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight.
 * Parameters:
-*	parameters {array} parameters of the material
+*	parameters {object} parameters of the material
 */
 JSM.Material = function (parameters)
 {

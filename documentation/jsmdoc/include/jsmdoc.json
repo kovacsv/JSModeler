@@ -183,6 +183,16 @@
 						["array", "anything[]", "the array to sort"],
 						["compare", "function", "the compare function"]
 					]
+				},
+				"AsyncRunTask" : {
+					"description" : "Calls a function multiple times asynchronously. If the environment is not specified, it will run synchronously.",
+					"parameters" : [
+						["taskFunction", "function", "the function to run"],
+						["environment", "AsyncEnvironment", "environment with callbackss"],
+						["runCount", "integer", "the count of runs"],
+						["timeout", "integer", "the timeout between runs"],
+						["userData", "anything", "task specific data"]
+					]
 				}
 			},
 			"classes" : {
@@ -213,6 +223,35 @@
 							],
 							"returns" : [
 								["integer", "The result."]
+							]
+						}
+					}
+				},
+				"AsyncEnvironment" : {
+					"description" : "Environment for asynchronous calls.",
+					"parameters" : [
+						["parameters", "object", "callback functions for calls"]
+					],
+					"functions" : {
+						"OnStart" : {
+							"description" : "Calls the onStart callback of the environment.",
+							"parameters" : [
+								["taskCount", "integer", "count of all tasks"],
+								["userData", "anything", "task specific data"]
+							]
+						},
+						"OnProcess" : {
+							"description" : "Calls the onProcess callback of the environment.",
+							"parameters" : [
+								["currentTask", "integer", "number of the current task"],
+								["userData", "anything", "task specific data"]
+							]
+						},
+						"OnFinish" : {
+							"description" : "Calls the onFinish callback of the environment.",
+							"parameters" : [
+								["result", "anything", "the result of the operation"],
+								["userData", "anything", "task specific data"]
 							]
 						}
 					}
@@ -2595,7 +2634,7 @@
 					"parameters" : [
 						["body", "Body", "the body"],
 						["materials", "Materials", "the materials"],
-						["explodeData", "Array", "the parameters and callback functions of explode"]
+						["explodeData", "object", "the parameters and callback functions of explode"]
 					],
 					"returns" : [
 						["boolean", "success"]
@@ -3018,13 +3057,13 @@
 				"Light" : {
 					"description" : "Defines a directional light. The parameter structure can contain the following values: ambient, diffuse, specular, direction.",
 					"parameters" : [
-						["parameters", "array", "parameters of the light"]
+						["parameters", "object", "parameters of the light"]
 					]
 				},
 				"Material" : {
 					"description" : "Defines a material. The parameter structure can contain the following values: ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight.",
 					"parameters" : [
-						["parameters", "array", "parameters of the material"]
+						["parameters", "object", "parameters of the material"]
 					]
 				},
 				"Materials" : {

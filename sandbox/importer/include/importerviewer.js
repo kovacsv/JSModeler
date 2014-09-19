@@ -39,22 +39,36 @@ ImporterViewer.prototype.GetJsonData = function ()
 	return this.jsonData;
 };
 
-ImporterViewer.prototype.ShowAllMeshes = function ()
+ImporterViewer.prototype.ShowAllMeshes = function (inEnvironment)
 {
 	this.viewer.RemoveMeshes ();
 	if (this.jsonData.materials.length === 0 || this.jsonData.meshes.length === 0) {
-		return false;
+		return;
 	}
 
-	var meshes = JSM.ConvertJSONDataToThreeMeshes (this.jsonData);
-	var i;
-	for (i = 0; i < meshes.length; i++) {
-		this.viewer.AddMesh (meshes[i]);
-	}
+	var myThis = this;
+	var currentMeshIndex = 0;
+	var environment = new JSM.AsyncEnvironment ({
+		onStart : function (taskCount, meshes) {
+			inEnvironment.OnStart (taskCount);
+			myThis.viewer.EnableDraw (false);
+		},				
+		onProcess : function (currentTask, meshes) {
+			while (currentMeshIndex < meshes.length) {
+				myThis.viewer.AddMesh (meshes[currentMeshIndex]);
+				currentMeshIndex = currentMeshIndex + 1;
+			}
+			inEnvironment.OnProcess (currentTask);
+		},
+		onFinish : function (meshes) {
+			myThis.viewer.AdjustClippingPlanes ();
+			myThis.viewer.EnableDraw (true);
+			myThis.viewer.Draw ();
+			inEnvironment.OnFinish (meshes);
+		}
+	});	
 	
-	this.viewer.AdjustClippingPlanes ();
-	this.viewer.Draw ();
-	return true;
+	JSM.ConvertJSONDataToThreeMeshes (this.jsonData, null, environment);
 };
 
 ImporterViewer.prototype.ShowMesh = function (index)
@@ -100,7 +114,9 @@ ImporterViewer.prototype.HideMesh = function (index)
 
 ImporterViewer.prototype.FitInWindow = function ()
 {
-	this.viewer.FitInWindow ();
+	if (this.viewer.MeshCount () > 0) {
+		this.viewer.FitInWindow ();
+	}
 };
 
 ImporterViewer.prototype.SetFixUp = function ()

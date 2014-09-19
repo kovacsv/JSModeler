@@ -7,6 +7,71 @@
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<title>Example</title>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../src/core/timer.js"></script>
+	<script type="text/javascript" src="../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../src/core/async.js"></script>
+	<script type="text/javascript" src="../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../src/modeler/light.js"></script>
+	<script type="text/javascript" src="../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../src/modeler/explode.js"></script>
+	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../src/import/trianglemodel.js"></script>
+	<script type="text/javascript" src="../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../src/import/importer.js"></script>
+	<script type="text/javascript" src="../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../src/extras/surfaces.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../src/renderer/converter.js"></script>
+	<script type="text/javascript" src="../src/viewer/jsonfileloader.js"></script>
+	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../src/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../src/three/threeviewer.js"></script>
+<!-- JSModeler includes end -->
 
 	<script type="text/javascript">
 		function AddToLog (text)
@@ -14,70 +79,6 @@
 			var log = document.getElementById ('log');
 			log.innerHTML += text + ' ';
 		}
-
-		var JSM = {};
-		
-		JSM.AsyncEnvironment = function (parameters)
-		{
-			this.parameters = parameters;
-		};
-
-		JSM.AsyncEnvironment.prototype.OnStart = function (taskCount)
-		{
-			if (this.parameters !== undefined && this.parameters.onStart !== undefined) {
-				this.parameters.onStart (taskCount);
-			}
-		};
-
-		JSM.AsyncEnvironment.prototype.OnProcess = function (currentTask)
-		{
-			if (this.parameters !== undefined && this.parameters.onProcess !== undefined) {
-				this.parameters.onProcess (currentTask);
-			}
-		};
-
-		JSM.AsyncEnvironment.prototype.OnFinish = function ()
-		{
-			if (this.parameters !== undefined && this.parameters.onFinish !== undefined) {
-				this.parameters.onFinish ();
-			}
-		};
-
-		JSM.AsyncRunTasks = function (parameters)
-		{
-			function GetTimeout ()
-			{
-				if (parameters.timeout !== undefined) {
-					return parameters.timeout;
-				}
-				return 0;
-			}
-
-			function RunTask (environment, counter)
-			{
-				var needContinue = parameters.taskFunction ();
-				environment.OnProcess (counter);
-				if (needContinue && counter < parameters.runCount - 1) {
-					setTimeout (function () {
-						RunTask (environment, counter + 1);
-					}, GetTimeout ());
-					return;
-				}
-				environment.OnFinish ();
-			}
-			
-			if (parameters === undefined || parameters.taskFunction === undefined || parameters.runCount === undefined) {
-				return;
-			}
-
-			var environment = parameters.environment;
-			if (environment === undefined) {
-				environment = new JSM.AsyncEnvironment ();
-			}
-			
-			environment.OnStart (parameters.runCount);
-			RunTask (environment, 0);
-		};
 
 		function Load ()
 		{
@@ -93,19 +94,19 @@
 					AddToLog ('finish');
 				}
 			});
-			JSM.AsyncRunTasks ({
-				taskFunction : function () {
+			JSM.AsyncRunTask (function () {
 					for (var i = 0; i < 100000; i++) {
 						var j = Math.sqrt (i);
 						j = j + 1;
 					}
+					AddToLog (myCounter);
 					myCounter++;
 					return true;
 				},
-				environment : environment,
-				runCount : 100,
-				timeout : 0
-			});
+				environment,
+				100,
+				0
+			);
 		}
 	
 	    window.onload = function ()

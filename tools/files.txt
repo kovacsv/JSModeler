@@ -1,6 +1,7 @@
 ../src/core/jsm.js
 ../src/core/timer.js
 ../src/core/algorithm.js
+../src/core/async.js
 ../src/geometry/coord.js
 ../src/geometry/determinant.js
 ../src/geometry/coordutils.js

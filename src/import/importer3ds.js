@@ -461,7 +461,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 
 JSM.Convert3dsToJsonData = function (arrayBuffer)
 {
-	function FinalizeMeshesByHierarchy (objectHierarchy, triangleModel, materialNameToIndex)
+	function FinalizeMeshes (objectHierarchy, triangleModel, materialNameToIndex)
 	{
 		function ApplyTransformation (currentBody, currentNode)
 		{
@@ -635,7 +635,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 		}
 	});
 	
-	FinalizeMeshesByHierarchy (objectHierarchy, triangleModel, materialNameToIndex);
+	FinalizeMeshes (objectHierarchy, triangleModel, materialNameToIndex);
 	triangleModel.Finalize ();
 
 	var jsonData = JSM.ConvertTriangleModelToJsonData (triangleModel);

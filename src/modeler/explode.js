@@ -6,7 +6,7 @@
 * Parameters:
 *	body {Body} the body
 *	materials {Materials} the materials
-*	explodeData {Array} the parameters and callback functions of explode
+*	explodeData {object} the parameters and callback functions of explode
 * Returns:
 *	{boolean} success
 */

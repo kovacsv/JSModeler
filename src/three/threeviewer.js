@@ -14,6 +14,7 @@ JSM.ThreeViewer = function ()
 	this.navigation = null;
 	this.settings = null;
 	this.drawLoop = null;
+	this.enableDraw = null;
 };
 
 JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
@@ -39,6 +40,7 @@ JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
 	}
 	
 	this.drawLoop = false;
+	this.enableDraw = true;
 	this.DrawIfNeeded ();
 	return true;
 };
@@ -460,8 +462,17 @@ JSM.ThreeViewer.prototype.ProjectVector = function (x, y, z)
 	return vector;
 };
 
+JSM.ThreeViewer.prototype.EnableDraw = function (enable)
+{
+	this.enableDraw = enable;
+};
+
 JSM.ThreeViewer.prototype.Draw = function ()
 {
+	if (!this.enableDraw) {
+		return;
+	}
+
 	if (this.runBeforeRender !== null) {
 		this.runBeforeRender ();
 	}

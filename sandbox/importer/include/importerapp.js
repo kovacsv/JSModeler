@@ -1,7 +1,6 @@
 ImporterApp = function ()
 {
 	this.viewer = null;
-	this.userFiles = null;
 	this.fileNames = null;
 };
 
@@ -51,14 +50,12 @@ ImporterApp.prototype.Resize = function ()
 ImporterApp.prototype.JsonLoaded = function ()
 {
 	var jsonData = this.viewer.GetJsonData ();
-
 	this.meshVisibility = {};
 	var i;
 	for (i = 0; i < jsonData.meshes.length; i++) {
 		this.meshVisibility[i] = true;
 	}
 
-	this.GenerateMenu (jsonData, this);
 	this.Generate ();
 };
 
@@ -142,10 +139,6 @@ ImporterApp.prototype.GenerateMenu = function ()
 	
 	var jsonData = this.viewer.GetJsonData ();
 	var menu = document.getElementById ('menu');
-	while (menu.lastChild) {
-		menu.removeChild (menu.lastChild);
-	}
-
 	var importerMenu = new ImporterMenu (menu);
 
 	var filesGroup = AddDefaultGroup (importerMenu, 'Files');
@@ -179,11 +172,25 @@ ImporterApp.prototype.GenerateMenu = function ()
 
 ImporterApp.prototype.Generate = function ()
 {
-	if (!this.viewer.ShowAllMeshes ()) {
-		return;
-	}
+	var menu = document.getElementById ('menu');
+	var progressBar = new ImporterProgressBar (menu);
 
-	this.FitInWindow ();
+	var myThis = this;
+	var environment = new JSM.AsyncEnvironment ({
+		onStart : function (taskCount) {
+			progressBar.Init (taskCount);
+		},				
+		onProcess : function (currentTask) {
+			progressBar.Step (currentTask + 1);
+		},
+		onFinish : function () {
+			var jsonData = myThis.viewer.GetJsonData ()
+			myThis.FitInWindow ();
+			myThis.GenerateMenu ();
+		}
+	});
+	
+	this.viewer.ShowAllMeshes (environment);
 };
 
 ImporterApp.prototype.FitInWindow = function ()
@@ -229,8 +236,8 @@ ImporterApp.prototype.Drop = function (event)
 	event.stopPropagation ();
 	event.preventDefault ();
 	
-	this.userFiles = event.dataTransfer.files;
-	if (this.userFiles.length === 0) {
+	var userFiles = event.dataTransfer.files;
+	if (userFiles.length === 0) {
 		return;
 	}
 	
@@ -243,8 +250,8 @@ ImporterApp.prototype.Drop = function (event)
 	var mainFile = null;
 
 	var i, file, fileName, firstPoint, extension;
-	for (i = 0; i < this.userFiles.length; i++) {
-		file = this.userFiles[i];
+	for (i = 0; i < userFiles.length; i++) {
+		file = userFiles[i];
 		fileName = file.name;
 		firstPoint = fileName.lastIndexOf ('.');
 		if (firstPoint == -1) {
@@ -271,7 +278,7 @@ ImporterApp.prototype.Drop = function (event)
 			myThis.JsonLoaded ();
 		});
 	} else if (extension == '.OBJ') {
-		JSM.GetStringBuffersFromFileList (this.userFiles, function (stringBuffers) {
+		JSM.GetStringBuffersFromFileList (userFiles, function (stringBuffers) {
 			var fileNameToBuffer = {};
 			
 			var i, currentBuffer;

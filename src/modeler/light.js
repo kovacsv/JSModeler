@@ -4,7 +4,7 @@
 *	Defines a directional light. The parameter structure can contain the following values:
 *	ambient, diffuse, specular, direction.
 * Parameters:
-*	parameters {array} parameters of the light
+*	parameters {object} parameters of the light
 */
 JSM.Light = function (parameters)
 {

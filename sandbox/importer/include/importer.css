@@ -18,9 +18,16 @@ html, body
 	overflow : auto;
 }
 
+#logo
+{
+	font-size : 21px;
+	padding : 10px 15px;
+	border-radius : 5px;
+}
+
 #menu
 {
-	padding : 10px;
+	margin : 0px 10px;
 }
 
 div.menuitem
@@ -64,6 +71,19 @@ div.menutext
 	padding : 2px;
 	margin-left : 3px;
 	float : left;
+}
+
+div.progressbarborder
+{
+	height : 20px;
+	border : 1px solid #dddddd;
+}
+
+div.progressbarcontent
+{
+	color : #ffffff;
+	background : #dddddd;
+	height : 20px;
 }
 
 table.infotable td
