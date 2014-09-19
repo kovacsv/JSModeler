@@ -27,7 +27,6 @@ ImporterApp.prototype.Init = function ()
 	importerButtons.AddButton ('images/bottom.png', 'Bottom View', function () { myThis.SetNamedView ('bottom'); });
 	
 	// debug
-	var myThis = this;
 	JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
 		myThis.viewer.Load3dsBuffer (arrayBuffer);
 		myThis.fileNames = {
@@ -156,7 +155,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	}
 	
 	var materialsGroup = AddDefaultGroup (importerMenu, 'Materials');
-	var i, material;
+	var material;
 	for (i = 0; i < jsonData.materials.length; i++) {
 		material = jsonData.materials[i];
 		AddMaterial (importerMenu, material);
@@ -179,12 +178,11 @@ ImporterApp.prototype.Generate = function ()
 	var environment = new JSM.AsyncEnvironment ({
 		onStart : function (taskCount) {
 			progressBar.Init (taskCount);
-		},				
+		},
 		onProcess : function (currentTask) {
 			progressBar.Step (currentTask + 1);
 		},
 		onFinish : function () {
-			var jsonData = myThis.viewer.GetJsonData ()
 			myThis.FitInWindow ();
 			myThis.GenerateMenu ();
 		}
@@ -233,11 +231,54 @@ ImporterApp.prototype.DragOver = function (event)
 		
 ImporterApp.prototype.Drop = function (event)
 {
+	function GetFileNamesFromFileList ()
+	{
+		var result = [];
+		var i;
+		for (i = 0; i < userFiles.length; i++) {
+			result.push (userFiles[i].name);
+		}
+		return result;
+	}
+
+	function GetFileExtension (fileName)
+	{
+		var firstPoint = fileName.lastIndexOf ('.');
+		if (firstPoint == -1) {
+			return null;
+		}
+		var extension = fileName.substr (firstPoint);
+		extension = extension.toUpperCase ();
+		return extension;
+	}
+	
+	function GetMainFileIndexFromFileNames (fileNames)
+	{
+		var i, fileName, extension;
+		for (i = 0; i < fileNames.length; i++) {
+			fileName = fileNames[i];
+			extension = GetFileExtension (fileName);
+			if (extension === null) {
+				continue;
+			}
+			if (extension == '.3DS' || extension == '.OBJ') {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	event.stopPropagation ();
 	event.preventDefault ();
 	
 	var userFiles = event.dataTransfer.files;
 	if (userFiles.length === 0) {
+		return;
+	}
+	
+	var fileNames = GetFileNamesFromFileList (userFiles);
+	var mainFileIndex = GetMainFileIndexFromFileNames (fileNames);
+	if (mainFileIndex == -1) {
 		return;
 	}
 	
@@ -247,28 +288,8 @@ ImporterApp.prototype.Drop = function (event)
 		missing : []
 	};
 	
-	var mainFile = null;
-
-	var i, file, fileName, firstPoint, extension;
-	for (i = 0; i < userFiles.length; i++) {
-		file = userFiles[i];
-		fileName = file.name;
-		firstPoint = fileName.lastIndexOf ('.');
-		if (firstPoint == -1) {
-			continue;
-		}
-		extension = fileName.substr (firstPoint);
-		extension = extension.toUpperCase ();
-		if (extension == '.3DS' || extension == '.OBJ') {
-			mainFile = file;
-			break;
-		}
-	}
-	
-	if (mainFile === null) {
-		return;
-	}
-	
+	var mainFile = userFiles[mainFileIndex];
+	var extension = GetFileExtension (mainFile.name);
 	this.fileNames.main = mainFile.name;
 	
 	var myThis = this;

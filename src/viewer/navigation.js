@@ -193,12 +193,13 @@ JSM.Navigation.prototype.OnMouseMove = function (event)
 		return;
 	}
 
+	var ratio = 0.0;
 	if (this.mouse.button == 1) {
 		if (!this.cameraEnableOrbit) {
 			return;
 		}
 		
-		var ratio = 0.5;
+		ratio = 0.5;
 		this.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 		this.DrawCallback ();
 	} else if (this.mouse.button == 3) {
@@ -207,7 +208,7 @@ JSM.Navigation.prototype.OnMouseMove = function (event)
 		}
 		
 		var eyeCenterDistance = JSM.CoordDistance (this.camera.eye, this.camera.center);
-		var ratio = 0.001 * eyeCenterDistance;
+		ratio = 0.001 * eyeCenterDistance;
 		this.Pan (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 		this.DrawCallback ();
 	}

@@ -49,10 +49,10 @@ ImporterViewer.prototype.ShowAllMeshes = function (inEnvironment)
 	var myThis = this;
 	var currentMeshIndex = 0;
 	var environment = new JSM.AsyncEnvironment ({
-		onStart : function (taskCount, meshes) {
+		onStart : function (taskCount/*, meshes*/) {
 			inEnvironment.OnStart (taskCount);
 			myThis.viewer.EnableDraw (false);
-		},				
+		},
 		onProcess : function (currentTask, meshes) {
 			while (currentMeshIndex < meshes.length) {
 				myThis.viewer.AddMesh (meshes[currentMeshIndex]);
@@ -66,7 +66,7 @@ ImporterViewer.prototype.ShowAllMeshes = function (inEnvironment)
 			myThis.viewer.Draw ();
 			inEnvironment.OnFinish (meshes);
 		}
-	});	
+	});
 	
 	JSM.ConvertJSONDataToThreeMeshes (this.jsonData, null, environment);
 };
