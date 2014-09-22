@@ -241,6 +241,17 @@ ImporterApp.prototype.Drop = function (event)
 		return result;
 	}
 
+	function GetFileIndexFromFileNames (fileName, fileNames)
+	{
+		var i;
+		for (i = 0; i < fileNames.length; i++) {
+			if (fileName == fileNames[i]) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	function GetFileExtension (fileName)
 	{
 		var firstPoint = fileName.lastIndexOf ('.');
@@ -268,17 +279,42 @@ ImporterApp.prototype.Drop = function (event)
 		return -1;
 	}
 
+	function Load3ds (importerApp, arrayBuffer)
+	{
+		importerApp.viewer.Load3dsBuffer (arrayBuffer);
+		importerApp.JsonLoaded ();	
+	}
+	
+	function LoadObj (importerApp, mainFileName, fileNameList, stringBuffers)
+	{
+		var mainFileBufferIndex = GetFileIndexFromFileNames (mainFileName, fileNameList);
+		if (mainFileBuffer == -1) {
+			return;
+		}
+
+		var mainFileBuffer = stringBuffers[mainFileBufferIndex];
+		if (mainFileBuffer === undefined) {
+			return;
+		}
+		
+		importerApp.viewer.LoadObjBuffer (mainFileBuffer.resultBuffer, function (fileName) {
+			var requestedFileIndex = GetFileIndexFromFileNames (fileName, fileNameList);
+			if (requestedFileIndex == -1) {
+				importerApp.fileNames.missing.push (fileName);
+				return null;
+			}
+			var requestedBuffer = stringBuffers[requestedFileIndex];
+			importerApp.fileNames.requested.push (requestedBuffer.originalObject.name);
+			return requestedBuffer.resultBuffer;
+		});
+		importerApp.JsonLoaded ();
+	}
+
 	event.stopPropagation ();
 	event.preventDefault ();
 	
 	var userFiles = event.dataTransfer.files;
 	if (userFiles.length === 0) {
-		return;
-	}
-	
-	var fileNames = GetFileNamesFromFileList (userFiles);
-	var mainFileIndex = GetMainFileIndexFromFileNames (fileNames);
-	if (mainFileIndex == -1) {
 		return;
 	}
 	
@@ -288,41 +324,25 @@ ImporterApp.prototype.Drop = function (event)
 		missing : []
 	};
 	
+	var fileNameList = GetFileNamesFromFileList (userFiles);
+	var mainFileIndex = GetMainFileIndexFromFileNames (fileNameList);
+	if (mainFileIndex == -1) {
+		return;
+	}
+	
 	var mainFile = userFiles[mainFileIndex];
+	var mainFileName = mainFile.name;
 	var extension = GetFileExtension (mainFile.name);
 	this.fileNames.main = mainFile.name;
 	
 	var myThis = this;
 	if (extension == '.3DS') {
 		JSM.GetArrayBufferFromFile (mainFile, function (arrayBuffer) {
-			myThis.viewer.Load3dsBuffer (arrayBuffer);
-			myThis.JsonLoaded ();
+			Load3ds (myThis, arrayBuffer);
 		});
 	} else if (extension == '.OBJ') {
 		JSM.GetStringBuffersFromFileList (userFiles, function (stringBuffers) {
-			var fileNameToBuffer = {};
-			
-			var i, currentBuffer;
-			for (i = 0; i < stringBuffers.length; i++) {
-				currentBuffer = stringBuffers[i];
-				fileNameToBuffer[currentBuffer.originalObject.name] = currentBuffer;
-			}
-			
-			var mainFileBuffer = fileNameToBuffer[mainFile.name];
-			if (mainFileBuffer === undefined) {
-				return;
-			}
-			
-			myThis.viewer.LoadObjBuffer (mainFileBuffer.resultBuffer, function (fileName) {
-				var requestedBuffer = fileNameToBuffer[fileName];
-				if (requestedBuffer === undefined) {
-					myThis.fileNames.missing.push (fileName);
-					return null;
-				}
-				myThis.fileNames.requested.push (requestedBuffer.originalObject.name);
-				return requestedBuffer.resultBuffer;
-			});
-			myThis.JsonLoaded ();
+			LoadObj (myThis, mainFileName, fileNameList, stringBuffers);
 		});
 	}
 };
