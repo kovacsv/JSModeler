@@ -96,6 +96,16 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		return name;
 	}
 
+	function ReadVector (reader, components)
+	{
+		var result = [];
+		var i;
+		for (i = 0; i < components; i++) {
+			result[i] = reader.ReadFloat32 ();
+		}
+		return result;
+	}
+
 	function ReadChunks (reader, endByte, onReady)
 	{
 		while (reader.GetPosition () < endByte) {
@@ -345,6 +355,30 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 
 		function ReadObjectNodeChunk (reader, id, length)
 		{
+			function ReadTrackVector (reader, components)
+			{
+				var result = [0.0, 0.0, 0.0];
+				reader.Skip (10);
+				
+				var i, flags;
+				var keyNum = reader.ReadInteger32 ();
+				for (i = 0; i < keyNum; i++) {
+					reader.ReadInteger32 ();
+					flags = reader.ReadUnsignedInteger16 ();
+					if (flags !== 0) {
+						reader.ReadFloat32 ();
+					}
+					
+					if (i === 0) {
+						result = ReadVector (reader, components);
+					} else {
+						ReadVector (reader, components);
+					}
+				}
+
+				return result;
+			}
+		
 			OnLog ('Read object node chunk (' + id.toString (16) + ', ' + length + ')', 2);
 			
 			var objectNode = {
@@ -352,7 +386,9 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				nodeId : -1,
 				flags : -1,
 				userId : -1,
-				pivot : [0.0, 0.0, 0.0]
+				pivot : [0.0, 0.0, 0.0],
+				position : [0.0, 0.0, 0.0],
+				rotation : [0.0, 0.0, 0.0, 0.0]
 			};
 			
 			var endByte = GetChunkEnd (reader, length);
@@ -362,9 +398,11 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 					objectNode.flags = reader.ReadUnsignedInteger32 ();
 					objectNode.userId = reader.ReadUnsignedInteger16 ();
 				} else if (chunkId == chunks.OBJECT_PIVOT) {
-					objectNode.pivot[0] = reader.ReadFloat32 ();
-					objectNode.pivot[1] = reader.ReadFloat32 ();
-					objectNode.pivot[2] = reader.ReadFloat32 ();
+					objectNode.pivot = ReadVector (reader, 3);
+				} else if (chunkId == chunks.OBJECT_POSITION) {
+					objectNode.position = ReadTrackVector (reader, 3);
+				} else if (chunkId == chunks.OBJECT_ROTATION) {
+					objectNode.rotation = ReadTrackVector (reader, 4);
 				} else if (chunkId == chunks.OBJECT_ID) {
 					objectNode.nodeId = reader.ReadUnsignedInteger16 ();
 				} else {
@@ -452,6 +490,8 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		OBJECT_NODE : 0xB002,
 		OBJECT_HIERARCHY : 0xB010,
 		OBJECT_PIVOT : 0xB013,
+		OBJECT_POSITION : 0xB020,
+		OBJECT_ROTATION : 0xB021,
 		OBJECT_ID : 0xB030
 	};
 	
@@ -486,7 +526,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 							currentBody.SetVertex (i, transformedVertex.x, transformedVertex.y, transformedVertex.z);
 						}
 					}
-
+					
 					if (currentNode !== undefined && currentNode !== null) {
 						invMatrix[12] -= currentNode.pivot[0];
 						invMatrix[13] -= currentNode.pivot[1];
@@ -594,17 +634,12 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 		},
 		onObjectNode : function (objectNode) {
 			var bodyIndex = bodyNameToIndex[objectNode.name];
-			objectHierarchy[objectNode.nodeId] = {
-				name : objectNode.name,
-				nodeId : objectNode.nodeId,
-				userId : objectNode.userId,
-				pivot : objectNode.pivot,
-				bodyIndex : bodyIndex
-			};
-			
 			if (bodyIndex === undefined) {
 				return;
 			}
+
+			objectHierarchy[objectNode.nodeId] = objectNode;
+			objectNode.bodyIndex = bodyIndex;
 			
 			var body = triangleModel.GetBody (bodyIndex);
 			body.meshData.objectNodes.push (objectNode.nodeId);

@@ -3,6 +3,7 @@
 		<Folder name="src">
 			<Folder name="core">
 				<File name="..\src\core\algorithm.js" />
+				<File name="..\src\core\async.js" />
 				<File name="..\src\core\jsm.js" />
 				<File name="..\src\core\timer.js" />
 			</Folder>
@@ -41,6 +42,8 @@
 			<Folder name="import">
 				<File name="..\src\import\binaryreader.js" />
 				<File name="..\src\import\importer.js" />
+				<File name="..\src\import\importer3ds.js" />
+				<File name="..\src\import\importerobj.js" />
 				<File name="..\src\import\trianglemodel.js" />
 			</Folder>
 			<Folder name="modeler">
