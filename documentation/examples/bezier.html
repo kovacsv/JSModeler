@@ -45,7 +45,7 @@
 				current = scene.children[i];
 				if (current instanceof THREE.Mesh ||
 					current instanceof THREE.Line ||
-					current instanceof THREE.ParticleSystem)
+					current instanceof THREE.PointCloud)
 				{
 					scene.remove (current);
 					i--;
@@ -123,13 +123,13 @@
 				}
 			}
 
-			var material = new THREE.ParticleBasicMaterial ({
+			var material = new THREE.PointCloudMaterial ({
 				size: 0.05,
 				color : 0x000000,
 				depthTest: false
 			});
 			
-			var particle = new THREE.ParticleSystem (bezierData.controlPointGeometry, material);
+			var particle = new THREE.PointCloud (bezierData.controlPointGeometry, material);
 			bezierData.controlPointScene.add (particle);
 		}
 		
@@ -151,7 +151,6 @@
 				new JSM.Coord (0.0, 0.0, 0.0)
 			));			
 						
-			
 			bezierData.surfaceBody.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));
 			
 			//JSM.GenerateRandomMaterials (bezierData.surfaceBody, materials, true);

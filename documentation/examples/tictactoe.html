@@ -172,7 +172,7 @@
 
 				var i, j, k;
 				var body, transformation;
-				for (k = 0; k < ticTacToe.zSize; k++) {
+				for (k = ticTacToe.zSize - 1; k >= 0; k--) {
 					for (j = 0; j < ticTacToe.ySize; j++) {
 						for (i = 0; i < ticTacToe.xSize; i++) {
 							body = JSM.GenerateCircle (ticTacToe.shapeSize / 2.0, 20);
@@ -180,7 +180,8 @@
 							
 							transformation = JSM.TranslationTransformation (new JSM.Vector (offset * i, offset * j, offset * k));
 							body.Transform (transformation);
-
+							
+							body.ticTacToeId = ticTacToe.DimensionsToIndex ([i, j, k]);
 							model.AddBody (body);
 						}
 					}
@@ -212,7 +213,7 @@
 			};
 			var meshes = JSM.ConvertModelToThreeMeshes (model[0], model[1], conversionData);
 			for (var i = 0; i < meshes.length; i++) {
-				meshes[i].ticTacToeId = i;
+				meshes[i].ticTacToeId = model[0].GetBody (i).ticTacToeId;
 				viewer.AddMesh (meshes[i]);
 			}
 			
