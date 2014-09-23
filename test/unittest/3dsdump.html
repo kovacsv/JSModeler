@@ -79,10 +79,11 @@
 	<script type="text/javascript">
 		function RunFileTestExample (file)
 		{
+			var logDiv = document.getElementById ('log');
+			logDiv.innerHTML = '';
 			JSM.GetArrayBufferFromFile (file, function (arrayBuffer) {
 				JSM.Read3dsFile (arrayBuffer, callbacks = {		
 					onLog: function (logText, logLevel) {
-						var logDiv = document.getElementById ('log');
 						logDiv.innerHTML += '<div style="margin-left:' + (logLevel * 20) + 'px;">' + logText + '</div>';
 					}
 				});
