@@ -505,42 +505,95 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 	{
 		function ApplyTransformation (currentBody, currentNode)
 		{
-			var i, currentMeshData;
-			var matrix, xFlippedMatrix, invMatrix, finalMatrix, determinant;
-			var vertex, transformedVertex;
-			if (currentBody.meshData.transformation !== undefined) {
-				currentMeshData = currentBody.meshData;
-				matrix = JSM.MatrixClone (currentMeshData.transformation);
-				invMatrix = JSM.MatrixInvert (currentMeshData.transformation);
-				if (invMatrix !== null) {
-					determinant = JSM.MatrixDeterminant (currentMeshData.transformation);
-					if (JSM.IsNegative (determinant)) {
-						xFlippedMatrix = JSM.MatrixClone (currentMeshData.transformation);
-						xFlippedMatrix[0] *= -1;
-						xFlippedMatrix[1] *= -1;
-						xFlippedMatrix[2] *= -1;
-						finalMatrix = JSM.MatrixMultiply (invMatrix, xFlippedMatrix);
-						for (i = 0; i < currentBody.VertexCount (); i++) {
-							vertex = currentBody.GetVertex (i);
-							transformedVertex = JSM.ApplyTransformation (finalMatrix, vertex);
-							currentBody.SetVertex (i, transformedVertex.x, transformedVertex.y, transformedVertex.z);
-						}
-					}
-					
-					if (currentNode !== undefined && currentNode !== null) {
-						invMatrix[12] -= currentNode.pivot[0];
-						invMatrix[13] -= currentNode.pivot[1];
-						invMatrix[14] -= currentNode.pivot[2];
-					}
-
-					finalMatrix = JSM.MatrixMultiply (invMatrix, matrix);
-					for (i = 0; i < currentBody.VertexCount (); i++) {
-						vertex = currentBody.GetVertex (i);
-						transformedVertex = JSM.ApplyTransformation (finalMatrix, vertex);
-						currentBody.SetVertex (i, transformedVertex.x, transformedVertex.y, transformedVertex.z);
-					}
+			function MatrixScale (matrix, x, z, y)
+			{
+				var i;
+				for (i = 0; i < 4; i++) {
+					matrix[0 * 4 + i] *= x;
+					matrix[1 * 4 + i] *= y;
+					matrix[2 * 4 + i] *= z;
 				}
 			}
+
+			function TransformBodyVertices (body, matrix)
+			{
+				var i, vertex, transformedVertex;
+				for (i = 0; i < body.VertexCount (); i++) {
+					vertex = body.GetVertex (i);
+					transformedVertex = JSM.ApplyTransformation (matrix, vertex);
+					body.SetVertex (i, transformedVertex.x, transformedVertex.y, transformedVertex.z);
+				}			
+			}
+			
+			function FlipByXCoordinates (body, matrix, invMatrix)	
+			{
+				var determinant = JSM.MatrixDeterminant (matrix);
+				if (!JSM.IsNegative (determinant)) {
+					return;
+				}
+
+				var flippedMatrix = JSM.MatrixClone (matrix);
+				MatrixScale (flippedMatrix, -1.0, 1.0, 1.0);
+				
+				var finalMatrix = JSM.MatrixMultiply (invMatrix, flippedMatrix);
+				TransformBodyVertices (body, finalMatrix);
+			}
+		
+			function MyMatrixTranslate (matrix, x, y, z)
+			{
+				matrix[12] += x;
+				matrix[13] += y;
+				matrix[14] += z;
+			}
+
+			function GetNodeTransformation (node)
+			{
+				if (node === undefined || node === null) {
+					return JSM.MatrixIdentity ();
+				}
+				
+				var result = JSM.MatrixIdentity ();
+				result[12] = currentNode.position[0];
+				result[13] = currentNode.position[1];
+				result[14] = currentNode.position[2];				
+				return result;
+			}
+		
+			function GetNodePivotPoint (node)
+			{
+				if (node === undefined || node === null) {
+					return [0.0, 0.0, 0.0];
+				}
+				return node.pivot;
+			}
+
+			function GetMeshTransformation (mesh)
+			{
+				if (mesh === undefined || mesh === null) {
+					return JSM.MatrixIdentity ();
+				}
+				return mesh.transformation;
+			}
+
+			var currentMeshData = currentBody.meshData;
+			var meshTransformation = GetMeshTransformation (currentMeshData);
+			
+			var nodeTransformation = GetNodeTransformation (currentNode);
+			nodeTransformation = meshTransformation;
+			
+			var matrix = JSM.MatrixClone (nodeTransformation);
+			var invMatrix = JSM.MatrixInvert (meshTransformation);
+			if (invMatrix === null) {
+				return;
+			}
+
+			FlipByXCoordinates (currentBody, matrix, invMatrix);
+
+			var nodePivotPoint = GetNodePivotPoint (currentNode);
+			MyMatrixTranslate (invMatrix, -nodePivotPoint[0], -nodePivotPoint[1], -nodePivotPoint[2]);
+			
+			var finalMatrix = JSM.MatrixMultiply (invMatrix, matrix);
+			TransformBodyVertices (currentBody, finalMatrix);
 		}
 
 		function FinalizeMaterials (currentBody, materialNameToIndex)
@@ -622,7 +675,8 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			currentBody.meshData ={
 				faceToMaterial : {},
 				faceToSmoothingGroup : {},
-				objectNodes : []
+				objectNodes : [],
+				transformation : JSM.MatrixIdentity ()
 			};
 			bodyNameToIndex[meshName] = index;
 		},

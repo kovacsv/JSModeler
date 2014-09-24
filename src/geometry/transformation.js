@@ -30,15 +30,6 @@ JSM.Transformation.prototype.SetMatrix = function (matrix)
 };
 
 /**
-* Function: Transformation.Transpose
-* Description: Transpose matrix of the transformation.
-*/
-JSM.Transformation.prototype.Transpose = function ()
-{
-	this.matrix = JSM.MatrixTranspose (this.matrix);
-};
-
-/**
 * Function: Transformation.Append
 * Description: Adds a transformation to the matrix.
 * Parameters:
