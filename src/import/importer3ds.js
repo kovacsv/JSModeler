@@ -96,11 +96,11 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		return name;
 	}
 
-	function ReadVector (reader, components)
+	function ReadVector (reader)
 	{
 		var result = [];
 		var i;
-		for (i = 0; i < components; i++) {
+		for (i = 0; i < 3; i++) {
 			result[i] = reader.ReadFloat32 ();
 		}
 		return result;
@@ -355,12 +355,12 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 
 		function ReadObjectNodeChunk (reader, id, length)
 		{
-			function ReadTrackVector (reader, components)
+			function ReadTrackVector (reader, type)
 			{
-				var result = [0.0, 0.0, 0.0];
+				var result = [];
 				reader.Skip (10);
 				
-				var i, flags;
+				var i, flags, current, tmp;
 				var keyNum = reader.ReadInteger32 ();
 				for (i = 0; i < keyNum; i++) {
 					reader.ReadInteger32 ();
@@ -369,11 +369,15 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 						reader.ReadFloat32 ();
 					}
 					
-					if (i === 0) {
-						result = ReadVector (reader, components);
+					current = null;
+					if (type == chunks.OBJECT_ROTATION) {
+						tmp = reader.ReadFloat32 ();
+						current = ReadVector (reader);
+						current[3] = tmp;
 					} else {
-						ReadVector (reader, components);
+						current = ReadVector (reader);
 					}
+					result.push (current);
 				}
 
 				return result;
@@ -387,8 +391,9 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				flags : -1,
 				userId : -1,
 				pivot : [0.0, 0.0, 0.0],
-				position : [0.0, 0.0, 0.0],
-				rotation : [0.0, 0.0, 0.0, 0.0]
+				positions : [],
+				rotations : [],
+				scales : []
 			};
 			
 			var endByte = GetChunkEnd (reader, length);
@@ -398,11 +403,13 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 					objectNode.flags = reader.ReadUnsignedInteger32 ();
 					objectNode.userId = reader.ReadUnsignedInteger16 ();
 				} else if (chunkId == chunks.OBJECT_PIVOT) {
-					objectNode.pivot = ReadVector (reader, 3);
+					objectNode.pivot = ReadVector (reader);
 				} else if (chunkId == chunks.OBJECT_POSITION) {
-					objectNode.position = ReadTrackVector (reader, 3);
+					objectNode.positions = ReadTrackVector (reader, chunks.OBJECT_POSITION);
 				} else if (chunkId == chunks.OBJECT_ROTATION) {
-					objectNode.rotation = ReadTrackVector (reader, 4);
+					objectNode.rotations = ReadTrackVector (reader, chunks.OBJECT_ROTATION);
+				} else if (chunkId == chunks.OBJECT_SCALE) {
+					objectNode.scales = ReadTrackVector (reader, chunks.OBJECT_SCALE);
 				} else if (chunkId == chunks.OBJECT_ID) {
 					objectNode.nodeId = reader.ReadUnsignedInteger16 ();
 				} else {
@@ -492,6 +499,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		OBJECT_PIVOT : 0xB013,
 		OBJECT_POSITION : 0xB020,
 		OBJECT_ROTATION : 0xB021,
+		OBJECT_SCALE : 0xB022,
 		OBJECT_ID : 0xB030
 	};
 	
@@ -501,18 +509,44 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 
 JSM.Convert3dsToJsonData = function (arrayBuffer)
 {
-	function FinalizeMeshes (objectHierarchy, triangleModel, materialNameToIndex)
+	function FinalizeMeshes (nodeHierarcy, triangleModel, materialNameToIndex)
 	{
-		function ApplyTransformation (currentBody, currentNode)
+		function ApplyTransformation (body, node, nodeHierarcy)
 		{
-			function MatrixScale (matrix, x, z, y)
+			function MatrixScale (matrix, scale)
 			{
+				var x = scale[0];
+				var y = scale[1];
+				var z = scale[2];
+			
 				var i;
 				for (i = 0; i < 4; i++) {
 					matrix[0 * 4 + i] *= x;
 					matrix[1 * 4 + i] *= y;
 					matrix[2 * 4 + i] *= z;
 				}
+				
+				return matrix;
+			}
+
+			function MatrixTranslate (matrix, translation)
+			{
+				var x = translation[0];
+				var y = translation[1];
+				var z = translation[2];
+
+				var i;
+				for (i = 0; i < 3; i++) {
+					matrix[3 * 4 + i] += matrix[0 * 4 + i] * x + matrix[1 * 4 + i] * y + matrix[2 * 4 + i] * z;
+				}
+				
+				return matrix;
+			}
+
+			function MatrixRotate (matrix, quaternion)
+			{
+				var rotation = JSM.MatrixRotationQuaternion (quaternion);
+				return JSM.MatrixMultiply (rotation, matrix);
 			}
 
 			function TransformBodyVertices (body, matrix)
@@ -533,7 +567,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				}
 
 				var flippedMatrix = JSM.MatrixClone (matrix);
-				MatrixScale (flippedMatrix, -1.0, 1.0, 1.0);
+				MatrixScale (flippedMatrix, [-1.0, 1.0, 1.0]);
 				
 				var finalMatrix = JSM.MatrixMultiply (invMatrix, flippedMatrix);
 				TransformBodyVertices (body, finalMatrix);
@@ -546,16 +580,60 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				matrix[14] += z;
 			}
 
-			function GetNodeTransformation (node)
+			function GetNodeTransformation (node, nodeHierarcy)
 			{
-				if (node === undefined || node === null) {
-					return JSM.MatrixIdentity ();
+				function GetNodePosition (node)
+				{
+					if (node.positions.length === 0) {
+						return [0.0, 0.0, 0.0];
+					}
+					return node.positions[0];
+				}
+			
+				function GetNodeRotation (node)
+				{
+					function GetQuatFromAxisAndAngle (quat)
+					{
+						var result = [0.0, 0.0, 0.0, 1.0];
+						var length = Math.sqrt (quat[0] * quat[0] + quat[1] * quat[1] + quat[2] * quat[2]);
+						if (JSM.IsPositive (length)) {
+							var omega = quat[3] * -0.5;
+							var si = Math.sin (omega) / length;
+							result = [si * quat[0], si * quat[1], si * quat[2], Math.cos (omega)];
+						}
+						return result;
+					}
+
+					if (node.rotations.length === 0) {
+						return [0.0, 0.0, 0.0, 0.0];
+					}
+					
+					var quat = node.rotations[0];
+					return GetQuatFromAxisAndAngle (quat);
+				}
+
+				function GetNodeScale (node)
+				{
+					if (node.scales.length === 0) {
+						return [0.0, 0.0, 0.0, 0.0];
+					}
+					return node.scales[0];
 				}
 				
 				var result = JSM.MatrixIdentity ();
-				result[12] = currentNode.position[0];
-				result[13] = currentNode.position[1];
-				result[14] = currentNode.position[2];				
+				result = MatrixTranslate (result, GetNodePosition (node));
+				result = MatrixRotate (result, GetNodeRotation (node));
+				result = MatrixScale (result, GetNodeScale (node));
+				
+				if (node.userId != 65535) {
+					var parentIndex = nodeHierarcy.nodeIdToIndex[node.userId];
+					if (parentIndex !== undefined) {
+						var parentNode = nodeHierarcy.nodes[parentIndex];
+						var parentTransformation = GetNodeTransformation (parentNode, nodeHierarcy);
+						result = JSM.MatrixMultiply (result, parentTransformation);
+					}
+				}
+				
 				return result;
 			}
 		
@@ -570,38 +648,45 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			function GetMeshTransformation (mesh)
 			{
 				if (mesh === undefined || mesh === null) {
-					return JSM.MatrixIdentity ();
+					return null;
 				}
 				return mesh.transformation;
 			}
-
-			var currentMeshData = currentBody.meshData;
+			
+			var currentMeshData = body.meshData;
 			var meshTransformation = GetMeshTransformation (currentMeshData);
+			if (meshTransformation === null) {
+				return;
+			}
 			
-			var nodeTransformation = GetNodeTransformation (currentNode);
-			nodeTransformation = meshTransformation;
-			
+			var nodeTransformation = null;
+			if (node !== null) {
+				nodeTransformation = GetNodeTransformation (node, nodeHierarcy);
+			} else {
+				nodeTransformation = meshTransformation;
+			}
+
 			var matrix = JSM.MatrixClone (nodeTransformation);
-			var invMatrix = JSM.MatrixInvert (meshTransformation);
-			if (invMatrix === null) {
+			var meshMatrix = JSM.MatrixClone (meshTransformation);
+			var invMeshMatrix = JSM.MatrixInvert (meshMatrix);
+			if (invMeshMatrix === null) {
 				return;
 			}
 
-			FlipByXCoordinates (currentBody, matrix, invMatrix);
+			FlipByXCoordinates (body, meshMatrix, invMeshMatrix);
 
-			var nodePivotPoint = GetNodePivotPoint (currentNode);
-			MyMatrixTranslate (invMatrix, -nodePivotPoint[0], -nodePivotPoint[1], -nodePivotPoint[2]);
-			
-			var finalMatrix = JSM.MatrixMultiply (invMatrix, matrix);
-			TransformBodyVertices (currentBody, finalMatrix);
+			var nodePivotPoint = GetNodePivotPoint (node);
+			MatrixTranslate (matrix, [-nodePivotPoint[0], -nodePivotPoint[1], -nodePivotPoint[2]]);
+			var finalMatrix = JSM.MatrixMultiply (invMeshMatrix, matrix);
+			TransformBodyVertices (body, finalMatrix);
 		}
 
-		function FinalizeMaterials (currentBody, materialNameToIndex)
+		function FinalizeMaterials (body, materialNameToIndex)
 		{
-			var currentMeshData = currentBody.meshData;
+			var currentMeshData = body.meshData;
 			var i, triangle, materialName, materialIndex, smoothingGroup;
-			for (i = 0; i < currentBody.TriangleCount (); i++) {
-				triangle = currentBody.GetTriangle (i);
+			for (i = 0; i < body.TriangleCount (); i++) {
+				triangle = body.GetTriangle (i);
 				
 				materialName = currentMeshData.faceToMaterial[i];
 				if (materialName !== undefined) {
@@ -618,19 +703,37 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			}
 		}
 		
-		var i, currentBody, currentMeshData, currentNode;
-		for (i = 0; i < triangleModel.BodyCount (); i++) {
+		function FinalizeMesh (body, node, materialNameToIndex, nodeHierarcy)
+		{
+			ApplyTransformation (body, node, nodeHierarcy);
+			FinalizeMaterials (body, materialNameToIndex);		
+		}
+		
+		function DuplicateBody (model, body)
+		{
+			var clonedBody = body.Clone ();
+			model.AddBody (clonedBody);
+			return clonedBody;
+		}
+		
+		var i, j, currentBody, currentMeshData, currentNode;
+		var firstNode, addedBody;
+		var bodyCount = triangleModel.BodyCount ();
+		for (i = 0; i < bodyCount; i++) {
 			currentBody = triangleModel.GetBody (i);
 			currentMeshData = currentBody.meshData;
-			
-			currentNode = null;
-			if (currentMeshData.objectNodes.length > 0) {
-				// todo: handle multiple nodes for one mesh
-				currentNode = objectHierarchy[currentMeshData.objectNodes[0]];
+			if (currentMeshData.objectNodes.length === 0) {
+				FinalizeMesh (currentBody, null, materialNameToIndex, nodeHierarcy);
+			} else {
+				firstNode = nodeHierarcy.nodes[currentMeshData.objectNodes[0]];
+				for (j = 1; j < currentMeshData.objectNodes.length; j++) {
+					currentNode = nodeHierarcy.nodes[currentMeshData.objectNodes[j]];
+					addedBody = DuplicateBody (triangleModel, currentBody);
+					addedBody.meshData = currentBody.meshData;
+					FinalizeMesh (addedBody, currentNode, materialNameToIndex, nodeHierarcy);
+				}
+				FinalizeMesh (currentBody, firstNode, materialNameToIndex, nodeHierarcy);
 			}
-			
-			ApplyTransformation (currentBody, currentNode);
-			FinalizeMaterials (currentBody, materialNameToIndex);
 		}
 	}
 
@@ -640,7 +743,10 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 	var materialNameToIndex = {};
 	var bodyNameToIndex = {};
 
-	var objectHierarchy = {};
+	var nodeHierarcy = {
+		nodes : [],
+		nodeIdToIndex : {}
+	};
 	
 	JSM.Read3dsFile (arrayBuffer, {
 		onMaterial : function (material) {
@@ -676,7 +782,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				faceToMaterial : {},
 				faceToSmoothingGroup : {},
 				objectNodes : [],
-				transformation : JSM.MatrixIdentity ()
+				transformation : null
 			};
 			bodyNameToIndex[meshName] = index;
 		},
@@ -687,16 +793,16 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			currentBody.meshData.transformation = matrix;
 		},
 		onObjectNode : function (objectNode) {
+			var nodeIndex = nodeHierarcy.nodes.length;
+			nodeHierarcy.nodes.push (objectNode);
+			nodeHierarcy.nodeIdToIndex[objectNode.nodeId] = nodeIndex;
+
 			var bodyIndex = bodyNameToIndex[objectNode.name];
 			if (bodyIndex === undefined) {
 				return;
 			}
-
-			objectHierarchy[objectNode.nodeId] = objectNode;
-			objectNode.bodyIndex = bodyIndex;
-			
 			var body = triangleModel.GetBody (bodyIndex);
-			body.meshData.objectNodes.push (objectNode.nodeId);
+			body.meshData.objectNodes.push (nodeIndex);
 		},
 		onVertex : function (x, y, z) {
 			if (currentBody === null) {
@@ -704,7 +810,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			}
 			currentBody.AddVertex (x, y, z);
 		},
-		onFace : function (v0, v1, v2/*, flags*/) {
+		onFace : function (v0, v1, v2) {
 			if (currentBody === null) {
 				return;
 			}
@@ -724,7 +830,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 		}
 	});
 	
-	FinalizeMeshes (objectHierarchy, triangleModel, materialNameToIndex);
+	FinalizeMeshes (nodeHierarcy, triangleModel, materialNameToIndex);
 	triangleModel.Finalize ();
 
 	var jsonData = JSM.ConvertTriangleModelToJsonData (triangleModel);

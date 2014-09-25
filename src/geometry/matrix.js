@@ -404,6 +404,55 @@ JSM.MatrixRotation = function (axis, angle, origo)
 };
 
 /**
+* Function: MatrixRotationQuaternion
+* Description: Creates a rotation matrix from a given quaternion.
+* Parameters:
+*	quaternion {number[4]} the quaternion
+* Returns:
+*	{number[16]} the result matrix
+*/
+JSM.MatrixRotationQuaternion = function (quaternion)
+{
+	var x = quaternion[0];
+	var y = quaternion[1];
+	var z = quaternion[2];
+	var w = quaternion[3];
+
+	var x2 = x + x;
+	var y2 = y + y;
+	var z2 = z + z;
+
+	var xx = x * x2;
+	var xy = x * y2;
+	var xz = x * z2;
+	var yy = y * y2;
+	var yz = y * z2;
+	var zz = z * z2;
+	var wx = w * x2;
+	var wy = w * y2;
+	var wz = w * z2;
+
+	var result = [];
+	result[0] = 1.0 - (yy + zz);
+	result[1] = xy + wz;
+	result[2] = xz - wy;
+	result[3] = 0.0;
+	result[4] = xy - wz;
+	result[5] = 1.0 - (xx + zz);
+	result[6] = yz + wx;
+	result[7] = 0.0;
+	result[8] = xz + wy;
+	result[9] = yz - wx;
+	result[10] = 1.0 - (xx + yy);
+	result[11] = 0.0;
+	result[12] = 0.0;
+	result[13] = 0.0;
+	result[14] = 0.0;
+	result[15] = 1;
+	return result;
+};
+
+/**
 * Function: MatrixRotationX
 * Description: Creates a rotation matrix around the x axis.
 * Parameters:

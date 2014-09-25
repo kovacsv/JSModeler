@@ -261,10 +261,10 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 			currentBody = triangleModel.GetBody (index);
 		},
 		onVertex : function (x, y, z) {
-			globalVertices.push (new JSM.Coord (z, x, y));
+			globalVertices.push (new JSM.Coord (x, y, z));
 		},
 		onNormal : function (x, y, z) {
-			globalNormals.push (new JSM.Coord (z, x, y));
+			globalNormals.push (new JSM.Coord (x, y, z));
 		},
 		onFace : function (vertices, normals) {
 			var i, triangle, triangleIndex;

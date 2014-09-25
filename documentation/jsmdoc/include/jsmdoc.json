@@ -805,6 +805,15 @@
 						["number[16]", "the result matrix"]
 					]
 				},
+				"MatrixRotationQuaternion" : {
+					"description" : "Creates a rotation matrix from a given quaternion.",
+					"parameters" : [
+						["quaternion", "number[4]", "the quaternion"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
 				"MatrixRotationX" : {
 					"description" : "Creates a rotation matrix around the x axis.",
 					"parameters" : [
@@ -1665,9 +1674,6 @@
 							"parameters" : [
 								["matrix", "number[16]", "the matrix"]
 							]
-						},
-						"Transpose" : {
-							"description" : "Transpose matrix of the transformation."
 						},
 						"Append" : {
 							"description" : "Adds a transformation to the matrix.",

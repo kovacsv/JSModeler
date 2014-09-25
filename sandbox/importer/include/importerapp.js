@@ -19,12 +19,12 @@ ImporterApp.prototype.Init = function ()
 	var importerButtons = new ImporterButtons (260);
 	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	importerButtons.AddButton ('images/fixup.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
-	importerButtons.AddButton ('images/front.png', 'Front View', function () { myThis.SetNamedView ('front'); });
-	importerButtons.AddButton ('images/back.png', 'Back View', function () { myThis.SetNamedView ('back'); });
-	importerButtons.AddButton ('images/left.png', 'Left View', function () { myThis.SetNamedView ('left'); });
-	importerButtons.AddButton ('images/right.png', 'Right View', function () { myThis.SetNamedView ('right'); });
-	importerButtons.AddButton ('images/top.png', 'Top View', function () { myThis.SetNamedView ('top'); });
-	importerButtons.AddButton ('images/bottom.png', 'Bottom View', function () { myThis.SetNamedView ('bottom'); });
+	importerButtons.AddButton ('images/top.png', 'Set Up Vector (Z)', function () { myThis.SetNamedView ('z'); });
+	importerButtons.AddButton ('images/bottom.png', 'Set Up Vector (-Z)', function () { myThis.SetNamedView ('-z'); });
+	importerButtons.AddButton ('images/front.png', 'Set Up Vector (Y)', function () { myThis.SetNamedView ('y'); });
+	importerButtons.AddButton ('images/back.png', 'Set Up Vector (-Y)', function () { myThis.SetNamedView ('-y'); });
+	importerButtons.AddButton ('images/left.png', 'Set Up Vector (X)', function () { myThis.SetNamedView ('x'); });
+	importerButtons.AddButton ('images/right.png', 'Set Up Vector (-X)', function () { myThis.SetNamedView ('-x'); });
 	
 	// debug
 	JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
@@ -34,7 +34,9 @@ ImporterApp.prototype.Init = function ()
 			requested : [],
 			missing : []
 		};
-		myThis.JsonLoaded ();
+		var menu = document.getElementById ('menu');
+		var progressBar = new ImporterProgressBar (menu);		
+		myThis.JsonLoaded (progressBar);
 	});
 };
 
@@ -46,7 +48,7 @@ ImporterApp.prototype.Resize = function ()
 	canvas.height = document.body.clientHeight;
 };
 
-ImporterApp.prototype.JsonLoaded = function ()
+ImporterApp.prototype.JsonLoaded = function (progressBar)
 {
 	var jsonData = this.viewer.GetJsonData ();
 	this.meshVisibility = {};
@@ -55,7 +57,7 @@ ImporterApp.prototype.JsonLoaded = function ()
 		this.meshVisibility[i] = true;
 	}
 
-	this.Generate ();
+	this.Generate (progressBar);
 };
 
 ImporterApp.prototype.GenerateMenu = function ()
@@ -169,11 +171,8 @@ ImporterApp.prototype.GenerateMenu = function ()
 	}
 };
 
-ImporterApp.prototype.Generate = function ()
+ImporterApp.prototype.Generate = function (progressBar)
 {
-	var menu = document.getElementById ('menu');
-	var progressBar = new ImporterProgressBar (menu);
-
 	var myThis = this;
 	var environment = new JSM.AsyncEnvironment ({
 		onStart : function (taskCount) {
@@ -279,13 +278,13 @@ ImporterApp.prototype.Drop = function (event)
 		return -1;
 	}
 
-	function Load3ds (importerApp, arrayBuffer)
+	function Load3ds (importerApp, arrayBuffer, progressBar)
 	{
 		importerApp.viewer.Load3dsBuffer (arrayBuffer);
-		importerApp.JsonLoaded ();	
+		importerApp.JsonLoaded (progressBar);	
 	}
 	
-	function LoadObj (importerApp, mainFileName, fileNameList, stringBuffers)
+	function LoadObj (importerApp, mainFileName, fileNameList, stringBuffers, progressBar)
 	{
 		var mainFileBufferIndex = GetFileIndexFromFileNames (mainFileName, fileNameList);
 		if (mainFileBuffer == -1) {
@@ -307,7 +306,7 @@ ImporterApp.prototype.Drop = function (event)
 			importerApp.fileNames.requested.push (requestedBuffer.originalObject.name);
 			return requestedBuffer.resultBuffer;
 		});
-		importerApp.JsonLoaded ();
+		importerApp.JsonLoaded (progressBar);
 	}
 
 	event.stopPropagation ();
@@ -335,14 +334,17 @@ ImporterApp.prototype.Drop = function (event)
 	var extension = GetFileExtension (mainFile.name);
 	this.fileNames.main = mainFile.name;
 	
+	var menu = document.getElementById ('menu');
+	var progressBar = new ImporterProgressBar (menu);
+
 	var myThis = this;
 	if (extension == '.3DS') {
 		JSM.GetArrayBufferFromFile (mainFile, function (arrayBuffer) {
-			Load3ds (myThis, arrayBuffer);
+			Load3ds (myThis, arrayBuffer, progressBar);
 		});
 	} else if (extension == '.OBJ') {
 		JSM.GetStringBuffersFromFileList (userFiles, function (stringBuffers) {
-			LoadObj (myThis, mainFileName, fileNameList, stringBuffers);
+			LoadObj (myThis, mainFileName, fileNameList, stringBuffers, progressBar);
 		});
 	}
 };

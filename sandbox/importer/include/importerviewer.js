@@ -61,7 +61,7 @@ ImporterViewer.prototype.ShowAllMeshes = function (inEnvironment)
 			inEnvironment.OnProcess (currentTask);
 		},
 		onFinish : function (meshes) {
-			myThis.viewer.AdjustClippingPlanes ();
+			myThis.AdjustClippingPlanes ();
 			myThis.viewer.EnableDraw (true);
 			myThis.viewer.Draw ();
 			inEnvironment.OnFinish (meshes);
@@ -124,7 +124,52 @@ ImporterViewer.prototype.SetFixUp = function ()
 	this.viewer.navigation.EnableFixUp (!this.viewer.navigation.cameraFixUp);
 };
 
+ImporterViewer.prototype.AdjustClippingPlanes = function ()
+{
+	var center = this.viewer.GetCenter ();
+	var radius = this.viewer.GetBoundingSphereRadius (center);
+	if (radius < 50.0) {
+		this.viewer.camera.near = 0.1;
+		this.viewer.camera.far = 1000.0;
+	} else {
+		this.viewer.camera.near = 10.0;
+		this.viewer.camera.far = 1000000.0;
+	}
+	this.viewer.camera.updateProjectionMatrix ();
+	this.viewer.Draw ();
+};
+
 ImporterViewer.prototype.SetNamedView = function (viewName)
 {
-	this.viewer.SetNamedView (viewName);
+	var eye, center, up;
+	if (viewName == 'z') {
+		eye = new JSM.Coord (1.0, 0.0, 0.0);
+		center = new JSM.Coord (0.0, 0.0, 0.0);
+		up = new JSM.Coord (0.0, 0.0, 1.0);
+	} else if (viewName == '-z') {
+		eye = new JSM.Coord (-1.0, 0.0, 0.0);
+		center = new JSM.Coord (0.0, 0.0, 0.0);
+		up = new JSM.Coord (0.0, 0.0, -1.0);
+	} else if (viewName == 'y') {
+		eye = new JSM.Coord (1.0, 0.0, 0.0);
+		center = new JSM.Coord (0.0, 0.0, 0.0);
+		up = new JSM.Coord (0.0, 1.0, 0.0);
+	} else if (viewName == '-y') {
+		eye = new JSM.Coord (-1.0, 0.0, 0.0);
+		center = new JSM.Coord (0.0, 0.0, 0.0);
+		up = new JSM.Coord (0.0, -1.0, 0.0);
+	} else if (viewName == 'x') {
+		eye = new JSM.Coord (0.0, 1.0, 0.0);
+		center = new JSM.Coord (0.0, 0.0, 0.0);
+		up = new JSM.Coord (1.0, 0.0, 0.0);
+	} else if (viewName == '-x') {
+		eye = new JSM.Coord (0.0, -1.0, 0.0);
+		center = new JSM.Coord (0.0, 0.0, 0.0);
+		up = new JSM.Coord (-1.0, 0.0, 0.0);
+	} else {
+		return;
+	}
+
+	this.viewer.cameraMove.Set (eye, center, up);
+	this.viewer.FitInWindow ();
 };

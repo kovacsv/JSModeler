@@ -6,6 +6,11 @@ JSM.TriangleBody = function (name)
 	this.triangles = [];
 };
 
+JSM.TriangleBody.prototype.SetName = function (name)
+{
+	this.name = name;
+};
+
 JSM.TriangleBody.prototype.GetName = function ()
 {
 	return this.name;
@@ -141,6 +146,37 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 	for (i = 0; i < this.triangles.length; i++) {
 		FinalizeTriangle (this, i, triangleNormals, vertexToTriangles);
 	}
+};
+
+JSM.TriangleBody.prototype.Clone = function ()
+{
+	var result = new JSM.TriangleBody (this.name);
+	
+	var i, triangle;
+	
+	for (i = 0; i < this.vertices.length; i++) {
+		result.vertices.push (this.vertices[i].Clone ());
+	}
+	
+	for (i = 0; i < this.normals.length; i++) {
+		result.normals.push (this.normals[i].Clone ());
+	}
+	
+	for (i = 0; i < this.triangles.length; i++) {
+		triangle = this.triangles[i];
+		result.triangles.push ({
+			v0 : triangle.v0,
+			v1 : triangle.v1,
+			v2 : triangle.v2,
+			n0 : triangle.n0,
+			n1 : triangle.n1,
+			n2 : triangle.n2,
+			mat : triangle.mat,
+			curve : triangle.curve
+		});
+	}
+	
+	return result;
 };
 
 JSM.TriangleModel = function ()

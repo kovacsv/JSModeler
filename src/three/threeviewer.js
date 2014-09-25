@@ -203,56 +203,6 @@ JSM.ThreeViewer.prototype.MeshCount = function ()
 	return count;
 };
 
-JSM.ThreeViewer.prototype.AdjustClippingPlanes = function ()
-{
-	var center = this.GetCenter ();
-	var radius = this.GetBoundingSphereRadius (center);
-	if (radius < 50.0) {
-		this.camera.near = 0.1;
-		this.camera.far = 1000.0;
-	} else {
-		this.camera.near = 10.0;
-		this.camera.far = 1000000.0;
-	}
-	this.camera.updateProjectionMatrix ();
-	this.DrawIfNeeded ();
-};
-
-JSM.ThreeViewer.prototype.SetNamedView = function (viewName)
-{
-	var eye, center, up;
-	if (viewName == 'front') {
-		eye = new JSM.Coord (-1.0, 0.0, 0.0);
-		center = new JSM.Coord (0.0, 0.0, 0.0);
-		up = new JSM.Coord (0.0, 0.0, 1.0);
-	} else if (viewName == 'back') {
-		eye = new JSM.Coord (1.0, 0.0, 0.0);
-		center = new JSM.Coord (0.0, 0.0, 0.0);
-		up = new JSM.Coord (0.0, 0.0, 1.0);
-	} else if (viewName == 'left') {
-		eye = new JSM.Coord (0.0, -1.0, 0.0);
-		center = new JSM.Coord (0.0, 0.0, 0.0);
-		up = new JSM.Coord (0.0, 0.0, 1.0);
-	} else if (viewName == 'right') {
-		eye = new JSM.Coord (0.0, 1.0, 0.0);
-		center = new JSM.Coord (0.0, 0.0, 0.0);
-		up = new JSM.Coord (0.0, 0.0, 1.0);
-	} else if (viewName == 'top') {
-		eye = new JSM.Coord (0.0, 0.0, 1.0);
-		center = new JSM.Coord (0.0, 0.0, 0.0);
-		up = new JSM.Coord (0.0, 1.0, 0.0);
-	} else if (viewName == 'bottom') {
-		eye = new JSM.Coord (0.0, 0.0, -1.0);
-		center = new JSM.Coord (0.0, 0.0, 0.0);
-		up = new JSM.Coord (0.0, 1.0, 0.0);
-	} else {
-		return;
-	}
-
-	this.cameraMove.Set (eye, center, up);
-	this.FitInWindow ();
-};
-
 JSM.ThreeViewer.prototype.VertexCount = function ()
 {
 	var count = 0;
