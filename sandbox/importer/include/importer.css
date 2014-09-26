@@ -20,9 +20,22 @@ html, body
 
 #logo
 {
-	font-size : 21px;
-	padding : 10px 15px;
-	border-radius : 5px;
+	color : #ffffff;
+	background : #279b61;
+	text-align : center;
+	margin-bottom : 10px;
+	padding : 10px;
+}
+
+div.title
+{
+	font-size : 17px;
+	margin-bottom : 2px;
+}
+
+div.subtitle
+{
+	font-size : 12px;
 }
 
 #menu
@@ -95,4 +108,3 @@ canvas
 {
 	display : block;
 }
-

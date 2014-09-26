@@ -297,9 +297,22 @@ ImporterApp.prototype.Drop = function (event)
 		}
 		
 		importerApp.viewer.LoadObjBuffer (mainFileBuffer.resultBuffer, function (fileName) {
-			var requestedFileIndex = GetFileIndexFromFileNames (fileName, fileNameList);
+			function GetLastName (fileName)
+			{
+				var separatorIndex = fileName.lastIndexOf ('/');
+				if (separatorIndex == -1) {
+					separatorIndex = fileName.lastIndexOf ('\\');
+				}
+				if (separatorIndex == -1) {
+					return fileName;
+				}
+				return fileName.substr (separatorIndex + 1);
+			}
+
+			lastName = GetLastName (fileName);
+			var requestedFileIndex = GetFileIndexFromFileNames (lastName, fileNameList);
 			if (requestedFileIndex == -1) {
-				importerApp.fileNames.missing.push (fileName);
+				importerApp.fileNames.missing.push (lastName);
 				return null;
 			}
 			var requestedBuffer = stringBuffers[requestedFileIndex];

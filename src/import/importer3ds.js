@@ -709,17 +709,21 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			FinalizeMaterials (body, materialNameToIndex);		
 		}
 		
-		function DuplicateBody (model, body)
+		function DuplicateBody (model, body, bodyIndex, instanceIndex)
 		{
 			var clonedBody = body.Clone ();
-			model.AddBody (clonedBody);
+			clonedBody.SetName (clonedBody.GetName () + ' (' + instanceIndex + ')');
+			if (bodyIndex < model.BodyCount ()) {
+				model.AddBodyToIndex (clonedBody, bodyIndex);
+			} else {
+				model.AddBody (clonedBody);
+			}
 			return clonedBody;
 		}
-		
+
 		var i, j, currentBody, currentMeshData, currentNode;
 		var firstNode, addedBody;
-		var bodyCount = triangleModel.BodyCount ();
-		for (i = 0; i < bodyCount; i++) {
+		for (i = 0; i < triangleModel.BodyCount (); i++) {
 			currentBody = triangleModel.GetBody (i);
 			currentMeshData = currentBody.meshData;
 			if (currentMeshData.objectNodes.length === 0) {
@@ -728,9 +732,10 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				firstNode = nodeHierarcy.nodes[currentMeshData.objectNodes[0]];
 				for (j = 1; j < currentMeshData.objectNodes.length; j++) {
 					currentNode = nodeHierarcy.nodes[currentMeshData.objectNodes[j]];
-					addedBody = DuplicateBody (triangleModel, currentBody);
+					addedBody = DuplicateBody (triangleModel, currentBody, i + 1, j + 1);
 					addedBody.meshData = currentBody.meshData;
 					FinalizeMesh (addedBody, currentNode, materialNameToIndex, nodeHierarcy);
+					i = i + 1;
 				}
 				FinalizeMesh (currentBody, firstNode, materialNameToIndex, nodeHierarcy);
 			}

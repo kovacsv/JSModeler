@@ -234,6 +234,12 @@ JSM.TriangleModel.prototype.AddBody = function (body)
 	return this.bodies.length - 1;
 };
 
+JSM.TriangleModel.prototype.AddBodyToIndex = function (body, index)
+{
+	this.bodies.splice (index, 0, body);
+	return index;
+};
+
 JSM.TriangleModel.prototype.GetBody = function (index)
 {
 	return this.bodies[index];
