@@ -52,6 +52,7 @@
 	<script type="text/javascript" src="../../src/import/importer.js"></script>
 	<script type="text/javascript" src="../../src/import/importer3ds.js"></script>
 	<script type="text/javascript" src="../../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../../src/import/importerstl.js"></script>
 	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
 	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
 	<script type="text/javascript" src="../../src/extras/painter.js"></script>
@@ -127,6 +128,20 @@
 			});
 		}
 
+		function LoadStl (url)
+		{
+			viewer.RemoveMeshes ();
+			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
+				var jsonData = JSM.ConvertStlToJsonData (arrayBuffer);
+				var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
+				for (var i = 0; i < meshes.length; i++) {
+					viewer.AddMesh (meshes[i]);
+				}
+				viewer.FitInWindow ();
+				viewer.Draw ();
+			});
+		}
+
 		function Resize ()
 		{
 			var header = document.getElementById ('header');
@@ -153,7 +168,7 @@
 			}
 
 			//Load3ds ('testfiles/cube.3ds');
-			Load3ds ('testfiles/objects.3ds')
+			LoadStl ('testfiles/objects_ascii.stl')
 			viewer.Draw ();
 		}
 
@@ -173,6 +188,8 @@
 			<a class="button" href="javascript:Load3ds ('testfiles/complex.3ds')">complex.3ds</a>
 			<a class="button" href="javascript:LoadObj ('testfiles/cubeobj.obj')">cubeobj.obj</a>
 			<a class="button" href="javascript:LoadObj ('testfiles/meshesobj.obj')">meshesobj.obj</a>
+			<a class="button" href="javascript:LoadStl ('testfiles/objects_ascii.stl')">objects_ascii.stl</a>
+			<a class="button" href="javascript:LoadStl ('testfiles/objects_binary.stl')">objects_binary.stl</a>
 		</div>
 		<div id="info"></div>
 	</div>

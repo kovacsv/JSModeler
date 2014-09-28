@@ -271,7 +271,7 @@ ImporterApp.prototype.Drop = function (event)
 			if (extension === null) {
 				continue;
 			}
-			if (extension == '.3DS' || extension == '.OBJ') {
+			if (extension == '.3DS' || extension == '.OBJ' || extension == '.STL') {
 				return i;
 			}
 		}
@@ -322,6 +322,12 @@ ImporterApp.prototype.Drop = function (event)
 		importerApp.JsonLoaded (progressBar);
 	}
 
+	function LoadStl (importerApp, arrayBuffer, progressBar)
+	{
+		importerApp.viewer.LoadStlBuffer (arrayBuffer);
+		importerApp.JsonLoaded (progressBar);	
+	}
+
 	event.stopPropagation ();
 	event.preventDefault ();
 	
@@ -358,6 +364,10 @@ ImporterApp.prototype.Drop = function (event)
 	} else if (extension == '.OBJ') {
 		JSM.GetStringBuffersFromFileList (userFiles, function (stringBuffers) {
 			LoadObj (myThis, mainFileName, fileNameList, stringBuffers, progressBar);
+		});
+	} else if (extension == '.STL') {
+		JSM.GetArrayBufferFromFile (mainFile, function (arrayBuffer) {
+			LoadStl (myThis, arrayBuffer, progressBar);
 		});
 	}
 };

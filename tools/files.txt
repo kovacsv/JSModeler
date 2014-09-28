@@ -40,6 +40,7 @@
 ../src/import/importer.js
 ../src/import/importer3ds.js
 ../src/import/importerobj.js
+../src/import/importerstl.js
 ../src/extras/solidgenerator.js
 ../src/extras/extgenerator.js
 ../src/extras/painter.js
