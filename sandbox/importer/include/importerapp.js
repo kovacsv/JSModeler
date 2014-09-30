@@ -66,7 +66,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	{
 		var group = menu.AddGroup (name, {
 			openCloseButton : {
-				visible : true,
+				visible : false,
 				open : 'images/opened.png',
 				close : 'images/closed.png',
 				title : 'Show/Hide ' + name

@@ -20,19 +20,14 @@ html, body
 
 #logo
 {
+	color : #ffffff;
+	background : #006295;
+	font-size : 15px;
 	text-align : center;
-	padding : 10px;
-}
-
-div.title
-{
-	font-size : 17px;
-	margin-bottom : 2px;
-}
-
-div.subtitle
-{
-	font-size : 12px;
+	text-decoration : none;
+	margin-bottom : 10px;
+	padding : 7px;
+	display : block;
 }
 
 #menu
