@@ -48,15 +48,30 @@ JSM.ReadAsciiStlFile = function (stringBuffer, callbacks)
 			return lines[lineIndex].trim ();
 		}
 	
-		function GetVertexFromLine (lines, lineIndex)
+		function GetVertices (lines, lineIndex, vertices)
 		{
-			var line = GetLine (lines, lineIndex);
-			var lineParts = line.split (/\s+/);
-			if (lineParts.length < 4 || lineParts[0] != 'vertex') {
-				return null;
+			var currentLineIndex, currentLine, lineParts, vertex;
+			for (currentLineIndex = lineIndex; currentLineIndex < lines.length && vertices.length < 3; currentLineIndex++) {
+				currentLine = GetLine (lines, currentLineIndex);
+				if (currentLine.length === 0) {
+					continue;
+				}
+				
+				lineParts = currentLine.split (/\s+/);
+				if (lineParts.length === 0) {
+					continue;
+				}
+				
+				if (lineParts[0] == 'vertex') {
+					if (lineParts.length < 4) {
+						break;
+					} else {
+						vertex = [parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3])];
+						vertices.push (vertex);
+					}
+				}
 			}
-			var vertex = [parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3])];
-			return vertex;
+			return currentLineIndex + 1;
 		}
 	
 		var line = GetLine (lines, lineIndex);
@@ -77,15 +92,14 @@ JSM.ReadAsciiStlFile = function (stringBuffer, callbacks)
 			}
 			
 			var normal = [parseFloat (lineParts[2]), parseFloat (lineParts[3]), parseFloat (lineParts[4])];
-			var v0 = GetVertexFromLine (lines, lineIndex + 2);
-			var v1 = GetVertexFromLine (lines, lineIndex + 3);
-			var v2 = GetVertexFromLine (lines, lineIndex + 4);
-			if (v0 === null || v1 === null || v2 === null) {
+			var vertices = [];
+			var nextLineIndex = GetVertices (lines, lineIndex + 1, vertices);
+			if (vertices.length != 3) {
 				return -1;
 			}
 			
-			OnFace (v0, v1, v2, normal);
-			return lineIndex + 6;
+			OnFace (vertices[0], vertices[1], vertices[2], normal);
+			return nextLineIndex;
 		}
 
 		return lineIndex + 1;

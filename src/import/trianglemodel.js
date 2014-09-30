@@ -210,7 +210,7 @@ JSM.TriangleModel.prototype.AddDefaultMaterial = function ()
 			name : 'Default',
 			ambient : {r : 0.5, g : 0.5, b : 0.5},
 			diffuse : {r : 0.5, g : 0.5, b : 0.5},
-			specular : {r : 0.0, g : 0.0, b : 0.0},
+			specular : {r : 0.1, g : 0.1, b : 0.1},
 			opacity : 1.0
 		});
 		this.defaultMaterial = this.materials.length - 1;
