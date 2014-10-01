@@ -21,11 +21,11 @@ html, body
 #logo
 {
 	color : #ffffff;
-	background : #006295;
+	background : #008ab8;
 	font-size : 15px;
 	text-align : center;
 	text-decoration : none;
-	margin-bottom : 10px;
+	margin : 5px 5px 10px 5px;
 	padding : 7px;
 	display : block;
 }
