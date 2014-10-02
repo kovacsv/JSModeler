@@ -91,6 +91,13 @@ div.progressbarcontent
 	height : 20px;
 }
 
+div.error
+{
+	color : #ff0000;
+	background : transparent;
+	text-align : center;
+}
+
 table.infotable td
 {
 	padding : 1px 5px;

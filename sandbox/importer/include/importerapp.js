@@ -2,6 +2,7 @@ ImporterApp = function ()
 {
 	this.viewer = null;
 	this.fileNames = null;
+	this.inGenerate = false;
 };
 
 ImporterApp.prototype.Init = function ()
@@ -27,17 +28,17 @@ ImporterApp.prototype.Init = function ()
 	importerButtons.AddButton ('images/right.png', 'Set Up Vector (-X)', function () { myThis.SetNamedView ('-x'); });
 	
 	// debug
-	JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
-		myThis.viewer.Load3dsBuffer (arrayBuffer);
-		myThis.fileNames = {
-			main : 'cube.3ds',
-			requested : [],
-			missing : []
-		};
-		var menu = document.getElementById ('menu');
-		var progressBar = new ImporterProgressBar (menu);		
-		myThis.JsonLoaded (progressBar);
-	});
+	// JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
+	// 	myThis.viewer.Load3dsBuffer (arrayBuffer);
+	// 	myThis.fileNames = {
+	// 		main : 'cube.3ds',
+	// 		requested : [],
+	// 		missing : []
+	// 	};
+	// 	var menu = document.getElementById ('menu');
+	// 	var progressBar = new ImporterProgressBar (menu);		
+	// 	myThis.JsonLoaded (progressBar);
+	// });
 };
 
 ImporterApp.prototype.Resize = function ()
@@ -171,9 +172,24 @@ ImporterApp.prototype.GenerateMenu = function ()
 	}
 };
 
+ImporterApp.prototype.GenerateError = function (errorMessage)
+{
+	this.viewer.RemoveMeshes ();
+	var menu = document.getElementById ('menu');
+	var importerError = new ImporterError (menu);
+	importerError.Generate (errorMessage);
+};
+
 ImporterApp.prototype.Generate = function (progressBar)
 {
+	var jsonData = this.viewer.GetJsonData ();
+	if (jsonData.materials.length === 0 || jsonData.meshes.length === 0) {
+		this.GenerateError ('Failed to load file.');
+		return;
+	}
+
 	var myThis = this;
+	myThis.inGenerate = true;
 	var environment = new JSM.AsyncEnvironment ({
 		onStart : function (taskCount) {
 			progressBar.Init (taskCount);
@@ -184,6 +200,7 @@ ImporterApp.prototype.Generate = function (progressBar)
 		onFinish : function () {
 			myThis.FitInWindow ();
 			myThis.GenerateMenu ();
+			myThis.inGenerate = false;
 		}
 	});
 	
@@ -327,9 +344,13 @@ ImporterApp.prototype.Drop = function (event)
 		importerApp.viewer.LoadStlBuffer (arrayBuffer);
 		importerApp.JsonLoaded (progressBar);	
 	}
-
+	
 	event.stopPropagation ();
 	event.preventDefault ();
+	
+	if (this.inGenerate) {
+		return;
+	}
 	
 	var userFiles = event.dataTransfer.files;
 	if (userFiles.length === 0) {
@@ -345,6 +366,7 @@ ImporterApp.prototype.Drop = function (event)
 	var fileNameList = GetFileNamesFromFileList (userFiles);
 	var mainFileIndex = GetMainFileIndexFromFileNames (fileNameList);
 	if (mainFileIndex == -1) {
+		this.GenerateError ('No readable file found.');
 		return;
 	}
 	

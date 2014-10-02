@@ -44,13 +44,15 @@ ImporterViewer.prototype.GetJsonData = function ()
 	return this.jsonData;
 };
 
-ImporterViewer.prototype.ShowAllMeshes = function (inEnvironment)
+ImporterViewer.prototype.RemoveMeshes = function ()
 {
 	this.viewer.RemoveMeshes ();
-	if (this.jsonData.materials.length === 0 || this.jsonData.meshes.length === 0) {
-		return;
-	}
+};
 
+ImporterViewer.prototype.ShowAllMeshes = function (inEnvironment)
+{
+	this.RemoveMeshes ();
+	
 	var myThis = this;
 	var currentMeshIndex = 0;
 	var environment = new JSM.AsyncEnvironment ({
