@@ -68,7 +68,7 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 		}
 		
 		var lineParts = line.split (/\s+/);
-		if (lineParts.length === 0) {
+		if (lineParts.length === 0 || lineParts[0][0] == '#') {
 			return;
 		}
 
@@ -134,9 +134,10 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 			if (lineParts.length < 2) {
 				return;
 			}
-			
-			var fileName = lineParts[1];
-			var fileStringBuffer = OnFileRequested (fileName);
+
+			var fileNameIndex = line.indexOf ('mtllib') + 6;
+			var fileName = line.substr (fileNameIndex, line.length - fileNameIndex);
+			var fileStringBuffer = OnFileRequested (fileName.trim ());
 			if (fileStringBuffer === null) {
 				return;
 			}
