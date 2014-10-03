@@ -572,13 +572,6 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				var finalMatrix = JSM.MatrixMultiply (invMatrix, flippedMatrix);
 				TransformBodyVertices (body, finalMatrix);
 			}
-		
-			function MyMatrixTranslate (matrix, x, y, z)
-			{
-				matrix[12] += x;
-				matrix[13] += y;
-				matrix[14] += z;
-			}
 
 			function GetNodeTransformation (node, nodeHierarcy)
 			{
@@ -620,6 +613,10 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 					return node.scales[0];
 				}
 				
+				if (node.matrix !== undefined) {
+					return node.matrix;
+				}
+				
 				var result = JSM.MatrixIdentity ();
 				result = MatrixTranslate (result, GetNodePosition (node));
 				result = MatrixRotate (result, GetNodeRotation (node));
@@ -634,6 +631,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 					}
 				}
 				
+				node.matrix = result;
 				return result;
 			}
 		

@@ -214,17 +214,17 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, en
 
 		var vertices = mesh.vertices;
 		if (vertices === undefined) {
-			return result;
+			return;
 		}
 
 		var normals = mesh.normals;
 		if (normals === undefined) {
-			return result;
+			return;
 		}
 
 		var uvs = mesh.uvs;
 		if (uvs === undefined) {
-			return result;
+			return;
 		}
 	
 		var triangles = mesh.triangles;
