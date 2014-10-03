@@ -17,7 +17,7 @@ ImporterApp.prototype.Init = function ()
 	window.addEventListener ('drop', this.Drop.bind (this), false);
 	
 	var myThis = this;
-	var importerButtons = new ImporterButtons (260);
+	var importerButtons = new ImporterButtons (260, 10);
 	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	importerButtons.AddButton ('images/fixup.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
 	importerButtons.AddButton ('images/top.png', 'Set Up Vector (Z)', function () { myThis.SetNamedView ('z'); });

@@ -111,6 +111,9 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 					}
 				}
 			};
+			
+			menuText.onclick = openCloseImage.onclick;
+			menuText.style.cursor = 'pointer';
 		}
 
 		if (parameters.userButton !== undefined && parameters.userButton !== null) {
@@ -144,10 +147,10 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 	return menuContent;
 };
 
-ImporterButtons = function (xPosition)
+ImporterButtons = function (xPosition, yPosition)
 {
 	this.xPosition = xPosition;
-	this.yPosition = 10;
+	this.yPosition = yPosition;
 };
 
 ImporterButtons.prototype.AddButton = function (image, title, onClick)
@@ -158,7 +161,7 @@ ImporterButtons.prototype.AddButton = function (image, title, onClick)
 	buttonDiv.style.left = this.xPosition + 'px';
 	buttonDiv.style.top = this.yPosition + 'px';
 	buttonDiv.onclick = onClick;
-	this.yPosition += 30;
+	this.xPosition += 30;
 
 	var buttonImage = document.createElement ('img');
 	buttonImage.src = image;
