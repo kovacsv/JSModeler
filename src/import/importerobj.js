@@ -134,10 +134,10 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 			for (i = 1; i < lineParts.length; i++) {
 				partSplitted = lineParts[i].split ('/');
 				vertices.push (parseInt (partSplitted[0], 10) - 1);
-				if (partSplitted.length > 1) {
+				if (partSplitted.length > 1 && partSplitted[1].length > 0) {
 					uvs.push (parseInt (partSplitted[1], 10) - 1);
 				}
-				if (partSplitted.length > 2) {
+				if (partSplitted.length > 2 && partSplitted[2].length > 0) {
 					normals.push (parseInt (partSplitted[2], 10) - 1);
 				}
 			}
