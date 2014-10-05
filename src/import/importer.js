@@ -106,7 +106,8 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 				ambient : ColorToArray (material.ambient),
 				diffuse : ColorToArray (material.diffuse),
 				specular : ColorToArray (material.specular),
-				opacity : material.opacity
+				opacity : material.opacity,
+				textureBuffer : material.textureBuffer
 			});
 		}
 	}
@@ -127,7 +128,10 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 			mesh.normals.push (coord.x, coord.y, coord.z);
 		}
 
-		mesh.uvs.push (0.0, 0.0);
+		for (i = 0; i < body.UVCount (); i++) {
+			coord = body.GetUV (i);
+			mesh.uvs.push (coord.x, coord.y);
+		}
 
 		for (i = 0; i < materialCount; i++) {
 			trianglesByMaterial.push ([]);
@@ -159,7 +163,7 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 				jsonTriangles.parameters.push (
 					triangle.v0, triangle.v1, triangle.v2,
 					triangle.n0, triangle.n1, triangle.n2,
-					0, 0, 0
+					triangle.u0, triangle.u1, triangle.u2
 				);
 			}
 			triangleCount = triangleCount + triangles.length;

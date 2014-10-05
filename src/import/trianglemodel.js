@@ -3,6 +3,7 @@ JSM.TriangleBody = function (name)
 	this.name = name;
 	this.vertices = [];
 	this.normals = [];
+	this.uvs = [];
 	this.triangles = [];
 };
 
@@ -53,7 +54,23 @@ JSM.TriangleBody.prototype.NormalCount = function ()
 	return this.normals.length;
 };
 
-JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, mat, curve)
+JSM.TriangleBody.prototype.AddUV = function (x, y)
+{
+	this.uvs.push (new JSM.Coord2D (x, y));
+	return this.uvs.length - 1;
+};
+
+JSM.TriangleBody.prototype.GetUV = function (index)
+{
+	return this.uvs[index];
+};
+
+JSM.TriangleBody.prototype.UVCount = function ()
+{
+	return this.uvs.length;
+};
+
+JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, u0, u1, u2, mat, curve)
 {
 	this.triangles.push ({
 		v0 : v0,
@@ -62,6 +79,9 @@ JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, mat, 
 		n0 : n0,
 		n1 : n1,
 		n2 : n2,
+		u0 : u0,
+		u1 : u1,
+		u2 : u2,
 		mat : mat,
 		curve : curve
 	});
@@ -109,7 +129,7 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 			triangle.mat = model.AddDefaultMaterial ();
 		}
 		
-		var normal, normalIndex;
+		var normal, normalIndex, uvIndex;
 		if (triangle.n0 === undefined || triangle.n1 === undefined || triangle.n2 === undefined) {
 			if (triangle.curve === undefined || triangle.curve === 0) {
 				normal = triangleNormals[i];
@@ -122,6 +142,12 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 				triangle.n1 = AddAverageNormal (body, triangle.v1, triangleIndex, triangleNormals, vertexToTriangles);
 				triangle.n2 = AddAverageNormal (body, triangle.v2, triangleIndex, triangleNormals, vertexToTriangles);
 			}
+		}
+		if (triangle.u0 === undefined || triangle.u1 === undefined || triangle.u2 === undefined) {
+			uvIndex = body.AddUV (0.0, 0.0);
+			triangle.u0 = uvIndex;
+			triangle.u1 = uvIndex;
+			triangle.u2 = uvIndex;
 		}
 	}
 
@@ -171,6 +197,9 @@ JSM.TriangleBody.prototype.Clone = function ()
 			n0 : triangle.n0,
 			n1 : triangle.n1,
 			n2 : triangle.n2,
+			u0 : triangle.u0,
+			u1 : triangle.u1,
+			u2 : triangle.u2,
 			mat : triangle.mat,
 			curve : triangle.curve
 		});

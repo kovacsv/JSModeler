@@ -83,6 +83,11 @@
 	<script type="text/javascript">
 		var viewer = null;
 
+		function TextureLoaded ()
+		{
+			viewer.Draw ();
+		}
+		
 		function Load3ds (url)
 		{
 			viewer.RemoveMeshes ();
@@ -97,14 +102,9 @@
 			});
 		}
 		
-		function LoadObj (url)
+		function LoadObj (urls)
 		{
 			viewer.RemoveMeshes ();
-			var urls = [
-				url,
-				'testfiles/cubeobj.mtl',
-				'testfiles/meshesobj.mtl'
-			];
 			JSM.GetStringBuffersFromURLList (urls, function (stringBuffers) {
 				var jsonData = JSM.ConvertObjToJsonData (stringBuffers[0].resultBuffer, {
 					onFileRequested : function (fileName) {
@@ -119,7 +119,7 @@
 						return null;
 					}
 				});
-				var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
+				var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData, TextureLoaded);
 				for (var i = 0; i < meshes.length; i++) {
 					viewer.AddMesh (meshes[i]);
 				}
@@ -167,8 +167,7 @@
 				return;
 			}
 
-			//Load3ds ('testfiles/cube.3ds');
-			LoadStl ('testfiles/objects_ascii.stl')
+			LoadObj (['testfiles/texturedcube.obj', 'testfiles/texturedcube.mtl', 'testfiles/texture.png'])
 			viewer.Draw ();
 		}
 
@@ -186,8 +185,9 @@
 			<a class="button" href="javascript:Load3ds ('testfiles/cube.3ds')">cube.3ds</a>
 			<a class="button" href="javascript:Load3ds ('testfiles/objects.3ds')">objects.3ds</a>
 			<a class="button" href="javascript:Load3ds ('testfiles/complex.3ds')">complex.3ds</a>
-			<a class="button" href="javascript:LoadObj ('testfiles/cubeobj.obj')">cubeobj.obj</a>
-			<a class="button" href="javascript:LoadObj ('testfiles/meshesobj.obj')">meshesobj.obj</a>
+			<a class="button" href="javascript:LoadObj (['testfiles/cubeobj.obj', 'testfiles/cubeobj.mtl'])">cubeobj.obj</a>
+			<a class="button" href="javascript:LoadObj (['testfiles/meshesobj.obj', 'testfiles/meshesobj.mtl'])">meshesobj.obj</a>
+			<a class="button" href="javascript:LoadObj (['testfiles/texturedcube.obj', 'testfiles/texturedcube.mtl'])">texturedcube.obj</a>
 			<a class="button" href="javascript:LoadStl ('testfiles/objects_ascii.stl')">objects_ascii.stl</a>
 			<a class="button" href="javascript:LoadStl ('testfiles/objects_binary.stl')">objects_binary.stl</a>
 		</div>
