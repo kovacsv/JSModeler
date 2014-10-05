@@ -10,10 +10,14 @@ html, body
 	height : 100%;
 }
 
+#top
+{
+	overflow : auto;
+}
+
 #left
 {
 	width : 250px;
-	height : 100%;
 	float : left;
 	overflow : auto;
 }
@@ -25,14 +29,27 @@ html, body
 	font-size : 15px;
 	text-align : center;
 	text-decoration : none;
-	margin : 5px 5px 10px 5px;
-	padding : 8px;
+	width : 240px;
+	padding : 5px 0px;
+	margin : 5px 10px 5px 5px;
+	float : left;
 	display : block;
+}
+
+div.title
+{
+
+	margin-bottom : 5px;
+}
+
+div.subtitle
+{
+	font-size : 12px;
 }
 
 #menu
 {
-	margin : 0px 10px;
+	margin : 5px;
 }
 
 div.menuitem
@@ -63,12 +80,13 @@ img.menubutton
 	display : block;
 }
 
-div.button
+img.button
 {
 	width : 25px;
 	height : 25px;
+	margin : 5px 5px 0px 5px;
+	border : 0px;
 	cursor : pointer;
-	position : absolute;
 }
 
 div.menutext

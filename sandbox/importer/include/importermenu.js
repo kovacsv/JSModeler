@@ -147,27 +147,19 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 	return menuContent;
 };
 
-ImporterButtons = function (xPosition, yPosition)
+ImporterButtons = function (parent)
 {
-	this.xPosition = xPosition;
-	this.yPosition = yPosition;
+	this.parent = parent;
 };
 
 ImporterButtons.prototype.AddButton = function (image, title, onClick)
 {
-	var buttonDiv = document.createElement ('div');
-	buttonDiv.className = 'button';
-	buttonDiv.title = title;
-	buttonDiv.style.left = this.xPosition + 'px';
-	buttonDiv.style.top = this.yPosition + 'px';
-	buttonDiv.onclick = onClick;
-	this.xPosition += 30;
-
 	var buttonImage = document.createElement ('img');
+	buttonImage.className = 'button';
 	buttonImage.src = image;
-	
-	buttonDiv.appendChild (buttonImage);
-	document.body.appendChild (buttonDiv);
+	buttonImage.title = title;
+	buttonImage.onclick = onClick;
+	this.parent.appendChild (buttonImage);
 };
 
 ImporterProgressBar = function (parent)

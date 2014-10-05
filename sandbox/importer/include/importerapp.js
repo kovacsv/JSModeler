@@ -7,17 +7,9 @@ ImporterApp = function ()
 
 ImporterApp.prototype.Init = function ()
 {
-	window.addEventListener ('resize', this.Resize.bind (this), false);
-	this.Resize ();
-
-	this.viewer = new ImporterViewer ();
-	this.viewer.Init ('example');
-
-	window.addEventListener ('dragover', this.DragOver.bind (this), false);
-	window.addEventListener ('drop', this.Drop.bind (this), false);
-	
 	var myThis = this;
-	var importerButtons = new ImporterButtons (260, 10);
+	var top = document.getElementById ('top');
+	var importerButtons = new ImporterButtons (top);
 	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	importerButtons.AddButton ('images/fixup.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
 	importerButtons.AddButton ('images/top.png', 'Set Up Vector (Z)', function () { myThis.SetNamedView ('z'); });
@@ -27,26 +19,55 @@ ImporterApp.prototype.Init = function ()
 	importerButtons.AddButton ('images/left.png', 'Set Up Vector (X)', function () { myThis.SetNamedView ('x'); });
 	importerButtons.AddButton ('images/right.png', 'Set Up Vector (-X)', function () { myThis.SetNamedView ('-x'); });
 	
+	window.addEventListener ('resize', this.Resize.bind (this), false);
+	this.Resize ();
+
+	this.viewer = new ImporterViewer ();
+	this.viewer.Init ('example');
+
+	window.addEventListener ('dragover', this.DragOver.bind (this), false);
+	window.addEventListener ('drop', this.Drop.bind (this), false);
+	
 	// debug
-	// JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
-	// 	myThis.viewer.Load3dsBuffer (arrayBuffer);
-	// 	myThis.fileNames = {
-	// 		main : 'cube.3ds',
-	// 		requested : [],
-	// 		missing : []
-	// 	};
-	// 	var menu = document.getElementById ('menu');
-	// 	var progressBar = new ImporterProgressBar (menu);		
-	// 	myThis.JsonLoaded (progressBar);
-	// });
+	JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
+		myThis.viewer.Load3dsBuffer (arrayBuffer);
+		myThis.fileNames = {
+			main : 'cube.3ds',
+			requested : [],
+			missing : []
+		};
+		var menu = document.getElementById ('menu');
+		var progressBar = new ImporterProgressBar (menu);		
+		myThis.JsonLoaded (progressBar);
+	});
 };
 
 ImporterApp.prototype.Resize = function ()
 {
+	function SetWidth (elem, value)
+	{
+		elem.width = value;
+		elem.style.width = value + 'px';
+	}
+
+	function SetHeight (elem, value)
+	{
+		elem.height = value;
+		elem.style.height = value + 'px';
+	}
+
+	var top = document.getElementById ('top');
 	var left = document.getElementById ('left');
 	var canvas = document.getElementById ('example');
-	canvas.width = document.body.clientWidth - left.offsetWidth;
-	canvas.height = document.body.clientHeight;
+	var height = document.body.clientHeight - top.offsetHeight;
+
+	SetHeight (canvas, 0);
+	SetWidth (canvas, 0);
+
+	SetHeight (left, height);
+
+	SetHeight (canvas, height);
+	SetWidth (canvas, document.body.clientWidth - left.offsetWidth);
 };
 
 ImporterApp.prototype.JsonLoaded = function (progressBar)
