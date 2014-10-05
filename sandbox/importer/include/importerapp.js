@@ -10,7 +10,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	var importerButtons = new ImporterButtons (top);
-	importerButtons.AddButton ('images/fitinwindow.png', 'Open File', function () { myThis.OpenFile (); });
+	importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	importerButtons.AddButton ('images/fixup.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
 	importerButtons.AddButton ('images/top.png', 'Set Up Vector (Z)', function () { myThis.SetNamedView ('z'); });
