@@ -106,8 +106,7 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 				ambient : ColorToArray (material.ambient),
 				diffuse : ColorToArray (material.diffuse),
 				specular : ColorToArray (material.specular),
-				opacity : material.opacity,
-				textureBuffer : material.textureBuffer
+				opacity : material.opacity
 			});
 		}
 	}
