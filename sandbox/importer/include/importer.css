@@ -1,7 +1,7 @@
 html, body
 {
-	color : #dddddd;
-	background : #222222;
+	color : #222222;
+	background : #dddddd;
 	font-size : 12px;
 	font-family : Arial, cursive;
 	margin : 0px;
@@ -12,6 +12,8 @@ html, body
 
 #top
 {
+	color : #dddddd;
+	background : linear-gradient(#333333, #111111) #222222;
 	overflow : auto;
 }
 
@@ -25,13 +27,14 @@ html, body
 #logo
 {
 	color : #ffffff;
-	background : #008ab8;
-	font-size : 15px;
+	background : linear-gradient(#0095c6, #006d91)  #008ab8;
+	font-size : 14px;
 	text-align : center;
 	text-decoration : none;
-	width : 240px;
-	padding : 5px 0px;
-	margin : 5px 10px 5px 5px;
+	padding : 5px 20px;
+	margin : 8px;
+	border-radius : 5px;
+	box-shadow: 0px 0px 5px #000000;
 	float : left;
 	display : block;
 }
@@ -67,7 +70,7 @@ div.colorbutton
 {
 	width : 14px;
 	height : 14px;
-	border : 1px solid #dddddd;
+	border : 1px solid #222222;
 	float : left;
 }
 
@@ -84,7 +87,7 @@ img.button
 {
 	width : 25px;
 	height : 25px;
-	margin : 5px 5px 0px 5px;
+	margin : 9px 5px 0px 5px;
 	border : 0px;
 	cursor : pointer;
 }
@@ -99,21 +102,20 @@ div.menutext
 div.progressbarborder
 {
 	height : 20px;
-	border : 1px solid #dddddd;
+	border : 1px solid #222222;
 }
 
 div.progressbarcontent
 {
 	color : #ffffff;
-	background : #dddddd;
+	background : #279b61;
 	height : 20px;
 }
 
 div.error
 {
-	color : #ff0000;
+	color : #cc0000;
 	background : transparent;
-	text-align : center;
 }
 
 table.infotable td
