@@ -60,6 +60,16 @@ JSM.TriangleBody.prototype.AddUV = function (x, y)
 	return this.uvs.length - 1;
 };
 
+JSM.TriangleBody.prototype.AddDefaultUV = function ()
+{
+	return this.AddUV (0.0, 0.0);
+};
+
+JSM.TriangleBody.prototype.GetDefaultUVIndex = function ()
+{
+	return this.AddDefaultUV ();
+};
+
 JSM.TriangleBody.prototype.GetUV = function (index)
 {
 	return this.uvs[index];
@@ -144,7 +154,7 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 			}
 		}
 		if (triangle.u0 === undefined || triangle.u1 === undefined || triangle.u2 === undefined) {
-			uvIndex = body.AddUV (0.0, 0.0);
+			uvIndex = body.GetDefaultUVIndex ();
 			triangle.u0 = uvIndex;
 			triangle.u1 = uvIndex;
 			triangle.u2 = uvIndex;
