@@ -119,6 +119,7 @@ div.error
 {
 	color : #cc0000;
 	background : transparent;
+	text-align : center;
 }
 
 table.infotable td

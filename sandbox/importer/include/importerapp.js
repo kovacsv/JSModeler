@@ -10,6 +10,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	var importerButtons = new ImporterButtons (top);
+	importerButtons.AddButton ('images/fitinwindow.png', 'Open File', function () { myThis.OpenFile (); });
 	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	importerButtons.AddButton ('images/fixup.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
 	importerButtons.AddButton ('images/top.png', 'Set Up Vector (Z)', function () { myThis.SetNamedView ('z'); });
@@ -27,6 +28,9 @@ ImporterApp.prototype.Init = function ()
 
 	window.addEventListener ('dragover', this.DragOver.bind (this), false);
 	window.addEventListener ('drop', this.Drop.bind (this), false);
+	
+	var fileInput = document.getElementById ('file');
+	fileInput.addEventListener ('change', this.FileSelected.bind (this), false);
 	
 	// debug
 	JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
@@ -259,14 +263,7 @@ ImporterApp.prototype.ShowHideMesh = function (meshIndex)
 	return this.meshVisibility[meshIndex];
 };
 
-ImporterApp.prototype.DragOver = function (event)
-{
-	event.stopPropagation ();
-	event.preventDefault ();
-	event.dataTransfer.dropEffect = 'copy';
-};
-		
-ImporterApp.prototype.Drop = function (event)
+ImporterApp.prototype.ProcessFiles = function (fileList)
 {
 	function GetFileNamesFromFileList ()
 	{
@@ -366,14 +363,11 @@ ImporterApp.prototype.Drop = function (event)
 		importerApp.JsonLoaded (progressBar);	
 	}
 	
-	event.stopPropagation ();
-	event.preventDefault ();
-	
 	if (this.inGenerate) {
 		return;
 	}
 	
-	var userFiles = event.dataTransfer.files;
+	var userFiles = fileList;
 	if (userFiles.length === 0) {
 		return;
 	}
@@ -413,6 +407,33 @@ ImporterApp.prototype.Drop = function (event)
 			LoadStl (myThis, arrayBuffer, progressBar);
 		});
 	}
+};
+
+ImporterApp.prototype.DragOver = function (event)
+{
+	event.stopPropagation ();
+	event.preventDefault ();
+	event.dataTransfer.dropEffect = 'copy';
+};
+
+ImporterApp.prototype.Drop = function (event)
+{
+	event.stopPropagation ();
+	event.preventDefault ();
+	this.ProcessFiles (event.dataTransfer.files);
+};
+
+ImporterApp.prototype.FileSelected = function (event)
+{
+	event.stopPropagation ();
+	event.preventDefault ();
+	this.ProcessFiles (event.target.files);
+};
+
+ImporterApp.prototype.OpenFile = function ()
+{
+	var fileInput = document.getElementById('file');
+	fileInput.click ();
 };
 
 window.onload = function ()
