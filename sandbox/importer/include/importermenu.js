@@ -199,19 +199,3 @@ ImporterProgressBar.prototype.Step = function (count)
 	}
 	this.contentDiv.style.width = width + 'px';
 };
-
-ImporterError = function (parent)
-{
-	this.parent = parent;
-	while (this.parent.lastChild) {
-		this.parent.removeChild (this.parent.lastChild);
-	}
-};
-
-ImporterError.prototype.Generate = function (errorMessage)
-{
-	var errorDiv = document.createElement ('div');
-	errorDiv.className = 'error';
-	errorDiv.innerHTML = errorMessage;
-	this.parent.appendChild (errorDiv);
-};

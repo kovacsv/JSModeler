@@ -3,6 +3,7 @@ ImporterApp = function ()
 	this.viewer = null;
 	this.fileNames = null;
 	this.inGenerate = false;
+	this.dialog = null;
 };
 
 ImporterApp.prototype.Init = function ()
@@ -33,17 +34,17 @@ ImporterApp.prototype.Init = function ()
 	fileInput.addEventListener ('change', this.FileSelected.bind (this), false);
 	
 	// debug
-	JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
-		myThis.viewer.Load3dsBuffer (arrayBuffer);
-		myThis.fileNames = {
-			main : 'cube.3ds',
-			requested : [],
-			missing : []
-		};
-		var menu = document.getElementById ('menu');
-		var progressBar = new ImporterProgressBar (menu);		
-		myThis.JsonLoaded (progressBar);
-	});
+	//JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
+	//	myThis.viewer.Load3dsBuffer (arrayBuffer);
+	//	myThis.fileNames = {
+	//		main : 'cube.3ds',
+	//		requested : [],
+	//		missing : []
+	//	};
+	//	var menu = document.getElementById ('menu');
+	//	var progressBar = new ImporterProgressBar (menu);		
+	//	myThis.JsonLoaded (progressBar);
+	//});
 };
 
 ImporterApp.prototype.Resize = function ()
@@ -72,6 +73,10 @@ ImporterApp.prototype.Resize = function ()
 
 	SetHeight (canvas, height);
 	SetWidth (canvas, document.body.clientWidth - left.offsetWidth);
+	
+	if (this.dialog !== null) {
+		this.dialog.Resize ();
+	}
 };
 
 ImporterApp.prototype.JsonLoaded = function (progressBar)
@@ -201,15 +206,30 @@ ImporterApp.prototype.GenerateError = function (errorMessage)
 {
 	this.viewer.RemoveMeshes ();
 	var menu = document.getElementById ('menu');
-	var importerError = new ImporterError (menu);
-	importerError.Generate (errorMessage);
+	while (menu.lastChild) {
+		menu.removeChild (menu.lastChild);
+	}
+	
+	this.dialog = new FloatingDialog ();
+	this.dialog.Open ({
+		title : 'Error',
+		text : errorMessage,
+		buttons : [
+			{
+				text : 'ok',
+				callback : function (dialog) {
+					dialog.Close ();
+				}
+			}
+		]
+	});	
 };
 
 ImporterApp.prototype.Generate = function (progressBar)
 {
 	var jsonData = this.viewer.GetJsonData ();
 	if (jsonData.materials.length === 0 || jsonData.meshes.length === 0) {
-		this.GenerateError ('Failed to load file.');
+		this.GenerateError ('Failed to load file. Maybe something is wrong with your file.');
 		return;
 	}
 
@@ -381,7 +401,7 @@ ImporterApp.prototype.ProcessFiles = function (fileList)
 	var fileNameList = GetFileNamesFromFileList (userFiles);
 	var mainFileIndex = GetMainFileIndexFromFileNames (fileNameList);
 	if (mainFileIndex == -1) {
-		this.GenerateError ('No readable file found.');
+		this.GenerateError ('No readable file found. You can view 3ds, obj and stl files.');
 		return;
 	}
 	
