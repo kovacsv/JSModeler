@@ -108,7 +108,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 
 	function ReadChunks (reader, endByte, onReady)
 	{
-		while (reader.GetPosition () < endByte) {
+		while (reader.GetPosition () <= endByte - 6) {
 			ReadChunk (reader, onReady);
 		}
 	}
