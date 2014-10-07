@@ -2,7 +2,6 @@ div.dialog
 {
 	color : #222222;
 	background : #ffffff;
-	width : 250px;
 	position : absolute;
 	top : 0px;
 	left : 0px;
@@ -35,5 +34,6 @@ div.dialogbutton
 	margin : 5px 5px 5px 0px;
 	padding : 5px 10px;
 	cursor : pointer;
+	border-radius : 3px;
 	float : right;
 }

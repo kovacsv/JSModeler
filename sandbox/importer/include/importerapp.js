@@ -11,6 +11,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	var importerButtons = new ImporterButtons (top);
+	importerButtons.AddLogo ('Online 3D Viewer', function () { myThis.WelcomeDialog (); });
 	importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	importerButtons.AddButton ('images/fixup.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
@@ -21,6 +22,8 @@ ImporterApp.prototype.Init = function ()
 	importerButtons.AddButton ('images/left.png', 'Set Up Vector (X)', function () { myThis.SetNamedView ('x'); });
 	importerButtons.AddButton ('images/right.png', 'Set Up Vector (-X)', function () { myThis.SetNamedView ('-x'); });
 	
+	this.dialog = new FloatingDialog ();
+
 	window.addEventListener ('resize', this.Resize.bind (this), false);
 	this.Resize ();
 
@@ -33,18 +36,32 @@ ImporterApp.prototype.Init = function ()
 	var fileInput = document.getElementById ('file');
 	fileInput.addEventListener ('change', this.FileSelected.bind (this), false);
 	
-	// debug
-	//JSM.GetArrayBufferFromURL ('cube.3ds', function (arrayBuffer) {
-	//	myThis.viewer.Load3dsBuffer (arrayBuffer);
-	//	myThis.fileNames = {
-	//		main : 'cube.3ds',
-	//		requested : [],
-	//		missing : []
-	//	};
-	//	var menu = document.getElementById ('menu');
-	//	var progressBar = new ImporterProgressBar (menu);		
-	//	myThis.JsonLoaded (progressBar);
-	//});
+	this.WelcomeDialog ();
+};
+
+ImporterApp.prototype.WelcomeDialog = function ()
+{
+	var dialogText = [
+		'<div class="importerdialog">',
+		'<div class="welcometitle">Welcome to Online 3D Viewer!</div>',
+		'<div class="welcometext">Here you can view 3D models online. Just simply drag and drop 3D files to this browser window or use the open button above. The supported file formats are:</div>',
+		'<div class="welcometextformats"><span class="welcomeformat">3ds</span><span class="welcomeformat">obj</span><span class="welcomeformat">stl</span></div>',
+		'<div class="welcometext">Powered by <a target="_blank" href="https://github.com/mrdoob/three.js/">Three.js</a> and <a target="_blank" href="https://github.com/kovacsv/JSModeler">JSModeler</a>.</div>',
+		'<div class="welcometext"><a target="_blank" href="https://github.com/kovacsv/JSModeler"><img src="images/GitHub-Mark-32px.png"/></a></div>',
+		'</div>',
+	].join ('');
+	this.dialog.Open ({
+		title : 'Welcome',
+		text : dialogText,
+		buttons : [
+			{
+				text : 'ok',
+				callback : function (dialog) {
+					dialog.Close ();
+				}
+			}
+		]
+	});
 };
 
 ImporterApp.prototype.Resize = function ()
@@ -74,9 +91,7 @@ ImporterApp.prototype.Resize = function ()
 	SetHeight (canvas, height);
 	SetWidth (canvas, document.body.clientWidth - left.offsetWidth);
 	
-	if (this.dialog !== null) {
-		this.dialog.Resize ();
-	}
+	this.dialog.Resize ();
 };
 
 ImporterApp.prototype.JsonLoaded = function (progressBar)
@@ -134,22 +149,16 @@ ImporterApp.prototype.GenerateMenu = function ()
 				open : 'images/info.png',
 				close : 'images/info.png',
 				onOpen : function (content, mesh) {
-					function GetVisibleName (name)
-					{
-						if (name == 'vertexCount') {
-							return 'Vertex count';
-						} else if (name == 'triangleCount') {
-							return 'Triangle count';
-						}
-						return name;
+					var triangleCount = 0;
+					var i, triangles;
+					for (i = 0; i < mesh.triangles.length; i++) {
+						triangles = mesh.triangles[i];
+						triangleCount += triangles.parameters.length / 9;
 					}
-
+				
 					var table = new InfoTable (content);
-					var i, additionalInfo;
-					for (i = 0; i < mesh.additionalInfo.length; i++) {
-						additionalInfo = mesh.additionalInfo[i];
-						table.AddRow (GetVisibleName (additionalInfo.name), additionalInfo.value);
-					}
+					table.AddRow ('Vertex count', mesh.vertices.length / 3);
+					table.AddRow ('Triangle count', triangleCount);
 				},
 				title : 'Show/Hide Information',
 				userData : mesh
@@ -210,10 +219,9 @@ ImporterApp.prototype.GenerateError = function (errorMessage)
 		menu.removeChild (menu.lastChild);
 	}
 	
-	this.dialog = new FloatingDialog ();
 	this.dialog.Open ({
 		title : 'Error',
-		text : errorMessage,
+		text : '<div class="importerdialog">' + errorMessage + '</div>',
 		buttons : [
 			{
 				text : 'ok',
@@ -227,29 +235,61 @@ ImporterApp.prototype.GenerateError = function (errorMessage)
 
 ImporterApp.prototype.Generate = function (progressBar)
 {
-	var jsonData = this.viewer.GetJsonData ();
-	if (jsonData.materials.length === 0 || jsonData.meshes.length === 0) {
-		this.GenerateError ('Failed to load file. Maybe something is wrong with your file.');
-		return;
+	function ShowMeshes (importerApp, progressBar, merge)
+	{
+		importerApp.inGenerate = true;
+		var environment = new JSM.AsyncEnvironment ({
+			onStart : function (taskCount) {
+				progressBar.Init (taskCount);
+			},
+			onProcess : function (currentTask) {
+				progressBar.Step (currentTask + 1);
+			},
+			onFinish : function () {
+				importerApp.FitInWindow ();
+				importerApp.GenerateMenu ();
+				importerApp.inGenerate = false;
+			}
+		});
+		
+		if (merge) {
+			var jsonData = importerApp.viewer.GetJsonData ();
+			importerApp.viewer.SetJsonData (JSM.MergeJsonDataMeshes (jsonData));
+		}
+		importerApp.viewer.ShowAllMeshes (environment);	
 	}
 
-	var myThis = this;
-	myThis.inGenerate = true;
-	var environment = new JSM.AsyncEnvironment ({
-		onStart : function (taskCount) {
-			progressBar.Init (taskCount);
-		},
-		onProcess : function (currentTask) {
-			progressBar.Step (currentTask + 1);
-		},
-		onFinish : function () {
-			myThis.FitInWindow ();
-			myThis.GenerateMenu ();
-			myThis.inGenerate = false;
-		}
-	});
+	var jsonData = this.viewer.GetJsonData ();
+	if (jsonData.materials.length === 0 || jsonData.meshes.length === 0) {
+		this.GenerateError ('Failed to open file. Maybe something is wrong with your file.');
+		return;
+	}
 	
-	this.viewer.ShowAllMeshes (environment);
+	var myThis = this;
+	if (jsonData.meshes.length > 250) {
+		this.dialog.Open ({
+			title : 'Information',
+			text : '<div class="importerdialog">The model contains a large number of meshes. It can cause performance problems. Would you like to merge meshes?</div>',
+			buttons : [
+				{
+					text : 'yes',
+					callback : function (dialog) {
+						ShowMeshes (myThis, progressBar, true);
+						dialog.Close ();
+					}
+				},
+				{
+					text : 'no',
+					callback : function (dialog) {
+						ShowMeshes (myThis, progressBar, false);
+						dialog.Close ();
+					}
+				}				
+			]
+		});
+	} else {
+		ShowMeshes (myThis, progressBar, false);
+	}
 };
 
 ImporterApp.prototype.FitInWindow = function ()
@@ -383,6 +423,7 @@ ImporterApp.prototype.ProcessFiles = function (fileList)
 		importerApp.JsonLoaded (progressBar);	
 	}
 	
+	this.dialog.Close ();
 	if (this.inGenerate) {
 		return;
 	}
@@ -401,7 +442,7 @@ ImporterApp.prototype.ProcessFiles = function (fileList)
 	var fileNameList = GetFileNamesFromFileList (userFiles);
 	var mainFileIndex = GetMainFileIndexFromFileNames (fileNameList);
 	if (mainFileIndex == -1) {
-		this.GenerateError ('No readable file found. You can view 3ds, obj and stl files.');
+		this.GenerateError ('No readable file found. You can open 3ds, obj and stl files.');
 		return;
 	}
 	

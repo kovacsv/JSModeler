@@ -152,10 +152,19 @@ ImporterButtons = function (parent)
 	this.parent = parent;
 };
 
+ImporterButtons.prototype.AddLogo = function (title, onClick)
+{
+	var logoDiv = document.createElement ('div');
+	logoDiv.id = 'logo';
+	logoDiv.innerHTML = title;
+	logoDiv.onclick = onClick;
+	this.parent.appendChild (logoDiv);
+};
+
 ImporterButtons.prototype.AddButton = function (image, title, onClick)
 {
 	var buttonImage = document.createElement ('img');
-	buttonImage.className = 'button';
+	buttonImage.className = 'topbutton';
 	buttonImage.src = image;
 	buttonImage.title = title;
 	buttonImage.onclick = onClick;

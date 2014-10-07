@@ -165,9 +165,6 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 			triangleCount = triangleCount + triangles.length;
 			mesh.triangles.push (jsonTriangles);
 		}
-		
-		mesh.additionalInfo.push ({name : 'vertexCount', value : mesh.vertices.length / 3});
-		mesh.additionalInfo.push ({name : 'triangleCount', value : triangleCount});
 	}
 	
 	var result = {
@@ -189,12 +186,97 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 			vertices : [],
 			normals : [],
 			uvs : [],
-			triangles : [],
-			additionalInfo : []
+			triangles : []
 		};
 		ConvertBody (model, body, mesh);
 		result.meshes.push (mesh);
 	}
 	
+	return result;
+};
+
+JSM.MergeJsonDataMeshes = function (jsonData)
+{
+	function MergeMesh (mesh, currentMesh, materialToTriangles)
+	{
+		function MergeAttributes (mesh, currentMesh)
+		{
+			var i;
+			for (i = 0; i < currentMesh.vertices.length; i++) {
+				mesh.vertices.push (currentMesh.vertices[i]);
+			}
+			for (i = 0; i < currentMesh.normals.length; i++) {
+				mesh.normals.push (currentMesh.normals[i]);
+			}
+			for (i = 0; i < currentMesh.uvs.length; i++) {
+				mesh.uvs.push (currentMesh.uvs[i]);
+			}
+		}
+	
+		function MergeTriangles (mesh, currentTriangles, materialToTriangles)
+		{
+			var material = currentTriangles.material;
+			var trianglesIndex = materialToTriangles[material];
+			if (trianglesIndex === undefined) {
+				mesh.triangles.push ({
+					material : material,
+					parameters : []
+				});
+				trianglesIndex = mesh.triangles.length - 1;
+				materialToTriangles[material] = trianglesIndex;
+			}
+			
+			var triangles = mesh.triangles[trianglesIndex];
+			var triangleParameters = triangles.parameters;
+			var i;
+			for (i = 0; i < currentTriangles.parameters.length; i = i + 9) {
+				triangleParameters.push (
+					currentTriangles.parameters[i] + vertexOffset,
+					currentTriangles.parameters[i + 1] + vertexOffset,
+					currentTriangles.parameters[i + 2] + vertexOffset,
+					currentTriangles.parameters[i + 3] + normalOffset,
+					currentTriangles.parameters[i + 4] + normalOffset,
+					currentTriangles.parameters[i + 5] + normalOffset,
+					currentTriangles.parameters[i + 6] + uvOffset,
+					currentTriangles.parameters[i + 7] + uvOffset,
+					currentTriangles.parameters[i + 8] + uvOffset
+				);
+			}
+		}
+	
+		var vertexOffset = mesh.vertices.length / 3;
+		var normalOffset = mesh.normals.length / 3;
+		var uvOffset = mesh.uvs.length / 2;
+		MergeAttributes (mesh, currentMesh);
+
+		var i, currentTriangles;
+		for (i = 0; i < currentMesh.triangles.length; i++) {
+			currentTriangles = currentMesh.triangles[i];
+			MergeTriangles (mesh, currentTriangles, materialToTriangles);
+		}
+	}
+
+	var result = {
+		version : jsonData.version,
+		materials : jsonData.materials,
+		meshes : []
+	};
+	
+	var mesh = {
+		name : 'Merged',
+		vertices : [],
+		normals : [],
+		uvs : [],
+		triangles : []
+	};
+	
+	var materialToTriangles = {};
+	var i, currentMesh;
+	for (i = 0; i < jsonData.meshes.length; i++) {
+		currentMesh = jsonData.meshes[i];
+		MergeMesh (mesh, currentMesh, materialToTriangles);
+	}
+	
+	result.meshes.push (mesh);
 	return result;
 };

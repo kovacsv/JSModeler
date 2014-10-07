@@ -1,7 +1,7 @@
 FloatingDialog = function ()
 {
 	this.dialogDiv = null;
-	this.mouseClickHandler = this.MouseClick.bind (this);
+	this.mouseClick = this.MouseClick.bind (this);
 };
 
 FloatingDialog.prototype.Open = function (parameters)
@@ -18,7 +18,7 @@ FloatingDialog.prototype.Open = function (parameters)
 	}
 
 	if (this.dialogDiv !== null) {
-		return;
+		this.dialogDiv.Close ();
 	}
 
 	this.dialogDiv = document.createElement ('div');
@@ -43,10 +43,9 @@ FloatingDialog.prototype.Open = function (parameters)
 		button = parameters.buttons[i];
 		AddButton (this, buttonsDiv, button);
 	}
-
 	document.body.appendChild (this.dialogDiv);
 
-	document.addEventListener ('click', this.mouseClickHandler, true);
+	document.addEventListener ('click', this.mouseClick, true);
 	this.Resize ();
 };
 
@@ -57,7 +56,7 @@ FloatingDialog.prototype.Close = function ()
 	}
 	
 	document.body.removeChild (this.dialogDiv);
-	document.removeEventListener ('click', this.mouseClickHandler, true);
+	document.removeEventListener ('click', this.mouseClick, true);
 	this.dialogDiv = null;
 };
 
@@ -68,7 +67,7 @@ FloatingDialog.prototype.Resize = function ()
 	}
 	
 	this.dialogDiv.style.left = ((document.body.clientWidth - this.dialogDiv.clientWidth) / 2.0) + 'px';
-	this.dialogDiv.style.top = ((document.body.clientHeight - this.dialogDiv.clientHeight) / 2.0) + 'px';
+	this.dialogDiv.style.top = ((document.body.clientHeight - this.dialogDiv.clientHeight) / 3.0) + 'px';
 };
 
 FloatingDialog.prototype.MouseClick = function (clickEvent)
@@ -76,7 +75,7 @@ FloatingDialog.prototype.MouseClick = function (clickEvent)
 	if (this.dialogDiv === null) {
 		return;
 	}
-	
+
 	var dialogClicked = false;
 	var target = clickEvent.target;
 	while (target !== null) {

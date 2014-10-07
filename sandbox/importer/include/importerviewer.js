@@ -44,6 +44,11 @@ ImporterViewer.prototype.GetJsonData = function ()
 	return this.jsonData;
 };
 
+ImporterViewer.prototype.SetJsonData = function (jsonData)
+{
+	this.jsonData = jsonData;
+};
+
 ImporterViewer.prototype.RemoveMeshes = function ()
 {
 	this.viewer.RemoveMeshes ();
