@@ -7,7 +7,7 @@ ImporterViewer = function ()
 ImporterViewer.prototype.Init = function (canvasName)
 {
 	var viewerSettings = {
-		cameraEyePosition : [8.0, 6.0, 4.0],
+		cameraEyePosition : [8.0, -6.0, 4.0],
 		cameraCenterPosition : [0.0, 0.0, 0.0],
 		cameraUpVector : [0, 0, 1],
 		nearClippingPlane : 10.0,
