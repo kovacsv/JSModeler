@@ -446,6 +446,86 @@ def TestBezier (browser, path):
 	browser.Capture ('bezier')
 	browser.Click (60, 550)
 
+def Test3DViewer (browser, path):
+	def OpenFile (browser, openString):
+		browser.Click (270, 20)
+		browser.Sleep (1000)
+		browser.TextWrite (openString)
+		browser.Sleep (1000)
+		browser.KeyPress (0x0D, 0)
+		browser.Sleep (5000)
+	
+	testFiles = [
+		['testfiles/wrong.ext'],
+		['testfiles/wrong.3ds'],
+		['testfiles/wrong2.3ds'],
+		['testfiles/jeep.3ds'],
+		['testfiles/3dm-juggern.3ds'],
+		['testfiles/cabin.3ds'],
+		['testfiles/house4.3ds'],
+		['testfiles/ionic_temple.3ds'],
+		['testfiles/M1_Abrams.3DS'],
+		['testfiles/navigator.3ds'],
+		['testfiles/145fashion-model.3DS'],
+		['testfiles/wolverine_3ds.3DS'],
+		['testfiles/wolverine_obj.obj'],
+		['testfiles/face.obj'],
+		['testfiles/skeleton.obj'],
+		['testfiles/jeep.obj'],
+		['testfiles/jeep.obj', 'testfiles/jeep.mtl'],
+		['testfiles/objects_ascii.stl'],
+		['testfiles/objects_binary.stl'],
+		['testfiles/brain-gear.stl'],
+		['testfiles/pump.stl'],
+		['testfiles/tire_v.stl']
+	]
+	
+	browser.SetURL ('file:///' + os.path.join (path, 'sandbox', 'importer', 'index.html'))
+	browser.Capture ('3dviewer')
+	
+	browser.Click (808, 442)
+	
+	for testFile in testFiles:
+		openString = ''
+		for testFilePart in testFile:
+			openString += '"' + os.path.abspath (testFilePart) + '" '
+		OpenFile (browser, openString)
+		browser.Capture ('3dviewer')
+		
+	OpenFile (browser, '"' + os.path.abspath ('testfiles/3dm-F50.3DS') + '" ')
+	browser.Capture ('3dviewer')
+	
+	browser.Click (40, 106)
+	browser.Capture ('3dviewer')
+	browser.Click (40, 82)
+	browser.Capture ('3dviewer')
+	browser.Click (40, 56)
+	browser.Capture ('3dviewer')
+    
+	for i in range (0, 2):
+		browser.Click (56, 468)
+		browser.Capture ('3dviewer')
+    
+	for i in range (0, 2):
+		browser.Click (56, 492)
+		browser.Capture ('3dviewer')
+    
+	browser.Click (100, 460)
+	browser.Capture ('3dviewer')
+	
+	browser.Click (70, 296)
+	browser.Capture ('3dviewer')
+	
+	browser.DragDrop (600, 360, 700, 360)
+    
+	buttons = [
+		380, 414, 446, 484, 520, 550
+	]
+	
+	for button in buttons:
+		browser.Click (button, 21)
+		browser.Capture ('3dviewer')
+		
 def Main (argv):
 	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
@@ -479,6 +559,7 @@ def Main (argv):
 		TestCSGApp (browser, path)
 		TestBezier (browser, path)
 		TestViewerTypes (browser, path)
+		Test3DViewer (browser, path)
 		browser.Close ()
 	end = time.time ()
 	
