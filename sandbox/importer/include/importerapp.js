@@ -11,7 +11,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	var importerButtons = new ImporterButtons (top);
-	importerButtons.AddLogo ('Online 3D Viewer', function () { myThis.WelcomeDialog (); });
+	importerButtons.AddLogo ('Online 3D Viewer <span class="version">0.1</span>', function () { myThis.WelcomeDialog (); });
 	importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	importerButtons.AddButton ('images/fixup.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
@@ -445,7 +445,7 @@ ImporterApp.prototype.ProcessFiles = function (fileList)
 		this.GenerateError ('No readable file found. You can open 3ds, obj and stl files.');
 		return;
 	}
-	
+
 	var mainFile = userFiles[mainFileIndex];
 	var mainFileName = mainFile.name;
 	var extension = GetFileExtension (mainFile.name);

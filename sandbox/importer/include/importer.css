@@ -33,6 +33,12 @@ html, body
 	float : left;
 }
 
+span.version
+{
+	margin-left : 5px;
+	font-size : 10px;
+}
+
 img.topbutton
 {
 	width : 25px;
