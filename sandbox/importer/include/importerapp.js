@@ -149,14 +149,31 @@ ImporterApp.prototype.GenerateMenu = function ()
 				open : 'images/info.png',
 				close : 'images/info.png',
 				onOpen : function (content, mesh) {
+					var table = new InfoTable (content);
+					
+					var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
+					var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
+					var i, vertex;
+					for (i = 0; i < mesh.vertices.length; i =  i + 3) {
+						vertex = new JSM.Coord (mesh.vertices[i], mesh.vertices[i + 1], mesh.vertices[i + 2]);
+						min.x = JSM.Minimum (min.x, vertex.x);
+						min.y = JSM.Minimum (min.y, vertex.y);
+						min.z = JSM.Minimum (min.z, vertex.z);
+						max.x = JSM.Maximum (max.x, vertex.x);
+						max.y = JSM.Maximum (max.y, vertex.y);
+						max.z = JSM.Maximum (max.z, vertex.z);
+					}
+					table.AddRow ('X Size', (max.x - min.x).toFixed (2));
+					table.AddRow ('Y Size', (max.y - min.y).toFixed (2));
+					table.AddRow ('Z Size', (max.z - min.z).toFixed (2));
+					
 					var triangleCount = 0;
-					var i, triangles;
+					var triangles;
 					for (i = 0; i < mesh.triangles.length; i++) {
 						triangles = mesh.triangles[i];
 						triangleCount += triangles.parameters.length / 9;
 					}
 				
-					var table = new InfoTable (content);
 					table.AddRow ('Vertex count', mesh.vertices.length / 3);
 					table.AddRow ('Triangle count', triangleCount);
 				},
