@@ -263,7 +263,6 @@ ImporterApp.prototype.Generate = function (progressBar)
 				progressBar.Step (currentTask + 1);
 			},
 			onFinish : function () {
-				importerApp.FitInWindow ();
 				importerApp.GenerateMenu ();
 				importerApp.inGenerate = false;
 			}

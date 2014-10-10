@@ -9,9 +9,7 @@ ImporterViewer.prototype.Init = function (canvasName)
 	var viewerSettings = {
 		cameraEyePosition : [8.0, -6.0, 4.0],
 		cameraCenterPosition : [0.0, 0.0, 0.0],
-		cameraUpVector : [0, 0, 1],
-		nearClippingPlane : 10.0,
-		farClippingPlane : 100000000
+		cameraUpVector : [0, 0, 1]
 	};
 
 	this.viewer = new JSM.ThreeViewer ();
@@ -73,7 +71,8 @@ ImporterViewer.prototype.ShowAllMeshes = function (inEnvironment)
 			inEnvironment.OnProcess (currentTask);
 		},
 		onFinish : function (meshes) {
-			myThis.AdjustClippingPlanes ();
+			myThis.AdjustClippingPlanes (50.0);
+			myThis.FitInWindow ();
 			myThis.viewer.EnableDraw (true);
 			myThis.viewer.Draw ();
 			inEnvironment.OnFinish (meshes);
@@ -131,24 +130,16 @@ ImporterViewer.prototype.FitInWindow = function ()
 	}
 };
 
+ImporterViewer.prototype.AdjustClippingPlanes = function ()
+{
+	if (this.viewer.MeshCount () > 0) {
+		this.viewer.AdjustClippingPlanes (50);
+	}
+};
+
 ImporterViewer.prototype.SetFixUp = function ()
 {
 	this.viewer.navigation.EnableFixUp (!this.viewer.navigation.cameraFixUp);
-};
-
-ImporterViewer.prototype.AdjustClippingPlanes = function ()
-{
-	var center = this.viewer.GetCenter ();
-	var radius = this.viewer.GetBoundingSphereRadius (center);
-	if (radius < 50.0) {
-		this.viewer.camera.near = 0.1;
-		this.viewer.camera.far = 1000.0;
-	} else {
-		this.viewer.camera.near = 10.0;
-		this.viewer.camera.far = 1000000.0;
-	}
-	this.viewer.camera.updateProjectionMatrix ();
-	this.viewer.Draw ();
 };
 
 ImporterViewer.prototype.SetNamedView = function (viewName)

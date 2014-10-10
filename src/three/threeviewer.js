@@ -312,6 +312,21 @@ JSM.ThreeViewer.prototype.FitInWindow = function ()
 	this.DrawIfNeeded ();
 };
 
+JSM.ThreeViewer.prototype.AdjustClippingPlanes = function (radiusLimit)
+{
+	var center = this.GetCenter ();
+	var radius = this.GetBoundingSphereRadius (center);
+	if (radius < radiusLimit) {
+		this.camera.near = 0.1;
+		this.camera.far = 1000.0;
+	} else {
+		this.camera.near = 10.0;
+		this.camera.far = 1000000.0;
+	}
+	this.camera.updateProjectionMatrix ();
+	this.Draw ();
+};
+
 JSM.ThreeViewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
