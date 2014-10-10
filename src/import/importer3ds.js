@@ -776,7 +776,10 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				GetColor (material.specular),
 				GetOpacity (material.transparency)
 			);
-			materialNameToIndex[material.name] = index;
+			
+			if (materialNameToIndex[material.name] === undefined) {
+				materialNameToIndex[material.name] = index;
+			}
 		},
 		onMesh : function (meshName) {
 			var index = triangleModel.AddBody (new JSM.TriangleBody (meshName));
