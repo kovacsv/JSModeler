@@ -319,7 +319,7 @@ JSM.PolygonControl.prototype.Create = function (div, parameter)
 	this.coordViewer.style.marginTop = this.styles.coordViewer.margin;
 	this.coordViewer.style.textAlign = this.styles.coordViewer.textAlign;
 	
-	this.SetCurrentCoord (new JSM.Coord2D ());
+	this.SetCurrentCoord (new JSM.Coord2D (0.0, 0.0));
 	this.context = this.canvas.getContext ('2d');
 	this.coords = [];
 	var i;

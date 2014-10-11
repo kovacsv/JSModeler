@@ -38,7 +38,6 @@
 		function RotateModule (index, angle)
 		{
 			robot.RotateModule (index, angle);
-			viewer.Draw ();
 		}
 		
 		function Update ()
@@ -115,14 +114,9 @@
 
 		function AddExternalMeshes ()
 		{
-			function TextureLoaded () {
-				viewer.Draw ();
-			}		
-		
 			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'wall.jpg', 10.0, 10.0));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'wall.jpg', textureWidth : 10.0, textureHeight : 10.0}));
 			var conversionData = {
-				textureLoadedCallback : null,
 				hasConvexPolygons : true,
 				doubleSided : false
 			};
@@ -147,10 +141,6 @@
 
 		function Load ()
 		{
-			function TextureLoaded () {
-				viewer.Draw ();
-			}
-	
 			var viewerSettings = {
 				cameraEyePosition : [-4, -4, 4],
 				cameraCenterPosition : [0.0, 0.0, 1.5],
@@ -162,6 +152,7 @@
 				alert ('Viewer initialization failed.');
 				return;
 			}
+			viewer.SetClearColor (0x000000);
 			viewer.navigation.EnableZoom (false);
 			viewer.navigation.EnablePan (false);
 			
@@ -180,7 +171,7 @@
 			AddExternalMeshes ();
 			InitButtons ('controls');
 
-			viewer.Draw ();
+			viewer.StartDrawLoop ();
 		}
 		
 	    window.onload = function ()

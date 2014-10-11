@@ -18,7 +18,7 @@ PointCloudGenerator.prototype.Generate = function (xRange, yRange, callbackFunct
 {
 	function GetRandomCoord2D (xRange, yRange)
 	{
-		var result = new JSM.Coord2D ();
+		var result = new JSM.Coord2D (0.0, 0.0);
 		result.x = JSM.RandomNumber (xRange[0], xRange[1]);
 		result.y = JSM.RandomNumber (yRange[0], yRange[1]);
 		return result;

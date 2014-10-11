@@ -41,9 +41,9 @@
 			var materials;
 			if (coloredFaces) {
 				materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
-				materials.AddMaterial (new JSM.Material (0x279b61, 0x279b61));
-				materials.AddMaterial (new JSM.Material (0xcc3333, 0xcc3333));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x279b61, diffuse : 0x279b61}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc3333, diffuse : 0xcc3333}));
 
 				var vertexCountToColor = [];
 				var currentColor = 0;
@@ -60,7 +60,7 @@
 				}
 			} else {
 				var materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff}));
 				body.SetPolygonsMaterialIndex (0);
 			}
 			
