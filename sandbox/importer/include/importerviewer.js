@@ -22,21 +22,6 @@ ImporterViewer.prototype.Init = function (canvasName)
 	return true;
 };
 
-ImporterViewer.prototype.Load3dsBuffer = function (arrayBuffer)
-{
-	this.jsonData = JSM.Convert3dsToJsonData (arrayBuffer);
-};
-
-ImporterViewer.prototype.LoadObjBuffer = function (stringBuffer, onFileRequested)
-{
-	this.jsonData = JSM.ConvertObjToJsonData (stringBuffer, {onFileRequested : onFileRequested});
-};
-
-ImporterViewer.prototype.LoadStlBuffer = function (arrayBuffer)
-{
-	this.jsonData = JSM.ConvertStlToJsonData (arrayBuffer);
-};
-
 ImporterViewer.prototype.GetJsonData = function ()
 {
 	return this.jsonData;

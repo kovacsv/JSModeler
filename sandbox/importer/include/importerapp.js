@@ -341,104 +341,6 @@ ImporterApp.prototype.ShowHideMesh = function (meshIndex)
 
 ImporterApp.prototype.ProcessFiles = function (fileList)
 {
-	function GetFileNamesFromFileList ()
-	{
-		var result = [];
-		var i;
-		for (i = 0; i < userFiles.length; i++) {
-			result.push (userFiles[i].name);
-		}
-		return result;
-	}
-
-	function GetFileIndexFromFileNames (fileName, fileNames)
-	{
-		var i;
-		for (i = 0; i < fileNames.length; i++) {
-			if (fileName == fileNames[i]) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	function GetFileExtension (fileName)
-	{
-		var firstPoint = fileName.lastIndexOf ('.');
-		if (firstPoint == -1) {
-			return null;
-		}
-		var extension = fileName.substr (firstPoint);
-		extension = extension.toUpperCase ();
-		return extension;
-	}
-	
-	function GetMainFileIndexFromFileNames (fileNames)
-	{
-		var i, fileName, extension;
-		for (i = 0; i < fileNames.length; i++) {
-			fileName = fileNames[i];
-			extension = GetFileExtension (fileName);
-			if (extension === null) {
-				continue;
-			}
-			if (extension == '.3DS' || extension == '.OBJ' || extension == '.STL') {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	function Load3ds (importerApp, arrayBuffer, progressBar)
-	{
-		importerApp.viewer.Load3dsBuffer (arrayBuffer);
-		importerApp.JsonLoaded (progressBar);	
-	}
-	
-	function LoadObj (importerApp, mainFileName, fileNameList, stringBuffers, progressBar)
-	{
-		var mainFileBufferIndex = GetFileIndexFromFileNames (mainFileName, fileNameList);
-		if (mainFileBuffer == -1) {
-			return;
-		}
-
-		var mainFileBuffer = stringBuffers[mainFileBufferIndex];
-		if (mainFileBuffer === undefined) {
-			return;
-		}
-		
-		importerApp.viewer.LoadObjBuffer (mainFileBuffer.resultBuffer, function (fileName) {
-			function GetLastName (fileName)
-			{
-				var separatorIndex = fileName.lastIndexOf ('/');
-				if (separatorIndex == -1) {
-					separatorIndex = fileName.lastIndexOf ('\\');
-				}
-				if (separatorIndex == -1) {
-					return fileName;
-				}
-				return fileName.substr (separatorIndex + 1);
-			}
-
-			lastName = GetLastName (fileName);
-			var requestedFileIndex = GetFileIndexFromFileNames (lastName, fileNameList);
-			if (requestedFileIndex == -1) {
-				importerApp.fileNames.missing.push (lastName);
-				return null;
-			}
-			var requestedBuffer = stringBuffers[requestedFileIndex];
-			importerApp.fileNames.requested.push (requestedBuffer.originalObject.name);
-			return requestedBuffer.resultBuffer;
-		});
-		importerApp.JsonLoaded (progressBar);
-	}
-
-	function LoadStl (importerApp, arrayBuffer, progressBar)
-	{
-		importerApp.viewer.LoadStlBuffer (arrayBuffer);
-		importerApp.JsonLoaded (progressBar);	
-	}
-	
 	this.dialog.Close ();
 	if (this.inGenerate) {
 		return;
@@ -449,41 +351,23 @@ ImporterApp.prototype.ProcessFiles = function (fileList)
 		return;
 	}
 	
-	this.fileNames = {
-		main : null,
-		requested : [],
-		missing : []
-	};
+	this.fileNames = null;
 	
-	var fileNameList = GetFileNamesFromFileList (userFiles);
-	var mainFileIndex = GetMainFileIndexFromFileNames (fileNameList);
-	if (mainFileIndex == -1) {
-		this.GenerateError ('No readable file found. You can open 3ds, obj and stl files.');
-		return;
-	}
-
-	var mainFile = userFiles[mainFileIndex];
-	var mainFileName = mainFile.name;
-	var extension = GetFileExtension (mainFile.name);
-	this.fileNames.main = mainFile.name;
-	
-	var menu = document.getElementById ('menu');
-	var progressBar = new ImporterProgressBar (menu);
-
 	var myThis = this;
-	if (extension == '.3DS') {
-		JSM.GetArrayBufferFromFile (mainFile, function (arrayBuffer) {
-			Load3ds (myThis, arrayBuffer, progressBar);
-		});
-	} else if (extension == '.OBJ') {
-		JSM.GetStringBuffersFromFileList (userFiles, function (stringBuffers) {
-			LoadObj (myThis, mainFileName, fileNameList, stringBuffers, progressBar);
-		});
-	} else if (extension == '.STL') {
-		JSM.GetArrayBufferFromFile (mainFile, function (arrayBuffer) {
-			LoadStl (myThis, arrayBuffer, progressBar);
-		});
-	}
+	JSM.ConvertFileListToJsonData (userFiles, {
+		onError : function () {
+			myThis.GenerateError ('No readable file found. You can open 3ds, obj and stl files.');
+			return;
+		},
+		onReady : function (fileNames, jsonData) {
+			myThis.fileNames = fileNames;
+			myThis.viewer.SetJsonData (jsonData);
+
+			var menu = document.getElementById ('menu');
+			var progressBar = new ImporterProgressBar (menu);
+			myThis.JsonLoaded (progressBar);
+		}
+	});
 };
 
 ImporterApp.prototype.DragOver = function (event)
