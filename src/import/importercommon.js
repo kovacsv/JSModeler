@@ -108,7 +108,7 @@ JSM.ConvertFileListToJsonData = function (fileList, callbacks)
 	} else if (mainFile.extension == '.OBJ') {
 		JSM.GetStringBuffersFromFileList (fileList, function (stringBuffers) {
 			var mainFileBuffer = stringBuffers[mainFileIndex];
-			var jsonData = JSM.ConvertObjToJsonData (mainFileBuffer.resultBuffer, {
+			var jsonData = JSM.ConvertObjToJsonData (mainFileBuffer, {
 				onFileRequested : function (fileName) {
 					var requestedFileIndex = importFileList.GetFileIndexByName (fileName);
 					if (requestedFileIndex == -1) {
@@ -116,8 +116,7 @@ JSM.ConvertFileListToJsonData = function (fileList, callbacks)
 						return null;
 					}
 					fileNames.requested.push (fileName);
-					var requestedFileBuffer = stringBuffers[requestedFileIndex];
-					return requestedFileBuffer.resultBuffer;
+					return stringBuffers[requestedFileIndex];
 				}
 			});
 			OnReady (fileNames, jsonData);

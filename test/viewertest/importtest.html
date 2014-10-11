@@ -107,14 +107,14 @@
 		{
 			viewer.RemoveMeshes ();
 			JSM.GetStringBuffersFromURLList (urls, function (stringBuffers) {
-				var jsonData = JSM.ConvertObjToJsonData (stringBuffers[0].resultBuffer, {
+				var jsonData = JSM.ConvertObjToJsonData (stringBuffers[0], {
 					onFileRequested : function (fileName) {
 						var i, current, splitted;
 						for (i = 0; i < stringBuffers.length; i++) {
 							current = stringBuffers[i];
-							splitted = current.originalObject.split ('/');
+							splitted = urls[i].split ('/');
 							if (splitted[splitted.length - 1] == fileName) {
-								return current.resultBuffer;
+								return current;
 							}
 						}
 						return null;
@@ -168,7 +168,6 @@
 				return;
 			}
 
-			LoadObj (['testfiles/texturedcube.obj', 'testfiles/texturedcube.mtl', 'testfiles/texture.png'])
 			viewer.Draw ();
 		}
 

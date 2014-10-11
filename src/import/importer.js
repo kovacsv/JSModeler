@@ -50,12 +50,9 @@ JSM.LoadMultipleBuffers = function (inputList, result, index, loaderFunction, on
 		return;
 	}
 	
-	var originalObject = inputList[index];
-	loaderFunction (originalObject, function (resultBuffer) {
-		result.push ({
-			originalObject : originalObject,
-			resultBuffer : resultBuffer
-		});
+	var currentInput = inputList[index];
+	loaderFunction (currentInput, function (resultBuffer) {
+		result.push (resultBuffer);
 		JSM.LoadMultipleBuffers (inputList, result, index + 1, loaderFunction, onReady);
 	});
 };
