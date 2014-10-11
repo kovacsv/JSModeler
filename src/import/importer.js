@@ -43,6 +43,19 @@ JSM.GetStringBufferFromURL = function (url, onReady)
 	request.send (null);
 };
 
+JSM.GetStringBufferFromFile = function (file, onReady)
+{
+	var reader = new FileReader ();
+
+	reader.onloadend = function (event) {
+		if (event.target.readyState == FileReader.DONE) {
+			onReady (event.target.result);
+		}
+	};
+
+	reader.readAsText (file);
+};
+
 JSM.LoadMultipleBuffers = function (inputList, result, index, loaderFunction, onReady)
 {
 	if (index >= inputList.length) {
@@ -55,19 +68,6 @@ JSM.LoadMultipleBuffers = function (inputList, result, index, loaderFunction, on
 		result.push (resultBuffer);
 		JSM.LoadMultipleBuffers (inputList, result, index + 1, loaderFunction, onReady);
 	});
-};
-
-JSM.GetStringBufferFromFile = function (file, onReady)
-{
-	var reader = new FileReader ();
-
-	reader.onloadend = function (event) {
-		if (event.target.readyState == FileReader.DONE) {
-			onReady (event.target.result);
-		}
-	};
-
-	reader.readAsText (file);
 };
 
 JSM.GetStringBuffersFromURLList = function (urlList, onReady)
