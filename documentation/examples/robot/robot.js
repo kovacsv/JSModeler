@@ -43,7 +43,7 @@ JSM.RobotModule.prototype =
 	{
 		var i;
 		for (i = 0; i < this.meshes.length; i++) {
-			this.meshes[i].position = position.clone ();
+			this.meshes[i].position.set (position.x, position.y, position.z);
 		}
 	},
 
@@ -227,8 +227,8 @@ JSM.Robot.prototype =
 		};
 		
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (0xffcc33, 0xffcc33));
-		materials.AddMaterial (new JSM.Material (0xcc3333, 0xcc3333));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xffcc33, diffuse : 0xffcc33}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xcc3333, diffuse : 0xcc3333}));
 
 		if (index == 0) {
 			// bottom cylinder

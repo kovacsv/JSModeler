@@ -10,7 +10,7 @@
 */
 JSM.CalculateSphericalTextureCoord = function (coord, normal, system)
 {
-	var result = new JSM.Coord2D ();
+	var result = new JSM.Coord2D (0.0, 0.0);
 
 	var e3Direction = JSM.VectorNormalize (system.e3);
 	if (JSM.VectorsAreCollinear (e3Direction, normal)) {

@@ -10,12 +10,13 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		var hasTexture = (material.texture !== null);
 		var hasOpacity = (material.opacity !== 1.0);
 
-		var threeMaterial = new THREE.MeshLambertMaterial ({
+		var threeMaterial = new THREE.MeshPhongMaterial ({
 			ambient : material.ambient,
-			color : material.diffuse
+			color : material.diffuse,
+			specular : material.specular
 		});
 		
-		if (conversionData.doubleSided) {
+		if (theConversionData.doubleSided) {
 			threeMaterial.side = THREE.DoubleSide;
 		}
 		
@@ -26,8 +27,8 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		if (hasTexture) {
 			var textureName = material.texture;
 			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
-				if (conversionData.textureLoadedCallback !== null) {
-					conversionData.textureLoadedCallback ();
+				if (theConversionData.textureLoadedCallback !== null) {
+					theConversionData.textureLoadedCallback ();
 				}
 			});
 			texture.wrapS = THREE.RepeatWrapping;
@@ -35,7 +36,6 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 			threeMaterial.map = texture;
 		}
 
-		geometry.computeCentroids ();
 		geometry.computeFaceNormals ();
 
 		var mesh = new THREE.Mesh (geometry, threeMaterial);
@@ -68,24 +68,24 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		}
 	}
 	
-	var explodeData = {
+	var theConversionData = {
+		textureLoadedCallback : null,
 		hasConvexPolygons : false,
+		doubleSided : true
+	};
+
+	if (conversionData !== undefined && conversionData !== null) {
+		theConversionData.textureLoadedCallback = JSM.ValueOrDefault (conversionData.textureLoadedCallback, theConversionData.textureLoadedCallback);
+		theConversionData.hasConvexPolygons = JSM.ValueOrDefault (conversionData.hasConvexPolygons, theConversionData.hasConvexPolygons);
+		theConversionData.doubleSided = JSM.ValueOrDefault (conversionData.doubleSided, theConversionData.doubleSided);
+	}
+	
+	var explodeData = {
+		hasConvexPolygons : theConversionData.hasConvexPolygons,
 		onGeometryStart : OnGeometryStart,
 		onGeometryEnd : OnGeometryEnd,
 		onTriangle : OnTriangle
 	};
-	
-	if (conversionData === undefined || conversionData === null) {
-		conversionData = {
-			textureLoadedCallback : null,
-			hasConvexPolygons : false,
-			doubleSided : true
-		};
-	}
-	
-	if (conversionData.hasConvexPolygons !== undefined && conversionData.hasConvexPolygons !== null) {
-		explodeData.hasConvexPolygons = conversionData.hasConvexPolygons;
-	}
 
 	var meshes = [];
 	var geometry = null;
@@ -109,9 +109,9 @@ JSM.ConvertModelToThreeMeshes = function (model, materials, conversionData)
 	return meshes;
 };
 
-JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
+JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, environment)
 {
-	function AddMesh (mesh)
+	function AddMesh (mesh, meshIndex)
 	{
 		function AddTriangles (currentTriangles)
 		{
@@ -143,9 +143,10 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 				}
 			}
 			
-			var material = new THREE.MeshLambertMaterial ({
+			var material = new THREE.MeshPhongMaterial ({
 					ambient : diffuseColor.getHex (),
 					color : diffuseColor.getHex (),
+					specular : specularColor.getHex (),
 					side : THREE.DoubleSide
 				}
 			);
@@ -157,7 +158,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 			
 			if (textureName !== undefined) {
 				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
-					if (textureLoadedCallback !== undefined) {
+					if (textureLoadedCallback !== undefined && textureLoadedCallback !== null) {
 						textureLoadedCallback ();
 					}
 				});
@@ -207,22 +208,23 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 			}
 
 			var mesh = new THREE.Mesh (geometry, material);
+			mesh.originalJsonIndex = meshIndex;
 			result.push (mesh);
 		}
 
 		var vertices = mesh.vertices;
 		if (vertices === undefined) {
-			return result;
+			return;
 		}
 
 		var normals = mesh.normals;
 		if (normals === undefined) {
-			return result;
+			return;
 		}
 
 		var uvs = mesh.uvs;
 		if (uvs === undefined) {
-			return result;
+			return;
 		}
 	
 		var triangles = mesh.triangles;
@@ -244,10 +246,13 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback)
 		return result;
 	}
 	
-	var i;
-	for (i = 0; i < meshes.length; i++) {
-		AddMesh (meshes[i]);
-	}
+	var i = 0;
+	JSM.AsyncRunTask (function () {
+			AddMesh (meshes[i], i);
+			i = i + 1;
+			return true;
+		}, environment, meshes.length, 0, result
+	);
 
 	return result;
 };

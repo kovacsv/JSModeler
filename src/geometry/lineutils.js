@@ -87,7 +87,7 @@ JSM.CoordLinePosition = function (coord, line, projected)
 */
 JSM.ProjectCoordToLine = function (coord, line)
 {
-	var result = new JSM.Coord ();
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
 
 	var x = coord.x;
 	var y = coord.y;
@@ -185,8 +185,8 @@ JSM.LineLineClosestPoint = function (aLine, bLine, aClosestPoint, bClosestPoint)
 */
 JSM.LineLinePosition = function (aLine, bLine, intersection)
 {
-	var aClosestPoint = new JSM.Coord ();
-	var bClosestPoint = new JSM.Coord ();
+	var aClosestPoint = new JSM.Coord (0.0, 0.0, 0.0);
+	var bClosestPoint = new JSM.Coord (0.0, 0.0, 0.0);
 	if (!JSM.LineLineClosestPoint (aLine, bLine, aClosestPoint, bClosestPoint)) {
 		return 'LinesIntersectsCoincident';
 	}

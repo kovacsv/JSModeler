@@ -231,7 +231,7 @@ JSM.CalculatePolygonCentroid = function (body, index)
 	var polygon = body.GetPolygon (index);
 	var count = polygon.VertexIndexCount ();
 	
-	var result = new JSM.Coord ();
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
 	var i;
 	for (i = 0; i < count; i++) {
 		result = JSM.CoordAdd (result, body.GetVertexPosition (polygon.GetVertexIndex (i)));
@@ -343,7 +343,7 @@ JSM.GenerateRandomMaterials = function (body, materials, seeded)
 		} else {
 			color = JSM.RandomInt (minColor, maxColor);
 		}
-		materials.AddMaterial (new JSM.Material (color, color));
+		materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
 		material = materials.Count () - 1;
 		body.GetPolygon (i).SetMaterialIndex (material);
 	}

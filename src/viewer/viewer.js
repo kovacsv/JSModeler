@@ -39,16 +39,19 @@ JSM.Viewer.prototype.InitNavigation = function ()
 JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 {
 	this.renderer.SetClearColor (red, green, blue);
+	this.Draw ();
 };
 
 JSM.Viewer.prototype.AddGeometries = function (geometries)
 {
 	this.renderer.AddGeometries (geometries);
+	this.Draw ();
 };
 
 JSM.Viewer.prototype.RemoveGeometries = function ()
 {
 	this.renderer.RemoveGeometries ();
+	this.Draw ();
 };
 
 JSM.Viewer.prototype.FitInWindow = function ()
@@ -71,13 +74,11 @@ JSM.Viewer.prototype.GetBoundingBox = function ()
 	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
 	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
 	
-	var i, j, geometry, vertexArray, vertex;
+	var i, j, geometry, vertex;
 	for (i = 0; i < this.renderer.geometries.length; i++) {
 		geometry = this.renderer.geometries[i];
-		vertexArray = geometry.vertexArray;
-		for (j = 0; j < vertexArray.length; j = j + 3) {
-			vertex = new JSM.Coord (vertexArray[j], vertexArray[j + 1], vertexArray[j + 2]);
-			vertex = geometry.transformation.Apply (vertex);
+		for (j = 0; j < geometry.VertexCount (); j = j + 1) {
+			vertex = geometry.GetTransformedVertex (j);
 			min.x = JSM.Minimum (min.x, vertex.x);
 			min.y = JSM.Minimum (min.y, vertex.y);
 			min.z = JSM.Minimum (min.z, vertex.z);
@@ -97,13 +98,11 @@ JSM.Viewer.prototype.GetBoundingSphereRadius = function (center)
 	}
 	var radius = 0.0;
 
-	var i, j, geometry, vertexArray, vertex, distance;
+	var i, j, geometry, vertex, distance;
 	for (i = 0; i < this.renderer.geometries.length; i++) {
 		geometry = this.renderer.geometries[i];
-		vertexArray = geometry.vertexArray;
-		for (j = 0; j < vertexArray.length; j = j + 3) {
-			vertex = new JSM.Coord (vertexArray[j], vertexArray[j + 1], vertexArray[j + 2]);
-			vertex = geometry.transformation.Apply (vertex);
+		for (j = 0; j < geometry.VertexCount (); j = j + 1) {
+			vertex = geometry.GetTransformedVertex (j);
 			distance = JSM.CoordDistance (center, vertex);
 			if (JSM.IsGreater (distance, radius)) {
 				radius = distance;

@@ -11,6 +11,7 @@
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
 	<script type="text/javascript" src="../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../src/core/async.js"></script>
 	<script type="text/javascript" src="../src/geometry/coord.js"></script>
 	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
 	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
@@ -44,6 +45,13 @@
 	<script type="text/javascript" src="../src/modeler/camera.js"></script>
 	<script type="text/javascript" src="../src/modeler/explode.js"></script>
 	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../src/import/trianglemodel.js"></script>
+	<script type="text/javascript" src="../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../src/import/importer.js"></script>
+	<script type="text/javascript" src="../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../src/import/importercommon.js"></script>
 	<script type="text/javascript" src="../src/extras/solidgenerator.js"></script>
 	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
 	<script type="text/javascript" src="../src/extras/painter.js"></script>
@@ -101,8 +109,8 @@
 			}
 
 			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
-			materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 
 			var body1 = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 			body1.GetPolygon (1).SetMaterialIndex (1);

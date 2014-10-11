@@ -13,6 +13,7 @@
 	<script type="text/javascript" src="../../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../../src/core/timer.js"></script>
 	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../../src/core/async.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
 	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
@@ -46,6 +47,13 @@
 	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
 	<script type="text/javascript" src="../../src/modeler/explode.js"></script>
 	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/import/trianglemodel.js"></script>
+	<script type="text/javascript" src="../../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../../src/import/importer.js"></script>
+	<script type="text/javascript" src="../../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../../src/import/importercommon.js"></script>
 	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
 	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
 	<script type="text/javascript" src="../../src/extras/painter.js"></script>
@@ -119,6 +127,11 @@
 			}
 
 			if (type == 'three' || type == 'three2' || type == 'three3') {
+				function TextureLoaded ()
+				{
+					viewer.Draw ();
+				}
+			
 				CreateCanvas ();
 				
 				var viewerSettings = {
@@ -135,17 +148,20 @@
 				var body = JSM.GenerateCuboid (1, 1, 1);
 				
 				var materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 				if (type == 'three3') {
-					materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'texture.png', 1.0, 1.0));
+					materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 				} else {
-					materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+					materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 				}
 				
 				body.GetPolygon (1).SetMaterialIndex (0);
 				body.GetPolygon (2).SetMaterialIndex (1);
-			
-				viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body, materials));
+				
+				var conversionData = {
+					textureLoadedCallback : TextureLoaded
+				}
+				viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body, materials, conversionData));
 				
 				if (type == 'three2') {
 					var body2 = JSM.GenerateCuboid (1, 1, 1);
@@ -174,11 +190,11 @@
 				var body = JSM.GenerateCuboid (1, 1, 1);
 				
 				var materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 				if (type == 'internal3') {
-					materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc, 1.0, 'texture.png', 1.0, 1.0));
+					materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 				} else {
-					materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+					materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 				}
 				
 				body.GetPolygon (1).SetMaterialIndex (0);
@@ -245,8 +261,8 @@
 				var body = JSM.GenerateCuboid (1, 1, 1);
 				
 				var materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
-				materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 				
 				body.GetPolygon (1).SetMaterialIndex (0);
 				body.GetPolygon (2).SetMaterialIndex (1);
@@ -271,8 +287,8 @@
 				var body = JSM.GenerateCuboid (1, 1, 1);
 				
 				var materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material (0xcc0000, 0xcc0000));
-				materials.AddMaterial (new JSM.Material (0x0000cc, 0x0000cc));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 				
 				body.GetPolygon (1).SetMaterialIndex (0);
 				body.GetPolygon (2).SetMaterialIndex (1);

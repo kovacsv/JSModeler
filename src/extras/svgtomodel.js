@@ -171,7 +171,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 					return result;
 				}
 				
-				result = JSM.RGBComponentsToRGBColor (rgb[0], rgb[1], rgb[2]);
+				result = JSM.RGBComponentsToHexColor (rgb[0], rgb[1], rgb[2]);
 			}
 			
 			return result;
@@ -362,7 +362,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			}
 		}
 		
-		var material = new JSM.Material (polygon.color, polygon.color);
+		var material = new JSM.Material ({ambient : polygon.color, diffuse : polygon.color});
 		return [prisms, material];
 	}
 	

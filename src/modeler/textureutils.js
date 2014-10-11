@@ -9,7 +9,7 @@
 */
 JSM.CalculatePlanarTextureCoord = function (coord, system)
 {
-	var result = new JSM.Coord2D ();
+	var result = new JSM.Coord2D (0.0, 0.0);
 
 	var e1 = JSM.VectorNormalize (system.e1);
 	var e2 = JSM.VectorNormalize (system.e2);
@@ -38,7 +38,7 @@ JSM.CalculatePlanarTextureCoord = function (coord, system)
 */
 JSM.CalculateCubicTextureCoord = function (coord, normal, system)
 {
-	var result = new JSM.Coord2D ();
+	var result = new JSM.Coord2D (0.0, 0.0);
 
 	var e1 = JSM.VectorNormalize (system.e1);
 	var e2 = JSM.VectorNormalize (system.e2);
@@ -74,21 +74,21 @@ JSM.CalculateCubicTextureCoord = function (coord, normal, system)
 			system.origo,
 			e2,
 			e3,
-			new JSM.Coord ()
+			new JSM.Coord (0.0, 0.0, 0.0)
 		);
 	} else if (correctPlane === 1) {
 		planeSystem = new JSM.CoordSystem (
 			system.origo,
 			e1,
 			e3,
-			new JSM.Coord ()
+			new JSM.Coord (0.0, 0.0, 0.0)
 		);
 	} else if (correctPlane === 2) {
 		planeSystem = new JSM.CoordSystem (
 			system.origo,
 			e1,
 			e2,
-			new JSM.Coord ()
+			new JSM.Coord (0.0, 0.0, 0.0)
 		);
 	}
 	
@@ -111,7 +111,7 @@ JSM.CalculateCubicTextureCoord = function (coord, normal, system)
 */
 JSM.CalculateCylindricalTextureCoord = function (coord, normal, system)
 {
-	var result = new JSM.Coord2D ();
+	var result = new JSM.Coord2D (0.0, 0.0);
 
 	var e3Direction = JSM.VectorNormalize (system.e3);
 	if (JSM.VectorsAreCollinear (e3Direction, normal)) {

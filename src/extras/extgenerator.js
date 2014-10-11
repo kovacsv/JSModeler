@@ -42,7 +42,7 @@ JSM.GenerateLegoBrick = function (rows, columns, isLarge, hasTopCylinders, hasBo
 	
 	var legoDimensions = new JSM.LegoDimensions ();
 
-	var normal = new THREE.Vector3 (0.0, 0.0, 1.0);
+	var normal = new JSM.Vector (0.0, 0.0, 1.0);
 	var unitWidth = legoDimensions.legoWidth;
 	var unitHeight = legoDimensions.legoLargeHeight;
 	if (!isLarge) {
@@ -193,7 +193,7 @@ JSM.GenerateSuperShape = function (	aLon, bLon, mLon, n1Lon, n2Lon, n3Lon,
 
 	function CalculateSuperFormulaCoordinate (phi, theta)
 	{
-		var coord = new JSM.Coord ();
+		var coord = new JSM.Coord (0.0, 0.0, 0.0);
 		var rPhi = CalculateSuperFormula (phi, aLat, bLat, mLat, n1Lat, n2Lat, n3Lat);
 		var rTheta = CalculateSuperFormula (theta, aLon, bLon, mLon, n1Lon, n2Lon, n3Lon);
 		coord.x = rTheta * Math.cos (theta) * rPhi * Math.cos (phi);

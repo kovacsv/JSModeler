@@ -7,8 +7,8 @@
 */
 JSM.Sector2D = function (beg, end)
 {
-	this.beg = JSM.ValueOrDefault (beg, new JSM.Coord2D ());
-	this.end = JSM.ValueOrDefault (end, new JSM.Coord2D ());
+	this.beg = beg;
+	this.end = end;
 };
 
 /**
@@ -20,8 +20,8 @@ JSM.Sector2D = function (beg, end)
 */
 JSM.Sector2D.prototype.Set = function (beg, end)
 {
-	this.beg = JSM.ValueOrDefault (beg, new JSM.Coord2D ());
-	this.end = JSM.ValueOrDefault (end, new JSM.Coord2D ());
+	this.beg = beg;
+	this.end = end;
 };
 
 /**
@@ -44,8 +44,8 @@ JSM.Sector2D.prototype.Clone = function ()
 */
 JSM.Sector = function (beg, end)
 {
-	this.beg = JSM.ValueOrDefault (beg, new JSM.Coord ());
-	this.end = JSM.ValueOrDefault (end, new JSM.Coord ());
+	this.beg = beg;
+	this.end = end;
 };
 
 
@@ -58,8 +58,8 @@ JSM.Sector = function (beg, end)
 */
 JSM.Sector.prototype.Set = function (beg, end)
 {
-	this.beg = JSM.ValueOrDefault (beg, new JSM.Coord ());
-	this.end = JSM.ValueOrDefault (end, new JSM.Coord ());
+	this.beg = beg;
+	this.end = end;
 };
 
 /**

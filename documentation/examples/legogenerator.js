@@ -97,7 +97,7 @@ JSM.LegoBuild.prototype =
 		var brick = this.bricks[index];
 		
 		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material (brick.color, brick.color));
+		materials.AddMaterial (new JSM.Material ({ambient : brick.color, diffuse : brick.color}));
 		
 		var body = this.GetLegoBrickBody (brick, index === 0);
 		body.SetPolygonsMaterialIndex (0);
@@ -115,7 +115,7 @@ JSM.LegoBuild.prototype =
 		for (i = 0; i < this.bricks.length; i++) {
 			brick = this.bricks[i];
 			if (colorToIndex[brick.color] == undefined) {
-				materials.AddMaterial (new JSM.Material (brick.color, brick.color));
+				materials.AddMaterial (new JSM.Material ({ambient: brick.color, diffuse: brick.color}));
 				material = materials.Count () - 1;
 				colorToIndex[brick.color] = material;
 			}

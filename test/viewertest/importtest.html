@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/viewertest.css">
+
+	<script type="text/javascript" src="../../build/three.min.js"></script>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../../src/core/timer.js"></script>
+	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../../src/core/async.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../../src/modeler/light.js"></script>
+	<script type="text/javascript" src="../../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../../src/modeler/explode.js"></script>
+	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/import/trianglemodel.js"></script>
+	<script type="text/javascript" src="../../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../../src/import/importer.js"></script>
+	<script type="text/javascript" src="../../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../../src/import/importercommon.js"></script>
+	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../../src/extras/surfaces.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/converter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/jsonfileloader.js"></script>
+	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
+<!-- JSModeler includes end -->
+
+	<script type="text/javascript" src="include/stephandler.js"></script>
+	<script type="text/javascript" src="include/teststeps.js"></script>
+	<title>JSModeler Import Test</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+
+		function TextureLoaded ()
+		{
+			viewer.Draw ();
+		}
+		
+		function Load3ds (url)
+		{
+			viewer.RemoveMeshes ();
+			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
+				var jsonData = JSM.Convert3dsToJsonData (arrayBuffer);
+				var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
+				for (var i = 0; i < meshes.length; i++) {
+					viewer.AddMesh (meshes[i]);
+				}
+				viewer.FitInWindow ();
+				viewer.Draw ();
+			});
+		}
+		
+		function LoadObj (urls)
+		{
+			viewer.RemoveMeshes ();
+			JSM.GetStringBuffersFromURLList (urls, function (stringBuffers) {
+				var jsonData = JSM.ConvertObjToJsonData (stringBuffers[0], {
+					onFileRequested : function (fileName) {
+						var i, current, splitted;
+						for (i = 0; i < stringBuffers.length; i++) {
+							current = stringBuffers[i];
+							splitted = urls[i].split ('/');
+							if (splitted[splitted.length - 1] == fileName) {
+								return current;
+							}
+						}
+						return null;
+					}
+				});
+				var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData, TextureLoaded);
+				for (var i = 0; i < meshes.length; i++) {
+					viewer.AddMesh (meshes[i]);
+				}
+				viewer.FitInWindow ();
+				viewer.Draw ();
+			});
+		}
+
+		function LoadStl (url)
+		{
+			viewer.RemoveMeshes ();
+			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
+				var jsonData = JSM.ConvertStlToJsonData (arrayBuffer);
+				var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
+				for (var i = 0; i < meshes.length; i++) {
+					viewer.AddMesh (meshes[i]);
+				}
+				viewer.FitInWindow ();
+				viewer.Draw ();
+			});
+		}
+
+		function Resize ()
+		{
+			var header = document.getElementById ('header');
+			var canvas = document.getElementById ('test');
+			
+			canvas.width = document.body.clientWidth;
+			canvas.height = document.body.clientHeight - header.clientHeight - 1;
+		}
+
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+
+			var viewerSettings = {
+				cameraEyePosition : [6.0, -5.5, 4.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0.0, 0.0, 1.0]
+			};
+
+			viewer = new JSM.ThreeViewer ();
+			if (!viewer.Start ('test', viewerSettings)) {
+				return;
+			}
+
+			viewer.Draw ();
+		}
+
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="header">
+		<div id="buttons">
+			<a class="button" href="javascript:Load3ds ('testfiles/cube.3ds')">cube.3ds</a>
+			<a class="button" href="javascript:Load3ds ('testfiles/objects.3ds')">objects.3ds</a>
+			<a class="button" href="javascript:Load3ds ('testfiles/complex.3ds')">complex.3ds</a>
+			<a class="button" href="javascript:LoadObj (['testfiles/cubeobj.obj', 'testfiles/cubeobj.mtl'])">cubeobj.obj</a>
+			<a class="button" href="javascript:LoadObj (['testfiles/meshesobj.obj', 'testfiles/meshesobj.mtl'])">meshesobj.obj</a>
+			<a class="button" href="javascript:LoadObj (['testfiles/texturedcube.obj', 'testfiles/texturedcube.mtl'])">texturedcube.obj</a>
+			<a class="button" href="javascript:LoadStl ('testfiles/objects_ascii.stl')">objects_ascii.stl</a>
+			<a class="button" href="javascript:LoadStl ('testfiles/objects_binary.stl')">objects_binary.stl</a>
+		</div>
+		<div id="info"></div>
+	</div>
+	<canvas id="test" width="800" height="500"></canvas>
+</body>
+
+</html>

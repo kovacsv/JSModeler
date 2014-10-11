@@ -13,6 +13,8 @@ JSM.ThreeViewer = function ()
 	this.cameraMove = null;
 	this.navigation = null;
 	this.settings = null;
+	this.drawLoop = null;
+	this.enableDraw = null;
 };
 
 JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
@@ -37,10 +39,9 @@ JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
 		return false;
 	}
 	
+	this.drawLoop = false;
+	this.enableDraw = true;
 	this.DrawIfNeeded ();
-	if (this.settings.autoUpdate) {
-		this.AutoUpdate ();
-	}
 	return true;
 };
 
@@ -64,8 +65,7 @@ JSM.ThreeViewer.prototype.InitSettings = function (settings)
 		cameraCenterPosition : new JSM.Coord (0.0, 0.0, 0.0),
 		cameraUpVector : new JSM.Coord (0.0, 0.0, 1.0),
 		lightAmbientColor : [0.5, 0.5, 0.5],
-		lightDiffuseColor : [0.5, 0.5, 0.5],
-		autoUpdate : true
+		lightDiffuseColor : [0.5, 0.5, 0.5]
 	};
 
 	if (settings !== undefined) {
@@ -74,7 +74,6 @@ JSM.ThreeViewer.prototype.InitSettings = function (settings)
 		if (settings.cameraUpVector !== undefined) { this.settings.cameraUpVector = JSM.CoordFromArray (settings.cameraUpVector); }
 		if (settings.lightAmbientColor !== undefined) { this.settings.lightAmbientColor = settings.lightAmbientColor; }
 		if (settings.lightDiffuseColor !== undefined) { this.settings.lightDiffuseColor = settings.lightDiffuseColor; }
-		if (settings.autoUpdate !== undefined) { this.settings.autoUpdate = settings.autoUpdate; }
 	}
 
 	return true;
@@ -101,6 +100,7 @@ JSM.ThreeViewer.prototype.InitThree = function (canvasName)
 		return false;
 	}
 	
+	this.renderer.setClearColor (new THREE.Color (0xffffff));
 	this.renderer.setSize (this.canvas.width, this.canvas.height);
 	return true;
 };
@@ -152,7 +152,9 @@ JSM.ThreeViewer.prototype.InitLights = function ()
 		return false;
 	}
 	
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+	var lightPosition = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+	this.directionalLight.position.set (lightPosition.x, lightPosition.y, lightPosition.z);
+
 	this.scene.add (this.directionalLight);
 	return true;
 };
@@ -165,6 +167,12 @@ JSM.ThreeViewer.prototype.SetRunBeforeRender = function (runBeforeRender)
 JSM.ThreeViewer.prototype.SetRunAfterRender = function (runAfterRender)
 {
 	this.runAfterRender = runAfterRender;
+};
+
+JSM.ThreeViewer.prototype.SetClearColor = function (color)
+{
+	this.renderer.setClearColor (new THREE.Color (color));
+	this.DrawIfNeeded ();
 };
 
 JSM.ThreeViewer.prototype.AddMesh = function (mesh)
@@ -257,7 +265,6 @@ JSM.ThreeViewer.prototype.RemoveMeshes = function ()
 			i--;
 		}
 	}
-	
 	this.DrawIfNeeded ();
 };
 
@@ -295,10 +302,29 @@ JSM.ThreeViewer.prototype.Resize = function ()
 
 JSM.ThreeViewer.prototype.FitInWindow = function ()
 {
+	if (this.MeshCount () === 0) {
+		return;
+	}
+	
 	var center = this.GetCenter ();
 	var radius = this.GetBoundingSphereRadius (center);
 	this.navigation.FitInWindow (center, radius);
 	this.DrawIfNeeded ();
+};
+
+JSM.ThreeViewer.prototype.AdjustClippingPlanes = function (radiusLimit)
+{
+	var center = this.GetCenter ();
+	var radius = this.GetBoundingSphereRadius (center);
+	if (radius < radiusLimit) {
+		this.camera.near = 0.1;
+		this.camera.far = 1000.0;
+	} else {
+		this.camera.near = 10.0;
+		this.camera.far = 1000000.0;
+	}
+	this.camera.updateProjectionMatrix ();
+	this.Draw ();
 };
 
 JSM.ThreeViewer.prototype.GetCenter = function ()
@@ -401,32 +427,48 @@ JSM.ThreeViewer.prototype.ProjectVector = function (x, y, z)
 	return vector;
 };
 
+JSM.ThreeViewer.prototype.EnableDraw = function (enable)
+{
+	this.enableDraw = enable;
+};
+
 JSM.ThreeViewer.prototype.Draw = function ()
 {
+	if (!this.enableDraw) {
+		return;
+	}
+
 	if (this.runBeforeRender !== null) {
 		this.runBeforeRender ();
 	}
-	
-	this.camera.position = new THREE.Vector3 (this.cameraMove.eye.x, this.cameraMove.eye.y, this.cameraMove.eye.z);
-	this.camera.up = new THREE.Vector3 (this.cameraMove.up.x, this.cameraMove.up.y, this.cameraMove.up.z);
+
+	this.camera.position.set (this.cameraMove.eye.x, this.cameraMove.eye.y, this.cameraMove.eye.z);
+	this.camera.up.set (this.cameraMove.up.x, this.cameraMove.up.y, this.cameraMove.up.z);
 	this.camera.lookAt (new THREE.Vector3 (this.cameraMove.center.x, this.cameraMove.center.y, this.cameraMove.center.z));
-	this.directionalLight.position = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+
+	var lightPosition = new THREE.Vector3 ().subVectors (this.cameraMove.eye, this.cameraMove.center);
+	this.directionalLight.position.set (lightPosition.x, lightPosition.y, lightPosition.z);
+
 	this.renderer.render (this.scene, this.camera);
 	
 	if (this.runAfterRender !== null) {
 		this.runAfterRender ();
 	}
+	
+	if (this.drawLoop) {
+		requestAnimationFrame (this.Draw.bind (this));
+	}
 };
 
 JSM.ThreeViewer.prototype.DrawIfNeeded = function ()
 {
-	if (!this.settings.autoUpdate) {
+	if (!this.drawLoop) {
 		this.Draw ();
 	}
 };
 
-JSM.ThreeViewer.prototype.AutoUpdate = function ()
+JSM.ThreeViewer.prototype.StartDrawLoop = function ()
 {
+	this.drawLoop = true;
 	this.Draw ();
-	requestAnimationFrame (this.AutoUpdate.bind (this));
 };

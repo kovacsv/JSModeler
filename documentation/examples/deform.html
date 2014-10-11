@@ -128,7 +128,6 @@
 				if (offset != 0.0) {
 					SoftMoveMeshVertex (meshes[0], vmd.vertexData, vmd.faceAndVertex[1], vmd.radius, normal, offset);
 				}
-				viewer.Draw ();
 			}
 		}
 		
@@ -149,10 +148,6 @@
 		
 		function Load ()
 		{
-			function TextureLoaded () {
-				viewer.Draw ();
-			}
-		
 			window.onresize = Resize;
 			Resize ();
 
@@ -173,20 +168,18 @@
 			body = JSM.GenerateSegmentedRectangle (1, 1, segmentation, segmentation);
 			
 			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'tile.png', 0.1, 0.1));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'tile.png', textureWidth : 0.1, textureHeight : 0.1}));
 			body.SetPolygonsMaterialIndex (0);
 
 			var conversionData = {
-				textureLoadedCallback : TextureLoaded,
-				hasConvexPolygons : true,
-				doubleSided : true
+				hasConvexPolygons : true
 			};
 			meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);
 			}
 			viewer.FitInWindow ();
-			viewer.Draw ();
+			viewer.StartDrawLoop ();
 
 			window.onmousedown = OnMouseDown;
 			window.onmousemove = OnMouseMove;

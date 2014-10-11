@@ -71,7 +71,7 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 			return body.VertexCount () - 1;
 		}
 
-		var bodyPolygon = new JSM.BodyPolygon ();
+		var bodyPolygon = new JSM.BodyPolygon ([]);
 
 		var i, vertexIndex;
 		if (!reversed) {

@@ -183,6 +183,16 @@
 						["array", "anything[]", "the array to sort"],
 						["compare", "function", "the compare function"]
 					]
+				},
+				"AsyncRunTask" : {
+					"description" : "Calls a function multiple times asynchronously. If the environment is not specified, it will run synchronously.",
+					"parameters" : [
+						["taskFunction", "function", "the function to run"],
+						["environment", "AsyncEnvironment", "environment with callbackss"],
+						["runCount", "integer", "the count of runs"],
+						["timeout", "integer", "the timeout between runs"],
+						["userData", "anything", "task specific data"]
+					]
 				}
 			},
 			"classes" : {
@@ -213,6 +223,35 @@
 							],
 							"returns" : [
 								["integer", "The result."]
+							]
+						}
+					}
+				},
+				"AsyncEnvironment" : {
+					"description" : "Environment for asynchronous calls.",
+					"parameters" : [
+						["parameters", "object", "callback functions for calls"]
+					],
+					"functions" : {
+						"OnStart" : {
+							"description" : "Calls the onStart callback of the environment.",
+							"parameters" : [
+								["taskCount", "integer", "count of all tasks"],
+								["userData", "anything", "task specific data"]
+							]
+						},
+						"OnProcess" : {
+							"description" : "Calls the onProcess callback of the environment.",
+							"parameters" : [
+								["currentTask", "integer", "number of the current task"],
+								["userData", "anything", "task specific data"]
+							]
+						},
+						"OnFinish" : {
+							"description" : "Calls the onFinish callback of the environment.",
+							"parameters" : [
+								["result", "anything", "the result of the operation"],
+								["userData", "anything", "task specific data"]
 							]
 						}
 					}
@@ -574,6 +613,17 @@
 						["Coord", "the result"]
 					]
 				},
+				"CalculateTriangleNormal" : {
+					"description" : "Calculates normal vector for the given triangle vertices.",
+					"parameters" : [
+						["v0", "Coord", "the first vertex of the triangle"],
+						["v1", "Coord", "the second vertex of the triangle"],
+						["v2", "Coord", "the third vertex of the triangle"]
+					],
+					"returns" : [
+						["Vector", "the result"]
+					]
+				},
 				"CalculateNormal" : {
 					"description" : "Calculates normal vector for the given coordinates.",
 					"parameters" : [
@@ -695,6 +745,44 @@
 						["number[16]", "the result matrix"]
 					]
 				},
+				"MatrixVectorMultiply" : {
+					"description" : "Multiplies a matrix with a vector.",
+					"parameters" : [
+						["matrix", "number[16]", "the matrix"],
+						["vector", "number[4]", "the vector"]
+					],
+					"returns" : [
+						["number[4]", "the result vector"]
+					]
+				},
+				"MatrixMultiply" : {
+					"description" : "Multiplies a two matrices.",
+					"parameters" : [
+						["matrix1", "number[16]", "first matrix"],
+						["matrix2", "number[16]", "second matrix"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixDeterminant" : {
+					"description" : "Calculates the determinant of a matrix.",
+					"parameters" : [
+						["matrix", "number[16]", "the source matrix"]
+					],
+					"returns" : [
+						["number", "the determinant"]
+					]
+				},
+				"MatrixInvert" : {
+					"description" : "Inverts a matrix.",
+					"parameters" : [
+						["matrix", "number[16]", "the source matrix"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
 				"MatrixTranslation" : {
 					"description" : "Creates a translation matrix.",
 					"parameters" : [
@@ -712,6 +800,15 @@
 						["axis", "Vector", "the axis of the rotation"],
 						["angle", "number", "the angle of the rotation"],
 						["origo", "Coord", "the origo of the rotation"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixRotationQuaternion" : {
+					"description" : "Creates a rotation matrix from a given quaternion.",
+					"parameters" : [
+						["quaternion", "number[4]", "the quaternion"]
 					],
 					"returns" : [
 						["number[16]", "the result matrix"]
@@ -762,26 +859,6 @@
 						["aspectRatio", "number", "aspect ratio"],
 						["nearPlane", "number", "near clipping plane"],
 						["farPlane", "number", "far clipping plane"]
-					],
-					"returns" : [
-						["number[16]", "the result matrix"]
-					]
-				},
-				"MatrixVectorMultiply" : {
-					"description" : "Multiplies a matrix with a vector.",
-					"parameters" : [
-						["matrix", "number[16]", "the matrix"],
-						["vector", "number[4]", "the vector"]
-					],
-					"returns" : [
-						["number[4]", "the result vector"]
-					]
-				},
-				"MatrixMultiply" : {
-					"description" : "Multiplies a two matrices.",
-					"parameters" : [
-						["matrix1", "number[16]", "first matrix"],
-						["matrix2", "number[16]", "second matrix"]
 					],
 					"returns" : [
 						["number[16]", "the result matrix"]
@@ -1598,9 +1675,6 @@
 								["matrix", "number[16]", "the matrix"]
 							]
 						},
-						"Transpose" : {
-							"description" : "Transpose matrix of the transformation."
-						},
 						"Append" : {
 							"description" : "Adds a transformation to the matrix.",
 							"parameters" : [
@@ -1929,15 +2003,15 @@
 						["integer", "the RGB value"]
 					]
 				},
-				"RGBComponentsToRGBColor" : {
-					"description" : "Converts RGB components to RGB color.",
+				"RGBComponentsToHexColor" : {
+					"description" : "Converts RGB components to hex color.",
 					"parameters" : [
 						["red", "integer", "the red component"],
 						["green", "integer", "the green component"],
 						["blue", "integer", "the blue component"]
 					],
 					"returns" : [
-						["integer", "the RGB value"]
+						["integer", "the hex value"]
 					]
 				},
 				"AddVertexToBody" : {
@@ -2566,7 +2640,7 @@
 					"parameters" : [
 						["body", "Body", "the body"],
 						["materials", "Materials", "the materials"],
-						["explodeData", "Array", "the parameters and callback functions of explode"]
+						["explodeData", "object", "the parameters and callback functions of explode"]
 					],
 					"returns" : [
 						["boolean", "success"]
@@ -2987,22 +3061,15 @@
 					}
 				},
 				"Light" : {
-					"description" : "Defines a directional light.",
+					"description" : "Defines a directional light. The parameter structure can contain the following values: ambient, diffuse, specular, direction.",
 					"parameters" : [
-						["ambient", "number", "the ambient component"],
-						["diffuse", "number", "the diffuse component"],
-						["direction", "Vector", "the direction of the light"]
+						["parameters", "object", "parameters of the light"]
 					]
 				},
 				"Material" : {
-					"description" : "Defines a material.",
+					"description" : "Defines a material. The parameter structure can contain the following values: ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight.",
 					"parameters" : [
-						["ambient", "number", "the ambient component"],
-						["diffuse", "number", "the diffuse component"],
-						["opacity", "number", "the opacity component"],
-						["texture", "string", "the name of the texture file"],
-						["textureWidth", "number", "the width of the texture"],
-						["textureHeight", "number", "the height of the texture"]
+						["parameters", "object", "parameters of the material"]
 					]
 				},
 				"Materials" : {
@@ -3083,6 +3150,8 @@
 					}
 				}
 			}
+		},
+		"Import" : {
 		},
 		"Extras" : {
 			"functions" : {

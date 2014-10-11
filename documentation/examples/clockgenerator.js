@@ -50,9 +50,9 @@ JSM.GenerateClock = function (radius, segmentation)
 	
 	var model = new JSM.Model ();
 	var materials = new JSM.Materials ();
-	materials.AddMaterial (new JSM.Material (0xbbbbbb, 0xbbbbbb));
-	materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff));
-	materials.AddMaterial (new JSM.Material (0x222222, 0x222222));
+	materials.AddMaterial (new JSM.Material ({ambient : 0xbbbbbb, diffuse : 0xbbbbbb}));
+	materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff}));
+	materials.AddMaterial (new JSM.Material ({ambient : 0x222222, diffuse : 0x222222}));
 	
 	var height = radius / 20;
 	var isCurved = true;

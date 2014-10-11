@@ -27,8 +27,8 @@
 				var model = new JSM.Model ();
 				
 				var materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material (0x008ab8, 0x008ab8));
-				materials.AddMaterial (new JSM.Material (0xcc3333, 0xcc3333));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc3333, diffuse : 0xcc3333}));
 				
 				var offset = ticTacToe.shapeSize * 1.5;
 
@@ -66,8 +66,7 @@
 			var model = GetItemModel (ticTacToe, ijk[0], ijk[1], ijk[2]);
 			var conversionData = {
 				textureLoadedCallback : null,
-				hasConvexPolygons : true,
-				doubleSided : true
+				hasConvexPolygons : true
 			};
 			var meshes = JSM.ConvertModelToThreeMeshes (model[0], model[1], conversionData);
 			for (var i = 0; i < meshes.length; i++) {
@@ -167,13 +166,13 @@
 			{
 				var model = new JSM.Model ();
 				var materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material (0x000000, 0x000000, 0.1));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0x000000, specular : 0x000000, shininess : 0.0, opacity : 0.1}));
 				
 				var offset = ticTacToe.shapeSize * 1.5;
 
 				var i, j, k;
 				var body, transformation;
-				for (k = 0; k < ticTacToe.zSize; k++) {
+				for (k = ticTacToe.zSize - 1; k >= 0; k--) {
 					for (j = 0; j < ticTacToe.ySize; j++) {
 						for (i = 0; i < ticTacToe.xSize; i++) {
 							body = JSM.GenerateCircle (ticTacToe.shapeSize / 2.0, 20);
@@ -181,7 +180,8 @@
 							
 							transformation = JSM.TranslationTransformation (new JSM.Vector (offset * i, offset * j, offset * k));
 							body.Transform (transformation);
-
+							
+							body.ticTacToeId = ticTacToe.DimensionsToIndex ([i, j, k]);
 							model.AddBody (body);
 						}
 					}
@@ -209,12 +209,11 @@
 			var model = GetEmptyTableModel (ticTacToe);
 			var conversionData = {
 				textureLoadedCallback : null,
-				hasConvexPolygons : true,
-				doubleSided : true
+				hasConvexPolygons : true
 			};
 			var meshes = JSM.ConvertModelToThreeMeshes (model[0], model[1], conversionData);
 			for (var i = 0; i < meshes.length; i++) {
-				meshes[i].ticTacToeId = i;
+				meshes[i].ticTacToeId = model[0].GetBody (i).ticTacToeId;
 				viewer.AddMesh (meshes[i]);
 			}
 			

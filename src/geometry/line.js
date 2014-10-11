@@ -7,8 +7,8 @@
 */
 JSM.Line2D = function (start, direction)
 {
-	this.start = JSM.ValueOrDefault (start, new JSM.Coord2D ());
-	this.direction = JSM.ValueOrDefault (direction, new JSM.Vector2D ());
+	this.start = start;
+	this.direction = direction;
 };
 
 /**
@@ -20,8 +20,8 @@ JSM.Line2D = function (start, direction)
 */
 JSM.Line2D.prototype.Set = function (start, direction)
 {
-	this.start = JSM.ValueOrDefault (start, new JSM.Coord2D ());
-	this.direction = JSM.ValueOrDefault (direction, new JSM.Vector2D ());
+	this.start = start;
+	this.direction = direction;
 };
 
 /**
@@ -44,8 +44,8 @@ JSM.Line2D.prototype.Clone = function ()
 */
 JSM.Line = function (start, direction)
 {
-	this.start = JSM.ValueOrDefault (start, new JSM.Coord ());
-	this.direction = JSM.ValueOrDefault (direction, new JSM.Vector ());
+	this.start = start;
+	this.direction = direction;
 };
 
 /**
@@ -57,8 +57,8 @@ JSM.Line = function (start, direction)
 */
 JSM.Line.prototype.Set = function (start, direction)
 {
-	this.start = JSM.ValueOrDefault (start, new JSM.Coord ());
-	this.direction = JSM.ValueOrDefault (direction, new JSM.Vector ());
+	this.start = start;
+	this.direction = direction;
 };
 
 /**

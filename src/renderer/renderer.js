@@ -1,7 +1,9 @@
-JSM.RenderMaterial = function (ambient, diffuse, texture, textureWidth, textureHeight)
+JSM.RenderMaterial = function (ambient, diffuse, specular, shininess, texture, textureWidth, textureHeight)
 {
 	this.ambient = ambient;
 	this.diffuse = diffuse;
+	this.specular = specular;
+	this.shininess = shininess;
 	this.texture = texture;
 	this.textureWidth = textureWidth;
 	this.textureHeight = textureHeight;
@@ -108,6 +110,22 @@ JSM.RenderGeometry.prototype.GetUVBuffer = function ()
 	return this.uvBuffer;
 };
 
+JSM.RenderGeometry.prototype.VertexCount = function ()
+{
+	return parseInt (this.vertexArray.length / 3, 10);
+};
+
+JSM.RenderGeometry.prototype.GetVertex = function (index)
+{
+	return new JSM.Coord (this.vertexArray[3 * index], this.vertexArray[3 * index + 1], this.vertexArray[3 * index + 2]);
+};
+
+JSM.RenderGeometry.prototype.GetTransformedVertex = function (index)
+{
+	var vertex = this.GetVertex (index);
+	return this.transformation.Apply (vertex);
+};
+
 JSM.RenderGeometry.prototype.Compile = function (context, textureLoaded)
 {
 	this.material.Compile (context, textureLoaded);
@@ -182,17 +200,25 @@ JSM.Renderer.prototype.InitContext = function (canvasName)
 		return false;
 	}
 
-	this.context = this.canvas.getContext ('experimental-webgl');
+	this.context = this.canvas.getContext ('webgl') || this.canvas.getContext ('experimental-webgl');
 	if (this.context === null) {
 		return false;
 	}
 
 	this.context.viewportWidth = this.canvas.width;
 	this.context.viewportHeight = this.canvas.height;
+	
+	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 
 	this.context.clearColor (1.0, 1.0, 1.0, 1.0);
+	
 	this.context.enable (this.context.DEPTH_TEST);
-
+	this.context.depthFunc (this.context.LEQUAL);
+	
+	this.context.enable (this.context.BLEND);
+	this.context.blendEquation (this.context.FUNC_ADD);
+	this.context.blendFunc (this.context.SRC_ALPHA, this.context.ONE_MINUS_SRC_ALPHA);
+	
 	return true;
 };
 
@@ -237,35 +263,45 @@ JSM.Renderer.prototype.InitShaders = function ()
 		
 		var script = [
 			defineString,
-			'uniform highp vec3 uAmbientLightColor;',
-			'uniform highp vec3 uDirectionalLightColor;',
-			'uniform highp vec3 uLightDirection;',
+			'uniform highp vec3 uPolygonAmbientColor;',
+			'uniform highp vec3 uPolygonDiffuseColor;',
+			'uniform highp vec3 uPolygonSpecularColor;',
+			'uniform highp float uPolygonShininess;',
+			
+			'uniform highp vec3 uLightAmbientColor;',
+			'uniform highp vec3 uLightDiffuseColor;',
+			'uniform highp vec3 uLightSpecularColor;',
 
-			'uniform highp mat4 uViewMatrix;',
-			'uniform highp mat4 uModelViewMatrix;',
-
+			'varying highp vec3 vVertex;',
 			'varying highp vec3 vNormal;',
+			'varying highp vec3 vLight;',
+			
 			'#ifdef USETEXTURE',
 			'varying highp vec2 vUV;',
 			'uniform sampler2D uSampler;',
-			'#else',
-			'uniform highp vec3 uPolygonAmbientColor;',
-			'uniform highp vec3 uPolygonDiffuseColor;',
 			'#endif',
 			
 			'void main (void) {',
-			'	highp vec3 transformedNormal = normalize (vec3 (uModelViewMatrix * vec4 (vNormal, 0.0)));',
-			'	highp vec3 transformedLightDirection = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
-			'	highp float diffuseIntensity = abs (dot (transformedNormal, transformedLightDirection));',
+			'	highp vec3 N = normalize (vNormal);',
+			'	if (!gl_FrontFacing) {',
+			'		N = -N;',
+			'	}',
+			'	highp vec3 L = normalize (-vLight);',
+			'	highp vec3 E = normalize (-vVertex);',
+			'	highp vec3 R = normalize (-reflect (L, N));',
+			'	highp vec3 ambientComponent = uPolygonAmbientColor * uLightAmbientColor;',
+			'	highp vec3 diffuseComponent = uPolygonDiffuseColor * uLightDiffuseColor * max (dot (N, L), 0.0);',
+			'	highp vec3 specularComponent = uPolygonSpecularColor * uLightSpecularColor * pow (max (dot (R, E), 0.0), uPolygonShininess);',
 			'#ifdef USETEXTURE',
-			'	highp vec4 textureColor = texture2D (uSampler, vec2 (vUV.s, vUV.t));',
-			'	highp vec3 ambientComponent = textureColor.xyz * uAmbientLightColor;',
-			'	highp vec3 diffuseComponent = textureColor.xyz * uDirectionalLightColor * diffuseIntensity;',
-			'#else',
-			'	highp vec3 ambientComponent = uPolygonAmbientColor * uAmbientLightColor;',
-			'	highp vec3 diffuseComponent = uPolygonDiffuseColor * uDirectionalLightColor * diffuseIntensity;',
+			'	highp vec3 textureColor = texture2D (uSampler, vec2 (vUV.s, vUV.t)).xyz;',
+			'	ambientComponent = textureColor * ambientComponent;',
+			'	diffuseComponent = textureColor * diffuseComponent;',
+			'	specularComponent = textureColor * specularComponent;',
 			'#endif',
-			'	gl_FragColor = vec4 ((ambientComponent + diffuseComponent), 1.0);',
+			'	ambientComponent = clamp (ambientComponent, 0.0, 1.0);',
+			'	diffuseComponent = clamp (diffuseComponent, 0.0, 1.0);',
+			'	specularComponent = clamp (specularComponent, 0.0, 1.0);',
+			'	gl_FragColor = vec4 (ambientComponent + diffuseComponent + specularComponent, 1.0);',
 			'}'
 		].join('\n');
 		return script;
@@ -283,10 +319,14 @@ JSM.Renderer.prototype.InitShaders = function ()
 			'attribute highp vec3 aVertexPosition;',
 			'attribute highp vec3 aVertexNormal;',
 
+			'uniform highp mat4 uViewMatrix;',
 			'uniform highp mat4 uModelViewMatrix;',
 			'uniform highp mat4 uProjectionMatrix;',
+			'uniform highp vec3 uLightDirection;',
 
+			'varying highp vec3 vVertex;',
 			'varying highp vec3 vNormal;',
+			'varying highp vec3 vLight;',
 
 			'#ifdef USETEXTURE',
 			'attribute highp vec2 aVertexUV;',
@@ -294,39 +334,39 @@ JSM.Renderer.prototype.InitShaders = function ()
 			'#endif',
 
 			'void main (void) {',
-			'	vNormal = aVertexNormal;',
+			'	vVertex = vec3 (uModelViewMatrix * vec4 (aVertexPosition, 1.0));',
+			'	vNormal = normalize (vec3 (uModelViewMatrix * vec4 (aVertexNormal, 0.0)));',
+			'	vLight = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
 			'#ifdef USETEXTURE',
 			'	vUV = aVertexUV;',
 			'#endif',
-			'	gl_Position = uProjectionMatrix * uModelViewMatrix * vec4 (aVertexPosition, 1.0);',
+			'	gl_Position = uProjectionMatrix * vec4 (vVertex, 1.0);',
 			'}'
 		].join('\n');
 		return script;
 	}
 
-	function InitShaderCommon (context, shader, light)
+	function InitShaderCommon (context, shader)
 	{
 		shader.vertexPositionAttribute = context.getAttribLocation (shader, 'aVertexPosition');
 		shader.vertexNormalAttribute = context.getAttribLocation (shader, 'aVertexNormal');
 
-		shader.ambientLightColorUniform = context.getUniformLocation (shader, 'uAmbientLightColor');
-		shader.directionalLightColorUniform = context.getUniformLocation (shader, 'uDirectionalLightColor');
+		shader.lightAmbientColorUniform = context.getUniformLocation (shader, 'uLightAmbientColor');
+		shader.lightDiffuseColorUniform = context.getUniformLocation (shader, 'uLightDiffuseColor');
+		shader.lightSpecularColorUniform = context.getUniformLocation (shader, 'uLightSpecularColor');
 		shader.lightDirectionUniform = context.getUniformLocation (shader, 'uLightDirection');
-
-		shader.pMatrixUniform = context.getUniformLocation (shader, 'uProjectionMatrix');
+		
 		shader.vMatrixUniform = context.getUniformLocation (shader, 'uViewMatrix');
 		shader.mvMatrixUniform = context.getUniformLocation (shader, 'uModelViewMatrix');
+		shader.pMatrixUniform = context.getUniformLocation (shader, 'uProjectionMatrix');
 
 		shader.polygonAmbientColorUniform = context.getUniformLocation (shader, 'uPolygonAmbientColor');
 		shader.polygonDiffuseColorUniform = context.getUniformLocation (shader, 'uPolygonDiffuseColor');
-
-		var lightAmbient = JSM.HexColorToNormalizedRGBComponents (light.ambient);
-		var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (light.diffuse);
-		context.uniform3f (shader.ambientLightColorUniform, lightAmbient[0], lightAmbient[1], lightAmbient[2]);
-		context.uniform3f (shader.directionalLightColorUniform, lightDiffuse[0], lightDiffuse[1], lightDiffuse[2]);
+		shader.polygonSpecularColorUniform = context.getUniformLocation (shader, 'uPolygonSpecularColor');
+		shader.polygonShininessUniform = context.getUniformLocation (shader, 'uPolygonShininess');
 	}
 	
-	function InitMainShader (context, light)
+	function InitMainShader (context)
 	{
 		var fragmentShaderScript = GetFragmentShaderScript (false);
 		var vertexShaderScript = GetVertexShaderScript (false);
@@ -336,15 +376,12 @@ JSM.Renderer.prototype.InitShaders = function ()
 		}
 		
 		context.useProgram (shader);
-		InitShaderCommon (context, shader, light);
-
-		shader.polygonAmbientColorUniform = context.getUniformLocation (shader, 'uPolygonAmbientColor');
-		shader.polygonDiffuseColorUniform = context.getUniformLocation (shader, 'uPolygonDiffuseColor');
+		InitShaderCommon (context, shader);
 
 		return shader;
 	}
 
-	function InitTextureShader (context, light)
+	function InitTextureShader (context)
 	{
 		var fragmentShaderScript = GetFragmentShaderScript (true);
 		var vertexShaderScript = GetVertexShaderScript (true);
@@ -354,7 +391,7 @@ JSM.Renderer.prototype.InitShaders = function ()
 		}
 		
 		context.useProgram (shader);
-		InitShaderCommon (context, shader, light);
+		InitShaderCommon (context, shader);
 
 		shader.vertexUVAttribute = context.getAttribLocation (shader, 'aVertexUV');
 		shader.samplerUniform = context.getUniformLocation (shader, 'uSampler');
@@ -362,12 +399,12 @@ JSM.Renderer.prototype.InitShaders = function ()
 		return shader;
 	}
 
-	this.shader = InitMainShader (this.context, this.light);
+	this.shader = InitMainShader (this.context);
 	if (this.shader === null) {
 		return false;
 	}
 	
-	this.texShader = InitTextureShader (this.context, this.light);
+	this.texShader = InitTextureShader (this.context);
 	if (this.texShader === null) {
 		return false;
 	}
@@ -420,53 +457,60 @@ JSM.Renderer.prototype.Resize = function ()
 {
 	this.context.viewportWidth = this.canvas.width;
 	this.context.viewportHeight = this.canvas.height;
+	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 };
 
 JSM.Renderer.prototype.Render = function ()
 {
-	function GetShader (renderer, hasTexture)
+	function GetShader (renderer, geometry)
 	{
-		if (hasTexture) {
+		if (geometry.GetMaterial ().HasTexture ()) {
 			return renderer.texShader;
 		}
 		return renderer.shader;
 	}
 
-	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	
 	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
 	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
 	var modelViewMatrix = JSM.MatrixIdentity ();
 
-	this.light.direction = JSM.CoordSub (this.camera.eye, this.camera.center);
-	
-	var i, ambientColor, diffuseColor;
+	var lightAmbient = JSM.HexColorToNormalizedRGBComponents (this.light.ambient);
+	var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (this.light.diffuse);
+	var lightSpecular = JSM.HexColorToNormalizedRGBComponents (this.light.specular);
+	this.light.direction = JSM.VectorNormalize (JSM.CoordSub (this.camera.center, this.camera.eye));
+
+	var i, ambientColor, diffuseColor, specularColor, shininess;
 	var currentGeometry, currentVertexBuffer, currentNormalBuffer, currentUVBuffer;
-	var currentShader, newShader, hasTexture;
+	var currentShader, newShader;
 	for (i = 0; i < this.geometries.length; i++) {
 		currentGeometry = this.geometries[i];
-		hasTexture = currentGeometry.GetMaterial ().HasTexture ();
+		newShader = GetShader (this, currentGeometry);
 		
-		currentVertexBuffer = currentGeometry.GetVertexBuffer ();
-		currentNormalBuffer = currentGeometry.GetNormalBuffer ();
-		currentUVBuffer = currentGeometry.GetUVBuffer ();
-		
-		newShader = GetShader (this, hasTexture);
 		if (currentShader != newShader) {
 			currentShader = newShader;
 			this.context.useProgram (currentShader);
 			this.context.uniformMatrix4fv (currentShader.pMatrixUniform, false, projectionMatrix);
 			this.context.uniformMatrix4fv (currentShader.vMatrixUniform, false, viewMatrix);
+
 			this.context.uniform3f (currentShader.lightDirectionUniform, this.light.direction.x, this.light.direction.y, this.light.direction.z);
+			this.context.uniform3f (currentShader.lightAmbientColorUniform, lightAmbient[0], lightAmbient[1], lightAmbient[2]);
+			this.context.uniform3f (currentShader.lightDiffuseColorUniform, lightDiffuse[0], lightDiffuse[1], lightDiffuse[2]);
+			this.context.uniform3f (currentShader.lightSpecularColorUniform, lightSpecular[0], lightSpecular[1], lightSpecular[2]);
 		}
 		
-		if (currentShader == this.shader) {
-			ambientColor = currentGeometry.material.ambient;
-			diffuseColor = currentGeometry.material.diffuse;
-			this.context.uniform3f (currentShader.polygonAmbientColorUniform, ambientColor[0], ambientColor[1], ambientColor[2]);
-			this.context.uniform3f (currentShader.polygonDiffuseColorUniform, diffuseColor[0], diffuseColor[1], diffuseColor[2]);
-		} else if (currentShader == this.texShader) {
+		ambientColor = currentGeometry.material.ambient;
+		diffuseColor = currentGeometry.material.diffuse;
+		specularColor = currentGeometry.material.specular;
+		shininess = currentGeometry.material.shininess;
+		this.context.uniform3f (currentShader.polygonAmbientColorUniform, ambientColor[0], ambientColor[1], ambientColor[2]);
+		this.context.uniform3f (currentShader.polygonDiffuseColorUniform, diffuseColor[0], diffuseColor[1], diffuseColor[2]);
+		this.context.uniform3f (currentShader.polygonSpecularColorUniform, specularColor[0], specularColor[1], specularColor[2]);
+		this.context.uniform1f (currentShader.polygonShininessUniform, shininess);
+		
+		if (currentShader == this.texShader) {
+			currentUVBuffer = currentGeometry.GetUVBuffer ();
 			this.context.activeTexture (this.context.TEXTURE0);
 			this.context.bindTexture (this.context.TEXTURE_2D, currentGeometry.material.textureBuffer);
 			this.context.bindBuffer (this.context.ARRAY_BUFFER, currentUVBuffer);
@@ -474,14 +518,17 @@ JSM.Renderer.prototype.Render = function ()
 			this.context.enableVertexAttribArray (currentShader.vertexUVAttribute);
 			this.context.uniform1i (currentShader.samplerUniform, 0);
 		}
-		
+
 		modelViewMatrix = JSM.MatrixMultiply (currentGeometry.GetTransformationMatrix (), viewMatrix);
 		this.context.uniformMatrix4fv (currentShader.mvMatrixUniform, false, modelViewMatrix);
 
+		currentVertexBuffer = currentGeometry.GetVertexBuffer ();
+		
 		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentVertexBuffer);
 		this.context.enableVertexAttribArray (currentShader.vertexPositionAttribute);
 		this.context.vertexAttribPointer (currentShader.vertexPositionAttribute, currentVertexBuffer.itemSize, this.context.FLOAT, false, 0, 0);
 		
+		currentNormalBuffer = currentGeometry.GetNormalBuffer ();
 		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentNormalBuffer);
 		this.context.enableVertexAttribArray (currentShader.vertexNormalAttribute);
 		this.context.vertexAttribPointer (currentShader.vertexNormalAttribute, currentNormalBuffer.itemSize, this.context.FLOAT, false, 0, 0);

@@ -20,7 +20,7 @@ JSM.OrderPolygons = function (body, eye, center)
 	function GetPolygonCenter (p)
 	{
 		var polygon = body.GetPolygon (p);
-		var result = new JSM.Coord ();
+		var result = new JSM.Coord (0.0, 0.0, 0.0);
 
 		var i, coord;
 		for (i = 0; i < polygon.VertexIndexCount (); i++) {

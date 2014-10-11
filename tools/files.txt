@@ -1,6 +1,7 @@
 ../src/core/jsm.js
 ../src/core/timer.js
 ../src/core/algorithm.js
+../src/core/async.js
 ../src/geometry/coord.js
 ../src/geometry/determinant.js
 ../src/geometry/coordutils.js
@@ -34,6 +35,13 @@
 ../src/modeler/camera.js
 ../src/modeler/explode.js
 ../src/modeler/exporter.js
+../src/import/trianglemodel.js
+../src/import/binaryreader.js
+../src/import/importer.js
+../src/import/importer3ds.js
+../src/import/importerobj.js
+../src/import/importerstl.js
+../src/import/importercommon.js
 ../src/extras/solidgenerator.js
 ../src/extras/extgenerator.js
 ../src/extras/painter.js

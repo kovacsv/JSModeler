@@ -446,6 +446,18 @@ def TestBezier (browser, path):
 	browser.Capture ('bezier')
 	browser.Click (60, 550)
 
+def TestImporter (browser, path):
+	if browser.GetName () != 'firefox' and browser.GetName () != 'chrome':
+		return
+
+	browser.SetURL (os.path.join (path, 'test\\viewertest\\importtest.html'))
+	browser.Capture ('importtest')
+	
+	buttons = [42, 122, 220, 320, 410, 520, 630, 750]
+	for button in buttons:
+		browser.Click (button, 22)
+		browser.Capture ('importtest')
+	
 def Main (argv):
 	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
@@ -453,33 +465,31 @@ def Main (argv):
 	testRunner = TestRunner.TestRunner ()
 	
 	path = os.path.join (currentPath, '..', 'JSModeler');
-	browserSpecs = [
-		['firefox', [2, 114, 2, 2]]
-		#['chrome', [3, 81, 3, 3]]
-	]
+	browserSpec = ['firefox', [2, 114, 2, 2]]
 
 	start = time.time ()
-	for browserSpec in browserSpecs:
-		browser = Browser.Browser (testRunner, browserSpec[0])
-		
-		browser.Open (1200, 800, browserSpec[1])
-		TestViewer (browser, path)
-		UnitTest (browser, path)
-		TestSVGToModel (browser, path)
-		TestCSG (browser, path)
-		TestDemonstration (browser, path)
-		TestOldDemonstration (browser, path)
-		TestLegoBuilder (browser, path)
-		TestTicTacToe (browser, path)
-		TestDeform (browser, path)
-		TestSolids (browser, path)
-		TestRobot (browser, path)
-		TestClock (browser, path)
-		TestSVGTo3D (browser, path)
-		TestCSGApp (browser, path)
-		TestBezier (browser, path)
-		TestViewerTypes (browser, path)
-		browser.Close ()
+	browser = Browser.Browser (testRunner, browserSpec[0])
+	
+	browser.Open (1200, 800, browserSpec[1])
+	TestViewer (browser, path)
+	UnitTest (browser, path)
+	TestSVGToModel (browser, path)
+	TestCSG (browser, path)
+	TestDemonstration (browser, path)
+	TestOldDemonstration (browser, path)
+	TestLegoBuilder (browser, path)
+	TestTicTacToe (browser, path)
+	TestDeform (browser, path)
+	TestSolids (browser, path)
+	TestRobot (browser, path)
+	TestClock (browser, path)
+	TestSVGTo3D (browser, path)
+	TestCSGApp (browser, path)
+	TestBezier (browser, path)
+	TestViewerTypes (browser, path)
+	TestImporter (browser, path)
+
+	browser.Close ()
 	end = time.time ()
 	
 	print ('time: ' + str (end - start))	

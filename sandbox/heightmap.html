@@ -11,6 +11,7 @@
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
 	<script type="text/javascript" src="../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../src/core/async.js"></script>
 	<script type="text/javascript" src="../src/geometry/coord.js"></script>
 	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
 	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
@@ -44,6 +45,13 @@
 	<script type="text/javascript" src="../src/modeler/camera.js"></script>
 	<script type="text/javascript" src="../src/modeler/explode.js"></script>
 	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../src/import/trianglemodel.js"></script>
+	<script type="text/javascript" src="../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../src/import/importer.js"></script>
+	<script type="text/javascript" src="../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../src/import/importercommon.js"></script>
 	<script type="text/javascript" src="../src/extras/solidgenerator.js"></script>
 	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
 	<script type="text/javascript" src="../src/extras/painter.js"></script>
@@ -146,8 +154,7 @@
 			
 			var conversionData = {
 				textureLoadedCallback : TextureLoaded,
-				hasConvexPolygons : true,
-				doubleSided : true
+				hasConvexPolygons : true
 			};
 			//JSM.GenerateRandomMaterials (body, materials, true);
 			var timer = new JSM.Timer ();
@@ -155,7 +162,7 @@
 			body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 
 			var materials = new JSM.Materials ();
-			//materials.AddMaterial (new JSM.Material (0xffffff, 0xffffff, 1.0, 'hungary.jpg', jsonData.columns, jsonData.rows));
+			//materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 1.0, shininess : 0x000000, opacity : 0.0, texture : 'hungary.jpg', textureWidth : jsonData.columns, textureHeight : jsonData.rows}));
 			//body.SetPolygonsMaterialIndex (0);
 			
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);

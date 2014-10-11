@@ -48,7 +48,7 @@ function CalculateVertexOffsets (body, width)
 	var edge2Line = CalculateEdgeLine (body, al, vert.edges[1], edgeAngle, width);
 	
 	var vertexOffset = 0.0;
-	var intersection = new JSM.Coord ();
+	var intersection = new JSM.Coord (0.0, 0.0, 0.0);
 	if (JSM.LineLinePosition (edge1Line, edge2Line, intersection) == 'LinesIntersectsOnePoint') {
 		vertexOffset = JSM.CoordDistance (vertPosition, intersection);
 	}
