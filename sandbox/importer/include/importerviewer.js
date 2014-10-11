@@ -118,7 +118,7 @@ ImporterViewer.prototype.FitInWindow = function ()
 ImporterViewer.prototype.AdjustClippingPlanes = function ()
 {
 	if (this.viewer.MeshCount () > 0) {
-		this.viewer.AdjustClippingPlanes (50);
+		this.viewer.AdjustClippingPlanes (50.0);
 	}
 };
 
