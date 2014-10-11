@@ -48,7 +48,8 @@ Main capabilities
 		<li>We can define our model with adding vertices and polygons manually.</li>
 		<li>We can use built-in generator functions to create basic shapes.</li>
 	</ul>
-	<li>Automatic exportation to STL and OBJ file format.</li>
+	<li>Model import from 3DS, OBJ and STL format.</li>
+	<li>Model export to OBJ and STL file format.</li>
 	<li>Automatic conversion of SVG files to 3D models.</li>
 	<li>Miscellaneous 2D and 3D geometry functions.</li>
 	<ul>
