@@ -1,10 +1,13 @@
 JSM.ImportFileList = function ()
 {
+	this.originalList = null;
 	this.descriptors = null;
+	this.type = null;
 };
 
-JSM.ImportFileList.prototype.Init = function (fileList)
+JSM.ImportFileList.prototype.InitFromFiles = function (fileList)
 {
+	this.originalList = fileList;
 	this.descriptors = [];
 	var i, file, descriptor;
 	for (i = 0; i < fileList.length; i++) {
@@ -17,11 +20,50 @@ JSM.ImportFileList.prototype.Init = function (fileList)
 		};
 		this.descriptors.push (descriptor);
 	}
+	this.type = 'file';
+};
+
+JSM.ImportFileList.prototype.InitFromURLs = function (urlList)
+{
+	function GetFileName (url)
+	{
+		var splitted = url.split ('/');
+		if (splitted.length === 0) {
+			return '';
+		}
+		return splitted[splitted.length - 1];
+	}
+
+	this.originalList = urlList;
+	this.descriptors = [];
+	var i, url, fileName, descriptor;
+	for (i = 0; i < urlList.length; i++) {
+		url = urlList[i];
+		fileName = GetFileName (url);
+		descriptor = {
+			originalObject : url,
+			originalFileName : fileName,
+			fileName : fileName.toUpperCase (),
+			extension : this.GetFileExtension (fileName)
+		};
+		this.descriptors.push (descriptor);
+	}
+	this.type = 'url';
+};
+
+JSM.ImportFileList.prototype.GetOriginalList = function (index)
+{
+	return this.originalList;
 };
 
 JSM.ImportFileList.prototype.GetFileDescriptor = function (index)
 {
 	return this.descriptors[index];
+};
+
+JSM.ImportFileList.prototype.GetType = function (index)
+{
+	return this.type;
 };
 
 JSM.ImportFileList.prototype.GetMainFileIndex = function (extension)
@@ -68,7 +110,7 @@ JSM.ImportFileList.prototype.GetFileExtension = function (fileName)
 	return extension;
 };
 
-JSM.ConvertFileListToJsonData = function (fileList, callbacks)
+JSM.ConvertImportFileListToJsonData = function (importFileList, callbacks)
 {
 	function OnError ()
 	{
@@ -82,10 +124,7 @@ JSM.ConvertFileListToJsonData = function (fileList, callbacks)
 		if (callbacks.onReady !== undefined && callbacks.onReady !== null) {
 			callbacks.onReady (fileNames, jsonData);
 		}
-	}	
-	
-	var importFileList = new JSM.ImportFileList ();
-	importFileList.Init (fileList);
+	}
 	
 	var mainFileIndex = importFileList.GetMainFileIndex ();
 	if (mainFileIndex === -1) {
@@ -100,13 +139,32 @@ JSM.ConvertFileListToJsonData = function (fileList, callbacks)
 		missing : []
 	};
 
+	var loaderFunctions = null;
+	var importType = importFileList.GetType ();
+	if (importType == 'file') {
+		loaderFunctions = {
+			getArrayBuffer : JSM.GetArrayBufferFromFile,
+			getStringBuffers : JSM.GetStringBuffersFromFileList
+		};
+	} else if (importType == 'url') {
+		loaderFunctions = {
+			getArrayBuffer : JSM.GetArrayBufferFromURL,
+			getStringBuffers : JSM.GetStringBuffersFromURLList
+		};
+	}
+	
+	if (loaderFunctions === null) {
+		OnError ();
+		return;
+	}
+	
 	if (mainFile.extension == '.3DS') {
-		JSM.GetArrayBufferFromFile (mainFile.originalObject, function (arrayBuffer) {
+		loaderFunctions.getArrayBuffer (mainFile.originalObject, function (arrayBuffer) {
 			var jsonData = JSM.Convert3dsToJsonData (arrayBuffer);
 			OnReady (fileNames, jsonData);
 		});
 	} else if (mainFile.extension == '.OBJ') {
-		JSM.GetStringBuffersFromFileList (fileList, function (stringBuffers) {
+		loaderFunctions.getStringBuffers (importFileList.GetOriginalList (), function (stringBuffers) {
 			var mainFileBuffer = stringBuffers[mainFileIndex];
 			var jsonData = JSM.ConvertObjToJsonData (mainFileBuffer, {
 				onFileRequested : function (fileName) {
@@ -122,9 +180,24 @@ JSM.ConvertFileListToJsonData = function (fileList, callbacks)
 			OnReady (fileNames, jsonData);
 		});
 	} else if (mainFile.extension == '.STL') {
-		JSM.GetArrayBufferFromFile (mainFile.originalObject, function (arrayBuffer) {
+		loaderFunctions.getArrayBuffer (mainFile.originalObject, function (arrayBuffer) {
 			var jsonData = JSM.ConvertStlToJsonData (arrayBuffer);
 			OnReady (fileNames, jsonData);
 		});
 	}
+	
+};
+
+JSM.ConvertFileListToJsonData = function (fileList, callbacks)
+{
+	var importFileList = new JSM.ImportFileList ();
+	importFileList.InitFromFiles (fileList);
+	JSM.ConvertImportFileListToJsonData (importFileList, callbacks);
+};
+
+JSM.ConvertURLListToJsonData = function (urlList, callbacks)
+{
+	var importFileList = new JSM.ImportFileList ();
+	importFileList.InitFromURLs (urlList);
+	JSM.ConvertImportFileListToJsonData (importFileList, callbacks);
 };
