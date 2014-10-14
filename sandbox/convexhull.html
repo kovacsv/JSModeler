@@ -111,7 +111,7 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
+			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
 			var bodyAndMaterials = GenerateBodyFromHull ();
 			//alert (JSM.ExportBodyToGdl (bodyAndMaterials[0]));

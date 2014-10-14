@@ -128,7 +128,7 @@ AddTest ('ViewerTest', function (test)
 	document.body.appendChild (canvas);
 	
 	var viewer = new JSM.ThreeViewer ();
-	var result = viewer.Start ('example', viewerSettings);
+	var result = viewer.Start (document.getElementById ('example'), viewerSettings);
 	test.Assert (result);
 	
 	var meshes = JSM.ConvertBodyToThreeMeshes (body);

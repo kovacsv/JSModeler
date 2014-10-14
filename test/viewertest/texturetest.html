@@ -139,7 +139,7 @@
 				};
 
 				viewer = new JSM.ThreeViewer ();
-				if (!viewer.Start ('test', viewerSettings)) {
+				if (!viewer.Start (document.getElementById ('test'), viewerSettings)) {
 					return;
 				}
 
@@ -152,7 +152,7 @@
 				);
 
 				viewer = new JSM.Viewer ();
-				if (!viewer.Init ('test', camera)) {
+				if (!viewer.Init (document.getElementById ('test'), camera)) {
 					return;
 				}
 

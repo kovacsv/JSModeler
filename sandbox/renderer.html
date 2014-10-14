@@ -102,7 +102,7 @@
 			);
 
 			renderer = new JSM.Renderer ();
-			if (!renderer.Init ('example', camera)) {
+			if (!renderer.Init (document.getElementById ('example'), camera)) {
 				alert ('error');
 			}
 

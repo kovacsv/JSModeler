@@ -162,7 +162,7 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			if (!viewer.Start ('test', viewerSettings)) {
+			if (!viewer.Start (document.getElementById ('test'), viewerSettings)) {
 				return;
 			}
 

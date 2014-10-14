@@ -112,31 +112,31 @@ JSM.ReadAsciiStlFile = function (stringBuffer, callbacks)
 	}
 };
 
-JSM.ConvertStlToJsonData = function (arrayBuffer)
+JSM.IsBinaryStlFile = function (arrayBuffer)
 {
-	function IsBinaryFile (arrayBuffer)
-	{
-		var byteLength = arrayBuffer.byteLength;
-		if (byteLength < 84) {
-			return false;
-		}
-		
-		var reader = new JSM.BinaryReader (arrayBuffer, true);
-		reader.Skip (80);
-		
-		var triangleCount = reader.ReadUnsignedInteger32 ();
-		if (byteLength != triangleCount * 50 + 84) {
-			return false;
-		}
-		
-		return true;
+	var byteLength = arrayBuffer.byteLength;
+	if (byteLength < 84) {
+		return false;
 	}
+	
+	var reader = new JSM.BinaryReader (arrayBuffer, true);
+	reader.Skip (80);
+	
+	var triangleCount = reader.ReadUnsignedInteger32 ();
+	if (byteLength != triangleCount * 50 + 84) {
+		return false;
+	}
+	
+	return true;
+};
 
+JSM.ConvertStlToJsonData = function (arrayBuffer, stringBuffer)
+{
 	var triangleModel = new JSM.TriangleModel ();
 	var index = triangleModel.AddBody (new JSM.TriangleBody ('Default'));
 	var currentBody = triangleModel.GetBody (index);
 
-	if (IsBinaryFile (arrayBuffer)) {
+	if (arrayBuffer !== null) {
 		JSM.ReadBinaryStlFile (arrayBuffer, {
 			onFace : function (v0, v1, v2, normal) {
 				var v0Index = currentBody.AddVertex (v0[0], v0[1], v0[2]);
@@ -147,8 +147,7 @@ JSM.ConvertStlToJsonData = function (arrayBuffer)
 				currentBody.AddTriangle (v0Index, v1Index, v2Index, normalIndex, normalIndex, normalIndex);
 			}
 		});
-	} else {
-		var stringBuffer = String.fromCharCode.apply (null, new Uint8Array(arrayBuffer));
+	} else if (stringBuffer !== null) {
 		JSM.ReadAsciiStlFile (stringBuffer, {
 			onFace : function (v0, v1, v2, normal) {
 				var v0Index = currentBody.AddVertex (v0[0], v0[1], v0[2]);

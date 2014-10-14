@@ -99,7 +99,7 @@
 				var light = new JSM.Light ({ambient : 0x7f7f7f, diffuse : 0x7f7f7f, specular : 0xffffff});
 
 				viewer = new JSM.Viewer ();
-				viewer.Init ('example', camera, light);
+				viewer.Init (document.getElementById ('example'), camera, light);
 				
 				var meshes = JSM.ConvertBodyToRenderGeometries (body, materials);
 				viewer.AddGeometries (meshes);
@@ -113,7 +113,7 @@
 				};
 
 				viewer = new JSM.ThreeViewer ();
-				viewer.Start ('example', viewerSettings);
+				viewer.Start (document.getElementById ('example'), viewerSettings);
 				
 				var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
 				for (var i = 0; i < meshes.length; i++) {

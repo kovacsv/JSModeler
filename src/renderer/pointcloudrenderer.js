@@ -9,9 +9,9 @@ JSM.PointCloudRenderer = function ()
 	this.pointSize = null;
 };
 
-JSM.PointCloudRenderer.prototype.Init = function (canvasName, camera)
+JSM.PointCloudRenderer.prototype.Init = function (canvas, camera)
 {
-	if (!this.InitContext (canvasName)) {
+	if (!this.InitContext (canvas)) {
 		return false;
 	}
 
@@ -30,13 +30,13 @@ JSM.PointCloudRenderer.prototype.Init = function (canvasName, camera)
 	return true;
 };
 
-JSM.PointCloudRenderer.prototype.InitContext = function (canvasName)
+JSM.PointCloudRenderer.prototype.InitContext = function (canvas)
 {
 	if (!window.WebGLRenderingContext) {
 		return false;
 	}
 
-	this.canvas = document.getElementById (canvasName);
+	this.canvas = canvas;
 	if (this.canvas === null) {
 		return false;
 	}

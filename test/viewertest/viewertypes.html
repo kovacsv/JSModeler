@@ -141,7 +141,7 @@
 				};
 
 				viewer = new JSM.ThreeViewer ();
-				if (!viewer.Start ('test', viewerSettings)) {
+				if (!viewer.Start (document.getElementById ('test'), viewerSettings)) {
 					alert ('error');
 				}
 
@@ -183,7 +183,7 @@
 				);
 
 				viewer = new JSM.Viewer ();
-				if (!viewer.Init ('test', camera)) {
+				if (!viewer.Init (document.getElementById ('test'), camera)) {
 					alert ('error');
 				}
 
@@ -224,7 +224,7 @@
 				);
 
 				viewer = new JSM.PointCloudViewer ();
-				if (!viewer.Init ('test', camera)) {
+				if (!viewer.Init (document.getElementById ('test'), camera)) {
 					alert ('error');
 				}
 				
@@ -253,7 +253,7 @@
 				);
 
 				viewer = new JSM.SoftwareViewer ();
-				if (!viewer.Start ('test', camera)) {
+				if (!viewer.Start (document.getElementById ('test'), camera)) {
 					alert ('error');
 				}
 				viewer.drawMode = 'HiddenLineFrontFacing';
@@ -279,7 +279,7 @@
 				);
 
 				viewer = new JSM.SoftwareViewer ();
-				if (!viewer.Start ('test', camera)) {
+				if (!viewer.Start (document.getElementById ('test'), camera)) {
 					alert ('error');
 				}
 				viewer.drawMode = 'HiddenLineFrontFacing';
@@ -340,7 +340,7 @@
 				);
 
 				viewer = new JSM.SpriteViewer ();
-				var success = viewer.Start ('test', camera, viewerCallbacks);
+				var success = viewer.Start (document.getElementById ('test'), camera, viewerCallbacks);
 
 				viewer.AddPoint (new JSM.Coord (-0.5, -0.5, -0.5));
 				viewer.AddPoint (new JSM.Coord (0.5, -0.5, -0.5));

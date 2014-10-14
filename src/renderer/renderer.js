@@ -164,9 +164,9 @@ JSM.Renderer = function ()
 	this.geometries = null;
 };
 
-JSM.Renderer.prototype.Init = function (canvasName, camera, light)
+JSM.Renderer.prototype.Init = function (canvas, camera, light)
 {
-	if (!this.InitContext (canvasName)) {
+	if (!this.InitContext (canvas)) {
 		return false;
 	}
 
@@ -185,13 +185,13 @@ JSM.Renderer.prototype.Init = function (canvasName, camera, light)
 	return true;
 };
 
-JSM.Renderer.prototype.InitContext = function (canvasName)
+JSM.Renderer.prototype.InitContext = function (canvas)
 {
 	if (!window.WebGLRenderingContext) {
 		return false;
 	}
 
-	this.canvas = document.getElementById (canvasName);
+	this.canvas = canvas;
 	if (this.canvas === null) {
 		return false;
 	}

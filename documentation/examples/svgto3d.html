@@ -52,7 +52,7 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			if (!viewer.Start ('svgcanvas', viewerSettings)) {
+			if (!viewer.Start (document.getElementById ('svgcanvas'), viewerSettings)) {
 				viewer = null;
 			} else {
 				viewer.navigation.EnablePan (false);

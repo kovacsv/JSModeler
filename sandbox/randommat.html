@@ -92,7 +92,7 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
+			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
 			var body = JSM.GenerateSegmentedRectangle (1, 1, 3, 5);
 			var materials = new JSM.Materials ();

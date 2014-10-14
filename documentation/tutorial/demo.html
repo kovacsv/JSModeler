@@ -230,7 +230,8 @@
 			Resize ();
 
 			viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
+			var canvas = document.getElementById ('example');
+			viewer.Start (canvas, viewerSettings);
 
 			RunHash ();
 		}

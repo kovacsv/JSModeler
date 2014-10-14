@@ -8,9 +8,9 @@ JSM.SpriteViewer = function ()
 	this.navigation = null;
 };
 
-JSM.SpriteViewer.prototype.Start = function (canvasName, camera, callbacks)
+JSM.SpriteViewer.prototype.Start = function (canvas, camera, callbacks)
 {
-	if (!this.InitCanvas (canvasName)) {
+	if (!this.InitCanvas (canvas)) {
 		return false;
 	}
 
@@ -25,10 +25,10 @@ JSM.SpriteViewer.prototype.Start = function (canvasName, camera, callbacks)
 	return true;
 };
 
-JSM.SpriteViewer.prototype.InitCanvas = function (canvasName)
+JSM.SpriteViewer.prototype.InitCanvas = function (canvas)
 {
 	this.points = [];
-	this.canvas = document.getElementById (canvasName);
+	this.canvas = canvas;
 	if (!this.canvas) {
 		return false;
 	}

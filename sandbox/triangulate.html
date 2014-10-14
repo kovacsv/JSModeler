@@ -92,7 +92,7 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
+			viewer.Start (document.getElementById ('example'), viewerSettings);
 
 			var body = new JSM.GenerateCylinder (0.5, 1.0, 20, true, true);
 			body = JSM.TriangulatePolygons (body);

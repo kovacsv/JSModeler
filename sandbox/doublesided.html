@@ -104,7 +104,7 @@
 			var light = new JSM.Light ();
 			
 			viewer = new JSM.Viewer ();
-			if (!viewer.Init ('example', camera, light)) {
+			if (!viewer.Init (document.getElementById ('example'), camera, light)) {
 				alert ('error');
 			}
 

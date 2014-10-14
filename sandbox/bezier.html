@@ -294,7 +294,7 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
+			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
 			document.addEventListener ('mousemove', OnMouseMove, false);
 			document.addEventListener ('mouseup', OnMouseUp);

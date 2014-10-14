@@ -148,7 +148,7 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			if (!viewer.Start ('example', viewerSettings)) {
+			if (!viewer.Start (document.getElementById ('example'), viewerSettings)) {
 				alert ('Viewer initialization failed.');
 				return;
 			}

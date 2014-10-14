@@ -17,7 +17,7 @@ JSM.ThreeViewer = function ()
 	this.enableDraw = null;
 };
 
-JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
+JSM.ThreeViewer.prototype.Start = function (canvas, settings)
 {
 	if (!this.IsWebGLEnabled ()) {
 		return false;
@@ -27,7 +27,7 @@ JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
 		return false;
 	}
 	
-	if (!this.InitThree (canvasName)) {
+	if (!this.InitThree (canvas)) {
 		return false;
 	}
 
@@ -79,9 +79,9 @@ JSM.ThreeViewer.prototype.InitSettings = function (settings)
 	return true;
 };
 
-JSM.ThreeViewer.prototype.InitThree = function (canvasName)
+JSM.ThreeViewer.prototype.InitThree = function (canvas)
 {
-	this.canvas = document.getElementById (canvasName);
+	this.canvas = canvas;
 	if (!this.canvas || !this.canvas.getContext) {
 		return false;
 	}

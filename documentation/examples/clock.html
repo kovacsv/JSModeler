@@ -84,7 +84,7 @@
 			Resize ();
 
 			viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
+			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
 			var modelAndMaterials = JSM.GenerateClock (1.0, 100);
 			

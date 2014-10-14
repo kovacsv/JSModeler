@@ -172,7 +172,7 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
+			viewer.Start (document.getElementById ('example'), viewerSettings);
 			viewer.navigation.EnableZoom (false);
 			viewer.navigation.EnablePan (false);
 			
