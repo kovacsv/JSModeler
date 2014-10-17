@@ -166,6 +166,10 @@ JSM.Renderer = function ()
 
 JSM.Renderer.prototype.Init = function (canvas, camera, light)
 {
+	if (!JSM.IsWebGLEnabled ()) {
+		return false;
+	}
+
 	if (!this.InitContext (canvas)) {
 		return false;
 	}
@@ -187,10 +191,6 @@ JSM.Renderer.prototype.Init = function (canvas, camera, light)
 
 JSM.Renderer.prototype.InitContext = function (canvas)
 {
-	if (!window.WebGLRenderingContext) {
-		return false;
-	}
-
 	this.canvas = canvas;
 	if (this.canvas === null) {
 		return false;

@@ -19,7 +19,7 @@ JSM.ThreeViewer = function ()
 
 JSM.ThreeViewer.prototype.Start = function (canvas, settings)
 {
-	if (!this.IsWebGLEnabled ()) {
+	if (!JSM.IsWebGLEnabled ()) {
 		return false;
 	}
 
@@ -42,19 +42,6 @@ JSM.ThreeViewer.prototype.Start = function (canvas, settings)
 	this.drawLoop = false;
 	this.enableDraw = true;
 	this.DrawIfNeeded ();
-	return true;
-};
-
-JSM.ThreeViewer.prototype.IsWebGLEnabled = function ()
-{
-	if (!window.WebGLRenderingContext) {
-		return false;
-	}
-
-	if (!document.createElement ('canvas').getContext ('experimental-webgl')) {
-		return false;
-	}
-
 	return true;
 };
 

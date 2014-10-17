@@ -193,6 +193,18 @@
 						["timeout", "integer", "the timeout between runs"],
 						["userData", "anything", "task specific data"]
 					]
+				},
+				"IsWebGLEnabled" : {
+					"description" : "Returns if WebGL is enabled in the browser.",
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsFileApiEnabled" : {
+					"description" : "Returns if file api is enabled in the browser.",
+					"returns" : [
+						["boolean", "the result"]
+					]
 				}
 			},
 			"classes" : {

@@ -11,6 +11,10 @@ JSM.PointCloudRenderer = function ()
 
 JSM.PointCloudRenderer.prototype.Init = function (canvas, camera)
 {
+	if (!JSM.IsWebGLEnabled ()) {
+		return false;
+	}
+
 	if (!this.InitContext (canvas)) {
 		return false;
 	}
@@ -32,10 +36,6 @@ JSM.PointCloudRenderer.prototype.Init = function (canvas, camera)
 
 JSM.PointCloudRenderer.prototype.InitContext = function (canvas)
 {
-	if (!window.WebGLRenderingContext) {
-		return false;
-	}
-
 	this.canvas = canvas;
 	if (this.canvas === null) {
 		return false;
