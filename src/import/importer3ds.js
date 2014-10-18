@@ -862,7 +862,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)
 				if (shininess === undefined || shininess === null) {
 					return 0.0;
 				}
-				return parseInt (shininess * 100, 10);
+				return shininess;
 			}
 			
 			var hasTexture = false;
