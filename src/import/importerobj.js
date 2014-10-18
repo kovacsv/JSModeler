@@ -14,6 +14,20 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 		}
 	}
 
+	function OnMaterialParameter (name, value)
+	{
+		if (callbacks.onMaterialParameter !== undefined && callbacks.onMaterialParameter !== null) {
+			callbacks.onMaterialParameter (name, value);
+		}
+	}
+
+	function OnMaterialTexture (textureName)
+	{
+		if (callbacks.onMaterialTexture !== undefined && callbacks.onMaterialTexture !== null) {
+			callbacks.onMaterialTexture (textureName);
+		}
+	}
+	
 	function OnUseMaterial (name)
 	{
 		if (callbacks.onUseMaterial !== undefined && callbacks.onUseMaterial !== null) {
@@ -42,10 +56,17 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 		}
 	}
 
-	function OnFace (vertices, normals)
+	function OnTexCoord (x, y)
+	{
+		if (callbacks.onTexCoord !== undefined && callbacks.onTexCoord !== null) {
+			callbacks.onTexCoord (x, y);
+		}
+	}
+
+	function OnFace (vertices, normals, uvs)
 	{
 		if (callbacks.onFace !== undefined && callbacks.onFace !== null) {
-			callbacks.onFace (vertices, normals);
+			callbacks.onFace (vertices, normals, uvs);
 		}
 	}
 
@@ -102,6 +123,11 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 				return;
 			}
 			OnNormal (parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3]));
+		} else if (lineParts[0] == 'vt') {
+			if (lineParts.length < 3) {
+				return;
+			}
+			OnTexCoord (parseFloat (lineParts[1]), parseFloat (lineParts[2]));
 		} else if (lineParts[0] == 'f') {
 			if (lineParts.length < 4) {
 				return;
@@ -109,16 +135,20 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 			
 			var vertices = [];
 			var normals = [];
+			var uvs = [];
 			
 			var partSplitted;
 			for (i = 1; i < lineParts.length; i++) {
 				partSplitted = lineParts[i].split ('/');
 				vertices.push (parseInt (partSplitted[0], 10) - 1);
+				if (partSplitted.length > 1 && partSplitted[1].length > 0) {
+					uvs.push (parseInt (partSplitted[1], 10) - 1);
+				}
 				if (partSplitted.length > 2 && partSplitted[2].length > 0) {
 					normals.push (parseInt (partSplitted[2], 10) - 1);
 				}
 			}
-			OnFace (vertices, normals);
+			OnFace (vertices, normals, uvs);
 		} else if (lineParts[0] == 'usemtl') {
 			if (lineParts.length < 2) {
 				return;
@@ -137,12 +167,19 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 			}
 			
 			OnMaterialComponent (lineParts[0], parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3]));
-		} else if (lineParts[0] == 'Ka' || lineParts[0] == 'Kd' || lineParts[0] == 'Ks') {
-			if (lineParts.length < 4) {
+		} else if (lineParts[0] == 'Ns' || lineParts[0] == 'Tr' || lineParts[0] == 'd') {
+			if (lineParts.length < 2) {
 				return;
 			}
 			
-			OnMaterialComponent (lineParts[0], parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3]));
+			OnMaterialParameter (lineParts[0], lineParts[1]);
+		} else if (lineParts[0] == 'map_Kd') {
+			if (lineParts.length < 2) {
+				return;
+			}
+			
+			fileName = GetFileName (line, 'map_Kd');
+			OnMaterialTexture (fileName);
 		} else if (lineParts[0] == 'mtllib') {
 			if (lineParts.length < 2) {
 				return;
@@ -198,17 +235,20 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 				result = body.AddVertex (coordinate.x, coordinate.y, coordinate.z);
 			} else if (mode === 1) {
 				result = body.AddNormal (coordinate.x, coordinate.y, coordinate.z);
+			} else if (mode === 2) {
+				result = body.AddUV (coordinate.x, coordinate.y);
 			}
 			globalToLocal[globalIndex] = result;
 			return result;
 		}
 	
 		var i, j, body, triangle;
-		var globalToLocalVertices, globalToLocalNormals;
+		var globalToLocalVertices, globalToLocalNormals, globalToLocalUVs;
 		for (i = 0; i < triangleModel.BodyCount (); i++) {
 			body = triangleModel.GetBody (i);
 			globalToLocalVertices = {};
 			globalToLocalNormals = {};
+			globalToLocalUVs = {};
 			for (j = 0; j < body.TriangleCount (); j++) {
 				triangle = body.GetTriangle (j);
 				triangle.v0 = GetLocalIndex (body, globalVertices, triangle.v0, globalToLocalVertices, 0);
@@ -217,6 +257,9 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 				triangle.n0 = GetLocalIndex (body, globalNormals, triangle.n0, globalToLocalNormals, 1);
 				triangle.n1 = GetLocalIndex (body, globalNormals, triangle.n1, globalToLocalNormals, 1);
 				triangle.n2 = GetLocalIndex (body, globalNormals, triangle.n2, globalToLocalNormals, 1);
+				triangle.u0 = GetLocalIndex (body, globalUVs, triangle.u0, globalToLocalUVs, 2);
+				triangle.u1 = GetLocalIndex (body, globalUVs, triangle.u1, globalToLocalUVs, 2);
+				triangle.u2 = GetLocalIndex (body, globalUVs, triangle.u2, globalToLocalUVs, 2);
 			}
 		}
 	}
@@ -231,6 +274,7 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 	
 	var globalVertices = [];
 	var globalNormals = [];
+	var globalUVs = [];
 	
 	JSM.ReadObjFile (stringBuffer, {
 		onNewMaterial : function (name) {
@@ -239,7 +283,12 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 				{r : 1.0, g : 0.0, b : 0.0},
 				{r : 1.0, g : 0.0, b : 0.0},
 				{r : 0.0, g : 0.0, b : 0.0},
-				1.0
+				0.0,
+				1.0,
+				null,
+				null,
+				null,
+				null
 			);
 			currentMaterial = triangleModel.GetMaterial (index);
 			materialNameToIndex[name] = index;
@@ -263,6 +312,30 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 				SetMaterialColor (currentMaterial.specular, red, green, blue);
 			}
 		},
+		onMaterialParameter : function (name, value) {
+			if (currentMaterial === null) {
+				return;
+			}
+			if (name == 'Ns') {
+				currentMaterial.shininess = parseInt (value / 10, 10);
+			} else if (name == 'Tr' || name == 'd') {
+				currentMaterial.opacity = parseFloat (value);
+			}			
+		},
+		onMaterialTexture : function (textureName) {
+			if (currentMaterial === null) {
+				return;
+			}
+
+			var textureBuffer = OnFileRequested (textureName);
+			if (textureBuffer === null) {
+				return;
+			}
+			
+			var blob = new window.Blob ([textureBuffer]);
+			var blobURL = window.URL.createObjectURL (blob);
+			currentMaterial.texture = blobURL;
+		},
 		onUseMaterial : function (name) {
 			var materialIndex = materialNameToIndex[name];
 			if (materialIndex !== undefined) {
@@ -279,9 +352,13 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 		onNormal : function (x, y, z) {
 			globalNormals.push (new JSM.Coord (x, y, z));
 		},
-		onFace : function (vertices, normals) {
+		onTexCoord : function (x, y) {
+			globalUVs.push (new JSM.Coord2D (x, y));
+		},
+		onFace : function (vertices, normals, uvs) {
 			var i, triangle, triangleIndex;
-			var hasNormals = (vertices.length == normals.length);
+			var hasNormals = (normals.length == vertices.length);
+			var hasUVs = (uvs.length == vertices.length);
 			var count = vertices.length;
 			for (i = 0; i < count - 2; i++) {
 				triangleIndex = currentBody.AddTriangle (vertices[0], vertices[(i + 1) % count], vertices[(i + 2) % count]);
@@ -291,6 +368,11 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 					triangle.n1 = normals[(i + 1) % count];
 					triangle.n2 = normals[(i + 2) % count];
 				}
+				if (hasUVs) {
+					triangle.u0 = uvs[0];
+					triangle.u1 = uvs[(i + 1) % count];
+					triangle.u2 = uvs[(i + 2) % count];
+				}
 				if (currentMaterialIndex !== null) {
 					triangle.mat = currentMaterialIndex;
 				}
@@ -299,7 +381,7 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 		onFileRequested : OnFileRequested
 	});
 
-	FinalizeBodyVertices (triangleModel, globalVertices, globalNormals);
+	FinalizeBodyVertices (triangleModel, globalVertices, globalNormals, globalUVs);
 	triangleModel.Finalize ();
 	
 	var jsonData = JSM.ConvertTriangleModelToJsonData (triangleModel);

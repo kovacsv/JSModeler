@@ -30,7 +30,7 @@ JSM.IsWebGLEnabled = function (value)
 */
 JSM.IsFileApiEnabled = function (value)
 {
-	if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+	if (!window.File || !window.FileReader || !window.FileList || !window.Blob || !window.URL) {
 		return false;
 	}
 	

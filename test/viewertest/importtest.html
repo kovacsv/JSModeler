@@ -91,7 +91,9 @@
 					return;
 				},
 				onReady : function (fileNames, jsonData) {
-					var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
+					var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData, function () {
+						viewer.Draw ();
+					});
 					for (var i = 0; i < meshes.length; i++) {
 						viewer.AddMesh (meshes[i]);
 					}
@@ -144,9 +146,11 @@
 			<a class="button" href="javascript:LoadFile (['testfiles/cube.3ds'])">cube.3ds</a>
 			<a class="button" href="javascript:LoadFile (['testfiles/objects.3ds'])">objects.3ds</a>
 			<a class="button" href="javascript:LoadFile (['testfiles/complex.3ds'])">complex.3ds</a>
+			<a class="button" href="javascript:LoadFile (['testfiles/texturedcube.3ds', 'testfiles/_1.png'])">texturedcube.3ds</a>
 			<a class="button" href="javascript:LoadFile (['testfiles/cubeobj.obj', 'testfiles/cubeobj.mtl'])">cubeobj.obj</a>
 			<a class="button" href="javascript:LoadFile (['testfiles/meshesobj.obj', 'testfiles/meshesobj.mtl'])">meshesobj.obj</a>
-			<a class="button" href="javascript:LoadFile (['testfiles/texturedcube.obj', 'testfiles/texturedcube.mtl'])">texturedcube.obj</a>
+			<a class="button" href="javascript:LoadFile (['testfiles/texturedcube.obj', 'testfiles/texturedcube.mtl', 'testfiles/texture.png'])">texturedcube.obj</a>
+			<a class="button" href="javascript:LoadFile (['testfiles/texturedcube2.obj', 'testfiles/texturedcube2.mtl', 'testfiles/texture2.png'])">texturedcube2.obj</a>
 			<a class="button" href="javascript:LoadFile (['testfiles/objects_ascii.stl'])">objects_ascii.stl</a>
 			<a class="button" href="javascript:LoadFile (['testfiles/objects_binary.stl'])">objects_binary.stl</a>
 		</div>

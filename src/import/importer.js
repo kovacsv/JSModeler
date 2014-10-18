@@ -56,7 +56,7 @@ JSM.GetStringBufferFromFile = function (file, onReady)
 	reader.readAsText (file);
 };
 
-JSM.LoadMultipleBuffers = function (inputList, result, index, loaderFunction, onReady)
+JSM.LoadMultipleBuffersInternal = function (inputList, index, result, onReady)
 {
 	if (index >= inputList.length) {
 		onReady (result);
@@ -64,24 +64,31 @@ JSM.LoadMultipleBuffers = function (inputList, result, index, loaderFunction, on
 	}
 	
 	var currentInput = inputList[index];
-	loaderFunction (currentInput, function (resultBuffer) {
+	var loaderFunction = null;
+	if (currentInput.isFile) {
+		if (currentInput.isArrayBuffer) {
+			loaderFunction = JSM.GetArrayBufferFromFile;
+		} else {
+			loaderFunction = JSM.GetStringBufferFromFile;
+		}
+	} else {
+		if (currentInput.isArrayBuffer) {
+			loaderFunction = JSM.GetArrayBufferFromURL;
+		} else {
+			loaderFunction = JSM.GetStringBufferFromURL;
+		}
+	}
+	
+	loaderFunction (currentInput.originalObject, function (resultBuffer) {
 		result.push (resultBuffer);
-		JSM.LoadMultipleBuffers (inputList, result, index + 1, loaderFunction, onReady);
+		JSM.LoadMultipleBuffersInternal (inputList, index + 1, result, onReady);
 	});
 };
 
-JSM.GetStringBuffersFromURLList = function (urlList, onReady)
+JSM.LoadMultipleBuffers = function (inputList, onReady)
 {
 	var result = [];
-	JSM.LoadMultipleBuffers (urlList, result, 0, JSM.GetStringBufferFromURL, function (result) {
-		onReady (result);
-	});
-};
-
-JSM.GetStringBuffersFromFileList = function (fileList, onReady)
-{
-	var result = [];
-	JSM.LoadMultipleBuffers (fileList, result, 0, JSM.GetStringBufferFromFile, function (result) {
+	JSM.LoadMultipleBuffersInternal (inputList, 0, result, function (result) {
 		onReady (result);
 	});
 };
@@ -92,9 +99,20 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 	{
 		function ColorToArray (color)
 		{
+			if (color === undefined || color === null) {
+				return [0.0, 0.0, 0.0];
+			}
 			return [color.r, color.g, color.b];
 		}
 	
+		function CoordToArray (coord, defaultValue)
+		{
+			if (coord === undefined || coord === null) {
+				return defaultValue;
+			}
+			return [coord.x, coord.y];
+		}
+
 		var i, material;
 		for (i = 0; i < model.MaterialCount (); i++) {
 			material = model.GetMaterial (i);
@@ -103,7 +121,12 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 				ambient : ColorToArray (material.ambient),
 				diffuse : ColorToArray (material.diffuse),
 				specular : ColorToArray (material.specular),
-				opacity : material.opacity
+				shininess : material.shininess,
+				opacity : material.opacity,
+				texture : material.texture,
+				offset : CoordToArray (material.offset, [0.0, 0.0]),
+				scale : CoordToArray (material.scale, [1.0, 1.0]),
+				rotation : material.rotation
 			});
 		}
 	}
@@ -124,7 +147,10 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 			mesh.normals.push (coord.x, coord.y, coord.z);
 		}
 
-		mesh.uvs.push (0.0, 0.0);
+		for (i = 0; i < body.UVCount (); i++) {
+			coord = body.GetUV (i);
+			mesh.uvs.push (coord.x, coord.y);
+		}
 		
 		for (i = 0; i < materialCount; i++) {
 			trianglesByMaterial.push ([]);
@@ -156,7 +182,7 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 				jsonTriangles.parameters.push (
 					triangle.v0, triangle.v1, triangle.v2,
 					triangle.n0, triangle.n1, triangle.n2,
-					0, 0, 0
+					triangle.u0, triangle.u1, triangle.u2
 				);
 			}
 			triangleCount = triangleCount + triangles.length;

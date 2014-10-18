@@ -3,7 +3,9 @@ JSM.TriangleBody = function (name)
 	this.name = name;
 	this.vertices = [];
 	this.normals = [];
+	this.uvs = [];
 	this.triangles = [];
+	this.defaultUVIndex = -1;
 };
 
 JSM.TriangleBody.prototype.SetName = function (name)
@@ -51,6 +53,32 @@ JSM.TriangleBody.prototype.GetNormal = function (index)
 JSM.TriangleBody.prototype.NormalCount = function ()
 {
 	return this.normals.length;
+};
+
+JSM.TriangleBody.prototype.AddUV = function (x, y)
+{
+	this.uvs.push (new JSM.Coord2D (x, y));
+	return this.uvs.length - 1;
+};
+
+JSM.TriangleBody.prototype.AddDefaultUV = function ()
+{
+	if (this.defaultUVIndex != -1) {
+		return this.defaultUVIndex;
+	}
+	
+	this.defaultUVIndex = this.AddUV (0.0, 0.0);
+	return this.defaultUVIndex;
+};
+
+JSM.TriangleBody.prototype.GetUV = function (index)
+{
+	return this.uvs[index];
+};
+
+JSM.TriangleBody.prototype.UVCount = function ()
+{
+	return this.uvs.length;
 };
 
 JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, u0, u1, u2, mat, curve)
@@ -126,6 +154,12 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 				triangle.n2 = AddAverageNormal (body, triangle.v2, triangleIndex, triangleNormals, vertexToTriangles);
 			}
 		}
+		
+		if (triangle.u0 === undefined || triangle.u1 === undefined || triangle.u2 === undefined) {
+			triangle.u0 = body.AddDefaultUV ();
+			triangle.u1 = body.AddDefaultUV ();
+			triangle.u2 = body.AddDefaultUV ();
+		}
 	}
 
 	var triangleNormals = [];
@@ -165,6 +199,10 @@ JSM.TriangleBody.prototype.Clone = function ()
 		result.normals.push (this.normals[i].Clone ());
 	}
 	
+	for (i = 0; i < this.uvs.length; i++) {
+		result.uvs.push (this.uvs[i].Clone ());
+	}
+	
 	for (i = 0; i < this.triangles.length; i++) {
 		triangle = this.triangles[i];
 		result.triangles.push ({
@@ -192,14 +230,19 @@ JSM.TriangleModel = function ()
 	this.defaultMaterial = -1;
 };
 
-JSM.TriangleModel.prototype.AddMaterial = function (name, ambient, diffuse, specular, opacity)
+JSM.TriangleModel.prototype.AddMaterial = function (name, ambient, diffuse, specular, shininess, opacity, texture, offset, scale, rotation)
 {
 	this.materials.push ({
 		name : name,
 		ambient : ambient,
 		diffuse : diffuse,
 		specular : specular,
-		opacity : opacity
+		shininess : shininess,
+		opacity : opacity,
+		texture : texture,
+		offset : offset,
+		scale : scale,
+		rotation : rotation
 	});
 	return this.materials.length - 1;
 };
@@ -217,7 +260,12 @@ JSM.TriangleModel.prototype.AddDefaultMaterial = function ()
 			ambient : {r : 0.5, g : 0.5, b : 0.5},
 			diffuse : {r : 0.5, g : 0.5, b : 0.5},
 			specular : {r : 0.1, g : 0.1, b : 0.1},
-			opacity : 1.0
+			shininess : 0,
+			opacity : 1.0,
+			texture : null,
+			offset : null,
+			scale : null,
+			rotation : null
 		});
 		this.defaultMaterial = this.materials.length - 1;
 	}

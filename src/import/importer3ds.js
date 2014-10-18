@@ -42,6 +42,13 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		}
 	}
 
+	function OnTextureVertex (x, y)
+	{
+		if (callbacks.onTextureVertex !== undefined && callbacks.onTextureVertex !== null) {
+			callbacks.onTextureVertex (x, y);
+		}
+	}
+
 	function OnFace (v0, v1, v2, flags)
 	{
 		if (callbacks.onFace !== undefined && callbacks.onFace !== null) {
@@ -61,6 +68,14 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		if (callbacks.onFaceSmoothingGroup !== undefined && callbacks.onFaceSmoothingGroup !== null) {
 			callbacks.onFaceSmoothingGroup (faceIndex, smoothingGroup);
 		}
+	}
+
+	function OnFileRequested (fileName)
+	{
+		if (callbacks.onFileRequested !== undefined && callbacks.onFileRequested !== null) {
+			return callbacks.onFileRequested (fileName);
+		}
+		return null;
 	}
 
 	function ReadChunk (reader, onReady)
@@ -117,7 +132,11 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 	{
 		function ReadColorChunk (reader, id, length)
 		{
-			var color = {};
+			var color = {
+				r : 0.0,
+				g : 0.0,
+				b : 0.0
+			};
 			var endByte = GetChunkEnd (reader, length);
 			var hasLinColor = false;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
@@ -166,6 +185,35 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			return percentage;
 		}
 
+		function ReadTextureMapChunk (reader, id, length)
+		{
+			var textureMap = {
+				name : null,
+				offset : {x : 0.0, y : 0.0},
+				scale :  {x : 0.0, y : 0.0},
+				rotation : 0.0
+			};
+			var endByte = GetChunkEnd (reader, length);
+			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+				if (chunkId == chunks.MAT_TEXMAP_NAME) {
+					textureMap.name = ReadName (reader);
+				} else if (chunkId == chunks.MAT_TEXMAP_UOFFSET) {
+					textureMap.offset.x = reader.ReadFloat32 ();
+				} else if (chunkId == chunks.MAT_TEXMAP_VOFFSET) {
+					textureMap.offset.y = reader.ReadFloat32 ();
+				} else if (chunkId == chunks.MAT_TEXMAP_USCALE) {
+					textureMap.scale.x = reader.ReadFloat32 ();
+				} else if (chunkId == chunks.MAT_TEXMAP_VSCALE) {
+					textureMap.scale.y = reader.ReadFloat32 ();
+				} else if (chunkId == chunks.MAT_TEXMAP_ROTATION) {
+					textureMap.rotation = reader.ReadFloat32 ();
+				} else {
+					SkipChunk (reader, chunkLength);
+				}
+			});
+			return textureMap;
+		}
+
 		function ReadMaterialChunk (reader, id, length)
 		{
 			OnLog ('Read material chunk (' + id.toString (16) + ', ' + length + ')', 2);
@@ -191,6 +239,9 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				} else if (chunkId == chunks.MAT_TRANSPARENCY) {
 					OnLog ('Read material transparency chunk (' + id.toString (16) + ', ' + length + ')', 3);
 					material.transparency = ReadPercentageChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == chunks.MAT_TEXMAP) {
+					OnLog ('Read material texture map chunk (' + id.toString (16) + ', ' + length + ')', 3);
+					material.textureMap = ReadTextureMapChunk (reader, chunkId, chunkLength);
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 3);
 					SkipChunk (reader, chunkLength);
@@ -211,6 +262,19 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				y = reader.ReadFloat32 ();
 				z = reader.ReadFloat32 ();
 				OnVertex (x, y, z);
+			}
+		}
+
+		function ReadTextureVerticesChunk (reader, id, length)
+		{
+			OnLog ('Read texture vertices chunk (' + id.toString (16) + ', ' + length + ')', 4);
+			
+			var texVertexCount = reader.ReadUnsignedInteger16 ();
+			var i, x, y;
+			for (i = 0; i < texVertexCount; i++) {
+				x = reader.ReadFloat32 ();
+				y = reader.ReadFloat32 ();
+				OnTextureVertex (x, y);
 			}
 		}
 
@@ -291,9 +355,11 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			OnMesh (objectName);
 			var endByte = GetChunkEnd (reader, length);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
-				if (chunkId == chunks.TRI_VERTEXL) {
+				if (chunkId == chunks.TRI_VERTEX) {
 					ReadVerticesChunk (reader, chunkId, chunkLength);
-				} else if (chunkId == chunks.TRI_FACEL1) {
+				} else if (chunkId == chunks.TRI_TEXVERTEX) {
+					ReadTextureVerticesChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == chunks.TRI_FACE) {
 					ReadFacesChunk (reader, chunkId, chunkLength);
 				} else if (chunkId == chunks.TRI_TRANSFORMATION) {
 					ReadTransformationChunk (reader, chunkId, chunkLength);
@@ -482,14 +548,22 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		MAT_COLOR : 0x0011,
 		MAT_LIN_COLOR : 0x0012,
 		MAT_LIN_COLOR_F : 0x0013,
+		MAT_TEXMAP : 0xA200,
+		MAT_TEXMAP_NAME : 0xA300,
+		MAT_TEXMAP_UOFFSET : 0xA358,
+		MAT_TEXMAP_VOFFSET : 0xA35A,
+		MAT_TEXMAP_USCALE : 0xA354,
+		MAT_TEXMAP_VSCALE : 0xA356,
+		MAT_TEXMAP_ROTATION : 0xA35C,
 		PERCENTAGE : 0x0030,
 		PERCENTAGE_F : 0x0031,
 		EDIT_OBJECT : 0x4000,
 		OBJ_TRIMESH : 0x4100,
 		OBJ_LIGHT : 0x4600,
 		OBJ_CAMERA : 0x4700,
-		TRI_VERTEXL : 0x4110,
-		TRI_FACEL1 : 0x4120,
+		TRI_VERTEX : 0x4110,
+		TRI_TEXVERTEX : 0x4140,
+		TRI_FACE : 0x4120,
 		TRI_TRANSFORMATION : 0x4160,
 		TRI_MATERIAL : 0x4130,
 		TRI_SMOOTH : 0x4150,
@@ -507,8 +581,16 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 	ReadFile (reader);
 };
 
-JSM.Convert3dsToJsonData = function (arrayBuffer)
+JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)
 {
+	function OnFileRequested (fileName)
+	{
+		if (callbacks.onFileRequested !== undefined && callbacks.onFileRequested !== null) {
+			return callbacks.onFileRequested (fileName);
+		}
+		return null;
+	}
+
 	function FinalizeMeshes (nodeHierarcy, triangleModel, materialNameToIndex)
 	{
 		function ApplyTransformation (body, node, nodeHierarcy)
@@ -681,10 +763,16 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 
 		function FinalizeMaterials (body, materialNameToIndex)
 		{
+			var hasTextureCoordinates = (body.UVCount () == body.VertexCount ());
 			var currentMeshData = body.meshData;
 			var i, triangle, materialName, materialIndex, smoothingGroup;
 			for (i = 0; i < body.TriangleCount (); i++) {
 				triangle = body.GetTriangle (i);
+				if (hasTextureCoordinates) {
+					triangle.u0 = triangle.v0;
+					triangle.u1 = triangle.v1;
+					triangle.u2 = triangle.v2;
+				}
 				
 				materialName = currentMeshData.faceToMaterial[i];
 				if (materialName !== undefined) {
@@ -700,7 +788,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				}
 			}
 		}
-		
+
 		function FinalizeMesh (body, node, materialNameToIndex, nodeHierarcy)
 		{
 			ApplyTransformation (body, node, nodeHierarcy);
@@ -769,14 +857,47 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				return 1.0 - transparency;
 			}
 			
+			function GetShininess (shininess)
+			{
+				if (shininess === undefined || shininess === null) {
+					return 0.0;
+				}
+				return parseInt (shininess * 100, 10);
+			}
+			
+			var hasTexture = false;
+			if (material.textureMap !== undefined && material.textureMap !== null) {
+				var textureBuffer = OnFileRequested (material.textureMap.name);
+				if (textureBuffer !== null) {
+					var blob = new window.Blob ([textureBuffer]);
+					var blobURL = window.URL.createObjectURL (blob);
+					material.textureMap.name = blobURL;
+					hasTexture = true;
+				}
+			}
+			
+			if (!hasTexture) {
+				material.textureMap = {
+					name : null,
+					offset : null,
+					scale : null,
+					rotation : null
+				};
+			}
+			
 			var index = triangleModel.AddMaterial (
 				material.name,
 				GetColor (material.ambient),
 				GetColor (material.diffuse),
 				GetColor (material.specular),
-				GetOpacity (material.transparency)
+				GetShininess (material.shininess),
+				GetOpacity (material.transparency),
+				material.textureMap.name,
+				material.textureMap.offset,
+				material.textureMap.scale,
+				-material.textureMap.rotation
 			);
-			
+				
 			if (materialNameToIndex[material.name] === undefined) {
 				materialNameToIndex[material.name] = index;
 			}
@@ -816,6 +937,12 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 			}
 			currentBody.AddVertex (x, y, z);
 		},
+		onTextureVertex : function (x, y) {
+			if (currentBody === null) {
+				return;
+			}
+			currentBody.AddUV (x, y);
+		},
 		onFace : function (v0, v1, v2) {
 			if (currentBody === null) {
 				return;
@@ -833,7 +960,8 @@ JSM.Convert3dsToJsonData = function (arrayBuffer)
 				return;
 			}
 			currentBody.meshData.faceToSmoothingGroup[faceIndex] = smoothingGroup;
-		}
+		},
+		onFileRequested : OnFileRequested
 	});
 	
 	FinalizeMeshes (nodeHierarcy, triangleModel, materialNameToIndex);
