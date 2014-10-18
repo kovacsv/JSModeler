@@ -865,39 +865,28 @@ JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)
 				return shininess;
 			}
 			
-			var hasTexture = false;
-			if (material.textureMap !== undefined && material.textureMap !== null) {
-				var textureBuffer = OnFileRequested (material.textureMap.name);
-				if (textureBuffer !== null) {
-					var blob = new window.Blob ([textureBuffer]);
-					var blobURL = window.URL.createObjectURL (blob);
-					material.textureMap.name = blobURL;
-					hasTexture = true;
-				}
-			}
-			
-			if (!hasTexture) {
-				material.textureMap = {
-					name : null,
-					offset : null,
-					scale : null,
-					rotation : null
-				};
-			}
-			
 			var index = triangleModel.AddMaterial (
 				material.name,
 				GetColor (material.ambient),
 				GetColor (material.diffuse),
 				GetColor (material.specular),
 				GetShininess (material.shininess),
-				GetOpacity (material.transparency),
-				material.textureMap.name,
-				material.textureMap.offset,
-				material.textureMap.scale,
-				-material.textureMap.rotation
+				GetOpacity (material.transparency)
 			);
-				
+
+			var currentMaterial = triangleModel.GetMaterial (index);
+			if (material.textureMap !== undefined && material.textureMap !== null) {
+				var textureBuffer = OnFileRequested (material.textureMap.name);
+				if (textureBuffer !== null) {
+					var blob = new window.Blob ([textureBuffer]);
+					var blobURL = window.URL.createObjectURL (blob);
+					currentMaterial.texture = blobURL;
+					currentMaterial.offset = material.textureMap.offset;
+					currentMaterial.scale = material.textureMap.scale;
+					currentMaterial.rotation = -material.textureMap.rotation;
+				}
+			}
+
 			if (materialNameToIndex[material.name] === undefined) {
 				materialNameToIndex[material.name] = index;
 			}
