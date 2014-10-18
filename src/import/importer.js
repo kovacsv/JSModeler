@@ -117,16 +117,16 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 		for (i = 0; i < model.MaterialCount (); i++) {
 			material = model.GetMaterial (i);
 			materials.push ({
-				name : material.name,
+				name : JSM.ValueOrDefault (material.name, ''),
 				ambient : ColorToArray (material.ambient),
 				diffuse : ColorToArray (material.diffuse),
 				specular : ColorToArray (material.specular),
-				shininess : material.shininess,
-				opacity : material.opacity,
-				texture : material.texture,
+				shininess : JSM.ValueOrDefault (material.shininess, 0.0),
+				opacity : JSM.ValueOrDefault (material.opacity, 1.0),
+				texture : JSM.ValueOrDefault (material.texture, null),
 				offset : CoordToArray (material.offset, [0.0, 0.0]),
 				scale : CoordToArray (material.scale, [1.0, 1.0]),
-				rotation : material.rotation
+				rotation : JSM.ValueOrDefault (material.rotation, 0.0)
 			});
 		}
 	}
