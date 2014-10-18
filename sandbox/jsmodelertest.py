@@ -453,7 +453,7 @@ def TestImporter (browser, path):
 	browser.SetURL (os.path.join (path, 'test\\viewertest\\importtest.html'))
 	browser.Capture ('importtest')
 	
-	buttons = [42, 122, 220, 320, 410, 520, 630, 750]
+	buttons = [42, 122, 220, 320, 430, 530, 630, 760, 870, 990]
 	for button in buttons:
 		browser.Click (button, 22)
 		browser.Capture ('importtest')
