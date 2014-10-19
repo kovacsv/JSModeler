@@ -308,10 +308,6 @@ JSM.TriangleModel.prototype.FinalizeMaterials = function ()
 		rotation : null
 	};
 	
-	if (this.materials.length === 0) {
-		this.AddDefaultMaterial ();
-	}
-	
 	var i, material;
 	for (i = 0; i < this.materials.length; i++) {
 		material = this.materials[i];
@@ -330,6 +326,6 @@ JSM.TriangleModel.prototype.FinalizeBodies = function ()
 
 JSM.TriangleModel.prototype.Finalize = function ()
 {
-	this.FinalizeMaterials ();
 	this.FinalizeBodies ();
+	this.FinalizeMaterials ();
 };
