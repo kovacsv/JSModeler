@@ -295,18 +295,6 @@ JSM.TriangleModel.prototype.GetBody = function (index)
 
 JSM.TriangleModel.prototype.FinalizeMaterials = function ()
 {
-	function FinalizeMaterial (material, defaultMaterialData)
-	{
-		var property;
-		for (property in defaultMaterialData) {
-			if (defaultMaterialData.hasOwnProperty (property)) {
-				if (material[property] === undefined || material[property] === null) {
-					material[property] = defaultMaterialData[property];
-				}
-			}
-		}
-	}
-
 	var defaultMaterialData = {
 		name : 'Default',
 		ambient : [0.5, 0.5, 0.5],
