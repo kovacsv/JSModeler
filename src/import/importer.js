@@ -97,38 +97,22 @@ JSM.ConvertTriangleModelToJsonData = function (model)
 {
 	function ConvertMaterials (model, materials)
 	{
-		function ColorToArray (color)
-		{
-			if (color === undefined || color === null) {
-				return [0.0, 0.0, 0.0];
-			}
-			return [color.r, color.g, color.b];
-		}
-	
-		function CoordToArray (coord, defaultValue)
-		{
-			if (coord === undefined || coord === null) {
-				return defaultValue;
-			}
-			return [coord.x, coord.y];
-		}
-
 		var i, material, jsonMaterial;
 		for (i = 0; i < model.MaterialCount (); i++) {
 			material = model.GetMaterial (i);
 			jsonMaterial = {
 				name : JSM.ValueOrDefault (material.name, ''),
-				ambient : ColorToArray (material.ambient),
-				diffuse : ColorToArray (material.diffuse),
-				specular : ColorToArray (material.specular),
-				shininess : JSM.ValueOrDefault (material.shininess, 0.0),
-				opacity : JSM.ValueOrDefault (material.opacity, 1.0)
+				ambient : material.ambient,
+				diffuse : material.diffuse,
+				specular : material.specular,
+				shininess : material.shininess,
+				opacity : material.opacity
 			};
 			if (material.texture !== undefined && material.texture !== null) {
 				jsonMaterial.texture = JSM.ValueOrDefault (material.texture, null);
-				jsonMaterial.offset = CoordToArray (material.offset, [0.0, 0.0]);
-				jsonMaterial.scale = CoordToArray (material.scale, [1.0, 1.0]);
-				jsonMaterial.rotation = JSM.ValueOrDefault (material.rotation, 0.0);
+				jsonMaterial.offset = material.offset;
+				jsonMaterial.scale = material.scale;
+				jsonMaterial.rotation = material.rotation;
 			}
 			materials.push (jsonMaterial);
 		}

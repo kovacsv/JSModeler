@@ -170,6 +170,14 @@
 						["anything", "the result"]
 					]
 				},
+				"CopyObjectProperties" : {
+					"description" : "Copies one object properties to another object.",
+					"parameters" : [
+						["source", "anything", "source object"],
+						["target", "anything", "target object"],
+						["overwrite", "boolean", "overwrite existing properties"]
+					]
+				},
 				"Assert" : {
 					"description" : "Shows up an alert with the given message if the condition is false.",
 					"parameters" : [

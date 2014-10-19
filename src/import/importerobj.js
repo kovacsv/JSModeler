@@ -278,38 +278,20 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 	
 	JSM.ReadObjFile (stringBuffer, {
 		onNewMaterial : function (name) {
-			var index = triangleModel.AddMaterial (
-				name,
-				{r : 1.0, g : 0.0, b : 0.0},
-				{r : 1.0, g : 0.0, b : 0.0},
-				{r : 0.0, g : 0.0, b : 0.0},
-				0.0,
-				1.0,
-				null,
-				null,
-				null,
-				null
-			);
+			var index = triangleModel.AddMaterial ();
 			currentMaterial = triangleModel.GetMaterial (index);
 			materialNameToIndex[name] = index;
 		},
 		onMaterialComponent : function (name, red, green, blue) {
-			function SetMaterialColor (color, r, g, b)
-			{
-				color.r = r;
-				color.g = g;
-				color.b = b;
-			}
-			
 			if (currentMaterial === null) {
 				return;
 			}
 			if (name == 'Ka') {
-				SetMaterialColor (currentMaterial.ambient, red, green, blue);
+				currentMaterial.ambient = [red, green, blue];
 			} else if (name == 'Kd') {
-				SetMaterialColor (currentMaterial.diffuse, red, green, blue);
+				currentMaterial.diffuse = [red, green, blue];
 			} else if (name == 'Ks') {
-				SetMaterialColor (currentMaterial.specular, red, green, blue);
+				currentMaterial.specular = [red, green, blue];
 			}
 		},
 		onMaterialParameter : function (name, value) {

@@ -137,7 +137,7 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 	
 		var triangle = body.triangles[i];
 		if (triangle.mat === undefined) {
-			triangle.mat = model.AddDefaultMaterial ();
+			triangle.mat = model.GetDefaultMaterialIndex ();
 		}
 		
 		var normal, normalIndex;
@@ -230,20 +230,16 @@ JSM.TriangleModel = function ()
 	this.defaultMaterial = -1;
 };
 
-JSM.TriangleModel.prototype.AddMaterial = function (name, ambient, diffuse, specular, shininess, opacity, texture, offset, scale, rotation)
+JSM.TriangleModel.prototype.AddMaterial = function (material)
 {
-	this.materials.push ({
-		name : name,
-		ambient : ambient,
-		diffuse : diffuse,
-		specular : specular,
-		shininess : shininess,
-		opacity : opacity,
-		texture : texture,
-		offset : offset,
-		scale : scale,
-		rotation : rotation
-	});
+	if (material === undefined || material === null) {
+		material = {};
+	}
+	
+	var newMaterial = {};
+	JSM.CopyObjectProperties (material, newMaterial, true);
+	
+	this.materials.push (newMaterial);
 	return this.materials.length - 1;
 };
 
@@ -255,19 +251,7 @@ JSM.TriangleModel.prototype.GetMaterial = function (index)
 JSM.TriangleModel.prototype.AddDefaultMaterial = function ()
 {
 	if (this.defaultMaterial == -1) {
-		this.materials.push ({
-			name : 'Default',
-			ambient : {r : 0.5, g : 0.5, b : 0.5},
-			diffuse : {r : 0.5, g : 0.5, b : 0.5},
-			specular : {r : 0.1, g : 0.1, b : 0.1},
-			shininess : 0,
-			opacity : 1.0,
-			texture : null,
-			offset : null,
-			scale : null,
-			rotation : null
-		});
-		this.defaultMaterial = this.materials.length - 1;
+		this.defaultMaterial = this.AddMaterial ();
 	}
 	return this.defaultMaterial;
 };
@@ -309,11 +293,55 @@ JSM.TriangleModel.prototype.GetBody = function (index)
 	return this.bodies[index];
 };
 
-JSM.TriangleModel.prototype.Finalize = function ()
+JSM.TriangleModel.prototype.FinalizeMaterials = function ()
+{
+	function FinalizeMaterial (material, defaultMaterialData)
+	{
+		var property;
+		for (property in defaultMaterialData) {
+			if (defaultMaterialData.hasOwnProperty (property)) {
+				if (material[property] === undefined || material[property] === null) {
+					material[property] = defaultMaterialData[property];
+				}
+			}
+		}
+	}
+
+	var defaultMaterialData = {
+		name : 'Default',
+		ambient : [0.5, 0.5, 0.5],
+		diffuse : [0.5, 0.5, 0.5],
+		specular : [0.1, 0.1, 0.1],
+		shininess : 0.0,
+		opacity : 1.0,
+		texture : null,
+		offset : null,
+		scale : null,
+		rotation : null
+	};
+	
+	if (this.materials.length === 0) {
+		this.AddDefaultMaterial ();
+	}
+	
+	var i, material;
+	for (i = 0; i < this.materials.length; i++) {
+		material = this.materials[i];
+		JSM.CopyObjectProperties (defaultMaterialData, material, false);
+	}
+};
+
+JSM.TriangleModel.prototype.FinalizeBodies = function ()
 {
 	var i, body;
 	for (i = 0; i < this.bodies.length; i++) {
 		body = this.bodies[i];
 		body.Finalize (this);
 	}
+};
+
+JSM.TriangleModel.prototype.Finalize = function ()
+{
+	this.FinalizeMaterials ();
+	this.FinalizeBodies ();
 };

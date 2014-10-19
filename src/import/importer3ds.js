@@ -132,35 +132,31 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 	{
 		function ReadColorChunk (reader, id, length)
 		{
-			var color = {
-				r : 0.0,
-				g : 0.0,
-				b : 0.0
-			};
+			var color = [0.0, 0.0, 0.0];
 			var endByte = GetChunkEnd (reader, length);
 			var hasLinColor = false;
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks.MAT_COLOR) {
 					if (!hasLinColor) {
-						color.r = reader.ReadUnsignedCharacter () / 255.0;
-						color.g = reader.ReadUnsignedCharacter () / 255.0;
-						color.b = reader.ReadUnsignedCharacter () / 255.0;
+						color[0] = reader.ReadUnsignedCharacter () / 255.0;
+						color[1] = reader.ReadUnsignedCharacter () / 255.0;
+						color[2] = reader.ReadUnsignedCharacter () / 255.0;
 					}
 				} else if (chunkId == chunks.MAT_LIN_COLOR) {
-					color.r = reader.ReadUnsignedCharacter () / 255.0;
-					color.g = reader.ReadUnsignedCharacter () / 255.0;
-					color.b = reader.ReadUnsignedCharacter () / 255.0;
+					color[0] = reader.ReadUnsignedCharacter () / 255.0;
+					color[1] = reader.ReadUnsignedCharacter () / 255.0;
+					color[2] = reader.ReadUnsignedCharacter () / 255.0;
 					hasLinColor = true;
 				} else if (chunkId == chunks.MAT_COLOR_F) {
 					if (!hasLinColor) {
-						color.r = reader.ReadFloat32 ();
-						color.g = reader.ReadFloat32 ();
-						color.b = reader.ReadFloat32 ();
+						color[0] = reader.ReadFloat32 ();
+						color[1] = reader.ReadFloat32 ();
+						color[2] = reader.ReadFloat32 ();
 					}
 				} else if (chunkId == chunks.MAT_LIN_COLOR_F) {
-					color.r = reader.ReadFloat32 ();
-					color.g = reader.ReadFloat32 ();
-					color.b = reader.ReadFloat32 ();
+					color[0] = reader.ReadFloat32 ();
+					color[1] = reader.ReadFloat32 ();
+					color[2] = reader.ReadFloat32 ();
 					hasLinColor = true;
 				} else {
 					SkipChunk (reader, chunkLength);
@@ -185,33 +181,31 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 			return percentage;
 		}
 
-		function ReadTextureMapChunk (reader, id, length)
+		function ReadTextureMapChunk (reader, id, length, material)
 		{
-			var textureMap = {
-				name : null,
-				offset : {x : 0.0, y : 0.0},
-				scale :  {x : 1.0, y : 1.0},
-				rotation : 0.0
-			};
+			material.texture = null;
+			material.offset = [0.0, 0.0];
+			material.scale = [1.0, 1.0];
+			material.rotation = 0.0;
+		
 			var endByte = GetChunkEnd (reader, length);
 			ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 				if (chunkId == chunks.MAT_TEXMAP_NAME) {
-					textureMap.name = ReadName (reader);
+					material.texture = ReadName (reader);
 				} else if (chunkId == chunks.MAT_TEXMAP_UOFFSET) {
-					textureMap.offset.x = reader.ReadFloat32 ();
+					material.offset[0] = reader.ReadFloat32 ();
 				} else if (chunkId == chunks.MAT_TEXMAP_VOFFSET) {
-					textureMap.offset.y = reader.ReadFloat32 ();
+					material.offset[1] = reader.ReadFloat32 ();
 				} else if (chunkId == chunks.MAT_TEXMAP_USCALE) {
-					textureMap.scale.x = reader.ReadFloat32 ();
+					material.scale[0] = reader.ReadFloat32 ();
 				} else if (chunkId == chunks.MAT_TEXMAP_VSCALE) {
-					textureMap.scale.y = reader.ReadFloat32 ();
+					material.scale[1] = reader.ReadFloat32 ();
 				} else if (chunkId == chunks.MAT_TEXMAP_ROTATION) {
-					textureMap.rotation = reader.ReadFloat32 ();
+					material.rotation = reader.ReadFloat32 ();
 				} else {
 					SkipChunk (reader, chunkLength);
 				}
 			});
-			return textureMap;
 		}
 
 		function ReadMaterialChunk (reader, id, length)
@@ -241,7 +235,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 					material.transparency = ReadPercentageChunk (reader, chunkId, chunkLength);
 				} else if (chunkId == chunks.MAT_TEXMAP) {
 					OnLog ('Read material texture map chunk (' + id.toString (16) + ', ' + length + ')', 3);
-					material.textureMap = ReadTextureMapChunk (reader, chunkId, chunkLength);
+					ReadTextureMapChunk (reader, chunkId, chunkLength, material);
 				} else {
 					OnLog ('Skip chunk (' + chunkId.toString (16) + ', ' + chunkLength + ')', 3);
 					SkipChunk (reader, chunkLength);
@@ -841,14 +835,6 @@ JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)
 	
 	JSM.Read3dsFile (arrayBuffer, {
 		onMaterial : function (material) {
-			function GetColor (color)
-			{
-				if (color === undefined || color === null) {
-					return {r : 0.0, g : 0.0, b : 0.0};
-				}
-				return color;
-			}
-
 			function GetOpacity (transparency)
 			{
 				if (transparency === undefined || transparency === null) {
@@ -865,25 +851,25 @@ JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)
 				return shininess;
 			}
 			
-			var index = triangleModel.AddMaterial (
-				material.name,
-				GetColor (material.ambient),
-				GetColor (material.diffuse),
-				GetColor (material.specular),
-				GetShininess (material.shininess),
-				GetOpacity (material.transparency)
-			);
+			var index = triangleModel.AddMaterial ({
+				name : material.name,
+				ambient : material.ambient,
+				diffuse : material.diffuse,
+				specular : material.specular,
+				shininess : GetShininess (material.shininess),
+				opacity : GetOpacity (material.transparency)
+			});
 
 			var currentMaterial = triangleModel.GetMaterial (index);
-			if (material.textureMap !== undefined && material.textureMap !== null) {
-				var textureBuffer = OnFileRequested (material.textureMap.name);
+			if (material.texture !== undefined && material.texture !== null) {
+				var textureBuffer = OnFileRequested (material.texture);
 				if (textureBuffer !== null) {
 					var blob = new window.Blob ([textureBuffer]);
 					var blobURL = window.URL.createObjectURL (blob);
 					currentMaterial.texture = blobURL;
-					currentMaterial.offset = material.textureMap.offset;
-					currentMaterial.scale = material.textureMap.scale;
-					currentMaterial.rotation = -material.textureMap.rotation;
+					currentMaterial.offset = material.offset;
+					currentMaterial.scale = material.scale;
+					currentMaterial.rotation = -material.rotation;
 				}
 			}
 
