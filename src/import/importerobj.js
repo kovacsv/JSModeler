@@ -301,7 +301,10 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 				return;
 			}
 			if (name == 'Ns') {
-				currentMaterial.shininess = (Math.log2 (parseFloat (value)) - 1) / 10.0;
+				currentMaterial.shininess = 0.0;
+				if (JSM.IsPositive (value)) {
+					currentMaterial.shininess = (Math.log2 (parseFloat (value)) - 1) / 10.0;
+				}
 			} else if (name == 'Tr' || name == 'd') {
 				currentMaterial.opacity = parseFloat (value);
 			}			
