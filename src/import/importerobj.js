@@ -278,7 +278,9 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 	
 	JSM.ReadObjFile (stringBuffer, {
 		onNewMaterial : function (name) {
-			var index = triangleModel.AddMaterial ();
+			var index = triangleModel.AddMaterial ({
+				name : name
+			});
 			currentMaterial = triangleModel.GetMaterial (index);
 			materialNameToIndex[name] = index;
 		},
