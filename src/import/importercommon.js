@@ -42,12 +42,12 @@ JSM.ImportFileList.prototype.InitFromURLs = function (urlList)
 	this.isFile = false;
 };
 
-JSM.ImportFileList.prototype.GetOriginalList = function (index)
+JSM.ImportFileList.prototype.GetOriginalList = function ()
 {
 	return this.originalList;
 };
 
-JSM.ImportFileList.prototype.GetInputList = function (index)
+JSM.ImportFileList.prototype.GetInputList = function ()
 {
 	function IsArrayBuffer (descriptor)
 	{
@@ -88,12 +88,12 @@ JSM.ImportFileList.prototype.GetFileDescriptor = function (index)
 	return this.descriptors[index];
 };
 
-JSM.ImportFileList.prototype.IsFile = function (index)
+JSM.ImportFileList.prototype.IsFile = function ()
 {
 	return this.isFile;
 };
 
-JSM.ImportFileList.prototype.GetMainFileIndex = function (extension)
+JSM.ImportFileList.prototype.GetMainFileIndex = function ()
 {
 	var i, descriptor;
 	for (i = 0; i < this.descriptors.length; i++) {

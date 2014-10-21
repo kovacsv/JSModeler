@@ -70,14 +70,6 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		}
 	}
 
-	function OnFileRequested (fileName)
-	{
-		if (callbacks.onFileRequested !== undefined && callbacks.onFileRequested !== null) {
-			return callbacks.onFileRequested (fileName);
-		}
-		return null;
-	}
-
 	function ReadChunk (reader, onReady)
 	{
 		var chunkId = reader.ReadUnsignedInteger16 ();

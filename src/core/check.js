@@ -4,7 +4,7 @@
 * Returns:
 *	{boolean} the result
 */
-JSM.IsWebGLEnabled = function (value)
+JSM.IsWebGLEnabled = function ()
 {
 	if (!window.WebGLRenderingContext) {
 		return false;
@@ -28,7 +28,7 @@ JSM.IsWebGLEnabled = function (value)
 * Returns:
 *	{boolean} the result
 */
-JSM.IsFileApiEnabled = function (value)
+JSM.IsFileApiEnabled = function ()
 {
 	if (!window.File || !window.FileReader || !window.FileList || !window.Blob || !window.URL) {
 		return false;
