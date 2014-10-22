@@ -41,6 +41,7 @@
 
 		window.onload = function() {
 			renderer = new THREE.WebGLRenderer ();
+			renderer.setClearColor (new THREE.Color (0xffffff));
 			renderer.setSize (800, 600);
 			renderer.domElement.addEventListener ('mousedown', MouseDown);
 			document.addEventListener ('mouseup', MouseUp);
