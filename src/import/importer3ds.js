@@ -222,6 +222,9 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 				} else if (chunkId == chunks.MAT_SHININESS) {
 					OnLog ('Read material shininess chunk (' + id.toString (16) + ', ' + length + ')', 3);
 					material.shininess = ReadPercentageChunk (reader, chunkId, chunkLength);
+				} else if (chunkId == chunks.MAT_SHININESS_STRENGTH) {
+					OnLog ('Read material shininess strength chunk (' + id.toString (16) + ', ' + length + ')', 3);
+					material.shininessStrength = ReadPercentageChunk (reader, chunkId, chunkLength);
 				} else if (chunkId == chunks.MAT_TRANSPARENCY) {
 					OnLog ('Read material transparency chunk (' + id.toString (16) + ', ' + length + ')', 3);
 					material.transparency = ReadPercentageChunk (reader, chunkId, chunkLength);
@@ -529,6 +532,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		MAT_DIFFUSE : 0xA020,
 		MAT_SPECULAR : 0xA030,
 		MAT_SHININESS : 0xA040,
+		MAT_SHININESS_STRENGTH : 0xA041,
 		MAT_TRANSPARENCY : 0xA050,
 		MAT_COLOR_F : 0x0010,
 		MAT_COLOR : 0x0011,
@@ -835,12 +839,15 @@ JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)
 				return 1.0 - transparency;
 			}
 			
-			function GetShininess (shininess)
+			function GetShininess (shininess, shininessStrength)
 			{
 				if (shininess === undefined || shininess === null) {
 					return 0.0;
 				}
-				return shininess;
+				if (shininessStrength === undefined || shininessStrength === null) {
+					return 0.0;
+				}
+				return shininess * shininessStrength;
 			}
 			
 			var index = triangleModel.AddMaterial ({
@@ -848,10 +855,10 @@ JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)
 				ambient : material.ambient,
 				diffuse : material.diffuse,
 				specular : material.specular,
-				shininess : GetShininess (material.shininess),
+				shininess : GetShininess (material.shininess, material.shininessStrength),
 				opacity : GetOpacity (material.transparency)
 			});
-
+			
 			var currentMaterial = triangleModel.GetMaterial (index);
 			if (material.texture !== undefined && material.texture !== null) {
 				var textureBuffer = OnFileRequested (material.texture);
