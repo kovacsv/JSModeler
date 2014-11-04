@@ -1074,6 +1074,70 @@ AddTest ('ConvexHullTest', function (test)
 	test.Assert (result.toString () == '3,8,14,8,0,14,0,12,14,1,9,14,12,1,14,9,5,14,2,10,15,13,2,15,10,6,15,7,11,15,11,4,15,4,13,15,10,2,16,0,8,16,8,10,16,6,10,17,8,3,17,10,8,17,4,11,18,9,1,18,11,9,18,1,12,18,12,0,18,0,16,18,2,13,18,16,2,18,13,4,18,11,7,19,5,9,19,9,11,19,3,14,19,17,3,19,14,5,19,7,15,19,15,6,19,6,17,19');
 });
 
+AddTest ('OctreeTest', function (test)
+{
+	var octree = new JSM.Octree (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0));
+	var coords = [
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (1.0, 1.0, 1.0),
+		new JSM.Coord (-1.0, -1.0, -1.0),
+		new JSM.Coord (0.1, 0.0, 0.0),
+		new JSM.Coord (0.2, 0.0, 0.0),
+		new JSM.Coord (0.3, 0.0, 0.0),
+		new JSM.Coord (0.30001, 0.0, 0.0),
+		new JSM.Coord (0.30000001, 0.0, 0.0),
+		new JSM.Coord (0.30001001, 0.0, 0.0),
+		new JSM.Coord (0.99, 0.99, 0.99),
+		new JSM.Coord (-0.99, -0.99, -0.99),
+		new JSM.Coord (0.99, -0.99, -0.99),
+		new JSM.Coord (-0.99, 0.99, -0.99)
+	];
+	
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	
+	test.Assert (octree.AddCoord (coords[1]) == 1);
+	test.Assert (octree.AddCoord (coords[2]) == 2);
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+
+	test.Assert (octree.AddCoord (coords[3]) == 3);
+	test.Assert (octree.AddCoord (coords[4]) == 4);
+	test.Assert (octree.AddCoord (coords[5]) == 5);
+	test.Assert (octree.AddCoord (coords[6]) == 6);
+	test.Assert (octree.AddCoord (coords[7]) == 5);
+	test.Assert (octree.AddCoord (coords[8]) == 6);
+	
+	test.Assert (octree.AddCoord (coords[9]) == 7);
+	test.Assert (octree.AddCoord (coords[10]) == 8);
+	test.Assert (octree.AddCoord (coords[11]) == 9);
+	test.Assert (octree.AddCoord (coords[12]) == 10);
+	
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	
+	test.Assert (octree.FindCoord (coords[1]) == 1);
+	test.Assert (octree.FindCoord (coords[2]) == 2);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+
+	test.Assert (octree.FindCoord (coords[3]) == 3);
+	test.Assert (octree.FindCoord (coords[4]) == 4);
+	test.Assert (octree.FindCoord (coords[5]) == 5);
+	test.Assert (octree.FindCoord (coords[6]) == 6);
+	test.Assert (octree.FindCoord (coords[7]) == 5);
+	test.Assert (octree.FindCoord (coords[8]) == 6);
+	
+	test.Assert (octree.FindCoord (coords[9]) == 7);
+	test.Assert (octree.FindCoord (coords[10]) == 8);
+	test.Assert (octree.FindCoord (coords[11]) == 9);
+	test.Assert (octree.FindCoord (coords[12]) == 10);
+});
+
 AddTestSuite ('Geometry - Polygon');
 
 AddTest ('PolygonTest', function (test)

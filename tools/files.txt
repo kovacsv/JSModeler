@@ -21,6 +21,7 @@
 ../src/geometry/convexhull.js
 ../src/geometry/polygon.js
 ../src/geometry/polygonutils.js
+../src/geometry/octree.js
 ../src/geometry/bsptree.js
 ../src/geometry/utilities.js
 ../src/modeler/body.js
