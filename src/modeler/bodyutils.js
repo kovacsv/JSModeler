@@ -330,7 +330,7 @@ JSM.TriangulatePolygons = function (body)
 * Parameters:
 *	body {Body} the body
 *	materials {Materials} the materials
-*	seed {integer} seed value
+*	seeded {boolean} seeded random generation
 */
 JSM.GenerateRandomMaterials = function (body, materials, seeded)
 {

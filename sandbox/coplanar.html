@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<script type="text/javascript" src="../build/three.min.js"></script>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../src/core/timer.js"></script>
+	<script type="text/javascript" src="../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../src/core/async.js"></script>
+	<script type="text/javascript" src="../src/core/check.js"></script>
+	<script type="text/javascript" src="../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../src/modeler/light.js"></script>
+	<script type="text/javascript" src="../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../src/modeler/explode.js"></script>
+	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../src/import/trianglemodel.js"></script>
+	<script type="text/javascript" src="../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../src/import/importer.js"></script>
+	<script type="text/javascript" src="../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../src/import/importercommon.js"></script>
+	<script type="text/javascript" src="../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../src/extras/surfaces.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../src/renderer/converter.js"></script>
+	<script type="text/javascript" src="../src/viewer/jsonfileloader.js"></script>
+	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../src/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../src/three/threeviewer.js"></script>
+<!-- JSModeler includes end -->
+	<title>Example</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+
+		/**
+		* Function: MergeCoplanarFaces
+		* Description: Merges the coplanar faces of a body.
+		* Parameters:
+		*	body {Body} the body
+		* Returns:
+		*	{Body} the result
+		*/
+		JSM.MergeCoplanarFaces = function (body)
+		{
+			function AddVertices (body, result)
+			{
+				var i;
+				for (i = 0; i < body.VertexCount (); i++) {
+					result.AddVertex (body.GetVertex (i));
+				}
+			}
+
+			function AddPolygons (body, result)
+			{
+				function FindCoplanarPgonGroups (body, adjacency)
+				{
+					function GetCoplanarPgons (pgonIndex, adjacency, pgonNormals, processedPgons)
+					{
+						if (processedPgons[pgonIndex] !== undefined) {
+							return null;
+						}
+						var coplanarPgons = [];
+						JSM.TraversePgonsAlongEdges (pgonIndex, adjacency, function (currentIndex) {
+							if (JSM.IsEqual (JSM.GetVectorsAngle (pgonNormals[pgonIndex], pgonNormals[currentIndex]), 0.0)) {
+								coplanarPgons.push (currentIndex);
+								processedPgons[currentIndex] = true;
+							}
+							return true;
+						});
+						return coplanarPgons;
+					}
+				
+					var pgonNormals = JSM.CalculateBodyPolygonNormals (body);
+					var coplanarPgonGroups = [];
+					var processedPgons = {};
+					
+					var i;
+					for (i = 0; i < adjacency.pgons.length; i++) {
+						coplanarPgons = GetCoplanarPgons (i, adjacency, pgonNormals, processedPgons);
+						if (coplanarPgons === null) {
+							continue;
+						}
+						coplanarPgonGroups.push (coplanarPgons);
+					}
+					
+					return coplanarPgonGroups;
+				}
+				
+				function CreatePolygonsFromGroup (body, adjacency, coplanarPgons, result)
+				{
+					function GetContourEdges (coplanarPgons, adjacency, contourEdges)
+					{
+						var i, j;
+						var groupPgonSet = {};
+						for (i = 0; i < coplanarPgons.length; i++) {
+							groupPgonSet[coplanarPgons[i]] = true;
+						}
+
+						var startVertex = -1;
+						var pgon, pedge, edge, from, to;
+						for (i = 0; i < coplanarPgons.length; i++) {
+							pgon = adjacency.pgons[coplanarPgons[i]];
+							for (j = 0; j < pgon.pedges.length; j++) {
+								pedge = pgon.pedges[j];
+								edge = adjacency.edges[pedge.index];
+								if (groupPgonSet[edge.pgon1] === undefined || groupPgonSet[edge.pgon2] === undefined) {
+									if (!pedge.reversed) {
+										from = edge.vert1;
+										to = edge.vert2;
+									} else {
+										from = edge.vert2;
+										to = edge.vert1;
+									}
+									contourEdges[from] = to;
+									if (startVertex == -1) {
+										startVertex = from;
+									}
+								}
+							}
+						}
+						return startVertex;
+					}
+				
+					if (coplanarPgons.length === 0) {
+						return;
+					}
+					
+					if (coplanarPgons.length == 1) {
+						result.AddPolygon (body.GetPolygon (coplanarPgons[0]));
+						return;
+					}
+					
+					var contourEdges = [];
+					var startVertex = GetContourEdges (coplanarPgons, adjacency, contourEdges);
+					if (startVertex == -1) {
+						return;
+					}
+					
+					var bodyPolygon = new JSM.BodyPolygon ([]);
+					var currentVertex = startVertex;
+					do {
+						if (currentVertex === undefined) {
+							break;
+						}
+						bodyPolygon.AddVertexIndex (currentVertex);
+						currentVertex = contourEdges[currentVertex];
+					} while (currentVertex != startVertex);
+					
+					result.AddPolygon (bodyPolygon);
+				}
+			
+				var adjacency = JSM.CalculateAdjacencyInfo (body);
+				var coplanarPgonGroups = FindCoplanarPgonGroups (body, adjacency);
+				var i, coplanarPgons;
+				for (i = 0; i < coplanarPgonGroups.length; i++) {
+					coplanarPgons = coplanarPgonGroups[i];
+					CreatePolygonsFromGroup (body, adjacency, coplanarPgons, result);
+				}
+			}
+
+			var result = new JSM.Body ();
+			AddVertices (body, result);
+			AddPolygons (body, result);
+			
+			return result;
+		};
+
+		function Load ()
+		{
+			var TextureLoaded = function () {
+				viewer.Draw ();
+			};
+
+			var viewerSettings = {
+				cameraEyePosition : [-2.0, -1.5, 1.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
+
+			viewer = new JSM.ThreeViewer ();
+			viewer.Start (document.getElementById ('example'), viewerSettings);
+			
+			var body = new JSM.Body ();
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 0.0, 0.0)));
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 0.0, 0.0)));
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 0.5, 0.0)));
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 1.0, 0.0)));
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 1.5, 0.0)));
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, 0.0)));
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, -1.0)));
+			body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 0.0, -1.0)));
+			
+			body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2]));
+			body.AddPolygon (new JSM.BodyPolygon ([0, 2, 3]));
+			body.AddPolygon (new JSM.BodyPolygon ([0, 3, 4]));
+			body.AddPolygon (new JSM.BodyPolygon ([0, 4, 5]));
+			body.AddPolygon (new JSM.BodyPolygon ([0, 5, 6]));
+			body.AddPolygon (new JSM.BodyPolygon ([0, 6, 7]));
+			body.AddPolygon (new JSM.BodyPolygon ([0, 1, 7]));
+			
+			body = JSM.MergeCoplanarFaces (body);
+			
+			var logDiv = document.getElementById ('log');
+			logDiv.innerHTML = body.VertexCount () + ', ' + body.PolygonCount ();
+			
+			var materials = new JSM.Materials ();
+			JSM.GenerateRandomMaterials (body, materials, true);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			for (var i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}
+
+			viewer.Draw ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<canvas id="example" width="800" height="500"></canvas>
+	<div id="log"></div>
+</body>
+
+</html>

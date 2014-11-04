@@ -2034,6 +2034,74 @@
 						["integer", "the hex value"]
 					]
 				},
+				"GetPolyEdgeStartVertex" : {
+					"description" : "Returns the start vertex index of a polygon edge.",
+					"parameters" : [
+						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
+						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
+					],
+					"returns" : [
+						["integer", "the result"]
+					]
+				},
+				"GetPolyEdgeEndVertex" : {
+					"description" : "Returns the end vertex index of a polygon edge.",
+					"parameters" : [
+						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
+						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
+					],
+					"returns" : [
+						["integer", "the result"]
+					]
+				},
+				"GetAnotherPgonOfEdge" : {
+					"description" : "Returns the polygon index which is next to the current polygon along an edge.",
+					"parameters" : [
+						["edge", "EdgeInfo", "the edge info"],
+						["currentPgon", "integer", "the current polygon index"]
+					],
+					"returns" : [
+						["integer", "the result"]
+					]
+				},
+				"CalculateAdjacencyInfo" : {
+					"description" : "Calculates the adjacency info for a body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["AdjacencyInfo", "the result"]
+					]
+				},
+				"IsSolidBody" : {
+					"description" : "Returns if a given body is solid. It means that every edges of the body has two polygon neighbours.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"CheckSolidBody" : {
+					"description" : "Returns if a given body solid body is correct. It means that every edges of the body has two polygon neighbours, and there are no edge in the body which appears twice with the same direction.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"TraversePgonsAlongEdges" : {
+					"description" : "Traverses polygons along edges. The given callback function called on every found polygon. The return value of the callback means if the traverse should continue along the edges of the current polygon.",
+					"parameters" : [
+						["pgonIndex", "integer", "the polygon index to start from"],
+						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"],
+						["onPgonFound", "function", "the callback"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
 				"AddVertexToBody" : {
 					"description" : "Adds a vertex to an existing body.",
 					"parameters" : [
@@ -2136,54 +2204,16 @@
 					"parameters" : [
 						["body", "Body", "the body"],
 						["materials", "Materials", "the materials"],
-						["seed", "integer", "seed value"]
+						["seeded", "boolean", "seeded random generation"]
 					]
 				},
-				"GetPolyEdgeStartVertex" : {
-					"description" : "Returns the start vertex index of a polygon edge.",
-					"parameters" : [
-						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
-						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
-					],
-					"returns" : [
-						["integer", "the result"]
-					]
-				},
-				"GetPolyEdgeEndVertex" : {
-					"description" : "Returns the end vertex index of a polygon edge.",
-					"parameters" : [
-						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
-						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
-					],
-					"returns" : [
-						["integer", "the result"]
-					]
-				},
-				"CalculateAdjacencyInfo" : {
-					"description" : "Calculates the adjacency info for a body.",
+				"MergeCoplanarFaces" : {
+					"description" : "Merges the coplanar faces of a body.",
 					"parameters" : [
 						["body", "Body", "the body"]
 					],
 					"returns" : [
-						["AdjacencyInfo", "the result"]
-					]
-				},
-				"IsSolidBody" : {
-					"description" : "Returns if a given body is solid. It means that every edges of the body has two polygon neighbours.",
-					"parameters" : [
-						["body", "Body", "the body"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CheckSolidBody" : {
-					"description" : "Returns if a given body solid body is correct. It means that every edges of the body has two polygon neighbours, and there are no edge in the body which appears twice with the same direction.",
-					"parameters" : [
-						["body", "Body", "the body"]
-					],
-					"returns" : [
-						["boolean", "the result"]
+						["Body", "the result"]
 					]
 				},
 				"CalculatePlanarTextureCoord" : {

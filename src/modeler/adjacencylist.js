@@ -98,6 +98,25 @@ JSM.GetPolyEdgeEndVertex = function (polyEdge, adjacencyInfo)
 };
 
 /**
+* Function: GetAnotherPgonOfEdge
+* Description: Returns the polygon index which is next to the current polygon along an edge.
+* Parameters:
+*	edge {EdgeInfo} the edge info
+*	currentPgon {integer} the current polygon index
+* Returns:
+*	{integer} the result
+*/
+JSM.GetAnotherPgonOfEdge = function (edge, currentPgon)
+{
+	if (edge.pgon1 != -1 && edge.pgon1 != currentPgon) {
+		return edge.pgon1;
+	} else if (edge.pgon2 != -1 && edge.pgon2 != currentPgon) {
+		return edge.pgon2;
+	}
+	return -1;
+};
+
+/**
 * Function: CalculateAdjacencyInfo
 * Description: Calculates the adjacency info for a body.
 * Parameters:
@@ -256,4 +275,53 @@ JSM.CheckSolidBody = function (body)
 		}
 	}
 	return true;
+};
+
+/**
+* Function: TraversePgonsAlongEdges
+* Description:
+*	Traverses polygons along edges. The given callback function called on every
+*	found polygon. The return value of the callback means if the traverse should
+*	continue along the edges of the current polygon.
+* Parameters:
+*	pgonIndex {integer} the polygon index to start from
+*	adjacencyInfo {AdjacencyInfo} the adjacency info
+*	onPgonFound {function} the callback
+* Returns:
+*	{boolean} the result
+*/
+JSM.TraversePgonsAlongEdges = function (pgonIndex, adjacencyInfo, onPgonFound)
+{
+	function AddNeighboursToStack (pgonIndex, adjacencyInfo, pgonStack)
+	{
+		var pgon = adjacencyInfo.pgons[pgonIndex];
+		var i, edge, anotherPgon;
+		for (i = 0; i < pgon.pedges.length; i++) {
+			edge = adjacencyInfo.edges[pgon.pedges[i].index];
+			anotherPgon = JSM.GetAnotherPgonOfEdge (edge, pgonIndex);
+			if (anotherPgon != -1) {
+				pgonStack.push (anotherPgon);
+			}
+		}
+	}
+
+	var pgonIsProcessed = [];
+	var i;
+	for (i = 0; i < adjacencyInfo.pgons.length; i++) {
+		pgonIsProcessed.push (false);
+	}
+	
+	var pgonStack = [pgonIndex];
+	var currentPgonIndex;
+	while (pgonStack.length > 0) {
+		currentPgonIndex = pgonStack.pop ();
+		if (pgonIsProcessed[currentPgonIndex]) {
+			continue;
+		}
+		
+		pgonIsProcessed[currentPgonIndex] = true;
+		if (onPgonFound (currentPgonIndex)) {
+			AddNeighboursToStack (currentPgonIndex, adjacencyInfo, pgonStack);
+		}
+	}
 };
