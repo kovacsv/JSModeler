@@ -850,6 +850,10 @@ JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)
 				return shininess * shininessStrength;
 			}
 			
+			if (materialNameToIndex[material.name] !== undefined) {
+				return;
+			}
+			
 			var index = triangleModel.AddMaterial ({
 				name : material.name,
 				ambient : material.ambient,
@@ -872,11 +876,13 @@ JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)
 				}
 			}
 
-			if (materialNameToIndex[material.name] === undefined) {
-				materialNameToIndex[material.name] = index;
-			}
+			materialNameToIndex[material.name] = index;
 		},
 		onMesh : function (meshName) {
+			if (bodyNameToIndex[meshName] !== undefined) {
+				return;
+			}
+		
 			var index = triangleModel.AddBody (new JSM.TriangleBody (meshName));
 			currentBody = triangleModel.GetBody (index);
 			currentBody.meshData ={
