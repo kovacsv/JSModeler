@@ -67,8 +67,7 @@ JSM.PointCloudViewer.prototype.FitInWindow = function ()
 JSM.PointCloudViewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
-	var center = JSM.MidCoord (boundingBox[0], boundingBox[1]);
-	return center;
+	return boundingBox.GetCenter ();
 };
 
 JSM.PointCloudViewer.prototype.GetBoundingBox = function ()
@@ -90,7 +89,7 @@ JSM.PointCloudViewer.prototype.GetBoundingBox = function ()
 		}
 	}
 
-	return [min, max];
+	return new JSM.Box (min, max);
 };
 
 JSM.PointCloudViewer.prototype.GetBoundingSphereRadius = function (center)

@@ -79,8 +79,7 @@ JSM.SoftwareViewer.prototype.FitInWindow = function ()
 JSM.SoftwareViewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
-	var center = JSM.MidCoord (boundingBox[0], boundingBox[1]);
-	return center;
+	return boundingBox.GetCenter ();
 };
 
 JSM.SoftwareViewer.prototype.GetBoundingBox = function ()
@@ -102,7 +101,7 @@ JSM.SoftwareViewer.prototype.GetBoundingBox = function ()
 		}
 	}
 
-	return [min, max];
+	return new JSM.Box (min, max);
 };
 
 JSM.SoftwareViewer.prototype.GetBoundingSphereRadius = function (center)

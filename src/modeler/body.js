@@ -463,7 +463,7 @@ JSM.Body.prototype.Transform = function (transformation)
 * Function: Body.GetBoundingBox
 * Description: Returns the bounding box of the body.
 * Returns:
-*	{Coord[2]} the minimum and maximum coordinate of the bounding box
+*	{Box} the result
 */
 JSM.Body.prototype.GetBoundingBox = function ()
 {
@@ -481,7 +481,7 @@ JSM.Body.prototype.GetBoundingBox = function ()
 		max.z = JSM.Maximum (max.z, coord.z);
 	}
 	
-	return [min, max];
+	return new JSM.Box (min, max);
 };
 
 /**
@@ -493,7 +493,7 @@ JSM.Body.prototype.GetBoundingBox = function ()
 JSM.Body.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
-	return JSM.MidCoord (boundingBox[0], boundingBox[1]);
+	return boundingBox.GetCenter ();
 };
 
 /**

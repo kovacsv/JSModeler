@@ -743,6 +743,20 @@ AddTest ('SectorSectorPositionTest', function (test)
 	test.Assert (JSM.SectorSectorPosition2D (GetSector2D (3.0, 0.0, 3.0, 3.0), GetSector2D (0.0, 0.0, 1.0, 1.0)) == 'SectorsDontIntersects');
 });
 
+AddTest ('BoxTest', function (test)
+{
+	var box = new JSM.Box2D (new JSM.Coord2D (0.0, 0.0), new JSM.Coord2D (1.0, 1.0));
+	test.Assert (JSM.CoordIsEqual2D (box.GetCenter (), new JSM.Coord2D (0.5, 0.5)));
+
+	var box = new JSM.Box (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 1.0, 1.0));
+	test.Assert (JSM.CoordIsEqual (box.GetCenter (), new JSM.Coord (0.5, 0.5, 0.5)));
+
+	var box2 = new JSM.Box (new JSM.Coord (-0.5, -0.5, -0.5), new JSM.Coord (0.5, 0.5, 0.5));
+	var box3 = JSM.BoxUnion (box, box2);
+	test.Assert (JSM.CoordIsEqual (box3.min, new JSM.Coord (-0.5, -0.5, -0.5)));
+	test.Assert (JSM.CoordIsEqual (box3.max, new JSM.Coord (1.0, 1.0, 1.0)));
+});
+
 AddTest ('PlaneTest', function (test)
 {
 	var plane = new JSM.Plane (1.0, 2.0, 3.0, 4.0);

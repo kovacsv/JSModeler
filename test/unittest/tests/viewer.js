@@ -112,12 +112,7 @@ AddTest ('ViewerTest', function (test)
 	var viewerSettings = {
 		cameraEyePosition : [3.0, -3.0, 3.0],
 		cameraCenterPosition : [0.0, 0.0, 0.0],
-		cameraUpVector : [0.0, 0.0, 1.0],
-		fieldOfView : 45.0,
-		nearClippingPlane : 0.1,
-		farClippingPlane : 1000.0,
-		lightAmbientColor : [0.5, 0.5, 0.5],
-		lightDiffuseColor :	[0.5, 0.5, 0.5]
+		cameraUpVector : [0.0, 0.0, 1.0]
 	};
 
 	var canvas = document.createElement ('canvas');
@@ -141,8 +136,8 @@ AddTest ('ViewerTest', function (test)
 
 	var boundingBox = viewer.GetBoundingBox ();
 	test.Assert (JSM.CoordIsEqual (viewer.GetCenter (), new JSM.Coord (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[0], new JSM.Coord (-0.5, -0.5, -0.5)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[1], new JSM.Coord (0.5, 0.5, 0.5)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.min, new JSM.Coord (-0.5, -0.5, -0.5)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.max, new JSM.Coord (0.5, 0.5, 0.5)));
 	test.Assert (JSM.IsEqual (viewer.GetBoundingSphereRadius (), 0.8660254037844386));
 
 	var body2 = JSM.GenerateCuboid (1.0, 1.0, 1.0);
@@ -159,24 +154,24 @@ AddTest ('ViewerTest', function (test)
 
 	var boundingBox = viewer.GetBoundingBox ();
 	test.Assert (JSM.CoordIsEqual (viewer.GetCenter (), new JSM.Coord (1.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[0], new JSM.Coord (-0.5, -0.5, -0.5)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[1], new JSM.Coord (2.5, 0.5, 0.5)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.min, new JSM.Coord (-0.5, -0.5, -0.5)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.max, new JSM.Coord (2.5, 0.5, 0.5)));
 	test.Assert (JSM.IsEqual (viewer.GetBoundingSphereRadius (), 1.6583123951777));
 
 	viewer.RemoveLastMesh ();
 
 	var boundingBox = viewer.GetBoundingBox ();
 	test.Assert (JSM.CoordIsEqual (viewer.GetCenter (), new JSM.Coord (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[0], new JSM.Coord (-0.5, -0.5, -0.5)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[1], new JSM.Coord (0.5, 0.5, 0.5)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.min, new JSM.Coord (-0.5, -0.5, -0.5)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.max, new JSM.Coord (0.5, 0.5, 0.5)));
 	test.Assert (JSM.IsEqual (viewer.GetBoundingSphereRadius (), 0.8660254037844386));
 
 	viewer.RemoveLastMesh ();
 
 	var boundingBox = viewer.GetBoundingBox ();
 	test.Assert (JSM.CoordIsEqual (viewer.GetCenter (), new JSM.Coord (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[0], new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[1], new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.min, new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.max, new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf)));
 	test.Assert (JSM.IsEqual (viewer.GetBoundingSphereRadius (), 0.0));
 
 	var meshes = JSM.ConvertBodyToThreeMeshes (body);
@@ -189,16 +184,16 @@ AddTest ('ViewerTest', function (test)
 
 	var boundingBox = viewer.GetBoundingBox ();
 	test.Assert (JSM.CoordIsEqual (viewer.GetCenter (), new JSM.Coord (1.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[0], new JSM.Coord (-0.5, -0.5, -0.5)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[1], new JSM.Coord (2.5, 0.5, 0.5)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.min, new JSM.Coord (-0.5, -0.5, -0.5)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.max, new JSM.Coord (2.5, 0.5, 0.5)));
 	test.Assert (JSM.IsEqual (viewer.GetBoundingSphereRadius (), 1.6583123951777));
 	
 	viewer.RemoveMeshes ();
 	
 	var boundingBox = viewer.GetBoundingBox ();
 	test.Assert (JSM.CoordIsEqual (viewer.GetCenter (), new JSM.Coord (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[0], new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf)));
-	test.Assert (JSM.CoordIsEqual (boundingBox[1], new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.min, new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf)));
+	test.Assert (JSM.CoordIsEqual (boundingBox.max, new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf)));
 	test.Assert (JSM.IsEqual (viewer.GetBoundingSphereRadius (), 0.0));
 });
 

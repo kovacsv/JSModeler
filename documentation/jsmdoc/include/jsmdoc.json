@@ -1004,6 +1004,16 @@
 						["string", "'LinesIntersectsCoincident', 'LinesIntersectsOnePoint', or 'LinesDontIntersects'"]
 					]
 				},
+				"BoxUnion" : {
+					"description" : "Calculates the union of two 3D boxes.",
+					"parameters" : [
+						["aBox", "Box", "the first box"],
+						["bBox", "Box", "the second box"]
+					],
+					"returns" : [
+						["Box", "the result"]
+					]
+				},
 				"IdentityTransformation" : {
 					"description" : "Generates an identity transformation.",
 					"returns" : [
@@ -1676,6 +1686,62 @@
 							"description" : "Clones the line.",
 							"returns" : [
 								["Line", "a cloned instance"]
+							]
+						}
+					}
+				},
+				"Box2D" : {
+					"description" : "Represents a 2D box.",
+					"parameters" : [
+						["min", "Coord2D", "the minimum position of the box"],
+						["min", "Coord2D", "the maximum position of the box"]
+					],
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the box.",
+							"parameters" : [
+								["min", "Coord2D", "the minimum position of the box"],
+								["min", "Coord2D", "the maximum position of the box"]
+							]
+						},
+						"GetCenter" : {
+							"description" : "Returns the center point of the box.",
+							"returns" : [
+								["Coord2D", "the result"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the box.",
+							"returns" : [
+								["Box2D", "a cloned instance"]
+							]
+						}
+					}
+				},
+				"Box" : {
+					"description" : "Represents a 3D box.",
+					"parameters" : [
+						["min", "Coord", "the minimum position of the box"],
+						["min", "Coord", "the maximum position of the box"]
+					],
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the box.",
+							"parameters" : [
+								["min", "Coord", "the minimum position of the box"],
+								["min", "Coord", "the maximum position of the box"]
+							]
+						},
+						"GetCenter" : {
+							"description" : "Returns the center point of the box.",
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the box.",
+							"returns" : [
+								["Box", "a cloned instance"]
 							]
 						}
 					}
@@ -3014,7 +3080,7 @@
 						"GetBoundingBox" : {
 							"description" : "Returns the bounding box of the body.",
 							"returns" : [
-								["Coord[2]", "the minimum and maximum coordinate of the bounding box"]
+								["Box", "the result"]
 							]
 						},
 						"GetCenter" : {

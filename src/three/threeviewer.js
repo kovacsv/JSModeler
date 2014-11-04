@@ -317,8 +317,7 @@ JSM.ThreeViewer.prototype.AdjustClippingPlanes = function (radiusLimit)
 JSM.ThreeViewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
-	var center = JSM.MidCoord (boundingBox[0], boundingBox[1]);
-	return center;
+	return boundingBox.GetCenter ();
 };
 
 JSM.ThreeViewer.prototype.GetBoundingBox = function ()
@@ -344,7 +343,7 @@ JSM.ThreeViewer.prototype.GetBoundingBox = function ()
 		}
 	});
 
-	return [min, max];
+	return new JSM.Box (min, max);
 };
 
 JSM.ThreeViewer.prototype.GetBoundingSphereRadius = function (center)

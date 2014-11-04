@@ -121,8 +121,7 @@ JSM.SpriteViewer.prototype.FitInWindow = function ()
 JSM.SpriteViewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
-	var center = JSM.MidCoord (boundingBox[0], boundingBox[1]);
-	return center;
+	return boundingBox.GetCenter ();
 };
 
 JSM.SpriteViewer.prototype.GetBoundingBox = function ()
@@ -141,7 +140,7 @@ JSM.SpriteViewer.prototype.GetBoundingBox = function ()
 		max.z = JSM.Maximum (max.z, coord.z);
 	}
 
-	return [min, max];
+	return new JSM.Box (min, max);
 };
 
 JSM.SpriteViewer.prototype.GetBoundingSphereRadius = function (center)

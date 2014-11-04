@@ -13,6 +13,8 @@
 ../src/geometry/sectorutils.js
 ../src/geometry/line.js
 ../src/geometry/lineutils.js
+../src/geometry/box.js
+../src/geometry/boxutils.js
 ../src/geometry/transformation.js
 ../src/geometry/transformationutils.js
 ../src/geometry/plane.js
