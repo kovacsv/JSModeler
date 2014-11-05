@@ -305,12 +305,7 @@ JSM.TraversePgonsAlongEdges = function (pgonIndex, adjacencyInfo, onPgonFound)
 		}
 	}
 
-	var pgonIsProcessed = [];
-	var i;
-	for (i = 0; i < adjacencyInfo.pgons.length; i++) {
-		pgonIsProcessed.push (false);
-	}
-	
+	var pgonIsProcessed = {};
 	var pgonStack = [pgonIndex];
 	var currentPgonIndex;
 	while (pgonStack.length > 0) {

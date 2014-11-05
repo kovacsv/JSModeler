@@ -1090,7 +1090,7 @@ AddTest ('ConvexHullTest', function (test)
 
 AddTest ('OctreeTest', function (test)
 {
-	var octree = new JSM.Octree (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0));
+	var octree = new JSM.Octree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)));
 	var coords = [
 		new JSM.Coord (0.0, 0.0, 0.0),
 		new JSM.Coord (1.0, 1.0, 1.0),
@@ -1104,7 +1104,10 @@ AddTest ('OctreeTest', function (test)
 		new JSM.Coord (0.99, 0.99, 0.99),
 		new JSM.Coord (-0.99, -0.99, -0.99),
 		new JSM.Coord (0.99, -0.99, -0.99),
-		new JSM.Coord (-0.99, 0.99, -0.99)
+		new JSM.Coord (-0.99, 0.99, -0.99),
+		new JSM.Coord (-0.98, 0.99, -0.99),
+		new JSM.Coord (-0.97, 0.99, -0.99),
+		new JSM.Coord (-0.96, 0.99, -0.99)		
 	];
 	
 	test.Assert (octree.AddCoord (coords[0]) == 0);
@@ -1150,6 +1153,10 @@ AddTest ('OctreeTest', function (test)
 	test.Assert (octree.FindCoord (coords[10]) == 8);
 	test.Assert (octree.FindCoord (coords[11]) == 9);
 	test.Assert (octree.FindCoord (coords[12]) == 10);
+
+	test.Assert (octree.FindCoord (coords[13]) == -1);
+	test.Assert (octree.FindCoord (coords[14]) == -1);
+	test.Assert (octree.FindCoord (coords[15]) == -1);
 });
 
 AddTestSuite ('Geometry - Polygon');

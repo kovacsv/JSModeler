@@ -1975,10 +1975,10 @@
 					}
 				},
 				"Octree" : {
-					"description" : "Defines an octree.",
+					"description" : "Defines an octree. The octree contains each coordinate only once.",
 					"parameters" : [
-						["min", "Coord", "bounding box minimum"],
-						["max", "Coord", "bounding box maximum"]
+						["box", "Box", "bounding box"],
+						["maxCoordNumInNodes", "integer", "maximum number of coordinates in a node"]
 					],
 					"functions" : {
 						"AddCoord" : {

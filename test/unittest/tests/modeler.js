@@ -569,6 +569,66 @@ AddTest ('TriangulatePolygonsTest', function (test)
 	test.Assert (JSM.CheckSolidBody (body));
 });
 
+AddTest ('OctreeBodyTest', function (test)
+{
+	function TestOctreeOnBody (body, test, maxCoordNumInNodes)
+	{
+		var octree = new JSM.Octree (body.GetBoundingBox (), maxCoordNumInNodes);
+		var success = true;
+		for (var i = 0; i < body.VertexCount (); i++) {
+			var index = octree.AddCoord (body.GetVertexPosition (i));
+			if (i != index) {
+				return false;
+			}
+			var index = octree.FindCoord (body.GetVertexPosition (i));
+			if (i != index) {
+				return false;
+			}
+		}
+		for (var i = 0; i < body.VertexCount (); i++) {
+			var index = octree.FindCoord (body.GetVertexPosition (i));
+			if (i != index) {
+				return false;
+			}
+		}
+		for (var i = 0; i < body.VertexCount (); i++) {
+			var index = octree.AddCoord (body.GetVertexPosition (i));
+			if (i != index) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	function TestOctree (body, test)
+	{
+		var coordNums = [0, 1, 10, 50, 100, 1000];
+		var i, coordNum;
+		for (i = 0; i < coordNums.length; i++) {
+			coordNum = coordNums[i];
+			if (!TestOctreeOnBody (body, test, coordNum)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	var body = JSM.GenerateRectangle (1, 2);
+	test.Assert (TestOctree (body, test));
+
+	var body = JSM.GenerateSegmentedRectangle (1, 2, 10, 10);
+	test.Assert (TestOctree (body, test));
+
+	var body = JSM.GenerateCircle (1.0, 25);	
+	test.Assert (TestOctree (body, test));
+	
+	var body = JSM.GenerateCuboid (1, 2, 3);
+	test.Assert (TestOctree (body, test));
+
+	var body = JSM.GenerateSphere (1.0, 50, true);
+	test.Assert (TestOctree (body, test));
+});
+
 AddTestSuite ('Modeler - Generator');
 
 AddTest ('GenerateRectangleTest', function (test)

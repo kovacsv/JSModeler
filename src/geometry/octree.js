@@ -1,20 +1,23 @@
 /**
 * Class: Octree
-* Description:
-*	Defines an octree.
+* Description: Defines an octree. The octree contains each coordinate only once.
 * Parameters:
-*	min {Coord} bounding box minimum
-*	max {Coord} bounding box maximum
+*	box {Box} bounding box
+*	maxCoordNumInNodes {integer} maximum number of coordinates in a node
 */
-JSM.Octree = function (min, max)
+JSM.Octree = function (box, maxCoordNumInNodes)
 {
 	this.coords = [];
 	this.root = {
-		center : JSM.MidCoord (min, max),
-		size : JSM.CoordSub (max, min),
-		coord : -1,
+		center : JSM.MidCoord (box.min, box.max),
+		size : JSM.CoordSub (box.max, box.min),
+		coords : [],
 		children : null
 	};
+	this.maxCoordNumInNodes = maxCoordNumInNodes;
+	if (this.maxCoordNumInNodes === undefined || this.maxCoordNumInNodes === null || this.maxCoordNumInNodes === 0) {
+		this.maxCoordNumInNodes = 50;
+	}
 };
 
 /**
@@ -48,7 +51,19 @@ JSM.Octree.prototype.FindCoord = function (coord)
 	if (node === null) {
 		return -1;
 	}
-	return node.coord;
+	return this.FindCoordInNode (coord, node);
+};
+
+JSM.Octree.prototype.FindCoordInNode = function (coord, node)
+{
+	var i, current;
+	for (i = 0; i < node.coords.length; i++) {
+		current = node.coords[i];
+		if (JSM.CoordIsEqual (coord, this.coords[current])) {
+			return current;
+		}
+	}
+	return -1;
 };
 
 JSM.Octree.prototype.AddCoordToNode = function (coord, root)
@@ -58,14 +73,16 @@ JSM.Octree.prototype.AddCoordToNode = function (coord, root)
 		return -1;
 	}
 	
-	if (node.coord == -1) {
-		node.coord = this.coords.length;
-		this.coords.push (coord);
-		return node.coord;
+	var found = this.FindCoordInNode (coord, node);
+	if (found != -1) {	
+		return found;
 	}
 	
-	if (JSM.CoordIsEqual (coord, this.coords[node.coord])) {	
-		return node.coord;
+	if (node.coords.length < this.maxCoordNumInNodes) {
+		var index = this.coords.length;
+		this.coords.push (coord);
+		node.coords.push (index);
+		return index;
 	}
 	
 	this.SplitNode (node);
@@ -105,35 +122,40 @@ JSM.Octree.prototype.FindNode = function (coord, node)
 
 JSM.Octree.prototype.SplitNode = function (node)
 {
-	function CreateNode (originalNode, direction)
+	function CreateNode (originalNode, dirX, dirY, dirZ)
 	{
 		var center = originalNode.center.Clone ();
 		var size = JSM.VectorMultiply (originalNode.size, 0.5);
-		center.x += direction.x * size.x * 0.5;
-		center.y += direction.y * size.y * 0.5;
-		center.z += direction.z * size.z * 0.5;
+		center.x += dirX * size.x * 0.5;
+		center.y += dirY * size.y * 0.5;
+		center.z += dirZ * size.z * 0.5;
 		
 		var newNode = {
 			center : center,
 			size : size,
-			coord : -1,
+			coords : [],
 			children : null
 		};
 		return newNode;
 	}
 
 	node.children = [
-		CreateNode (node, new JSM.Coord (-1.0, -1.0, -1.0)),
-		CreateNode (node, new JSM.Coord (+1.0, -1.0, -1.0)),
-		CreateNode (node, new JSM.Coord (+1.0, +1.0, -1.0)),
-		CreateNode (node, new JSM.Coord (-1.0, +1.0, -1.0)),
-		CreateNode (node, new JSM.Coord (-1.0, -1.0, +1.0)),
-		CreateNode (node, new JSM.Coord (+1.0, -1.0, +1.0)),
-		CreateNode (node, new JSM.Coord (+1.0, +1.0, +1.0)),
-		CreateNode (node, new JSM.Coord (-1.0, +1.0, +1.0))
+		CreateNode (node, -1.0, -1.0, -1.0),
+		CreateNode (node, +1.0, -1.0, -1.0),
+		CreateNode (node, +1.0, +1.0, -1.0),
+		CreateNode (node, -1.0, +1.0, -1.0),
+		CreateNode (node, -1.0, -1.0, +1.0),
+		CreateNode (node, +1.0, -1.0, +1.0),
+		CreateNode (node, +1.0, +1.0, +1.0),
+		CreateNode (node, -1.0, +1.0, +1.0)
 	];
 	
-	var newNode = this.FindNode (this.coords[node.coord], node);
-	newNode.coord = node.coord;
-	node.coord = -1;
+	var nodeCoords = node.coords;
+	node.coords = [];
+	
+	var i;
+	for (i = 0; i < nodeCoords.length; i++) {
+		var newNode = this.FindNode (this.coords[nodeCoords[i]], node);
+		newNode.coords.push (nodeCoords[i]);
+	}
 };
