@@ -4,6 +4,7 @@
 			<Folder name="core">
 				<File name="..\src\core\algorithm.js" />
 				<File name="..\src\core\async.js" />
+				<File name="..\src\core\check.js" />
 				<File name="..\src\core\jsm.js" />
 				<File name="..\src\core\timer.js" />
 			</Folder>
@@ -18,6 +19,8 @@
 				<File name="..\src\extras\svgtomodel.js" />
 			</Folder>
 			<Folder name="geometry">
+				<File name="..\src\geometry\box.js" />
+				<File name="..\src\geometry\boxutils.js" />
 				<File name="..\src\geometry\bsptree.js" />
 				<File name="..\src\geometry\convexhull.js" />
 				<File name="..\src\geometry\coord.js" />
@@ -28,6 +31,7 @@
 				<File name="..\src\geometry\line.js" />
 				<File name="..\src\geometry\lineutils.js" />
 				<File name="..\src\geometry\matrix.js" />
+				<File name="..\src\geometry\octree.js" />
 				<File name="..\src\geometry\plane.js" />
 				<File name="..\src\geometry\planeutils.js" />
 				<File name="..\src\geometry\polygon.js" />
@@ -43,6 +47,7 @@
 				<File name="..\src\import\binaryreader.js" />
 				<File name="..\src\import\importer.js" />
 				<File name="..\src\import\importer3ds.js" />
+				<File name="..\src\import\importercommon.js" />
 				<File name="..\src\import\importerobj.js" />
 				<File name="..\src\import\importerstl.js" />
 				<File name="..\src\import\trianglemodel.js" />

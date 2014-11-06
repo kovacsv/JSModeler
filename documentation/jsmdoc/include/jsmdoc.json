@@ -2113,6 +2113,15 @@
 						["integer", "the result"]
 					]
 				},
+				"CalculateBodyVertexToPolygon" : {
+					"description" : "Calculates an array which contains array of the connected polygon indices for all vertex indices in the body. The result is an array of array of polygon indices.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["integer[*][*]", "the result"]
+					]
+				},
 				"CalculateAdjacencyInfo" : {
 					"description" : "Calculates the adjacency info for a body.",
 					"parameters" : [
@@ -2165,15 +2174,6 @@
 					"parameters" : [
 						["body", "Body", "the body"],
 						["vertices", "integer[*]", "array of vertex indices stored in the body"]
-					]
-				},
-				"CalculateBodyVertexToPolygon" : {
-					"description" : "Calculates an array which contains array of the connected polygon indices for all vertex indices in the body. The result is an array of array of polygon indices.",
-					"parameters" : [
-						["body", "Body", "the body"]
-					],
-					"returns" : [
-						["integer[*][*]", "the result"]
 					]
 				},
 				"CalculateBodyPolygonNormal" : {
@@ -2254,6 +2254,15 @@
 						["body", "Body", "the body"],
 						["materials", "Materials", "the materials"],
 						["seeded", "boolean", "seeded random generation"]
+					]
+				},
+				"MergeCoplanarPolygons" : {
+					"description" : "Merges the coplanar polygons of a body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["Body", "the result"]
 					]
 				},
 				"CalculatePlanarTextureCoord" : {
@@ -2886,6 +2895,12 @@
 								["integer", "the stored vertex index"]
 							]
 						},
+						"GetVertices" : {
+							"description" : "Returns an array of the body vertex indices in the polygon.",
+							"returns" : [
+								["integer[]", "the stored vertex indices"]
+							]
+						},
 						"VertexIndexCount" : {
 							"description" : "Returns the vertex count of the polygon.",
 							"returns" : [
@@ -3178,6 +3193,9 @@
 							"description" : "Adds a material to the container.",
 							"parameters" : [
 								["material", "Material", "the material"]
+							],
+							"returns" : [
+								["integer", "the index of the newly added material"]
 							]
 						},
 						"GetDefaultMaterial" : {

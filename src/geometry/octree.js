@@ -85,7 +85,10 @@ JSM.Octree.prototype.AddCoordToNode = function (coord, root)
 		return index;
 	}
 	
-	this.SplitNode (node);
+	if (!this.SplitNode (node)) {
+		return -1;
+	}
+	
 	return this.AddCoordToNode (coord, node);
 };
 
@@ -139,6 +142,10 @@ JSM.Octree.prototype.SplitNode = function (node)
 		return newNode;
 	}
 
+	if (JSM.IsZero (node.size.x) && JSM.IsZero (node.size.y) && JSM.IsZero (node.size.z)) {
+		return false;
+	}
+	
 	node.children = [
 		CreateNode (node, -1.0, -1.0, -1.0),
 		CreateNode (node, +1.0, -1.0, -1.0),
@@ -158,4 +165,6 @@ JSM.Octree.prototype.SplitNode = function (node)
 		var newNode = this.FindNode (this.coords[nodeCoords[i]], node);
 		newNode.coords.push (nodeCoords[i]);
 	}
+	
+	return true;
 };

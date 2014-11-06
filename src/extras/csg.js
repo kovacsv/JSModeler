@@ -52,23 +52,21 @@ JSM.AddBodyToBSPTree = function (body, bspTree, id)
 */
 JSM.BooleanOperation = function (operation, aBody, bBody)
 {
-	function AddPolygonToBody (polygon, body, reversed)
+	function AddPolygonToBody (polygon, body, octree, reversed)
 	{
-		function AddBodyVertex (coord)
+		function AddBodyVertex (coord, octree)
 		{
 			var merge = false;
 			if (merge) {
-				var i, current;
-				for (i = 0; i < body.VertexCount (); i++) {
-					current = body.GetVertexPosition (i);
-					if (JSM.CoordIsEqual (current, coord)) {
-						return i;
-					}
+				var index = octree.FindCoord (coord);
+				if (index == -1) {
+					index = body.AddVertex (new JSM.BodyVertex (coord));
+					octree.AddCoord (coord);
 				}
+				return index;
 			}
-
-			body.AddVertex (new JSM.BodyVertex (coord));
-			return body.VertexCount () - 1;
+			
+			return body.AddVertex (new JSM.BodyVertex (coord));
 		}
 
 		var bodyPolygon = new JSM.BodyPolygon ([]);
@@ -76,12 +74,12 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 		var i, vertexIndex;
 		if (!reversed) {
 			for (i = 0; i < polygon.VertexCount (); i++) {
-				vertexIndex = AddBodyVertex (polygon.GetVertex (i));
+				vertexIndex = AddBodyVertex (polygon.GetVertex (i), octree);
 				bodyPolygon.AddVertexIndex (vertexIndex);
 			}
 		} else {
 			for (i = polygon.VertexCount () - 1; i >= 0; i--) {
-				vertexIndex = AddBodyVertex (polygon.GetVertex (i));
+				vertexIndex = AddBodyVertex (polygon.GetVertex (i), octree);
 				bodyPolygon.AddVertexIndex (vertexIndex);
 			}
 		}
@@ -92,11 +90,11 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 		body.AddPolygon (bodyPolygon);
 	}
 
-	function AddPolygonsToBody (polygons, body, reversed)
+	function AddPolygonsToBody (polygons, body, octree, reversed)
 	{
 		var i;
 		for (i = 0; i < polygons.length; i++) {
-			AddPolygonToBody (polygons[i], body, reversed);
+			AddPolygonToBody (polygons[i], body, octree, reversed);
 		}
 	}
 	
@@ -126,8 +124,6 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 	JSM.AddBodyToBSPTree (aBody, aTree, 'a');
 	JSM.AddBodyToBSPTree (bBody, bTree, 'b');
 
-	var result = new JSM.Body ();
-	
 	var aFrontPolygons = [];
 	var aBackPolygons = [];
 	var aPlanarFrontPolygons = [];
@@ -140,20 +136,23 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 	var bPlanarBackPolygons = [];
 	ClipNodePolygonsWithTree (bTree.GetNodes (), aTree, bFrontPolygons, bBackPolygons, bPlanarFrontPolygons, bPlanarBackPolygons);
 
+	var result = new JSM.Body ();
+	var resultOctree = new JSM.Octree (JSM.BoxUnion (aBody.GetBoundingBox (), bBody.GetBoundingBox ()));
+	
 	if (operation == 'Union') {
-		AddPolygonsToBody (aFrontPolygons, result, false);
-		AddPolygonsToBody (aPlanarFrontPolygons, result, false);
-		AddPolygonsToBody (aPlanarBackPolygons, result, false);
-		AddPolygonsToBody (bFrontPolygons, result, false);
-		AddPolygonsToBody (bPlanarFrontPolygons, result, false);
+		AddPolygonsToBody (aFrontPolygons, result, resultOctree, false);
+		AddPolygonsToBody (aPlanarFrontPolygons, result, resultOctree, false);
+		AddPolygonsToBody (aPlanarBackPolygons, result, resultOctree, false);
+		AddPolygonsToBody (bFrontPolygons, result, resultOctree, false);
+		AddPolygonsToBody (bPlanarFrontPolygons, result, resultOctree, false);
 	} else if (operation == 'Difference') {
-		AddPolygonsToBody (aFrontPolygons, result, false);
-		AddPolygonsToBody (aPlanarFrontPolygons, result, false);
-		AddPolygonsToBody (bBackPolygons, result, true);
+		AddPolygonsToBody (aFrontPolygons, result, resultOctree, false);
+		AddPolygonsToBody (aPlanarFrontPolygons, result, resultOctree, false);
+		AddPolygonsToBody (bBackPolygons, result, resultOctree, true);
 	} else if (operation == 'Intersection') {
-		AddPolygonsToBody (aBackPolygons, result, false);
-		AddPolygonsToBody (aPlanarBackPolygons, result, false);
-		AddPolygonsToBody (bBackPolygons, result, false);
+		AddPolygonsToBody (aBackPolygons, result, resultOctree, false);
+		AddPolygonsToBody (aPlanarBackPolygons, result, resultOctree, false);
+		AddPolygonsToBody (bBackPolygons, result, resultOctree, false);
 	}
 
 	return result;

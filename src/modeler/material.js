@@ -54,10 +54,13 @@ JSM.Materials.prototype.GetMaterial = function (index)
 * Description: Adds a material to the container.
 * Parameters:
 *	material {Material} the material
+* Returns:
+*	{integer} the index of the newly added material
 */
 JSM.Materials.prototype.AddMaterial = function (material)
 {
 	this.materials.push (material);
+	return this.materials.length - 1;
 };
 
 /**

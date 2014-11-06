@@ -1157,6 +1157,15 @@ AddTest ('OctreeTest', function (test)
 	test.Assert (octree.FindCoord (coords[13]) == -1);
 	test.Assert (octree.FindCoord (coords[14]) == -1);
 	test.Assert (octree.FindCoord (coords[15]) == -1);
+
+	var octree = new JSM.Octree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)), 3);
+	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 1.0, 0.0)) == 0);
+	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 2.0, 0.0)) == 1);
+	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 3.0, 0.0)) == 2);
+	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 4.0, 0.0)) == -1);
+	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 5.0, 0.0)) == -1);
+	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 6.0, 0.0)) == -1);
+	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 7.0, 0.0)) == -1);
 });
 
 AddTestSuite ('Geometry - Polygon');

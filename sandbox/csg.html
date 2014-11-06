@@ -129,26 +129,16 @@
 			timer.Start ();
 			var body = JSM.BooleanOperation ('Difference', aBody, bBody);
 			timer.Stop ();
+
+			//body = JSM.MergeCoplanarPolygons (body);
+			//JSM.GenerateRandomMaterials (body, materials);
+			
 			logDiv.innerHTML += 'Vertex count: '  + body.VertexCount () + '<br>';
 			logDiv.innerHTML += 'Polygon count: '  + body.PolygonCount () + '<br>';
 			logDiv.innerHTML += 'Operation time: '  + timer.Result () + '<br>';
-			/*
-			var maxColor = 16777215;
-			var minColor = parseInt (maxColor / 2);
-			var i, color;
-			for (i = 0; i < body.PolygonCount (); i++) {
-				color = JSM.SeededRandomInt (minColor, maxColor, i + 1);
-				materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
-				body.GetPolygon (i).SetMaterialIndex (i);
-			}
-			*/
 
-			var conversionData = {
-				textureLoadedCallback : null,
-				hasConvexPolygons : true
-			};
 			timer.Start ();
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials/*, cd*/);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
 			timer.Stop ();
 			logDiv.innerHTML += 'Conversion time: '  + timer.Result () + '<br>';
 			

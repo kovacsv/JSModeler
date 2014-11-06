@@ -117,6 +117,37 @@ JSM.GetAnotherPgonOfEdge = function (edge, currentPgon)
 };
 
 /**
+* Function: CalculateBodyVertexToPolygon
+* Description:
+*	Calculates an array which contains array of the connected polygon
+*	indices for all vertex indices in the body. The result is an
+*	array of array of polygon indices.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{integer[*][*]} the result
+*/
+JSM.CalculateBodyVertexToPolygon = function (body)
+{
+	var result = [];
+	
+	var i, j;
+	for (i = 0; i < body.VertexCount (); i++) {
+		result.push ([]);
+	}
+	
+	var polygon;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		polygon = body.GetPolygon (i);
+		for (j = 0; j < polygon.VertexIndexCount (); j++) {
+			result[polygon.GetVertexIndex (j)].push (i);
+		}
+	}
+	
+	return result;
+};
+
+/**
 * Function: CalculateAdjacencyInfo
 * Description: Calculates the adjacency info for a body.
 * Parameters:
