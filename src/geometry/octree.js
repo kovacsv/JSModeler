@@ -78,18 +78,16 @@ JSM.Octree.prototype.AddCoordToNode = function (coord, root)
 		return found;
 	}
 	
-	if (node.coords.length < this.maxCoordNumInNodes) {
-		var index = this.coords.length;
-		this.coords.push (coord);
-		node.coords.push (index);
-		return index;
+	if (node.coords.length >= this.maxCoordNumInNodes) {
+		if (this.SplitNode (node)) {
+			return this.AddCoordToNode (coord, node);
+		}
 	}
 	
-	if (!this.SplitNode (node)) {
-		return -1;
-	}
-	
-	return this.AddCoordToNode (coord, node);
+	var index = this.coords.length;
+	this.coords.push (coord);
+	node.coords.push (index);
+	return index;
 };
 
 JSM.Octree.prototype.FindNode = function (coord, node)

@@ -1159,13 +1159,31 @@ AddTest ('OctreeTest', function (test)
 	test.Assert (octree.FindCoord (coords[15]) == -1);
 
 	var octree = new JSM.Octree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)), 3);
-	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 1.0, 0.0)) == 0);
-	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 2.0, 0.0)) == 1);
-	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 3.0, 0.0)) == 2);
-	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 4.0, 0.0)) == -1);
-	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 5.0, 0.0)) == -1);
-	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 6.0, 0.0)) == -1);
-	test.Assert (octree.AddCoord (new JSM.Coord (5.0, 7.0, 0.0)) == -1);
+	var coords = [
+		new JSM.Coord (5.0, 1.0, 0.0),
+		new JSM.Coord (5.0, 2.0, 0.0),
+		new JSM.Coord (5.0, 3.0, 0.0),
+		new JSM.Coord (5.0, 4.0, 0.0),
+		new JSM.Coord (5.0, 5.0, 0.0),
+		new JSM.Coord (5.0, 6.0, 0.0),
+		new JSM.Coord (5.0, 7.0, 0.0)	
+	];
+	
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	test.Assert (octree.AddCoord (coords[1]) == 1);
+	test.Assert (octree.AddCoord (coords[2]) == 2);
+	test.Assert (octree.AddCoord (coords[3]) == 3);
+	test.Assert (octree.AddCoord (coords[4]) == 4);
+	test.Assert (octree.AddCoord (coords[5]) == 5);
+	
+	test.Assert (octree.AddCoord (coords[6]) == 6);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	test.Assert (octree.FindCoord (coords[1]) == 1);
+	test.Assert (octree.FindCoord (coords[2]) == 2);
+	test.Assert (octree.FindCoord (coords[3]) == 3);
+	test.Assert (octree.FindCoord (coords[4]) == 4);
+	test.Assert (octree.FindCoord (coords[5]) == 5);
+	test.Assert (octree.FindCoord (coords[6]) == 6);
 });
 
 AddTestSuite ('Geometry - Polygon');

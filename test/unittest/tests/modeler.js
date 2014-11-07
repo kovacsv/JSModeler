@@ -619,13 +619,16 @@ AddTest ('OctreeBodyTest', function (test)
 	var body = JSM.GenerateSegmentedRectangle (1, 2, 10, 10);
 	test.Assert (TestOctree (body, test));
 
-	var body = JSM.GenerateCircle (1.0, 25);	
+	var body = JSM.GenerateCircle (1, 25);	
 	test.Assert (TestOctree (body, test));
 	
 	var body = JSM.GenerateCuboid (1, 2, 3);
 	test.Assert (TestOctree (body, test));
 
-	var body = JSM.GenerateSphere (1.0, 50, true);
+	var body = JSM.GenerateSphere (1, 50, true);
+	test.Assert (TestOctree (body, test));
+
+	var body = JSM.GenerateCylinder (1, 1, 50, true);
 	test.Assert (TestOctree (body, test));
 });
 
