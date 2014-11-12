@@ -102,49 +102,55 @@
 
 		JSM.BodySmartBuilder.prototype.AddPolygon = function (coords)
 		{
-			function AddVerticesToExistingEdges (body, polygonIndex, referencePolygonIndex)
+			function MergePolygons (body, aPolygonIndex, bPolygonIndex)
 			{
-				function GetVerticesOnSector (body, sector, referenceVertices)
+				function MergeToAnother (body, aPolygonIndex, bPolygonIndex)
 				{
-					var result = [];
-					var i, index, coord;
-					for (i = 0; i < referenceVertices.length; i++) {
-						index = referenceVertices[i];
-						coord = body.GetVertexPosition (index);
-						if (JSM.CoordSectorPosition (coord, sector) == 'CoordInsideOfSector') {
-							result.push (index);
+					function GetPolygonVertexIndicesOnSector (body, sector, vertices)
+					{
+						var result = [];
+						var i, index, coord;
+						for (i = 0; i < vertices.length; i++) {
+							index = vertices[i];
+							coord = body.GetVertexPosition (index);
+							if (JSM.CoordSectorPosition (coord, sector) == 'CoordInsideOfSector') {
+								result.push (index);
+							}
 						}
+						return result;
 					}
-					return result;
-				}
-				
-				function AddNewVerticesToPolygon (vertices, referenceVertices)
-				{
+
+					function GetEdgeSector (body, vertices, fromIndex)
+					{
+						var from = vertices[fromIndex];
+						var to = aVertices[fromIndex < vertices.length - 1 ? fromIndex + 1 : 0];
+						return new JSM.Sector (body.GetVertexPosition (from), body.GetVertexPosition (to));
+					}
+					
+					var aPolygon = body.GetPolygon (aPolygonIndex);
+					var bPolygon = body.GetPolygon (bPolygonIndex);
+					var aVertices = aPolygon.GetVertexIndices ();
+					var bVertices = bPolygon.GetVertexIndices ();
+
 					var newVertices = [];
-					var i, j, from, to, sector, verticesOnEdge;
-					for (i = 0; i < vertices.length; i++) {
-						from = vertices[i];
-						to = vertices[i < vertices.length - 1 ? i + 1 : 0];
-						sector = new JSM.Sector (body.GetVertexPosition (from), body.GetVertexPosition (to));
-						newVertices.push (from);
-						verticesOnEdge = GetVerticesOnSector (body, sector, referenceVertices);
+					var i, j, sector, verticesOnEdge;
+					for (i = 0; i < aVertices.length; i++) {
+						sector = GetEdgeSector (body, aVertices, i);
+						newVertices.push (aVertices[i]);
+						verticesOnEdge = GetPolygonVertexIndicesOnSector (body, sector, bVertices);
 						for (j = 0; j < verticesOnEdge.length; j++) {
 							newVertices.push (verticesOnEdge[j]);
 						}
 					}
-					return newVertices;
-				}
-				
-				if (polygonIndex == referencePolygonIndex) {
-					return;
+					aPolygon.SetVertexIndices (newVertices);
 				}
 			
-				var polygon = body.GetPolygon (polygonIndex);
-				var referencePolygon = body.GetPolygon (referencePolygonIndex);
-				var vertices = polygon.GetVertexIndices ();
-				var referenceVertices = referencePolygon.GetVertexIndices ();
-				var newVertices = AddNewVerticesToPolygon (vertices, referenceVertices);
-				polygon.SetVertexIndices (newVertices);
+				if (aPolygonIndex == bPolygonIndex) {
+					return;
+				}
+				
+				MergeToAnother (body, aPolygonIndex, bPolygonIndex);
+				MergeToAnother (body, bPolygonIndex, aPolygonIndex);
 			}
 		
 			var polygon = new JSM.BodyPolygon ([]);
@@ -156,8 +162,7 @@
 			
 			var pgonIndex = this.body.AddPolygon (polygon);
 			for (i = 0; i < this.body.PolygonCount (); i++) {
-				AddVerticesToExistingEdges (this.body, i, pgonIndex);
-				AddVerticesToExistingEdges (this.body, pgonIndex, i);
+				MergePolygons (this.body, i, pgonIndex);
 			}
 		};
 
