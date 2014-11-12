@@ -85,14 +85,25 @@ JSM.BodyPolygon.prototype.GetVertexIndex = function (index)
 };
 
 /**
-* Function: BodyPolygon.GetVertices
+* Function: BodyPolygon.GetVertexIndices
 * Description: Returns an array of the body vertex indices in the polygon.
 * Returns:
 *	{integer[]} the stored vertex indices
 */
-JSM.BodyPolygon.prototype.GetVertices = function ()
+JSM.BodyPolygon.prototype.GetVertexIndices = function ()
 {
 	return this.vertices;
+};
+
+/**
+* Function: BodyPolygon.SetVertexIndices
+* Description: Sets the vertex indices in the polygon.
+* Parameters:
+*	vertices {integer[]} the new vertex indices
+*/
+JSM.BodyPolygon.prototype.SetVertexIndices = function (vertices)
+{
+	this.vertices = vertices;
 };
 
 /**

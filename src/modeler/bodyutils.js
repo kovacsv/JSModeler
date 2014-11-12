@@ -422,7 +422,7 @@ JSM.MergeCoplanarPolygons = function (body)
 		
 		var oldVertices = [];
 		if (coplanarPgons.length == 1) {
-			oldVertices = body.GetPolygon (coplanarPgons[0]).GetVertices ();
+			oldVertices = body.GetPolygon (coplanarPgons[0]).GetVertexIndices ();
 		} else {
 			var contourEdges = [];
 			var startVertex = GetContourEdges (coplanarPgons, adjacency, contourEdges);
