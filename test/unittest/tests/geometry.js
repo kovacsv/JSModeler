@@ -641,6 +641,51 @@ AddTest ('CoordLinePositionTest', function (test)
 
 AddTest ('CoordSectorPositionTest', function (test)
 {
+	var sector1 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
+	var sector2 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 0.0));
+	var sector3 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 1.0, 1.0));
+	var sector4 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (42.0, 0.0, 0.0));
+	
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 1.0), sector1) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, -1.0), sector1) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.25, 0.0, 0.0), sector1) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.5, 0.0, 0.0), sector1) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.75, 0.0, 0.0), sector1) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 0.0), sector1) == 'CoordOnSectorEndCoord');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.0, 0.0, 0.0), sector1) == 'CoordOnSectorEndCoord');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (-0.1, 0.0, 0.0), sector1) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.1, 0.0, 0.0), sector1) == 'CoordOutsideOfSector');
+	
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.0, 0.0, 0.0), sector2) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 0.0), sector2) == 'CoordOnSectorEndCoord');
+    
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 1.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, -1.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.25, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.5, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.75, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 0.0), sector3) == 'CoordOnSectorEndCoord');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.0, 1.0, 1.0), sector3) == 'CoordOnSectorEndCoord');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.0, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (-0.1, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.1, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.5, 0.5, 0.5), sector3) == 'CoordInsideOfSector');
+	
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 1.0), sector4) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, -1.0), sector4) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.25, 0.0, 0.0), sector4) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.5, 0.0, 0.0), sector4) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.75, 0.0, 0.0), sector4) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 0.0), sector4) == 'CoordOnSectorEndCoord');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.0, 0.0, 0.0), sector4) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (-0.1, 0.0, 0.0), sector4) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.1, 0.0, 0.0), sector4) == 'CoordInsideOfSector');	
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (42, 0.0, 0.0), sector4) == 'CoordOnSectorEndCoord');	
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (42.1, 0.0, 0.0), sector4) == 'CoordOutsideOfSector');	
+});
+
+AddTest ('CoordSectorPosition2DTest', function (test)
+{
 	var coord = new JSM.Coord2D (1.0, 0.0);
 	var sector = new JSM.Sector2D (new JSM.Coord2D (0.0, 1.0), new JSM.Coord2D (1.0, 1.0));
 	test.Assert (JSM.CoordSectorPosition2D (coord, sector) == 'CoordOutsideOfSector');
