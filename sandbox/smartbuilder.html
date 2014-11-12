@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<script type="text/javascript" src="../build/three.min.js"></script>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../src/core/timer.js"></script>
+	<script type="text/javascript" src="../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../src/core/async.js"></script>
+	<script type="text/javascript" src="../src/core/check.js"></script>
+	<script type="text/javascript" src="../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/box.js"></script>
+	<script type="text/javascript" src="../src/geometry/boxutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/octree.js"></script>
+	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../src/modeler/light.js"></script>
+	<script type="text/javascript" src="../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../src/modeler/explode.js"></script>
+	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../src/import/trianglemodel.js"></script>
+	<script type="text/javascript" src="../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../src/import/importer.js"></script>
+	<script type="text/javascript" src="../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../src/import/importercommon.js"></script>
+	<script type="text/javascript" src="../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../src/extras/surfaces.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../src/renderer/converter.js"></script>
+	<script type="text/javascript" src="../src/viewer/jsonfileloader.js"></script>
+	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../src/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../src/three/threeviewer.js"></script>
+<!-- JSModeler includes end -->
+	<title>Example</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+
+		JSM.BodySmartBuilder = function (box)
+		{
+			this.body = new JSM.Body ();
+			this.octree = new JSM.Octree (box);
+			this.normals = [];
+		};
+
+		JSM.BodySmartBuilder.prototype.AddVertex = function (coord)
+		{
+			var index = this.octree.FindCoord (coord);
+			if (index == -1) {
+				this.octree.AddCoord (coord);
+				index = this.body.AddVertex (new JSM.BodyVertex (coord));
+			}
+			return index;
+		};
+
+		JSM.BodySmartBuilder.prototype.AddPolygon = function (coords)
+		{
+			function AddVerticesToExistingEdges (body, polygonIndex, referencePolygonIndex)
+			{
+				function GetVerticesOnSector (body, sector, referenceVertices)
+				{
+					var result = [];
+					var i, index, coord;
+					for (i = 0; i < referenceVertices.length; i++) {
+						index = referenceVertices[i];
+						coord = body.GetVertexPosition (index);
+						if (JSM.CoordSectorPosition (coord, sector) == 'CoordInsideOfSector') {
+							result.push (index);
+						}
+					}
+					return result;
+				}
+				
+				function AddNewVerticesToPolygon (vertices, referenceVertices)
+				{
+					var newVertices = [];
+					var i, j, from, to, sector, verticesOnEdge;
+					for (i = 0; i < vertices.length; i++) {
+						from = vertices[i];
+						to = vertices[i < vertices.length - 1 ? i + 1 : 0];
+						sector = new JSM.Sector (body.GetVertexPosition (from), body.GetVertexPosition (to));
+						newVertices.push (from);
+						verticesOnEdge = GetVerticesOnSector (body, sector, referenceVertices);
+						for (j = 0; j < verticesOnEdge.length; j++) {
+							newVertices.push (verticesOnEdge[j]);
+						}
+					}
+					return newVertices;
+				}
+				
+				if (polygonIndex == referencePolygonIndex) {
+					return;
+				}
+			
+				var polygon = body.GetPolygon (polygonIndex);
+				var referencePolygon = body.GetPolygon (referencePolygonIndex);
+				var vertices = polygon.GetVertexIndices ();
+				var referenceVertices = referencePolygon.GetVertexIndices ();
+				var newVertices = AddNewVerticesToPolygon (vertices, referenceVertices);
+				polygon.SetVertexIndices (newVertices);
+			}
+		
+			var polygon = new JSM.BodyPolygon ([]);
+			var i, index;
+			for (i = 0; i < coords.length; i++) {
+				index = this.AddVertex (coords[i]);
+				polygon.AddVertexIndex (index);
+			}
+			
+			var pgonIndex = this.body.AddPolygon (polygon);
+			for (i = 0; i < this.body.PolygonCount (); i++) {
+				AddVerticesToExistingEdges (this.body, i, pgonIndex);
+				AddVerticesToExistingEdges (this.body, pgonIndex, i);
+			}
+		};
+
+		JSM.BodySmartBuilder.prototype.GetBody = function ()
+		{
+			return this.body;
+		};
+
+		function Load ()
+		{
+			var TextureLoaded = function () {
+				viewer.Draw ();
+			};
+
+			var viewerSettings = {
+				cameraEyePosition : [-2.0, -1.5, 1.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
+
+			viewer = new JSM.ThreeViewer ();
+			viewer.Start (document.getElementById ('example'), viewerSettings);
+			
+			var builder = new JSM.BodySmartBuilder (new JSM.Box (new JSM.Coord (-2, -2, -2), new JSM.Coord (2, 2, 2)));
+
+			builder.AddPolygon ([
+				new JSM.Coord (0, 0, 0),
+				new JSM.Coord (0.5, 0, 0),
+				new JSM.Coord (0.5, 1, 0),
+				new JSM.Coord (0, 1, 0)
+			]);
+
+			builder.AddPolygon ([
+				new JSM.Coord (0.5, 0.25, 0),
+				new JSM.Coord (1.0, 0.25, 0),
+				new JSM.Coord (1.0, 0.75, 0),
+				new JSM.Coord (0.5, 0.75, 0)
+			]);
+
+			builder.AddPolygon ([
+				new JSM.Coord (0.5, 0.0, 0),
+				new JSM.Coord (1.0, 0.0, 0),
+				new JSM.Coord (1.0, 0.25, 0),
+				new JSM.Coord (0.5, 0.25, 0)
+			]);
+			
+			builder.AddPolygon ([
+				new JSM.Coord (0.5, 0.75, 0),
+				new JSM.Coord (1.0, 0.75, 0),
+				new JSM.Coord (1.0, 1.0, 0),
+				new JSM.Coord (0.5, 1.0, 0)
+			]);
+
+			builder.AddPolygon ([
+				new JSM.Coord (1.0, 0.0, 0),
+				new JSM.Coord (1.5, 0.0, 0),
+				new JSM.Coord (1.5, 1.0, 0),
+				new JSM.Coord (1.0, 1.0, 0)
+			]);
+
+			var body = builder.GetBody ();
+			body = JSM.MergeCoplanarPolygons (body);
+			
+			var infoDiv = document.getElementById ('info');
+			infoDiv.innerHTML =
+				"Vertex count: " + body.VertexCount () + '<br>' +
+				"Polygon count: " + body.PolygonCount ()
+			;
+			
+			var materials = new JSM.Materials ();
+			JSM.GenerateRandomMaterials (body, materials, true);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			for (var i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}
+
+			viewer.Draw ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<canvas id="example" width="800" height="500"></canvas>
+	<div id="info"></div>
+</body>
+
+</html>
