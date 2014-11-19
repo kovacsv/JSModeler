@@ -69,9 +69,7 @@ var meshes = JSM.ConvertBodyToThreeMeshes (body);
 			</div>
 			To show the body in the built-in viewer, we can use the following code.
 <pre>
-for (var i = 0; i < meshes.length; i++) {
-	viewer.AddMesh (meshes[i]);
-}		
+viewer.AddMeshes (meshes);
 </pre>
 		</p>
 		
