@@ -16,7 +16,7 @@ JSM.CoordSectorPosition2D = function (coord, sector)
 	var x2 = sector.end.x;
 	var y2 = sector.end.y;
 
-	var length = Math.pow (x2 - x1, 2) + Math.pow (y2 - y1, 2);
+	var length = sector.GetLength ();
 	if (JSM.IsZero (length)) {
 		if (JSM.CoordIsEqual2D (coord, sector.beg)) {
 			return 'CoordOnSectorEndCoord';
@@ -25,7 +25,7 @@ JSM.CoordSectorPosition2D = function (coord, sector)
 		return 'CoordOutsideOfSector';
 	}
 
-	var u = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / length;
+	var u = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / (length * length);
 	if (JSM.IsLower (u, 0.0) || JSM.IsGreater (u, 1.0)) {
 		return 'CoordOutsideOfSector';
 	}
@@ -41,6 +41,54 @@ JSM.CoordSectorPosition2D = function (coord, sector)
 	}
 
 	return 'CoordInsideOfSector';
+};
+
+/**
+* Function: CoordSectorPosition
+* Description: Calculates the position of a coordinate and a sector.
+* Parameters:
+*	coord {Coord} the coordinate
+*	sector {Sector} the sector
+* Returns:
+*	{string} 'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'
+*/
+JSM.CoordSectorPosition = function (coord, sector)
+{
+	var x = coord.x;
+	var y = coord.y;
+	var z = coord.z;
+
+	var a = sector.beg;
+	var b = JSM.CoordSub (sector.end, sector.beg);
+	
+	var x1 = a.x;
+	var y1 = a.y;
+	var z1 = a.z;
+	var x2 = a.x + b.x;
+	var y2 = a.y + b.y;
+	var z2 = a.z + b.z;
+
+	var denom = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1);
+	if (JSM.IsZero (denom)) {
+		if (JSM.CoordIsEqual (a, coord)) {
+			return 'CoordOnSectorEndCoord';
+		}
+		return 'CoordOutsideOfSector';
+	}
+
+	var u = ((x2 - x1) * (x - x1) + (y2 - y1) * (y - y1) + (z2 - z1) * (z - z1)) / denom;
+	var c = JSM.CoordAdd (a, JSM.VectorMultiply (b, u));
+	var distance = JSM.CoordDistance (coord, c);
+	if (JSM.IsZero (distance)) {
+		if (JSM.IsLower (u, 0.0) || JSM.IsGreater (u, 1.0)) {
+			return 'CoordOutsideOfSector';
+		} else if (JSM.IsEqual (u, 0.0) || JSM.IsEqual (u, 1.0)) {
+			return 'CoordOnSectorEndCoord';
+		}
+		return 'CoordInsideOfSector';
+	}
+
+	return 'CoordOutsideOfSector';
 };
 
 /**

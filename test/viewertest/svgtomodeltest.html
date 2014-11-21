@@ -14,6 +14,7 @@
 	<script type="text/javascript" src="../../src/core/timer.js"></script>
 	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
 	<script type="text/javascript" src="../../src/core/async.js"></script>
+	<script type="text/javascript" src="../../src/core/check.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
 	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
@@ -24,6 +25,8 @@
 	<script type="text/javascript" src="../../src/geometry/sectorutils.js"></script>
 	<script type="text/javascript" src="../../src/geometry/line.js"></script>
 	<script type="text/javascript" src="../../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/box.js"></script>
+	<script type="text/javascript" src="../../src/geometry/boxutils.js"></script>
 	<script type="text/javascript" src="../../src/geometry/transformation.js"></script>
 	<script type="text/javascript" src="../../src/geometry/transformationutils.js"></script>
 	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
@@ -32,6 +35,7 @@
 	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
 	<script type="text/javascript" src="../../src/geometry/polygon.js"></script>
 	<script type="text/javascript" src="../../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/octree.js"></script>
 	<script type="text/javascript" src="../../src/geometry/bsptree.js"></script>
 	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
 	<script type="text/javascript" src="../../src/modeler/body.js"></script>
@@ -39,8 +43,8 @@
 	<script type="text/javascript" src="../../src/modeler/color.js"></script>
 	<script type="text/javascript" src="../../src/modeler/light.js"></script>
 	<script type="text/javascript" src="../../src/modeler/material.js"></script>
-	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
@@ -162,7 +166,7 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			if (!viewer.Start ('test', viewerSettings)) {
+			if (!viewer.Start (document.getElementById ('test'), viewerSettings)) {
 				return;
 			}
 

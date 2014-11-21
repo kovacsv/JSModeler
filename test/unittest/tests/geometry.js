@@ -641,6 +641,51 @@ AddTest ('CoordLinePositionTest', function (test)
 
 AddTest ('CoordSectorPositionTest', function (test)
 {
+	var sector1 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
+	var sector2 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 0.0));
+	var sector3 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 1.0, 1.0));
+	var sector4 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (42.0, 0.0, 0.0));
+	
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 1.0), sector1) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, -1.0), sector1) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.25, 0.0, 0.0), sector1) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.5, 0.0, 0.0), sector1) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.75, 0.0, 0.0), sector1) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 0.0), sector1) == 'CoordOnSectorEndCoord');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.0, 0.0, 0.0), sector1) == 'CoordOnSectorEndCoord');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (-0.1, 0.0, 0.0), sector1) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.1, 0.0, 0.0), sector1) == 'CoordOutsideOfSector');
+	
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.0, 0.0, 0.0), sector2) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 0.0), sector2) == 'CoordOnSectorEndCoord');
+    
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 1.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, -1.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.25, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.5, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.75, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 0.0), sector3) == 'CoordOnSectorEndCoord');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.0, 1.0, 1.0), sector3) == 'CoordOnSectorEndCoord');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.0, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (-0.1, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.1, 0.0, 0.0), sector3) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.5, 0.5, 0.5), sector3) == 'CoordInsideOfSector');
+	
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 1.0), sector4) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, -1.0), sector4) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.25, 0.0, 0.0), sector4) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.5, 0.0, 0.0), sector4) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.75, 0.0, 0.0), sector4) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (0.0, 0.0, 0.0), sector4) == 'CoordOnSectorEndCoord');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.0, 0.0, 0.0), sector4) == 'CoordInsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (-0.1, 0.0, 0.0), sector4) == 'CoordOutsideOfSector');
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (1.1, 0.0, 0.0), sector4) == 'CoordInsideOfSector');	
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (42, 0.0, 0.0), sector4) == 'CoordOnSectorEndCoord');	
+	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (42.1, 0.0, 0.0), sector4) == 'CoordOutsideOfSector');	
+});
+
+AddTest ('CoordSectorPosition2DTest', function (test)
+{
 	var coord = new JSM.Coord2D (1.0, 0.0);
 	var sector = new JSM.Sector2D (new JSM.Coord2D (0.0, 1.0), new JSM.Coord2D (1.0, 1.0));
 	test.Assert (JSM.CoordSectorPosition2D (coord, sector) == 'CoordOutsideOfSector');
@@ -741,6 +786,20 @@ AddTest ('SectorSectorPositionTest', function (test)
 	
 	test.Assert (JSM.SectorSectorPosition2D (GetSector2D (0.0, 0.0, 1.0, 1.0), GetSector2D (3.0, 0.0, 3.0, 3.0)) == 'SectorsDontIntersects');
 	test.Assert (JSM.SectorSectorPosition2D (GetSector2D (3.0, 0.0, 3.0, 3.0), GetSector2D (0.0, 0.0, 1.0, 1.0)) == 'SectorsDontIntersects');
+});
+
+AddTest ('BoxTest', function (test)
+{
+	var box = new JSM.Box2D (new JSM.Coord2D (0.0, 0.0), new JSM.Coord2D (1.0, 1.0));
+	test.Assert (JSM.CoordIsEqual2D (box.GetCenter (), new JSM.Coord2D (0.5, 0.5)));
+
+	var box = new JSM.Box (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 1.0, 1.0));
+	test.Assert (JSM.CoordIsEqual (box.GetCenter (), new JSM.Coord (0.5, 0.5, 0.5)));
+
+	var box2 = new JSM.Box (new JSM.Coord (-0.5, -0.5, -0.5), new JSM.Coord (0.5, 0.5, 0.5));
+	var box3 = JSM.BoxUnion (box, box2);
+	test.Assert (JSM.CoordIsEqual (box3.min, new JSM.Coord (-0.5, -0.5, -0.5)));
+	test.Assert (JSM.CoordIsEqual (box3.max, new JSM.Coord (1.0, 1.0, 1.0)));
 });
 
 AddTest ('PlaneTest', function (test)
@@ -1072,6 +1131,104 @@ AddTest ('ConvexHullTest', function (test)
 
 	result = JSM.ConvexHull3D (coords);
 	test.Assert (result.toString () == '3,8,14,8,0,14,0,12,14,1,9,14,12,1,14,9,5,14,2,10,15,13,2,15,10,6,15,7,11,15,11,4,15,4,13,15,10,2,16,0,8,16,8,10,16,6,10,17,8,3,17,10,8,17,4,11,18,9,1,18,11,9,18,1,12,18,12,0,18,0,16,18,2,13,18,16,2,18,13,4,18,11,7,19,5,9,19,9,11,19,3,14,19,17,3,19,14,5,19,7,15,19,15,6,19,6,17,19');
+});
+
+AddTest ('OctreeTest', function (test)
+{
+	var octree = new JSM.Octree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)));
+	var coords = [
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (1.0, 1.0, 1.0),
+		new JSM.Coord (-1.0, -1.0, -1.0),
+		new JSM.Coord (0.1, 0.0, 0.0),
+		new JSM.Coord (0.2, 0.0, 0.0),
+		new JSM.Coord (0.3, 0.0, 0.0),
+		new JSM.Coord (0.30001, 0.0, 0.0),
+		new JSM.Coord (0.30000001, 0.0, 0.0),
+		new JSM.Coord (0.30001001, 0.0, 0.0),
+		new JSM.Coord (0.99, 0.99, 0.99),
+		new JSM.Coord (-0.99, -0.99, -0.99),
+		new JSM.Coord (0.99, -0.99, -0.99),
+		new JSM.Coord (-0.99, 0.99, -0.99),
+		new JSM.Coord (-0.98, 0.99, -0.99),
+		new JSM.Coord (-0.97, 0.99, -0.99),
+		new JSM.Coord (-0.96, 0.99, -0.99)		
+	];
+	
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	
+	test.Assert (octree.AddCoord (coords[1]) == 1);
+	test.Assert (octree.AddCoord (coords[2]) == 2);
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+
+	test.Assert (octree.AddCoord (coords[3]) == 3);
+	test.Assert (octree.AddCoord (coords[4]) == 4);
+	test.Assert (octree.AddCoord (coords[5]) == 5);
+	test.Assert (octree.AddCoord (coords[6]) == 6);
+	test.Assert (octree.AddCoord (coords[7]) == 5);
+	test.Assert (octree.AddCoord (coords[8]) == 6);
+	
+	test.Assert (octree.AddCoord (coords[9]) == 7);
+	test.Assert (octree.AddCoord (coords[10]) == 8);
+	test.Assert (octree.AddCoord (coords[11]) == 9);
+	test.Assert (octree.AddCoord (coords[12]) == 10);
+	
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	
+	test.Assert (octree.FindCoord (coords[1]) == 1);
+	test.Assert (octree.FindCoord (coords[2]) == 2);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+
+	test.Assert (octree.FindCoord (coords[3]) == 3);
+	test.Assert (octree.FindCoord (coords[4]) == 4);
+	test.Assert (octree.FindCoord (coords[5]) == 5);
+	test.Assert (octree.FindCoord (coords[6]) == 6);
+	test.Assert (octree.FindCoord (coords[7]) == 5);
+	test.Assert (octree.FindCoord (coords[8]) == 6);
+	
+	test.Assert (octree.FindCoord (coords[9]) == 7);
+	test.Assert (octree.FindCoord (coords[10]) == 8);
+	test.Assert (octree.FindCoord (coords[11]) == 9);
+	test.Assert (octree.FindCoord (coords[12]) == 10);
+
+	test.Assert (octree.FindCoord (coords[13]) == -1);
+	test.Assert (octree.FindCoord (coords[14]) == -1);
+	test.Assert (octree.FindCoord (coords[15]) == -1);
+
+	var octree = new JSM.Octree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)), 3);
+	var coords = [
+		new JSM.Coord (5.0, 1.0, 0.0),
+		new JSM.Coord (5.0, 2.0, 0.0),
+		new JSM.Coord (5.0, 3.0, 0.0),
+		new JSM.Coord (5.0, 4.0, 0.0),
+		new JSM.Coord (5.0, 5.0, 0.0),
+		new JSM.Coord (5.0, 6.0, 0.0),
+		new JSM.Coord (5.0, 7.0, 0.0)	
+	];
+	
+	test.Assert (octree.AddCoord (coords[0]) == 0);
+	test.Assert (octree.AddCoord (coords[1]) == 1);
+	test.Assert (octree.AddCoord (coords[2]) == 2);
+	test.Assert (octree.AddCoord (coords[3]) == 3);
+	test.Assert (octree.AddCoord (coords[4]) == 4);
+	test.Assert (octree.AddCoord (coords[5]) == 5);
+	
+	test.Assert (octree.AddCoord (coords[6]) == 6);
+	test.Assert (octree.FindCoord (coords[0]) == 0);
+	test.Assert (octree.FindCoord (coords[1]) == 1);
+	test.Assert (octree.FindCoord (coords[2]) == 2);
+	test.Assert (octree.FindCoord (coords[3]) == 3);
+	test.Assert (octree.FindCoord (coords[4]) == 4);
+	test.Assert (octree.FindCoord (coords[5]) == 5);
+	test.Assert (octree.FindCoord (coords[6]) == 6);
 });
 
 AddTestSuite ('Geometry - Polygon');

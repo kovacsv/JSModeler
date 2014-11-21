@@ -17,9 +17,9 @@ JSM.ThreeViewer = function ()
 	this.enableDraw = null;
 };
 
-JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
+JSM.ThreeViewer.prototype.Start = function (canvas, settings)
 {
-	if (!this.IsWebGLEnabled ()) {
+	if (!JSM.IsWebGLEnabled ()) {
 		return false;
 	}
 
@@ -27,7 +27,7 @@ JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
 		return false;
 	}
 	
-	if (!this.InitThree (canvasName)) {
+	if (!this.InitThree (canvas)) {
 		return false;
 	}
 
@@ -42,19 +42,6 @@ JSM.ThreeViewer.prototype.Start = function (canvasName, settings)
 	this.drawLoop = false;
 	this.enableDraw = true;
 	this.DrawIfNeeded ();
-	return true;
-};
-
-JSM.ThreeViewer.prototype.IsWebGLEnabled = function ()
-{
-	if (!window.WebGLRenderingContext) {
-		return false;
-	}
-
-	if (!document.createElement ('canvas').getContext ('experimental-webgl')) {
-		return false;
-	}
-
 	return true;
 };
 
@@ -79,9 +66,9 @@ JSM.ThreeViewer.prototype.InitSettings = function (settings)
 	return true;
 };
 
-JSM.ThreeViewer.prototype.InitThree = function (canvasName)
+JSM.ThreeViewer.prototype.InitThree = function (canvas)
 {
-	this.canvas = document.getElementById (canvasName);
+	this.canvas = canvas;
 	if (!this.canvas || !this.canvas.getContext) {
 		return false;
 	}
@@ -330,8 +317,7 @@ JSM.ThreeViewer.prototype.AdjustClippingPlanes = function (radiusLimit)
 JSM.ThreeViewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
-	var center = JSM.MidCoord (boundingBox[0], boundingBox[1]);
-	return center;
+	return boundingBox.GetCenter ();
 };
 
 JSM.ThreeViewer.prototype.GetBoundingBox = function ()
@@ -357,7 +343,7 @@ JSM.ThreeViewer.prototype.GetBoundingBox = function ()
 		}
 	});
 
-	return [min, max];
+	return new JSM.Box (min, max);
 };
 
 JSM.ThreeViewer.prototype.GetBoundingSphereRadius = function (center)

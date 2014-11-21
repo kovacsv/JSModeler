@@ -20,7 +20,8 @@ JSMDemo.prototype =
 		this.uiDiv = document.getElementById (uiDivName);
 		this.editor = new Editor ();
 
-		if (!this.viewer.Start (canvasName, viewerSettings)) {
+		var canvas = document.getElementById (canvasName);
+		if (!this.viewer.Start (canvas, viewerSettings)) {
 			return false;
 		}
 

@@ -8,7 +8,7 @@
 */
 JSM.Material = function (parameters)
 {
-	var theParameters = {
+	var defaultParameters = {
 		ambient : 0x00cc00,
 		diffuse : 0x00cc00,
 		specular : 0x000000,
@@ -18,26 +18,9 @@ JSM.Material = function (parameters)
 		textureWidth : 1.0,
 		textureHeight : 1.0
 	};
-	
-	if (parameters !== undefined && parameters !== null) {
-		theParameters.ambient = JSM.ValueOrDefault (parameters.ambient, theParameters.ambient);
-		theParameters.diffuse = JSM.ValueOrDefault (parameters.diffuse, theParameters.diffuse);
-		theParameters.specular = JSM.ValueOrDefault (parameters.specular, theParameters.specular);
-		theParameters.shininess = JSM.ValueOrDefault (parameters.shininess, theParameters.shininess);
-		theParameters.opacity = JSM.ValueOrDefault (parameters.opacity, theParameters.opacity);
-		theParameters.texture = JSM.ValueOrDefault (parameters.texture, theParameters.texture);
-		theParameters.textureWidth = JSM.ValueOrDefault (parameters.textureWidth, theParameters.textureWidth);
-		theParameters.textureHeight = JSM.ValueOrDefault (parameters.textureHeight, theParameters.textureHeight);
-	}
-	
-	this.ambient = theParameters.ambient;
-	this.diffuse = theParameters.diffuse;
-	this.specular = theParameters.specular;
-	this.shininess = theParameters.shininess;
-	this.opacity = theParameters.opacity;
-	this.texture = theParameters.texture;
-	this.textureWidth = theParameters.textureWidth;
-	this.textureHeight = theParameters.textureHeight;
+
+	JSM.CopyObjectProperties (parameters, this, true);
+	JSM.CopyObjectProperties (defaultParameters, this, false);
 };
 
 /**
@@ -71,10 +54,13 @@ JSM.Materials.prototype.GetMaterial = function (index)
 * Description: Adds a material to the container.
 * Parameters:
 *	material {Material} the material
+* Returns:
+*	{integer} the index of the newly added material
 */
 JSM.Materials.prototype.AddMaterial = function (material)
 {
 	this.materials.push (material);
+	return this.materials.length - 1;
 };
 
 /**

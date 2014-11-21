@@ -37,10 +37,7 @@
 		function AddBodyToViewer (body, materials)
 		{
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
-			
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}		
+			viewer.AddMeshes (meshes);			
 		}
 		
 		function Demo1 ()
@@ -230,7 +227,8 @@
 			Resize ();
 
 			viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
+			var canvas = document.getElementById ('example');
+			viewer.Start (canvas, viewerSettings);
 
 			RunHash ();
 		}

@@ -3,7 +3,9 @@ JSM.TriangleBody = function (name)
 	this.name = name;
 	this.vertices = [];
 	this.normals = [];
+	this.uvs = [];
 	this.triangles = [];
+	this.defaultUVIndex = -1;
 };
 
 JSM.TriangleBody.prototype.SetName = function (name)
@@ -51,6 +53,32 @@ JSM.TriangleBody.prototype.GetNormal = function (index)
 JSM.TriangleBody.prototype.NormalCount = function ()
 {
 	return this.normals.length;
+};
+
+JSM.TriangleBody.prototype.AddUV = function (x, y)
+{
+	this.uvs.push (new JSM.Coord2D (x, y));
+	return this.uvs.length - 1;
+};
+
+JSM.TriangleBody.prototype.AddDefaultUV = function ()
+{
+	if (this.defaultUVIndex != -1) {
+		return this.defaultUVIndex;
+	}
+	
+	this.defaultUVIndex = this.AddUV (0.0, 0.0);
+	return this.defaultUVIndex;
+};
+
+JSM.TriangleBody.prototype.GetUV = function (index)
+{
+	return this.uvs[index];
+};
+
+JSM.TriangleBody.prototype.UVCount = function ()
+{
+	return this.uvs.length;
 };
 
 JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, u0, u1, u2, mat, curve)
@@ -109,7 +137,7 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 	
 		var triangle = body.triangles[i];
 		if (triangle.mat === undefined) {
-			triangle.mat = model.AddDefaultMaterial ();
+			triangle.mat = model.GetDefaultMaterialIndex ();
 		}
 		
 		var normal, normalIndex;
@@ -125,6 +153,12 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 				triangle.n1 = AddAverageNormal (body, triangle.v1, triangleIndex, triangleNormals, vertexToTriangles);
 				triangle.n2 = AddAverageNormal (body, triangle.v2, triangleIndex, triangleNormals, vertexToTriangles);
 			}
+		}
+		
+		if (triangle.u0 === undefined || triangle.u1 === undefined || triangle.u2 === undefined) {
+			triangle.u0 = body.AddDefaultUV ();
+			triangle.u1 = body.AddDefaultUV ();
+			triangle.u2 = body.AddDefaultUV ();
 		}
 	}
 
@@ -165,6 +199,10 @@ JSM.TriangleBody.prototype.Clone = function ()
 		result.normals.push (this.normals[i].Clone ());
 	}
 	
+	for (i = 0; i < this.uvs.length; i++) {
+		result.uvs.push (this.uvs[i].Clone ());
+	}
+	
 	for (i = 0; i < this.triangles.length; i++) {
 		triangle = this.triangles[i];
 		result.triangles.push ({
@@ -192,15 +230,16 @@ JSM.TriangleModel = function ()
 	this.defaultMaterial = -1;
 };
 
-JSM.TriangleModel.prototype.AddMaterial = function (name, ambient, diffuse, specular, opacity)
+JSM.TriangleModel.prototype.AddMaterial = function (material)
 {
-	this.materials.push ({
-		name : name,
-		ambient : ambient,
-		diffuse : diffuse,
-		specular : specular,
-		opacity : opacity
-	});
+	if (material === undefined || material === null) {
+		material = {};
+	}
+	
+	var newMaterial = {};
+	JSM.CopyObjectProperties (material, newMaterial, true);
+	
+	this.materials.push (newMaterial);
 	return this.materials.length - 1;
 };
 
@@ -212,14 +251,7 @@ JSM.TriangleModel.prototype.GetMaterial = function (index)
 JSM.TriangleModel.prototype.AddDefaultMaterial = function ()
 {
 	if (this.defaultMaterial == -1) {
-		this.materials.push ({
-			name : 'Default',
-			ambient : {r : 0.5, g : 0.5, b : 0.5},
-			diffuse : {r : 0.5, g : 0.5, b : 0.5},
-			specular : {r : 0.1, g : 0.1, b : 0.1},
-			opacity : 1.0
-		});
-		this.defaultMaterial = this.materials.length - 1;
+		this.defaultMaterial = this.AddMaterial ();
 	}
 	return this.defaultMaterial;
 };
@@ -261,11 +293,39 @@ JSM.TriangleModel.prototype.GetBody = function (index)
 	return this.bodies[index];
 };
 
-JSM.TriangleModel.prototype.Finalize = function ()
+JSM.TriangleModel.prototype.FinalizeMaterials = function ()
+{
+	var defaultMaterialData = {
+		name : 'Default',
+		ambient : [0.5, 0.5, 0.5],
+		diffuse : [0.5, 0.5, 0.5],
+		specular : [0.1, 0.1, 0.1],
+		shininess : 0.0,
+		opacity : 1.0,
+		texture : null,
+		offset : null,
+		scale : null,
+		rotation : null
+	};
+	
+	var i, material;
+	for (i = 0; i < this.materials.length; i++) {
+		material = this.materials[i];
+		JSM.CopyObjectProperties (defaultMaterialData, material, false);
+	}
+};
+
+JSM.TriangleModel.prototype.FinalizeBodies = function ()
 {
 	var i, body;
 	for (i = 0; i < this.bodies.length; i++) {
 		body = this.bodies[i];
 		body.Finalize (this);
 	}
+};
+
+JSM.TriangleModel.prototype.Finalize = function ()
+{
+	this.FinalizeBodies ();
+	this.FinalizeMaterials ();
 };

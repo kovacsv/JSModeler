@@ -23,14 +23,16 @@
 			};
 
 			var viewer = new JSM.ThreeViewer ();
-			if (!viewer.Start ('svgcanvas', viewerSettings)) {
+			if (!viewer.Start (document.getElementById ('svgcanvas'), viewerSettings)) {
 				viewer = null;
 				return;
 			}
 
 			var svgObject = document.getElementById ('svgid');
 			var modelAndMaterials = JSM.SvgToModel (svgObject, 8, 5);
-			var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1]);
+			var model = modelAndMaterials[0];
+			var materials = modelAndMaterials[1];
+			var meshes = JSM.ConvertModelToThreeMeshes (model, materials);			
 			viewer.AddMeshes (meshes);
 
 			viewer.FitInWindow ();
@@ -97,14 +99,16 @@ var viewerSettings = {
 };
 
 var viewer = new JSM.ThreeViewer ();
-if (!viewer.Start ('svgcanvas', viewerSettings)) {
+if (!viewer.Start (document.getElementById ('svgcanvas'), viewerSettings)) {
 	viewer = null;
 	return;
 }
 
 var svgObject = document.getElementById ('svgid');
 var modelAndMaterials = JSM.SvgToModel (svgObject, 8, 5);
-var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1]);
+var model = modelAndMaterials[0];
+var materials = modelAndMaterials[1];
+var meshes = JSM.ConvertModelToThreeMeshes (model, materials);
 viewer.AddMeshes (meshes);
 
 viewer.FitInWindow ();

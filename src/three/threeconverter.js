@@ -1,3 +1,39 @@
+JSM.IsPowerOfTwo = function (x)
+{
+	return (x & (x - 1) === 0);
+};
+
+JSM.NextPowerOfTwo = function (x)
+{
+	if (JSM.IsPowerOfTwo (x)) {
+		return x;
+	}
+
+	var result = 1;
+	while (result < x) {
+		result *= 2;
+	}
+	return result;
+};
+
+JSM.ResizeImageToPowerOfTwoSides = function (image)
+{
+	if (JSM.IsPowerOfTwo (image.width) && !JSM.IsPowerOfTwo (image.height)) {
+		return image;
+	}
+	
+	var width = JSM.NextPowerOfTwo (image.width);
+	var height = JSM.NextPowerOfTwo (image.height);
+
+	var canvas = document.createElement ('canvas');
+	canvas.width = width;
+	canvas.height = height;
+	
+	var context = canvas.getContext ('2d');
+	context.drawImage (image, 0, 0, width, height);
+	return context.getImageData (0, 0, width, height);
+};
+
 JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 {
 	function OnGeometryStart ()
@@ -13,7 +49,8 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		var threeMaterial = new THREE.MeshPhongMaterial ({
 			ambient : material.ambient,
 			color : material.diffuse,
-			specular : material.specular
+			specular : material.specular,
+			shininess : material.shininess
 		});
 		
 		if (theConversionData.doubleSided) {
@@ -27,6 +64,7 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		if (hasTexture) {
 			var textureName = material.texture;
 			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
+				texture.image = JSM.ResizeImageToPowerOfTwoSides (texture.image);
 				if (theConversionData.textureLoadedCallback !== null) {
 					theConversionData.textureLoadedCallback ();
 				}
@@ -115,6 +153,20 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, en
 	{
 		function AddTriangles (currentTriangles)
 		{
+			function GetTextureCoordinate (u, v, offset, scale, rotation)
+			{
+				var result = new THREE.Vector2 (u, v);
+				if (!JSM.IsZero (rotation)) {
+					var si = Math.sin (rotation * JSM.DegRad);
+					var co = Math.cos (rotation * JSM.DegRad);
+					result.x = co * u - si * v;
+					result.y = si * u + co * v;
+				}
+				result.x = textureOffset[0] + result.x * textureScale[0];
+				result.y = textureOffset[1] + result.y * textureScale[1];
+				return result;
+			}
+		
 			var materialIndex = currentTriangles.material;
 			var parameters = currentTriangles.parameters;
 			var materialData = materials[materialIndex];
@@ -122,24 +174,30 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, en
 			var textureName = materialData.texture;
 			var textureOffset = materialData.offset;
 			var textureScale = materialData.scale;
+			var textureRotation = materialData.rotation;
 			
 			var ambientColor = new THREE.Color ();
 			var diffuseColor = new THREE.Color ();
 			var specularColor = new THREE.Color ();
+			var shininess = materialData.shininess;
+
 			ambientColor.setRGB (materialData.ambient[0], materialData.ambient[1], materialData.ambient[2]);
 			diffuseColor.setRGB (materialData.diffuse[0], materialData.diffuse[1], materialData.diffuse[2]);
 			specularColor.setRGB (materialData.specular[0], materialData.specular[1], materialData.specular[2]);
 
-			if (textureName !== undefined) {
+			if (textureName !== undefined && textureName !== null) {
 				ambientColor.setRGB (1.0, 1.0, 1.0);
 				diffuseColor.setRGB (1.0, 1.0, 1.0);
 				specularColor.setRGB (1.0, 1.0, 1.0);
 				
-				if (textureOffset === undefined) {
+				if (textureOffset === undefined || textureOffset === null) {
 					textureOffset = [0.0, 0.0];
 				}
-				if (textureScale === undefined) {
+				if (textureScale === undefined || textureScale === null) {
 					textureScale = [1.0, 1.0];
+				}
+				if (textureRotation === undefined || textureRotation === null) {
+					textureRotation = 0.0;
 				}
 			}
 			
@@ -147,17 +205,19 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, en
 					ambient : diffuseColor.getHex (),
 					color : diffuseColor.getHex (),
 					specular : specularColor.getHex (),
+					shininess : shininess,
 					side : THREE.DoubleSide
 				}
 			);
-			
+
 			if (materialData.opacity !== 1.0) {
 				material.opacity = materialData.opacity;
 				material.transparent = true;
 			}
 			
-			if (textureName !== undefined) {
-				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
+			if (textureName !== undefined && textureName !== null) {
+				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (texture) {
+					texture.image = JSM.ResizeImageToPowerOfTwoSides (texture.image);
 					if (textureLoadedCallback !== undefined && textureLoadedCallback !== null) {
 						textureLoadedCallback ();
 					}
@@ -198,11 +258,11 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, en
 				vertexNormals.push (new THREE.Vector3 (normals[n3 + 0], normals[n3 + 1], normals[n3 + 2]));
 				geometry.faces[lastFace].vertexNormals = vertexNormals;
 
-				if (textureName !== undefined) {
+				if (textureName !== undefined && textureName !== null) {
 					textureUVs = [];
-					textureUVs.push (new THREE.Vector2 (textureOffset[0] + uvs[u1 + 0] * textureScale[0], textureOffset[1] + uvs[u1 + 1] * textureScale[1]));
-					textureUVs.push (new THREE.Vector2 (textureOffset[0] + uvs[u2 + 0] * textureScale[0], textureOffset[1] + uvs[u2 + 1] * textureScale[1]));
-					textureUVs.push (new THREE.Vector2 (textureOffset[0] + uvs[u3 + 0] * textureScale[0], textureOffset[1] + uvs[u3 + 1] * textureScale[1]));
+					textureUVs.push (GetTextureCoordinate (uvs[u1 + 0], uvs[u1 + 1], textureOffset, textureScale, textureRotation));
+					textureUVs.push (GetTextureCoordinate (uvs[u2 + 0], uvs[u2 + 1], textureOffset, textureScale, textureRotation));
+					textureUVs.push (GetTextureCoordinate (uvs[u3 + 0], uvs[u3 + 1], textureOffset, textureScale, textureRotation));
 					geometry.faceVertexUvs[0].push (textureUVs);
 				}
 			}

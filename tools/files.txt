@@ -2,6 +2,7 @@
 ../src/core/timer.js
 ../src/core/algorithm.js
 ../src/core/async.js
+../src/core/check.js
 ../src/geometry/coord.js
 ../src/geometry/determinant.js
 ../src/geometry/coordutils.js
@@ -12,6 +13,8 @@
 ../src/geometry/sectorutils.js
 ../src/geometry/line.js
 ../src/geometry/lineutils.js
+../src/geometry/box.js
+../src/geometry/boxutils.js
 ../src/geometry/transformation.js
 ../src/geometry/transformationutils.js
 ../src/geometry/plane.js
@@ -20,6 +23,7 @@
 ../src/geometry/convexhull.js
 ../src/geometry/polygon.js
 ../src/geometry/polygonutils.js
+../src/geometry/octree.js
 ../src/geometry/bsptree.js
 ../src/geometry/utilities.js
 ../src/modeler/body.js
@@ -27,8 +31,8 @@
 ../src/modeler/color.js
 ../src/modeler/light.js
 ../src/modeler/material.js
-../src/modeler/bodyutils.js
 ../src/modeler/adjacencylist.js
+../src/modeler/bodyutils.js
 ../src/modeler/textureutils.js
 ../src/modeler/cututils.js
 ../src/modeler/generator.js

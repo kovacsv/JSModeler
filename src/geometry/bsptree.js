@@ -1,29 +1,4 @@
 /**
-* Class: BSPNode
-* Description: Node of a BSP tree.
-*/
-JSM.BSPNode = function ()
-{
-	this.polygon = null;
-	this.userData = null;
-	this.plane = null;
-	this.parent = null;
-	this.inside = null;
-	this.outside = null;
-};
-
-/**
-* Function: BSPNode.IsLeaf
-* Description: Returns if the node is leaf.
-* Returns:
-*	{boolean} the result
-*/
-JSM.BSPNode.prototype.IsLeaf = function ()
-{
-	return this.inside === null && this.outside === null;
-};
-
-/**
 * Class: BSPTree
 * Description: Defines a BSP tree.
 */
@@ -107,16 +82,6 @@ JSM.BSPTree.prototype.NodeCount = function ()
 	return count;
 };
 
-/**
-* Function: BSPTree.AddPolygonToNode
-* Description: Adds a polygon to a node.
-* Parameters:
-*	node {BSPNode} the node
-*	polygon {Polygon} the polygon
-*	userData {anything} user data for polygon
-* Returns:
-*	{boolean} success
-*/
 JSM.BSPTree.prototype.AddPolygonToNode = function (node, polygon, userData)
 {
 	if (polygon.VertexCount () < 3) {
@@ -158,14 +123,6 @@ JSM.BSPTree.prototype.AddPolygonToNode = function (node, polygon, userData)
 	return true;
 };
 
-/**
-* Function: BSPTree.AddInsidePolygonsToNode
-* Description: Adds inside a polygons to a node.
-* Parameters:
-*	node {BSPNode} the node
-*	polygon {Polygon[*]} the polygons
-*	userData {anything} user data for polygons
-*/
 JSM.BSPTree.prototype.AddInsidePolygonsToNode = function (node, polygons, userData)
 {
 	if (node.inside === null) {
@@ -178,14 +135,6 @@ JSM.BSPTree.prototype.AddInsidePolygonsToNode = function (node, polygons, userDa
 	}
 };
 
-/**
-* Function: BSPTree.AddOutsidePolygonsToNode
-* Description: Adds outside a polygons to a node.
-* Parameters:
-*	node {BSPNode} the node
-*	polygon {Polygon[*]} the polygons
-*	userData {anything} user data for polygons
-*/
 JSM.BSPTree.prototype.AddOutsidePolygonsToNode = function (node, polygons, userData)
 {
 	if (node.outside === null) {
@@ -198,15 +147,16 @@ JSM.BSPTree.prototype.AddOutsidePolygonsToNode = function (node, polygons, userD
 	}
 };
 
-/**
-* Function: BSPTree.GetNewNode
-* Description: Creates a new node.
-* Returns:
-*	{BSPNode} the new node
-*/
 JSM.BSPTree.prototype.GetNewNode = function ()
 {
-	var node = new JSM.BSPNode ();
+	var node = {
+		polygon : null,
+		userData : null,
+		plane : null,
+		parent : null,
+		inside : null,
+		outside : null
+	};
 	return node;
 };
 

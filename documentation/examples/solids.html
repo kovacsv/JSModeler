@@ -165,7 +165,7 @@
 			);
 
 			viewer = new JSM.SoftwareViewer ();
-			var success = viewer.Start ('example', camera);
+			var success = viewer.Start (document.getElementById ('example'), camera);
 			
 			var check = document.getElementById ('showfacescheck');
 			viewer.drawMode = check.checked ? 'HiddenLinePainter' : 'Wireframe';			

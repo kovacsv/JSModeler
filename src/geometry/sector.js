@@ -25,6 +25,17 @@ JSM.Sector2D.prototype.Set = function (beg, end)
 };
 
 /**
+* Function: Sector.GetLength
+* Description: Returns the length of the sector.
+* Returns:
+*	{number} the result
+*/
+JSM.Sector2D.prototype.GetLength = function ()
+{
+	return JSM.CoordDistance2D (this.beg, this.end);
+};
+
+/**
 * Function: Sector2D.Clone
 * Description: Clones the sector.
 * Returns:
@@ -60,6 +71,17 @@ JSM.Sector.prototype.Set = function (beg, end)
 {
 	this.beg = beg;
 	this.end = end;
+};
+
+/**
+* Function: Sector.GetLength
+* Description: Returns the length of the sector.
+* Returns:
+*	{number} the result
+*/
+JSM.Sector.prototype.GetLength = function ()
+{
+	return JSM.CoordDistance (this.beg, this.end);
 };
 
 /**

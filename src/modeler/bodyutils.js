@@ -25,37 +25,6 @@ JSM.AddPolygonToBody = function (body, vertices)
 };
 
 /**
-* Function: CalculateBodyVertexToPolygon
-* Description:
-*	Calculates an array which contains array of the connected polygon
-*	indices for all vertex indices in the body. The result is an
-*	array of array of polygon indices.
-* Parameters:
-*	body {Body} the body
-* Returns:
-*	{integer[*][*]} the result
-*/
-JSM.CalculateBodyVertexToPolygon = function (body)
-{
-	var result = [];
-	
-	var i, j;
-	for (i = 0; i < body.VertexCount (); i++) {
-		result.push ([]);
-	}
-	
-	var polygon;
-	for (i = 0; i < body.PolygonCount (); i++) {
-		polygon = body.GetPolygon (i);
-		for (j = 0; j < polygon.VertexIndexCount (); j++) {
-			result[polygon.GetVertexIndex (j)].push (i);
-		}
-	}
-	
-	return result;
-};
-
-/**
 * Function: CalculateBodyPolygonNormal
 * Description: Calculates a normal vector for a polygon stored in the body.
 * Parameters:
@@ -330,7 +299,7 @@ JSM.TriangulatePolygons = function (body)
 * Parameters:
 *	body {Body} the body
 *	materials {Materials} the materials
-*	seed {integer} seed value
+*	seeded {boolean} seeded random generation
 */
 JSM.GenerateRandomMaterials = function (body, materials, seeded)
 {
@@ -343,8 +312,146 @@ JSM.GenerateRandomMaterials = function (body, materials, seeded)
 		} else {
 			color = JSM.RandomInt (minColor, maxColor);
 		}
-		materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
-		material = materials.Count () - 1;
+		material = materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
 		body.GetPolygon (i).SetMaterialIndex (material);
 	}
+};
+
+/**
+* Function: MergeCoplanarPolygons
+* Description: Merges the coplanar polygons of a body.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{Body} the result
+*/
+JSM.MergeCoplanarPolygons = function (body)
+{
+	function FindCoplanarPgonGroups (body, adjacency)
+	{
+		function GetCoplanarPgons (pgonIndex, adjacency, pgonNormals, processedPgons)
+		{
+			if (processedPgons[pgonIndex]) {
+				return null;
+			}
+			var coplanarPgons = [];
+			var angle;
+			JSM.TraversePgonsAlongEdges (pgonIndex, adjacency, function (currentIndex) {
+				angle = JSM.GetVectorsAngle (pgonNormals[pgonIndex], pgonNormals[currentIndex]);
+				if (JSM.IsEqual (angle, 0.0)) {
+					coplanarPgons.push (currentIndex);
+					processedPgons[currentIndex] = true;
+					return true;
+				}
+				return false;
+			});
+			return coplanarPgons;
+		}
+	
+		var pgonNormals = JSM.CalculateBodyPolygonNormals (body);
+		var coplanarPgonGroups = [];
+		var processedPgons = {};
+		
+		var i;
+		for (i = 0; i < adjacency.pgons.length; i++) {
+			coplanarPgons = GetCoplanarPgons (i, adjacency, pgonNormals, processedPgons);
+			if (coplanarPgons === null) {
+				continue;
+			}
+			coplanarPgonGroups.push (coplanarPgons);
+		}
+		
+		return coplanarPgonGroups;
+	}
+	
+	function CreatePolygonsFromGroup (body, adjacency, coplanarPgons, oldToNewVertices, result)
+	{
+		function GetContourEdges (coplanarPgons, adjacency, contourEdges)
+		{
+			var i, j;
+			var groupPgons = {};
+			for (i = 0; i < coplanarPgons.length; i++) {
+				groupPgons[coplanarPgons[i]] = true;
+			}
+
+			var startVertex = -1;
+			var pgon, pedge, edge, from, to;
+			for (i = 0; i < coplanarPgons.length; i++) {
+				pgon = adjacency.pgons[coplanarPgons[i]];
+				for (j = 0; j < pgon.pedges.length; j++) {
+					pedge = pgon.pedges[j];
+					edge = adjacency.edges[pedge.index];
+					if (!groupPgons[edge.pgon1] || !groupPgons[edge.pgon2]) {
+						if (!pedge.reverse) {
+							from = edge.vert1;
+							to = edge.vert2;
+						} else {
+							from = edge.vert2;
+							to = edge.vert1;
+						}
+						contourEdges[from] = to;
+						if (startVertex == -1) {
+							startVertex = from;
+						}
+					}
+				}
+			}
+			return startVertex;
+		}
+	
+		function AddPolygon (body, result, oldVertices, oldToNewVertices)
+		{
+			var newVertices = [];
+			var i, oldIndex, newIndex, oldCoord;
+			for (i = 0; i < oldVertices.length; i++) {
+				oldIndex = oldVertices[i];
+				newIndex = oldToNewVertices[oldIndex];
+				if (newIndex === undefined) {
+					oldCoord = body.GetVertexPosition (oldIndex);
+					newIndex = result.AddVertex (new JSM.BodyVertex (oldCoord.Clone ()));
+					oldToNewVertices[oldIndex] = newIndex;
+				}
+				newVertices.push (newIndex);
+			}
+			result.AddPolygon (new JSM.BodyPolygon (newVertices));
+		}
+	
+		if (coplanarPgons.length === 0) {
+			return;
+		}
+		
+		var oldVertices = [];
+		if (coplanarPgons.length == 1) {
+			oldVertices = body.GetPolygon (coplanarPgons[0]).GetVertexIndices ();
+		} else {
+			var contourEdges = [];
+			var startVertex = GetContourEdges (coplanarPgons, adjacency, contourEdges);
+			if (startVertex == -1) {
+				return;
+			}
+
+			var currentVertex = startVertex;
+			do {
+				if (currentVertex === undefined) {
+					break;
+				}
+				oldVertices.push (currentVertex);
+				currentVertex = contourEdges[currentVertex];
+			} while (currentVertex != startVertex);
+		}
+		
+		AddPolygon (body, result, oldVertices, oldToNewVertices);
+	}
+
+	var result = new JSM.Body ();
+	var adjacency = JSM.CalculateAdjacencyInfo (body);
+	var coplanarPgonGroups = FindCoplanarPgonGroups (body, adjacency);
+	var oldToNewVertices = {};
+	var i, coplanarPgons;
+	for (i = 0; i < coplanarPgonGroups.length; i++) {
+		coplanarPgons = coplanarPgonGroups[i];
+		CreatePolygonsFromGroup (body, adjacency, coplanarPgons, oldToNewVertices, result);
+	}
+
+	return result;
 };

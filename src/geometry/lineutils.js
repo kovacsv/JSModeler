@@ -30,6 +30,7 @@ JSM.CoordLinePosition2D = function (coord, line)
 * Parameters:
 *	coord {Coord} the coordinate
 *	line {Line} the line
+*	projected {Coord} the projected coordinate
 * Returns:
 *	{string} 'CoordOutsideOfLine', or 'CoordOnLine'
 */

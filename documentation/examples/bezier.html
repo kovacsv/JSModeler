@@ -415,7 +415,7 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
+			viewer.Start (document.getElementById ('example'), viewerSettings);
 			viewer.navigation.EnablePan (false);
 			
 			document.addEventListener ('mousemove', OnMouseMove, false);

@@ -12,6 +12,7 @@
 	<script type="text/javascript" src="../src/core/timer.js"></script>
 	<script type="text/javascript" src="../src/core/algorithm.js"></script>
 	<script type="text/javascript" src="../src/core/async.js"></script>
+	<script type="text/javascript" src="../src/core/check.js"></script>
 	<script type="text/javascript" src="../src/geometry/coord.js"></script>
 	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
 	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
@@ -22,6 +23,8 @@
 	<script type="text/javascript" src="../src/geometry/sectorutils.js"></script>
 	<script type="text/javascript" src="../src/geometry/line.js"></script>
 	<script type="text/javascript" src="../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/box.js"></script>
+	<script type="text/javascript" src="../src/geometry/boxutils.js"></script>
 	<script type="text/javascript" src="../src/geometry/transformation.js"></script>
 	<script type="text/javascript" src="../src/geometry/transformationutils.js"></script>
 	<script type="text/javascript" src="../src/geometry/plane.js"></script>
@@ -30,6 +33,7 @@
 	<script type="text/javascript" src="../src/geometry/convexhull.js"></script>
 	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
 	<script type="text/javascript" src="../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/octree.js"></script>
 	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
 	<script type="text/javascript" src="../src/geometry/utilities.js"></script>
 	<script type="text/javascript" src="../src/modeler/body.js"></script>
@@ -37,8 +41,8 @@
 	<script type="text/javascript" src="../src/modeler/color.js"></script>
 	<script type="text/javascript" src="../src/modeler/light.js"></script>
 	<script type="text/javascript" src="../src/modeler/material.js"></script>
-	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/cututils.js"></script>
 	<script type="text/javascript" src="../src/modeler/generator.js"></script>
@@ -92,7 +96,7 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
+			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
 			/*
 			var polygon = [
@@ -125,26 +129,16 @@
 			timer.Start ();
 			var body = JSM.BooleanOperation ('Difference', aBody, bBody);
 			timer.Stop ();
+
+			//body = JSM.MergeCoplanarPolygons (body);
+			//JSM.GenerateRandomMaterials (body, materials);
+			
 			logDiv.innerHTML += 'Vertex count: '  + body.VertexCount () + '<br>';
 			logDiv.innerHTML += 'Polygon count: '  + body.PolygonCount () + '<br>';
 			logDiv.innerHTML += 'Operation time: '  + timer.Result () + '<br>';
-			/*
-			var maxColor = 16777215;
-			var minColor = parseInt (maxColor / 2);
-			var i, color;
-			for (i = 0; i < body.PolygonCount (); i++) {
-				color = JSM.SeededRandomInt (minColor, maxColor, i + 1);
-				materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
-				body.GetPolygon (i).SetMaterialIndex (i);
-			}
-			*/
 
-			var conversionData = {
-				textureLoadedCallback : null,
-				hasConvexPolygons : true
-			};
 			timer.Start ();
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials/*, cd*/);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
 			timer.Stop ();
 			logDiv.innerHTML += 'Conversion time: '  + timer.Result () + '<br>';
 			

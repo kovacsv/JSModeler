@@ -8,9 +8,9 @@ JSM.SoftwareViewer = function ()
 	this.navigation = null;
 };
 
-JSM.SoftwareViewer.prototype.Start = function (canvasName, camera)
+JSM.SoftwareViewer.prototype.Start = function (canvas, camera)
 {
-	if (!this.InitCanvas (canvasName)) {
+	if (!this.InitCanvas (canvas)) {
 		return false;
 	}
 
@@ -21,10 +21,10 @@ JSM.SoftwareViewer.prototype.Start = function (canvasName, camera)
 	return true;
 };
 
-JSM.SoftwareViewer.prototype.InitCanvas = function (canvasName)
+JSM.SoftwareViewer.prototype.InitCanvas = function (canvas)
 {
 	this.bodies = [];
-	this.canvas = document.getElementById (canvasName);
+	this.canvas = canvas;
 	if (!this.canvas) {
 		return false;
 	}
@@ -79,8 +79,7 @@ JSM.SoftwareViewer.prototype.FitInWindow = function ()
 JSM.SoftwareViewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
-	var center = JSM.MidCoord (boundingBox[0], boundingBox[1]);
-	return center;
+	return boundingBox.GetCenter ();
 };
 
 JSM.SoftwareViewer.prototype.GetBoundingBox = function ()
@@ -102,7 +101,7 @@ JSM.SoftwareViewer.prototype.GetBoundingBox = function ()
 		}
 	}
 
-	return [min, max];
+	return new JSM.Box (min, max);
 };
 
 JSM.SoftwareViewer.prototype.GetBoundingSphereRadius = function (center)

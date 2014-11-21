@@ -5,9 +5,9 @@ JSM.PointCloudViewer = function ()
 	this.navigation = null;
 };
 
-JSM.PointCloudViewer.prototype.Init = function (canvasName, camera)
+JSM.PointCloudViewer.prototype.Init = function (canvas, camera)
 {
-	if (!this.InitRenderer (canvasName, camera)) {
+	if (!this.InitRenderer (canvas, camera)) {
 		return false;
 	}
 
@@ -18,10 +18,10 @@ JSM.PointCloudViewer.prototype.Init = function (canvasName, camera)
 	return true;
 };
 
-JSM.PointCloudViewer.prototype.InitRenderer = function (canvasName, camera)
+JSM.PointCloudViewer.prototype.InitRenderer = function (canvas, camera)
 {
 	this.renderer = new JSM.PointCloudRenderer ();
-	if (!this.renderer.Init (canvasName, camera)) {
+	if (!this.renderer.Init (canvas, camera)) {
 		return false;
 	}
 	return true;
@@ -67,8 +67,7 @@ JSM.PointCloudViewer.prototype.FitInWindow = function ()
 JSM.PointCloudViewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
-	var center = JSM.MidCoord (boundingBox[0], boundingBox[1]);
-	return center;
+	return boundingBox.GetCenter ();
 };
 
 JSM.PointCloudViewer.prototype.GetBoundingBox = function ()
@@ -90,7 +89,7 @@ JSM.PointCloudViewer.prototype.GetBoundingBox = function ()
 		}
 	}
 
-	return [min, max];
+	return new JSM.Box (min, max);
 };
 
 JSM.PointCloudViewer.prototype.GetBoundingSphereRadius = function (center)

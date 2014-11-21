@@ -85,6 +85,28 @@ JSM.BodyPolygon.prototype.GetVertexIndex = function (index)
 };
 
 /**
+* Function: BodyPolygon.GetVertexIndices
+* Description: Returns an array of the body vertex indices in the polygon.
+* Returns:
+*	{integer[]} the stored vertex indices
+*/
+JSM.BodyPolygon.prototype.GetVertexIndices = function ()
+{
+	return this.vertices;
+};
+
+/**
+* Function: BodyPolygon.SetVertexIndices
+* Description: Sets the vertex indices in the polygon.
+* Parameters:
+*	vertices {integer[]} the new vertex indices
+*/
+JSM.BodyPolygon.prototype.SetVertexIndices = function (vertices)
+{
+	this.vertices = vertices;
+};
+
+/**
 * Function: BodyPolygon.VertexIndexCount
 * Description: Returns the vertex count of the polygon.
 * Returns:
@@ -463,7 +485,7 @@ JSM.Body.prototype.Transform = function (transformation)
 * Function: Body.GetBoundingBox
 * Description: Returns the bounding box of the body.
 * Returns:
-*	{Coord[2]} the minimum and maximum coordinate of the bounding box
+*	{Box} the result
 */
 JSM.Body.prototype.GetBoundingBox = function ()
 {
@@ -481,7 +503,7 @@ JSM.Body.prototype.GetBoundingBox = function ()
 		max.z = JSM.Maximum (max.z, coord.z);
 	}
 	
-	return [min, max];
+	return new JSM.Box (min, max);
 };
 
 /**
@@ -493,7 +515,7 @@ JSM.Body.prototype.GetBoundingBox = function ()
 JSM.Body.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
-	return JSM.MidCoord (boundingBox[0], boundingBox[1]);
+	return boundingBox.GetCenter ();
 };
 
 /**

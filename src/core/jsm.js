@@ -1,6 +1,6 @@
 var JSM = {
 	mainVersion : 0,
-	subVersion : 32
+	subVersion : 33
 };
 
 JSM.Eps = 0.00000001;
@@ -257,6 +257,32 @@ JSM.ValueOrDefault = function (val, def)
 		return def;
 	}
 	return val;
+};
+
+/**
+* Function: CopyObjectProperties
+* Description: Copies one object properties to another object.
+* Parameters:
+*	source {anything} source object
+*	target {anything} target object
+*	overwrite {boolean} overwrite existing properties
+*/
+JSM.CopyObjectProperties = function (source, target, overwrite)
+{
+	if (source === undefined || source === null ||
+		target === undefined || target === null)
+	{
+		return;
+	}
+
+	var property;
+	for (property in source) {
+		if (source.hasOwnProperty (property)) {
+			if (overwrite || target[property] === undefined || target[property] === null) {
+				target[property] = source[property];
+			}
+		}
+	}
 };
 
 /**

@@ -569,6 +569,69 @@ AddTest ('TriangulatePolygonsTest', function (test)
 	test.Assert (JSM.CheckSolidBody (body));
 });
 
+AddTest ('OctreeBodyTest', function (test)
+{
+	function TestOctreeOnBody (body, test, maxCoordNumInNodes)
+	{
+		var octree = new JSM.Octree (body.GetBoundingBox (), maxCoordNumInNodes);
+		var success = true;
+		for (var i = 0; i < body.VertexCount (); i++) {
+			var index = octree.AddCoord (body.GetVertexPosition (i));
+			if (i != index) {
+				return false;
+			}
+			var index = octree.FindCoord (body.GetVertexPosition (i));
+			if (i != index) {
+				return false;
+			}
+		}
+		for (var i = 0; i < body.VertexCount (); i++) {
+			var index = octree.FindCoord (body.GetVertexPosition (i));
+			if (i != index) {
+				return false;
+			}
+		}
+		for (var i = 0; i < body.VertexCount (); i++) {
+			var index = octree.AddCoord (body.GetVertexPosition (i));
+			if (i != index) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	function TestOctree (body, test)
+	{
+		var coordNums = [0, 1, 10, 50, 100, 1000];
+		var i, coordNum;
+		for (i = 0; i < coordNums.length; i++) {
+			coordNum = coordNums[i];
+			if (!TestOctreeOnBody (body, test, coordNum)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	var body = JSM.GenerateRectangle (1, 2);
+	test.Assert (TestOctree (body, test));
+
+	var body = JSM.GenerateSegmentedRectangle (1, 2, 10, 10);
+	test.Assert (TestOctree (body, test));
+
+	var body = JSM.GenerateCircle (1, 25);	
+	test.Assert (TestOctree (body, test));
+	
+	var body = JSM.GenerateCuboid (1, 2, 3);
+	test.Assert (TestOctree (body, test));
+
+	var body = JSM.GenerateSphere (1, 50, true);
+	test.Assert (TestOctree (body, test));
+
+	var body = JSM.GenerateCylinder (1, 1, 50, true);
+	test.Assert (TestOctree (body, test));
+});
+
 AddTestSuite ('Modeler - Generator');
 
 AddTest ('GenerateRectangleTest', function (test)
@@ -1542,6 +1605,51 @@ AddTest ('BodyCylindricalTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[3][0], new JSM.Coord2D (radius * 3.0 / 6.0, 1.0)));
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[4][0], new JSM.Coord2D (radius * 2.0 / 6.0, 1.0)));
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[5][0], new JSM.Coord2D (radius * 1.0 / 6.0, 1.0)));
+});
+
+AddTestSuite ('Modeler - Utils');
+
+AddTest ('MergeCoplanarPolygonsTest', function (test)
+{
+	var body = new JSM.Body ();
+	
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 0.0, 0.0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 0.0, 0.0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 0.5, 0.0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 1.0, 0.0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 1.5, 0.0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, 0.0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, -1.0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 0.0, -1.0)));
+	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2]));
+	body.AddPolygon (new JSM.BodyPolygon ([0, 2, 3]));
+	body.AddPolygon (new JSM.BodyPolygon ([0, 3, 4]));
+	body.AddPolygon (new JSM.BodyPolygon ([0, 4, 5]));
+	body.AddPolygon (new JSM.BodyPolygon ([0, 5, 6]));
+	body.AddPolygon (new JSM.BodyPolygon ([0, 6, 7]));
+	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 7]));
+	test.Assert (body.VertexCount () == 8);
+	test.Assert (body.PolygonCount () == 7);
+
+	mergedBody = JSM.MergeCoplanarPolygons (body);
+	test.Assert (mergedBody.VertexCount () == 8);
+	test.Assert (mergedBody.PolygonCount () == 3);
+	
+	cylinder = JSM.GenerateCylinder (1.0, 1.0, 50, true);
+	triangulatedCylinder1 = JSM.TriangulatePolygons (cylinder);
+	triangulatedCylinder2 = JSM.TriangulateWithCentroids (cylinder);
+	mergedCylinder1 = JSM.MergeCoplanarPolygons (triangulatedCylinder1);
+	mergedCylinder2 = JSM.MergeCoplanarPolygons (triangulatedCylinder2);
+	test.Assert (cylinder.VertexCount () == 100);
+	test.Assert (cylinder.PolygonCount () == 52);
+	test.Assert (triangulatedCylinder1.VertexCount () == 100);
+	test.Assert (triangulatedCylinder1.PolygonCount () == 196);
+	test.Assert (triangulatedCylinder2.VertexCount () == 152);
+	test.Assert (triangulatedCylinder2.PolygonCount () == 300);
+	test.Assert (mergedCylinder1.VertexCount () == 100);
+	test.Assert (mergedCylinder1.PolygonCount () == 52);
+	test.Assert (mergedCylinder2.VertexCount () == 100);
+	test.Assert (mergedCylinder2.PolygonCount () == 52);
 });
 
 AddTestSuite ('Modeler - CSG');

@@ -8,9 +8,9 @@ JSM.SpriteViewer = function ()
 	this.navigation = null;
 };
 
-JSM.SpriteViewer.prototype.Start = function (canvasName, camera, callbacks)
+JSM.SpriteViewer.prototype.Start = function (canvas, camera, callbacks)
 {
-	if (!this.InitCanvas (canvasName)) {
+	if (!this.InitCanvas (canvas)) {
 		return false;
 	}
 
@@ -25,10 +25,10 @@ JSM.SpriteViewer.prototype.Start = function (canvasName, camera, callbacks)
 	return true;
 };
 
-JSM.SpriteViewer.prototype.InitCanvas = function (canvasName)
+JSM.SpriteViewer.prototype.InitCanvas = function (canvas)
 {
 	this.points = [];
-	this.canvas = document.getElementById (canvasName);
+	this.canvas = canvas;
 	if (!this.canvas) {
 		return false;
 	}
@@ -121,8 +121,7 @@ JSM.SpriteViewer.prototype.FitInWindow = function ()
 JSM.SpriteViewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
-	var center = JSM.MidCoord (boundingBox[0], boundingBox[1]);
-	return center;
+	return boundingBox.GetCenter ();
 };
 
 JSM.SpriteViewer.prototype.GetBoundingBox = function ()
@@ -141,7 +140,7 @@ JSM.SpriteViewer.prototype.GetBoundingBox = function ()
 		max.z = JSM.Maximum (max.z, coord.z);
 	}
 
-	return [min, max];
+	return new JSM.Box (min, max);
 };
 
 JSM.SpriteViewer.prototype.GetBoundingSphereRadius = function (center)

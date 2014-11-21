@@ -1,13 +1,12 @@
 JSM.Viewer = function ()
 {
-	this.canvas = null;
 	this.renderer = null;
 	this.navigation = null;
 };
 
-JSM.Viewer.prototype.Init = function (canvasName, camera, light)
+JSM.Viewer.prototype.Init = function (canvas, camera, light)
 {
-	if (!this.InitRenderer (canvasName, camera, light)) {
+	if (!this.InitRenderer (canvas, camera, light)) {
 		return false;
 	}
 
@@ -18,10 +17,10 @@ JSM.Viewer.prototype.Init = function (canvasName, camera, light)
 	return true;
 };
 
-JSM.Viewer.prototype.InitRenderer = function (canvasName, camera, light)
+JSM.Viewer.prototype.InitRenderer = function (canvas, camera, light)
 {
 	this.renderer = new JSM.Renderer ();
-	if (!this.renderer.Init (canvasName, camera, light)) {
+	if (!this.renderer.Init (canvas, camera, light)) {
 		return false;
 	}
 	return true;
@@ -65,8 +64,7 @@ JSM.Viewer.prototype.FitInWindow = function ()
 JSM.Viewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
-	var center = JSM.MidCoord (boundingBox[0], boundingBox[1]);
-	return center;
+	return boundingBox.GetCenter ();
 };
 
 JSM.Viewer.prototype.GetBoundingBox = function ()
@@ -88,7 +86,7 @@ JSM.Viewer.prototype.GetBoundingBox = function ()
 		}
 	}
 
-	return [min, max];
+	return new JSM.Box (min, max);
 };
 
 JSM.Viewer.prototype.GetBoundingSphereRadius = function (center)
