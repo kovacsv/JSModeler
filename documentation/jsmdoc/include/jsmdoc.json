@@ -933,6 +933,16 @@
 						["string", "'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'"]
 					]
 				},
+				"CoordSectorPosition" : {
+					"description" : "Calculates the position of a coordinate and a sector.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["sector", "Sector", "the sector"]
+					],
+					"returns" : [
+						["string", "'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'"]
+					]
+				},
 				"SectorSectorPosition2D" : {
 					"description" : "Calculates the position of two sectors.",
 					"parameters" : [
@@ -965,7 +975,8 @@
 					"description" : "Calculates the position of a coordinate and a line.",
 					"parameters" : [
 						["coord", "Coord", "the coordinate"],
-						["line", "Line", "the line"]
+						["line", "Line", "the line"],
+						["projected", "Coord", "the projected coordinate"]
 					],
 					"returns" : [
 						["string", "'CoordOutsideOfLine', or 'CoordOnLine'"]
@@ -1636,6 +1647,12 @@
 							"parameters" : [
 								["beg", "Coord", "the beginning coordinate"],
 								["end", "Coord", "the ending coordinate"]
+							]
+						},
+						"GetLength" : {
+							"description" : "Returns the length of the sector.",
+							"returns" : [
+								["number", "the result"]
 							]
 						},
 						"Clone" : {
@@ -2895,10 +2912,16 @@
 								["integer", "the stored vertex index"]
 							]
 						},
-						"GetVertices" : {
+						"GetVertexIndices" : {
 							"description" : "Returns an array of the body vertex indices in the polygon.",
 							"returns" : [
 								["integer[]", "the stored vertex indices"]
+							]
+						},
+						"SetVertexIndices" : {
+							"description" : "Sets the vertex indices in the polygon.",
+							"parameters" : [
+								["vertices", "integer[]", "the new vertex indices"]
 							]
 						},
 						"VertexIndexCount" : {
