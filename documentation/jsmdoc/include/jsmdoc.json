@@ -170,6 +170,14 @@
 						["anything", "the result"]
 					]
 				},
+				"CopyObjectProperties" : {
+					"description" : "Copies one object properties to another object.",
+					"parameters" : [
+						["source", "anything", "source object"],
+						["target", "anything", "target object"],
+						["overwrite", "boolean", "overwrite existing properties"]
+					]
+				},
 				"Assert" : {
 					"description" : "Shows up an alert with the given message if the condition is false.",
 					"parameters" : [
@@ -192,6 +200,18 @@
 						["runCount", "integer", "the count of runs"],
 						["timeout", "integer", "the timeout between runs"],
 						["userData", "anything", "task specific data"]
+					]
+				},
+				"IsWebGLEnabled" : {
+					"description" : "Returns if WebGL is enabled in the browser.",
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsFileApiEnabled" : {
+					"description" : "Returns if file api is enabled in the browser.",
+					"returns" : [
+						["boolean", "the result"]
 					]
 				}
 			},
@@ -913,6 +933,16 @@
 						["string", "'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'"]
 					]
 				},
+				"CoordSectorPosition" : {
+					"description" : "Calculates the position of a coordinate and a sector.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["sector", "Sector", "the sector"]
+					],
+					"returns" : [
+						["string", "'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'"]
+					]
+				},
 				"SectorSectorPosition2D" : {
 					"description" : "Calculates the position of two sectors.",
 					"parameters" : [
@@ -945,7 +975,8 @@
 					"description" : "Calculates the position of a coordinate and a line.",
 					"parameters" : [
 						["coord", "Coord", "the coordinate"],
-						["line", "Line", "the line"]
+						["line", "Line", "the line"],
+						["projected", "Coord", "the projected coordinate"]
 					],
 					"returns" : [
 						["string", "'CoordOutsideOfLine', or 'CoordOnLine'"]
@@ -982,6 +1013,16 @@
 					],
 					"returns" : [
 						["string", "'LinesIntersectsCoincident', 'LinesIntersectsOnePoint', or 'LinesDontIntersects'"]
+					]
+				},
+				"BoxUnion" : {
+					"description" : "Calculates the union of two 3D boxes.",
+					"parameters" : [
+						["aBox", "Box", "the first box"],
+						["bBox", "Box", "the second box"]
+					],
+					"returns" : [
+						["Box", "the result"]
 					]
 				},
 				"IdentityTransformation" : {
@@ -1608,6 +1649,12 @@
 								["end", "Coord", "the ending coordinate"]
 							]
 						},
+						"GetLength" : {
+							"description" : "Returns the length of the sector.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
 						"Clone" : {
 							"description" : "Clones the sector.",
 							"returns" : [
@@ -1656,6 +1703,62 @@
 							"description" : "Clones the line.",
 							"returns" : [
 								["Line", "a cloned instance"]
+							]
+						}
+					}
+				},
+				"Box2D" : {
+					"description" : "Represents a 2D box.",
+					"parameters" : [
+						["min", "Coord2D", "the minimum position of the box"],
+						["min", "Coord2D", "the maximum position of the box"]
+					],
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the box.",
+							"parameters" : [
+								["min", "Coord2D", "the minimum position of the box"],
+								["min", "Coord2D", "the maximum position of the box"]
+							]
+						},
+						"GetCenter" : {
+							"description" : "Returns the center point of the box.",
+							"returns" : [
+								["Coord2D", "the result"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the box.",
+							"returns" : [
+								["Box2D", "a cloned instance"]
+							]
+						}
+					}
+				},
+				"Box" : {
+					"description" : "Represents a 3D box.",
+					"parameters" : [
+						["min", "Coord", "the minimum position of the box"],
+						["min", "Coord", "the maximum position of the box"]
+					],
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the box.",
+							"parameters" : [
+								["min", "Coord", "the minimum position of the box"],
+								["min", "Coord", "the maximum position of the box"]
+							]
+						},
+						"GetCenter" : {
+							"description" : "Returns the center point of the box.",
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the box.",
+							"returns" : [
+								["Box", "a cloned instance"]
 							]
 						}
 					}
@@ -1888,13 +1991,29 @@
 						}
 					}
 				},
-				"BSPNode" : {
-					"description" : "Node of a BSP tree.",
+				"Octree" : {
+					"description" : "Defines an octree. The octree contains each coordinate only once.",
+					"parameters" : [
+						["box", "Box", "bounding box"],
+						["maxCoordNumInNodes", "integer", "maximum number of coordinates in a node"]
+					],
 					"functions" : {
-						"IsLeaf" : {
-							"description" : "Returns if the node is leaf.",
+						"AddCoord" : {
+							"description" : "Adds a coordinate to the octree. The return value is the stored index of the coordinate. If the coordinate was already in the octree, it returns the existing index.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
 							"returns" : [
-								["boolean", "the result"]
+								["integer", "the stored index of the coordinate"]
+							]
+						},
+						"FindCoord" : {
+							"description" : "Finds a coordinate in the octree, and returns the stored index of it. The return value is -1 if the coordinate does not exist.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["integer", "the stored index of the coordinate"]
 							]
 						}
 					}
@@ -1935,39 +2054,6 @@
 							"description" : "Count nodes.",
 							"returns" : [
 								["integer", "the result"]
-							]
-						},
-						"AddPolygonToNode" : {
-							"description" : "Adds a polygon to a node.",
-							"parameters" : [
-								["node", "BSPNode", "the node"],
-								["polygon", "Polygon", "the polygon"],
-								["userData", "anything", "user data for polygon"]
-							],
-							"returns" : [
-								["boolean", "success"]
-							]
-						},
-						"AddInsidePolygonsToNode" : {
-							"description" : "Adds inside a polygons to a node.",
-							"parameters" : [
-								["node", "BSPNode", "the node"],
-								["polygon", "Polygon[*]", "the polygons"],
-								["userData", "anything", "user data for polygons"]
-							]
-						},
-						"AddOutsidePolygonsToNode" : {
-							"description" : "Adds outside a polygons to a node.",
-							"parameters" : [
-								["node", "BSPNode", "the node"],
-								["polygon", "Polygon[*]", "the polygons"],
-								["userData", "anything", "user data for polygons"]
-							]
-						},
-						"GetNewNode" : {
-							"description" : "Creates a new node.",
-							"returns" : [
-								["BSPNode", "the new node"]
 							]
 						}
 					}
@@ -2014,6 +2100,83 @@
 						["integer", "the hex value"]
 					]
 				},
+				"GetPolyEdgeStartVertex" : {
+					"description" : "Returns the start vertex index of a polygon edge.",
+					"parameters" : [
+						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
+						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
+					],
+					"returns" : [
+						["integer", "the result"]
+					]
+				},
+				"GetPolyEdgeEndVertex" : {
+					"description" : "Returns the end vertex index of a polygon edge.",
+					"parameters" : [
+						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
+						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
+					],
+					"returns" : [
+						["integer", "the result"]
+					]
+				},
+				"GetAnotherPgonOfEdge" : {
+					"description" : "Returns the polygon index which is next to the current polygon along an edge.",
+					"parameters" : [
+						["edge", "EdgeInfo", "the edge info"],
+						["currentPgon", "integer", "the current polygon index"]
+					],
+					"returns" : [
+						["integer", "the result"]
+					]
+				},
+				"CalculateBodyVertexToPolygon" : {
+					"description" : "Calculates an array which contains array of the connected polygon indices for all vertex indices in the body. The result is an array of array of polygon indices.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["integer[*][*]", "the result"]
+					]
+				},
+				"CalculateAdjacencyInfo" : {
+					"description" : "Calculates the adjacency info for a body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["AdjacencyInfo", "the result"]
+					]
+				},
+				"IsSolidBody" : {
+					"description" : "Returns if a given body is solid. It means that every edges of the body has two polygon neighbours.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"CheckSolidBody" : {
+					"description" : "Returns if a given body solid body is correct. It means that every edges of the body has two polygon neighbours, and there are no edge in the body which appears twice with the same direction.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"TraversePgonsAlongEdges" : {
+					"description" : "Traverses polygons along edges. The given callback function called on every found polygon. The return value of the callback means if the traverse should continue along the edges of the current polygon.",
+					"parameters" : [
+						["pgonIndex", "integer", "the polygon index to start from"],
+						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"],
+						["onPgonFound", "function", "the callback"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
 				"AddVertexToBody" : {
 					"description" : "Adds a vertex to an existing body.",
 					"parameters" : [
@@ -2028,15 +2191,6 @@
 					"parameters" : [
 						["body", "Body", "the body"],
 						["vertices", "integer[*]", "array of vertex indices stored in the body"]
-					]
-				},
-				"CalculateBodyVertexToPolygon" : {
-					"description" : "Calculates an array which contains array of the connected polygon indices for all vertex indices in the body. The result is an array of array of polygon indices.",
-					"parameters" : [
-						["body", "Body", "the body"]
-					],
-					"returns" : [
-						["integer[*][*]", "the result"]
 					]
 				},
 				"CalculateBodyPolygonNormal" : {
@@ -2116,54 +2270,16 @@
 					"parameters" : [
 						["body", "Body", "the body"],
 						["materials", "Materials", "the materials"],
-						["seed", "integer", "seed value"]
+						["seeded", "boolean", "seeded random generation"]
 					]
 				},
-				"GetPolyEdgeStartVertex" : {
-					"description" : "Returns the start vertex index of a polygon edge.",
-					"parameters" : [
-						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
-						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
-					],
-					"returns" : [
-						["integer", "the result"]
-					]
-				},
-				"GetPolyEdgeEndVertex" : {
-					"description" : "Returns the end vertex index of a polygon edge.",
-					"parameters" : [
-						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
-						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
-					],
-					"returns" : [
-						["integer", "the result"]
-					]
-				},
-				"CalculateAdjacencyInfo" : {
-					"description" : "Calculates the adjacency info for a body.",
+				"MergeCoplanarPolygons" : {
+					"description" : "Merges the coplanar polygons of a body.",
 					"parameters" : [
 						["body", "Body", "the body"]
 					],
 					"returns" : [
-						["AdjacencyInfo", "the result"]
-					]
-				},
-				"IsSolidBody" : {
-					"description" : "Returns if a given body is solid. It means that every edges of the body has two polygon neighbours.",
-					"parameters" : [
-						["body", "Body", "the body"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CheckSolidBody" : {
-					"description" : "Returns if a given body solid body is correct. It means that every edges of the body has two polygon neighbours, and there are no edge in the body which appears twice with the same direction.",
-					"parameters" : [
-						["body", "Body", "the body"]
-					],
-					"returns" : [
-						["boolean", "the result"]
+						["Body", "the result"]
 					]
 				},
 				"CalculatePlanarTextureCoord" : {
@@ -2796,6 +2912,18 @@
 								["integer", "the stored vertex index"]
 							]
 						},
+						"GetVertexIndices" : {
+							"description" : "Returns an array of the body vertex indices in the polygon.",
+							"returns" : [
+								["integer[]", "the stored vertex indices"]
+							]
+						},
+						"SetVertexIndices" : {
+							"description" : "Sets the vertex indices in the polygon.",
+							"parameters" : [
+								["vertices", "integer[]", "the new vertex indices"]
+							]
+						},
 						"VertexIndexCount" : {
 							"description" : "Returns the vertex count of the polygon.",
 							"returns" : [
@@ -2990,7 +3118,7 @@
 						"GetBoundingBox" : {
 							"description" : "Returns the bounding box of the body.",
 							"returns" : [
-								["Coord[2]", "the minimum and maximum coordinate of the bounding box"]
+								["Box", "the result"]
 							]
 						},
 						"GetCenter" : {
@@ -3088,6 +3216,9 @@
 							"description" : "Adds a material to the container.",
 							"parameters" : [
 								["material", "Material", "the material"]
+							],
+							"returns" : [
+								["integer", "the index of the newly added material"]
 							]
 						},
 						"GetDefaultMaterial" : {

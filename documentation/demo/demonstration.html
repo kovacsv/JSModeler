@@ -294,7 +294,8 @@
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			if (!viewer.Start ('demo', viewerSettings)) {
+			var canvas = document.getElementById ('demo');
+			if (!viewer.Start (canvas, viewerSettings)) {
 				while (document.body.lastChild) {
 					document.body.removeChild (document.body.lastChild);
 				}

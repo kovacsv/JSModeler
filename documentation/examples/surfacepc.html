@@ -99,7 +99,7 @@
 			);
 					
 			viewer = new JSM.PointCloudViewer ();
-			if (!viewer.Init ('example', camera)) {
+			if (!viewer.Init (document.getElementById ('example'), camera)) {
 				alert ('error');
 			}
 			

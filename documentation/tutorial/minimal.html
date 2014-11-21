@@ -20,7 +20,7 @@
 			};
 
 			var viewer = new JSM.ThreeViewer ();
-			viewer.Start ('example', viewerSettings);
+			viewer.Start (document.getElementById ('example'), viewerSettings);
 
 			var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 
