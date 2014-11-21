@@ -162,7 +162,9 @@ JSM.ConvertImportFileListToJsonData = function (importFileList, callbacks)
 			fileNames.missing.push (currentFileName);
 			return null;
 		}
-		fileNames.requested.push (currentFileName);
+		if (fileNames.requested.indexOf (currentFileName) == -1) {
+			fileNames.requested.push (currentFileName);
+		}
 		return resultBuffers[requestedFileIndex];	
 	}
 	
