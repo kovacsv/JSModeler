@@ -1,6 +1,9 @@
-AddTestSuite ('Modeler - General');
+module.exports = function (unitTest)
+{
 
-AddTest ('BodyTest', function (test)
+var generalSuite = unitTest.AddTestSuite ('Modeler - General');
+
+generalSuite.AddTest ('BodyTest', function (test)
 {
 	var body = new JSM.Body ();
 	test.Assert (body.VertexCount () == 0 && body.PolygonCount () == 0);
@@ -44,7 +47,7 @@ AddTest ('BodyTest', function (test)
 	test.Assert (body.VertexCount () == 0 && body.PolygonCount () == 0);
 });
 
-AddTest ('ModelTest', function (test)
+generalSuite.AddTest ('ModelTest', function (test)
 {
 	var model = new JSM.Model ();
 	model.AddBody (JSM.GenerateCuboid (1.0, 1.0, 1.0));
@@ -54,7 +57,7 @@ AddTest ('ModelTest', function (test)
 	test.Assert (model.GetBody (1).VertexCount () == 8);
 });
 
-AddTest ('BodyVertexToPolygonTest', function (test)
+generalSuite.AddTest ('BodyVertexToPolygonTest', function (test)
 {
 	var body = new JSM.Body ();
 	test.Assert (body.VertexCount () == 0 && body.PolygonCount () == 0);
@@ -86,7 +89,7 @@ AddTest ('BodyVertexToPolygonTest', function (test)
 	test.Assert (body.VertexCount () == 0 && body.PolygonCount () == 0);
 });
 
-AddTest ('BodyVertexNormalTest', function (test)
+generalSuite.AddTest ('BodyVertexNormalTest', function (test)
 {
 	var body = new JSM.Body ();
 	test.Assert (body.VertexCount () == 0 && body.PolygonCount () == 0);
@@ -123,7 +126,7 @@ AddTest ('BodyVertexNormalTest', function (test)
 	test.Assert (JSM.CoordIsEqual (vertexNormals[1][3], new JSM.Vector (1, 0, 0)));
 });
 
-AddTest ('AdjacencyListTest', function (test)
+generalSuite.AddTest ('AdjacencyListTest', function (test)
 {
 	var EqualEdge = function (e1, e2)
 	{
@@ -257,7 +260,7 @@ AddTest ('AdjacencyListTest', function (test)
 	test.Assert (EqualEdge (al.pgons[5].pedges[0], [2, true]) && EqualEdge (al.pgons[5].pedges[1], [6, true]) && EqualEdge (al.pgons[5].pedges[2], [9, true]) && EqualEdge (al.pgons[5].pedges[3], [11, true]));
 });
 
-AddTest ('SubdivisionTest', function (test)
+generalSuite.AddTest ('SubdivisionTest', function (test)
 {
 	var body = JSM.GenerateCuboid (1, 1, 1);
 	test.Assert (JSM.CheckSolidBody (body));
@@ -275,7 +278,7 @@ AddTest ('SubdivisionTest', function (test)
 	test.Assert (body.PolygonCount () == 96);
 });
 
-AddTest ('ExplodeTest', function (test)
+generalSuite.AddTest ('ExplodeTest', function (test)
 {
 	function OnGeometryStart (material)
 	{
@@ -316,7 +319,7 @@ AddTest ('ExplodeTest', function (test)
 	test.Assert (onTriangleCount == 12);
 });
 
-AddTest ('ExportTest', function (test)
+generalSuite.AddTest ('ExportTest', function (test)
 {
 	var gdl1Ref = "base\nvert 0, 0, 0 ! 1\nvert 1, 0, 0 ! 2\nvert 0, 1, 0 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
 	var gdl2Ref = "base\nvert 0, 0, 1 ! 1\nvert 1, 0, 1 ! 2\nvert 0, 1, 1 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
@@ -400,7 +403,7 @@ AddTest ('ExportTest', function (test)
 	test.Assert (modelObj == modelObjRef);
 });
 
-AddTest ('TriangulateWithCentroidsTest', function (test)
+generalSuite.AddTest ('TriangulateWithCentroidsTest', function (test)
 {
 	var AllPolygonIsTriangle = function (body)
 	{
@@ -438,7 +441,7 @@ AddTest ('TriangulateWithCentroidsTest', function (test)
 	test.Assert (JSM.CheckSolidBody (body));
 });
 
-AddTest ('CheckSolidBodyTest', function (test)
+generalSuite.AddTest ('CheckSolidBodyTest', function (test)
 {
 	var body = new JSM.Body ();
 
@@ -472,7 +475,7 @@ AddTest ('CheckSolidBodyTest', function (test)
 	test.Assert (JSM.CheckSolidBody (body));
 });
 
-AddTest ('PainterTest', function (test)
+generalSuite.AddTest ('PainterTest', function (test)
 {
 	var width = 300;
 	var height = 200;
@@ -546,7 +549,7 @@ AddTest ('PainterTest', function (test)
 	test.Assert (ordered[0] == 4 && ordered[1] == 3 && ordered[2] == 2 && ordered[3] == 1 && ordered[4] == 0);
 });
 
-AddTest ('TriangulatePolygonsTest', function (test)
+generalSuite.AddTest ('TriangulatePolygonsTest', function (test)
 {
 	var body = JSM.GenerateCuboid (1, 1, 1);
 	test.Assert (body.VertexCount () == 8);
@@ -569,7 +572,7 @@ AddTest ('TriangulatePolygonsTest', function (test)
 	test.Assert (JSM.CheckSolidBody (body));
 });
 
-AddTest ('OctreeBodyTest', function (test)
+generalSuite.AddTest ('OctreeBodyTest', function (test)
 {
 	function TestOctreeOnBody (body, test, maxCoordNumInNodes)
 	{
@@ -632,9 +635,9 @@ AddTest ('OctreeBodyTest', function (test)
 	test.Assert (TestOctree (body, test));
 });
 
-AddTestSuite ('Modeler - Generator');
+var generatorSuite = unitTest.AddTestSuite ('Modeler - Generator');
 
-AddTest ('GenerateRectangleTest', function (test)
+generatorSuite.AddTest ('GenerateRectangleTest', function (test)
 {
 	var rectangle = JSM.GenerateRectangle (1, 2);
 	test.Assert (rectangle.VertexCount () == 4 && rectangle.PolygonCount () == 1);
@@ -646,7 +649,7 @@ AddTest ('GenerateRectangleTest', function (test)
 	test.Assert (JSM.CoordIsEqual (vertexNormals[0][3], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
 });
 
-AddTest ('GenerateCuboidTest', function (test)
+generatorSuite.AddTest ('GenerateCuboidTest', function (test)
 {
 	var cuboid = JSM.GenerateCuboid (1, 2, 3);
 	test.Assert (cuboid.VertexCount () == 8 && cuboid.PolygonCount () == 6);
@@ -664,7 +667,7 @@ AddTest ('GenerateCuboidTest', function (test)
 	test.Assert (JSM.CoordIsEqual (vertexNormals[5][3], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
 });
 
-AddTest ('GenerateSegmentedCuboidTest', function (test)
+generatorSuite.AddTest ('GenerateSegmentedCuboidTest', function (test)
 {
 	var cuboid = JSM.GenerateSegmentedCuboid (1, 2, 3, 1);
 	test.Assert (cuboid.VertexCount () == 8 && cuboid.PolygonCount () == 6);
@@ -679,7 +682,7 @@ AddTest ('GenerateSegmentedCuboidTest', function (test)
 	test.Assert (JSM.CheckSolidBody (cuboid));
 });
 
-AddTest ('GenerateSegmentedRectangleTest', function (test)
+generatorSuite.AddTest ('GenerateSegmentedRectangleTest', function (test)
 {
 	var plane = JSM.GenerateSegmentedRectangle (1, 2, 1, 1);
 	test.Assert (plane.VertexCount () == 4 && plane.PolygonCount () == 1);
@@ -700,7 +703,7 @@ AddTest ('GenerateSegmentedRectangleTest', function (test)
 	test.Assert (plane.VertexCount () == 63 && plane.PolygonCount () == 48);
 });
 
-AddTest ('GenerateSphereTest', function (test)
+generatorSuite.AddTest ('GenerateSphereTest', function (test)
 {
 	function VertexCountFromSegmentation (segmentation)
 	{
@@ -721,7 +724,7 @@ AddTest ('GenerateSphereTest', function (test)
 	test.Assert (JSM.CheckSolidBody (sphere));
 });
 
-AddTest ('GenerateCircleTest', function (test)
+generatorSuite.AddTest ('GenerateCircleTest', function (test)
 {
 	var circle = JSM.GenerateCircle (1.0, 25);
 	test.Assert (circle.VertexCount () == 25 && circle.PolygonCount () == 1);
@@ -731,7 +734,7 @@ AddTest ('GenerateCircleTest', function (test)
 	test.Assert (JSM.CoordIsEqual (polygonNormals[0], new JSM.Vector (0, 0, 1)));
 });
 
-AddTest ('GenerateCylinderTest', function (test)
+generatorSuite.AddTest ('GenerateCylinderTest', function (test)
 {
 	var cylinder = JSM.GenerateCylinder (1.0, 2.0, 25, true, true);
 	test.Assert (cylinder.VertexCount () == 50 && cylinder.PolygonCount () == 27);
@@ -774,7 +777,7 @@ AddTest ('GenerateCylinderTest', function (test)
 	test.Assert (!JSM.CheckSolidBody (cylinder3));
 });
 
-AddTest ('GeneratePieTest', function (test)
+generatorSuite.AddTest ('GeneratePieTest', function (test)
 {
 	var pie = JSM.GeneratePie (1.0, 2.0, 90.0 * JSM.DegRad, 25, true, true);
 	test.Assert (pie.VertexCount () == 52 && pie.PolygonCount () == 28);
@@ -788,7 +791,7 @@ AddTest ('GeneratePieTest', function (test)
 	test.Assert (pie.GetPolygon (27).VertexIndexCount () == 26);
 });
 
-AddTest ('GenerateConeTest', function (test)
+generatorSuite.AddTest ('GenerateConeTest', function (test)
 {
 	var cone = JSM.GenerateCone (0.5, 1.0, 1.0, 25, true, true);
 	test.Assert (JSM.CheckSolidBody (cone));
@@ -821,7 +824,7 @@ AddTest ('GenerateConeTest', function (test)
 	test.Assert (JSM.CoordIsEqual (vertexNormals[5][3], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
 });
 
-AddTest ('GeneratePrismTest', function (test)
+generatorSuite.AddTest ('GeneratePrismTest', function (test)
 {
 	var basePoints = [
 		new JSM.Coord (0.0, 0.0, 0.0),
@@ -877,7 +880,7 @@ AddTest ('GeneratePrismTest', function (test)
 	test.Assert (JSM.CoordIsEqual (vertexNormals[6][4], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
 });
 
-AddTest ('GeneratePrismWithHoleTest', function (test)
+generatorSuite.AddTest ('GeneratePrismWithHoleTest', function (test)
 {
 	var basePoints = [
 		new JSM.Coord (0, 0, 0),
@@ -986,7 +989,7 @@ AddTest ('GeneratePrismWithHoleTest', function (test)
 	test.Assert (tris == 40);
 });
 
-AddTest ('GeneratePrismShellTest', function (test)
+generatorSuite.AddTest ('GeneratePrismShellTest', function (test)
 {
 	var basePoints = [
 		new JSM.Coord (0.0, 0.0, 0.0),
@@ -1004,14 +1007,14 @@ AddTest ('GeneratePrismShellTest', function (test)
 	test.Assert (JSM.CoordIsEqual (prism.GetVertex (10).position, new JSM.Vector (0.0, 0.0, 1.0)));
 });
 
-AddTest ('GenerateCylinderShellTest', function (test)
+generatorSuite.AddTest ('GenerateCylinderShellTest', function (test)
 {
 	var cylinder = JSM.GenerateCylinderShell (1, 1, 0.1, 10, true, false);
 	test.Assert (cylinder.VertexCount () == 4 * 10 && cylinder.PolygonCount () == 4 * 10);
 	test.Assert (JSM.CheckSolidBody (cylinder));
 });
 
-AddTest ('GenerateLineShellTest', function (test)
+generatorSuite.AddTest ('GenerateLineShellTest', function (test)
 {
 	var basePoints = [
 		new JSM.Coord (0.0, 0.0, 0.0),
@@ -1029,14 +1032,14 @@ AddTest ('GenerateLineShellTest', function (test)
 	test.Assert (JSM.CoordIsEqual (shell.GetVertex (10).position, new JSM.Vector (0.0, 0.0, 1.0)));
 });
 
-AddTest ('GenerateTorusTest', function (test)
+generatorSuite.AddTest ('GenerateTorusTest', function (test)
 {
 	var torus = JSM.GenerateTorus (1.0, 5.0, 10, 10, true);
 	test.Assert (torus.VertexCount () == 100 && torus.PolygonCount () == 100);
 	test.Assert (JSM.CheckSolidBody (torus));
 });
 
-AddTest ('GenerateRuledTest', function (test)
+generatorSuite.AddTest ('GenerateRuledTest', function (test)
 {
 	var aCoords = [new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (2.0, 0.0, 0.0)];
 	var bCoords = [new JSM.Coord (0.0, 2.0, 0.0), new JSM.Coord (1.0, 2.0, 0.0), new JSM.Coord (2.0, 2.0, 0.0)];
@@ -1080,7 +1083,7 @@ AddTest ('GenerateRuledTest', function (test)
 	test.Assert (JSM.CoordIsEqual (ruledFromSectors2.GetVertex (60).position, new JSM.Vector (1.0, 1.0, 0.0)));
 });
 
-AddTest ('GenerateRevolvedTest', function (test)
+generatorSuite.AddTest ('GenerateRevolvedTest', function (test)
 {
 	var polyLine = [
 		new JSM.Coord (0.5, 0.0, 0.0),
@@ -1103,7 +1106,7 @@ AddTest ('GenerateRevolvedTest', function (test)
 	test.Assert (!JSM.CheckSolidBody (openRevolved));
 });
 
-AddTest ('GenerateTubeTest', function (test)
+generatorSuite.AddTest ('GenerateTubeTest', function (test)
 {
 	var polygons = [
 		[
@@ -1177,7 +1180,7 @@ AddTest ('GenerateTubeTest', function (test)
 	test.Assert (JSM.CheckSolidBody (tube));
 });
 
-AddTest ('GenerateFunctionSurfaceTest', function (test)
+generatorSuite.AddTest ('GenerateFunctionSurfaceTest', function (test)
 {
 	function TheFunction (x, y)
 	{
@@ -1194,7 +1197,7 @@ AddTest ('GenerateFunctionSurfaceTest', function (test)
 	}
 });
 
-AddTest ('SolidGeneratorTest', function (test)
+generatorSuite.AddTest ('SolidGeneratorTest', function (test)
 {
 	var ArePolygonsRegular = function (body)
 	{
@@ -1339,7 +1342,7 @@ AddTest ('SolidGeneratorTest', function (test)
 	test.Assert (JSM.CheckSolidBody (solid));
 });
 
-AddTest ('ConvexHullBodyTest', function (test)
+generatorSuite.AddTest ('ConvexHullBodyTest', function (test)
 {
 	var AllPolygonIsTriangle = function (body)
 	{
@@ -1406,9 +1409,9 @@ AddTest ('ConvexHullBodyTest', function (test)
 	test.Assert (JSM.CheckSolidBody (body));
 });
 
-AddTestSuite ('Modeler - Texture');
+var textureSuite = unitTest.AddTestSuite ('Modeler - Texture');
 
-AddTest ('BodyPlanarTextureCoordTest', function (test)
+textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 {
 	var body = new JSM.Body ();
 	
@@ -1514,7 +1517,7 @@ AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (-0.2, 0.7)));
 });
 
-AddTest ('BodyCubicTextureCoordTest', function (test)
+textureSuite.AddTest ('BodyCubicTextureCoordTest', function (test)
 {
 	var body = new JSM.Body ();
 	
@@ -1578,7 +1581,7 @@ AddTest ('BodyCubicTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][3], new JSM.Coord2D (0, 1)));
 });
 
-AddTest ('BodyCylindricalTextureCoordTest', function (test)
+textureSuite.AddTest ('BodyCylindricalTextureCoordTest', function (test)
 {
 	var body = new JSM.GenerateCylinder (1.0, 1.0, 6, true, false);
 	test.Assert (body.VertexCount () == 12);
@@ -1607,9 +1610,9 @@ AddTest ('BodyCylindricalTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[5][0], new JSM.Coord2D (radius * 1.0 / 6.0, 1.0)));
 });
 
-AddTestSuite ('Modeler - Utils');
+var utilsSuite = unitTest.AddTestSuite ('Modeler - Utils');
 
-AddTest ('MergeCoplanarPolygonsTest', function (test)
+utilsSuite.AddTest ('MergeCoplanarPolygonsTest', function (test)
 {
 	var body = new JSM.Body ();
 	
@@ -1652,9 +1655,9 @@ AddTest ('MergeCoplanarPolygonsTest', function (test)
 	test.Assert (mergedCylinder2.PolygonCount () == 52);
 });
 
-AddTestSuite ('Modeler - CSG');
+var csgSuite = unitTest.AddTestSuite ('Modeler - CSG');
 
-AddTest ('AddBodyToBSPTreeTest', function (test)
+csgSuite.AddTest ('AddBodyToBSPTreeTest', function (test)
 {
 	var body = new JSM.GenerateCuboid (1, 1, 1);
 	var bspTree = new JSM.BSPTree ();
@@ -1671,3 +1674,5 @@ AddTest ('AddBodyToBSPTreeTest', function (test)
 	JSM.AddBodyToBSPTree (body2, bspTree, 43);
 	test.Assert (bspTree.NodeCount () == 21);
 });
+
+}

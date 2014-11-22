@@ -1,6 +1,9 @@
-AddTestSuite ('Geometry - General');
+module.exports = function (unitTest)
+{
 
-AddTest ('VectorTest', function (test) {
+var generalSuite = unitTest.AddTestSuite ('Geometry - General');
+
+generalSuite.AddTest ('VectorTest', function (test) {
 	var coord2d1 = new JSM.Coord2D (1, 2);
 	var coord2d2 = new JSM.Coord2D (3, 4);
 	var coord2d3 = new JSM.Coord2D (1, 6);
@@ -164,7 +167,7 @@ AddTest ('VectorTest', function (test) {
 	test.Assert (JSM.CoordIsEqualWithEps (coord, new JSM.Coord (2.0, 2.0, 3.0), 1.1));
 });
 
-AddTest ('TriangleNormalTest', function (test) {
+generalSuite.AddTest ('TriangleNormalTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (JSM.CalculateTriangleNormal (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (1.0, 1.0, 0.0)), new JSM.Vector (0.0, 0.0, 1.0)));
 	test.Assert (JSM.CoordIsEqual (JSM.CalculateTriangleNormal (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (1.0, -1.0, 0.0)), new JSM.Vector (0.0, 0.0, -1.0)));
 	
@@ -175,7 +178,7 @@ AddTest ('TriangleNormalTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (JSM.CalculateTriangleNormal (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 1.0)), new JSM.Vector (0.0, -1.0, 0.0)));
 });
 
-AddTest ('SphericalTest', function (test) {
+generalSuite.AddTest ('SphericalTest', function (test) {
 	function TestConversion (x, y, z) {
 		var original = new JSM.Coord (x, y, z);
 		
@@ -264,7 +267,7 @@ AddTest ('SphericalTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (current, new JSM.Coord (0.0, 1.0, 0.0)));
 });
 
-AddTest ('CircleTest', function (test) {
+generalSuite.AddTest ('CircleTest', function (test) {
 	test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 0.0 * JSM.DegRad), new JSM.Coord2D (1.0, 0.0)));
 	test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 90.0 * JSM.DegRad), new JSM.Coord2D (0.0, 1.0)));
 	test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 180.0 * JSM.DegRad), new JSM.Coord2D (-1.0, 0.0)));
@@ -288,7 +291,7 @@ AddTest ('CircleTest', function (test) {
 	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, 5.0 * unitRadius / 4.0), 450.0 * JSM.DegRad));
 });
 
-AddTest ('MatrixTest', function (test) {
+generalSuite.AddTest ('MatrixTest', function (test) {
 	var vector1 = [1, 2, 3, 4];
 	var matrix1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 	var matrix2 = [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
@@ -372,7 +375,7 @@ AddTest ('MatrixTest', function (test) {
 	].toString ());
 });
 
-AddTest ('ArcLengthTest', function (test) {
+generalSuite.AddTest ('ArcLengthTest', function (test) {
 	var a1 = new JSM.Vector (0.0, 1.0, 0.0);
 	var a2 = new JSM.Vector (0.0, -1.0, 0.0);
 	var a3 = new JSM.Vector (-1.0, 0.0, 0.0);
@@ -432,7 +435,7 @@ AddTest ('ArcLengthTest', function (test) {
 	}
 });
 
-AddTest ('TransformationTest', function (test) {
+generalSuite.AddTest ('TransformationTest', function (test) {
 	var transformation = new JSM.IdentityTransformation ();
 	
 	var coord = new JSM.Coord (1.0, 1.0, 1.0);
@@ -550,7 +553,7 @@ AddTest ('TransformationTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (trXYZ.Apply (new JSM.Coord (1.0, 2.0, 3.0)), coord));
 });
 
-AddTest ('SectorTest', function (test) {
+generalSuite.AddTest ('SectorTest', function (test) {
 	var beg = new JSM.Coord2D (1.0, 2.0);
 	var end = new JSM.Coord2D (3.0, 4.0);
 	
@@ -574,7 +577,7 @@ AddTest ('SectorTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (sector.end, new JSM.Coord (1.0, 2.0, 3.0)));
 });
 
-AddTest ('CoordLinePositionTest', function (test)
+generalSuite.AddTest ('CoordLinePositionTest', function (test)
 {
 	var start2D = new JSM.Coord2D (1.0, 1.0);
 	var direction2D = new JSM.Coord2D (1.0, 0.0);
@@ -639,7 +642,7 @@ AddTest ('CoordLinePositionTest', function (test)
 	test.Assert (JSM.CoordIsEqual (intersection, new JSM.Coord (0.5, 0.5, 0.5)));
 });
 
-AddTest ('CoordSectorPositionTest', function (test)
+generalSuite.AddTest ('CoordSectorPositionTest', function (test)
 {
 	var sector1 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
 	var sector2 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 0.0));
@@ -684,7 +687,7 @@ AddTest ('CoordSectorPositionTest', function (test)
 	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (42.1, 0.0, 0.0), sector4) == 'CoordOutsideOfSector');	
 });
 
-AddTest ('CoordSectorPosition2DTest', function (test)
+generalSuite.AddTest ('CoordSectorPosition2DTest', function (test)
 {
 	var coord = new JSM.Coord2D (1.0, 0.0);
 	var sector = new JSM.Sector2D (new JSM.Coord2D (0.0, 1.0), new JSM.Coord2D (1.0, 1.0));
@@ -725,7 +728,7 @@ AddTest ('CoordSectorPosition2DTest', function (test)
 	test.Assert (JSM.CoordSectorPosition2D (new JSM.Coord2D (0.0, 0.0), sector4) == 'CoordOutsideOfSector');
 });
 
-AddTest ('SectorSectorPositionTest', function (test)
+generalSuite.AddTest ('SectorSectorPositionTest', function (test)
 {
 	var GetSector2D = function (a, b, c, d)
 	{
@@ -788,7 +791,7 @@ AddTest ('SectorSectorPositionTest', function (test)
 	test.Assert (JSM.SectorSectorPosition2D (GetSector2D (3.0, 0.0, 3.0, 3.0), GetSector2D (0.0, 0.0, 1.0, 1.0)) == 'SectorsDontIntersects');
 });
 
-AddTest ('BoxTest', function (test)
+generalSuite.AddTest ('BoxTest', function (test)
 {
 	var box = new JSM.Box2D (new JSM.Coord2D (0.0, 0.0), new JSM.Coord2D (1.0, 1.0));
 	test.Assert (JSM.CoordIsEqual2D (box.GetCenter (), new JSM.Coord2D (0.5, 0.5)));
@@ -802,7 +805,7 @@ AddTest ('BoxTest', function (test)
 	test.Assert (JSM.CoordIsEqual (box3.max, new JSM.Coord (1.0, 1.0, 1.0)));
 });
 
-AddTest ('PlaneTest', function (test)
+generalSuite.AddTest ('PlaneTest', function (test)
 {
 	var plane = new JSM.Plane (1.0, 2.0, 3.0, 4.0);
 	test.Assert (plane.a == 1.0 && plane.b == 2.0 && plane.c == 3.0 && plane.d == 4.0);
@@ -888,7 +891,7 @@ AddTest ('PlaneTest', function (test)
 	}
 });
 
-AddTest ('ProjectionTest', function (test)
+generalSuite.AddTest ('ProjectionTest', function (test)
 {
 	var eye = new JSM.Coord (1, 0, 0);
 	var center = new JSM.Coord (0, 0, 0);
@@ -939,7 +942,7 @@ AddTest ('ProjectionTest', function (test)
 	test.Assert (JSM.IsEqual (projected.x, 160.35533905932851) && JSM.IsEqual (projected.y, 110.3553390593285));
 });
 
-AddTest ('ConvexHullTest', function (test)
+generalSuite.AddTest ('ConvexHullTest', function (test)
 {
 	var result = [];
 	var coord = [];
@@ -1133,7 +1136,7 @@ AddTest ('ConvexHullTest', function (test)
 	test.Assert (result.toString () == '3,8,14,8,0,14,0,12,14,1,9,14,12,1,14,9,5,14,2,10,15,13,2,15,10,6,15,7,11,15,11,4,15,4,13,15,10,2,16,0,8,16,8,10,16,6,10,17,8,3,17,10,8,17,4,11,18,9,1,18,11,9,18,1,12,18,12,0,18,0,16,18,2,13,18,16,2,18,13,4,18,11,7,19,5,9,19,9,11,19,3,14,19,17,3,19,14,5,19,7,15,19,15,6,19,6,17,19');
 });
 
-AddTest ('OctreeTest', function (test)
+generalSuite.AddTest ('OctreeTest', function (test)
 {
 	var octree = new JSM.Octree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)));
 	var coords = [
@@ -1231,9 +1234,9 @@ AddTest ('OctreeTest', function (test)
 	test.Assert (octree.FindCoord (coords[6]) == 6);
 });
 
-AddTestSuite ('Geometry - Polygon');
+var polygonSuite = unitTest.AddTestSuite ('Geometry - Polygon');
 
-AddTest ('PolygonTest', function (test)
+polygonSuite.AddTest ('PolygonTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
@@ -1306,7 +1309,7 @@ AddTest ('PolygonTest', function (test)
 	test.Assert (JSM.PolygonOrientation2D (polygon) == 'CounterClockwise');
 });
 
-AddTest ('ContourPolygon2DTest', function (test)
+polygonSuite.AddTest ('ContourPolygon2DTest', function (test)
 {
 	var polygon = new JSM.ContourPolygon2D ();
 	test.Assert (polygon.ContourCount () == 0);
@@ -1365,7 +1368,7 @@ AddTest ('ContourPolygon2DTest', function (test)
 	test.Assert (polygon.VertexCount (2) == 0);
 });
 
-AddTest ('CoordPolygonPosition2DTest', function (test)
+polygonSuite.AddTest ('CoordPolygonPosition2DTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 2.0);
@@ -1404,7 +1407,7 @@ AddTest ('CoordPolygonPosition2DTest', function (test)
 	test.Assert (JSM.CoordPolygonPosition2D (new JSM.Coord2D (1.5, 1.0), polygon) == 'CoordInsideOfPolygon');
 });
 
-AddTest ('PolygonVertexVisibility2DTest', function (test)
+polygonSuite.AddTest ('PolygonVertexVisibility2DTest', function (test)
 {
 	function GetSector (x1, y1, x2, y2)
 	{
@@ -1512,7 +1515,7 @@ AddTest ('PolygonVertexVisibility2DTest', function (test)
 	test.Assert (JSM.SectorIntersectsPolygon2D (polygon4, GetSector (0, 0, 1, 1), 0, -1) == false);
 });
 
-AddTest ('PolygonTriangulation2DTest', function (test)
+polygonSuite.AddTest ('PolygonTriangulation2DTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
@@ -1647,7 +1650,7 @@ AddTest ('PolygonTriangulation2DTest', function (test)
 	test.Assert (triangles[9].toString () == [11, 9, 10].toString ());
 });
 
-AddTest ('PolygonTriangulationTest', function (test)
+polygonSuite.AddTest ('PolygonTriangulationTest', function (test)
 {
 	var polygon = new JSM.Polygon ();
 	polygon.AddVertex (0.0, 0.0, 0.0);
@@ -1663,7 +1666,7 @@ AddTest ('PolygonTriangulationTest', function (test)
 	test.Assert (triangles[2].toString () == [0, 3, 4].toString ());
 });
 
-AddTest ('PolygonOffsetTest', function (test)
+polygonSuite.AddTest ('PolygonOffsetTest', function (test)
 {
 	var polygon = new JSM.Polygon ();
 	polygon.AddVertex (0.0, 0.0, 0.0);
@@ -1692,7 +1695,7 @@ AddTest ('PolygonOffsetTest', function (test)
 	test.Assert (JSM.CoordIsEqual (offseted.vertices[4], new JSM.Coord (0.8, 1.1527864045000422, 0.0)));
 });
 
-AddTest ('PolygonWithHole2DTest', function (test)
+polygonSuite.AddTest ('PolygonWithHole2DTest', function (test)
 {
 	function GetVisibleVertices (polygon, from)
 	{
@@ -1808,7 +1811,7 @@ AddTest ('PolygonWithHole2DTest', function (test)
 	test.Assert (triangles[6].toString () == [4, 2, 3].toString ());
 });
 
-AddTest ('CreatePolygonWithHole2DTest', function (test)
+polygonSuite.AddTest ('CreatePolygonWithHole2DTest', function (test)
 {
 	function CreatePolygon2D (vertices, indices)
 	{
@@ -1979,7 +1982,7 @@ AddTest ('CreatePolygonWithHole2DTest', function (test)
 	test.Assert (indices.toString () == [0, 13, 14, 8, 9, 10, 11, 12, 13, 0, 1, 2, 3, 4, 5, 6].toString ());
 });
 
-AddTest ('CreatePolygonWithHoleTest', function (test)
+polygonSuite.AddTest ('CreatePolygonWithHoleTest', function (test)
 {
 	function CreatePolygon (vertices, indices)
 	{
@@ -2064,7 +2067,7 @@ AddTest ('CreatePolygonWithHoleTest', function (test)
 	}	
 });
 
-AddTest ('OldCutPolygonTest', function (test)
+polygonSuite.AddTest ('OldCutPolygonTest', function (test)
 {
 	var polygon = new JSM.Polygon ();
 	polygon.AddVertex (0.0, 0.0, 0.0);
@@ -2346,7 +2349,7 @@ AddTest ('OldCutPolygonTest', function (test)
 		);
 });
 
-AddTest ('CutPolygonTest', function (test)
+polygonSuite.AddTest ('CutPolygonTest', function (test)
 {
 	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
 	var revPlane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
@@ -2809,7 +2812,7 @@ AddTest ('CutPolygonTest', function (test)
 	test.Assert (planePolygons[0].VertexCount () == 6);
 });
 
-AddTest ('CutTriangleTest', function (test)
+polygonSuite.AddTest ('CutTriangleTest', function (test)
 {
 	var polygon = new JSM.Polygon ();
 	polygon.AddVertex (0, 0, 0);
@@ -2999,7 +3002,7 @@ AddTest ('CutTriangleTest', function (test)
 	test.Assert (JSM.CoordIsEqual (frontPolygons[0].GetVertex (2), new JSM.Coord (0.5, 1, 0)));
 });
 
-AddTest ('BSPTreeTest', function (test)
+polygonSuite.AddTest ('BSPTreeTest', function (test)
 {
 	function TestNode (test, node, vertexCount, normalVector)
 	{
@@ -3066,3 +3069,5 @@ AddTest ('BSPTreeTest', function (test)
 	TestNode (test, bspTree.root.outside.outside, 4, new JSM.Coord (0, 0, 1));
 	test.Assert (bspTree.root.outside.outside.userData == 2);
 });
+
+}
