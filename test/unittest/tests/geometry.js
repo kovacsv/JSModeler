@@ -1,7 +1,7 @@
 module.exports = function (unitTest)
 {
 
-var generalSuite = unitTest.AddTestSuite ('Geometry - General');
+var generalSuite = unitTest.AddTestSuite ('GeometryGeneral');
 
 generalSuite.AddTest ('VectorTest', function (test) {
 	var coord2d1 = new JSM.Coord2D (1, 2);
@@ -1234,7 +1234,7 @@ generalSuite.AddTest ('OctreeTest', function (test)
 	test.Assert (octree.FindCoord (coords[6]) == 6);
 });
 
-var polygonSuite = unitTest.AddTestSuite ('Geometry - Polygon');
+var polygonSuite = unitTest.AddTestSuite ('GeometryPolygon');
 
 polygonSuite.AddTest ('PolygonTest', function (test)
 {

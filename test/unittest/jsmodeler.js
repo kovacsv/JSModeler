@@ -1,7 +1,7 @@
 var currentDir = require ('path').dirname (require.main.filename);
 
 var UnitTest = require ('./framework/unittest.js');
-var unitTest = new UnitTest (currentDir);
+var unitTest = new UnitTest (currentDir, process.argv);
 
 unitTest.IncludeSourceFile ('../../src/core/jsm.js');
 unitTest.IncludeSourceFile ('../../src/core/timer.js');

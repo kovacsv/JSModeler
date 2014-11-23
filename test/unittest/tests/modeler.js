@@ -1,7 +1,7 @@
 module.exports = function (unitTest)
 {
 
-var generalSuite = unitTest.AddTestSuite ('Modeler - General');
+var generalSuite = unitTest.AddTestSuite ('ModelerGeneral');
 
 generalSuite.AddTest ('BodyTest', function (test)
 {
@@ -635,7 +635,7 @@ generalSuite.AddTest ('OctreeBodyTest', function (test)
 	test.Assert (TestOctree (body, test));
 });
 
-var generatorSuite = unitTest.AddTestSuite ('Modeler - Generator');
+var generatorSuite = unitTest.AddTestSuite ('ModelerGenerator');
 
 generatorSuite.AddTest ('GenerateRectangleTest', function (test)
 {
@@ -1409,7 +1409,7 @@ generatorSuite.AddTest ('ConvexHullBodyTest', function (test)
 	test.Assert (JSM.CheckSolidBody (body));
 });
 
-var textureSuite = unitTest.AddTestSuite ('Modeler - Texture');
+var textureSuite = unitTest.AddTestSuite ('ModelerTexture');
 
 textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 {
@@ -1610,7 +1610,7 @@ textureSuite.AddTest ('BodyCylindricalTextureCoordTest', function (test)
 	test.Assert (JSM.CoordIsEqual2D (textureCoords[5][0], new JSM.Coord2D (radius * 1.0 / 6.0, 1.0)));
 });
 
-var utilsSuite = unitTest.AddTestSuite ('Modeler - Utils');
+var utilsSuite = unitTest.AddTestSuite ('ModelerUtils');
 
 utilsSuite.AddTest ('MergeCoplanarPolygonsTest', function (test)
 {
@@ -1655,7 +1655,7 @@ utilsSuite.AddTest ('MergeCoplanarPolygonsTest', function (test)
 	test.Assert (mergedCylinder2.PolygonCount () == 52);
 });
 
-var csgSuite = unitTest.AddTestSuite ('Modeler - CSG');
+var csgSuite = unitTest.AddTestSuite ('ModelerCSG');
 
 csgSuite.AddTest ('AddBodyToBSPTreeTest', function (test)
 {
