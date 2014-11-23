@@ -18,7 +18,7 @@ def RunUnitTest (unitTestPath):
 	return True
 	
 def Main ():
-	unitTestPath = os.path.abspath ('../test/unittest/jsmodeler.js')
+	unitTestPath = os.path.abspath ('../test/unittest/jsmodelertest.js')
 	
 	PrintInfo ('Run unit tests <' + unitTestPath + '>.')
 	succeeded = RunUnitTest (unitTestPath)
