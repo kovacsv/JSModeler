@@ -2,12 +2,6 @@ import os
 import sys
 import re
 
-rootFolderDir = '..'
-filesFileName = 'files.txt'
-
-includesStart = '<!-- JSModeler includes start -->'
-includesEnd = '<!-- JSModeler includes end -->'
-
 def PrintInfo (message):
 	print ('Info: ' + message)
 
@@ -46,7 +40,7 @@ def ReplaceStringPart (fromIndex, toIndex, originalString, newString):
 	result = preFix + newString + postFix
 	return result
 	
-def ReplaceIncludesInFile (htmlFileName, inputFileNames):
+def ReplaceIncludesInFile (htmlFileName, inputFileNames, includesStart, includesEnd, includesPrefix, includesPostfix):
 	htmlFile = open (htmlFileName, 'r')
 	htmlContent = htmlFile.read ()
 	htmlFile.close ()
@@ -63,7 +57,7 @@ def ReplaceIncludesInFile (htmlFileName, inputFileNames):
 		absPath = os.path.abspath (inputFileName)
 		dirName = os.path.dirname (htmlFileName)
 		relPath = os.path.relpath (absPath, dirName)
-		includesString += '\t<script type="text/javascript" src="' + relPath.replace ('\\', '/') + '"></script>' + lineEnd
+		includesString += includesPrefix + relPath.replace ('\\', '/') + includesPostfix + lineEnd
 	
 	resultString = ReplaceStringPart (startPos + len (includesStart), endPos, htmlContent, includesString)
 	result = open (htmlFileName, 'w')
@@ -74,20 +68,39 @@ def Main ():
 	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
 
-	filesFilePath = os.path.abspath (filesFileName)
+	filesFilePath = os.path.abspath ('files.txt')
 	PrintInfo ('Collect file names from <' + filesFilePath + '>.')
 	inputFileNames = GetLinesFromFile (filesFilePath);
 	if len (inputFileNames) == 0:
 		PrintError ('Invalid file list.');
 		return 1
 	
-	rootFolderDirPath = os.path.abspath (rootFolderDir)
+	rootFolderDirPath = os.path.abspath ('..')
 	PrintInfo ('Collect HTML files from <' + rootFolderDirPath + '>.')
 	htmlFiles = GetHTMLFiles (rootFolderDirPath)
 
 	PrintInfo ('Replace includes in <' + rootFolderDirPath + '>.')
-	for htmlFileName in htmlFiles:
-		ReplaceIncludesInFile (htmlFileName, inputFileNames)
+	for htmlFilePath in htmlFiles:
+		ReplaceIncludesInFile (
+			htmlFilePath,
+			inputFileNames,
+			'<!-- JSModeler includes start -->',
+			'<!-- JSModeler includes end -->',
+			'\t<script type="text/javascript" src="',
+			'"></script>'
+			
+		)
+
+	testFilePath = os.path.abspath ('../test/unittest/jsmodelertest.js');
+	PrintInfo ('Replace includes in <' + testFilePath + '>.')
+	ReplaceIncludesInFile (
+		testFilePath,
+		inputFileNames,
+		'// JSModeler includes start',
+		'// JSModeler includes end',
+		'unitTest.IncludeSourceFile (\'',
+		'\');'
+	)
 	return 0
 	
 sys.exit (Main ())
