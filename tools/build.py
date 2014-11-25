@@ -60,12 +60,12 @@ def GetVersion (versionFileName):
 	content = inputFile.read ()
 	inputFile.close ()
 	
-	match = re.search (r'mainVersion.*?:.*?(?P<mainVersion>\d+)', content)
+	match = re.search (r'this.mainVersion.*?=.*?(?P<mainVersion>\d+)', content)
 	if not match:
 		return version
 	mainVersion = match.group ('mainVersion')
 
-	match = re.search (r'subVersion.*?:.*?(?P<subVersion>\d+)', content)
+	match = re.search (r'this.subVersion.*?=.*?(?P<subVersion>\d+)', content)
 	if not match:
 		return version
 	subVersion = match.group ('subVersion')
