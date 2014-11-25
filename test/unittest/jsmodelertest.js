@@ -3,6 +3,7 @@ var currentDir = require ('path').dirname (require.main.filename);
 var UnitTest = require ('./framework/unittest.js');
 var unitTest = new UnitTest (currentDir, process.argv);
 
+// JSModeler includes start
 unitTest.IncludeSourceFile ('../../src/core/jsm.js');
 unitTest.IncludeSourceFile ('../../src/core/timer.js');
 unitTest.IncludeSourceFile ('../../src/core/algorithm.js');
@@ -70,10 +71,14 @@ unitTest.IncludeSourceFile ('../../src/viewer/softwareviewer.js');
 unitTest.IncludeSourceFile ('../../src/viewer/spriteviewer.js');
 unitTest.IncludeSourceFile ('../../src/viewer/viewer.js');
 unitTest.IncludeSourceFile ('../../src/viewer/pointcloudviewer.js');
+unitTest.IncludeSourceFile ('../../src/three/threeconverter.js');
+unitTest.IncludeSourceFile ('../../src/three/threeviewer.js');
+// JSModeler includes end
 
 unitTest.AddTestFile ('tests/core.js');
 unitTest.AddTestFile ('tests/geometry.js');
 unitTest.AddTestFile ('tests/modeler.js');
+unitTest.AddTestFile ('tests/import.js');
 
 var succeeded = unitTest.Run ();
 var resultNum = 0;
