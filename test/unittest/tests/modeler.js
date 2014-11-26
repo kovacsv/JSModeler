@@ -1655,9 +1655,7 @@ utilsSuite.AddTest ('MergeCoplanarPolygonsTest', function (test)
 	test.Assert (mergedCylinder2.PolygonCount () == 52);
 });
 
-var csgSuite = unitTest.AddTestSuite ('ModelerCSG');
-
-csgSuite.AddTest ('AddBodyToBSPTreeTest', function (test)
+utilsSuite.AddTest ('AddBodyToBSPTreeTest', function (test)
 {
 	var body = new JSM.GenerateCuboid (1, 1, 1);
 	var bspTree = new JSM.BSPTree ();

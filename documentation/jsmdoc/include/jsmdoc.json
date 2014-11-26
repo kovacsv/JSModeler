@@ -1341,7 +1341,7 @@
 						["vertices", "Coord2D[*]", "array of contour vertices with null values at contour ends"]
 					],
 					"returns" : [
-						["Coord2D[*]", "the result"]
+						["int[*]", "the result"]
 					]
 				},
 				"PolygonTriangulate2D" : {
@@ -1369,7 +1369,7 @@
 						["vertices", "Coord[*]", "array of contour vertices with null values at contour ends"]
 					],
 					"returns" : [
-						["Coord[*]", "the result"]
+						["int[*]", "the result"]
 					]
 				},
 				"PolygonTriangulate" : {

@@ -309,89 +309,147 @@ JSM.IsPolygonVertexVisible2D = function (polygon, from, to)
 * Parameters:
 *	vertices {Coord2D[*]} array of contour vertices with null values at contour ends
 * Returns:
-*	{Coord2D[*]} the result
+*	{int[*]} the result
 */
 JSM.CreatePolygonWithHole2D = function (vertices)
 {
-	function FindHoleEntryPoint (contourIndex)
+	function GetContourEnds (vertices)
 	{
+		var result = [];
+		result.push (-1);
+		var i;
+		for (i = 0; i < vertices.length; i++) {
+			if (vertices[i] === null) {
+				result.push (i);
+				continue;
+			}
+		}
+		result.push (i);
+		return result;
+	}
+
+	function GetContourPolygons (vertices, contourCount, contourEnds)
+	{
+		var result = [];
+		var i, j, from, to, polygon, vertex;
+		for (i = 0; i < contourCount; i++) {
+			from = contourEnds[i] + 1;
+			to = contourEnds[i + 1];
+			polygon = new JSM.Polygon2D ();
+			for (j = from; j < to; j++) {
+				vertex = vertices[j];
+				polygon.AddVertex (vertex.x, vertex.y);
+			}
+			result.push (polygon);
+		}
+		return result;
+	}
+
+	function FindHoleEntryPoint (vertices, contourIndex, contourPolygons, finishedContourPolygons)
+	{
+		function IsNotIntersectingSector (currentSector, originalIndex, currentHoleIndex, originalPolygon, currentHolePolygon, contourPolygons, finishedContourPolygons)
+		{
+			if (JSM.SectorIntersectsPolygon2D (originalPolygon, currentSector, originalIndex, -1)) {
+				return false;
+			}
+			if (JSM.SectorIntersectsPolygon2D (currentHolePolygon, currentSector, -1, currentHoleIndex)) {
+				return false;
+			}
+			
+			var i, currentContourPolygon;
+			for (i = 0; i < contourPolygons.length; i++) {
+				if (i == contourIndex || finishedContourPolygons[i] !== undefined) {
+					continue;
+				}
+				currentContourPolygon = contourPolygons[i];
+				if (JSM.SectorIntersectsPolygon2D (currentContourPolygon, currentSector, -1, -1)) {
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
 		var originalPolygon = new JSM.Polygon2D ();
-		var contourPolygon = new JSM.Polygon2D ();
 		var i, j, vertex;
 		for (i = 0; i < result.length; i++) {
 			vertex = vertices[result[i]];
 			originalPolygon.AddVertex (vertex.x, vertex.y);
 		}
-	
+		
 		var from = contourEnds[contourIndex] + 1;
-		var to = contourEnds[contourIndex + 1];
-		for (i = from; i < to; i++) {
-			vertex = vertices[i];
-			contourPolygon.AddVertex (vertex.x, vertex.y);
-		}
-
+        
 		var entryPoint = null;
-		var originalSector, originalInd, contourInd;
+		var currentHolePolygon = contourPolygons[contourIndex];
+		var currentSector;
 		for (i = 0; i < originalPolygon.VertexCount (); i++) {
-			originalInd = result[i];
-			for (j = from; j < to; j++) {
-				contourInd = j - from;
-				originalSector = new JSM.Sector (vertices[originalInd], vertices[j]);
-				if (!JSM.SectorIntersectsPolygon2D (originalPolygon, originalSector, i, -1)) {
-					if (!JSM.SectorIntersectsPolygon2D (contourPolygon, originalSector, -1, contourInd)) {
-						entryPoint = [originalInd, j];
-						break;
-					}
+			for (j = 0; j < currentHolePolygon.VertexCount (); j++) {
+				currentSector = new JSM.Sector (originalPolygon.GetVertex (i), currentHolePolygon.GetVertex (j));
+				if (IsNotIntersectingSector (currentSector, i, j, originalPolygon, currentHolePolygon, contourPolygons, finishedContourPolygons)) {
+					entryPoint = [result[i], j + from];
+					break;
 				}
 			}
 			if (entryPoint !== null) {
 				break;
 			}
 		}
-		
+
 		return entryPoint;
 	}
 
-	function AddHoleContour (contourIndex)
+	function AddHoleContour (vertices, contourIndex, contourPolygons, finishedContourPolygons)
 	{
-		var entryPoint = FindHoleEntryPoint (contourIndex);
+		var entryPoint = FindHoleEntryPoint (vertices, contourIndex, contourPolygons, finishedContourPolygons);
+		if (entryPoint === null) {
+			return false;
+		}
+		
 		var from = contourEnds[contourIndex] + 1;
 		var to = contourEnds[contourIndex + 1];
 
 		var oldResult = [];
-		var i, j;
+		var i;
 		for (i = 0; i < result.length; i++) {
 			oldResult[i] = result[i];
 		}
+		
 		result = [];
-		var first, finished;
+		var first, finished, originalInd, contourInd;
 		for (i = 0; i < oldResult.length; i++) {
-			result.push (oldResult[i]);
-			if (oldResult[i] == entryPoint[0]) {
-				j = entryPoint[1];
+			originalInd = oldResult[i];
+			result.push (originalInd);
+			if (originalInd == entryPoint[0]) {
+				contourInd = entryPoint[1];
 				first = true;
 				finished = false;
 				while (!finished) {
-					result.push (j);
-					if (!first && j == entryPoint[1]) {
+					result.push (contourInd);
+					if (!first && contourInd == entryPoint[1]) {
 						finished = true;
 					}
 					if (first) {
 						first = false;
 					}
-					if (j < to - 1) {
-						j = j + 1;
+					if (contourInd < to - 1) {
+						contourInd = contourInd + 1;
 					} else {
-						j = from;
+						contourInd = from;
 					}
 				}
-				result.push (oldResult[i]);
+				result.push (originalInd);
 			}
 		}
+		
+		return true;
 	}
 
-	function AddContour (contourIndex)
+	function AddContour (vertices, contourIndex, contourPolygons, finishedContourPolygons)
 	{
+		if (finishedContourPolygons[contourIndex] !== undefined) {
+			return false;
+		}
+	
 		var from = contourEnds[contourIndex] + 1;
 		var to = contourEnds[contourIndex + 1];
 		
@@ -400,31 +458,48 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 			for (i = from; i < to; i++) {
 				result.push (i);
 			}
+			finishedContourPolygons[contourIndex] = true;
 		} else {
-			AddHoleContour (contourIndex);
+			if (AddHoleContour (vertices, contourIndex, contourPolygons, finishedContourPolygons)) {
+				finishedContourPolygons[contourIndex] = true;
+			}
 		}
+		
+		return true;
 	}
 
 	var result = [];
-	var contourEnds = [];
-	var contourCount = 0;
+	var contourEnds = GetContourEnds (vertices);
+	var contourCount = contourEnds.length - 1;
+	if (contourCount === 0) {
+		contourCount = 1;
+	}
+
+	var contourPolygons = GetContourPolygons (vertices, contourCount, contourEnds);
+	var finishedContourPolygons = {};
+	var finishedContourCount = 0;
+	var addedContourInCurrentRound = false;
 	
-	var i;
-	contourEnds.push (-1);
-	for (i = 0; i < vertices.length; i++) {
-		if (vertices[i] === null) {
-			contourEnds.push (i);
-			contourCount = contourCount + 1;
-			continue;
+	var i = 0;
+	while (finishedContourCount < contourCount) {
+		if (AddContour (vertices, i, contourPolygons, finishedContourPolygons)) {
+			finishedContourCount += 1;
+			addedContourInCurrentRound = true;
+		}
+		if (i < contourCount - 1) {
+			i = i + 1;
+		} else {
+			i = 0;
+			if (!addedContourInCurrentRound) {
+				break;
+			}
+			addedContourInCurrentRound = false;
 		}
 	}
-	contourEnds.push (i);
-	contourCount = contourCount + 1;
-
-	for (i = 0; i < contourCount; i++) {
-		AddContour (i);
-	}
 	
+	for (i = 0; i < contourCount; i++) {
+		AddContour (vertices, i, contourPolygons, finishedContourPolygons);
+	}
 	return result;
 };
 
@@ -654,7 +729,7 @@ JSM.CheckTriangulation2D = function (polygon, triangles)
 * Parameters:
 *	vertices {Coord[*]} array of contour vertices with null values at contour ends
 * Returns:
-*	{Coord[*]} the result
+*	{int[*]} the result
 */
 JSM.CreatePolygonWithHole = function (vertices)
 {
