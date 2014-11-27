@@ -1,6 +1,9 @@
-AddTestSuite ('Geometry - General');
+module.exports = function (unitTest)
+{
 
-AddTest ('VectorTest', function (test) {
+var generalSuite = unitTest.AddTestSuite ('GeometryGeneral');
+
+generalSuite.AddTest ('VectorTest', function (test) {
 	var coord2d1 = new JSM.Coord2D (1, 2);
 	var coord2d2 = new JSM.Coord2D (3, 4);
 	var coord2d3 = new JSM.Coord2D (1, 6);
@@ -164,7 +167,7 @@ AddTest ('VectorTest', function (test) {
 	test.Assert (JSM.CoordIsEqualWithEps (coord, new JSM.Coord (2.0, 2.0, 3.0), 1.1));
 });
 
-AddTest ('TriangleNormalTest', function (test) {
+generalSuite.AddTest ('TriangleNormalTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (JSM.CalculateTriangleNormal (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (1.0, 1.0, 0.0)), new JSM.Vector (0.0, 0.0, 1.0)));
 	test.Assert (JSM.CoordIsEqual (JSM.CalculateTriangleNormal (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (1.0, -1.0, 0.0)), new JSM.Vector (0.0, 0.0, -1.0)));
 	
@@ -175,7 +178,7 @@ AddTest ('TriangleNormalTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (JSM.CalculateTriangleNormal (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 1.0)), new JSM.Vector (0.0, -1.0, 0.0)));
 });
 
-AddTest ('SphericalTest', function (test) {
+generalSuite.AddTest ('SphericalTest', function (test) {
 	function TestConversion (x, y, z) {
 		var original = new JSM.Coord (x, y, z);
 		
@@ -264,7 +267,7 @@ AddTest ('SphericalTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (current, new JSM.Coord (0.0, 1.0, 0.0)));
 });
 
-AddTest ('CircleTest', function (test) {
+generalSuite.AddTest ('CircleTest', function (test) {
 	test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 0.0 * JSM.DegRad), new JSM.Coord2D (1.0, 0.0)));
 	test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 90.0 * JSM.DegRad), new JSM.Coord2D (0.0, 1.0)));
 	test.Assert (JSM.CoordIsEqual2D (JSM.PolarToCartesian (1.0, 180.0 * JSM.DegRad), new JSM.Coord2D (-1.0, 0.0)));
@@ -288,7 +291,7 @@ AddTest ('CircleTest', function (test) {
 	test.Assert (JSM.IsEqual (JSM.GetAngleFromArcLength (1.0, 5.0 * unitRadius / 4.0), 450.0 * JSM.DegRad));
 });
 
-AddTest ('MatrixTest', function (test) {
+generalSuite.AddTest ('MatrixTest', function (test) {
 	var vector1 = [1, 2, 3, 4];
 	var matrix1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 	var matrix2 = [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
@@ -372,7 +375,7 @@ AddTest ('MatrixTest', function (test) {
 	].toString ());
 });
 
-AddTest ('ArcLengthTest', function (test) {
+generalSuite.AddTest ('ArcLengthTest', function (test) {
 	var a1 = new JSM.Vector (0.0, 1.0, 0.0);
 	var a2 = new JSM.Vector (0.0, -1.0, 0.0);
 	var a3 = new JSM.Vector (-1.0, 0.0, 0.0);
@@ -432,7 +435,7 @@ AddTest ('ArcLengthTest', function (test) {
 	}
 });
 
-AddTest ('TransformationTest', function (test) {
+generalSuite.AddTest ('TransformationTest', function (test) {
 	var transformation = new JSM.IdentityTransformation ();
 	
 	var coord = new JSM.Coord (1.0, 1.0, 1.0);
@@ -550,7 +553,7 @@ AddTest ('TransformationTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (trXYZ.Apply (new JSM.Coord (1.0, 2.0, 3.0)), coord));
 });
 
-AddTest ('SectorTest', function (test) {
+generalSuite.AddTest ('SectorTest', function (test) {
 	var beg = new JSM.Coord2D (1.0, 2.0);
 	var end = new JSM.Coord2D (3.0, 4.0);
 	
@@ -574,7 +577,7 @@ AddTest ('SectorTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (sector.end, new JSM.Coord (1.0, 2.0, 3.0)));
 });
 
-AddTest ('CoordLinePositionTest', function (test)
+generalSuite.AddTest ('CoordLinePositionTest', function (test)
 {
 	var start2D = new JSM.Coord2D (1.0, 1.0);
 	var direction2D = new JSM.Coord2D (1.0, 0.0);
@@ -639,7 +642,7 @@ AddTest ('CoordLinePositionTest', function (test)
 	test.Assert (JSM.CoordIsEqual (intersection, new JSM.Coord (0.5, 0.5, 0.5)));
 });
 
-AddTest ('CoordSectorPositionTest', function (test)
+generalSuite.AddTest ('CoordSectorPositionTest', function (test)
 {
 	var sector1 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
 	var sector2 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 0.0));
@@ -684,7 +687,7 @@ AddTest ('CoordSectorPositionTest', function (test)
 	test.Assert (JSM.CoordSectorPosition (new JSM.Coord (42.1, 0.0, 0.0), sector4) == 'CoordOutsideOfSector');	
 });
 
-AddTest ('CoordSectorPosition2DTest', function (test)
+generalSuite.AddTest ('CoordSectorPosition2DTest', function (test)
 {
 	var coord = new JSM.Coord2D (1.0, 0.0);
 	var sector = new JSM.Sector2D (new JSM.Coord2D (0.0, 1.0), new JSM.Coord2D (1.0, 1.0));
@@ -725,7 +728,7 @@ AddTest ('CoordSectorPosition2DTest', function (test)
 	test.Assert (JSM.CoordSectorPosition2D (new JSM.Coord2D (0.0, 0.0), sector4) == 'CoordOutsideOfSector');
 });
 
-AddTest ('SectorSectorPositionTest', function (test)
+generalSuite.AddTest ('SectorSectorPositionTest', function (test)
 {
 	var GetSector2D = function (a, b, c, d)
 	{
@@ -788,7 +791,7 @@ AddTest ('SectorSectorPositionTest', function (test)
 	test.Assert (JSM.SectorSectorPosition2D (GetSector2D (3.0, 0.0, 3.0, 3.0), GetSector2D (0.0, 0.0, 1.0, 1.0)) == 'SectorsDontIntersects');
 });
 
-AddTest ('BoxTest', function (test)
+generalSuite.AddTest ('BoxTest', function (test)
 {
 	var box = new JSM.Box2D (new JSM.Coord2D (0.0, 0.0), new JSM.Coord2D (1.0, 1.0));
 	test.Assert (JSM.CoordIsEqual2D (box.GetCenter (), new JSM.Coord2D (0.5, 0.5)));
@@ -802,7 +805,7 @@ AddTest ('BoxTest', function (test)
 	test.Assert (JSM.CoordIsEqual (box3.max, new JSM.Coord (1.0, 1.0, 1.0)));
 });
 
-AddTest ('PlaneTest', function (test)
+generalSuite.AddTest ('PlaneTest', function (test)
 {
 	var plane = new JSM.Plane (1.0, 2.0, 3.0, 4.0);
 	test.Assert (plane.a == 1.0 && plane.b == 2.0 && plane.c == 3.0 && plane.d == 4.0);
@@ -888,7 +891,7 @@ AddTest ('PlaneTest', function (test)
 	}
 });
 
-AddTest ('ProjectionTest', function (test)
+generalSuite.AddTest ('ProjectionTest', function (test)
 {
 	var eye = new JSM.Coord (1, 0, 0);
 	var center = new JSM.Coord (0, 0, 0);
@@ -939,7 +942,7 @@ AddTest ('ProjectionTest', function (test)
 	test.Assert (JSM.IsEqual (projected.x, 160.35533905932851) && JSM.IsEqual (projected.y, 110.3553390593285));
 });
 
-AddTest ('ConvexHullTest', function (test)
+generalSuite.AddTest ('ConvexHullTest', function (test)
 {
 	var result = [];
 	var coord = [];
@@ -1133,7 +1136,7 @@ AddTest ('ConvexHullTest', function (test)
 	test.Assert (result.toString () == '3,8,14,8,0,14,0,12,14,1,9,14,12,1,14,9,5,14,2,10,15,13,2,15,10,6,15,7,11,15,11,4,15,4,13,15,10,2,16,0,8,16,8,10,16,6,10,17,8,3,17,10,8,17,4,11,18,9,1,18,11,9,18,1,12,18,12,0,18,0,16,18,2,13,18,16,2,18,13,4,18,11,7,19,5,9,19,9,11,19,3,14,19,17,3,19,14,5,19,7,15,19,15,6,19,6,17,19');
 });
 
-AddTest ('OctreeTest', function (test)
+generalSuite.AddTest ('OctreeTest', function (test)
 {
 	var octree = new JSM.Octree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)));
 	var coords = [
@@ -1231,9 +1234,9 @@ AddTest ('OctreeTest', function (test)
 	test.Assert (octree.FindCoord (coords[6]) == 6);
 });
 
-AddTestSuite ('Geometry - Polygon');
+var polygonSuite = unitTest.AddTestSuite ('GeometryPolygon');
 
-AddTest ('PolygonTest', function (test)
+polygonSuite.AddTest ('PolygonTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
@@ -1306,7 +1309,7 @@ AddTest ('PolygonTest', function (test)
 	test.Assert (JSM.PolygonOrientation2D (polygon) == 'CounterClockwise');
 });
 
-AddTest ('ContourPolygon2DTest', function (test)
+polygonSuite.AddTest ('ContourPolygon2DTest', function (test)
 {
 	var polygon = new JSM.ContourPolygon2D ();
 	test.Assert (polygon.ContourCount () == 0);
@@ -1365,7 +1368,7 @@ AddTest ('ContourPolygon2DTest', function (test)
 	test.Assert (polygon.VertexCount (2) == 0);
 });
 
-AddTest ('CoordPolygonPosition2DTest', function (test)
+polygonSuite.AddTest ('CoordPolygonPosition2DTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 2.0);
@@ -1404,7 +1407,7 @@ AddTest ('CoordPolygonPosition2DTest', function (test)
 	test.Assert (JSM.CoordPolygonPosition2D (new JSM.Coord2D (1.5, 1.0), polygon) == 'CoordInsideOfPolygon');
 });
 
-AddTest ('PolygonVertexVisibility2DTest', function (test)
+polygonSuite.AddTest ('PolygonVertexVisibility2DTest', function (test)
 {
 	function GetSector (x1, y1, x2, y2)
 	{
@@ -1512,7 +1515,7 @@ AddTest ('PolygonVertexVisibility2DTest', function (test)
 	test.Assert (JSM.SectorIntersectsPolygon2D (polygon4, GetSector (0, 0, 1, 1), 0, -1) == false);
 });
 
-AddTest ('PolygonTriangulation2DTest', function (test)
+polygonSuite.AddTest ('PolygonTriangulation2DTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
@@ -1647,7 +1650,7 @@ AddTest ('PolygonTriangulation2DTest', function (test)
 	test.Assert (triangles[9].toString () == [11, 9, 10].toString ());
 });
 
-AddTest ('PolygonTriangulationTest', function (test)
+polygonSuite.AddTest ('PolygonTriangulationTest', function (test)
 {
 	var polygon = new JSM.Polygon ();
 	polygon.AddVertex (0.0, 0.0, 0.0);
@@ -1663,7 +1666,7 @@ AddTest ('PolygonTriangulationTest', function (test)
 	test.Assert (triangles[2].toString () == [0, 3, 4].toString ());
 });
 
-AddTest ('PolygonOffsetTest', function (test)
+polygonSuite.AddTest ('PolygonOffsetTest', function (test)
 {
 	var polygon = new JSM.Polygon ();
 	polygon.AddVertex (0.0, 0.0, 0.0);
@@ -1692,19 +1695,8 @@ AddTest ('PolygonOffsetTest', function (test)
 	test.Assert (JSM.CoordIsEqual (offseted.vertices[4], new JSM.Coord (0.8, 1.1527864045000422, 0.0)));
 });
 
-AddTest ('PolygonWithHole2DTest', function (test)
+polygonSuite.AddTest ('PolygonWithHole2DTest', function (test)
 {
-	function GetVisibleVertices (polygon, from)
-	{
-		var result = [];
-		for (var i = 0; i < polygon.VertexCount (); i++) {
-			if (JSM.IsPolygonVertexVisible2D (polygon, from, i)) {
-				result.push (i);
-			}
-		}
-		return result;
-	}
-
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0, 0);
 	polygon.AddVertex (3, 0);
@@ -1808,7 +1800,7 @@ AddTest ('PolygonWithHole2DTest', function (test)
 	test.Assert (triangles[6].toString () == [4, 2, 3].toString ());
 });
 
-AddTest ('CreatePolygonWithHole2DTest', function (test)
+polygonSuite.AddTest ('CreatePolygonWithHole2DTest', function (test)
 {
 	function CreatePolygon2D (vertices, indices)
 	{
@@ -1979,7 +1971,7 @@ AddTest ('CreatePolygonWithHole2DTest', function (test)
 	test.Assert (indices.toString () == [0, 13, 14, 8, 9, 10, 11, 12, 13, 0, 1, 2, 3, 4, 5, 6].toString ());
 });
 
-AddTest ('CreatePolygonWithHoleTest', function (test)
+polygonSuite.AddTest ('CreatePolygonWithHoleTest', function (test)
 {
 	function CreatePolygon (vertices, indices)
 	{
@@ -2064,7 +2056,408 @@ AddTest ('CreatePolygonWithHoleTest', function (test)
 	}	
 });
 
-AddTest ('OldCutPolygonTest', function (test)
+polygonSuite.AddTest ('TriangulationWithHole2DTest', function (test) {
+	function TestTriangulation (basePolygon, refIndices)
+	{
+		var polygonIndices = JSM.CreatePolygonWithHole2D (basePolygon);
+		if (polygonIndices.toString () != refIndices.toString ()) {
+			return false;
+		}
+		var polygon = new JSM.Polygon2D ();
+		var i, vertex;
+		for (i = 0; i < polygonIndices.length; i++) {
+			vertex = basePolygon[polygonIndices[i]];
+			polygon.AddVertex (vertex.x, vertex.y);
+		}
+		var triangles = JSM.PolygonTriangulate2D (polygon);	
+		if (!JSM.CheckTriangulation2D (polygon, triangles)) {
+			return false;
+		}
+		return true;
+	}
+
+	var basePolygon = [
+		new JSM.Coord2D (14.406249999999998, 0.004463199991732836),
+		new JSM.Coord2D (12.273693084716795, -0.13337911665439606),
+		new JSM.Coord2D (10.177939414978026, -0.5507046580314636),
+		new JSM.Coord2D (8.158322334289549, -1.2485805749893188),
+		new JSM.Coord2D (6.256920814514159, -2.2232589721679688),
+		new JSM.Coord2D (4.518617153167724, -3.4653913974761963),
+		new JSM.Coord2D (2.992141485214233, -4.959873676300049),
+		new JSM.Coord2D (1.7292572259902952, -6.682513236999512),
+		new JSM.Coord2D (0.7823054790496825, -8.596776962280273),
+		new JSM.Coord2D (0.19680410623550412, -10.650409698486328),
+		new JSM.Coord2D (2.7840769689646545e-9, -12.77676773071289),
+		new JSM.Coord2D (2.7840769689646545e-9, -58.87051773071289),
+		new JSM.Coord2D (0.19683623313903806, -60.99687194824219),
+		new JSM.Coord2D (0.782375395298004, -63.05048370361328),
+		new JSM.Coord2D (1.7292767763137815, -64.96475982666016),
+		new JSM.Coord2D (2.992123126983642, -66.68743133544922),
+		new JSM.Coord2D (4.5186753273010245, -68.18182373046875),
+		new JSM.Coord2D (6.256915569305419, -69.42404174804688),
+		new JSM.Coord2D (8.158330917358397, -70.398681640625),
+		new JSM.Coord2D (10.17793846130371, -71.0965805053711),
+		new JSM.Coord2D (12.273698806762694, -71.51383209228516),
+		new JSM.Coord2D (14.406246185302733, -71.65176391601562),
+		new JSM.Coord2D (385.18749999999994, -71.65176391601562),
+		new JSM.Coord2D (387.32006835937494, -71.513916015625),
+		new JSM.Coord2D (389.41580200195307, -71.0965805053711),
+		new JSM.Coord2D (391.43542480468744, -70.398681640625),
+		new JSM.Coord2D (393.33679199218744, -69.42398071289062),
+		new JSM.Coord2D (395.0751342773437, -68.18187713623047),
+		new JSM.Coord2D (396.6016235351562, -66.6874008178711),
+		new JSM.Coord2D (397.86450195312494, -64.96475982666016),
+		new JSM.Coord2D (398.8114624023437, -63.050498962402344),
+		new JSM.Coord2D (399.39697265624994, -60.99687576293945),
+		new JSM.Coord2D (399.59374999999994, -58.870513916015625),
+		new JSM.Coord2D (399.59374999999994, -12.776763916015625),
+		new JSM.Coord2D (399.39688110351557, -10.650407791137695),
+		new JSM.Coord2D (398.8113708496093, -8.596782684326172),
+		new JSM.Coord2D (397.8644714355468, -6.682509422302246),
+		new JSM.Coord2D (396.6016235351562, -4.95983362197876),
+		new JSM.Coord2D (395.07510375976557, -3.465416193008423),
+		new JSM.Coord2D (393.3368530273437, -2.223223924636841),
+		new JSM.Coord2D (391.43542480468744, -1.2485815286636353),
+		new JSM.Coord2D (389.41580200195307, -0.5506518483161926),
+		new JSM.Coord2D (387.3200378417968, -0.13342222571372986),
+		new JSM.Coord2D (385.18749999999994, 0.004486083984375),
+		null,
+		new JSM.Coord2D (357.99999999999994, -10.651786804199219),
+		new JSM.Coord2D (360.0240173339843, -10.729362487792969),
+		new JSM.Coord2D (362.0359497070312, -10.963029861450195),
+		new JSM.Coord2D (364.0234985351562, -11.353105545043945),
+		new JSM.Coord2D (365.97412109374994, -11.898651123046875),
+		new JSM.Coord2D (367.87536621093744, -12.597009658813477),
+		new JSM.Coord2D (369.7149047851562, -13.44465446472168),
+		new JSM.Coord2D (371.4808044433593, -14.436634063720703),
+		new JSM.Coord2D (373.1611938476562, -15.567431449890137),
+		new JSM.Coord2D (374.7445983886718, -16.83041000366211),
+		new JSM.Coord2D (376.2197875976562, -18.21826934814453),
+		new JSM.Coord2D (377.57568359374994, -19.722864151000977),
+		new JSM.Coord2D (378.80154418945307, -21.335163116455078),
+		new JSM.Coord2D (379.88711547851557, -23.0450382232666),
+		new JSM.Coord2D (380.82266235351557, -24.84136199951172),
+		new JSM.Coord2D (381.5994262695312, -26.711843490600586),
+		new JSM.Coord2D (382.2098999023437, -28.642974853515625),
+		new JSM.Coord2D (382.64871215820307, -30.620220184326172),
+		new JSM.Coord2D (382.91235351562494, -32.628326416015625),
+		new JSM.Coord2D (382.99999999999994, -34.65178680419922),
+		new JSM.Coord2D (382.91235351562494, -36.67523956298828),
+		new JSM.Coord2D (382.6486206054687, -38.68333053588867),
+		new JSM.Coord2D (382.2098083496093, -40.660552978515625),
+		new JSM.Coord2D (381.59924316406244, -42.591670989990234),
+		new JSM.Coord2D (380.8226013183593, -44.46219253540039),
+		new JSM.Coord2D (379.8871459960937, -46.258583068847656),
+		new JSM.Coord2D (378.8015747070312, -47.96845626831055),
+		new JSM.Coord2D (377.5756530761718, -49.58070755004883),
+		new JSM.Coord2D (376.2197875976562, -51.08530807495117),
+		new JSM.Coord2D (374.7445983886718, -52.47315979003906),
+		new JSM.Coord2D (373.16116333007807, -53.73616027832031),
+		new JSM.Coord2D (371.4807739257812, -54.86695861816406),
+		new JSM.Coord2D (369.7149353027343, -55.85900115966797),
+		new JSM.Coord2D (367.87536621093744, -56.70659255981445),
+		new JSM.Coord2D (365.97412109374994, -57.405006408691406),
+		new JSM.Coord2D (364.0234985351562, -57.95049285888672),
+		new JSM.Coord2D (362.0359497070312, -58.340576171875),
+		new JSM.Coord2D (360.0239868164062, -58.574188232421875),
+		new JSM.Coord2D (357.99999999999994, -58.65178680419922),
+		new JSM.Coord2D (355.97598266601557, -58.57420349121094),
+		new JSM.Coord2D (353.9640502929687, -58.340545654296875),
+		new JSM.Coord2D (351.9765014648437, -57.95048141479492),
+		new JSM.Coord2D (350.02587890624994, -57.40494155883789),
+		new JSM.Coord2D (348.12463378906244, -56.706573486328125),
+		new JSM.Coord2D (346.2850952148437, -55.85893249511719),
+		new JSM.Coord2D (344.51919555664057, -54.866943359375),
+		new JSM.Coord2D (342.8388061523437, -53.73613357543945),
+		new JSM.Coord2D (341.25537109374994, -52.47316360473633),
+		new JSM.Coord2D (339.78018188476557, -51.085304260253906),
+		new JSM.Coord2D (338.4242858886718, -49.58070755004883),
+		new JSM.Coord2D (337.1984252929687, -47.968421936035156),
+		new JSM.Coord2D (336.1128845214843, -46.25852584838867),
+		new JSM.Coord2D (335.1773071289062, -44.462196350097656),
+		new JSM.Coord2D (334.40054321289057, -42.591712951660156),
+		new JSM.Coord2D (333.79003906249994, -40.66058349609375),
+		new JSM.Coord2D (333.3512878417968, -38.68334197998047),
+		new JSM.Coord2D (333.08764648437494, -36.675235748291016),
+		new JSM.Coord2D (332.99999999999994, -34.65178680419922),
+		new JSM.Coord2D (333.08764648437494, -32.62833023071289),
+		new JSM.Coord2D (333.3513793945312, -30.620243072509766),
+		new JSM.Coord2D (333.79019165039057, -28.643016815185547),
+		new JSM.Coord2D (334.4007263183593, -26.711898803710938),
+		new JSM.Coord2D (335.17736816406244, -24.84137725830078),
+		new JSM.Coord2D (336.11282348632807, -23.044984817504883),
+		new JSM.Coord2D (337.1984252929687, -21.33512306213379),
+		new JSM.Coord2D (338.42434692382807, -19.722867965698242),
+		new JSM.Coord2D (339.7802429199218, -18.2182674407959),
+		new JSM.Coord2D (341.25540161132807, -16.830411911010742),
+		new JSM.Coord2D (342.8388061523437, -15.567415237426758),
+		new JSM.Coord2D (344.51919555664057, -14.436615943908691),
+		new JSM.Coord2D (346.28506469726557, -13.444568634033203),
+		new JSM.Coord2D (348.12466430664057, -12.596980094909668),
+		new JSM.Coord2D (350.02587890624994, -11.8985595703125),
+		new JSM.Coord2D (351.9765014648437, -11.353080749511719),
+		new JSM.Coord2D (353.9640502929687, -10.962987899780273),
+		new JSM.Coord2D (355.9760131835937, -10.729391098022461),
+		null,
+		new JSM.Coord2D (45.84374999999999, -10.683036804199219),
+		new JSM.Coord2D (47.88229370117187, -10.759542465209961),
+		new JSM.Coord2D (49.909187316894524, -10.990069389343262),
+		new JSM.Coord2D (51.91246795654296, -11.375129699707031),
+		new JSM.Coord2D (53.879959106445305, -11.913954734802246),
+		new JSM.Coord2D (55.799419403076165, -12.604604721069336),
+		new JSM.Coord2D (57.658760070800774, -13.443743705749512),
+		new JSM.Coord2D (59.44597625732422, -14.427173614501953),
+		new JSM.Coord2D (61.14910888671875, -15.54993724822998),
+		new JSM.Coord2D (62.75645065307617, -16.805988311767578),
+		new JSM.Coord2D (64.25637817382811, -18.188514709472656),
+		new JSM.Coord2D (65.63724517822264, -19.689943313598633),
+		new JSM.Coord2D (66.88774108886717, -21.301536560058594),
+		new JSM.Coord2D (67.99694824218749, -23.013425827026367),
+		new JSM.Coord2D (68.9541778564453, -24.814687728881836),
+		new JSM.Coord2D (69.74999237060545, -26.69283676147461),
+		new JSM.Coord2D (70.37625885009764, -28.63409423828125),
+		new JSM.Coord2D (70.82669067382811, -30.623504638671875),
+		new JSM.Coord2D (71.09741210937499, -32.64522933959961),
+		new JSM.Coord2D (71.18749999999999, -34.68303298950195),
+		new JSM.Coord2D (71.09748077392577, -36.72084426879883),
+		new JSM.Coord2D (70.82672882080077, -38.74257278442383),
+		new JSM.Coord2D (70.37628936767577, -40.731990814208984),
+		new JSM.Coord2D (69.7500534057617, -42.67326354980469),
+		new JSM.Coord2D (68.95420837402342, -44.55139923095703),
+		new JSM.Coord2D (67.99696350097655, -46.3526496887207),
+		new JSM.Coord2D (66.88782501220702, -48.06458282470703),
+		new JSM.Coord2D (65.63726806640624, -49.67613983154297),
+		new JSM.Coord2D (64.25634765624999, -51.17751693725586),
+		new JSM.Coord2D (62.75646209716797, -52.56009292602539),
+		new JSM.Coord2D (61.14913558959961, -53.816165924072266),
+		new JSM.Coord2D (59.44598388671875, -54.93890380859375),
+		new JSM.Coord2D (57.65877532958984, -55.9223518371582),
+		new JSM.Coord2D (55.799427032470696, -56.761478424072266),
+		new JSM.Coord2D (53.87994766235351, -57.45206832885742),
+		new JSM.Coord2D (51.912464141845696, -57.99094009399414),
+		new JSM.Coord2D (49.90919876098632, -58.37601852416992),
+		new JSM.Coord2D (47.882305145263665, -58.60653305053711),
+		new JSM.Coord2D (45.843757629394524, -58.68303298950195),
+		new JSM.Coord2D (43.80521011352538, -58.60653305053711),
+		new JSM.Coord2D (41.77831649780273, -58.37600326538086),
+		new JSM.Coord2D (39.77503585815429, -57.99094009399414),
+		new JSM.Coord2D (37.807544708251946, -57.45210647583008),
+		new JSM.Coord2D (35.88808059692382, -56.761451721191406),
+		new JSM.Coord2D (34.02873992919921, -55.92230987548828),
+		new JSM.Coord2D (32.241523742675774, -54.93888473510742),
+		new JSM.Coord2D (30.53838539123535, -53.81612777709961),
+		new JSM.Coord2D (28.931024551391598, -52.56009292602539),
+		new JSM.Coord2D (27.431098937988278, -51.17756652832031),
+		new JSM.Coord2D (26.05021476745605, -49.676151275634766),
+		new JSM.Coord2D (24.799709320068356, -48.06455612182617),
+		new JSM.Coord2D (23.690509796142575, -46.3526611328125),
+		new JSM.Coord2D (22.73331260681152, -44.55138397216797),
+		new JSM.Coord2D (21.937499999999996, -42.67323303222656),
+		new JSM.Coord2D (21.31124114990234, -40.731971740722656),
+		new JSM.Coord2D (20.860818862915036, -38.7425537109375),
+		new JSM.Coord2D (20.590082168579098, -36.720829010009766),
+		new JSM.Coord2D (20.500007629394528, -34.68303298950195),
+		new JSM.Coord2D (20.590051651000973, -32.645225524902344),
+		new JSM.Coord2D (20.860799789428707, -30.623497009277344),
+		new JSM.Coord2D (21.311223983764645, -28.634075164794922),
+		new JSM.Coord2D (21.93748092651367, -26.692811965942383),
+		new JSM.Coord2D (22.733314514160153, -24.814674377441406),
+		new JSM.Coord2D (23.69057464599609, -23.013431549072266),
+		new JSM.Coord2D (24.799715042114254, -21.301498413085938),
+		new JSM.Coord2D (26.050258636474606, -19.6899356842041),
+		new JSM.Coord2D (27.431152343749996, -18.188535690307617),
+		new JSM.Coord2D (28.931035995483395, -16.80597496032715),
+		new JSM.Coord2D (30.538366317749023, -15.549915313720703),
+		new JSM.Coord2D (32.24151229858398, -14.427176475524902),
+		new JSM.Coord2D (34.02872085571288, -13.443732261657715),
+		new JSM.Coord2D (35.888069152832024, -12.604608535766602),
+		new JSM.Coord2D (37.80755233764648, -11.914011001586914),
+		new JSM.Coord2D (39.77502822875976, -11.375136375427246),
+		new JSM.Coord2D (41.7782859802246, -10.990045547485352),
+		new JSM.Coord2D (43.80519485473632, -10.75953197479248),
+		null,
+		new JSM.Coord2D (107.71874999999999, -10.683036804199219),
+		new JSM.Coord2D (295.56249999999994, -10.683036804199219),
+		new JSM.Coord2D (297.7281188964843, -10.829914093017578),
+		new JSM.Coord2D (299.85278320312494, -11.273558616638184),
+		new JSM.Coord2D (301.8931274414062, -12.013519287109375),
+		new JSM.Coord2D (303.8041687011718, -13.04211139678955),
+		new JSM.Coord2D (305.53958129882807, -14.345172882080078),
+		new JSM.Coord2D (307.05151367187494, -15.901714324951172),
+		new JSM.Coord2D (308.2914733886718, -17.682279586791992),
+		new JSM.Coord2D (309.2132263183593, -19.646312713623047),
+		new JSM.Coord2D (309.77932739257807, -21.740589141845703),
+		new JSM.Coord2D (309.96874999999994, -23.90178680419922),
+		new JSM.Coord2D (309.96874999999994, -45.46428680419922),
+		new JSM.Coord2D (309.77932739257807, -47.625484466552734),
+		new JSM.Coord2D (309.21340942382807, -49.71982192993164),
+		new JSM.Coord2D (308.2914733886718, -51.683753967285156),
+		new JSM.Coord2D (307.0514831542968, -53.464298248291016),
+		new JSM.Coord2D (305.53958129882807, -55.02088928222656),
+		new JSM.Coord2D (303.80419921874994, -56.32395935058594),
+		new JSM.Coord2D (301.8931274414062, -57.3525505065918),
+		new JSM.Coord2D (299.85278320312494, -58.092491149902344),
+		new JSM.Coord2D (297.7281188964843, -58.53616714477539),
+		new JSM.Coord2D (295.56249999999994, -58.68303680419922),
+		new JSM.Coord2D (107.71874999999999, -58.68303680419922),
+		new JSM.Coord2D (105.55313873291014, -58.536163330078125),
+		new JSM.Coord2D (103.42848205566405, -58.09251022338867),
+		new JSM.Coord2D (101.3881378173828, -57.352508544921875),
+		new JSM.Coord2D (99.47705078124999, -56.32398223876953),
+		new JSM.Coord2D (97.74167633056639, -55.020896911621094),
+		new JSM.Coord2D (96.22973632812499, -53.46435546875),
+		new JSM.Coord2D (94.98975372314452, -51.68381118774414),
+		new JSM.Coord2D (94.06801605224608, -49.71977615356445),
+		new JSM.Coord2D (93.50196075439452, -47.625484466552734),
+		new JSM.Coord2D (93.31249999999999, -45.46428680419922),
+		new JSM.Coord2D (93.31249999999999, -23.90178680419922),
+		new JSM.Coord2D (93.50192260742186, -21.740585327148438),
+		new JSM.Coord2D (94.0679473876953, -19.646278381347656),
+		new JSM.Coord2D (94.98979187011717, -17.682294845581055),
+		new JSM.Coord2D (96.22973632812499, -15.901721954345703),
+		new JSM.Coord2D (97.7416534423828, -14.345148086547852),
+		new JSM.Coord2D (99.47707366943358, -13.04212474822998),
+		new JSM.Coord2D (101.38810729980467, -12.01349925994873),
+		new JSM.Coord2D (103.42847442626952, -11.27356243133545),
+		new JSM.Coord2D (105.55313873291014, -10.829910278320312)
+	];
+	test.Assert (TestTriangulation (basePolygon, [0, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74,
+		75, 76, 77, 78, 79, 80, 81, 82, 83, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 199, 200,
+		201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102,
+		103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 45, 0, 1, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135,
+		136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170,
+		171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 122, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+		12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43]));
+
+	var basePolygon = [
+		new JSM.Coord2D (0.0, 0.0),
+		new JSM.Coord2D (300.0, 0.0),
+		new JSM.Coord2D (300.0, 300.0),
+		new JSM.Coord2D (0.0, 300.0),
+		null,
+		new JSM.Coord2D (100.0, 100.0),
+		new JSM.Coord2D (100.0, 200.0),
+		new JSM.Coord2D (200.0, 200.0),
+		new JSM.Coord2D (200.0, 100.0),
+		null,
+		new JSM.Coord2D (10.0, 10.0),
+		new JSM.Coord2D (10.0, 50.0),
+		new JSM.Coord2D (50.0, 50.0),
+		new JSM.Coord2D (50.0, 10.0)
+	];
+	test.Assert (TestTriangulation (basePolygon, [0, 10, 11, 12, 13, 10, 0, 1, 5, 6, 7, 8, 5, 1, 2, 3]));
+	
+	var basePolygon = [
+		new JSM.Coord2D (0, 0),
+		new JSM.Coord2D (7, 0),
+		new JSM.Coord2D (7, 3),
+		new JSM.Coord2D (0, 3),
+		null,
+		new JSM.Coord2D (1, 1),
+		new JSM.Coord2D (1, 2),
+		new JSM.Coord2D (2, 2),
+		new JSM.Coord2D (2, 1),
+		null,
+		new JSM.Coord2D (3, 1),
+		new JSM.Coord2D (3, 2),
+		new JSM.Coord2D (4, 2),
+		new JSM.Coord2D (4, 1),
+		null,
+		new JSM.Coord2D (5, 1),
+		new JSM.Coord2D (5, 2),
+		new JSM.Coord2D (6, 2),
+		new JSM.Coord2D (6, 1)
+	];
+	test.Assert (TestTriangulation (basePolygon, [0, 5, 6, 7, 10, 11, 12, 15, 16, 17, 18, 15, 12, 13, 10, 7, 8, 5, 0, 1, 2, 3]));
+
+	var basePolygon = [
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (10.0, 0.0, 0.0),
+		new JSM.Coord (10.0, 10.0, 0.0),
+		new JSM.Coord (0.0, 10.0, 0.0),
+		null,
+		new JSM.Coord (5.0, 5.0, 0.0),
+		new JSM.Coord (5.0, 6.0, 0.0),
+		new JSM.Coord (6.0, 6.0, 0.0),
+		new JSM.Coord (6.0, 5.0, 0.0),
+		null,
+		new JSM.Coord (1.0, 1.0, 0.0),
+		new JSM.Coord (1.0, 9.0, 0.0),
+		new JSM.Coord (2.0, 9.0, 0.0),
+		new JSM.Coord (2.0, 2.0, 0.0),
+		new JSM.Coord (8.0, 2.0, 0.0),
+		new JSM.Coord (8.0, 9.0, 0.0),
+		new JSM.Coord (9.0, 9.0, 0.0),
+		new JSM.Coord (9.0, 1.0, 0.0)
+	];
+	test.Assert (TestTriangulation (basePolygon, [0, 10, 11, 12, 5, 6, 7, 8, 5, 12, 13, 14, 15, 16, 17, 10, 0, 1, 2, 3]));
+	
+	var basePolygon = [
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (10.0, 0.0, 0.0),
+		new JSM.Coord (10.0, 10.0, 0.0),
+		new JSM.Coord (0.0, 10.0, 0.0),
+		null,
+		new JSM.Coord (5.0, 5.0, 0.0),
+		new JSM.Coord (5.0, 6.0, 0.0),
+		new JSM.Coord (6.0, 6.0, 0.0),
+		new JSM.Coord (6.0, 5.0, 0.0),
+		null,
+		new JSM.Coord (3.0, 3.0, 0.0),
+		new JSM.Coord (3.0, 4.0, 0.0),
+		new JSM.Coord (4.0, 4.0, 0.0),
+		new JSM.Coord (4.0, 3.0, 0.0),
+		null,
+		new JSM.Coord (5.0, 3.0, 0.0),
+		new JSM.Coord (5.0, 4.0, 0.0),
+		new JSM.Coord (6.0, 4.0, 0.0),
+		new JSM.Coord (6.0, 3.0, 0.0),
+		null,
+		new JSM.Coord (1.0, 1.0, 0.0),
+		new JSM.Coord (1.0, 9.0, 0.0),
+		new JSM.Coord (2.0, 9.0, 0.0),
+		new JSM.Coord (2.0, 2.0, 0.0),
+		new JSM.Coord (8.0, 2.0, 0.0),
+		new JSM.Coord (8.0, 9.0, 0.0),
+		new JSM.Coord (9.0, 9.0, 0.0),
+		new JSM.Coord (9.0, 1.0, 0.0)
+	];
+	test.Assert (TestTriangulation (basePolygon, [0, 20, 21, 22, 5, 6, 7, 8, 11, 12, 15, 16, 17, 18, 15, 12, 13, 10, 11, 8, 5, 22, 23, 24, 25, 26, 27, 20, 0, 1, 2, 3]));
+	
+	var basePolygon = [
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (10.0, 0.0, 0.0),
+		new JSM.Coord (10.0, 10.0, 0.0),
+		new JSM.Coord (0.0, 10.0, 0.0),
+		null,
+		new JSM.Coord (5.0, 5.0, 0.0),
+		new JSM.Coord (5.0, 6.0, 0.0),
+		new JSM.Coord (6.0, 6.0, 0.0),
+		new JSM.Coord (6.0, 5.0, 0.0),
+		null,
+		new JSM.Coord (5.0, 3.0, 0.0),
+		new JSM.Coord (5.0, 4.0, 0.0),
+		new JSM.Coord (6.0, 4.0, 0.0),
+		new JSM.Coord (6.0, 3.0, 0.0),
+		null,
+		new JSM.Coord (1.0, 1.0, 0.0),
+		new JSM.Coord (1.0, 9.0, 0.0),
+		new JSM.Coord (2.0, 9.0, 0.0),
+		new JSM.Coord (2.0, 2.0, 0.0),
+		new JSM.Coord (8.0, 2.0, 0.0),
+		new JSM.Coord (8.0, 9.0, 0.0),
+		new JSM.Coord (9.0, 9.0, 0.0),
+		new JSM.Coord (9.0, 1.0, 0.0),
+		null,
+		new JSM.Coord (3.0, 3.0, 0.0),
+		new JSM.Coord (3.0, 4.0, 0.0),
+		new JSM.Coord (4.0, 4.0, 0.0),
+		new JSM.Coord (4.0, 3.0, 0.0),
+	];
+	test.Assert (TestTriangulation (basePolygon, [0, 15, 16, 17, 24, 25, 5, 6, 7, 8, 11, 12, 13, 10, 11, 8, 5, 25, 26, 27, 24, 17, 18, 19, 20, 21, 22, 15, 0, 1, 2, 3]));
+});
+
+polygonSuite.AddTest ('OldCutPolygonTest', function (test)
 {
 	var polygon = new JSM.Polygon ();
 	polygon.AddVertex (0.0, 0.0, 0.0);
@@ -2346,7 +2739,7 @@ AddTest ('OldCutPolygonTest', function (test)
 		);
 });
 
-AddTest ('CutPolygonTest', function (test)
+polygonSuite.AddTest ('CutPolygonTest', function (test)
 {
 	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
 	var revPlane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
@@ -2809,7 +3202,7 @@ AddTest ('CutPolygonTest', function (test)
 	test.Assert (planePolygons[0].VertexCount () == 6);
 });
 
-AddTest ('CutTriangleTest', function (test)
+polygonSuite.AddTest ('CutTriangleTest', function (test)
 {
 	var polygon = new JSM.Polygon ();
 	polygon.AddVertex (0, 0, 0);
@@ -2999,7 +3392,7 @@ AddTest ('CutTriangleTest', function (test)
 	test.Assert (JSM.CoordIsEqual (frontPolygons[0].GetVertex (2), new JSM.Coord (0.5, 1, 0)));
 });
 
-AddTest ('BSPTreeTest', function (test)
+polygonSuite.AddTest ('BSPTreeTest', function (test)
 {
 	function TestNode (test, node, vertexCount, normalVector)
 	{
@@ -3066,3 +3459,5 @@ AddTest ('BSPTreeTest', function (test)
 	TestNode (test, bspTree.root.outside.outside, 4, new JSM.Coord (0, 0, 1));
 	test.Assert (bspTree.root.outside.outside.userData == 2);
 });
+
+}

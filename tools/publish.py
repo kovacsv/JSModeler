@@ -10,6 +10,8 @@ def Main ():
 	if result == 0:
 		result = os.system ('checkdependencies.py');
 	if result == 0:
+		result = os.system ('unittest.py');
+	if result == 0:
 		result = os.system ('jshint.py');
 	if result == 0:
 		result = os.system ('build.py');

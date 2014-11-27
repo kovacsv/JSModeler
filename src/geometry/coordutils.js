@@ -499,10 +499,12 @@ JSM.CoordRotate = function (coord, axis, angle, origo)
 	var y = offseted.y;
 	var z = offseted.z;
 
+	var si = Math.sin (angle);
+	var co = Math.cos (angle);
 	var result = new JSM.Coord (0.0, 0.0, 0.0);
-	result.x = - u * (- u * x - v * y - w * z) * (1 - Math.cos (angle)) + x * Math.cos (angle) + (- w * y + v * z) * Math.sin (angle);
-	result.y = - v * (- u * x - v * y - w * z) * (1 - Math.cos (angle)) + y * Math.cos (angle) + (w * x - u * z) * Math.sin (angle);
-	result.z = - w * (- u * x - v * y - w * z) * (1 - Math.cos (angle)) + z * Math.cos (angle) + (- v * x + u * y) * Math.sin (angle);
+	result.x = - u * (- u * x - v * y - w * z) * (1 - co) + x * co + (- w * y + v * z) * si;
+	result.y = - v * (- u * x - v * y - w * z) * (1 - co) + y * co + (w * x - u * z) * si;
+	result.z = - w * (- u * x - v * y - w * z) * (1 - co) + z * co + (- v * x + u * y) * si;
 	
 	result = JSM.CoordAdd (result, origo);
 	return result;

@@ -1,6 +1,9 @@
-AddTestSuite ('Core');
+module.exports = function (unitTest)
+{
 
-AddTest ('CoreTest', function (test) {
+var suite = unitTest.AddTestSuite ('Core');
+
+suite.AddTest ('CoreTest', function (test) {
 	var GetAValue = function (val)
 	{
 		return JSM.ValueOrDefault (val, 2);
@@ -50,7 +53,7 @@ AddTest ('CoreTest', function (test) {
 	test.Assert (GetAValue () == 2);
 });
 
-AddTest ('SortTest', function (test) {
+suite.AddTest ('SortTest', function (test) {
 	var array = null;
 	
 	array = [];
@@ -95,3 +98,5 @@ AddTest ('SortTest', function (test) {
 	});
 	test.Assert (array.toString () == [1, 3, 3, 3, 5].toString ());
 });
+
+}

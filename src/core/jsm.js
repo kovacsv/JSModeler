@@ -1,6 +1,6 @@
-var JSM = {
-	mainVersion : 0,
-	subVersion : 33
+var JSM = function () {
+	this.mainVersion = 0;
+	this.subVersion = 34;
 };
 
 JSM.Eps = 0.00000001;
