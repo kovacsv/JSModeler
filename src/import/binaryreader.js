@@ -28,21 +28,21 @@ JSM.BinaryReader.prototype.End = function ()
 
 JSM.BinaryReader.prototype.ReadBoolean = function ()
 {
-	var result = this.dataView.getInt8 (this.position, this.isLittleEndian);
+	var result = this.dataView.getInt8 (this.position);
 	this.position = this.position + 1;
 	return result ? true : false;
 };
 
 JSM.BinaryReader.prototype.ReadCharacter = function ()
 {
-	var result = this.dataView.getInt8 (this.position, this.isLittleEndian);
+	var result = this.dataView.getInt8 (this.position);
 	this.position = this.position + 1;
 	return result;
 };
 
 JSM.BinaryReader.prototype.ReadUnsignedCharacter = function ()
 {
-	var result = this.dataView.getUint8 (this.position, this.isLittleEndian);
+	var result = this.dataView.getUint8 (this.position);
 	this.position = this.position + 1;
 	return result;
 };

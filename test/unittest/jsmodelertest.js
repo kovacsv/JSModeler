@@ -75,6 +75,8 @@ unitTest.IncludeSourceFile ('../../src/three/threeconverter.js');
 unitTest.IncludeSourceFile ('../../src/three/threeviewer.js');
 // JSModeler includes end
 
+global.DataView = require('./emulators/dataview.js');
+
 unitTest.AddTestFile ('tests/core.js');
 unitTest.AddTestFile ('tests/geometry.js');
 unitTest.AddTestFile ('tests/modeler.js');

@@ -204,6 +204,10 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 		}
 	}
 	
+	if (callbacks === undefined || callbacks === null) {
+		callbacks = {};
+	}
+
 	ProcessFile (stringBuffer);
 };
 
@@ -264,6 +268,10 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 		}
 	}
 	
+	if (callbacks === undefined || callbacks === null) {
+		callbacks = {};
+	}
+
 	var triangleModel = new JSM.TriangleModel ();
 	var index = triangleModel.AddBody (new JSM.TriangleBody ('Default'));
 	var currentBody = triangleModel.GetBody (index);

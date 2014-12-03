@@ -109,6 +109,9 @@
 			JSM.GetArrayBufferFromURL (url, function (arrayBuffer) {
 				AddLogLine ('url test (' + url + '):');
 				var br = new JSM.BinaryReader (arrayBuffer, true);
+				
+				Assert (br.GetByteLength () == 166);
+				
 				Assert (br.ReadBoolean () == true);
 				Assert (br.ReadBoolean () == false);
 				
