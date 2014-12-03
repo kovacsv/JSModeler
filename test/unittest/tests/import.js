@@ -302,6 +302,9 @@ importSuite.AddTest ('ConvertObjToJsonDataTest', function (test)
 
 importSuite.AddTest ('ConvertStlToJsonDataTest', function (test)
 {
+	test.Assert (JSM.IsBinaryStlFile (GetArrayBufferFromFile ('../testfiles/objects_binary.stl')));
+	test.Assert (!JSM.IsBinaryStlFile (GetArrayBufferFromFile ('../testfiles/objects_ascii.stl')));
+
 	var jsonData = JSM.ConvertStlToJsonData (GetArrayBufferFromFile ('../testfiles/objects_binary.stl'), null);
 	test.Assert (jsonData.materials.length == 1);
 	test.Assert (jsonData.materials[0].name == 'Default');
