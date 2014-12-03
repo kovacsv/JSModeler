@@ -6,8 +6,8 @@ header = '/* JSModeler [mainVersion].[subVersion] - http://www.github.com/kovacs
 versionFileName = '../src/core/jsm.js'
 filesFileName = 'files.txt'
 
-tempFileName = 'temp.js'
 externsFileName = 'externs.js'
+mergedFileName = 'jsmodeler_merged.js'
 resultFileName = '../build/jsmodeler.js'
 
 def PrintInfo (message):
@@ -105,14 +105,14 @@ def Main (argv):
 	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
 
-	noThree = False
-	if (len (argv) == 2):
-		if argv[1] == 'nothree':
-			noThree = True
+	keepMergedFile = False
+	for i in range (1, len (argv)):
+		if argv[i] == 'keepMergedFile':
+			keepMergedFile = True
 	
 	versionsPath = os.path.abspath (versionFileName)
 	filesFilePath = os.path.abspath (filesFileName)
-	tempFilePath = os.path.abspath (tempFileName)
+	mergedFilePath = os.path.abspath (mergedFileName)
 	externsFilePath = os.path.abspath (externsFileName)
 	resultFilePath = os.path.abspath (resultFileName)
 	
@@ -128,48 +128,43 @@ def Main (argv):
 		PrintError ('Invalid file list.');
 		return 1
 
-	PrintInfo ('Merge files to <' + tempFilePath + '>.')
-	if noThree:
-		originalFileNames = inputFileNames
-		inputFileNames = []
-		for fileName in originalFileNames:
-			if fileName.find ('src/three') == -1:
-				inputFileNames.append (fileName)
-	succeeded = MergeFiles (inputFileNames, tempFilePath)
+	PrintInfo ('Merge files to <' + mergedFilePath + '>.')
+	succeeded = MergeFiles (inputFileNames, mergedFilePath)
 	if not succeeded:
 		PrintError ('Not existing file in file list.');
 		return 1
 
 	PrintInfo ('Compile merged file to <' + resultFilePath + '>.')
-	succeeded = CompileFile (tempFilePath, externsFilePath, resultFilePath)
+	succeeded = CompileFile (mergedFilePath, externsFilePath, resultFilePath)
 	if not succeeded:
 		PrintError ('Compilation failed.');
 		DeleteFile (resultFilePath)
-		DeleteFile (tempFilePath)
+		DeleteFile (mergedFilePath)
 		return 1
 	
 	PrintInfo ('Write header to compiled file <' + resultFilePath + '>.')
 	currentHeader = GetHeader (version, header)
 	if len (currentHeader) == 0:
 		PrintError ('Invalid header.');
-		DeleteFile (resultFileName)
-		DeleteFile (tempFilePath)
+		DeleteFile (resultFilePath)
+		DeleteFile (mergedFilePath)
 		return 1
 	
-	succeeded = WriteHeader (resultFileName, currentHeader)
+	succeeded = WriteHeader (resultFilePath, currentHeader)
 	if not succeeded:
 		PrintError ('Write header failed.');
 		DeleteFile (resultFilePath)
-		DeleteFile (tempFilePath)
+		DeleteFile (mergedFilePath)
 		return 1
 	
-	PrintInfo ('Delete merged file <' + tempFilePath + '>.')
-	succeeded = DeleteFile (tempFilePath)
-	if not succeeded:
-		PrintError ('Delete failed.');
-		DeleteFile (resultFilePath)
-		DeleteFile (tempFilePath)
-		return 1
+	if not keepMergedFile:
+		PrintInfo ('Delete merged file <' + mergedFilePath + '>.')
+		succeeded = DeleteFile (mergedFilePath)
+		if not succeeded:
+			PrintError ('Delete failed.');
+			DeleteFile (resultFilePath)
+			DeleteFile (mergedFilePath)
+			return 1
 	
 	return 0
 	
