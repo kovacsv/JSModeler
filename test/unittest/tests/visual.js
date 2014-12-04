@@ -37,7 +37,7 @@ function DrawAndCheck (body, referenceFile)
 
 	DummyDrawer.prototype.DrawLine = function (from, to)
 	{
-		this.svgContent += '<line stroke="black" x1="' + from.x + '" y1="' + (this.height - from.y) + '" x2="' + to.x + '" y2="' + (this.height - to.y) + '"/>\n';
+		this.svgContent += '<line stroke="black" x1="' + from.x + '" y1="' + (this.height - from.y) + '" x2="' + to.x + '" y2="' + (this.height - to.y) + '"/>\r\n';
 	};
 
 	DummyDrawer.prototype.DrawPolygon = function (polygon, color)
@@ -48,24 +48,15 @@ function DrawAndCheck (body, referenceFile)
 			vertex = polygon.GetVertex (i);
 			this.svgContent += vertex.x + ' ' + (this.height - vertex.y) + ' ';
 		}
-		this.svgContent += '" style="fill:#ffffff;stroke:#000000;stroke-width:1"/>\n';
+		this.svgContent += '" style="fill:#ffffff;stroke:#000000;stroke-width:1"/>\r\n';
 	};
 
 	DummyDrawer.prototype.GetSvgContent = function (fileName)
 	{
-		var svgBegin = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" id="svgcontent" width="' + this.width + '" height="' + this.height + '">\n';
-		var svgEnd = '</svg>\n';
+		var svgBegin = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" id="svgcontent" width="' + this.width + '" height="' + this.height + '">\r\n';
+		var svgEnd = '</svg>\r\n';
 		return (svgBegin + this.svgContent + svgEnd);
 	};	
-	
-	DummyDrawer.prototype.WriteSVGFile = function (fileName)
-	{
-		var svgBegin = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" id="svgcontent" width="' + this.width + '" height="' + this.height + '">\n';
-		var svgEnd = '</svg>\n';
-		
-		var fs = require ('fs');
-		fs.writeFileSync (fileName, svgBegin + this.svgContent + svgEnd);
-	};
 
 	var camera = new JSM.Camera (new JSM.Coord (4.0, 2.0, 2.0), new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	var drawer = new DummyDrawer ();
