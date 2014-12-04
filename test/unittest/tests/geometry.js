@@ -373,6 +373,14 @@ generalSuite.AddTest ('MatrixTest', function (test) {
 		-8, -1, 2, 2,
 		3, 0.5, -1, -0.5
 	].toString ());
+	
+	var transposed = JSM.MatrixTranspose (matrix1);
+	test.Assert ([
+		1, 5, 9, 13,
+		2, 6, 10, 14,
+		3, 7, 11, 15,
+		4, 8, 12, 16
+	].toString () == transposed.toString ());
 });
 
 generalSuite.AddTest ('ArcLengthTest', function (test) {

@@ -81,6 +81,7 @@ unitTest.AddTestFile ('tests/core.js');
 unitTest.AddTestFile ('tests/geometry.js');
 unitTest.AddTestFile ('tests/modeler.js');
 unitTest.AddTestFile ('tests/import.js');
+unitTest.AddTestFile ('tests/visual.js');
 
 var succeeded = unitTest.Run ();
 var resultNum = 0;

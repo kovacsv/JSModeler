@@ -912,17 +912,6 @@
 						["CoordSystem", "the result"]
 					]
 				},
-				"ChangeCoordSystem" : {
-					"description" : "Converts a coordinate from one coordinate system to another.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["from", "CoordSystem", "first coordinate system"],
-						["to", "CoordSystem", "second coordinate system"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
 				"CoordSectorPosition2D" : {
 					"description" : "Calculates the position of a coordinate and a sector.",
 					"parameters" : [
