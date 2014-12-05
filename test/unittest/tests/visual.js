@@ -1,7 +1,7 @@
 module.exports = function (unitTest)
 {
 
-function DrawAndCheck (body, referenceFile)
+function DrawAndCheck (body, drawMode, referenceFile)
 {
 	DummyDrawer = function ()
 	{
@@ -18,16 +18,6 @@ function DrawAndCheck (body, referenceFile)
 	DummyDrawer.prototype.GetHeight = function ()
 	{
 		return this.height;
-	};
-
-	DummyDrawer.prototype.BeginPath = function ()
-	{
-
-	};
-
-	DummyDrawer.prototype.EndPath = function ()
-	{
-
 	};
 
 	DummyDrawer.prototype.Clear = function ()
@@ -60,7 +50,7 @@ function DrawAndCheck (body, referenceFile)
 
 	var camera = new JSM.Camera (new JSM.Coord (4.0, 2.0, 2.0), new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	var drawer = new DummyDrawer ();
-	JSM.DrawProjectedBody (body, null, camera, 'Wireframe', true, drawer);
+	JSM.DrawProjectedBody (body, null, camera, drawMode, true, drawer);
 	
 	var fs = require ('fs');
 	var path = require ('path');
@@ -83,7 +73,15 @@ var visualSuite = unitTest.AddTestSuite ('Visual');
 visualSuite.AddTest ('CubeTest', function (test)
 {
 	var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
-	test.Assert (DrawAndCheck (body, 'cube.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'cube.svg'));
+});
+
+visualSuite.AddTest ('DrawingTest', function (test)
+{
+	var body = JSM.GenerateSolidWithRadius ('Rhombicosidodecahedron', 0.5);
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'drawing_wireframe.svg'));
+	test.Assert (DrawAndCheck (body, 'HiddenLinePainter', 'drawing_hiddenlinepainter.svg'));
+	test.Assert (DrawAndCheck (body, 'HiddenLineFrontFacing', 'drawing_hiddenlinefrontfacing.svg'));
 });
 
 visualSuite.AddTest ('CutBodyByPlaneTest', function (test)
@@ -91,12 +89,12 @@ visualSuite.AddTest ('CutBodyByPlaneTest', function (test)
 	var body = JSM.GenerateSphere (1.0, 15, false);
 	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.3), new JSM.Vector (0.0, 0.0, -1.0));
 	body = JSM.CutBodyByPlane (body, plane);
-	test.Assert (DrawAndCheck (body, 'cutbodybyplane_01.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'cutbodybyplane_01.svg'));
 
 	var body = JSM.GenerateSphere (1.0, 15, false);
 	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.3), new JSM.Vector (0.0, -1.0, -1.0));
 	body = JSM.CutBodyByPlane (body, plane);
-	test.Assert (DrawAndCheck (body, 'cutbodybyplane_02.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'cutbodybyplane_02.svg'));
 });
 
 visualSuite.AddTest ('CatmullClarkSubdivisionTest', function (test)
@@ -112,11 +110,11 @@ visualSuite.AddTest ('CatmullClarkSubdivisionTest', function (test)
 	
 	var direction = new JSM.Vector (0.0, 0.0, 1.0);
 	var body = JSM.GeneratePrism (basePoints, direction, 1.0, true);
-	test.Assert (DrawAndCheck (body, 'subdivision_00.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_00.svg'));
 	body = JSM.CatmullClarkSubdivisionOneIteration (body);
-	test.Assert (DrawAndCheck (body, 'subdivision_01.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_01.svg'));
 	body = JSM.CatmullClarkSubdivisionOneIteration (body);
-	test.Assert (DrawAndCheck (body, 'subdivision_02.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_02.svg'));
 });
 
 visualSuite.AddTest ('BooleanOperationTest', function (test)
@@ -125,29 +123,29 @@ visualSuite.AddTest ('BooleanOperationTest', function (test)
 	var bBody = JSM.GenerateCuboid (1, 1, 1);
 	bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, -0.5, 0.5)));
 	var body = JSM.BooleanOperation ('Difference', aBody, bBody);
-	test.Assert (DrawAndCheck (body, 'csg_difference_01.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'csg_difference_01.svg'));
 	var body = JSM.BooleanOperation ('Union', aBody, bBody);
-	test.Assert (DrawAndCheck (body, 'csg_union_01.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'csg_union_01.svg'));
 	var body = JSM.BooleanOperation ('Intersection', aBody, bBody);
-	test.Assert (DrawAndCheck (body, 'csg_intersection_01.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'csg_intersection_01.svg'));
 
 	bBody.Transform (JSM.RotationYTransformation (40 * JSM.DegRad));
 	var body = JSM.BooleanOperation ('Difference', aBody, bBody);
-	test.Assert (DrawAndCheck (body, 'csg_difference_02.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'csg_difference_02.svg'));
 	var body = JSM.BooleanOperation ('Union', aBody, bBody);
-	test.Assert (DrawAndCheck (body, 'csg_union_02.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'csg_union_02.svg'));
 	var body = JSM.BooleanOperation ('Intersection', aBody, bBody);
-	test.Assert (DrawAndCheck (body, 'csg_intersection_02.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'csg_intersection_02.svg'));
 
 	var aBody = JSM.GenerateCuboid (1, 1, 1);
 	var bBody = JSM.GenerateCylinder (0.6, 1.5, 30, true);
 	bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, -0.5, 0.0)));
 	var body = JSM.BooleanOperation ('Difference', aBody, bBody);
-	test.Assert (DrawAndCheck (body, 'csg_difference_03.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'csg_difference_03.svg'));
 	var body = JSM.BooleanOperation ('Union', aBody, bBody);
-	test.Assert (DrawAndCheck (body, 'csg_union_03.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'csg_union_03.svg'));
 	var body = JSM.BooleanOperation ('Intersection', aBody, bBody);
-	test.Assert (DrawAndCheck (body, 'csg_intersection_03.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'csg_intersection_03.svg'));
 });
 
 }

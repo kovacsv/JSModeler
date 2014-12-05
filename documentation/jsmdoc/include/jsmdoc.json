@@ -1407,6 +1407,14 @@
 						["boolean", "success"]
 					]
 				},
+				"TraverseBSPTreeForEyePosition" : {
+					"description" : "Traverses a BSP tree for a given eye position.",
+					"parameters" : [
+						["bspTree", "BSPTree", "the BSP tree"],
+						["eyePosition", "Coord", "the eye position"],
+						["nodeFound", "function", "the callback function"]
+					]
+				},
 				"GetGaussianCParameter" : {
 					"description" : "Calculates the gaussian functions c parameter which can be used for the gaussian function to reach epsilon at a given value.",
 					"parameters" : [
@@ -2260,6 +2268,14 @@
 						["body", "Body", "the body"],
 						["materials", "Materials", "the materials"],
 						["seeded", "boolean", "seeded random generation"]
+					]
+				},
+				"AddBodyToBSPTree" : {
+					"description" : "Adds a body to a BSP tree.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["bspTree", "BSPTree", "the BSP tree"],
+						["id", "anything", "the id for added polygons"]
 					]
 				},
 				"MergeCoplanarPolygons" : {
@@ -3593,14 +3609,6 @@
 						["Body", "the result"]
 					]
 				},
-				"AddBodyToBSPTree" : {
-					"description" : "Adds a body to a BSP tree.",
-					"parameters" : [
-						["body", "Body", "the body"],
-						["bspTree", "BSPTree", "the BSP tree"],
-						["id", "anything", "the id for added polygons"]
-					]
-				},
 				"BooleanOperation" : {
 					"description" : "Makes a boolean operation on the given bodies.",
 					"parameters" : [
@@ -3663,12 +3671,6 @@
 								["integer", "the result"]
 							]
 						},
-						"BeginPath" : {
-							"description" : "Begins a path."
-						},
-						"EndPath" : {
-							"description" : "Ends a path."
-						},
 						"Clear" : {
 							"description" : "Clears the target."
 						},
@@ -3683,7 +3685,8 @@
 							"description" : "Draws a polygon to the target.",
 							"parameters" : [
 								["polygon", "Polygon2D", "the polygon"],
-								["color", "string", "the hex color string"]
+								["color", "string", "the hex color string"],
+								["contour", "boolean", "need to draw contour"]
 							]
 						}
 					}
@@ -3706,12 +3709,6 @@
 								["integer", "the result"]
 							]
 						},
-						"BeginPath" : {
-							"description" : "Begins a path."
-						},
-						"EndPath" : {
-							"description" : "Ends a path."
-						},
 						"Clear" : {
 							"description" : "Clears the target."
 						},
@@ -3726,13 +3723,11 @@
 							"description" : "Draws a polygon to the target.",
 							"parameters" : [
 								["polygon", "Polygon2D", "the polygon"],
-								["color", "string", "the hex color string"]
+								["color", "string", "the hex color string"],
+								["contour", "boolean", "need to draw contour"]
 							]
 						}
 					}
-				},
-				"BSPPolygonUserData" : {
-					"description" : "Class that contains user data for polygons in BSP tree."
 				},
 				"SurfaceControlPoints" : {
 					"description" : "Represents control points for surface generation.",
