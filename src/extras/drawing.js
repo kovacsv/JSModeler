@@ -92,13 +92,11 @@ JSM.CanvasDrawer.prototype.DrawPolygon = function (polygon, color, contour)
 	this.context.fill ();
 
 	if (contour) {
-		this.context.beginPath ();
 		for (i = 0; i < polygon.VertexCount (); i++) {
 			vertex = polygon.GetVertex (i);
 			nextVertex = polygon.GetVertex (i < polygon.VertexCount () - 1 ? i + 1 : 0);
 			this.DrawLine (vertex, nextVertex);
 		}
-		this.context.stroke ();
 	}
 };
 
