@@ -1658,11 +1658,11 @@ JSM.GenerateRuledFromCoords = function (aCoords, bCoords, meshSegmentation, isCu
 *	angle {number} the angle
 *	segmentation {integer} the segmentation
 *	withTopAndBottom {boolean} generate top and bottom polygons
-*	isCurved {boolean} create smooth surfaces
+*	curveMode {string} 'None', 'CurveSegments', or 'CurveAll'
 * Returns:
 *	{Body} the result
 */
-JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAndBottom, isCurved)
+JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAndBottom, curveMode)
 {
 	var result = new JSM.Body ();
 	var circular = JSM.IsEqual (angle, 2.0 * Math.PI);
@@ -1683,6 +1683,13 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 		}
 	}
 
+	var curveModeFlag = 0;
+	if (curveMode == 'CurveSegments') {
+		curveModeFlag = 1;
+	} else if (curveMode == 'CurveAll') {
+		curveModeFlag = 2;
+	}
+	
 	var current, top, next, ntop, polygon;
 	for (i = 0; i < count - 1; i++) {
 		for (j = 0; j < segmentation; j++) {
@@ -1703,8 +1710,10 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 			}
 
 			polygon = new JSM.BodyPolygon ([current, next, ntop, top]);
-			if (isCurved) {
+			if (curveModeFlag == 1) {
 				polygon.SetCurveGroup (i);
+			} else if (curveModeFlag == 2) {
+				polygon.SetCurveGroup (0);
 			}
 			result.AddPolygon (polygon);
 		}

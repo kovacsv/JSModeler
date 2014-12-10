@@ -214,19 +214,31 @@ JSM.SVGDrawer.prototype.DrawPolygon = function (polygon, color/*, contour*/)
 */
 JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, drawer)
 {
-	function GetProjectedPolygon (polygon)
+	function AddProjectedCoord (projectedPolygon, coord)
+	{
+		var projected = JSM.Project (coord, eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
+		projectedPolygon.AddVertex (projected.x, projected.y);
+	}
+
+	function GetProjectedPolygonFromBody (polygon)
 	{
 		var projectedPolygon = new JSM.Polygon2D ();
-		
-		var i, coord, projected, x, y;
+		var i, coord;
 		for (i = 0; i < polygon.VertexIndexCount (); i++) {
 			coord = body.GetVertexPosition (polygon.GetVertexIndex (i));
-			projected = JSM.Project (coord, eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
-			x = projected.x;
-			y = projected.y;
-			projectedPolygon.AddVertex (x, y);
+			AddProjectedCoord (projectedPolygon, coord);
 		}
-		
+		return projectedPolygon;
+	}
+
+	function GetProjectedPolygonFromPolygon (polygon)
+	{
+		var projectedPolygon = new JSM.Polygon2D ();
+		var i, coord;
+		for (i = 0; i < polygon.VertexCount (); i++) {
+			coord = polygon.GetVertex (i);
+			AddProjectedCoord (projectedPolygon, coord);
+		}
 		return projectedPolygon;
 	}
 
@@ -252,14 +264,28 @@ JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, 
 		if (materials === undefined || materials === null) {
 			materials = new JSM.Materials ();
 		}
-		
 		for (i = 0; i < orderedPolygons.length; i++) {
 			polygon = body.GetPolygon (orderedPolygons[i]);
-			projected = GetProjectedPolygon (polygon);
+			projected = GetProjectedPolygonFromBody (polygon);
 			materialIndex = polygon.GetMaterialIndex ();
 			color = materials.GetMaterial (materialIndex).diffuse;
 			drawer.DrawPolygon (projected, color, true);
 		}
+	} else if (drawMode == 'HiddenLineBSPTree') {
+		if (materials === undefined || materials === null) {
+			materials = new JSM.Materials ();
+		}
+
+		var bspTree = new JSM.BSPTree ();
+		JSM.AddBodyToBSPTree (body, bspTree);
+
+		JSM.TraverseBSPTreeForEyePosition (bspTree, camera.eye, function (node) {
+			projected = GetProjectedPolygonFromPolygon (node.polygon);
+			polygon = body.GetPolygon (node.userData.originalPolygon);
+			materialIndex = polygon.GetMaterialIndex ();
+			color = materials.GetMaterial (materialIndex).diffuse;
+			drawer.DrawPolygon (projected, color, true);
+		});		
 	} else if (drawMode == 'HiddenLineFrontFacing') {
 		if (materials === undefined || materials === null) {
 			materials = new JSM.Materials ();
@@ -267,7 +293,7 @@ JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, 
 		
 		for (i = 0; i < body.PolygonCount (); i++) {
 			polygon = body.GetPolygon (i);
-			projected = GetProjectedPolygon (polygon);
+			projected = GetProjectedPolygonFromBody (polygon);
 			if (JSM.PolygonOrientation2D (projected) == 'CounterClockwise') {
 				materialIndex = polygon.GetMaterialIndex ();
 				color = materials.GetMaterial (materialIndex).diffuse;

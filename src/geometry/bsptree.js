@@ -261,9 +261,12 @@ JSM.TraverseBSPTreeForEyePosition = function (bspTree, eyePosition, nodeFound)
 				TraverseNode (node.inside);
 				nodeFound (node);
 				TraverseNode (node.outside);
-			} else {
+			} else if (coordPlanePosition == 'CoordAtBackOfPlane') {
 				TraverseNode (node.outside);
 				nodeFound (node);
+				TraverseNode (node.inside);
+			} else {
+				TraverseNode (node.outside);
 				TraverseNode (node.inside);
 			}
 		}

@@ -1090,7 +1090,7 @@ generatorSuite.AddTest ('GenerateRevolvedTest', function (test)
 		new JSM.Coord (0.5, 0.0, 0.5)
 	];
 	var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
-	var revolved = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 10, true, false);
+	var revolved = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 10, true, 'None');
 	test.Assert (revolved.VertexCount () == 20);
 	test.Assert (revolved.PolygonCount () == 12);
 	test.Assert (JSM.CheckSolidBody (revolved));
@@ -1099,7 +1099,7 @@ generatorSuite.AddTest ('GenerateRevolvedTest', function (test)
 	test.Assert (JSM.CoordIsEqual (vertexNormals[10][0], new JSM.Vector (0.0, 0.0, 1.0)));
 	test.Assert (JSM.CoordIsEqual (vertexNormals[11][0], new JSM.Vector (0.0, 0.0, -1.0)));
 	
-	var openRevolved = JSM.GenerateRevolved (polyLine, axis, 180.0 * JSM.DegRad, 10, true, false);
+	var openRevolved = JSM.GenerateRevolved (polyLine, axis, 180.0 * JSM.DegRad, 10, true, 'None');
 	test.Assert (openRevolved.VertexCount () == 22);
 	test.Assert (openRevolved.PolygonCount () == 10);
 	test.Assert (!JSM.IsSolidBody (openRevolved));

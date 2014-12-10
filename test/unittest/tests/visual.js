@@ -78,9 +78,21 @@ visualSuite.AddTest ('CubeTest', function (test)
 
 visualSuite.AddTest ('DrawingTest', function (test)
 {
-	var body = JSM.GenerateSolidWithRadius ('Rhombicosidodecahedron', 0.5);
+	var basePoints = [
+		new JSM.Coord (0.0, 0.0, -0.5),
+		new JSM.Coord (0.0, 1.0, -0.5),
+		new JSM.Coord (-1.0, 1.0, -0.5),
+		new JSM.Coord (-1.0, -1.0, -0.5),
+		new JSM.Coord (1.0, -1.0, -0.5),
+		new JSM.Coord (1.0, 0.0, -0.5)
+	];
+	
+	var direction = new JSM.Vector (0.0, 0.0, 1.0);
+	var body = JSM.GeneratePrism (basePoints, direction, 1.0, true);
+
 	test.Assert (DrawAndCheck (body, 'Wireframe', 'drawing_wireframe.svg'));
 	test.Assert (DrawAndCheck (body, 'HiddenLinePainter', 'drawing_hiddenlinepainter.svg'));
+	test.Assert (DrawAndCheck (body, 'HiddenLineBSPTree', 'drawing_hiddenlinebsptree.svg'));
 	test.Assert (DrawAndCheck (body, 'HiddenLineFrontFacing', 'drawing_hiddenlinefrontfacing.svg'));
 });
 

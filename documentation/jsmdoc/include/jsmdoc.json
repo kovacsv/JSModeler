@@ -2713,7 +2713,7 @@
 						["angle", "number", "the angle"],
 						["segmentation", "integer", "the segmentation"],
 						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
-						["isCurved", "boolean", "create smooth surfaces"]
+						["curveMode", "string", "'None', 'CurveSegments', or 'CurveAll'"]
 					],
 					"returns" : [
 						["Body", "the result"]
