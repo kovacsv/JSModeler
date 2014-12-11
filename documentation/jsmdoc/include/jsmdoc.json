@@ -3620,6 +3620,27 @@
 						["Body", "the result"]
 					]
 				},
+				"BernsteinPolynomial" : {
+					"description" : "Calculates the value of the Bernstein polynomial.",
+					"parameters" : [
+						["k", "integer", "the start index"],
+						["n", "integer", "the end index"],
+						["x", "number", "the value"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"GenerateBezierCurve" : {
+					"description" : "Generates a bezier curve from the given points.",
+					"parameters" : [
+						["points", "Coord2D[]", "the points"],
+						["segmentation", "integer", "the segmentation of the result curve"]
+					],
+					"returns" : [
+						["Coord2D[]", "the result"]
+					]
+				},
 				"GenerateSurface" : {
 					"description" : "Generates a parametric surface.",
 					"parameters" : [

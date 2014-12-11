@@ -59,7 +59,7 @@ unitTest.IncludeSourceFile ('../../src/extras/drawing.js');
 unitTest.IncludeSourceFile ('../../src/extras/subdivision.js');
 unitTest.IncludeSourceFile ('../../src/extras/svgtomodel.js');
 unitTest.IncludeSourceFile ('../../src/extras/csg.js');
-unitTest.IncludeSourceFile ('../../src/extras/surfaces.js');
+unitTest.IncludeSourceFile ('../../src/extras/curves.js');
 unitTest.IncludeSourceFile ('../../src/renderer/renderer.js');
 unitTest.IncludeSourceFile ('../../src/renderer/pointcloudrenderer.js');
 unitTest.IncludeSourceFile ('../../src/renderer/converter.js');
@@ -81,6 +81,7 @@ unitTest.AddTestFile ('tests/core.js');
 unitTest.AddTestFile ('tests/geometry.js');
 unitTest.AddTestFile ('tests/modeler.js');
 unitTest.AddTestFile ('tests/import.js');
+unitTest.AddTestFile ('tests/extras.js');
 unitTest.AddTestFile ('tests/visual.js');
 
 var succeeded = unitTest.Run ();
