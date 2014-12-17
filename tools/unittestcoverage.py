@@ -42,8 +42,9 @@ def Main (argv):
 		fullPath = os.path.join (testsFolder, fileName)
 		AddContentToFile (fullPath, 'var JSM = require (\'../' + mergedFileName + '\');', False)
 	
-	mainTestFile = 'jsmodelertest.js'
+	mainTestFile = 'forcoverage.js'
 	os.chdir (coverageTempFolder)
+	os.system ('npm install sutest')
 	os.system ('istanbul cover ' + mainTestFile)
 	os.chdir (currentPath)
 	

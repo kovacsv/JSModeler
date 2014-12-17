@@ -98,7 +98,7 @@ def Main ():
 		inputFileNames,
 		'// JSModeler includes start',
 		'// JSModeler includes end',
-		'unitTest.IncludeSourceFile (\'',
+		'unitTest.AddSourceFile (\'',
 		'\');'
 	)
 	return 0

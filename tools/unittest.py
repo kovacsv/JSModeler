@@ -12,7 +12,7 @@ def PrintError (error):
 	print ('Error: ' + error)
 
 def RunUnitTest (unitTestPath):
-	result = os.system ('node ' + unitTestPath + ' -silent')
+	result = os.system ('sutest ' + unitTestPath + ' -silent')
 	if result != 0:
 		return False
 	return True
