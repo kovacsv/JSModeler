@@ -576,19 +576,19 @@ JSM.MatrixView = function (eye, center, up)
 	result[0] = v.x;
 	result[1] = u.x;
 	result[2] = d.x;
-	result[3] = 0;
+	result[3] = 0.0;
 	result[4] = v.y;
 	result[5] = u.y;
 	result[6] = d.y;
-	result[7] = 0;
+	result[7] = 0.0;
 	result[8] = v.z;
 	result[9] = u.z;
 	result[10] = d.z;
-	result[11] = 0;
+	result[11] = 0.0;
 	result[12] = -JSM.VectorDot (v, eye);
 	result[13] = -JSM.VectorDot (u, eye);
 	result[14] = -JSM.VectorDot (d, eye);
-	result[15] = 1;
+	result[15] = 1.0;
 	
 	return result;
 };
