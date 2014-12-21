@@ -9,7 +9,7 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		function Render (context, width, height, angle, vertices, polygons)
+		function Render (context, width, height, vertices, polygons)
 		{
 			function Dot (a, b)
 			{
@@ -84,23 +84,11 @@
 				return Dot (Cross (Sub (a, b), Sub (c, b)), Sub (eye, a)) < 0;
 			}
 
-			function RotZ (c, a)
-			{
-				var si = Math.sin (angle);
-				var co = Math.cos (angle);
-				return [
-					c[0] * co - c[1] * si,
-					c[0] * si + c[1] * co,
-					c[2]
-				];
-			};
-
 			var eye = [-4.0, 2.0, 2.0];
 			var center = [0.0, 0.0, 0.0];
 			var up = [0.0, 0.0, 1.0];
 			var fieldOfView = 45.0;
 
-			eye = RotZ (eye, angle);
 			context.clearRect (0, 0, width, height);
 			context.fillStyle = '#cc0000';
 			var i, j, polygon, count, projected, x, y;
@@ -126,13 +114,23 @@
 			}
 		}
 		
-		var angle = 0.0;
+		function RotZ (c, a)
+		{
+			var si = Math.sin (angle);
+			var co = Math.cos (angle);
+			return [
+				c[0] * co - c[1] * si,
+				c[0] * si + c[1] * co,
+				c[2]
+			];
+		};
+
 		function Load ()
 		{
 			var canvas = document.getElementById ('example');
 			var context = canvas.getContext ('2d');
 			Render (
-				context, canvas.width, canvas.height, angle,
+				context, canvas.width, canvas.height,
 				[
 					[+1, +1, +1],
 					[+1, +1, -1],
@@ -152,8 +150,6 @@
 					[3, 5, 7, 6]
 				]
 			);
-			angle += 0.005;
-			requestAnimationFrame (Load);
 		}
 	
 	    window.onload = function ()
