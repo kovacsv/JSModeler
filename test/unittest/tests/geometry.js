@@ -296,6 +296,10 @@ generalSuite.AddTest ('MatrixTest', function (test) {
 	var matrix1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 	var matrix2 = [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
 	
+	var a = JSM.MatrixVectorMultiply (matrix1, JSM.MatrixVectorMultiply (matrix2, vector1));
+	var b = JSM.MatrixVectorMultiply (JSM.MatrixMultiply (matrix2, matrix1), vector1);
+	test.Assert (a.toString () == b.toString ());
+	
 	var vector2 = JSM.MatrixVectorMultiply (matrix1, vector1);
 	var matrix3 = JSM.MatrixMultiply (matrix1, matrix2);
 	
