@@ -163,36 +163,6 @@ JSM.GenerateHexahedron = function ()
 
 	return result;
 };
-/**
-* Function: GenerateHexahedron
-* Description: Generates a hexahedron.
-* Returns:
-*	{Body} the result
-*/
-JSM.GenerateHexahedron = function ()
-{
-	var result = new JSM.Body ();
-
-	var a = 1.0;
-
-	JSM.AddVertexToBody (result, +a, +a, +a);
-	JSM.AddVertexToBody (result, +a, +a, -a);
-	JSM.AddVertexToBody (result, +a, -a, +a);
-	JSM.AddVertexToBody (result, +a, -a, -a);
-	JSM.AddVertexToBody (result, -a, +a, +a);
-	JSM.AddVertexToBody (result, -a, +a, -a);
-	JSM.AddVertexToBody (result, -a, -a, +a);
-	JSM.AddVertexToBody (result, -a, -a, -a);
-
-	JSM.AddPolygonToBody (result, [0, 1, 5, 4]);
-	JSM.AddPolygonToBody (result, [0, 2, 3, 1]);
-	JSM.AddPolygonToBody (result, [0, 4, 6, 2]);
-	JSM.AddPolygonToBody (result, [1, 3, 7, 5]);
-	JSM.AddPolygonToBody (result, [2, 6, 7, 3]);
-	JSM.AddPolygonToBody (result, [4, 5, 7, 6]);
-
-	return result;
-};
 
 /**
 * Function: GenerateOctahedron
