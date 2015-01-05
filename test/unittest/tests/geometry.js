@@ -1268,6 +1268,23 @@ polygonSuite.AddTest ('PolygonTest', function (test)
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
 	polygon.AddVertex (1.0, 0.0);
+	
+	var triangles = JSM.PolygonTriangulate2D (polygon);
+	test.Assert (triangles.length == 0);
+
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (1.0, 0.0);
+	polygon.AddVertex (1.0, 1.0);
+	
+	var triangles = JSM.PolygonTriangulate2D (polygon);
+	test.Assert (triangles.length == 1);
+	test.Assert (triangles[0].toString () == '0,1,2');
+	test.Assert (JSM.CheckTriangulation2D (polygon, triangles) == true);
+
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (1.0, 0.0);
 	polygon.AddVertex (1.0, 1.0);
 	polygon.AddVertex (0.0, 1.0);
 	test.Assert (JSM.IsPolygonVertexVisible2D (polygon, 0, 2) == true);
