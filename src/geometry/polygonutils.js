@@ -623,7 +623,6 @@ JSM.PolygonTriangulate2D = function (polygon)
 	var complexity = JSM.PolygonComplexity2D (workPolygon);
 	var orientation = JSM.PolygonOrientation2D (workPolygon);
 	if (complexity === 'Invalid' || orientation === 'Invalid') {
-		console.log ('aaaaaaaaaaaa');
 		return [];
 	}
 	
