@@ -318,6 +318,41 @@ JSM.GenerateRandomMaterials = function (body, materials, seeded)
 };
 
 /**
+* Function: AddBodyToBSPTree
+* Description: Adds a body to a BSP tree.
+* Parameters:
+*	body {Body} the body
+*	bspTree {BSPTree} the BSP tree
+*	id {anything} the id for added polygons
+*/
+JSM.AddBodyToBSPTree = function (body, bspTree, id)
+{
+	function ConvertBodyPolygonToPolygon (body, index, userData)
+	{
+		var polygon = body.GetPolygon (index);
+		userData.material = polygon.GetMaterialIndex ();
+		var result = new JSM.Polygon ();
+		var i, coord;
+		for (i = 0; i < polygon.VertexIndexCount (); i++) {
+			coord = body.GetVertexPosition (polygon.GetVertexIndex (i));
+			result.AddVertex (coord.x, coord.y, coord.z);
+		}
+		return result;
+	}
+
+	var i, polygon, userData;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		userData = {
+			id : id,
+			originalPolygon : i,
+			material : -1
+		};
+		polygon = ConvertBodyPolygonToPolygon (body, i, userData);
+		bspTree.AddPolygon (polygon, userData);
+	}
+};
+
+/**
 * Function: MergeCoplanarPolygons
 * Description: Merges the coplanar polygons of a body.
 * Parameters:

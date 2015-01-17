@@ -534,10 +534,9 @@ JSM.PolygonTriangulate2D = function (polygon)
 		}
 	}
 
-	function GetResult ()
+	function GetResult (resultPolygons, orientation)
 	{
 		var result = [];
-		
 		var i, j, resultPolygon, resultTriangle;
 		for (i = 0; i < resultPolygons.length; i++) {
 			resultPolygon = resultPolygons[i];
@@ -558,23 +557,23 @@ JSM.PolygonTriangulate2D = function (polygon)
 		return result;
 	}
 
-	function IsVisibleVertex (currentPolygon2D, vertex1, vertex2)
+	function IsVisibleVertex (polygon, vertex1, vertex2)
 	{
 		if (vertex1 === vertex2) {
 			return false;
 		}
 	
-		var currentVertexCount = currentPolygon2D.VertexCount ();
+		var currentVertexCount = polygon.VertexCount ();
 		if (Increase (vertex1, currentVertexCount) === vertex2 || Decrease (vertex1, currentVertexCount) === vertex2) {
 			return false;
 		}
 	
-		return JSM.IsPolygonVertexVisible2D (currentPolygon2D, vertex1, vertex2);
+		return JSM.IsPolygonVertexVisible2D (polygon, vertex1, vertex2);
 	}
 
-	function SplitPolygon (currentPolygon, vertex1, vertex2)
+	function SplitPolygon (polygon, vertex1, vertex2, resultPolygons)
 	{
-		var currentVertexCount = currentPolygon.length;
+		var currentVertexCount = polygon.length;
 		if (currentVertexCount <= 3) {
 			return true;
 		}
@@ -592,9 +591,9 @@ JSM.PolygonTriangulate2D = function (polygon)
 			}
 	
 			resultPolygon = [];
-			resultPolygon.push (currentPolygon[end]);
+			resultPolygon.push (polygon[end]);
 			for (j = start; j !== end; j = Increase (j, currentVertexCount)) {
-				resultPolygon.push (currentPolygon[j]);
+				resultPolygon.push (polygon[j]);
 			}
 			resultPolygons.push (resultPolygon);
 		}
@@ -602,8 +601,8 @@ JSM.PolygonTriangulate2D = function (polygon)
 		return true;
 	}
 
-	var poly = polygon.Clone ();
-	var count = poly.VertexCount ();
+	var workPolygon = polygon.Clone ();
+	var count = workPolygon.VertexCount ();
 	if (count < 3) {
 		return [];
 	}
@@ -618,11 +617,11 @@ JSM.PolygonTriangulate2D = function (polygon)
 	
 	resultPolygons.push (firstPolygon);
 	if (count === 3) {
-		return GetResult ();
+		return resultPolygons;
 	}
 
-	var complexity = JSM.PolygonComplexity2D (poly);
-	var orientation = JSM.PolygonOrientation2D (poly);
+	var complexity = JSM.PolygonComplexity2D (workPolygon);
+	var orientation = JSM.PolygonOrientation2D (workPolygon);
 	if (complexity === 'Invalid' || orientation === 'Invalid') {
 		return [];
 	}
@@ -632,9 +631,9 @@ JSM.PolygonTriangulate2D = function (polygon)
 		for (i = 0; i < count / 2; i++) {
 			i1 = i;
 			i2 = count - i - 1;
-			tmp = poly.vertices[i1];
-			poly.vertices[i1] = poly.vertices[i2];
-			poly.vertices[i2] = tmp;
+			tmp = workPolygon.vertices[i1];
+			workPolygon.vertices[i1] = workPolygon.vertices[i2];
+			workPolygon.vertices[i2] = tmp;
 		}
 	}
 	
@@ -647,7 +646,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 			triangle.push ((i + 2) % count);
 			resultPolygons.push (triangle);
 		}
-		return GetResult ();
+		return GetResult (resultPolygons, orientation);
 	}
 
 	var currentPolygon, currentVertexCount, currentPolygon2D, createdNewPolygons, vertex;
@@ -660,7 +659,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 
 		currentPolygon2D = new JSM.Polygon2D ();
 		for (j = 0; j < currentVertexCount; j++) {
-			vertex = poly.GetVertex (currentPolygon[j]);
+			vertex = workPolygon.GetVertex (currentPolygon[j]);
 			currentPolygon2D.AddVertex (vertex.x, vertex.y);
 		}
 
@@ -668,19 +667,18 @@ JSM.PolygonTriangulate2D = function (polygon)
 		for (j = 0; j < currentVertexCount; j++) {
 			for (k = 0; k < currentVertexCount; k++) {
 				if (IsVisibleVertex (currentPolygon2D, j, k)) {
-					SplitPolygon (currentPolygon, j, k);
+					SplitPolygon (currentPolygon, j, k, resultPolygons);
 					createdNewPolygons = true;
 					break;
 				}
 			}
-
 			if (createdNewPolygons) {
 				break;
 			}
 		}
 	}
 
-	return GetResult ();
+	return GetResult (resultPolygons, orientation);
 };
 
 /**

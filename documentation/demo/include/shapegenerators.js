@@ -597,7 +597,7 @@ JSM.RevolveGenerator.prototype.Generate = function ()
 		this.parameters.angle.value * JSM.DegRad,
 		this.parameters.segmentation.value,
 		this.parameters.withTopAndBottom.value,
-		this.parameters.isCurved.value
+		this.parameters.isCurved.value ? 'CurveSegments' : 'None'
 	);
 };
 

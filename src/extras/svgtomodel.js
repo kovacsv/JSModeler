@@ -251,6 +251,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			}
 		}
 		result.color = SVGColorToHex (elem);
+		result.originalElem = elem;
 		return result;
 	}
 	
@@ -328,12 +329,19 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 		var prisms = [];
 		var direction = new JSM.Vector (0.0, -1.0, 0.0);
 		
+		var currentHeight = height;
+		if (polygon.originalElem !== undefined) {
+			if (polygon.originalElem.hasAttribute ('modelheight')) {
+				currentHeight = parseFloat (polygon.originalElem.getAttribute ('modelheight'));
+			}
+		}
+		
 		var basePolygon, baseOrientation, prism;
 		var contourCount = polygon.ContourCount ();
 		if (contourCount == 1) {
 			baseOrientation = JSM.PolygonOrientation2D (polygon.GetContour (0));
 			basePolygon = CreateBasePolygon (polygon.GetContour (0), baseOrientation);
-			prism = JSM.GeneratePrism (basePolygon, direction, height, true);
+			prism = JSM.GeneratePrism (basePolygon, direction, currentHeight, true);
 			prisms.push (prism);
 		} else if (contourCount > 1) {
 			baseOrientation = JSM.PolygonOrientation2D (polygon.GetContour (0));
@@ -345,7 +353,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 				orientation = JSM.PolygonOrientation2D (polygon.GetContour (i));
 				if (orientation == baseOrientation) {
 					basePolygon = CreateBasePolygon (polygon.GetContour (i), baseOrientation);
-					prism = JSM.GeneratePrism (basePolygon, direction, height, true);
+					prism = JSM.GeneratePrism (basePolygon, direction, currentHeight, true);
 					prisms.push (prism);
 				} else {
 					AddHoleToBasePolygon (holeBasePolygon, polygon.GetContour (i), orientation);
@@ -354,10 +362,10 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			}
 			
 			if (!hasHoles) {
-				prism = JSM.GeneratePrism (holeBasePolygon, direction, height, true);
+				prism = JSM.GeneratePrism (holeBasePolygon, direction, currentHeight, true);
 				prisms.push (prism);
 			} else {
-				prism = JSM.GeneratePrismWithHole (holeBasePolygon, direction, height, true);
+				prism = JSM.GeneratePrismWithHole (holeBasePolygon, direction, currentHeight, true);
 				prisms.push (prism);
 			}
 		}

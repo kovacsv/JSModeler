@@ -242,3 +242,35 @@ JSM.ClipPolygonWithBSPTree = function (polygon, bspTree, frontPolygons, backPoly
 	CutPolygonWithNode (polygon, bspTree.root, false);
 	return true;
 };
+
+/**
+* Function: TraverseBSPTreeForEyePosition
+* Description: Traverses a BSP tree for a given eye position.
+* Parameters:
+*	bspTree {BSPTree} the BSP tree
+*	eyePosition {Coord} the eye position
+*	nodeFound {function} the callback function
+*/
+JSM.TraverseBSPTreeForEyePosition = function (bspTree, eyePosition, nodeFound)
+{
+	function TraverseNode (node)
+	{
+		if (node !== null) {
+			var coordPlanePosition = JSM.CoordPlanePosition (eyePosition, node.plane);
+			if (coordPlanePosition == 'CoordInFrontOfPlane') {
+				TraverseNode (node.inside);
+				nodeFound (node);
+				TraverseNode (node.outside);
+			} else if (coordPlanePosition == 'CoordAtBackOfPlane') {
+				TraverseNode (node.outside);
+				nodeFound (node);
+				TraverseNode (node.inside);
+			} else {
+				TraverseNode (node.outside);
+				TraverseNode (node.inside);
+			}
+		}
+	}
+	
+	TraverseNode (bspTree.root);
+};

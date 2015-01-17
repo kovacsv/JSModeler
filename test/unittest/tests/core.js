@@ -51,6 +51,24 @@ suite.AddTest ('CoreTest', function (test) {
 	test.Assert (GetAValue (undefined) == 2);
 	test.Assert (GetAValue (null) == 2);
 	test.Assert (GetAValue () == 2);
+	
+	test.Assert (JSM.ArcSin (0.5) == Math.asin (0.5));
+	test.Assert (JSM.ArcSin (1.0) == Math.PI / 2.0);
+	test.Assert (JSM.ArcSin (-1.0) == -Math.PI / 2.0);
+
+	test.Assert (JSM.ArcCos (0.5) == Math.acos (0.5));
+	test.Assert (JSM.ArcCos (1.0) == 0.0);
+	test.Assert (JSM.ArcCos (-1.0) == Math.PI);
+	
+	var i, rnd;
+	for (i = 0; i < 100; i++) {
+		rnd = JSM.RandomNumber (5.0, 10.0);
+		test.Assert (rnd >= 5.0 && rnd <= 10.0);
+		rnd = JSM.RandomInt (5, 10);
+		test.Assert (rnd >= 5 && rnd <= 10);
+		rnd = JSM.SeededRandomInt (5, 10, i);
+		test.Assert (rnd >= 5 && rnd <= 10);
+	}
 });
 
 suite.AddTest ('SortTest', function (test) {

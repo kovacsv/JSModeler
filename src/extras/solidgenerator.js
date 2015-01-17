@@ -133,7 +133,6 @@ JSM.GenerateTetrahedron = function ()
 	return result;
 };
 
-
 /**
 * Function: GenerateHexahedron
 * Description: Generates a hexahedron.
@@ -149,18 +148,18 @@ JSM.GenerateHexahedron = function ()
 	JSM.AddVertexToBody (result, +a, +a, +a);
 	JSM.AddVertexToBody (result, +a, +a, -a);
 	JSM.AddVertexToBody (result, +a, -a, +a);
-	JSM.AddVertexToBody (result, -a, +a, +a);
 	JSM.AddVertexToBody (result, +a, -a, -a);
+	JSM.AddVertexToBody (result, -a, +a, +a);
 	JSM.AddVertexToBody (result, -a, +a, -a);
 	JSM.AddVertexToBody (result, -a, -a, +a);
 	JSM.AddVertexToBody (result, -a, -a, -a);
 
-	JSM.AddPolygonToBody (result, [0, 1, 5, 3]);
-	JSM.AddPolygonToBody (result, [0, 2, 4, 1]);
-	JSM.AddPolygonToBody (result, [0, 3, 6, 2]);
-	JSM.AddPolygonToBody (result, [1, 4, 7, 5]);
-	JSM.AddPolygonToBody (result, [2, 6, 7, 4]);
-	JSM.AddPolygonToBody (result, [3, 5, 7, 6]);
+	JSM.AddPolygonToBody (result, [0, 1, 5, 4]);
+	JSM.AddPolygonToBody (result, [0, 2, 3, 1]);
+	JSM.AddPolygonToBody (result, [0, 4, 6, 2]);
+	JSM.AddPolygonToBody (result, [1, 3, 7, 5]);
+	JSM.AddPolygonToBody (result, [2, 6, 7, 3]);
+	JSM.AddPolygonToBody (result, [4, 5, 7, 6]);
 
 	return result;
 };
@@ -278,30 +277,30 @@ JSM.GenerateIcosahedron = function ()
 	JSM.AddVertexToBody (result, -a, -c, +b);
 
 	JSM.AddVertexToBody (result, +c, +b, +a);
-	JSM.AddVertexToBody (result, -c, +b, +a);
 	JSM.AddVertexToBody (result, +c, +b, -a);
+	JSM.AddVertexToBody (result, -c, +b, +a);
 	JSM.AddVertexToBody (result, -c, +b, -a);
 
 	JSM.AddPolygonToBody (result, [0, 2, 8]);
 	JSM.AddPolygonToBody (result, [0, 4, 6]);
-	JSM.AddPolygonToBody (result, [0, 6, 9]);
+	JSM.AddPolygonToBody (result, [0, 6, 10]);
 	JSM.AddPolygonToBody (result, [0, 8, 4]);
-	JSM.AddPolygonToBody (result, [0, 9, 2]);
+	JSM.AddPolygonToBody (result, [0, 10, 2]);
 	JSM.AddPolygonToBody (result, [1, 3, 11]);
-	JSM.AddPolygonToBody (result, [1, 4, 10]);
+	JSM.AddPolygonToBody (result, [1, 4, 9]);
 	JSM.AddPolygonToBody (result, [1, 6, 4]);
-	JSM.AddPolygonToBody (result, [1, 10, 3]);
+	JSM.AddPolygonToBody (result, [1, 9, 3]);
 	JSM.AddPolygonToBody (result, [1, 11, 6]);
 	JSM.AddPolygonToBody (result, [2, 5, 8]);
 	JSM.AddPolygonToBody (result, [2, 7, 5]);
-	JSM.AddPolygonToBody (result, [2, 9, 7]);
+	JSM.AddPolygonToBody (result, [2, 10, 7]);
 	JSM.AddPolygonToBody (result, [3, 5, 7]);
 	JSM.AddPolygonToBody (result, [3, 7, 11]);
-	JSM.AddPolygonToBody (result, [3, 10, 5]);
-	JSM.AddPolygonToBody (result, [4, 8, 10]);
-	JSM.AddPolygonToBody (result, [6, 11, 9]);
-	JSM.AddPolygonToBody (result, [5, 10, 8]);
-	JSM.AddPolygonToBody (result, [7, 9, 11]);
+	JSM.AddPolygonToBody (result, [3, 9, 5]);
+	JSM.AddPolygonToBody (result, [4, 8, 9]);
+	JSM.AddPolygonToBody (result, [5, 9, 8]);
+	JSM.AddPolygonToBody (result, [6, 11, 10]);
+	JSM.AddPolygonToBody (result, [7, 10, 11]);
 
 	return result;
 };

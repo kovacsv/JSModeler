@@ -17,6 +17,10 @@ JSM.ReadBinaryStlFile = function (arrayBuffer, callbacks)
 		return result;
 	}
 
+	if (callbacks === undefined || callbacks === null) {
+		callbacks = {};
+	}
+
 	var reader = new JSM.BinaryReader (arrayBuffer, true);
 	reader.Skip (80);
 	
@@ -105,6 +109,10 @@ JSM.ReadAsciiStlFile = function (stringBuffer, callbacks)
 		return lineIndex + 1;
 	}
 	
+	if (callbacks === undefined || callbacks === null) {
+		callbacks = {};
+	}
+
 	var lineIndex = 0;
 	var lines = stringBuffer.split ('\n');
 	while (lineIndex < lines.length && lineIndex != -1) {

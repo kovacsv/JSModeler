@@ -818,6 +818,10 @@ JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)
 		}
 	}
 
+	if (callbacks === undefined || callbacks === null) {
+		callbacks = {};
+	}
+
 	var triangleModel = new JSM.TriangleModel ();
 	var currentBody = null;
 	

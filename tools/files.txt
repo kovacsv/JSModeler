@@ -53,7 +53,7 @@
 ../src/extras/subdivision.js
 ../src/extras/svgtomodel.js
 ../src/extras/csg.js
-../src/extras/surfaces.js
+../src/extras/curves.js
 ../src/renderer/renderer.js
 ../src/renderer/pointcloudrenderer.js
 ../src/renderer/converter.js

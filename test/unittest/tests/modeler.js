@@ -705,23 +705,25 @@ generatorSuite.AddTest ('GenerateSegmentedRectangleTest', function (test)
 
 generatorSuite.AddTest ('GenerateSphereTest', function (test)
 {
-	function VertexCountFromSegmentation (segmentation)
-	{
-		return (2 * segmentation) * (segmentation - 1) + 2;
-	}
-
-	function PolygonCountFromSegmentation (segmentation)
-	{
-		return (2 * segmentation) * segmentation;
-	}
-
 	var sphere = JSM.GenerateSphere (1.0, 3, true);
 	test.Assert (sphere.VertexCount () == 14 && sphere.PolygonCount () == 18);
 	test.Assert (JSM.CheckSolidBody (sphere));
 	
 	var sphere2 = JSM.GenerateSphere (1.0, 10, true);
 	test.Assert (sphere2.VertexCount () == 182 && sphere2.PolygonCount () == 200);
-	test.Assert (JSM.CheckSolidBody (sphere));
+	test.Assert (JSM.CheckSolidBody (sphere2));
+	
+	var sphere3 = JSM.GenerateTriangulatedSphere (1.0, 0, true);
+	test.Assert (sphere3.VertexCount () == 12 && sphere3.PolygonCount () == 20);
+	test.Assert (JSM.CheckSolidBody (sphere3));
+
+	var sphere3 = JSM.GenerateTriangulatedSphere (1.0, 1, true);
+	test.Assert (sphere3.VertexCount () == 42 && sphere3.PolygonCount () == 80);
+	test.Assert (JSM.CheckSolidBody (sphere3));
+
+	var sphere3 = JSM.GenerateTriangulatedSphere (1.0, 2, true);
+	test.Assert (sphere3.VertexCount () == 162 && sphere3.PolygonCount () == 320);
+	test.Assert (JSM.CheckSolidBody (sphere3));
 });
 
 generatorSuite.AddTest ('GenerateCircleTest', function (test)
@@ -822,6 +824,14 @@ generatorSuite.AddTest ('GenerateConeTest', function (test)
 	test.Assert (JSM.CoordIsEqual (vertexNormals[5][1], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
 	test.Assert (JSM.CoordIsEqual (vertexNormals[5][2], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
 	test.Assert (JSM.CoordIsEqual (vertexNormals[5][3], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
+
+	var cone3 = JSM.GenerateCone (0.0, 1.0, 1.0, 4, true, true);
+	test.Assert (cone3.VertexCount () == 5 && cone3.PolygonCount () == 5);
+	test.Assert (JSM.CheckSolidBody (cone3));
+	
+	var cone4 = JSM.GenerateCone (1.0, 0.0, 1.0, 4, true, true);
+	test.Assert (cone4.VertexCount () == 5 && cone4.PolygonCount () == 5);
+	test.Assert (JSM.CheckSolidBody (cone4));
 });
 
 generatorSuite.AddTest ('GeneratePrismTest', function (test)
@@ -1009,7 +1019,7 @@ generatorSuite.AddTest ('GeneratePrismShellTest', function (test)
 
 generatorSuite.AddTest ('GenerateCylinderShellTest', function (test)
 {
-	var cylinder = JSM.GenerateCylinderShell (1, 1, 0.1, 10, true, false);
+	var cylinder = JSM.GenerateCylinderShell (1, 1, 0.1, 10, true, true);
 	test.Assert (cylinder.VertexCount () == 4 * 10 && cylinder.PolygonCount () == 4 * 10);
 	test.Assert (JSM.CheckSolidBody (cylinder));
 });
@@ -1025,6 +1035,20 @@ generatorSuite.AddTest ('GenerateLineShellTest', function (test)
 	];
 	
 	var direction = new JSM.Vector (0.0, 0.0, 1.0);
+	var shell = JSM.GenerateLineShell (basePoints, direction, 1.0, 0.1, true, true);
+	test.Assert (JSM.CheckSolidBody (shell));
+	test.Assert (shell.VertexCount () == 20 && shell.PolygonCount () == 18);
+	test.Assert (JSM.CoordIsEqual (shell.GetVertex (0).position, new JSM.Vector (0.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (shell.GetVertex (10).position, new JSM.Vector (0.0, 0.0, 1.0)));
+	
+	var basePoints = [
+		new JSM.Coord (0.0, 0.0, 0.0),
+		new JSM.Coord (2.0, 0.0, 0.0),
+		new JSM.Coord (2.0, 1.0, 0.0),
+		new JSM.Coord (1.0, 1.0, 0.0),
+		new JSM.Coord (1.0, 2.0, 0.0)
+	];
+	
 	var shell = JSM.GenerateLineShell (basePoints, direction, 1.0, 0.1, true, true);
 	test.Assert (JSM.CheckSolidBody (shell));
 	test.Assert (shell.VertexCount () == 20 && shell.PolygonCount () == 18);
@@ -1090,7 +1114,7 @@ generatorSuite.AddTest ('GenerateRevolvedTest', function (test)
 		new JSM.Coord (0.5, 0.0, 0.5)
 	];
 	var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
-	var revolved = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 10, true, false);
+	var revolved = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 10, true, 'None');
 	test.Assert (revolved.VertexCount () == 20);
 	test.Assert (revolved.PolygonCount () == 12);
 	test.Assert (JSM.CheckSolidBody (revolved));
@@ -1099,7 +1123,7 @@ generatorSuite.AddTest ('GenerateRevolvedTest', function (test)
 	test.Assert (JSM.CoordIsEqual (vertexNormals[10][0], new JSM.Vector (0.0, 0.0, 1.0)));
 	test.Assert (JSM.CoordIsEqual (vertexNormals[11][0], new JSM.Vector (0.0, 0.0, -1.0)));
 	
-	var openRevolved = JSM.GenerateRevolved (polyLine, axis, 180.0 * JSM.DegRad, 10, true, false);
+	var openRevolved = JSM.GenerateRevolved (polyLine, axis, 180.0 * JSM.DegRad, 10, true, 'None');
 	test.Assert (openRevolved.VertexCount () == 22);
 	test.Assert (openRevolved.PolygonCount () == 10);
 	test.Assert (!JSM.IsSolidBody (openRevolved));

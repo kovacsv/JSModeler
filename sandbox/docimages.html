@@ -63,7 +63,7 @@
 	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
 	<script type="text/javascript" src="../src/extras/svgtomodel.js"></script>
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
-	<script type="text/javascript" src="../src/extras/surfaces.js"></script>
+	<script type="text/javascript" src="../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/converter.js"></script>
@@ -245,7 +245,7 @@
 					new JSM.Coord (0.0, -1.0, 1.0)
 				];
 				var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
-				var body = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 50, true, true);
+				var body = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 50, true, 'CurveSegments');
 				InitViewer (body);
 			} else if (current == 21) {
 				function TheFunction (x, y) {

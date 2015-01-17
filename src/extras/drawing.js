@@ -33,24 +33,6 @@ JSM.CanvasDrawer.prototype.GetHeight = function ()
 };
 
 /**
-* Function: CanvasDrawer.BeginPath
-* Description: Begins a path.
-*/
-JSM.CanvasDrawer.prototype.BeginPath = function ()
-{
-	this.context.beginPath ();
-};
-
-/**
-* Function: CanvasDrawer.EndPath
-* Description: Ends a path.
-*/
-JSM.CanvasDrawer.prototype.EndPath = function ()
-{
-	this.context.stroke ();
-};
-
-/**
 * Function: CanvasDrawer.Clear
 * Description: Clears the target.
 */
@@ -70,8 +52,10 @@ JSM.CanvasDrawer.prototype.Clear = function ()
 */
 JSM.CanvasDrawer.prototype.DrawLine = function (from, to)
 {
+	this.context.beginPath ();
 	this.context.moveTo (from.x, this.canvas.height - from.y);
 	this.context.lineTo (to.x, this.canvas.height - to.y);
+	this.context.stroke ();
 };
 
 /**
@@ -80,8 +64,9 @@ JSM.CanvasDrawer.prototype.DrawLine = function (from, to)
 * Parameters:
 *	polygon {Polygon2D} the polygon
 *	color {string} the hex color string
+*	contour {boolean} need to draw contour
 */
-JSM.CanvasDrawer.prototype.DrawPolygon = function (polygon, color)
+JSM.CanvasDrawer.prototype.DrawPolygon = function (polygon, color, contour)
 {
 	function HexColorToHTMLColor (hexColor)
 	{
@@ -91,7 +76,7 @@ JSM.CanvasDrawer.prototype.DrawPolygon = function (polygon, color)
 	}
 	
 	this.context.fillStyle = HexColorToHTMLColor (color);
-	this.context.beginPath();
+	this.context.beginPath ();
 
 	var i, vertex, nextVertex;
 	for (i = 0; i < polygon.VertexCount (); i++) {
@@ -106,13 +91,13 @@ JSM.CanvasDrawer.prototype.DrawPolygon = function (polygon, color)
 	this.context.closePath ();
 	this.context.fill ();
 
-	this.BeginPath ();
-	for (i = 0; i < polygon.VertexCount (); i++) {
-		vertex = polygon.GetVertex (i);
-		nextVertex = polygon.GetVertex (i < polygon.VertexCount () - 1 ? i + 1 : 0);
-		this.DrawLine (vertex, nextVertex);
+	if (contour) {
+		for (i = 0; i < polygon.VertexCount (); i++) {
+			vertex = polygon.GetVertex (i);
+			nextVertex = polygon.GetVertex (i < polygon.VertexCount () - 1 ? i + 1 : 0);
+			this.DrawLine (vertex, nextVertex);
+		}
 	}
-	this.EndPath ();
 };
 
 /**
@@ -147,24 +132,6 @@ JSM.SVGDrawer.prototype.GetWidth = function ()
 JSM.SVGDrawer.prototype.GetHeight = function ()
 {
 	return this.svgObject.getAttribute ('height');
-};
-
-/**
-* Function: SVGDrawer.BeginPath
-* Description: Begins a path.
-*/
-JSM.SVGDrawer.prototype.BeginPath = function ()
-{
-	// nothing to do
-};
-
-/**
-* Function: SVGDrawer.EndPath
-* Description: Ends a path.
-*/
-JSM.SVGDrawer.prototype.EndPath = function ()
-{
-	// nothing to do
 };
 
 /**
@@ -203,8 +170,9 @@ JSM.SVGDrawer.prototype.DrawLine = function (from, to)
 * Parameters:
 *	polygon {Polygon2D} the polygon
 *	color {string} the hex color string
+*	contour {boolean} need to draw contour
 */
-JSM.SVGDrawer.prototype.DrawPolygon = function (polygon, color)
+JSM.SVGDrawer.prototype.DrawPolygon = function (polygon, color/*, contour*/)
 {
 	function HexColorToHTMLColor (hexColor)
 	{
@@ -246,19 +214,31 @@ JSM.SVGDrawer.prototype.DrawPolygon = function (polygon, color)
 */
 JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, drawer)
 {
-	function GetProjectedPolygon (polygon)
+	function AddProjectedCoord (projectedPolygon, coord)
+	{
+		var projected = JSM.Project (coord, eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
+		projectedPolygon.AddVertex (projected.x, projected.y);
+	}
+
+	function GetProjectedPolygonFromBody (polygon)
 	{
 		var projectedPolygon = new JSM.Polygon2D ();
-		
-		var i, coord, projected, x, y;
+		var i, coord;
 		for (i = 0; i < polygon.VertexIndexCount (); i++) {
 			coord = body.GetVertexPosition (polygon.GetVertexIndex (i));
-			projected = JSM.Project (coord, eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
-			x = projected.x;
-			y = projected.y;
-			projectedPolygon.AddVertex (x, y);
+			AddProjectedCoord (projectedPolygon, coord);
 		}
-		
+		return projectedPolygon;
+	}
+
+	function GetProjectedPolygonFromPolygon (polygon)
+	{
+		var projectedPolygon = new JSM.Polygon2D ();
+		var i, coord;
+		for (i = 0; i < polygon.VertexCount (); i++) {
+			coord = polygon.GetVertex (i);
+			AddProjectedCoord (projectedPolygon, coord);
+		}
 		return projectedPolygon;
 	}
 
@@ -284,14 +264,28 @@ JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, 
 		if (materials === undefined || materials === null) {
 			materials = new JSM.Materials ();
 		}
-		
 		for (i = 0; i < orderedPolygons.length; i++) {
 			polygon = body.GetPolygon (orderedPolygons[i]);
-			projected = GetProjectedPolygon (polygon);
+			projected = GetProjectedPolygonFromBody (polygon);
 			materialIndex = polygon.GetMaterialIndex ();
 			color = materials.GetMaterial (materialIndex).diffuse;
-			drawer.DrawPolygon (projected, color);
+			drawer.DrawPolygon (projected, color, true);
 		}
+	} else if (drawMode == 'HiddenLineBSPTree') {
+		if (materials === undefined || materials === null) {
+			materials = new JSM.Materials ();
+		}
+
+		var bspTree = new JSM.BSPTree ();
+		JSM.AddBodyToBSPTree (body, bspTree);
+
+		JSM.TraverseBSPTreeForEyePosition (bspTree, camera.eye, function (node) {
+			projected = GetProjectedPolygonFromPolygon (node.polygon);
+			polygon = body.GetPolygon (node.userData.originalPolygon);
+			materialIndex = polygon.GetMaterialIndex ();
+			color = materials.GetMaterial (materialIndex).diffuse;
+			drawer.DrawPolygon (projected, color, true);
+		});		
 	} else if (drawMode == 'HiddenLineFrontFacing') {
 		if (materials === undefined || materials === null) {
 			materials = new JSM.Materials ();
@@ -299,17 +293,15 @@ JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, 
 		
 		for (i = 0; i < body.PolygonCount (); i++) {
 			polygon = body.GetPolygon (i);
-			projected = GetProjectedPolygon (polygon);
+			projected = GetProjectedPolygonFromBody (polygon);
 			if (JSM.PolygonOrientation2D (projected) == 'CounterClockwise') {
 				materialIndex = polygon.GetMaterialIndex ();
 				color = materials.GetMaterial (materialIndex).diffuse;
-				drawer.DrawPolygon (projected, color);
+				drawer.DrawPolygon (projected, color, true);
 			}
 		}
 	} else if (drawMode == 'Wireframe') {
 		var vertexCount, currentCoord, currentVertex, vertex;
-		drawer.BeginPath ();
-		
 		var drawedLines = [];
 		for (i = 0; i < body.PolygonCount (); i++) {
 			currentCoord = null;
@@ -329,8 +321,6 @@ JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, 
 				currentCoord = projected;
 			}
 		}
-		
-		drawer.EndPath ();
 	}
 
 	return true;

@@ -1,4 +1,62 @@
 /**
+* Function: BernsteinPolynomial
+* Description: Calculates the value of the Bernstein polynomial.
+* Parameters:
+*	k {integer} the start index
+*	n {integer} the end index
+*	x {number} the value
+* Returns:
+*	{number} the result
+*/
+JSM.BernsteinPolynomial = function (k, n, x)
+{
+	function BinomialCoefficient (n, k)
+	{
+		var result = 1.0;
+		var min = JSM.Minimum (k, n - k);
+		var i;
+		for (i = 0; i < min; i++) {
+			result = result * (n - i);
+			result = result / (i + 1);
+		}
+		return result;
+	}
+
+	var coefficient = BinomialCoefficient (n, k);
+	return coefficient * Math.pow (x, k) * Math.pow (1.0 - x, n - k);
+};
+
+/**
+* Function: GenerateBezierCurve
+* Description: Generates a bezier curve from the given points.
+* Parameters:
+*	points {Coord2D[]} the points
+*	segmentation {integer} the segmentation of the result curve
+* Returns:
+*	{Coord2D[]} the result
+*/
+JSM.GenerateBezierCurve = function (points, segmentation)
+{
+	var result = [];
+	var n = points.length - 1;
+	var s = 1.0 / segmentation;
+	
+	var i, j, t, point, bernstein, coord;
+	for (i = 0; i <= segmentation; i++) {
+		t = i * s;
+		coord = new JSM.Coord2D (0.0, 0.0);
+		for (j = 0; j <= n; j++) {
+			point = points[j];
+			bernstein = JSM.BernsteinPolynomial (j, n, t);
+			coord.x += point.x * bernstein;
+			coord.y += point.y * bernstein;
+		}
+		result.push (coord);
+	}
+	return result;
+};
+
+/**
 * Function: GenerateSurface
 * Description: Generates a parametric surface.
 * Parameters:
@@ -173,24 +231,6 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 {
 	function GetBezierSurfacePoint (uIndex, vIndex, u, v, surfaceControlPoints)
 	{
-		function BernsteinPolynomial (i, n, u)
-		{
-			function BinomialCoefficient (n, k)
-			{
-				var result = 1.0;
-				var min = JSM.Minimum (k, n - k);
-				var i;
-				for (i = 0; i < min; i++) {
-					result = result * (n - i);
-					result = result / (i + 1);
-				}
-				return result;
-			}
-
-			var bc = BinomialCoefficient (n, i);
-			return bc * Math.pow (u, i) * Math.pow (1.0 - u, n - i);
-		}
-		
 		var i, j, result, tmp1, tmp2, scalar;
 		var n = surfaceControlPoints.GetNValue ();
 		var m = surfaceControlPoints.GetMValue ();
@@ -199,7 +239,7 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 		for (i = 0; i <= n; i++) {
 			tmp1 = new JSM.Coord (0.0, 0.0, 0.0);
 			for (j = 0; j <= m; j++) {
-				scalar = BernsteinPolynomial (i, n, u) * BernsteinPolynomial (j, m, v);
+				scalar = JSM.BernsteinPolynomial (i, n, u) * JSM.BernsteinPolynomial (j, m, v);
 				tmp2 = JSM.VectorMultiply (surfaceControlPoints.GetControlPoint (i, j), scalar);
 				tmp1 = JSM.CoordAdd (tmp1, tmp2);
 			}

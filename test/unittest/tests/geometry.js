@@ -296,6 +296,10 @@ generalSuite.AddTest ('MatrixTest', function (test) {
 	var matrix1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 	var matrix2 = [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
 	
+	var a = JSM.MatrixVectorMultiply (matrix1, JSM.MatrixVectorMultiply (matrix2, vector1));
+	var b = JSM.MatrixVectorMultiply (JSM.MatrixMultiply (matrix2, matrix1), vector1);
+	test.Assert (a.toString () == b.toString ());
+	
 	var vector2 = JSM.MatrixVectorMultiply (matrix1, vector1);
 	var matrix3 = JSM.MatrixMultiply (matrix1, matrix2);
 	
@@ -373,6 +377,14 @@ generalSuite.AddTest ('MatrixTest', function (test) {
 		-8, -1, 2, 2,
 		3, 0.5, -1, -0.5
 	].toString ());
+	
+	var transposed = JSM.MatrixTranspose (matrix1);
+	test.Assert ([
+		1, 5, 9, 13,
+		2, 6, 10, 14,
+		3, 7, 11, 15,
+		4, 8, 12, 16
+	].toString () == transposed.toString ());
 });
 
 generalSuite.AddTest ('ArcLengthTest', function (test) {
@@ -1253,6 +1265,23 @@ polygonSuite.AddTest ('PolygonTest', function (test)
 	test.Assert (JSM.PolygonComplexity2D (polygon) == 'Convex');
 	test.Assert (JSM.CoordPolygonPosition2D (new JSM.Coord2D (0.2, 0.2), polygon) == 'CoordInsideOfPolygon');
 	
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (1.0, 0.0);
+	
+	var triangles = JSM.PolygonTriangulate2D (polygon);
+	test.Assert (triangles.length == 0);
+
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (1.0, 0.0);
+	polygon.AddVertex (1.0, 1.0);
+	
+	var triangles = JSM.PolygonTriangulate2D (polygon);
+	test.Assert (triangles.length == 1);
+	test.Assert (triangles[0].toString () == '0,1,2');
+	test.Assert (JSM.CheckTriangulation2D (polygon, triangles) == true);
+
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
 	polygon.AddVertex (1.0, 0.0);

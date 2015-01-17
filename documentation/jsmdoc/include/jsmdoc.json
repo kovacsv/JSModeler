@@ -912,17 +912,6 @@
 						["CoordSystem", "the result"]
 					]
 				},
-				"ChangeCoordSystem" : {
-					"description" : "Converts a coordinate from one coordinate system to another.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["from", "CoordSystem", "first coordinate system"],
-						["to", "CoordSystem", "second coordinate system"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
 				"CoordSectorPosition2D" : {
 					"description" : "Calculates the position of a coordinate and a sector.",
 					"parameters" : [
@@ -1416,6 +1405,14 @@
 					],
 					"returns" : [
 						["boolean", "success"]
+					]
+				},
+				"TraverseBSPTreeForEyePosition" : {
+					"description" : "Traverses a BSP tree for a given eye position.",
+					"parameters" : [
+						["bspTree", "BSPTree", "the BSP tree"],
+						["eyePosition", "Coord", "the eye position"],
+						["nodeFound", "function", "the callback function"]
 					]
 				},
 				"GetGaussianCParameter" : {
@@ -2273,6 +2270,14 @@
 						["seeded", "boolean", "seeded random generation"]
 					]
 				},
+				"AddBodyToBSPTree" : {
+					"description" : "Adds a body to a BSP tree.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["bspTree", "BSPTree", "the BSP tree"],
+						["id", "anything", "the id for added polygons"]
+					]
+				},
 				"MergeCoplanarPolygons" : {
 					"description" : "Merges the coplanar polygons of a body.",
 					"parameters" : [
@@ -2708,7 +2713,7 @@
 						["angle", "number", "the angle"],
 						["segmentation", "integer", "the segmentation"],
 						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
-						["isCurved", "boolean", "create smooth surfaces"]
+						["curveMode", "string", "'None', 'CurveSegments', or 'CurveAll'"]
 					],
 					"returns" : [
 						["Body", "the result"]
@@ -3604,14 +3609,6 @@
 						["Body", "the result"]
 					]
 				},
-				"AddBodyToBSPTree" : {
-					"description" : "Adds a body to a BSP tree.",
-					"parameters" : [
-						["body", "Body", "the body"],
-						["bspTree", "BSPTree", "the BSP tree"],
-						["id", "anything", "the id for added polygons"]
-					]
-				},
 				"BooleanOperation" : {
 					"description" : "Makes a boolean operation on the given bodies.",
 					"parameters" : [
@@ -3621,6 +3618,27 @@
 					],
 					"returns" : [
 						["Body", "the result"]
+					]
+				},
+				"BernsteinPolynomial" : {
+					"description" : "Calculates the value of the Bernstein polynomial.",
+					"parameters" : [
+						["k", "integer", "the start index"],
+						["n", "integer", "the end index"],
+						["x", "number", "the value"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"GenerateBezierCurve" : {
+					"description" : "Generates a bezier curve from the given points.",
+					"parameters" : [
+						["points", "Coord2D[]", "the points"],
+						["segmentation", "integer", "the segmentation of the result curve"]
+					],
+					"returns" : [
+						["Coord2D[]", "the result"]
 					]
 				},
 				"GenerateSurface" : {
@@ -3674,12 +3692,6 @@
 								["integer", "the result"]
 							]
 						},
-						"BeginPath" : {
-							"description" : "Begins a path."
-						},
-						"EndPath" : {
-							"description" : "Ends a path."
-						},
 						"Clear" : {
 							"description" : "Clears the target."
 						},
@@ -3694,7 +3706,8 @@
 							"description" : "Draws a polygon to the target.",
 							"parameters" : [
 								["polygon", "Polygon2D", "the polygon"],
-								["color", "string", "the hex color string"]
+								["color", "string", "the hex color string"],
+								["contour", "boolean", "need to draw contour"]
 							]
 						}
 					}
@@ -3717,12 +3730,6 @@
 								["integer", "the result"]
 							]
 						},
-						"BeginPath" : {
-							"description" : "Begins a path."
-						},
-						"EndPath" : {
-							"description" : "Ends a path."
-						},
 						"Clear" : {
 							"description" : "Clears the target."
 						},
@@ -3737,13 +3744,11 @@
 							"description" : "Draws a polygon to the target.",
 							"parameters" : [
 								["polygon", "Polygon2D", "the polygon"],
-								["color", "string", "the hex color string"]
+								["color", "string", "the hex color string"],
+								["contour", "boolean", "need to draw contour"]
 							]
 						}
 					}
-				},
-				"BSPPolygonUserData" : {
-					"description" : "Class that contains user data for polygons in BSP tree."
 				},
 				"SurfaceControlPoints" : {
 					"description" : "Represents control points for surface generation.",

@@ -412,8 +412,8 @@ function TestStep (viewer, mode, step, info)
 		];
 		
 		var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
-		var body1 = JSM.GenerateRevolved (polyLine, axis, 200 * JSM.DegRad, 25, true, true);
-		var body2 = JSM.GenerateRevolved (polyLine, axis, 250 * JSM.DegRad, 15, false, false);
+		var body1 = JSM.GenerateRevolved (polyLine, axis, 200 * JSM.DegRad, 25, true, 'CurveSegments');
+		var body2 = JSM.GenerateRevolved (polyLine, axis, 250 * JSM.DegRad, 15, false, 'None');
 		OffsetTwoBodies (body1, body2, 0.7, 0.0, 0.0);
 		
 		model.AddBody (body1);
@@ -431,8 +431,8 @@ function TestStep (viewer, mode, step, info)
 		];
 		
 		var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
-		var body1 = JSM.GenerateRevolved (polyLine, axis, 360 * JSM.DegRad, 25, true, true);
-		var body2 = JSM.GenerateRevolved (polyLine, axis, 360 * JSM.DegRad, 15, false, false);
+		var body1 = JSM.GenerateRevolved (polyLine, axis, 360 * JSM.DegRad, 25, true, 'CurveSegments');
+		var body2 = JSM.GenerateRevolved (polyLine, axis, 360 * JSM.DegRad, 15, false, 'None');
 		OffsetTwoBodies (body1, body2, 0.7, 0.0, 0.0);
 		
 		model.AddBody (body1);
