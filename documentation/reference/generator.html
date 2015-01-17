@@ -1011,7 +1011,7 @@ var polyLine = [
 	new JSM.Coord (0.0, -1.0, 1.0)
 ];
 var axis = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
-var body = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 50, true, true);
+var body = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 50, true, 'CurveSegments');
 </pre>
 <img src="images/revolved.png">
 			</div>

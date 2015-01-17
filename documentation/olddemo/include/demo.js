@@ -667,7 +667,7 @@ JSMDemo.prototype =
 			polyLine.push (new JSM.Coord (x, 0.0, z));
 		}
 
-		this.body = JSM.GenerateRevolved (polyLine, axis, angle, segmentation, withTopAndBottom, curved);
+		this.body = JSM.GenerateRevolved (polyLine, axis, angle, segmentation, withTopAndBottom, curved ? 'CurveSegments' : 'None');
 		this.AddBodyToViewer (this.body);
 	},
 
