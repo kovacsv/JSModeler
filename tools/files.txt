@@ -39,7 +39,8 @@
 ../src/modeler/camera.js
 ../src/modeler/explode.js
 ../src/modeler/exporter.js
-../src/import/trianglemodel.js
+../src/modeler/trianglebody.js
+../src/modeler/trianglemodel.js
 ../src/import/binaryreader.js
 ../src/import/importer.js
 ../src/import/importer3ds.js
