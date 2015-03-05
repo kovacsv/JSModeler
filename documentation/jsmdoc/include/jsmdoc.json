@@ -3336,6 +3336,148 @@
 							]
 						}
 					}
+				},
+				"TriangleBody" : {
+					"description" : "Represents a 3D body which contains only triangles.",
+					"functions" : {
+						"SetName" : {
+							"description" : "Sets the name of the body.",
+							"parameters" : [
+								["name", "string", "the name"]
+							]
+						},
+						"GetName" : {
+							"description" : "Returns the name of the body.",
+							"returns" : [
+								["string", "the result"]
+							]
+						},
+						"AddVertex" : {
+							"description" : "Adds a vertex to the body.",
+							"parameters" : [
+								["x, y, z", "number", "the coordinates of the vertex"]
+							],
+							"returns" : [
+								["integer", "the index of the added vertex"]
+							]
+						},
+						"GetVertex" : {
+							"description" : "Returns the vertex at the given index.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"SetVertex" : {
+							"description" : "Sets the position of the vertex at the given index.",
+							"parameters" : [
+								["index", "integer", "the vertex index"],
+								["x, y, z", "number", "the new coordinates of the vertex"]
+							]
+						},
+						"VertexCount" : {
+							"description" : "Returns the vertex count of the body.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"AddNormal" : {
+							"description" : "Adds a normal vector to the body.",
+							"parameters" : [
+								["x, y, z", "number", "the coordinates of the normal vector"]
+							],
+							"returns" : [
+								["integer", "the index of the added normal vector"]
+							]
+						},
+						"GetNormal" : {
+							"description" : "Returns the normal vector at the given index.",
+							"parameters" : [
+								["index", "integer", "the normal vector index"]
+							],
+							"returns" : [
+								["Vector", "the result"]
+							]
+						},
+						"NormalCount" : {
+							"description" : "Returns the normal vector count of the body.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"AddUV" : {
+							"description" : "Adds a texture coordinate to the body.",
+							"parameters" : [
+								["x, y", "number", "the coordinates of the texture coordinate"]
+							],
+							"returns" : [
+								["integer", "the index of the added texture coordinate"]
+							]
+						},
+						"AddDefaultUV" : {
+							"description" : "Adds a default texture coordinate to the body. The default texture coordinate is stored only once.",
+							"returns" : [
+								["integer", "the index of the default texture coordinate"]
+							]
+						},
+						"GetUV" : {
+							"description" : "Returns the texture coordinate at the given index.",
+							"parameters" : [
+								["index", "integer", "the texture coordinate index"]
+							],
+							"returns" : [
+								["Coord2D", "the result"]
+							]
+						},
+						"UVCount" : {
+							"description" : "Returns the texture coordinate count of the body.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"AddTriangle" : {
+							"description" : "Adds a triangle to the body.",
+							"parameters" : [
+								["v0, v1, v2", "integer", "the vertex indices of the triangle"],
+								["n0, n1, n2", "integer", "the normal vector indices of the triangle"],
+								["u0, u1, u2", "integer", "the texture coordinate indices of the triangle"],
+								["mat", "integer", "the material index of the triangle"],
+								["curve", "integer", "the curve group index of the triangle"]
+							],
+							"returns" : [
+								["integer", "the index of the added triangle"]
+							]
+						},
+						"GetTriangle" : {
+							"description" : "Returns the triangle at the given index.",
+							"parameters" : [
+								["index", "integer", "the triangle index"]
+							],
+							"returns" : [
+								["object", "the result"]
+							]
+						},
+						"TriangleCount" : {
+							"description" : "Returns the triangle count of the body.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"Finalize" : {
+							"description" : "Finalizes the body. This operation calculates normal vectors and fixes the body if some data is missing from it.",
+							"parameters" : [
+								["model", "TriangleModel", "the triangle index"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the body.",
+							"returns" : [
+								["TriangleBody", "a cloned instance"]
+							]
+						}
+					}
 				}
 			}
 		},

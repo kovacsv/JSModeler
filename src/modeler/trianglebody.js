@@ -1,3 +1,7 @@
+/**
+* Class: TriangleBody
+* Description: Represents a 3D body which contains only triangles.
+*/
 JSM.TriangleBody = function (name)
 {
 	this.name = name;
@@ -8,59 +12,138 @@ JSM.TriangleBody = function (name)
 	this.defaultUVIndex = -1;
 };
 
+/**
+* Function: TriangleBody.SetName
+* Description: Sets the name of the body.
+* Parameters:
+*	name {string} the name
+*/
 JSM.TriangleBody.prototype.SetName = function (name)
 {
 	this.name = name;
 };
 
+/**
+* Function: TriangleBody.GetName
+* Description: Returns the name of the body.
+* Returns:
+*	{string} the result
+*/
 JSM.TriangleBody.prototype.GetName = function ()
 {
 	return this.name;
 };
 
+/**
+* Function: TriangleBody.AddVertex
+* Description: Adds a vertex to the body.
+* Parameters:
+*	x, y, z {number} the coordinates of the vertex
+* Returns:
+*	{integer} the index of the added vertex
+*/
 JSM.TriangleBody.prototype.AddVertex = function (x, y, z)
 {
 	this.vertices.push (new JSM.Coord (x, y, z));
 	return this.vertices.length - 1;
 };
 
+/**
+* Function: TriangleBody.GetVertex
+* Description: Returns the vertex at the given index.
+* Parameters:
+*	index {integer} the vertex index
+* Returns:
+*	{Coord} the result
+*/
 JSM.TriangleBody.prototype.GetVertex = function (index)
 {
 	return this.vertices[index];
 };
 
+/**
+* Function: TriangleBody.SetVertex
+* Description: Sets the position of the vertex at the given index.
+* Parameters:
+*	index {integer} the vertex index
+*	x, y, z {number} the new coordinates of the vertex
+*/
 JSM.TriangleBody.prototype.SetVertex = function (index, x, y, z)
 {
 	this.vertices[index] = new JSM.Coord (x, y, z);
 };
 
+/**
+* Function: TriangleBody.VertexCount
+* Description: Returns the vertex count of the body.
+* Returns:
+*	{integer} the result
+*/
 JSM.TriangleBody.prototype.VertexCount = function ()
 {
 	return this.vertices.length;
 };
 
+/**
+* Function: TriangleBody.AddNormal
+* Description: Adds a normal vector to the body.
+* Parameters:
+*	x, y, z {number} the coordinates of the normal vector
+* Returns:
+*	{integer} the index of the added normal vector
+*/
 JSM.TriangleBody.prototype.AddNormal = function (x, y, z)
 {
-	this.normals.push (new JSM.Coord (x, y, z));
+	this.normals.push (new JSM.Vector (x, y, z));
 	return this.normals.length - 1;
 };
 
+/**
+* Function: TriangleBody.GetNormal
+* Description: Returns the normal vector at the given index.
+* Parameters:
+*	index {integer} the normal vector index
+* Returns:
+*	{Vector} the result
+*/
 JSM.TriangleBody.prototype.GetNormal = function (index)
 {
 	return this.normals[index];
 };
 
+/**
+* Function: TriangleBody.NormalCount
+* Description: Returns the normal vector count of the body.
+* Returns:
+*	{integer} the result
+*/
 JSM.TriangleBody.prototype.NormalCount = function ()
 {
 	return this.normals.length;
 };
 
+/**
+* Function: TriangleBody.AddUV
+* Description: Adds a texture coordinate to the body.
+* Parameters:
+*	x, y {number} the coordinates of the texture coordinate
+* Returns:
+*	{integer} the index of the added texture coordinate
+*/
 JSM.TriangleBody.prototype.AddUV = function (x, y)
 {
 	this.uvs.push (new JSM.Coord2D (x, y));
 	return this.uvs.length - 1;
 };
 
+/**
+* Function: TriangleBody.AddDefaultUV
+* Description:
+*	Adds a default texture coordinate to the body.
+*	The default texture coordinate is stored only once.
+* Returns:
+*	{integer} the index of the default texture coordinate
+*/
 JSM.TriangleBody.prototype.AddDefaultUV = function ()
 {
 	if (this.defaultUVIndex != -1) {
@@ -71,16 +154,42 @@ JSM.TriangleBody.prototype.AddDefaultUV = function ()
 	return this.defaultUVIndex;
 };
 
+/**
+* Function: TriangleBody.GetUV
+* Description: Returns the texture coordinate at the given index.
+* Parameters:
+*	index {integer} the texture coordinate index
+* Returns:
+*	{Coord2D} the result
+*/
 JSM.TriangleBody.prototype.GetUV = function (index)
 {
 	return this.uvs[index];
 };
 
+/**
+* Function: TriangleBody.UVCount
+* Description: Returns the texture coordinate count of the body.
+* Returns:
+*	{integer} the result
+*/
 JSM.TriangleBody.prototype.UVCount = function ()
 {
 	return this.uvs.length;
 };
 
+/**
+* Function: TriangleBody.AddTriangle
+* Description: Adds a triangle to the body.
+* Parameters:
+*	v0, v1, v2 {integer} the vertex indices of the triangle
+*	n0, n1, n2 {integer} the normal vector indices of the triangle
+*	u0, u1, u2 {integer} the texture coordinate indices of the triangle
+*	mat {integer} the material index of the triangle
+*	curve {integer} the curve group index of the triangle
+* Returns:
+*	{integer} the index of the added triangle
+*/
 JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, u0, u1, u2, mat, curve)
 {
 	this.triangles.push ({
@@ -99,16 +208,38 @@ JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, u0, u
 	return this.triangles.length - 1;
 };
 
+/**
+* Function: TriangleBody.GetTriangle
+* Description: Returns the triangle at the given index.
+* Parameters:
+*	index {integer} the triangle index
+* Returns:
+*	{object} the result
+*/
 JSM.TriangleBody.prototype.GetTriangle = function (index)
 {
 	return this.triangles[index];
 };
 
+/**
+* Function: TriangleBody.TriangleCount
+* Description: Returns the triangle count of the body.
+* Returns:
+*	{integer} the result
+*/
 JSM.TriangleBody.prototype.TriangleCount = function ()
 {
 	return this.triangles.length;
 };
 
+/**
+* Function: TriangleBody.Finalize
+* Description:
+*	Finalizes the body. This operation calculates normal vectors
+*	and fixes the body if some data is missing from it.
+* Parameters:
+*	model {TriangleModel} the triangle index
+*/
 JSM.TriangleBody.prototype.Finalize = function (model)
 {
 	function FinalizeTriangle (body, triangleIndex, triangleNormals, vertexToTriangles)
@@ -185,6 +316,12 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 	}
 };
 
+/**
+* Function: TriangleBody.Clone
+* Description: Clones the body.
+* Returns:
+*	{TriangleBody} a cloned instance
+*/
 JSM.TriangleBody.prototype.Clone = function ()
 {
 	var result = new JSM.TriangleBody (this.name);
