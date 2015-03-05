@@ -26,6 +26,7 @@
 ../src/geometry/octree.js
 ../src/geometry/bsptree.js
 ../src/geometry/utilities.js
+../src/geometry/ray.js
 ../src/modeler/body.js
 ../src/modeler/model.js
 ../src/modeler/color.js
@@ -41,6 +42,7 @@
 ../src/modeler/exporter.js
 ../src/modeler/trianglebody.js
 ../src/modeler/trianglemodel.js
+../src/modeler/rayutils.js
 ../src/import/binaryreader.js
 ../src/import/importer.js
 ../src/import/importer3ds.js

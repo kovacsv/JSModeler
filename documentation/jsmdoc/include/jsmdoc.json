@@ -2054,6 +2054,48 @@
 							]
 						}
 					}
+				},
+				"Ray" : {
+					"description" : "Represents a Ray.",
+					"parameters" : [
+						["origin", "Coord", "the starting point of the ray"],
+						["direction", "Vector", "the direction of the ray"],
+						["length", "number", "the length of the ray, null means infinite ray"]
+					],
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the ray.",
+							"parameters" : [
+								["origin", "Coord", "the starting point of the ray"],
+								["direction", "Vector", "the direction of the ray"],
+								["length", "number", "the length of the ray, null means infinite ray"]
+							]
+						},
+						"GetOrigin" : {
+							"description" : "Returns the origin of the ray.",
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"GetDirection" : {
+							"description" : "Returns the direction of the ray.",
+							"returns" : [
+								["Vector", "the result"]
+							]
+						},
+						"IsLengthReached" : {
+							"description" : "Returns if the given length is greater than the length of the ray. Always return false in case of infinite ray.",
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the ray.",
+							"returns" : [
+								["Ray", "a cloned instance"]
+							]
+						}
+					}
 				}
 			}
 		},
@@ -2866,6 +2908,16 @@
 					],
 					"returns" : [
 						["string", "the result"]
+					]
+				},
+				"RayTriangleIntersection" : {
+					"description" : "Calculates intersection between a ray and a triangle.",
+					"parameters" : [
+						["ray", "Ray", "the ray"],
+						["v0, v1, v2", "Coord", "the vertices of the triangle"]
+					],
+					"returns" : [
+						["object", "the result data (position, distance) if intersection found, null otherwise"]
 					]
 				}
 			},
