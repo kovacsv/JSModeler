@@ -76,7 +76,7 @@ JSM.RayTracer.prototype.GetPixelColor = function (x, y)
 			var n0 = body.GetNormal (triangle.n0);
 			var n1 = body.GetNormal (triangle.n1);
 			var n2 = body.GetNormal (triangle.n2);
-			normal = JSM.BarycentricInterpolation (v0, v1, v2, n0, n1, n2, intersection.position);
+			normal = JSM.BarycentricInterpolation (v0, v1, v2, n0, n1, n2, intersection);
 		}
 		return normal;
 	}
