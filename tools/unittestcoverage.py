@@ -32,7 +32,7 @@ def Main (argv):
 	
 	mergedFileName = 'jsmodeler_merged.js'
 	resultBuildPath = os.path.join (coverageTempFolder, mergedFileName)
-	os.system ('build.py keepMergedFile')
+	os.system ('python build.py keepMergedFile')
 	shutil.move (mergedFileName, resultBuildPath)
 	
 	AddContentToFile (resultBuildPath, 'module.exports = JSM;', True)

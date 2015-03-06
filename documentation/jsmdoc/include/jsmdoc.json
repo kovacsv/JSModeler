@@ -250,7 +250,7 @@
 				"AsyncEnvironment" : {
 					"description" : "Environment for asynchronous calls.",
 					"parameters" : [
-						["parameters", "object", "callback functions for calls"]
+						["parameters", "object", "callback functions for calls (onStart, onProcess, onFinish)"]
 					],
 					"functions" : {
 						"OnStart" : {
@@ -651,6 +651,17 @@
 					],
 					"returns" : [
 						["Vector", "the result"]
+					]
+				},
+				"BarycentricInterpolation" : {
+					"description" : "Calculates barycentric interpolation for the given values.",
+					"parameters" : [
+						["vertex0, vertex1, vertex2", "Coord", "the vertices of interpolation"],
+						["value0, value1, value2", "Coord", "the values to interpolate"],
+						["position", "Coord", "the position of interpolation"]
+					],
+					"returns" : [
+						["Coord", "the result"]
 					]
 				},
 				"SphericalToCartesian" : {
@@ -2910,6 +2921,43 @@
 						["string", "the result"]
 					]
 				},
+				"ConvertBodyToTriangleBody" : {
+					"description" : "Converts a body to triangle body.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["TriangleBody", "the result"]
+					]
+				},
+				"ConvertModelToTriangleModel" : {
+					"description" : "Converts a model to triangle model.",
+					"parameters" : [
+						["model", "Model", "the model"],
+						["materials", "Materials", "the materials"]
+					],
+					"returns" : [
+						["TriangleModel", "the result"]
+					]
+				},
+				"ConvertTriangleModelToJsonData" : {
+					"description" : "Converts a triangle model to json data.",
+					"parameters" : [
+						["model", "TriangleModel", "the model"]
+					],
+					"returns" : [
+						["object", "the result data"]
+					]
+				},
+				"MergeJsonDataMeshes" : {
+					"description" : "Merges meshes in json data.",
+					"parameters" : [
+						["jsonData", "object", "the original data"]
+					],
+					"returns" : [
+						["object", "the result data"]
+					]
+				},
 				"RayTriangleIntersection" : {
 					"description" : "Calculates intersection between a ray and a triangle.",
 					"parameters" : [
@@ -2918,6 +2966,26 @@
 					],
 					"returns" : [
 						["object", "the result data (position, distance) if intersection found, null otherwise"]
+					]
+				},
+				"RayTriangleBodyIntersection" : {
+					"description" : "Calculates intersection between a ray and a triangle body.",
+					"parameters" : [
+						["ray", "Ray", "the ray"],
+						["body", "TriangleBody", "the triangle body"]
+					],
+					"returns" : [
+						["object", "the result data (position, distance, triangleIndex) if intersection found, null otherwise"]
+					]
+				},
+				"RayTriangleModelIntersection" : {
+					"description" : "Calculates intersection between a ray and a triangle model.",
+					"parameters" : [
+						["ray", "Ray", "the ray"],
+						["model", "TriangleModel", "the triangle model"]
+					],
+					"returns" : [
+						["object", "the result data (position, distance, triangleIndex, bodyIndex) if intersection found, null otherwise"]
 					]
 				}
 			},
@@ -3476,6 +3544,90 @@
 							"returns" : [
 								["TriangleBody", "a cloned instance"]
 							]
+						}
+					}
+				},
+				"TriangleModel" : {
+					"description" : "Represents a 3D model which contains only triangles.",
+					"functions" : {
+						"AddMaterial" : {
+							"description" : "Adds a material to the model.",
+							"parameters" : [
+								["material", "material", "the parameters of the material"]
+							],
+							"returns" : [
+								["integer", "the index of the added material"]
+							]
+						},
+						"GetMaterial" : {
+							"description" : "Returns the material at the given index.",
+							"parameters" : [
+								["index", "integer", "the material index"]
+							],
+							"returns" : [
+								["object", "the result"]
+							]
+						},
+						"AddDefaultMaterial" : {
+							"description" : "Adds a default material coordinate to the model. The default material is stored only once.",
+							"returns" : [
+								["integer", "the index of the default material"]
+							]
+						},
+						"GetDefaultMaterialIndex" : {
+							"description" : "Adds a default material, and returns the index of it.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"MaterialCount" : {
+							"description" : "Returns the material count of the model.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"AddBody" : {
+							"description" : "Adds a body to the model.",
+							"parameters" : [
+								["body", "TriangleBody", "the body"]
+							],
+							"returns" : [
+								["integer", "the index of the added body"]
+							]
+						},
+						"AddBodyToIndex" : {
+							"description" : "Adds a body to the model to the given index.",
+							"parameters" : [
+								["body", "TriangleBody", "the body"],
+								["index", "integer", "the index"]
+							],
+							"returns" : [
+								["integer", "the index of the added body"]
+							]
+						},
+						"GetBody" : {
+							"description" : "Returns the body at the given index.",
+							"parameters" : [
+								["index", "integer", "the body index"]
+							],
+							"returns" : [
+								["TriangleBody", "the result"]
+							]
+						},
+						"BodyCount" : {
+							"description" : "Returns the body count of the model.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"FinalizeMaterials" : {
+							"description" : "Finalizes the materials in the model. This fill every not specified material parameter with default values."
+						},
+						"FinalizeBodies" : {
+							"description" : "Finalizes all body in the model."
+						},
+						"Finalize" : {
+							"description" : "Finalizes the model. It finalizes materials and bodies."
 						}
 					}
 				}

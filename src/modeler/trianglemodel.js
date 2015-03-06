@@ -1,3 +1,7 @@
+/**
+* Class: TriangleModel
+* Description: Represents a 3D model which contains only triangles.
+*/
 JSM.TriangleModel = function ()
 {
 	this.materials = [];
@@ -5,6 +9,14 @@ JSM.TriangleModel = function ()
 	this.defaultMaterial = -1;
 };
 
+/**
+* Function: TriangleModel.AddMaterial
+* Description: Adds a material to the model.
+* Parameters:
+*	material {material} the parameters of the material
+* Returns:
+*	{integer} the index of the added material
+*/
 JSM.TriangleModel.prototype.AddMaterial = function (material)
 {
 	if (material === undefined || material === null) {
@@ -18,11 +30,27 @@ JSM.TriangleModel.prototype.AddMaterial = function (material)
 	return this.materials.length - 1;
 };
 
+/**
+* Function: TriangleModel.GetMaterial
+* Description: Returns the material at the given index.
+* Parameters:
+*	index {integer} the material index
+* Returns:
+*	{object} the result
+*/
 JSM.TriangleModel.prototype.GetMaterial = function (index)
 {
 	return this.materials[index];
 };
 
+/**
+* Function: TriangleModel.AddDefaultMaterial
+* Description:
+*	Adds a default material coordinate to the model.
+*	The default material is stored only once.
+* Returns:
+*	{integer} the index of the default material
+*/
 JSM.TriangleModel.prototype.AddDefaultMaterial = function ()
 {
 	if (this.defaultMaterial == -1) {
@@ -31,43 +59,87 @@ JSM.TriangleModel.prototype.AddDefaultMaterial = function ()
 	return this.defaultMaterial;
 };
 
+/**
+* Function: TriangleModel.GetDefaultMaterialIndex
+* Description: Adds a default material, and returns the index of it.
+* Returns:
+*	{integer} the result
+*/
 JSM.TriangleModel.prototype.GetDefaultMaterialIndex = function ()
 {
 	return this.AddDefaultMaterial ();
 };
 
+/**
+* Function: TriangleModel.MaterialCount
+* Description: Returns the material count of the model.
+* Returns:
+*	{integer} the result
+*/
 JSM.TriangleModel.prototype.MaterialCount = function ()
 {
 	return this.materials.length;
 };
 
+/**
+* Function: TriangleModel.AddBody
+* Description: Adds a body to the model.
+* Parameters:
+*	body {TriangleBody} the body
+* Returns:
+*	{integer} the index of the added body
+*/
 JSM.TriangleModel.prototype.AddBody = function (body)
 {
 	this.bodies.push (body);
 	return this.bodies.length - 1;
 };
 
+/**
+* Function: TriangleModel.AddBodyToIndex
+* Description: Adds a body to the model to the given index.
+* Parameters:
+*	body {TriangleBody} the body
+*	index {integer} the index
+* Returns:
+*	{integer} the index of the added body
+*/
 JSM.TriangleModel.prototype.AddBodyToIndex = function (body, index)
 {
 	this.bodies.splice (index, 0, body);
 	return index;
 };
 
+/**
+* Function: TriangleModel.GetBody
+* Description: Returns the body at the given index.
+* Parameters:
+*	index {integer} the body index
+* Returns:
+*	{TriangleBody} the result
+*/
 JSM.TriangleModel.prototype.GetBody = function (index)
 {
 	return this.bodies[index];
 };
 
+/**
+* Function: TriangleModel.BodyCount
+* Description: Returns the body count of the model.
+* Returns:
+*	{integer} the result
+*/
 JSM.TriangleModel.prototype.BodyCount = function ()
 {
 	return this.bodies.length;
 };
 
-JSM.TriangleModel.prototype.GetBody = function (index)
-{
-	return this.bodies[index];
-};
-
+/**
+* Function: TriangleModel.FinalizeMaterials
+* Description:
+*	Finalizes the materials in the model. This fill every not
+*	specified material parameter with default values.
+*/
 JSM.TriangleModel.prototype.FinalizeMaterials = function ()
 {
 	var defaultMaterialData = {
@@ -90,6 +162,10 @@ JSM.TriangleModel.prototype.FinalizeMaterials = function ()
 	}
 };
 
+/**
+* Function: TriangleModel.FinalizeBodies
+* Description: Finalizes all body in the model.
+*/
 JSM.TriangleModel.prototype.FinalizeBodies = function ()
 {
 	var i, body;
@@ -99,6 +175,10 @@ JSM.TriangleModel.prototype.FinalizeBodies = function ()
 	}
 };
 
+/**
+* Function: TriangleModel.Finalize
+* Description: Finalizes the model. It finalizes materials and bodies.
+*/
 JSM.TriangleModel.prototype.Finalize = function ()
 {
 	this.FinalizeBodies ();

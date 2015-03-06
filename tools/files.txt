@@ -42,6 +42,7 @@
 ../src/modeler/exporter.js
 ../src/modeler/trianglebody.js
 ../src/modeler/trianglemodel.js
+../src/modeler/converter.js
 ../src/modeler/rayutils.js
 ../src/import/binaryreader.js
 ../src/import/importer.js
@@ -59,7 +60,7 @@
 ../src/extras/curves.js
 ../src/renderer/renderer.js
 ../src/renderer/pointcloudrenderer.js
-../src/renderer/converter.js
+../src/renderer/rendererconverter.js
 ../src/viewer/jsonfileloader.js
 ../src/viewer/mouse.js
 ../src/viewer/touch.js

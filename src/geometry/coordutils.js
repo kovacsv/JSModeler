@@ -642,6 +642,52 @@ JSM.CalculateNormal = function (coords)
 };
 
 /**
+* Function: BarycentricInterpolation
+* Description: Calculates barycentric interpolation for the given values.
+* Parameters:
+*	vertex0, vertex1, vertex2 {Coord} the vertices of interpolation
+*	value0, value1, value2 {Coord} the values to interpolate
+*	position {Coord} the position of interpolation
+* Returns:
+*	{Coord} the result
+*/
+JSM.BarycentricInterpolation = function (vertex0, vertex1, vertex2, value0, value1, value2, position)
+{
+	function GetTriangleArea (a, b, c)
+	{
+		var s = (a + b + c) / 2.0;
+		var areaSquare = s * (s - a) * (s - b) * (s - c);
+		if (areaSquare < 0.0) {
+			return 0.0;
+		}
+		return Math.sqrt (areaSquare);
+	}
+	
+	var edge0 = JSM.CoordDistance (vertex0, vertex1);
+	var edge1 = JSM.CoordDistance (vertex1, vertex2);
+	var edge2 = JSM.CoordDistance (vertex2, vertex0);
+	
+	var distance0 = JSM.CoordDistance (vertex0, position);
+	var distance1 = JSM.CoordDistance (vertex1, position);
+	var distance2 = JSM.CoordDistance (vertex2, position);
+	
+	var area = GetTriangleArea (edge0, edge1, edge2);
+	if (JSM.IsZero (area)) {
+		return value0;
+	}
+	
+	var area0 = GetTriangleArea (edge0, distance0, distance1);
+	var area1 = GetTriangleArea (edge1, distance1, distance2);
+	var area2 = GetTriangleArea (edge2, distance0, distance2);
+	
+	var interpolated0 = JSM.VectorMultiply (value0, area1);
+	var interpolated1 = JSM.VectorMultiply (value1, area2);
+	var interpolated2 = JSM.VectorMultiply (value2, area0);
+	var interpolated = JSM.CoordAdd (JSM.CoordAdd (interpolated0, interpolated1), interpolated2);
+	return JSM.VectorMultiply (interpolated, 1.0 / area);
+};
+
+/**
 * Function: SphericalToCartesian
 * Description: Converts a spherical coordinate to a cartesian coordinate.
 * Parameters:

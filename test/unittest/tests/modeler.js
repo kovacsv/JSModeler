@@ -1697,4 +1697,303 @@ utilsSuite.AddTest ('AddBodyToBSPTreeTest', function (test)
 	test.Assert (bspTree.NodeCount () == 21);
 });
 
+var raySuite = unitTest.AddTestSuite ('RayTest');
+
+raySuite.AddTest ('RayTest', function (test)
+{
+	var ray = new JSM.Ray (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0), 10.0);
+	var ray2 = ray.Clone ();
+	ray.Set (new JSM.Coord (0.0, 1.0, 0.0), new JSM.Vector (12.0, 0.0, 0.0), 10.1);
+	
+	test.Assert (JSM.CoordIsEqual (ray.origin, new JSM.Coord (0.0, 1.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (ray.direction, new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (ray.GetOrigin (), new JSM.Coord (0.0, 1.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (ray.GetDirection (), new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (ray.length == 10.1);
+	
+	test.Assert (JSM.CoordIsEqual (ray2.origin, new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (ray2.direction, new JSM.Coord (0.0, 0.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual (ray2.GetOrigin (), new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (JSM.CoordIsEqual (ray2.GetDirection (), new JSM.Coord (0.0, 0.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual (ray2.GetDirection (), new JSM.Coord (0.0, 0.0, 1.0)));
+	test.Assert (ray2.length == 10.0);
+
+	test.Assert (ray2.IsLengthReached (11));
+	test.Assert (!ray2.IsLengthReached (9));
+
+	var ray3 = new JSM.Ray (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0), null);
+	test.Assert (!ray3.IsLengthReached (100));
+});
+
+raySuite.AddTest ('RayTriangleIntersectionTest', function (test)
+{
+	function CheckIntersection (from, to)
+	{
+		var ray = new JSM.Ray (from, JSM.CoordSub (to, from), null);
+		var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
+		return (intersection !== null);
+	}
+	
+	var v0 = new JSM.Coord (0.0, 0.0, 0.0);
+	var v1 = new JSM.Coord (1.0, 0.0, 0.0);
+	var v2 = new JSM.Coord (1.0, 1.0, 0.0);
+	
+	var ray = new JSM.Ray (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Vector (0.0, 0.0, 1.0), 10.0);
+	var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
+	test.Assert (intersection === null);
+
+	var ray = new JSM.Ray (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Vector (0.0, 0.0, -1.0), 0.2);
+	var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
+	test.Assert (intersection === null);
+
+	var ray = new JSM.Ray (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
+	var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.2, 0.2, 0.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
+
+	var ray = new JSM.Ray (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Vector (0.0, 0.0, -1.0), null);
+	var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.2, 0.2, 0.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
+	
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0, 0, 0)) == true);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (1, 0, 0)) == true);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (1, 1, 0)) == true);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0, 0, -1)) == true);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0.2, 0.2, 0)) == true);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0.5, 0.5, 0)) == true);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0.6, 0.4, 0)) == true);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0.0, 1.0, 0)) == false);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0.6, 0.7, 0)) == false);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (-1, 0, 0)) == false);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0, 0, 2)) == false);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (1, 1, 1)) == false);
+
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (0, 0, 0)) == false);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (1, 0, 0)) == false);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (1, 1, 0)) == false);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (0, 0, -1)) == false);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (0.2, 0.2, 0)) == false);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (0.5, 0.5, 0)) == false);
+	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (0.6, 0.4, 0)) == false);
+});
+
+raySuite.AddTest ('RayTriangleModelIntersectionTest', function (test)
+{
+	var body = new JSM.TriangleBody ();
+	body.AddVertex (0, 0, 0);
+	body.AddVertex (1, 0, 0);
+	body.AddVertex (1, 1, 0);
+	body.AddVertex (0, 1, 0);
+	body.AddTriangle (0, 1, 2);
+	body.AddTriangle (0, 2, 3);
+	
+	var model = new JSM.TriangleModel ();
+	model.AddBody (body);
+	model.Finalize ();
+	
+	var ray = new JSM.Ray (new JSM.Coord (2.0, 2.0, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
+	var intersection = JSM.RayTriangleBodyIntersection (ray, body);
+	test.Assert (intersection === null);
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection === null);
+
+	var ray = new JSM.Ray (new JSM.Coord (0.6, 0.4, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 0.5);
+	var intersection = JSM.RayTriangleBodyIntersection (ray, body);
+	test.Assert (intersection === null);
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection === null);
+
+	var ray = new JSM.Ray (new JSM.Coord (0.6, 0.4, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
+	var intersection = JSM.RayTriangleBodyIntersection (ray, body);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.6, 0.4, 0.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 2.0));	
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.6, 0.4, 0.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 2.0));	
+
+	var ray = new JSM.Ray (new JSM.Coord (0.4, 0.6, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
+	var intersection = JSM.RayTriangleBodyIntersection (ray, body);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.4, 0.6, 0.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 2.0));	
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.4, 0.6, 0.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 2.0));
+
+	var body = new JSM.TriangleBody ();
+	body.AddVertex (0, 0, 0);
+	body.AddVertex (1, 0, 0);
+	body.AddVertex (1, 1, 0);
+	body.AddVertex (0, 1, 0);
+	body.AddTriangle (0, 1, 2);
+	body.AddTriangle (0, 2, 3);
+	
+	body.AddVertex (0, 0, 1);
+	body.AddVertex (1, 0, 1);
+	body.AddVertex (1, 1, 1);
+	body.AddVertex (0, 1, 1);
+	body.AddTriangle (4, 5, 6);
+	body.AddTriangle (4, 6, 7);	
+	
+	var model = new JSM.TriangleModel ();
+	model.AddBody (body);
+	model.Finalize ();
+
+	var ray = new JSM.Ray (new JSM.Coord (2.0, 2.0, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
+	var intersection = JSM.RayTriangleBodyIntersection (ray, body);
+	test.Assert (intersection === null);
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection === null);
+
+	var ray = new JSM.Ray (new JSM.Coord (0.6, 0.4, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 0.5);
+	var intersection = JSM.RayTriangleBodyIntersection (ray, body);
+	test.Assert (intersection === null);
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection === null);
+
+	var ray = new JSM.Ray (new JSM.Coord (0.6, 0.4, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
+	var intersection = JSM.RayTriangleBodyIntersection (ray, body);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.6, 0.4, 1.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 1.0));	
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.6, 0.4, 1.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 1.0));	
+
+	var ray = new JSM.Ray (new JSM.Coord (0.4, 0.6, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
+	var intersection = JSM.RayTriangleBodyIntersection (ray, body);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.4, 0.6, 1.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 1.0));	
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.4, 0.6, 1.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
+
+	var body = new JSM.TriangleBody ();
+	body.AddVertex (0, 0, 0);
+	body.AddVertex (1, 0, 0);
+	body.AddVertex (1, 1, 0);
+	body.AddVertex (0, 1, 0);
+	body.AddTriangle (0, 1, 2);
+	body.AddTriangle (0, 2, 3);
+	
+	var body2 = new JSM.TriangleBody ();
+	body2.AddVertex (0, 0, 1);
+	body2.AddVertex (1, 0, 1);
+	body2.AddVertex (1, 1, 1);
+	body2.AddVertex (0, 1, 1);
+	body2.AddTriangle (0, 1, 2);
+	body2.AddTriangle (0, 2, 3);
+	
+	var model = new JSM.TriangleModel ();
+	model.AddBody (body);
+	model.AddBody (body2);
+	model.Finalize ();
+
+	var ray = new JSM.Ray (new JSM.Coord (2.0, 2.0, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection === null);
+
+	var ray = new JSM.Ray (new JSM.Coord (0.6, 0.4, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 0.5);
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection === null);
+
+	var ray = new JSM.Ray (new JSM.Coord (0.6, 0.4, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.6, 0.4, 1.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 1.0));	
+
+	var ray = new JSM.Ray (new JSM.Coord (0.4, 0.6, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
+	var intersection = JSM.RayTriangleModelIntersection (ray, model);
+	test.Assert (intersection !== null);
+	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.4, 0.6, 1.0)));
+	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
+});
+
+raySuite.AddTest ('RayTriangleModelIntersectionTest2', function (test)
+{
+	var body = JSM.GenerateCuboid (1, 1, 1);
+	var model = new JSM.Model ();
+	model.AddBody (body);
+
+	var triangleModel = JSM.ConvertModelToTriangleModel (model);
+	var ray = new JSM.Ray (new JSM.Coord (2, 0, 0), JSM.CoordSub (new JSM.Coord (0, 0, 0), new JSM.Coord (2, 0, 0.1)), 10.0);
+	var intersection = JSM.RayTriangleModelIntersection (ray, triangleModel);
+	test.Assert (intersection !== null);
+	test.Assert (intersection.bodyIndex == 0);
+	test.Assert (intersection.triangleIndex == 2);
+	
+	var ray = new JSM.Ray (new JSM.Coord (2, 0, 0), JSM.CoordSub (new JSM.Coord (0, 0, 0), new JSM.Coord (2, 0, -0.1)), 10.0);
+	var intersection = JSM.RayTriangleModelIntersection (ray, triangleModel);
+	test.Assert (intersection !== null);
+	test.Assert (intersection.bodyIndex == 0);
+	test.Assert (intersection.triangleIndex == 3);
+});
+
+var conversionSuite = unitTest.AddTestSuite ('Conversion');
+
+conversionSuite.AddTest ('TriangleModelConversion', function (test)
+{
+	var body = JSM.GenerateSolidWithRadius ('Icosahedron', 1.0);
+	var triangleBody = JSM.ConvertBodyToTriangleBody (body);
+	test.Assert (triangleBody.VertexCount () == 12);
+	test.Assert (triangleBody.TriangleCount () == 20);	
+	
+	var body2 = JSM.GenerateCuboid (1.0, 2.0, 3.0);
+	var triangleBody = JSM.ConvertBodyToTriangleBody (body2);
+	test.Assert (triangleBody.VertexCount () == 8);
+	test.Assert (triangleBody.TriangleCount () == 6 * 2);
+    
+	var body3 = JSM.GenerateSolidWithRadius ('Dodecahedron', 1.0);
+	var triangleBody = JSM.ConvertBodyToTriangleBody (body3);
+	test.Assert (triangleBody.VertexCount () == 20);
+	test.Assert (triangleBody.TriangleCount () == 12 * 3);
+	
+	var model = new JSM.Model ();
+	var materials = new JSM.Materials ();
+	model.AddBody (body);
+	var triangleModel = JSM.ConvertModelToTriangleModel (model, materials);
+	test.Assert (triangleModel.MaterialCount () == 1);
+	test.Assert (triangleModel.BodyCount () == 1);
+
+	var model = new JSM.Model ();
+	var materials = new JSM.Materials ();
+	materials.AddMaterial (new JSM.Material ({ambient : 0xff0000, diffuse : 0xff0000}));
+	materials.AddMaterial (new JSM.Material ({ambient : 0x00ff00, diffuse : 0x00ff00}));
+
+	var body = JSM.GenerateCuboid (1.0, 2.0, 3.0);
+	body.GetPolygon (0).SetMaterialIndex (0);
+	body.GetPolygon (1).SetMaterialIndex (1);
+	model.AddBody (body);
+	
+	var triangleModel = JSM.ConvertModelToTriangleModel (model, materials);
+	test.Assert (triangleModel.MaterialCount () == 3);
+	test.Assert (triangleModel.GetMaterial (0).ambient.toString () == [1.0, 0.0, 0.0].toString ());
+	test.Assert (triangleModel.GetMaterial (0).diffuse.toString () == [1.0, 0.0, 0.0].toString ());
+	test.Assert (triangleModel.GetMaterial (1).ambient.toString () == [0.0, 1.0, 0.0].toString ());
+	test.Assert (triangleModel.GetMaterial (1).diffuse.toString () == [0.0, 1.0, 0.0].toString ());
+	test.Assert (triangleModel.GetMaterial (2).ambient.toString () == [0.5, 0.5, 0.5].toString ());
+	test.Assert (triangleModel.GetMaterial (2).diffuse.toString () == [0.5, 0.5, 0.5].toString ());
+	
+	test.Assert (triangleModel.BodyCount () == 1);
+	for (var i = 0; i < 12; i++) {
+		if (i == 0 || i == 1) {
+			test.Assert (triangleModel.GetBody (0).GetTriangle (i).mat == 0);
+		} else if (i == 2 || i == 3) {
+			test.Assert (triangleModel.GetBody (0).GetTriangle (i).mat == 1);
+		} else {
+			test.Assert (triangleModel.GetBody (0).GetTriangle (i).mat == 2);
+		}
+	}
+});
+
 }

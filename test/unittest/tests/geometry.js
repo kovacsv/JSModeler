@@ -178,6 +178,34 @@ generalSuite.AddTest ('TriangleNormalTest', function (test) {
 	test.Assert (JSM.CoordIsEqual (JSM.CalculateTriangleNormal (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 1.0)), new JSM.Vector (0.0, -1.0, 0.0)));
 });
 
+generalSuite.AddTest ('BarycentricInterpolation', function (test) {
+	var vertex0 = new JSM.Coord (0, 0, 0);
+	var vertex1 = new JSM.Coord (1, 0, 0);
+	var vertex2 = new JSM.Coord (1, 1, 0);
+	var value0 = new JSM.Coord (0, 0, 0);
+	var value1 = new JSM.Coord (1, 0, 0);
+	var value2 = new JSM.Coord (1, 1, 0);
+
+	var result = JSM.BarycentricInterpolation (vertex0, vertex1, vertex2, value0, value1, value2, new JSM.Coord (0, 0, 0));
+	test.Assert (JSM.CoordIsEqual (result, new JSM.Coord (0, 0, 0)));
+	var result = JSM.BarycentricInterpolation (vertex0, vertex1, vertex2, value0, value1, value2, new JSM.Coord (0.6, 0.4, 0));
+	test.Assert (JSM.CoordIsEqual (result, new JSM.Coord (0.6, 0.4, 0)));
+
+	var value0 = new JSM.Coord (1, 1, 1);
+	var value1 = new JSM.Coord (5, 5, 5);
+	var value2 = new JSM.Coord (100, 100, 100);
+	var result = JSM.BarycentricInterpolation (vertex0, vertex1, vertex2, value0, value1, value2, new JSM.Coord (0, 0, 0));
+	test.Assert (JSM.CoordIsEqual (result, new JSM.Coord (1, 1, 1)));
+	var result = JSM.BarycentricInterpolation (vertex0, vertex1, vertex2, value0, value1, value2, new JSM.Coord (1, 0, 0));
+	test.Assert (JSM.CoordIsEqual (result, new JSM.Coord (5, 5, 5)));
+	var result = JSM.BarycentricInterpolation (vertex0, vertex1, vertex2, value0, value1, value2, new JSM.Coord (1, 1, 0));
+	test.Assert (JSM.CoordIsEqual (result, new JSM.Coord (100, 100, 100)));
+	var result = JSM.BarycentricInterpolation (vertex0, vertex1, vertex2, value0, value1, value2, new JSM.Coord (0.5, 0.5, 0));
+	test.Assert (JSM.CoordIsEqual (result, new JSM.Coord (50.5, 50.5, 50.5)));
+	var result = JSM.BarycentricInterpolation (vertex0, vertex1, vertex2, value0, value1, value2, new JSM.Coord (0.8, 0.8, 0));
+	test.Assert (JSM.CoordIsEqual (result, new JSM.Coord (80.2, 80.2, 80.2)));
+});
+
 generalSuite.AddTest ('SphericalTest', function (test) {
 	function TestConversion (x, y, z) {
 		var original = new JSM.Coord (x, y, z);
@@ -3487,89 +3515,6 @@ polygonSuite.AddTest ('BSPTreeTest', function (test)
 	test.Assert (bspTree.root.outside.inside.userData == 2);
 	TestNode (test, bspTree.root.outside.outside, 4, new JSM.Coord (0, 0, 1));
 	test.Assert (bspTree.root.outside.outside.userData == 2);
-});
-
-var raySuite = unitTest.AddTestSuite ('GeometryRayTest');
-
-raySuite.AddTest ('RayTest', function (test)
-{
-	var ray = new JSM.Ray (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0), 10.0);
-	var ray2 = ray.Clone ();
-	ray.Set (new JSM.Coord (0.0, 1.0, 0.0), new JSM.Vector (12.0, 0.0, 0.0), 10.1);
-	
-	test.Assert (JSM.CoordIsEqual (ray.origin, new JSM.Coord (0.0, 1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (ray.direction, new JSM.Coord (1.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (ray.GetOrigin (), new JSM.Coord (0.0, 1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (ray.GetDirection (), new JSM.Coord (1.0, 0.0, 0.0)));
-	test.Assert (ray.length == 10.1);
-	
-	test.Assert (JSM.CoordIsEqual (ray2.origin, new JSM.Coord (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (ray2.direction, new JSM.Coord (0.0, 0.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual (ray2.GetOrigin (), new JSM.Coord (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (ray2.GetDirection (), new JSM.Coord (0.0, 0.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual (ray2.GetDirection (), new JSM.Coord (0.0, 0.0, 1.0)));
-	test.Assert (ray2.length == 10.0);
-
-	test.Assert (ray2.IsLengthReached (11));
-	test.Assert (!ray2.IsLengthReached (9));
-
-	var ray3 = new JSM.Ray (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0), null);
-	test.Assert (!ray3.IsLengthReached (100));
-});
-
-raySuite.AddTest ('RayTriangleIntersectionTest', function (test)
-{
-	function CheckIntersection (from, to)
-	{
-		var ray = new JSM.Ray (from, JSM.CoordSub (to, from), null);
-		var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
-		return (intersection !== null);
-	}
-	
-	var v0 = new JSM.Coord (0.0, 0.0, 0.0);
-	var v1 = new JSM.Coord (1.0, 0.0, 0.0);
-	var v2 = new JSM.Coord (1.0, 1.0, 0.0);
-	
-	var ray = new JSM.Ray (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Vector (0.0, 0.0, 1.0), 10.0);
-	var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
-	test.Assert (intersection === null);
-
-	var ray = new JSM.Ray (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Vector (0.0, 0.0, -1.0), 0.2);
-	var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
-	test.Assert (intersection === null);
-
-	var ray = new JSM.Ray (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
-	var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
-	test.Assert (intersection !== null);
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.2, 0.2, 0.0)));
-	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
-
-	var ray = new JSM.Ray (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Vector (0.0, 0.0, -1.0), null);
-	var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
-	test.Assert (intersection !== null);
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.2, 0.2, 0.0)));
-	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
-	
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0, 0, 0)) == true);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (1, 0, 0)) == true);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (1, 1, 0)) == true);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0, 0, -1)) == true);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0.2, 0.2, 0)) == true);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0.5, 0.5, 0)) == true);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0.6, 0.4, 0)) == true);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0.0, 1.0, 0)) == false);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0.6, 0.7, 0)) == false);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (-1, 0, 0)) == false);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0, 0, 2)) == false);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (1, 1, 1)) == false);
-
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (0, 0, 0)) == false);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (1, 0, 0)) == false);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (1, 1, 0)) == false);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (0, 0, -1)) == false);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (0.2, 0.2, 0)) == false);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (0.5, 0.5, 0)) == false);
-	test.Assert (CheckIntersection (new JSM.Coord (0, 0, -1), new JSM.Coord (0.6, 0.4, 0)) == false);
 });
 
 }

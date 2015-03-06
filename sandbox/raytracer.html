@@ -85,72 +85,172 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		BSpline = function (dataPoints)
+		JSM.RayTracerImage = function (camera, resolutionX, resolutionY, distance)
 		{
-			this.dataPoints = dataPoints;
-			this.parameterVector = this.GetParameterVectorChordLength ();
-			this.knotVector = this.GetKnotVectorByAverage (3);
+			var imageWidth = 2.0 * distance * Math.tan (camera.fieldOfView / 2.0);
+			var imageHeight = 2.0 * distance * Math.tan (camera.fieldOfView / 2.0);
+			this.fieldWidth = imageWidth / resolutionX;
+			this.fieldHeight = imageHeight / resolutionY;
+			
+			var eyeToCenter = JSM.VectorNormalize (JSM.CoordSub (camera.center, camera.eye));
+			this.xDirection = JSM.VectorNormalize (JSM.VectorCross (eyeToCenter, camera.up));
+			this.yDirection = JSM.VectorNormalize (JSM.VectorCross (this.xDirection, eyeToCenter));
+			
+			var pyramidBottom = JSM.CoordOffset (camera.eye, eyeToCenter, distance);
+			this.bottomLeft = pyramidBottom;
+			this.bottomLeft = JSM.CoordOffset (this.bottomLeft, JSM.VectorMultiply (this.xDirection, -1.0), imageWidth / 2.0);
+			this.bottomLeft = JSM.CoordOffset (this.bottomLeft, JSM.VectorMultiply (this.yDirection, -1.0), imageHeight / 2.0);
 		};
-
-		BSpline.prototype.GetParameterVectorChordLength = function ()
+		
+		JSM.RayTracerImage.prototype.GetFieldCenter = function (x, y)
 		{
-			var result = [];
-			var distances = [];
-			var fullDistance = 0.0;
-			var i, distance;
-			for (i = 0; i < this.dataPoints.length - 1; i++) {
-				distance = JSM.CoordDistance2D (this.dataPoints[i], this.dataPoints[i + 1]);
-				distances.push (distance);
-				fullDistance += distance;
-			}
-			var currentDistance = 0.0;
-			for (i = 0; i < distances.length; i++) {
-				result.push (currentDistance / fullDistance);
-				currentDistance += distances[i];
-			}
-			result.push (1.0);
-			return result;
-		};
-
-		BSpline.prototype.GetKnotVectorByAverage = function (degree)
-		{
-			var result = [];
-			var knotCount = this.parameterVector.length + degree + 1;
-			var i, j, sum;
-			for (i = 0; i < knotCount; i++) {
-				if (i <= degree) {
-					result.push (0.0);
-				} else if (i >= knotCount - degree - 1) {
-					result.push (1.0);
-				} else {
-					sum = 0.0;
-					for (j = i - degree; j <= i - 1; j++) {
-						sum = sum + this.parameterVector[j];
-					}
-					result.push (sum / degree);
-				}
-			}
+			var result = this.bottomLeft.Clone ();
+			result = JSM.CoordOffset (result, this.xDirection, x * this.fieldWidth + this.fieldWidth / 2.0);
+			result = JSM.CoordOffset (result, this.yDirection, y * this.fieldHeight + this.fieldHeight / 2.0);
 			return result;
 		};
 		
-		BSpline.prototype.GetValue = function (x)
+		JSM.RayTracer = function ()
 		{
-			
+			this.canvas = null;
+			this.context = null;
 		};
+
+		JSM.RayTracer.prototype.Init = function (canvas)
+		{
+			this.canvas = canvas;
+			this.context = this.canvas.getContext ('2d');
+		};
+
+		JSM.RayTracer.prototype.Render = function (model, camera, light)
+		{
+			function RenderRow ()
+			{
+				var colors = [];
+				var currentColumn, color;
+				for (currentColumn = 0; currentColumn < this.canvas.width; currentColumn++) {
+					color = this.GetPixelColor (currentColumn, this.canvas.height - currentRow - 1, model, camera, light, image);
+					colors.push (color);
+				}
+				this.PutPixelRow (currentRow, colors);
+				currentRow++;
+				return true;
+			}
+			
+			var image = new JSM.RayTracerImage (camera, this.canvas.width, this.canvas.height, 1.0);
+			
+			var currentRow = 0;
+			var asyncEnv = new JSM.AsyncEnvironment ();
+			JSM.AsyncRunTask (RenderRow.bind (this), asyncEnv, this.canvas.height, 0, null);
+		};
+	
+		JSM.RayTracer.prototype.GetPixelColor = function (x, y, model, camera, light, image)
+		{
+			function GetNormal (body, triangle, intersection)
+			{
+				var normal = null;
+				if (triangle.curve == -1) {
+					normal = body.GetNormal (triangle.n0);
+				} else {
+					var v0 = body.GetVertex (triangle.v0);
+					var v1 = body.GetVertex (triangle.v1);
+					var v2 = body.GetVertex (triangle.v2);
+					var n0 = body.GetNormal (triangle.n0);
+					var n1 = body.GetNormal (triangle.n1);
+					var n2 = body.GetNormal (triangle.n2);
+					normal = JSM.BarycentricInterpolation (v0, v1, v2, n0, n1, n2, intersection.position);
+				}
+				return normal;
+			}
+		
+			var fieldCenter = image.GetFieldCenter (x, y);
+			var ray = new JSM.Ray (camera.eye, JSM.CoordSub (fieldCenter, camera.eye));
+			var intersection = JSM.RayTriangleModelIntersection (ray, model);
+			if (intersection == null) {
+				return {r : 0, g : 0, b : 0};
+			}
+			
+			var body = model.GetBody (intersection.bodyIndex);
+			var triangle = body.GetTriangle (intersection.triangleIndex);
+			var material = model.GetMaterial (triangle.mat);
+			var intersectionPosition = intersection.position;
+			var intersectionNormal = GetNormal (body, triangle, intersectionPosition);
+			var color = this.PhongShading (material, light, intersectionPosition, intersectionNormal);
+			return color;
+		};
+
+		JSM.RayTracer.prototype.PhongShading = function (material, light, shadedPoint, shadedPointNormal)
+		{
+			function Clamp (value)
+			{
+				if (value.x < 0.0) { value.x = 0.0; }
+				if (value.y < 0.0) { value.y = 0.0; }
+				if (value.z < 0.0) { value.z = 0.0; }
+				if (value.x > 1.0) { value.x = 1.0; }
+				if (value.y > 1.0) { value.y = 1.0; }
+				if (value.z > 1.0) { value.z = 1.0; }
+			}
+		
+			var lightPosition = new JSM.Coord (4, 2, 3);
+			
+			var lightDiffuseColor = new JSM.Coord (light.diffuse[0], light.diffuse[1], light.diffuse[2]);
+			var materialDiffuseColor = new JSM.Coord (material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+			var lightDirection = JSM.VectorNormalize (JSM.CoordSub (lightPosition, shadedPoint));
+
+			var lightNormalProduct = JSM.VectorDot (lightDirection, shadedPointNormal);
+			var diffuseCoeff = Math.max (lightNormalProduct, 0.0);
+			
+			var diffuseColor = JSM.CoordAdd (lightDiffuseColor, materialDiffuseColor);
+			var color = JSM.VectorMultiply (diffuseColor, diffuseCoeff);
+			Clamp (color);
+			return {r : color.x * 255, g : color.y * 255, b : color.z * 255};
+		};
+		
+		JSM.RayTracer.prototype.PutPixelRow = function (rowIndex, colors)
+		{
+			var imageData = this.context.createImageData (colors.length, 1);
+			var i, color;
+			for (i = 0; i < colors.length; i++) {
+				color = colors[i];
+				imageData.data[4 * i + 0] = color.r;
+				imageData.data[4 * i + 1] = color.g;
+				imageData.data[4 * i + 2] = color.b;
+				imageData.data[4 * i + 3] = 255;
+			}
+			this.context.putImageData (imageData, 0, rowIndex);
+		};	
 
 		function Load ()
 		{
-			var canvas = document.getElementById ('example');
-			var s = new BSpline ([
-					new JSM.Coord2D (0, 0),
-					new JSM.Coord2D (1, 2),
-					new JSM.Coord2D (3, 4),
-					new JSM.Coord2D (4, 0)
-				]
+			function GetModel ()
+			{
+				var model = new JSM.Model ();
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				body.SetPolygonsMaterialIndex (0);
+				model.AddBody (body);
+				var box = JSM.GenerateCuboid (10, 10, 10);
+				box.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 4.5)));
+				JSM.MakeBodyInsideOut (box);
+				model.AddBody (box);
+				return JSM.ConvertModelToTriangleModel (model, materials);
+			}
+			
+			var model = GetModel ();
+			var camera = new JSM.Camera (
+				new JSM.Coord (3, 1, 2),
+				new JSM.Coord (0, 0, 0),
+				new JSM.Coord (0, 0, 1)
 			);
-
-			alert (s.parameterVector);
-			alert (s.knotVector);
+			var light = {
+				diffuse : [0.1, 0.1, 0.1]
+			};			
+			
+			var canvas = document.getElementById ('example');
+			var rayTracer = new JSM.RayTracer ();
+			rayTracer.Init (canvas);
+			rayTracer.Render (model, camera, light);
 		}
 	
 	    window.onload = function ()
@@ -162,7 +262,7 @@
 </head>
 
 <body>
-	<canvas id="example" width="800" height="500"></canvas>
+	<canvas id="example" width="200" height="200"></canvas>
 </body>
 
 </html>

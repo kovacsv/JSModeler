@@ -267,18 +267,19 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 		}
 	
 		var triangle = body.triangles[i];
-		if (triangle.mat === undefined) {
+		if (triangle.mat === undefined || triangle.mat < 0) {
 			triangle.mat = model.GetDefaultMaterialIndex ();
 		}
 		
 		var normal, normalIndex;
 		if (triangle.n0 === undefined || triangle.n1 === undefined || triangle.n2 === undefined) {
-			if (triangle.curve === undefined || triangle.curve === 0) {
+			if (triangle.curve === undefined || triangle.curve < 0) {
 				normal = triangleNormals[i];
 				normalIndex = body.AddNormal (normal.x, normal.y, normal.z);
 				triangle.n0 = normalIndex;
 				triangle.n1 = normalIndex;
 				triangle.n2 = normalIndex;
+				triangle.curve = -1;
 			} else {
 				triangle.n0 = AddAverageNormal (body, triangle.v0, triangleIndex, triangleNormals, vertexToTriangles);
 				triangle.n1 = AddAverageNormal (body, triangle.v1, triangleIndex, triangleNormals, vertexToTriangles);
