@@ -92,14 +92,19 @@
 			{
 				var model = new JSM.Model ();
 				var materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xcccccc}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0x00cc00}));
+				
 				var body = JSM.GenerateCuboid (1, 1, 1);
-				body.SetPolygonsMaterialIndex (0);
+				body.SetPolygonsMaterialIndex (1);
 				model.AddBody (body);
+				
 				var box = JSM.GenerateCuboid (10, 10, 10);
-				box.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 4.5)));
+				box.SetPolygonsMaterialIndex (0);
 				JSM.MakeBodyInsideOut (box);
+				box.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 4.5)));
 				model.AddBody (box);
+				
 				return {
 					model : model,
 					materials : materials
@@ -108,12 +113,12 @@
 			
 			var model = GetModel ();
 			var camera = new JSM.Camera (
-				new JSM.Coord (3, 1, 2),
+				new JSM.Coord (4, 1, 2),
 				new JSM.Coord (0, 0, 0),
 				new JSM.Coord (0, 0, 1)
 			);
 			var light = {
-				position : new JSM.Coord (4, 2, 3),
+				position : new JSM.Coord (4, 2, 5),
 				diffuse : [0.1, 0.1, 0.1]
 			};			
 			

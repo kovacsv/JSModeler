@@ -81,19 +81,32 @@ JSM.RayTracer.prototype.GetPixelColor = function (x, y)
 		return normal;
 	}
 
+	function IsInShadow (renderData, intersectionPosition)
+	{
+		var lightDistance = JSM.CoordDistance (renderData.light.position, intersectionPosition);
+		var lightDirection = JSM.CoordSub (renderData.light.position, intersectionPosition);
+		var shadowRay = new JSM.Ray (intersectionPosition, lightDirection, lightDistance);
+		var intersection = JSM.RayTriangleModelIntersection (shadowRay, renderData.model);
+		return intersection !== null;
+	}
+	
+	var color = {r : 0, g : 0, b : 0};
 	var fieldCenter = this.renderData.image.GetFieldCenter (x, y);
 	var ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (fieldCenter, this.renderData.camera.eye));
 	var intersection = JSM.RayTriangleModelIntersection (ray, this.renderData.model);
 	if (intersection == null) {
-		return {r : 0, g : 0, b : 0};
+		return color;
 	}
 	
 	var body = this.renderData.model.GetBody (intersection.bodyIndex);
 	var triangle = body.GetTriangle (intersection.triangleIndex);
 	var material = this.renderData.model.GetMaterial (triangle.mat);
 	var intersectionPosition = intersection.position;
-	var intersectionNormal = GetNormal (body, triangle, intersectionPosition);
-	var color = this.PhongShading (material, this.renderData.light, intersectionPosition, intersectionNormal);
+	
+	if (!IsInShadow (this.renderData, intersectionPosition)) {
+		var intersectionNormal = GetNormal (body, triangle, intersectionPosition);
+		color = this.PhongShading (material, this.renderData.light, intersectionPosition, intersectionNormal);
+	}
 	return color;
 };
 
@@ -109,15 +122,19 @@ JSM.RayTracer.prototype.PhongShading = function (material, light, shadedPoint, s
 		if (value.z > 1.0) { value.z = 1.0; }
 	}
 
-	var lightDiffuseColor = new JSM.Coord (light.diffuse[0], light.diffuse[1], light.diffuse[2]);
+	var materialAmbientColor = new JSM.Coord (material.ambient[0], material.ambient[1], material.ambient[2]);
 	var materialDiffuseColor = new JSM.Coord (material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+	
+	var ambientColor = materialAmbientColor;
+	Clamp (ambientColor);
+	
 	var lightDirection = JSM.VectorNormalize (JSM.CoordSub (light.position, shadedPoint));
-
 	var lightNormalProduct = JSM.VectorDot (lightDirection, shadedPointNormal);
 	var diffuseCoeff = Math.max (lightNormalProduct, 0.0);
+	var diffuseColor = JSM.VectorMultiply (materialDiffuseColor, diffuseCoeff);
+	Clamp (diffuseColor)
 	
-	var diffuseColor = JSM.CoordAdd (lightDiffuseColor, materialDiffuseColor);
-	var color = JSM.VectorMultiply (diffuseColor, diffuseCoeff);
+	var color = JSM.CoordAdd (ambientColor, diffuseColor);
 	Clamp (color);
 	return {r : color.x * 255, g : color.y * 255, b : color.z * 255};
 };
