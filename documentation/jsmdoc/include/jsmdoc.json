@@ -3286,10 +3286,10 @@
 								["Coord", "the result"]
 							]
 						},
-						"GetBoundingSphereRadius" : {
-							"description" : "Returns the radius of the bounding sphere of the body.",
+						"GetBoundingSphere" : {
+							"description" : "Returns the bounding sphere of the body.",
 							"returns" : [
-								["number", "the result"]
+								["Sphere", "the result"]
 							]
 						},
 						"OffsetToOrigo" : {

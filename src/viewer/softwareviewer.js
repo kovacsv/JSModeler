@@ -70,9 +70,8 @@ JSM.SoftwareViewer.prototype.RemoveBodies = function ()
 
 JSM.SoftwareViewer.prototype.FitInWindow = function ()
 {
-	var center = this.GetCenter ();
-	var radius = this.GetBoundingSphereRadius (center);
-	this.navigation.FitInWindow (center, radius);
+	var sphere = this.GetBoundingSphere ();
+	this.navigation.FitInWindow (sphere.GetOrigo (), sphere.GetRadius ());
 	this.Draw ();
 };
 
@@ -104,11 +103,9 @@ JSM.SoftwareViewer.prototype.GetBoundingBox = function ()
 	return new JSM.Box (min, max);
 };
 
-JSM.SoftwareViewer.prototype.GetBoundingSphereRadius = function (center)
+JSM.SoftwareViewer.prototype.GetBoundingSphere = function ()
 {
-	if (center === undefined || center === null) {
-		center = this.GetCenter ();
-	}
+	var center = this.GetCenter ();
 	var radius = 0.0;
 
 	var i, j, body, vertex, distance;
@@ -123,7 +120,8 @@ JSM.SoftwareViewer.prototype.GetBoundingSphereRadius = function (center)
 		}
 	}
 
-	return radius;
+	var sphere = new JSM.Sphere (center, radius);
+	return sphere;
 };
 
 JSM.SoftwareViewer.prototype.Resize = function ()

@@ -55,9 +55,8 @@ JSM.Viewer.prototype.RemoveGeometries = function ()
 
 JSM.Viewer.prototype.FitInWindow = function ()
 {
-	var center = this.GetCenter ();
-	var radius = this.GetBoundingSphereRadius (center);
-	this.navigation.FitInWindow (center, radius);
+	var sphere = this.GetBoundingSphere ();
+	this.navigation.FitInWindow (sphere.GetOrigo (), sphere.GetRadius ());
 	this.Draw ();
 };
 
@@ -89,11 +88,9 @@ JSM.Viewer.prototype.GetBoundingBox = function ()
 	return new JSM.Box (min, max);
 };
 
-JSM.Viewer.prototype.GetBoundingSphereRadius = function (center)
+JSM.Viewer.prototype.GetBoundingSphere = function ()
 {
-	if (center === undefined || center === null) {
-		center = this.GetCenter ();
-	}
+	var center = this.GetCenter ();
 	var radius = 0.0;
 
 	var i, j, geometry, vertex, distance;
@@ -108,7 +105,8 @@ JSM.Viewer.prototype.GetBoundingSphereRadius = function (center)
 		}
 	}
 
-	return radius;
+	var sphere = new JSM.Sphere (center, radius);
+	return sphere;
 };
 
 JSM.Viewer.prototype.Resize = function ()
