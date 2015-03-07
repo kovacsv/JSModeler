@@ -130,7 +130,7 @@ JSM.RayTracer.prototype.PhongShading = function (material, light, shadedPoint, s
 	
 	var lightDirection = JSM.VectorNormalize (JSM.CoordSub (light.position, shadedPoint));
 	var lightNormalProduct = JSM.VectorDot (lightDirection, shadedPointNormal);
-	var diffuseCoeff = Math.max (lightNormalProduct, 0.0);
+	var diffuseCoeff = JSM.Maximum (lightNormalProduct, 0.0);
 	var diffuseColor = JSM.VectorMultiply (materialDiffuseColor, diffuseCoeff);
 	Clamp (diffuseColor)
 	

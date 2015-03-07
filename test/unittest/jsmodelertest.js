@@ -19,6 +19,7 @@ unitTest.AddSourceFile ('../../src/geometry/line.js');
 unitTest.AddSourceFile ('../../src/geometry/lineutils.js');
 unitTest.AddSourceFile ('../../src/geometry/box.js');
 unitTest.AddSourceFile ('../../src/geometry/boxutils.js');
+unitTest.AddSourceFile ('../../src/geometry/sphere.js');
 unitTest.AddSourceFile ('../../src/geometry/transformation.js');
 unitTest.AddSourceFile ('../../src/geometry/transformationutils.js');
 unitTest.AddSourceFile ('../../src/geometry/plane.js');

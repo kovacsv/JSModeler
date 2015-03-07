@@ -1771,6 +1771,40 @@
 						}
 					}
 				},
+				"Sphere" : {
+					"description" : "Represents a sphere.",
+					"parameters" : [
+						["origo", "Coord", "the origo of the sphere"],
+						["radius", "number", "the radius of the sphere"]
+					],
+					"functions" : {
+						"Set" : {
+							"description" : "Sets the sphere.",
+							"parameters" : [
+								["origo", "Coord", "the origo of the sphere"],
+								["radius", "number", "the radius of the sphere"]
+							]
+						},
+						"GetOrigo" : {
+							"description" : "Returns the origo of the sphere.",
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"GetRadius" : {
+							"description" : "Returns the radius of the sphere.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the sphere.",
+							"returns" : [
+								["Sphere", "a cloned instance"]
+							]
+						}
+					}
+				},
 				"Transformation" : {
 					"description" : "Represents a transformation matrix.",
 					"functions" : {
