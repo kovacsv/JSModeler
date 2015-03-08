@@ -23,17 +23,14 @@ JSM.RayTracerImage.prototype.GetFieldCenter = function (x, y)
 	return result;
 };
 
-JSM.RayTracerImage.prototype.GetFieldFixSample = function (x, y, sampleRes, index)
+JSM.RayTracerImage.prototype.GetFieldFixSample = function (x, y, xSample, ySample, sampleRes)
 {
-	var sx = parseInt (index % sampleRes);
-	var sy = parseInt (index / sampleRes);
-
 	var sampleWidth = this.fieldWidth / sampleRes;
 	var sampleHeight = this.fieldHeight / sampleRes;
 	
 	var result = this.bottomLeft.Clone ();
-	result = JSM.CoordOffset (result, this.xDirection, x * this.fieldWidth + sx * sampleWidth);
-	result = JSM.CoordOffset (result, this.yDirection, y * this.fieldHeight + sx * sampleHeight);
+	result = JSM.CoordOffset (result, this.xDirection, x * this.fieldWidth + xSample * sampleWidth);
+	result = JSM.CoordOffset (result, this.yDirection, y * this.fieldHeight + ySample * sampleHeight);
 	return result;
 };
 
@@ -80,13 +77,15 @@ JSM.RayTracer.prototype.GetPixelColor = function (x, y)
 {
 	var sampleRes = 4;
 	var color = new JSM.Coord (0.0, 0.0, 0.0);
-	var i, sample, ray;
+	var i, j, sample, ray;
 	for (i = 0; i < sampleRes; i++) {
-		sample = this.renderData.image.GetFieldFixSample (x, y, 4, i);
-		ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (sample, this.renderData.camera.eye));
-		color = JSM.CoordAdd (color, this.Trace (ray));
+		for (j = 0; j < sampleRes; j++) {
+			sample = this.renderData.image.GetFieldFixSample (x, y, i, j, sampleRes);
+			ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (sample, this.renderData.camera.eye));
+			color = JSM.CoordAdd (color, this.Trace (ray));
+		}
 	}
-	color = JSM.VectorMultiply (color, 1.0 / sampleRes);
+	color = JSM.VectorMultiply (color, 1.0 / (sampleRes * sampleRes));
 	return {r : color.x * 255, g : color.y * 255, b : color.z * 255}
 };
 
