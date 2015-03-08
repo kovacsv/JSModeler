@@ -59,7 +59,7 @@ JSM.PointCloudViewer.prototype.RemovePoints = function ()
 JSM.PointCloudViewer.prototype.FitInWindow = function ()
 {
 	var sphere = this.GetBoundingSphere ();
-	this.navigation.FitInWindow (sphere.GetOrigo (), sphere.GetRadius ());
+	this.navigation.FitInWindow (sphere.GetCenter (), sphere.GetRadius ());
 	this.Draw ();
 };
 

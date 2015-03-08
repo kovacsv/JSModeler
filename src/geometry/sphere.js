@@ -2,12 +2,12 @@
 * Class: Sphere
 * Description: Represents a sphere.
 * Parameters:
-*	origo {Coord} the origo of the sphere
+*	center {Coord} the center of the sphere
 *	radius {number} the radius of the sphere
 */
-JSM.Sphere = function (origo, radius)
+JSM.Sphere = function (center, radius)
 {
-	this.origo = origo;
+	this.center = center;
 	this.radius = radius;
 };
 
@@ -15,24 +15,24 @@ JSM.Sphere = function (origo, radius)
 * Function: Sphere.Set
 * Description: Sets the sphere.
 * Parameters:
-*	origo {Coord} the origo of the sphere
+*	center {Coord} the center of the sphere
 *	radius {number} the radius of the sphere
 */
-JSM.Sphere.prototype.Set = function (origo, radius)
+JSM.Sphere.prototype.Set = function (center, radius)
 {
-	this.origo = origo;
+	this.center = center;
 	this.radius = radius;
 };
 
 /**
-* Function: Sphere.GetOrigo
-* Description: Returns the origo of the sphere.
+* Function: Sphere.GetCenter
+* Description: Returns the center of the sphere.
 * Returns:
 *	{Coord} the result
 */
-JSM.Sphere.prototype.GetOrigo = function ()
+JSM.Sphere.prototype.GetCenter = function ()
 {
-	return this.origo;
+	return this.center;
 };
 
 /**
@@ -54,5 +54,5 @@ JSM.Sphere.prototype.GetRadius = function ()
 */
 JSM.Sphere.prototype.Clone = function ()
 {
-	return new JSM.Sphere (this.origo.Clone (), this.radius);
+	return new JSM.Sphere (this.center.Clone (), this.radius);
 };

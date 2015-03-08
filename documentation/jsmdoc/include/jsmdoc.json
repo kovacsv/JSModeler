@@ -1774,19 +1774,19 @@
 				"Sphere" : {
 					"description" : "Represents a sphere.",
 					"parameters" : [
-						["origo", "Coord", "the origo of the sphere"],
+						["center", "Coord", "the center of the sphere"],
 						["radius", "number", "the radius of the sphere"]
 					],
 					"functions" : {
 						"Set" : {
 							"description" : "Sets the sphere.",
 							"parameters" : [
-								["origo", "Coord", "the origo of the sphere"],
+								["center", "Coord", "the center of the sphere"],
 								["radius", "number", "the radius of the sphere"]
 							]
 						},
-						"GetOrigo" : {
-							"description" : "Returns the origo of the sphere.",
+						"GetCenter" : {
+							"description" : "Returns the center of the sphere.",
 							"returns" : [
 								["Coord", "the result"]
 							]

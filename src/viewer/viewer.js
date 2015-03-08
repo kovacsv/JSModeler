@@ -56,7 +56,7 @@ JSM.Viewer.prototype.RemoveGeometries = function ()
 JSM.Viewer.prototype.FitInWindow = function ()
 {
 	var sphere = this.GetBoundingSphere ();
-	this.navigation.FitInWindow (sphere.GetOrigo (), sphere.GetRadius ());
+	this.navigation.FitInWindow (sphere.GetCenter (), sphere.GetRadius ());
 	this.Draw ();
 };
 

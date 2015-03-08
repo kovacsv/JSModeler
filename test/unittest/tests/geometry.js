@@ -849,11 +849,11 @@ generalSuite.AddTest ('SphereTest', function (test)
 {
 	var sphere = new JSM.Sphere (new JSM.Coord (1.0, 1.0, 1.0), 2.0);
 	var sphere2 = sphere.Clone ();
-	test.Assert (JSM.CoordIsEqual (sphere2.GetOrigo (), new JSM.Coord (1.0, 1.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual (sphere2.GetCenter (), new JSM.Coord (1.0, 1.0, 1.0)));
 	test.Assert (sphere2.GetRadius () == 2.0);
 
 	sphere.Set (new JSM.Coord (3.0, 3.0, 3.0), 4.0);
-	test.Assert (JSM.CoordIsEqual (sphere.GetOrigo (), new JSM.Coord (3.0, 3.0, 3.0)));
+	test.Assert (JSM.CoordIsEqual (sphere.GetCenter (), new JSM.Coord (3.0, 3.0, 3.0)));
 	test.Assert (sphere.GetRadius () == 4.0);
 });
 
