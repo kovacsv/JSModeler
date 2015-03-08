@@ -23,6 +23,20 @@ JSM.RayTracerImage.prototype.GetFieldCenter = function (x, y)
 	return result;
 };
 
+JSM.RayTracerImage.prototype.GetFieldFixSample = function (x, y, sampleRes, index)
+{
+	var sx = parseInt (index % sampleRes);
+	var sy = parseInt (index / sampleRes);
+
+	var sampleWidth = this.fieldWidth / sampleRes;
+	var sampleHeight = this.fieldHeight / sampleRes;
+	
+	var result = this.bottomLeft.Clone ();
+	result = JSM.CoordOffset (result, this.xDirection, x * this.fieldWidth + sx * sampleWidth);
+	result = JSM.CoordOffset (result, this.yDirection, y * this.fieldHeight + sx * sampleHeight);
+	return result;
+};
+
 JSM.RayTracer = function ()
 {
 	this.canvas = null;
@@ -64,6 +78,20 @@ JSM.RayTracer.prototype.Render = function (model, materials, camera, light)
 
 JSM.RayTracer.prototype.GetPixelColor = function (x, y)
 {
+	var sampleRes = 4;
+	var color = new JSM.Coord (0.0, 0.0, 0.0);
+	var i, sample, ray;
+	for (i = 0; i < sampleRes; i++) {
+		sample = this.renderData.image.GetFieldFixSample (x, y, 4, i);
+		ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (sample, this.renderData.camera.eye));
+		color = JSM.CoordAdd (color, this.Trace (ray));
+	}
+	color = JSM.VectorMultiply (color, 1.0 / sampleRes);
+	return {r : color.x * 255, g : color.y * 255, b : color.z * 255}
+};
+
+JSM.RayTracer.prototype.Trace = function (ray)
+{
 	function GetNormal (body, triangle, intersection)
 	{
 		var normal = null;
@@ -81,6 +109,12 @@ JSM.RayTracer.prototype.GetPixelColor = function (x, y)
 		return normal;
 	}
 
+	function GetReflectedDirection (direction, normal)
+	{
+		var dotProduct = JSM.VectorDot (normal, direction);
+		return JSM.CoordSub (direction, JSM.VectorMultiply (normal, 2.0 * dotProduct));
+	}
+	
 	function IsInShadow (renderData, intersectionPosition)
 	{
 		var lightDistance = JSM.CoordDistance (renderData.light.position, intersectionPosition);
@@ -90,9 +124,7 @@ JSM.RayTracer.prototype.GetPixelColor = function (x, y)
 		return intersection !== null;
 	}
 	
-	var color = {r : 0, g : 0, b : 0};
-	var fieldCenter = this.renderData.image.GetFieldCenter (x, y);
-	var ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (fieldCenter, this.renderData.camera.eye));
+	var color = new JSM.Coord (0.0, 0.0, 0.0);
 	var intersection = JSM.RayTriangleModelIntersection (ray, this.renderData.model);
 	if (intersection == null) {
 		return color;
@@ -102,41 +134,40 @@ JSM.RayTracer.prototype.GetPixelColor = function (x, y)
 	var triangle = body.GetTriangle (intersection.triangleIndex);
 	var material = this.renderData.model.GetMaterial (triangle.mat);
 	var intersectionPosition = intersection.position;
+	var intersectionNormal = GetNormal (body, triangle, intersectionPosition);
 	
 	if (!IsInShadow (this.renderData, intersectionPosition)) {
-		var intersectionNormal = GetNormal (body, triangle, intersectionPosition);
 		color = this.PhongShading (material, this.renderData.light, intersectionPosition, intersectionNormal);
 	}
+	
+	//if (triangle.mat == 3) {
+	//	var reflectedDirection = GetReflectedDirection (ray.GetDirection (), intersectionNormal);
+	//	var reflectedRay = new JSM.Ray (intersection.position, reflectedDirection);
+	//	var reflectedColor = this.Trace (reflectedRay);
+	//	color = JSM.CoordAdd (color, JSM.VectorMultiply (reflectedColor, 0.5));
+	//}
+	
+	this.ClampColor (color);
 	return color;
 };
 
 JSM.RayTracer.prototype.PhongShading = function (material, light, shadedPoint, shadedPointNormal)
 {
-	function Clamp (value)
-	{
-		if (value.x < 0.0) { value.x = 0.0; }
-		if (value.y < 0.0) { value.y = 0.0; }
-		if (value.z < 0.0) { value.z = 0.0; }
-		if (value.x > 1.0) { value.x = 1.0; }
-		if (value.y > 1.0) { value.y = 1.0; }
-		if (value.z > 1.0) { value.z = 1.0; }
-	}
-
 	var materialAmbientColor = new JSM.Coord (material.ambient[0], material.ambient[1], material.ambient[2]);
 	var materialDiffuseColor = new JSM.Coord (material.diffuse[0], material.diffuse[1], material.diffuse[2]);
 	
 	var ambientColor = materialAmbientColor;
-	Clamp (ambientColor);
+	this.ClampColor (ambientColor);
 	
 	var lightDirection = JSM.VectorNormalize (JSM.CoordSub (light.position, shadedPoint));
 	var lightNormalProduct = JSM.VectorDot (lightDirection, shadedPointNormal);
 	var diffuseCoeff = JSM.Maximum (lightNormalProduct, 0.0);
 	var diffuseColor = JSM.VectorMultiply (materialDiffuseColor, diffuseCoeff);
-	Clamp (diffuseColor)
+	this.ClampColor (diffuseColor)
 	
 	var color = JSM.CoordAdd (ambientColor, diffuseColor);
-	Clamp (color);
-	return {r : color.x * 255, g : color.y * 255, b : color.z * 255};
+	this.ClampColor (color);
+	return color;
 };
 
 JSM.RayTracer.prototype.PutPixelRow = function (rowIndex, colors)
@@ -152,3 +183,13 @@ JSM.RayTracer.prototype.PutPixelRow = function (rowIndex, colors)
 	}
 	this.context.putImageData (imageData, 0, rowIndex);
 };	
+
+JSM.RayTracer.prototype.ClampColor = function (value)
+{
+	if (value.x < 0.0) { value.x = 0.0; }
+	if (value.y < 0.0) { value.y = 0.0; }
+	if (value.z < 0.0) { value.z = 0.0; }
+	if (value.x > 1.0) { value.x = 1.0; }
+	if (value.y > 1.0) { value.y = 1.0; }
+	if (value.z > 1.0) { value.z = 1.0; }
+}
