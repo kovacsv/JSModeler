@@ -87,7 +87,8 @@ JSM.ConvertModelToTriangleModel = function (model, materials)
 				diffuse : JSM.HexColorToNormalizedRGBComponents (material.diffuse),
 				specular : JSM.HexColorToNormalizedRGBComponents (material.specular),
 				shininess : material.shininess,
-				opacity : material.opacity
+				opacity : material.opacity,
+				reflection : material.reflection
 			});
 		}
 	}

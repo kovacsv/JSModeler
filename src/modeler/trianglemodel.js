@@ -149,6 +149,7 @@ JSM.TriangleModel.prototype.FinalizeMaterials = function ()
 		specular : [0.1, 0.1, 0.1],
 		shininess : 0.0,
 		opacity : 1.0,
+		reflection : 0.0,
 		texture : null,
 		offset : null,
 		scale : null,

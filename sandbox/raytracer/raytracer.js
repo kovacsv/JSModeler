@@ -139,13 +139,13 @@ JSM.RayTracer.prototype.Trace = function (ray)
 	if (!IsInShadow (this.renderData, intersectionPosition)) {
 		color = this.PhongShading (material, this.renderData.light, intersectionPosition, intersectionNormal);
 	}
-	
-	//if (triangle.mat == 3) {
-	//	var reflectedDirection = GetReflectedDirection (ray.GetDirection (), intersectionNormal);
-	//	var reflectedRay = new JSM.Ray (intersection.position, reflectedDirection);
-	//	var reflectedColor = this.Trace (reflectedRay);
-	//	color = JSM.CoordAdd (color, JSM.VectorMultiply (reflectedColor, 0.5));
-	//}
+
+	if (material.reflection > 0) {
+		var reflectedDirection = GetReflectedDirection (ray.GetDirection (), intersectionNormal);
+		var reflectedRay = new JSM.Ray (intersection.position, reflectedDirection);
+		var reflectedColor = this.Trace (reflectedRay);
+		color = JSM.CoordAdd (color, JSM.VectorMultiply (reflectedColor, material.reflection));
+	}
 	
 	this.ClampColor (color);
 	return color;
