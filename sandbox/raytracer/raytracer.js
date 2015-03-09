@@ -47,7 +47,7 @@ JSM.RayTracer.prototype.Init = function (canvas)
 	this.context = this.canvas.getContext ('2d');
 };
 
-JSM.RayTracer.prototype.Render = function (model, materials, camera, light)
+JSM.RayTracer.prototype.Render = function (model, camera, lights, onFinish)
 {
 	function RenderRow ()
 	{
@@ -63,13 +63,19 @@ JSM.RayTracer.prototype.Render = function (model, materials, camera, light)
 	}
 	
 	this.renderData = {};
-	this.renderData.model = JSM.ConvertModelToTriangleModel (model, materials);
+	this.renderData.model = model;
 	this.renderData.camera = camera;
-	this.renderData.light = light;
+	this.renderData.lights = lights;
 	this.renderData.image = new JSM.RayTracerImage (camera, this.canvas.width, this.canvas.height, 1.0);
 	
 	var currentRow = 0;
-	var asyncEnv = new JSM.AsyncEnvironment ();
+	var asyncEnv = new JSM.AsyncEnvironment ({
+		onFinish : function () {
+			if (onFinish !== undefined && onFinish !== null) {
+				onFinish ();
+			}
+		}
+	});
 	JSM.AsyncRunTask (RenderRow.bind (this), asyncEnv, this.canvas.height, 0, null);
 };
 
@@ -114,10 +120,10 @@ JSM.RayTracer.prototype.Trace = function (ray, iteration)
 		return JSM.CoordSub (direction, JSM.VectorMultiply (normal, 2.0 * dotProduct));
 	}
 	
-	function IsInShadow (renderData, intersectionPosition)
+	function IsInShadow (renderData, intersectionPosition, light)
 	{
-		var lightDistance = JSM.CoordDistance (renderData.light.position, intersectionPosition);
-		var lightDirection = JSM.CoordSub (renderData.light.position, intersectionPosition);
+		var lightDistance = JSM.CoordDistance (light.position, intersectionPosition);
+		var lightDirection = JSM.CoordSub (light.position, intersectionPosition);
 		var shadowRay = new JSM.Ray (intersectionPosition, lightDirection, lightDistance);
 		var intersection = JSM.RayTriangleModelIntersection (shadowRay, renderData.model);
 		return intersection !== null;
@@ -139,11 +145,16 @@ JSM.RayTracer.prototype.Trace = function (ray, iteration)
 	var intersectionPosition = intersection.position;
 	var intersectionNormal = GetNormal (body, triangle, intersectionPosition);
 	
-	if (!IsInShadow (this.renderData, intersectionPosition)) {
-		color = this.PhongShading (material, this.renderData.light, intersectionPosition, intersectionNormal);
+	var i, light, currentColor;
+	for (i = 0; i < this.renderData.lights.length; i++) {
+		light = this.renderData.lights[i];
+		if (!IsInShadow (this.renderData, intersectionPosition, light)) {
+			currentColor = this.PhongShading (material, light, intersectionPosition, intersectionNormal);
+			color = JSM.CoordAdd (color, currentColor);
+		}
 	}
 
-	if (material.reflection > 0) {
+	if (material.reflection > 0.0) {
 		var reflectedDirection = GetReflectedDirection (ray.GetDirection (), intersectionNormal);
 		var reflectedRay = new JSM.Ray (intersection.position, reflectedDirection);
 		var reflectedColor = this.Trace (reflectedRay, iteration + 1);
@@ -159,16 +170,15 @@ JSM.RayTracer.prototype.PhongShading = function (material, light, shadedPoint, s
 	var materialAmbientColor = new JSM.Coord (material.ambient[0], material.ambient[1], material.ambient[2]);
 	var materialDiffuseColor = new JSM.Coord (material.diffuse[0], material.diffuse[1], material.diffuse[2]);
 	
-	var ambientColor = materialAmbientColor;
+	var ambientColor = JSM.VectorMultiply (materialAmbientColor, light.ambientIntensity);
 	this.ClampColor (ambientColor);
 	
 	var lightDirection = JSM.VectorNormalize (JSM.CoordSub (light.position, shadedPoint));
-	var lightNormalProduct = JSM.VectorDot (lightDirection, shadedPointNormal);
-	var diffuseCoeff = JSM.Maximum (lightNormalProduct, 0.0);
-	var diffuseColor = JSM.VectorMultiply (materialDiffuseColor, diffuseCoeff);
+	var diffuseCoeff = JSM.Maximum (JSM.VectorDot (lightDirection, shadedPointNormal), 0.0);
+	var diffuseColor = JSM.VectorMultiply (materialDiffuseColor, light.diffuseIntensity);
 	this.ClampColor (diffuseColor)
 	
-	var color = JSM.CoordAdd (ambientColor, diffuseColor);
+	var color = JSM.CoordAdd (ambientColor, JSM.VectorMultiply (diffuseColor, diffuseCoeff));
 	this.ClampColor (color);
 	return color;
 };
