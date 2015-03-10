@@ -57,6 +57,31 @@ JSM.RayTriangleIntersection = function (ray, v0, v1, v2)
 };
 
 /**
+* Function: RayTriangleBodyHasIntersection
+* Description: Returns if there is intersection between a ray and a triangle body.
+* Parameters:
+*	ray {Ray} the ray
+*	body {TriangleBody} the triangle body
+* Returns:
+*	{boolean} the result
+*/
+JSM.RayTriangleBodyHasIntersection = function (ray, body)
+{
+	var i, triangle, v0, v1, v2, intersection;
+	for (i = 0; i < body.TriangleCount (); i++) {
+		triangle = body.GetTriangle (i);
+		v0 = body.GetVertex (triangle.v0);
+		v1 = body.GetVertex (triangle.v1);
+		v2 = body.GetVertex (triangle.v2);
+		intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
+		if (intersection !== null) {
+			return true;
+		}
+	}
+	return false;
+};
+
+/**
 * Function: RayTriangleBodyIntersection
 * Description: Calculates intersection between a ray and a triangle body.
 * Parameters:
@@ -83,6 +108,28 @@ JSM.RayTriangleBodyIntersection = function (ray, body)
 		}
 	}
 	return minIntersection;
+};
+
+/**
+* Function: RayTriangleModelHasIntersection
+* Description: Returns if there is intersection between a ray and a triangle model.
+* Parameters:
+*	ray {Ray} the ray
+*	model {TriangleModel} the triangle model
+* Returns:
+*	{boolean} the result
+*/
+JSM.RayTriangleModelHasIntersection = function (ray, model)
+{
+	var i, body, intersection;
+	for (i = 0; i < model.BodyCount (); i++) {
+		body = model.GetBody (i);
+		intersection = JSM.RayTriangleBodyIntersection (ray, body);
+		if (intersection !== null) {
+			return true;
+		}
+	}
+	return false;
 };
 
 /**

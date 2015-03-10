@@ -3002,6 +3002,16 @@
 						["object", "the result data (position, distance) if intersection found, null otherwise"]
 					]
 				},
+				"RayTriangleBodyHasIntersection" : {
+					"description" : "Returns if there is intersection between a ray and a triangle body.",
+					"parameters" : [
+						["ray", "Ray", "the ray"],
+						["body", "TriangleBody", "the triangle body"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
 				"RayTriangleBodyIntersection" : {
 					"description" : "Calculates intersection between a ray and a triangle body.",
 					"parameters" : [
@@ -3010,6 +3020,16 @@
 					],
 					"returns" : [
 						["object", "the result data (position, distance, triangleIndex) if intersection found, null otherwise"]
+					]
+				},
+				"RayTriangleModelHasIntersection" : {
+					"description" : "Returns if there is intersection between a ray and a triangle model.",
+					"parameters" : [
+						["ray", "Ray", "the ray"],
+						["model", "TriangleModel", "the triangle model"]
+					],
+					"returns" : [
+						["boolean", "the result"]
 					]
 				},
 				"RayTriangleModelIntersection" : {
