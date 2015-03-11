@@ -57,103 +57,85 @@ JSM.RayTriangleIntersection = function (ray, v0, v1, v2)
 };
 
 /**
-* Function: RayTriangleBodyHasIntersection
-* Description: Returns if there is intersection between a ray and a triangle body.
-* Parameters:
-*	ray {Ray} the ray
-*	body {TriangleBody} the triangle body
-* Returns:
-*	{boolean} the result
-*/
-JSM.RayTriangleBodyHasIntersection = function (ray, body)
-{
-	var i, triangle, v0, v1, v2, intersection;
-	for (i = 0; i < body.TriangleCount (); i++) {
-		triangle = body.GetTriangle (i);
-		v0 = body.GetVertex (triangle.v0);
-		v1 = body.GetVertex (triangle.v1);
-		v2 = body.GetVertex (triangle.v2);
-		intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
-		if (intersection !== null) {
-			return true;
-		}
-	}
-	return false;
-};
-
-/**
 * Function: RayTriangleBodyIntersection
-* Description: Calculates intersection between a ray and a triangle body.
+* Description: Calculates the nearest intersection between a ray and a triangle body.
 * Parameters:
 *	ray {Ray} the ray
 *	body {TriangleBody} the triangle body
+*	intersection {object} the result data (position, distance, triangleIndex)
 * Returns:
-*	{object} the result data (position, distance, triangleIndex) if intersection found, null otherwise
+*	{boolean} true if found intersection, false otherwise
 */
-JSM.RayTriangleBodyIntersection = function (ray, body)
+JSM.RayTriangleBodyIntersection = function (ray, body, intersection)
 {
 	var minIntersection = null;
-	var i, triangle, v0, v1, v2, intersection;
+	var foundIntersection = false;
+	var calcMinIntersection = (intersection !== null && intersection !== undefined);
+	
+	var i, triangle, v0, v1, v2, currentIntersection;
 	for (i = 0; i < body.TriangleCount (); i++) {
 		triangle = body.GetTriangle (i);
 		v0 = body.GetVertex (triangle.v0);
 		v1 = body.GetVertex (triangle.v1);
 		v2 = body.GetVertex (triangle.v2);
-		intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
-		if (intersection !== null) {
-			if (minIntersection === null || intersection.distance < minIntersection.distance) {
-				minIntersection = intersection;
+		currentIntersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
+		if (currentIntersection !== null) {
+			foundIntersection = true;
+			if (!calcMinIntersection) {
+				break;
+			}
+			if (minIntersection === null || currentIntersection.distance < minIntersection.distance) {
+				minIntersection = currentIntersection;
 				minIntersection.triangleIndex = i;
 			}
 		}
 	}
-	return minIntersection;
-};
-
-/**
-* Function: RayTriangleModelHasIntersection
-* Description: Returns if there is intersection between a ray and a triangle model.
-* Parameters:
-*	ray {Ray} the ray
-*	model {TriangleModel} the triangle model
-* Returns:
-*	{boolean} the result
-*/
-JSM.RayTriangleModelHasIntersection = function (ray, model)
-{
-	var i, body, intersection;
-	for (i = 0; i < model.BodyCount (); i++) {
-		body = model.GetBody (i);
-		intersection = JSM.RayTriangleBodyIntersection (ray, body);
-		if (intersection !== null) {
-			return true;
-		}
+	
+	if (calcMinIntersection && minIntersection !== null) {
+		intersection.position = minIntersection.position;
+		intersection.distance = minIntersection.distance;
+		intersection.triangleIndex = minIntersection.triangleIndex;
 	}
-	return false;
+	return foundIntersection;
 };
 
 /**
 * Function: RayTriangleModelIntersection
-* Description: Calculates intersection between a ray and a triangle model.
+* Description: Calculates the nearest intersection between a ray and a triangle model.
 * Parameters:
 *	ray {Ray} the ray
 *	model {TriangleModel} the triangle model
+*	intersection {object} the result data (position, distance, triangleIndex, bodyIndex)
 * Returns:
-*	{object} the result data (position, distance, triangleIndex, bodyIndex) if intersection found, null otherwise
+*	{boolean} true if found intersection, false otherwise
 */
-JSM.RayTriangleModelIntersection = function (ray, model)
+JSM.RayTriangleModelIntersection = function (ray, model, intersection)
 {
 	var minIntersection = null;
-	var i, body, intersection;
+	var foundIntersection = false;
+	var calcMinIntersection = (intersection !== null && intersection !== undefined);
+	
+	var i, body, currentIntersection;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		intersection = JSM.RayTriangleBodyIntersection (ray, body);
-		if (intersection !== null) {
-			if (minIntersection === null || intersection.distance < minIntersection.distance) {
-				minIntersection = intersection;
+		currentIntersection = calcMinIntersection ? {} : null;
+		if (JSM.RayTriangleBodyIntersection (ray, body, currentIntersection)) {
+			foundIntersection = true;
+			if (!calcMinIntersection) {
+				break;
+			}
+			if (minIntersection === null || currentIntersection.distance < minIntersection.distance) {
+				minIntersection = currentIntersection;
 				minIntersection.bodyIndex = i;
 			}
 		}
 	}
-	return minIntersection;
+	
+	if (calcMinIntersection && minIntersection !== null) {
+		intersection.position = minIntersection.position;
+		intersection.distance = minIntersection.distance;
+		intersection.triangleIndex = minIntersection.triangleIndex;
+		intersection.bodyIndex = minIntersection.bodyIndex;
+	}	
+	return foundIntersection;
 };

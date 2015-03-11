@@ -3002,44 +3002,26 @@
 						["object", "the result data (position, distance) if intersection found, null otherwise"]
 					]
 				},
-				"RayTriangleBodyHasIntersection" : {
-					"description" : "Returns if there is intersection between a ray and a triangle body.",
-					"parameters" : [
-						["ray", "Ray", "the ray"],
-						["body", "TriangleBody", "the triangle body"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
 				"RayTriangleBodyIntersection" : {
-					"description" : "Calculates intersection between a ray and a triangle body.",
+					"description" : "Calculates the nearest intersection between a ray and a triangle body.",
 					"parameters" : [
 						["ray", "Ray", "the ray"],
-						["body", "TriangleBody", "the triangle body"]
+						["body", "TriangleBody", "the triangle body"],
+						["intersection", "object", "the result data (position, distance, triangleIndex)"]
 					],
 					"returns" : [
-						["object", "the result data (position, distance, triangleIndex) if intersection found, null otherwise"]
-					]
-				},
-				"RayTriangleModelHasIntersection" : {
-					"description" : "Returns if there is intersection between a ray and a triangle model.",
-					"parameters" : [
-						["ray", "Ray", "the ray"],
-						["model", "TriangleModel", "the triangle model"]
-					],
-					"returns" : [
-						["boolean", "the result"]
+						["boolean", "true if found intersection, false otherwise"]
 					]
 				},
 				"RayTriangleModelIntersection" : {
-					"description" : "Calculates intersection between a ray and a triangle model.",
+					"description" : "Calculates the nearest intersection between a ray and a triangle model.",
 					"parameters" : [
 						["ray", "Ray", "the ray"],
-						["model", "TriangleModel", "the triangle model"]
+						["model", "TriangleModel", "the triangle model"],
+						["intersection", "object", "the result data (position, distance, triangleIndex, bodyIndex)"]
 					],
 					"returns" : [
-						["object", "the result data (position, distance, triangleIndex, bodyIndex) if intersection found, null otherwise"]
+						["boolean", "true if found intersection, false otherwise"]
 					]
 				}
 			},

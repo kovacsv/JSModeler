@@ -125,7 +125,7 @@ JSM.RayTracer.prototype.Trace = function (ray, iteration)
 		var lightDistance = JSM.CoordDistance (light.position, intersectionPosition);
 		var lightDirection = JSM.CoordSub (light.position, intersectionPosition);
 		var shadowRay = new JSM.Ray (intersectionPosition, lightDirection, lightDistance);
-		return JSM.RayTriangleModelHasIntersection (shadowRay, renderData.model);
+		return JSM.RayTriangleModelIntersection (shadowRay, renderData.model);
 	}
 	
 	var color = new JSM.Coord (0.0, 0.0, 0.0);
@@ -133,8 +133,8 @@ JSM.RayTracer.prototype.Trace = function (ray, iteration)
 		return color;
 	}
 	
-	var intersection = JSM.RayTriangleModelIntersection (ray, this.renderData.model);
-	if (intersection == null) {
+	var intersection = {};
+	if (!JSM.RayTriangleModelIntersection (ray, this.renderData.model, intersection)) {
 		return color;
 	}
 	
