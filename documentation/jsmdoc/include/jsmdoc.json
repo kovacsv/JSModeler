@@ -1404,6 +1404,23 @@
 						["boolean", "success"]
 					]
 				},
+				"TraverseOctreeNodes" : {
+					"description" : "Traverses the nodes of the tree, and calls the given callback when a node found. The return value of the callback determines if we need to continue traverse along that given node.",
+					"parameters" : [
+						["nodeFound", "function", "the callback"]
+					]
+				},
+				"CreateOctreeChildNodes" : {
+					"description" : "Create child nodes for an octree node. It calls a callback function which should create a new node element for the octree.",
+					"parameters" : [
+						["originalCenter", "Coord", "the center of the original node"],
+						["originalSize", "Coord", "the size of the original node"],
+						["createNodeCallback", "function", "the callback function"]
+					],
+					"returns" : [
+						["object[*]", "the result"]
+					]
+				},
 				"ClipPolygonWithBSPTree" : {
 					"description" : "Clips a polygon with a created BSP tree.",
 					"parameters" : [
@@ -2057,6 +2074,92 @@
 							"returns" : [
 								["integer", "the stored index of the coordinate"]
 							]
+						},
+						"FindCoordInNode" : {
+							"description" : "Finds a coordinate in a node.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"],
+								["node", "object", "the node"]
+							],
+							"returns" : [
+								["integer", "the stored index of the coordinate"]
+							]
+						},
+						"AddCoordToNode" : {
+							"description" : "Adds a coordinate to a node.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"],
+								["root", "object", "the root node"]
+							],
+							"returns" : [
+								["integer", "the stored index of the coordinate"]
+							]
+						},
+						"FindNodeForCoord" : {
+							"description" : "Finds a node for a coordinate.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"],
+								["node", "object", "the starting node"]
+							],
+							"returns" : [
+								["object", "the found node"]
+							]
+						},
+						"SplitNode" : {
+							"description" : "Splits a node to subnodes.",
+							"parameters" : [
+								["node", "object", "the node"]
+							],
+							"returns" : [
+								["boolean", "success"]
+							]
+						},
+						"CreateNewNode" : {
+							"description" : "Creates a new node.",
+							"parameters" : [
+								["parent", "object", "the parent node"],
+								["center", "Coord", "the center of the node"],
+								["size", "Coord", "the size of the node"]
+							],
+							"returns" : [
+								["object", "the result"]
+							]
+						}
+					}
+				},
+				"TriangleOctree" : {
+					"description" : "Defines an octree which stores triangles. Every triangle is placed in the smallest possible node which contains all of its vertices.",
+					"parameters" : [
+						["box", "Box", "bounding box"]
+					],
+					"functions" : {
+						"AddTriangle" : {
+							"description" : "Adds a triangle to the octree.",
+							"parameters" : [
+								["v0, v1, v2", "Coord", "the vertices of the triangle"],
+								["userData", "anything", "user data for the triangle"]
+							]
+						},
+						"AddTriangleToNode" : {
+							"description" : "Adds a coordinate to a node.",
+							"parameters" : [
+								["v0, v1, v2", "Coord", "the vertices of the triangle"],
+								["root", "object", "the root node"]
+							],
+							"returns" : [
+								["boolean", "success"]
+							]
+						},
+						"CreateNewNode" : {
+							"description" : "Creates a new node.",
+							"parameters" : [
+								["parent", "object", "the parent node"],
+								["center", "Coord", "the center of the node"],
+								["size", "Coord", "the size of the node"]
+							],
+							"returns" : [
+								["object", "the result"]
+							]
 						}
 					}
 				},
@@ -2082,20 +2185,53 @@
 						"TraverseNode" : {
 							"description" : "Traverses a node and its children and calls a function on node found.",
 							"parameters" : [
-								["node", "BSPNode", "the node"],
+								["node", "object", "the node"],
 								["nodeFound", "function", "the callback function"]
 							]
 						},
 						"GetNodes" : {
 							"description" : "Returns the nodes as an array.",
 							"returns" : [
-								["BSPNode[*]", "the result"]
+								["object[*]", "the result"]
 							]
 						},
 						"GetNodes" : {
 							"description" : "Count nodes.",
 							"returns" : [
 								["integer", "the result"]
+							]
+						},
+						"AddPolygonToNode" : {
+							"description" : "Adds a polygon to a node.",
+							"parameters" : [
+								["node", "object", "the node"],
+								["polygon", "Polygon", "the polygon"],
+								["userData", "anything", "user data for polygon"]
+							],
+							"returns" : [
+								["boolean", "success"]
+							]
+						},
+						"AddInsidePolygonsToNode" : {
+							"description" : "Adds inside polygons to a node.",
+							"parameters" : [
+								["node", "object", "the node"],
+								["polygon", "Polygon[*]", "the polygons"],
+								["userData", "anything", "user data for polygons"]
+							]
+						},
+						"AddOutsidePolygonsToNode" : {
+							"description" : "Adds outside polygons to a node.",
+							"parameters" : [
+								["node", "object", "the node"],
+								["polygon", "Polygon[*]", "the polygons"],
+								["userData", "anything", "user data for polygons"]
+							]
+						},
+						"CreateNewNode" : {
+							"description" : "Creates a new node.",
+							"returns" : [
+								["object", "the result"]
 							]
 						}
 					}

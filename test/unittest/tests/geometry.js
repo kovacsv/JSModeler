@@ -1190,74 +1190,93 @@ generalSuite.AddTest ('ConvexHullTest', function (test)
 
 generalSuite.AddTest ('OctreeTest', function (test)
 {
-	var octree = new JSM.Octree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)));
-	var coords = [
-		new JSM.Coord (0.0, 0.0, 0.0),
-		new JSM.Coord (1.0, 1.0, 1.0),
-		new JSM.Coord (-1.0, -1.0, -1.0),
-		new JSM.Coord (0.1, 0.0, 0.0),
-		new JSM.Coord (0.2, 0.0, 0.0),
-		new JSM.Coord (0.3, 0.0, 0.0),
-		new JSM.Coord (0.30001, 0.0, 0.0),
-		new JSM.Coord (0.30000001, 0.0, 0.0),
-		new JSM.Coord (0.30001001, 0.0, 0.0),
-		new JSM.Coord (0.99, 0.99, 0.99),
-		new JSM.Coord (-0.99, -0.99, -0.99),
-		new JSM.Coord (0.99, -0.99, -0.99),
-		new JSM.Coord (-0.99, 0.99, -0.99),
-		new JSM.Coord (-0.98, 0.99, -0.99),
-		new JSM.Coord (-0.97, 0.99, -0.99),
-		new JSM.Coord (-0.96, 0.99, -0.99)		
-	];
-	
-	test.Assert (octree.AddCoord (coords[0]) == 0);
-	test.Assert (octree.AddCoord (coords[0]) == 0);
-	test.Assert (octree.AddCoord (coords[0]) == 0);
-	test.Assert (octree.AddCoord (coords[0]) == 0);
-	test.Assert (octree.AddCoord (coords[0]) == 0);
-	
-	test.Assert (octree.AddCoord (coords[1]) == 1);
-	test.Assert (octree.AddCoord (coords[2]) == 2);
-	test.Assert (octree.AddCoord (coords[0]) == 0);
+	var i;
+	for (i = 0; i < 2; i++) {
+		var maxNodeNum = (i === 0 ? null : 5);
+		var octree = new JSM.Octree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)), maxNodeNum);
+		var coords = [
+			new JSM.Coord (0.0, 0.0, 0.0),
+			new JSM.Coord (1.0, 1.0, 1.0),
+			new JSM.Coord (-1.0, -1.0, -1.0),
+			new JSM.Coord (0.1, 0.0, 0.0),
+			new JSM.Coord (0.2, 0.0, 0.0),
+			new JSM.Coord (0.3, 0.0, 0.0),
+			new JSM.Coord (0.30001, 0.0, 0.0),
+			new JSM.Coord (0.30000001, 0.0, 0.0),
+			new JSM.Coord (0.30001001, 0.0, 0.0),
+			new JSM.Coord (0.99, 0.99, 0.99),
+			new JSM.Coord (-0.99, -0.99, -0.99),
+			new JSM.Coord (0.99, -0.99, -0.99),
+			new JSM.Coord (-0.99, 0.99, -0.99),
+			new JSM.Coord (-0.98, 0.99, -0.99),
+			new JSM.Coord (-0.97, 0.99, -0.99),
+			new JSM.Coord (-0.96, 0.99, -0.99)		
+		];
+		
+		test.Assert (octree.AddCoord (coords[0]) == 0);
+		test.Assert (octree.AddCoord (coords[0]) == 0);
+		test.Assert (octree.AddCoord (coords[0]) == 0);
+		test.Assert (octree.AddCoord (coords[0]) == 0);
+		test.Assert (octree.AddCoord (coords[0]) == 0);
+		
+		test.Assert (octree.AddCoord (coords[1]) == 1);
+		test.Assert (octree.AddCoord (coords[2]) == 2);
+		test.Assert (octree.AddCoord (coords[0]) == 0);
 
-	test.Assert (octree.AddCoord (coords[3]) == 3);
-	test.Assert (octree.AddCoord (coords[4]) == 4);
-	test.Assert (octree.AddCoord (coords[5]) == 5);
-	test.Assert (octree.AddCoord (coords[6]) == 6);
-	test.Assert (octree.AddCoord (coords[7]) == 5);
-	test.Assert (octree.AddCoord (coords[8]) == 6);
-	
-	test.Assert (octree.AddCoord (coords[9]) == 7);
-	test.Assert (octree.AddCoord (coords[10]) == 8);
-	test.Assert (octree.AddCoord (coords[11]) == 9);
-	test.Assert (octree.AddCoord (coords[12]) == 10);
-	
-	test.Assert (octree.FindCoord (coords[0]) == 0);
-	test.Assert (octree.FindCoord (coords[0]) == 0);
-	test.Assert (octree.FindCoord (coords[0]) == 0);
-	test.Assert (octree.FindCoord (coords[0]) == 0);
-	test.Assert (octree.FindCoord (coords[0]) == 0);
-	
-	test.Assert (octree.FindCoord (coords[1]) == 1);
-	test.Assert (octree.FindCoord (coords[2]) == 2);
-	test.Assert (octree.FindCoord (coords[0]) == 0);
+		test.Assert (octree.AddCoord (coords[3]) == 3);
+		test.Assert (octree.AddCoord (coords[4]) == 4);
+		test.Assert (octree.AddCoord (coords[5]) == 5);
+		test.Assert (octree.AddCoord (coords[6]) == 6);
+		test.Assert (octree.AddCoord (coords[7]) == 5);
+		test.Assert (octree.AddCoord (coords[8]) == 6);
+		
+		test.Assert (octree.AddCoord (coords[9]) == 7);
+		test.Assert (octree.AddCoord (coords[10]) == 8);
+		test.Assert (octree.AddCoord (coords[11]) == 9);
+		test.Assert (octree.AddCoord (coords[12]) == 10);
+		
+		test.Assert (octree.FindCoord (coords[0]) == 0);
+		test.Assert (octree.FindCoord (coords[0]) == 0);
+		test.Assert (octree.FindCoord (coords[0]) == 0);
+		test.Assert (octree.FindCoord (coords[0]) == 0);
+		test.Assert (octree.FindCoord (coords[0]) == 0);
+		
+		test.Assert (octree.FindCoord (coords[1]) == 1);
+		test.Assert (octree.FindCoord (coords[2]) == 2);
+		test.Assert (octree.FindCoord (coords[0]) == 0);
 
-	test.Assert (octree.FindCoord (coords[3]) == 3);
-	test.Assert (octree.FindCoord (coords[4]) == 4);
-	test.Assert (octree.FindCoord (coords[5]) == 5);
-	test.Assert (octree.FindCoord (coords[6]) == 6);
-	test.Assert (octree.FindCoord (coords[7]) == 5);
-	test.Assert (octree.FindCoord (coords[8]) == 6);
+		test.Assert (octree.FindCoord (coords[3]) == 3);
+		test.Assert (octree.FindCoord (coords[4]) == 4);
+		test.Assert (octree.FindCoord (coords[5]) == 5);
+		test.Assert (octree.FindCoord (coords[6]) == 6);
+		test.Assert (octree.FindCoord (coords[7]) == 5);
+		test.Assert (octree.FindCoord (coords[8]) == 6);
+		
+		test.Assert (octree.FindCoord (coords[9]) == 7);
+		test.Assert (octree.FindCoord (coords[10]) == 8);
+		test.Assert (octree.FindCoord (coords[11]) == 9);
+		test.Assert (octree.FindCoord (coords[12]) == 10);
+
+		test.Assert (octree.FindCoord (coords[13]) == -1);
+		test.Assert (octree.FindCoord (coords[14]) == -1);
+		test.Assert (octree.FindCoord (coords[15]) == -1);
+
+		var nodeCount = 0;
+		var coordCount = 0
+		JSM.TraverseOctreeNodes (octree, function (node) {
+			nodeCount += 1;
+			coordCount += node.coords.length;
+			return true;
+		});
+		
+		if (i == 0) {
+			test.Assert (nodeCount === 1);
+		} else if (i == 1) {
+			test.Assert (nodeCount === 9);
+		}
+		test.Assert (coordCount == 11);
+	}
 	
-	test.Assert (octree.FindCoord (coords[9]) == 7);
-	test.Assert (octree.FindCoord (coords[10]) == 8);
-	test.Assert (octree.FindCoord (coords[11]) == 9);
-	test.Assert (octree.FindCoord (coords[12]) == 10);
-
-	test.Assert (octree.FindCoord (coords[13]) == -1);
-	test.Assert (octree.FindCoord (coords[14]) == -1);
-	test.Assert (octree.FindCoord (coords[15]) == -1);
-
 	var octree = new JSM.Octree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)), 3);
 	var coords = [
 		new JSM.Coord (5.0, 1.0, 0.0),
@@ -1275,8 +1294,8 @@ generalSuite.AddTest ('OctreeTest', function (test)
 	test.Assert (octree.AddCoord (coords[3]) == 3);
 	test.Assert (octree.AddCoord (coords[4]) == 4);
 	test.Assert (octree.AddCoord (coords[5]) == 5);
-	
 	test.Assert (octree.AddCoord (coords[6]) == 6);
+
 	test.Assert (octree.FindCoord (coords[0]) == 0);
 	test.Assert (octree.FindCoord (coords[1]) == 1);
 	test.Assert (octree.FindCoord (coords[2]) == 2);
@@ -1284,6 +1303,54 @@ generalSuite.AddTest ('OctreeTest', function (test)
 	test.Assert (octree.FindCoord (coords[4]) == 4);
 	test.Assert (octree.FindCoord (coords[5]) == 5);
 	test.Assert (octree.FindCoord (coords[6]) == 6);
+});
+
+generalSuite.AddTest ('TriangleOctreeTest', function (test)
+{
+	function CheckCounts (octree, refNodeCount, refTriangleCount)
+	{
+		var nodeCount = 0;
+		var triangleCount = 0
+		JSM.TraverseOctreeNodes (octree, function (node) {
+			nodeCount += 1;
+			triangleCount += node.triangles.length;
+			return true;
+		});
+		return (nodeCount == refNodeCount && triangleCount == refTriangleCount);		
+	}
+	
+	var octree = new JSM.TriangleOctree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)));
+	test.Assert (CheckCounts (octree, 1, 0));
+    
+	test.Assert (octree.AddTriangle (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.1, 0.0, 0.0), new JSM.Coord (0.1, 0.1, 0.0)));
+	test.Assert (octree.AddTriangle (new JSM.Coord (0.0, 0.0, 0.5), new JSM.Coord (0.1, 0.0, 0.5), new JSM.Coord (0.1, 0.1, 0.5)));
+	test.Assert (CheckCounts (octree, 73, 2));
+	
+	test.Assert (octree.AddTriangle (new JSM.Coord (0.0, 0.0, -0.5), new JSM.Coord (0.1, 0.0, -0.5), new JSM.Coord (0.1, 0.1, -0.5)));
+	test.Assert (octree.AddTriangle (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Coord (0.6, 0.0, 0.0), new JSM.Coord (0.6, 0.6, 0.0)));
+	test.Assert (octree.AddTriangle (new JSM.Coord (0.5, 0.0, 0.5), new JSM.Coord (0.6, 0.0, 0.5), new JSM.Coord (0.6, 0.6, 0.5)));
+	test.Assert (octree.AddTriangle (new JSM.Coord (0.5, 0.0, -0.5), new JSM.Coord (0.6, 0.0, -0.5), new JSM.Coord (0.6, 0.6, -0.5)));
+	test.Assert (CheckCounts (octree, 97, 6));
+	
+	var octree = new JSM.TriangleOctree (new JSM.Box (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 1.0, 1.0)));
+	test.Assert (octree.AddTriangle (new JSM.Coord (-1.0, -1.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (1.0, 1.0, 0.0), 1));
+	test.Assert (CheckCounts (octree, 9, 1));
+	test.Assert (octree.AddTriangle (new JSM.Coord (-1.0, -1.0, 1.0), new JSM.Coord (1.0, 0.0, 1.0), new JSM.Coord (1.0, 1.0, 1.0), 2));
+	test.Assert (CheckCounts (octree, 9, 2));
+	test.Assert (octree.AddTriangle (new JSM.Coord (-1.0, -1.0, -1.0), new JSM.Coord (1.0, 0.0, -1.0), new JSM.Coord (1.0, 1.0, -1.0), 3));
+	test.Assert (CheckCounts (octree, 9, 3));
+	test.Assert (octree.AddTriangle (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.1, 0.0, 0.0), new JSM.Coord (0.1, 0.1, 0.0), 4));
+	test.Assert (CheckCounts (octree, 41, 4));
+	
+	var userDataSum = 0;
+	JSM.TraverseOctreeNodes (octree, function (node) {
+		var i = 0;
+		for (i = 0; i < node.triangles.length; i++) {
+			userDataSum += node.triangles[i].userData;
+		}
+		return true;
+	});
+	test.Assert (userDataSum == 10);
 });
 
 var polygonSuite = unitTest.AddTestSuite ('GeometryPolygon');
