@@ -23,7 +23,6 @@
 			var fragmentShader = [
 				'precision highp float;',
 				'varying vec2 vVertexPosition;',
-				'uniform highp float uVertexScale;',
 				'uniform highp float uWidth;',
 				'uniform highp float uHeight;',
 				'highp int GetPixelNum (highp float position, highp float size) {',
@@ -44,7 +43,12 @@
 					logDiv.innerHTML += errors[i] + '<br>';
 				}
 			}
-			renderer.scale = 2.0;
+
+			var widthLocation = renderer.GetUniformLocation ('uWidth');
+			renderer.SetUniform1f (widthLocation, canvas.width);
+			var heightLocation = renderer.GetUniformLocation ('uHeight');
+			renderer.SetUniform1f (heightLocation, canvas.height);
+
 			Render ();
 		}
 	

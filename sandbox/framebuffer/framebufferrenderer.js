@@ -4,7 +4,6 @@ FrameBufferRenderer = function ()
 	this.content = null;
 	this.shader = null;
 	this.errors = null;
-	this.scale = 1.0;
 };
 
 FrameBufferRenderer.prototype.Init = function (canvas, shader)
@@ -31,6 +30,16 @@ FrameBufferRenderer.prototype.Init = function (canvas, shader)
 FrameBufferRenderer.prototype.GetErrors = function ()
 {
 	return this.errors;
+};
+
+FrameBufferRenderer.prototype.GetUniformLocation = function (name)
+{
+	return this.context.getUniformLocation (this.shader, name);
+};
+
+FrameBufferRenderer.prototype.SetUniform1f = function (location, value)
+{
+	this.context.uniform1f (location, value);
 };
 
 FrameBufferRenderer.prototype.InitWebGL = function (canvas)
@@ -103,16 +112,14 @@ FrameBufferRenderer.prototype.InitShaders = function (fragmentShader)
 	if (this.shader == null) {
 		return false;
 	}
+	
+	this.context.useProgram (this.shader);
 	return true;
 };
 
 FrameBufferRenderer.prototype.InitBuffers = function ()
 {
 	this.shader.vertexAttribLocation = this.context.getAttribLocation (this.shader, 'aVertexPosition');
-	this.shader.vertexScaleLocation = this.context.getUniformLocation (this.shader, 'uVertexScale');
-	this.shader.widthLocation = this.context.getUniformLocation (this.shader, 'uWidth');
-	this.shader.heightLocation = this.context.getUniformLocation (this.shader, 'uHeight');
-	
 	var vertices = new Float32Array ([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]);
 	var vertexBuffer = this.context.createBuffer ();
 	
@@ -126,9 +133,5 @@ FrameBufferRenderer.prototype.InitBuffers = function ()
 FrameBufferRenderer.prototype.Render = function ()
 {
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
-	this.context.useProgram (this.shader);
-	this.context.uniform1f (this.shader.vertexScaleLocation, this.scale);
-	this.context.uniform1f (this.shader.widthLocation, this.canvas.width);
-	this.context.uniform1f (this.shader.heightLocation, this.canvas.height);
 	this.context.drawArrays (this.context.TRIANGLE_FAN, 0, 4);
 };

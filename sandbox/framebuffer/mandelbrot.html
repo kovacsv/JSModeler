@@ -15,7 +15,8 @@
 			function Render ()
 			{
 				renderer.Render ();
-				//renderer.scale *= 0.999;
+				//scale *= 0.999;
+				//renderer.SetUniform1f (scaleLocation, scale);
 				//requestAnimationFrame (Render);
 			}
 		
@@ -51,7 +52,10 @@
 			if (!renderer.Init (canvas, fragmentShader)) {
 				alert ('something is wrong');
 			}
-			renderer.scale = 2.0;
+			var scale = 2.0;
+			var scaleLocation = renderer.GetUniformLocation ('uVertexScale');
+			renderer.SetUniform1f (scaleLocation, scale);
+			//renderer.scale = 2.0;
 			Render ();
 		}
 	
