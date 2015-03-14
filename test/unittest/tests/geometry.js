@@ -1263,7 +1263,9 @@ generalSuite.AddTest ('OctreeTest', function (test)
 
 		var nodeCount = 0;
 		var coordCount = 0
+		var coordsPerNode = {};
 		JSM.TraverseOctreeNodes (octree, function (node) {
+			coordsPerNode[nodeCount] = node.coords.length;
 			nodeCount += 1;
 			coordCount += node.coords.length;
 			return true;
@@ -1271,8 +1273,18 @@ generalSuite.AddTest ('OctreeTest', function (test)
 		
 		if (i == 0) {
 			test.Assert (nodeCount === 1);
+			test.Assert (coordsPerNode[0] == 11);
 		} else if (i == 1) {
 			test.Assert (nodeCount === 9);
+			test.Assert (coordsPerNode[0] == 0);
+			test.Assert (coordsPerNode[1] == 3);
+			test.Assert (coordsPerNode[2] == 5);
+			test.Assert (coordsPerNode[3] == 0);
+			test.Assert (coordsPerNode[4] == 1);
+			test.Assert (coordsPerNode[5] == 0);
+			test.Assert (coordsPerNode[6] == 0);
+			test.Assert (coordsPerNode[7] == 2);
+			test.Assert (coordsPerNode[8] == 0);
 		}
 		test.Assert (coordCount == 11);
 	}
@@ -1342,14 +1354,27 @@ generalSuite.AddTest ('TriangleOctreeTest', function (test)
 	test.Assert (octree.AddTriangle (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.1, 0.0, 0.0), new JSM.Coord (0.1, 0.1, 0.0), 4));
 	test.Assert (CheckCounts (octree, 41, 4));
 	
+	var nodeIndex = 0;
+	var trianglesPerNode = {};
 	var userDataSum = 0;
 	JSM.TraverseOctreeNodes (octree, function (node) {
 		var i = 0;
 		for (i = 0; i < node.triangles.length; i++) {
 			userDataSum += node.triangles[i].userData;
 		}
+		trianglesPerNode[nodeIndex] = node.triangles.length;
+		nodeIndex += 1;
 		return true;
 	});
+	for (var key in trianglesPerNode) {
+		if (key == 0) {
+			test.Assert (trianglesPerNode[key] == 3);
+		} else if (key == 18) {
+			test.Assert (trianglesPerNode[key] == 1);
+		} else {
+			test.Assert (trianglesPerNode[key] == 0);
+		}
+	}
 	test.Assert (userDataSum == 10);
 });
 

@@ -34,37 +34,40 @@ JSM.TraverseOctreeNodes = function (octree, nodeFound)
 *	Create child nodes for an octree node. It calls a callback function
 *	which should create a new node element for the octree.
 * Parameters:
-*	originalCenter {Coord} the center of the original node
-*	originalSize {Coord} the size of the original node
+*	originalBox {Box} the box of the original node
 *	createNodeCallback {function} the callback function
 * Returns:
 *	{object[*]} the result
 */
-JSM.CreateOctreeChildNodes = function (originalCenter, originalSize, createNodeCallback)
+JSM.CreateOctreeChildNodes = function (originalBox, createNodeCallback)
 {
-	function CreateNode (originalCenter, originalSize, createNodeCallback, dirX, dirY, dirZ)
+	function CreateNode (originalBox, createNodeCallback, dirX, dirY, dirZ)
 	{
-		var center = originalCenter.Clone ();
-		var size = JSM.VectorMultiply (originalSize, 0.5);
-		center.x += dirX * size.x * 0.5;
-		center.y += dirY * size.y * 0.5;
-		center.z += dirZ * size.z * 0.5;
-		return createNodeCallback (center, size);
+		var size = JSM.VectorMultiply (originalBox.GetSize (), 0.5);
+		var min = new JSM.Coord (
+			originalBox.min.x + dirX * size.x,
+			originalBox.min.y + dirY * size.y,
+			originalBox.min.z + dirZ * size.z
+		);
+		var max = JSM.CoordAdd (min, size);
+		var box = new JSM.Box (min, max);
+		return createNodeCallback (box);
 	}
 
-	if (JSM.IsZero (originalSize.x) && JSM.IsZero (originalSize.y) && JSM.IsZero (originalSize.z)) {
+	var size = originalBox.GetSize ();
+	if (JSM.IsZero (size.x) && JSM.IsZero (size.y) && JSM.IsZero (size.z)) {
 		return null;
 	}
 	
 	var result = [
-		CreateNode (originalCenter, originalSize, createNodeCallback, -1.0, -1.0, -1.0),
-		CreateNode (originalCenter, originalSize, createNodeCallback, +1.0, -1.0, -1.0),
-		CreateNode (originalCenter, originalSize, createNodeCallback, +1.0, +1.0, -1.0),
-		CreateNode (originalCenter, originalSize, createNodeCallback, -1.0, +1.0, -1.0),
-		CreateNode (originalCenter, originalSize, createNodeCallback, -1.0, -1.0, +1.0),
-		CreateNode (originalCenter, originalSize, createNodeCallback, +1.0, -1.0, +1.0),
-		CreateNode (originalCenter, originalSize, createNodeCallback, +1.0, +1.0, +1.0),
-		CreateNode (originalCenter, originalSize, createNodeCallback, -1.0, +1.0, +1.0)
+		CreateNode (originalBox, createNodeCallback, 0.0, 0.0, 0.0),
+		CreateNode (originalBox, createNodeCallback, 1.0, 0.0, 0.0),
+		CreateNode (originalBox, createNodeCallback, 1.0, 1.0, 0.0),
+		CreateNode (originalBox, createNodeCallback, 0.0, 1.0, 0.0),
+		CreateNode (originalBox, createNodeCallback, 0.0, 0.0, 1.0),
+		CreateNode (originalBox, createNodeCallback, 1.0, 0.0, 1.0),
+		CreateNode (originalBox, createNodeCallback, 1.0, 1.0, 1.0),
+		CreateNode (originalBox, createNodeCallback, 0.0, 1.0, 1.0),
 	];
 	return result;
 };
@@ -79,9 +82,7 @@ JSM.CreateOctreeChildNodes = function (originalCenter, originalSize, createNodeC
 JSM.Octree = function (box, maxCoordNumInNodes)
 {
 	this.coords = [];
-	var center = box.GetCenter ();
-	var size = JSM.CoordSub (box.max, box.min);
-	this.root = this.CreateNewNode (null, center, size);
+	this.root = this.CreateNewNode (null, box);
 	this.maxCoordNumInNodes = maxCoordNumInNodes;
 	if (this.maxCoordNumInNodes === undefined || this.maxCoordNumInNodes === null || this.maxCoordNumInNodes === 0) {
 		this.maxCoordNumInNodes = 50;
@@ -191,9 +192,10 @@ JSM.Octree.prototype.FindNodeForCoord = function (coord, node)
 		return node;
 	}
 	
-	var xGreater = coord.x > node.center.x;
-	var yGreater = coord.y > node.center.y;
-	var zGreater = coord.z > node.center.z;
+	var center = node.box.GetCenter ();
+	var xGreater = coord.x > center.x;
+	var yGreater = coord.y > center.y;
+	var zGreater = coord.z > center.z;
 	
 	if (!xGreater && !yGreater && !zGreater) {
 		return this.FindNodeForCoord (coord, node.children[0]);
@@ -227,8 +229,8 @@ JSM.Octree.prototype.FindNodeForCoord = function (coord, node)
 JSM.Octree.prototype.SplitNode = function (node)
 {
 	var myThis = this;
-	var children = JSM.CreateOctreeChildNodes (node.center, node.size, function (center, size) {
-		return myThis.CreateNewNode (node, center, size);
+	var children = JSM.CreateOctreeChildNodes (node.box, function (nodeBox) {
+		return myThis.CreateNewNode (node, nodeBox);
 	});
 	
 	if (children === null) {
@@ -253,17 +255,15 @@ JSM.Octree.prototype.SplitNode = function (node)
 * Description: Creates a new node.
 * Parameters:
 *	parent {object} the parent node
-*	center {Coord} the center of the node
-*	size {Coord} the size of the node
+*	box {Box} the box of the node
 * Returns:
 *	{object} the result
 */
-JSM.Octree.prototype.CreateNewNode = function (parent, center, size)
+JSM.Octree.prototype.CreateNewNode = function (parent, box)
 {
 	var newNode = {
 		parent : parent,
-		center : center,
-		size : size,
+		box : box,
 		coords : [],
 		children : null
 	};
@@ -281,9 +281,7 @@ JSM.Octree.prototype.CreateNewNode = function (parent, center, size)
 JSM.TriangleOctree = function (box)
 {
 	this.coords = [];
-	var center = box.GetCenter ();
-	var size = JSM.CoordSub (box.max, box.min);
-	this.root = this.CreateNewNode (null, center, size);
+	this.root = this.CreateNewNode (null, box);
 };
 
 /**
@@ -311,20 +309,7 @@ JSM.TriangleOctree.prototype.AddTriangleToNode = function (v0, v1, v2, root, use
 {
 	function IsTriangleInNode (v0, v1, v2, node)
 	{
-		function IsCoordInNode (coord, node)
-		{
-			if (JSM.IsGreater (Math.abs (coord.x - node.center.x), node.size.x / 2.0)) {
-				return false;
-			}
-			if (JSM.IsGreater (Math.abs (coord.y - node.center.y), node.size.y / 2.0)) {
-				return false;
-			}
-			if (JSM.IsGreater (Math.abs (coord.z - node.center.z), node.size.z / 2.0)) {
-				return false;
-			}
-			return true;
-		}
-		return IsCoordInNode (v0, node) && IsCoordInNode (v1, node) && IsCoordInNode (v2, node);
+		return JSM.IsCoordInBox (v0, node.box) && JSM.IsCoordInBox (v1, node.box) && JSM.IsCoordInBox (v2, node.box);
 	}
 	
 	if (!IsTriangleInNode (v0, v1, v2, root)) {
@@ -333,8 +318,8 @@ JSM.TriangleOctree.prototype.AddTriangleToNode = function (v0, v1, v2, root, use
 	
 	if (root.children === null) {
 		var myThis = this;
-		root.children = JSM.CreateOctreeChildNodes (root.center, root.size, function (center, size) {
-			return myThis.CreateNewNode (root, center, size);
+		root.children = JSM.CreateOctreeChildNodes (root.box, function (nodeBox) {
+			return myThis.CreateNewNode (root, nodeBox);
 		});
 	}
 	
@@ -362,17 +347,15 @@ JSM.TriangleOctree.prototype.AddTriangleToNode = function (v0, v1, v2, root, use
 * Description: Creates a new node.
 * Parameters:
 *	parent {object} the parent node
-*	center {Coord} the center of the node
-*	size {Coord} the size of the node
+*	box {Box} the box of the node
 * Returns:
 *	{object} the result
 */
-JSM.TriangleOctree.prototype.CreateNewNode = function (parent, center, size)
+JSM.TriangleOctree.prototype.CreateNewNode = function (parent, box)
 {
 	var newNode = {
 		parent : parent,
-		center : center,
-		size : size,
+		box : box,
 		triangles : [],
 		children : null
 	};
