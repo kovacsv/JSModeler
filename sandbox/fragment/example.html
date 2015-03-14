@@ -8,7 +8,25 @@
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<title>Example</title>
 
-	<script type="text/javascript" src="framebufferrenderer.js"></script>
+	<script type="text/javascript" src="fragmentrenderer.js"></script>
+	
+	<script id="shader-fs" type="x-shader/x-fragment">
+		precision highp float;
+		varying vec2 vVertexPosition;
+		uniform highp float uWidth;
+		uniform highp float uHeight;
+		
+		highp int GetPixelNum (highp float position, highp float size) {
+			return int (floor (((position + 1.0) * size / 2.0)));
+		}
+		
+		void main (void) {
+			highp int a = GetPixelNum (vVertexPosition.x, uWidth);
+			highp int b = GetPixelNum (vVertexPosition.y, uHeight);
+			gl_FragColor = vec4 (float (a) / 255.0, float (b) / 255.0, 0.0, 1.0);
+		}
+	</script>
+
 	<script type="text/javascript">
 		function Load ()
 		{
@@ -16,25 +34,13 @@
 			{
 				renderer.Render ();
 			}
-		
+		 
 			var canvas = document.getElementById ('example');
-			var renderer = new FrameBufferRenderer ();
-
-			var fragmentShader = [
-				'precision highp float;',
-				'varying vec2 vVertexPosition;',
-				'uniform highp float uWidth;',
-				'uniform highp float uHeight;',
-				'highp int GetPixelNum (highp float position, highp float size) {',
-				'	return int (floor (((position + 1.0) * size / 2.0)));',
-				'}',
-				'void main (void) {',
-				'	highp int a = GetPixelNum (vVertexPosition.x, uWidth);',
-				'	highp int b = GetPixelNum (vVertexPosition.y, uHeight);',
-				'	gl_FragColor = vec4 (float (a) / 255.0, float (b) / 255.0, 0.0, 1.0);',
-				'}'
-			].join('\n');
+			var renderer = new FragmentRenderer ();
 			
+			var shaderScript = document.getElementById ('shader-fs');
+			fragmentShader = shaderScript.firstChild.textContent;
+
 			if (!renderer.Init (canvas, fragmentShader)) {
 				var logDiv = document.getElementById ('log');
 				var errors = renderer.GetErrors ();

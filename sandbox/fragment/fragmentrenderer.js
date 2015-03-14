@@ -1,4 +1,4 @@
-FrameBufferRenderer = function ()
+FragmentRenderer = function ()
 {
 	this.canvas = null;
 	this.content = null;
@@ -6,7 +6,7 @@ FrameBufferRenderer = function ()
 	this.errors = null;
 };
 
-FrameBufferRenderer.prototype.Init = function (canvas, shader)
+FragmentRenderer.prototype.Init = function (canvas, shader)
 {
 	this.errors = [];
 	if (!this.InitWebGL (canvas)) {
@@ -27,22 +27,22 @@ FrameBufferRenderer.prototype.Init = function (canvas, shader)
 	return true;
 };
 
-FrameBufferRenderer.prototype.GetErrors = function ()
+FragmentRenderer.prototype.GetErrors = function ()
 {
 	return this.errors;
 };
 
-FrameBufferRenderer.prototype.GetUniformLocation = function (name)
+FragmentRenderer.prototype.GetUniformLocation = function (name)
 {
 	return this.context.getUniformLocation (this.shader, name);
 };
 
-FrameBufferRenderer.prototype.SetUniform1f = function (location, value)
+FragmentRenderer.prototype.SetUniform1f = function (location, value)
 {
 	this.context.uniform1f (location, value);
 };
 
-FrameBufferRenderer.prototype.InitWebGL = function (canvas)
+FragmentRenderer.prototype.InitWebGL = function (canvas)
 {
 	this.canvas = canvas;
 	if (this.canvas === null) {
@@ -65,7 +65,7 @@ FrameBufferRenderer.prototype.InitWebGL = function (canvas)
 	return true;
 };
 
-FrameBufferRenderer.prototype.InitShaders = function (fragmentShader)
+FragmentRenderer.prototype.InitShaders = function (fragmentShader)
 {
 	function CompileShader (context, script, type, errors)
 	{
@@ -117,7 +117,7 @@ FrameBufferRenderer.prototype.InitShaders = function (fragmentShader)
 	return true;
 };
 
-FrameBufferRenderer.prototype.InitBuffers = function ()
+FragmentRenderer.prototype.InitBuffers = function ()
 {
 	this.shader.vertexAttribLocation = this.context.getAttribLocation (this.shader, 'aVertexPosition');
 	var vertices = new Float32Array ([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]);
@@ -130,7 +130,7 @@ FrameBufferRenderer.prototype.InitBuffers = function ()
 	return true;
 };
 
-FrameBufferRenderer.prototype.Render = function ()
+FragmentRenderer.prototype.Render = function ()
 {
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	this.context.drawArrays (this.context.TRIANGLE_FAN, 0, 4);
