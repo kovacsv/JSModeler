@@ -8,41 +8,38 @@
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<title>Example</title>
 
-	<script type="text/javascript" src="fragmentrenderer.js"></script>
-	
-	<script id="shader-fs" type="x-shader/x-fragment">
-		precision highp float;
-		varying vec2 vVertexPosition;
-		uniform highp float uWidth;
-		uniform highp float uHeight;
-		
-		highp int GetPixelNum (highp float position, highp float size) {
-			return int (floor (((position + 1.0) * size / 2.0)));
-		}
-		
-		void main (void) {
-			highp int a = GetPixelNum (vVertexPosition.x, uWidth);
-			highp int b = GetPixelNum (vVertexPosition.y, uHeight);
-			gl_FragColor = vec4 (float (a) / 255.0, float (b) / 255.0, 0.0, 1.0);
-		}
-	</script>
-
-	<script type="text/javascript">
-		function Load ()
+	<style>
+		#left
 		{
-			function Render ()
-			{
-				renderer.Render ();
-			}
-		 
+			float : left;
+		}
+		
+		#right
+		{
+			float : left;
+		}
+		
+		textarea
+		{
+			width : 800px;
+			height : 600px;
+		}
+	</style>
+	
+	<script type="text/javascript" src="fragmentrenderer.js"></script>
+	<script type="text/javascript">
+		function Render ()
+		{
 			var canvas = document.getElementById ('example');
 			var renderer = new FragmentRenderer ();
-			
-			var shaderScript = document.getElementById ('shader-fs');
-			fragmentShader = shaderScript.firstChild.textContent;
+
+			var shaderScript = document.getElementById ('shadertext');
+			var fragmentShader = shaderScript.value;
+
+			var logDiv = document.getElementById ('log');
+			logDiv.innerHTML = '';
 
 			if (!renderer.Init (canvas, fragmentShader)) {
-				var logDiv = document.getElementById ('log');
 				var errors = renderer.GetErrors ();
 				var i;
 				for (i = 0; i < errors.length; i++) {
@@ -51,24 +48,64 @@
 			}
 
 			var widthLocation = renderer.GetUniformLocation ('uWidth');
-			renderer.SetUniform1f (widthLocation, canvas.width);
+			renderer.SetUniformFloat (widthLocation, canvas.width);
 			var heightLocation = renderer.GetUniformLocation ('uHeight');
-			renderer.SetUniform1f (heightLocation, canvas.height);
-
-			Render ();
+			renderer.SetUniformFloat (heightLocation, canvas.height);
+			
+			renderer.Render ();
+		}
+	
+		function TextareaKeyDown ()
+		{
+		
 		}
 	
 	    window.onload = function ()
 		{
-			Load ();			
+			var renderButton = document.getElementById ('render');
+			renderButton.onclick = Render;
+			
+			var shaderScript = document.getElementById ('shadertext');
+			shaderScript.onkeydown = function (event) {
+				if (event.which == 9) {
+					event.preventDefault ();
+					var selectionStart = this.selectionStart;
+					this.value = this.value.substring (0, this.selectionStart) + '\t' + this.value.substring (this.selectionEnd);
+					this.selectionEnd = selectionStart + 1; 
+				}
+			}
+
+			Render ();			
 		}
 	</script>
 
 </head>
 
 <body>
+
+<div id="left">
+<textarea id="shadertext">
+precision highp float;
+varying vec2 vVertexPosition;
+uniform highp float uWidth;
+uniform highp float uHeight;
+
+highp int GetPixelNum (highp float position, highp float size) {
+	return int (floor (((position + 1.0) * size / 2.0)));
+}
+
+void main (void) {
+	highp int a = GetPixelNum (vVertexPosition.x, uWidth);
+	highp int b = GetPixelNum (vVertexPosition.y, uHeight);
+	gl_FragColor = vec4 (float (a) / 255.0, float (b) / 255.0, 0.0, 1.0);
+}
+</textarea>
+</div>
+<div id="right">
+	<input id="render" type="button" value="render"></input><br>
 	<canvas id="example" width="255" height="255"></canvas>
 	<div id="log"></div>
+</div>
 </body>
 
 </html>

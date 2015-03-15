@@ -37,7 +37,7 @@ FragmentRenderer.prototype.GetUniformLocation = function (name)
 	return this.context.getUniformLocation (this.shader, name);
 };
 
-FragmentRenderer.prototype.SetUniform1f = function (location, value)
+FragmentRenderer.prototype.SetUniformFloat = function (location, value)
 {
 	this.context.uniform1f (location, value);
 };

@@ -54,8 +54,7 @@
 			}
 			var scale = 2.0;
 			var scaleLocation = renderer.GetUniformLocation ('uVertexScale');
-			renderer.SetUniform1f (scaleLocation, scale);
-			//renderer.scale = 2.0;
+			renderer.SetUniformFloat (scaleLocation, scale);
 			Render ();
 		}
 	
