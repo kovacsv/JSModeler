@@ -23,10 +23,14 @@ JSM.RayTracerImage.prototype.GetFieldCenter = function (x, y)
 	return result;
 };
 
-JSM.RayTracerImage.prototype.GetFieldFixSample = function (x, y, xSample, ySample, sampleRes)
+JSM.RayTracerImage.prototype.GetFieldFixSample = function (x, y, currentSample, sampleCount)
 {
-	var sampleWidth = this.fieldWidth / sampleRes;
-	var sampleHeight = this.fieldHeight / sampleRes;
+    var sampleResolution = Math.sqrt (sampleCount);
+	var sampleWidth = this.fieldWidth / sampleResolution;
+	var sampleHeight = this.fieldHeight / sampleResolution;
+    
+    var xSample = parseInt (currentSample / sampleResolution);
+    var ySample = parseInt (currentSample % sampleResolution);
 	
 	var result = this.bottomLeft.Clone ();
 	result = JSM.CoordOffset (result, this.xDirection, x * this.fieldWidth + xSample * sampleWidth);
@@ -81,18 +85,16 @@ JSM.RayTracer.prototype.Render = function (model, camera, lights, onFinish)
 
 JSM.RayTracer.prototype.GetPixelColor = function (x, y)
 {
-	var sampleRes = 4;
+	var sampleCount = 16;
 	var color = new JSM.Coord (0.0, 0.0, 0.0);
-	var i, j, sample, ray;
-	for (i = 0; i < sampleRes; i++) {
-		for (j = 0; j < sampleRes; j++) {
-			sample = this.renderData.image.GetFieldFixSample (x, y, i, j, sampleRes);
-			ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (sample, this.renderData.camera.eye));
-			color = JSM.CoordAdd (color, this.Trace (ray, 0));
-		}
+	var i, sample, ray;
+	for (i = 0; i < sampleCount; i++) {
+		sample = this.renderData.image.GetFieldFixSample (x, y, i, sampleCount);
+		ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (sample, this.renderData.camera.eye));
+		color = JSM.CoordAdd (color, this.Trace (ray, 0));
 	}
-	color = JSM.VectorMultiply (color, 1.0 / (sampleRes * sampleRes));
-	return {r : color.x * 255, g : color.y * 255, b : color.z * 255}
+	color = JSM.VectorMultiply (color, 1.0 / sampleCount);
+	return color;
 };
 
 JSM.RayTracer.prototype.Trace = function (ray, iteration)
@@ -188,10 +190,10 @@ JSM.RayTracer.prototype.PutPixelRow = function (rowIndex, colors)
 	var i, color;
 	for (i = 0; i < colors.length; i++) {
 		color = colors[i];
-		imageData.data[4 * i + 0] = color.r;
-		imageData.data[4 * i + 1] = color.g;
-		imageData.data[4 * i + 2] = color.b;
-		imageData.data[4 * i + 3] = 255;
+		imageData.data[4 * i + 0] = color.x * 255.0;
+		imageData.data[4 * i + 1] = color.y * 255.0;
+		imageData.data[4 * i + 2] = color.z * 255.0;
+		imageData.data[4 * i + 3] = 255.0;
 	}
 	this.context.putImageData (imageData, 0, rowIndex);
 };	
