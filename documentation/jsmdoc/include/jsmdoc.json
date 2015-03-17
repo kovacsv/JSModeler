@@ -325,6 +325,15 @@
 						["Coord", "the result"]
 					]
 				},
+				"CoordToArray" : {
+					"description" : "Returns array of components from a coordinate.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"]
+					],
+					"returns" : [
+						["array", "number[3]"]
+					]
+				},
 				"CoordIsEqual2D" : {
 					"description" : "Determines if the given coordinates are equal.",
 					"parameters" : [
@@ -1025,6 +1034,16 @@
 						["Box", "the result"]
 					]
 				},
+				"IsCoordInBox" : {
+					"description" : "Determines if a coordinate is inside a box.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["box", "Box", "the box"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
 				"IdentityTransformation" : {
 					"description" : "Generates an identity transformation.",
 					"returns" : [
@@ -1413,8 +1432,7 @@
 				"CreateOctreeChildNodes" : {
 					"description" : "Create child nodes for an octree node. It calls a callback function which should create a new node element for the octree.",
 					"parameters" : [
-						["originalCenter", "Coord", "the center of the original node"],
-						["originalSize", "Coord", "the size of the original node"],
+						["originalBox", "Box", "the box of the original node"],
 						["createNodeCallback", "function", "the callback function"]
 					],
 					"returns" : [
@@ -1780,6 +1798,12 @@
 								["Coord", "the result"]
 							]
 						},
+						"GetSize" : {
+							"description" : "Returns the size of the box.",
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
 						"Clone" : {
 							"description" : "Clones the box.",
 							"returns" : [
@@ -2118,8 +2142,7 @@
 							"description" : "Creates a new node.",
 							"parameters" : [
 								["parent", "object", "the parent node"],
-								["center", "Coord", "the center of the node"],
-								["size", "Coord", "the size of the node"]
+								["box", "Box", "the box of the node"]
 							],
 							"returns" : [
 								["object", "the result"]
@@ -2154,8 +2177,7 @@
 							"description" : "Creates a new node.",
 							"parameters" : [
 								["parent", "object", "the parent node"],
-								["center", "Coord", "the center of the node"],
-								["size", "Coord", "the size of the node"]
+								["box", "Box", "the box of the node"]
 							],
 							"returns" : [
 								["object", "the result"]
@@ -3138,6 +3160,16 @@
 						["object", "the result data (position, distance) if intersection found, null otherwise"]
 					]
 				},
+				"RayBoxIntersection" : {
+					"description" : "Calculates intersection between a ray and a box.",
+					"parameters" : [
+						["ray", "Ray", "the ray"],
+						["min, max", "Coord", "the minimum and maximum points of the box"]
+					],
+					"returns" : [
+						["object", "the result data (position, distance) if intersection found, null otherwise"]
+					]
+				},
 				"RayTriangleBodyIntersection" : {
 					"description" : "Calculates the nearest intersection between a ray and a triangle body.",
 					"parameters" : [
@@ -3154,7 +3186,8 @@
 					"parameters" : [
 						["ray", "Ray", "the ray"],
 						["model", "TriangleModel", "the triangle model"],
-						["intersection", "object", "the result data (position, distance, triangleIndex, bodyIndex)"]
+						["intersection", "object", "the result data (position, distance, triangleIndex, bodyIndex)"],
+						["cacheBoundingBoxes", "boolean", "cache bounding boxes for bodies"]
 					],
 					"returns" : [
 						["boolean", "true if found intersection, false otherwise"]
@@ -3703,6 +3736,12 @@
 							"description" : "Returns the triangle count of the body.",
 							"returns" : [
 								["integer", "the result"]
+							]
+						},
+						"GetBoundingBox" : {
+							"description" : "Returns the bounding box of the body.",
+							"returns" : [
+								["Box", "the result"]
 							]
 						},
 						"Finalize" : {

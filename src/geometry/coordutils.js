@@ -25,6 +25,19 @@ JSM.CoordFromArray = function (array)
 };
 
 /**
+* Function: CoordToArray
+* Description: Returns array of components from a coordinate.
+* Parameters:
+*	coord {Coord} the coordinate
+* Returns:
+*	array {number[3]} the result
+*/
+JSM.CoordToArray = function (coord)
+{
+	return [coord.x, coord.y, coord.z];
+};
+
+/**
 * Function: CoordIsEqual2D
 * Description: Determines if the given coordinates are equal.
 * Parameters:

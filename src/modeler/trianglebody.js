@@ -233,6 +233,31 @@ JSM.TriangleBody.prototype.TriangleCount = function ()
 };
 
 /**
+* Function: TriangleBody.GetBoundingBox
+* Description: Returns the bounding box of the body.
+* Returns:
+*	{Box} the result
+*/
+JSM.TriangleBody.prototype.GetBoundingBox = function ()
+{
+	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
+	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
+
+	var i, coord;
+	for (i = 0; i < this.vertices.length; i++) {
+		coord = this.vertices[i];
+		min.x = JSM.Minimum (min.x, coord.x);
+		min.y = JSM.Minimum (min.y, coord.y);
+		min.z = JSM.Minimum (min.z, coord.z);
+		max.x = JSM.Maximum (max.x, coord.x);
+		max.y = JSM.Maximum (max.y, coord.y);
+		max.z = JSM.Maximum (max.z, coord.z);
+	}
+	
+	return new JSM.Box (min, max);
+};
+
+/**
 * Function: TriangleBody.Finalize
 * Description:
 *	Finalizes the body. This operation calculates normal vectors

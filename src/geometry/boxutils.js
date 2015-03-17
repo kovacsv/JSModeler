@@ -32,4 +32,4 @@ JSM.IsCoordInBox = function (coord, box)
 		return false;
 	}
 	return true;
-}
+};

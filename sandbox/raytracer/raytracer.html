@@ -125,10 +125,12 @@
 		function RayTrace (model, onFinish)
 		{
 			var size = 200;
-			var canvas = document.createElement ('canvas');
+			var sampleCount = 16;
+			var rectSize = 50;
+
+			var canvas = document.getElementById ('canvas');
 			canvas.width = size;
 			canvas.height = size;
-			document.body.appendChild (canvas);
 			
 			var camera = new JSM.Camera (
 				new JSM.Coord (4, 1, 2),
@@ -145,7 +147,7 @@
 			
 			var rayTracer = new JSM.RayTracer ();
 			rayTracer.Init (canvas);
-			rayTracer.Render (model, camera, lights, onFinish);
+			rayTracer.Render (model, camera, lights, sampleCount, rectSize, onFinish);
 		}
 
 		function RayTraceCurrent (index)
@@ -154,9 +156,13 @@
 				return;
 			}
 			
+			var logDiv = document.getElementById ('log');
 			var model = GetModel ();
+			var timer = new JSM.Timer ();
+			timer.Start ();
 			RayTrace (model, function () {
-				alert ('everything finished');
+				timer.Stop ();
+				logDiv.innerHTML = 'Elapsed time: ' + timer.Result ();
 			});
 		}
 		
@@ -174,6 +180,8 @@
 </head>
 
 <body>
+	<canvas id="canvas"></canvas>
+	<div id="log"></div>
 </body>
 
 </html>
