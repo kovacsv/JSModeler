@@ -3113,6 +3113,15 @@
 						["string", "the result"]
 					]
 				},
+				"AddVertexToBody" : {
+					"description" : "Adds a vertex to an existing body.",
+					"parameters" : [
+						["body", "TriangleBody", "the body"]
+					],
+					"returns" : [
+						["Octree", "the result"]
+					]
+				},
 				"ConvertBodyToTriangleBody" : {
 					"description" : "Converts a body to triangle body.",
 					"parameters" : [
@@ -3170,6 +3179,17 @@
 						["object", "the result data (position, distance) if intersection found, null otherwise"]
 					]
 				},
+				"RayOctreeIntersection" : {
+					"description" : "Calculates the nearest intersection between a ray and an octree.",
+					"parameters" : [
+						["ray", "Ray", "the ray"],
+						["octree", "Octree", "the octree"],
+						["intersection", "object", "the result data (position, distance, userData)"]
+					],
+					"returns" : [
+						["boolean", "true if found intersection, false otherwise"]
+					]
+				},
 				"RayTriangleBodyIntersection" : {
 					"description" : "Calculates the nearest intersection between a ray and a triangle body.",
 					"parameters" : [
@@ -3186,8 +3206,7 @@
 					"parameters" : [
 						["ray", "Ray", "the ray"],
 						["model", "TriangleModel", "the triangle model"],
-						["intersection", "object", "the result data (position, distance, triangleIndex, bodyIndex)"],
-						["cacheBoundingBoxes", "boolean", "cache bounding boxes for bodies"]
+						["intersection", "object", "the result data (position, distance, triangleIndex, bodyIndex)"]
 					],
 					"returns" : [
 						["boolean", "true if found intersection, false otherwise"]

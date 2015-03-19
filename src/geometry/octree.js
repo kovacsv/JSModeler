@@ -280,7 +280,6 @@ JSM.Octree.prototype.CreateNewNode = function (parent, box)
 */
 JSM.TriangleOctree = function (box)
 {
-	this.coords = [];
 	this.root = this.CreateNewNode (null, box);
 };
 

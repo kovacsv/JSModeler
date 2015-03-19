@@ -2003,6 +2003,66 @@ raySuite.AddTest ('RayTriangleModelIntersectionTest2', function (test)
 	test.Assert (intersection.triangleIndex == 3);
 });
 
+raySuite.AddTest ('TriangleBodyOctreeTest', function (test)
+{
+	function OctreeTriangleCount (octree)
+	{
+		var triangleCount = 0;
+		JSM.TraverseOctreeNodes (octree, function (node) {
+			triangleCount += node.triangles.length;
+			return true;
+		});
+		return triangleCount;
+	}
+	
+	function EqualTriangleCountInOctree (body)
+	{
+		var triangleBody = JSM.ConvertBodyToTriangleBody (body);
+		var octree = JSM.ConvertTriangleBodyToOctree (triangleBody);
+		return (OctreeTriangleCount (octree) == triangleBody.TriangleCount ());
+	}
+	
+	function EqualIntersection (from, to, body, octree, checkIndex)
+	{
+		var ray = new JSM.Ray (from, JSM.CoordSub (to, from), null);
+		var bodyIntersection = {}
+		var hasBodyIntersection = JSM.RayTriangleBodyIntersection (ray, body, bodyIntersection);
+		var octreeIntersection = {}
+		var timer = new JSM.Timer ();
+		var hasOctreeIntersection = JSM.RayOctreeIntersection (ray, octree, octreeIntersection);
+		if (hasBodyIntersection != hasOctreeIntersection) {
+			return false;
+		}
+		if (hasBodyIntersection && hasOctreeIntersection) {
+			test.Assert (JSM.CoordIsEqual (bodyIntersection.position, octreeIntersection.position));
+			test.Assert (JSM.IsEqual (bodyIntersection.distance, octreeIntersection.distance));
+			if (checkIndex) {
+				test.Assert (bodyIntersection.triangleIndex == octreeIntersection.userData.triangleIndex);
+			}
+		}
+		return true;
+	}
+	
+	function CheckAllIntersections (body, checkIndex)
+	{
+		var triangleBody = JSM.ConvertBodyToTriangleBody (body);
+		var octree = JSM.ConvertTriangleBodyToOctree (triangleBody);
+
+		var	i;
+		for (i = -2; i <= 2; i += 0.1) {
+			for (j = -2; j <= 2; j += 0.1) {
+				test.Assert (EqualIntersection (new JSM.Coord (2, 0, 0), new JSM.Coord (0, i, j), triangleBody, octree, checkIndex));
+			}
+		}		
+	}
+	
+	test.Assert (EqualTriangleCountInOctree (JSM.GenerateCuboid (1, 1, 1)));
+	test.Assert (EqualTriangleCountInOctree (JSM.GenerateSphere (1, 20, true)));
+	test.Assert (EqualTriangleCountInOctree (JSM.GenerateSolidWithRadius ('Icosahedron', 1.0)));
+	CheckAllIntersections (JSM.GenerateSolidWithRadius ('Icosahedron', 1.0), true);
+	CheckAllIntersections (JSM.GenerateSphere (1, 25, true), false);
+});
+
 var conversionSuite = unitTest.AddTestSuite ('Conversion');
 
 conversionSuite.AddTest ('TriangleModelConversion', function (test)

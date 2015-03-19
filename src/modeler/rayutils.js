@@ -148,6 +148,58 @@ JSM.RayBoxIntersection = function (ray, min, max)
 };
 
 /**
+* Function: RayOctreeIntersection
+* Description: Calculates the nearest intersection between a ray and an octree.
+* Parameters:
+*	ray {Ray} the ray
+*	octree {Octree} the octree
+*	intersection {object} the result data (position, distance, userData)
+* Returns:
+*	{boolean} true if found intersection, false otherwise
+*/
+JSM.RayOctreeIntersection = function (ray, octree, intersection)
+{
+	var minIntersection = null;
+	var foundIntersection = false;
+	var calcMinIntersection = (intersection !== null && intersection !== undefined);
+
+	JSM.TraverseOctreeNodes (octree, function (node) {
+		if (!calcMinIntersection && foundIntersection) {
+			return false;
+		}
+		if (!JSM.RayBoxIntersection (ray, node.box.min, node.box.max)) {
+			return false;
+		}
+		var i;
+		for (i = 0; i < node.triangles.length; i++) {
+			var triangle = node.triangles[i];
+			var v0 = triangle.v0;
+			var v1 = triangle.v1;
+			var v2 = triangle.v2;
+			var currentIntersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
+			if (currentIntersection !== null) {
+				foundIntersection = true;
+				if (!calcMinIntersection) {
+					return false;
+				}
+				if (minIntersection === null || currentIntersection.distance < minIntersection.distance) {
+					minIntersection = currentIntersection;
+					minIntersection.userData = triangle.userData;
+				}
+			}
+		}
+		return true;
+	});	
+
+	if (calcMinIntersection && minIntersection !== null) {
+		intersection.position = minIntersection.position;
+		intersection.distance = minIntersection.distance;
+		intersection.userData = minIntersection.userData;
+	}
+	return foundIntersection;
+};
+
+/**
 * Function: RayTriangleBodyIntersection
 * Description: Calculates the nearest intersection between a ray and a triangle body.
 * Parameters:
@@ -197,30 +249,17 @@ JSM.RayTriangleBodyIntersection = function (ray, body, intersection)
 *	ray {Ray} the ray
 *	model {TriangleModel} the triangle model
 *	intersection {object} the result data (position, distance, triangleIndex, bodyIndex)
-*	cacheBoundingBoxes {boolean} cache bounding boxes for bodies
 * Returns:
 *	{boolean} true if found intersection, false otherwise
 */
-JSM.RayTriangleModelIntersection = function (ray, model, intersection, cacheBoundingBoxes)
+JSM.RayTriangleModelIntersection = function (ray, model, intersection)
 {
 	var minIntersection = null;
 	var foundIntersection = false;
 	var calcMinIntersection = (intersection !== null && intersection !== undefined);
-	if (cacheBoundingBoxes === undefined || cacheBoundingBoxes === null) {
-		cacheBoundingBoxes = false;
-	}
-	
 	var i, body, currentIntersection;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		if (cacheBoundingBoxes) {
-			if (body.boundingBox === undefined) {
-				body.boundingBox = body.GetBoundingBox ();
-			}
-			if (JSM.RayBoxIntersection (ray, body.boundingBox.min, body.boundingBox.max) === null) {
-				continue;
-			}
-		}
 		currentIntersection = calcMinIntersection ? {} : null;
 		if (JSM.RayTriangleBodyIntersection (ray, body, currentIntersection)) {
 			foundIntersection = true;
