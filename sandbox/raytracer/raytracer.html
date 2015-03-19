@@ -88,7 +88,7 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		function GetModel ()
+		function GetModel (index)
 		{
 			var model = new JSM.Model ();
 			var materials = new JSM.Materials ();
@@ -102,7 +102,7 @@
 			body.Transform (JSM.RotationZTransformation (-0.35));
 			body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
 			model.AddBody (body);
-			
+
 			var body2 = JSM.GenerateCuboid (0.5, 0.5, 0.5);
 			body2.SetPolygonsMaterialIndex (2);
 			body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.2, 0.0, -0.25)));
@@ -129,9 +129,11 @@
 			var sampleCount = 16;
 			var rectSize = 50;
 
-			var canvas = document.getElementById ('canvas');
+			var renders = document.getElementById ('renders');
+			var canvas = document.createElement ('canvas');
 			canvas.width = size;
 			canvas.height = size;
+			renders.appendChild (canvas);
 			
 			var camera = new JSM.Camera (
 				new JSM.Coord (4, 1, 2),
@@ -158,12 +160,13 @@
 			}
 			
 			var logDiv = document.getElementById ('log');
-			var model = GetModel ();
+			var model = GetModel (index);
 			var timer = new JSM.Timer ();
 			timer.Start ();
 			RayTrace (model, function () {
 				timer.Stop ();
-				logDiv.innerHTML = 'Elapsed time: ' + timer.Result ();
+				logDiv.innerHTML += 'Elapsed time: ' + timer.Result () + '<br>';
+				RayTraceCurrent (index + 1);
 			});
 		}
 		
@@ -181,7 +184,7 @@
 </head>
 
 <body>
-	<canvas id="canvas"></canvas>
+	<div id="renders"></div>
 	<div id="log"></div>
 </body>
 

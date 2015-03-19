@@ -281,3 +281,58 @@ JSM.RayTriangleModelIntersection = function (ray, model, intersection)
 	}	
 	return foundIntersection;
 };
+
+/**
+* Function: RayTriangleModelIntersectionWithOctree
+* Description:
+*	Calculates the nearest intersection between a ray and a triangle model.
+*	Caches the octrees for all bodies in the model.
+* Parameters:
+*	ray {Ray} the ray
+*	model {TriangleModel} the triangle model
+*	intersection {object} the result data (position, distance, triangleIndex, bodyIndex)
+* Returns:
+*	{boolean} true if found intersection, false otherwise
+*/
+JSM.RayTriangleModelIntersectionWithOctree = function (ray, model, intersection)
+{
+	var minIntersection = null;
+	var foundIntersection = false;
+	var calcMinIntersection = (intersection !== null && intersection !== undefined);
+	var i, body, hasIntersection, currentIntersection;
+	for (i = 0; i < model.BodyCount (); i++) {
+		body = model.GetBody (i);
+		hasIntersection = false;
+		currentIntersection = calcMinIntersection ? {} : null;
+		if (body.TriangleCount () > 20) {
+			if (body.octree === undefined) {
+				body.octree = JSM.ConvertTriangleBodyToOctree (body);
+			}
+			hasIntersection = JSM.RayOctreeIntersection (ray, body.octree, currentIntersection);
+		} else {
+			hasIntersection = JSM.RayTriangleBodyIntersection (ray, body, currentIntersection);
+		}
+		
+		if (hasIntersection) {
+			foundIntersection = true;
+			if (!calcMinIntersection) {
+				break;
+			}
+			if (minIntersection === null || currentIntersection.distance < minIntersection.distance) {
+				minIntersection = currentIntersection;
+				if (currentIntersection.userData !== undefined) {
+					minIntersection.triangleIndex = currentIntersection.userData.triangleIndex;
+				}
+				minIntersection.bodyIndex = i;
+			}
+		}
+	}
+	
+	if (calcMinIntersection && minIntersection !== null) {
+		intersection.position = minIntersection.position;
+		intersection.distance = minIntersection.distance;
+		intersection.triangleIndex = minIntersection.triangleIndex;
+		intersection.bodyIndex = minIntersection.bodyIndex;
+	}	
+	return foundIntersection;
+};
