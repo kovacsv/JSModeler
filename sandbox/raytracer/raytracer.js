@@ -78,7 +78,7 @@ JSM.RayTracer.prototype.Init = function (canvas)
 	this.context = this.canvas.getContext ('2d');
 };
 
-JSM.RayTracer.prototype.Render = function (model, camera, lights, sampleCount, rectSize, onFinish)
+JSM.RayTracer.prototype.Render = function (mode, model, camera, lights, sampleCount, rectSize, onFinish)
 {
 	function InitRects (rectSize, canvasWidth, canvasHeight)
 	{
@@ -152,7 +152,12 @@ JSM.RayTracer.prototype.Render = function (model, camera, lights, sampleCount, r
 	var maxSampleCount = sampleCount;
 	var renderRects = InitRects (rectSize, this.canvas.width, this.canvas.height);
 	var runCount = renderRects.length * maxSampleCount;
-	var renderCallback = this.PathTraceGetPixelColor.bind (this);
+	var renderCallback = null;
+	if (mode == 'RayTrace') {
+		renderCallback = this.RayTraceGetPixelColor.bind (this);
+	} else if (mode == 'PathTrace') {
+		renderCallback = this.PathTraceGetPixelColor.bind (this);
+	}
 
 	var asyncEnv = new JSM.AsyncEnvironment ({
 		onFinish : function () {

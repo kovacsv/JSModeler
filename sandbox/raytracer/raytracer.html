@@ -97,16 +97,18 @@
 			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0x0000ff}));
 			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xcc0000, reflection : 0.2}));
 			
-			var body = JSM.GenerateCuboid (1, 1, 1);
-			body.SetPolygonsMaterialIndex (1);
-			body.Transform (JSM.RotationZTransformation (-0.35));
-			body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
-			model.AddBody (body);
+			if (index < 3) {
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				body.SetPolygonsMaterialIndex (1);
+				body.Transform (JSM.RotationZTransformation (-0.35));
+				body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
+				model.AddBody (body);
 
-			var body2 = JSM.GenerateCuboid (0.5, 0.5, 0.5);
-			body2.SetPolygonsMaterialIndex (2);
-			body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.2, 0.0, -0.25)));
-			model.AddBody (body2);
+				var body2 = JSM.GenerateCuboid (0.5, 0.5, 0.5);
+				body2.SetPolygonsMaterialIndex (2);
+				body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.2, 0.0, -0.25)));
+				model.AddBody (body2);
+			}
 
 			if (index == 0) {
 				var body3 = JSM.GenerateCuboid (3, 0.1, 2);
@@ -126,6 +128,12 @@
 				body3.Transform (JSM.RotationZTransformation (-0.3));
 				body3.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.8, -0.8, 0.5)));
 				model.AddBody (body3);
+			} else if (index == 3) {
+				var body3 = JSM.GenerateLegoBrick (3, 2, true, true, false, 30, true);
+				body3.SetPolygonsMaterialIndex (2);
+				body3.Transform (JSM.RotationZTransformation (-0.5));
+				body3.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.8, 0.0, -0.5)));
+				model.AddBody (body3);
 			}
 
 			var box = JSM.GenerateCuboid (10, 10, 10);
@@ -140,7 +148,7 @@
 		function RayTrace (model, onFinish)
 		{
 			var size = 400;
-			var sampleCount = 32;
+			var sampleCount = 16;
 			var rectSize = 50;
 
 			var renders = document.getElementById ('renders');
@@ -165,12 +173,12 @@
 			
 			var rayTracer = new JSM.RayTracer ();
 			rayTracer.Init (canvas);
-			rayTracer.Render (model, camera, lights, sampleCount, rectSize, onFinish);
+			rayTracer.Render ('PathTrace', model, camera, lights, sampleCount, rectSize, onFinish);
 		}
 
 		function RayTraceCurrent (index)
 		{
-			if (index >= 3) {
+			if (index > 2) {
 				return;
 			}
 			
