@@ -108,11 +108,25 @@
 			body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.2, 0.0, -0.25)));
 			model.AddBody (body2);
 
-			var body3 = JSM.GenerateCuboid (3, 0.1, 2);
-			body3.SetPolygonsMaterialIndex (3);
-			body3.Transform (JSM.RotationZTransformation (-0.3));
-			body3.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, -0.7, 0.5)));
-			model.AddBody (body3);
+			if (index == 0) {
+				var body3 = JSM.GenerateCuboid (3, 0.1, 2);
+				body3.SetPolygonsMaterialIndex (3);
+				body3.Transform (JSM.RotationZTransformation (-0.3));
+				body3.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, -0.7, 0.5)));
+				model.AddBody (body3);
+			} else if (index == 1) {
+				var body3 = JSM.GenerateCylinder (1.0, 2.0, 50, true, true);
+				body3.SetPolygonsMaterialIndex (3);
+				body3.Transform (JSM.RotationZTransformation (-0.3));
+				body3.Transform (JSM.TranslationTransformation (new JSM.Coord (-1.0, -1.0, 0.0)));
+				model.AddBody (body3);
+			} else if (index == 2) {
+				var body3 = JSM.GenerateSphere (1.0, 25, true);
+				body3.SetPolygonsMaterialIndex (3);
+				body3.Transform (JSM.RotationZTransformation (-0.3));
+				body3.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.8, -0.8, 0.5)));
+				model.AddBody (body3);
+			}
 
 			var box = JSM.GenerateCuboid (10, 10, 10);
 			box.SetPolygonsMaterialIndex (0);
@@ -125,9 +139,9 @@
 
 		function RayTrace (model, onFinish)
 		{
-			var size = 200;
-			var sampleCount = 16;
-			var rectSize = 100;
+			var size = 400;
+			var sampleCount = 32;
+			var rectSize = 50;
 
 			var renders = document.getElementById ('renders');
 			var canvas = document.createElement ('canvas');
@@ -143,6 +157,7 @@
 			var lights = [
 				{
 					position : new JSM.Coord (4, 2, 3),
+					radius : 0.5,
 					ambientIntensity : 1.0,
 					diffuseIntensity : 1.0
 				}				
@@ -155,7 +170,7 @@
 
 		function RayTraceCurrent (index)
 		{
-			if (index >= 1) {
+			if (index >= 3) {
 				return;
 			}
 			

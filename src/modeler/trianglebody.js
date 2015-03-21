@@ -111,6 +111,34 @@ JSM.TriangleBody.prototype.GetNormal = function (index)
 	return this.normals[index];
 };
 
+
+/**
+* Function: TriangleBody.GetTriangleNormal
+* Description: Returns the normal vector of a triangle at the given position.
+* Parameters:
+*	triangleIndex {integer} the triangle index
+*	normalPosition {Coord} the position of the normal inside the triangle
+* Returns:
+*	{Vector} the result
+*/
+JSM.TriangleBody.prototype.GetTriangleNormal = function (triangleIndex, normalPosition)
+{
+	var normal = null;
+	var triangle = this.triangles[triangleIndex];
+	if (triangle.curve == -1) {
+		normal = this.GetNormal (triangle.n0);
+	} else {
+		var v0 = this.GetVertex (triangle.v0);
+		var v1 = this.GetVertex (triangle.v1);
+		var v2 = this.GetVertex (triangle.v2);
+		var n0 = this.GetNormal (triangle.n0);
+		var n1 = this.GetNormal (triangle.n1);
+		var n2 = this.GetNormal (triangle.n2);
+		normal = JSM.BarycentricInterpolation (v0, v1, v2, n0, n1, n2, normalPosition);
+	}
+	return normal;
+};
+
 /**
 * Function: TriangleBody.NormalCount
 * Description: Returns the normal vector count of the body.

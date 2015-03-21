@@ -57,6 +57,14 @@ JSM.RayTracerImage.prototype.GetFieldFixSample = function (x, y, currentSample, 
 	return result;
 };
 
+JSM.RayTracerImage.prototype.GetFieldRandomSample = function (x, y)
+{
+    var result = this.bottomLeft.Clone ();
+	result = JSM.CoordOffset (result, this.xDirection, x * this.fieldWidth + Math.random () * this.fieldWidth);
+	result = JSM.CoordOffset (result, this.yDirection, y * this.fieldHeight + Math.random () * this.fieldHeight);
+	return result;
+};
+
 JSM.RayTracer = function ()
 {
 	this.canvas = null;
@@ -117,7 +125,7 @@ JSM.RayTracer.prototype.Render = function (model, camera, lights, sampleCount, r
 		var i, j, color;
 		for (i = currentRect.y; i < currentRect.y + currentRect.height; i++) {
 			for (j = currentRect.x; j < currentRect.x + currentRect.width; j++) {
-				color = this.GetPixelColor (j, this.canvas.height - i - 1, currentSample, maxSampleCount);
+				color = renderCallback (j, this.canvas.height - i - 1, currentSample, maxSampleCount);
 				currentRect.AddColor (i - currentRect.y, j - currentRect.x, color);
 			}
 		}
@@ -144,6 +152,7 @@ JSM.RayTracer.prototype.Render = function (model, camera, lights, sampleCount, r
 	var maxSampleCount = sampleCount;
 	var renderRects = InitRects (rectSize, this.canvas.width, this.canvas.height);
 	var runCount = renderRects.length * maxSampleCount;
+	var renderCallback = this.PathTraceGetPixelColor.bind (this);
 
 	var asyncEnv = new JSM.AsyncEnvironment ({
 		onFinish : function () {
@@ -155,32 +164,15 @@ JSM.RayTracer.prototype.Render = function (model, camera, lights, sampleCount, r
 	JSM.AsyncRunTask (RenderCurrentRect.bind (this), asyncEnv, runCount, 0, null);
 };
 
-JSM.RayTracer.prototype.GetPixelColor = function (x, y, currentSample, maxSampleCount)
+JSM.RayTracer.prototype.RayTraceGetPixelColor = function (x, y, currentSample, maxSampleCount)
 {
 	var sample = this.renderData.image.GetFieldFixSample (x, y, currentSample, maxSampleCount);
 	var ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (sample, this.renderData.camera.eye));
-	return this.Trace (ray, 0);
+	return this.TraceRay (ray, 0);
 };
 
-JSM.RayTracer.prototype.Trace = function (ray, iteration)
+JSM.RayTracer.prototype.TraceRay = function (ray, iteration)
 {
-	function GetNormal (body, triangle, intersection)
-	{
-		var normal = null;
-		if (triangle.curve == -1) {
-			normal = body.GetNormal (triangle.n0);
-		} else {
-			var v0 = body.GetVertex (triangle.v0);
-			var v1 = body.GetVertex (triangle.v1);
-			var v2 = body.GetVertex (triangle.v2);
-			var n0 = body.GetNormal (triangle.n0);
-			var n1 = body.GetNormal (triangle.n1);
-			var n2 = body.GetNormal (triangle.n2);
-			normal = JSM.BarycentricInterpolation (v0, v1, v2, n0, n1, n2, intersection);
-		}
-		return normal;
-	}
-
 	function GetReflectedDirection (direction, normal)
 	{
 		var dotProduct = JSM.VectorDot (normal, direction);
@@ -209,7 +201,7 @@ JSM.RayTracer.prototype.Trace = function (ray, iteration)
 	var triangle = body.GetTriangle (intersection.triangleIndex);
 	var material = this.renderData.model.GetMaterial (triangle.mat);
 	var intersectionPosition = intersection.position;
-	var intersectionNormal = GetNormal (body, triangle, intersectionPosition);
+	var intersectionNormal = body.GetTriangleNormal (intersection.triangleIndex, intersectionPosition);
 	
 	var i, light, currentColor;
 	for (i = 0; i < this.renderData.lights.length; i++) {
@@ -223,7 +215,114 @@ JSM.RayTracer.prototype.Trace = function (ray, iteration)
 	if (material.reflection > 0.0) {
 		var reflectedDirection = GetReflectedDirection (ray.GetDirection (), intersectionNormal);
 		var reflectedRay = new JSM.Ray (intersection.position, reflectedDirection);
-		var reflectedColor = this.Trace (reflectedRay, iteration + 1);
+		var reflectedColor = this.TraceRay (reflectedRay, iteration + 1);
+		color = JSM.CoordAdd (color, JSM.VectorMultiply (reflectedColor, material.reflection));
+	}
+	
+	this.ClampColor (color);
+	return color;
+};
+
+JSM.RayTracer.prototype.PathTraceGetPixelColor = function (x, y, currentSample, maxSampleCount)
+{
+	var sample = this.renderData.image.GetFieldRandomSample (x, y, currentSample, maxSampleCount);
+	var ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (sample, this.renderData.camera.eye));
+	return this.TracePath (ray, 0);
+};
+
+JSM.RayTracer.prototype.TracePath = function (ray, iteration)
+{
+	function RandomDirectionOnHemisphere (normal)
+	{
+		var theta = Math.acos (Math.sqrt (1.0 - Math.random ()));
+		var phi = 2.0 * Math.PI * Math.random ();
+		var xs = Math.sin (theta) * Math.cos (phi);
+		var ys = Math.cos (theta);
+		var zs = Math.sin (theta) * Math.sin (phi);
+		
+		var yVector = new JSM.Vector (normal.x, normal.y, normal.z);
+		var h = yVector.Clone ();
+		if (JSM.IsLowerOrEqual (Math.abs (h.x), Math.abs (h.y)) && JSM.IsLowerOrEqual (Math.abs (h.x), Math.abs (h.z))) {
+			h.x = 1.0;
+		} else if (JSM.IsLowerOrEqual (Math.abs (h.y), Math.abs (h.x)) && JSM.IsLowerOrEqual (Math.abs (h.y), Math.abs (h.z))) {
+			h.y = 1.0;
+		} else {
+			h.z = 1.0;
+		}
+
+		var xVector = JSM.VectorNormalize (JSM.VectorCross (h, yVector));
+		var zVector = JSM.VectorNormalize (JSM.VectorCross (xVector, yVector));
+		var direction = new JSM.Vector (0.0, 0.0, 0.0);
+		direction = JSM.CoordAdd (direction, JSM.VectorMultiply (xVector, xs));
+		direction = JSM.CoordAdd (direction, JSM.VectorMultiply (yVector, ys));
+		direction = JSM.CoordAdd (direction, JSM.VectorMultiply (zVector, zs));
+		return JSM.VectorNormalize (direction);
+	}
+
+	function GetReflectedDirection (direction, normal)
+	{
+		var dotProduct = JSM.VectorDot (normal, direction);
+		return JSM.CoordSub (direction, JSM.VectorMultiply (normal, 2.0 * dotProduct));
+	}
+	
+	function TraceLights (renderer, intersectionPosition, intersectionNormal)
+	{
+		function GetRandomLightPoint (light)
+		{
+			var direction = new JSM.Vector (Math.random (), Math.random (), Math.random ());
+			var result = JSM.CoordOffset (light.position, direction, Math.random () * light.radius);
+			return result;
+		}	
+	
+		var result = new JSM.Coord (0.0, 0.0, 0.0);
+		var i, light, lightDistance, lightDirection, lightRay, color;
+		for (i = 0; i < renderer.renderData.lights.length; i++) {
+			light = renderer.renderData.lights[i];
+			lightPoint = GetRandomLightPoint (light);
+			lightDistance = JSM.CoordDistance (lightPoint, intersectionPosition);
+			lightDirection = JSM.CoordSub (lightPoint, intersectionPosition);
+			lightRay = new JSM.Ray (intersectionPosition, lightDirection, lightDistance);
+			if (!JSM.RayTriangleModelIntersectionWithOctree (lightRay, renderer.renderData.model, null)) {
+				color = renderer.PhongShading (material, light, intersectionPosition, intersectionNormal);
+				result = JSM.CoordAdd (result, color);
+			}
+		}
+		return result;
+	}
+	
+	function TraceModel (renderer, intersectionPosition, intersectionNormal, iteration)
+	{
+		var result = new JSM.Coord (0.0, 0.0, 0.0);
+		var randomRayDir = RandomDirectionOnHemisphere (intersectionNormal);
+		var ray = new JSM.Ray (intersectionPosition, randomRayDir);
+		return renderer.TracePath (ray, iteration + 1)
+	}	
+	
+	var color = new JSM.Coord (0.0, 0.0, 0.0);
+	if (iteration > 5) {
+		return color;
+	}
+	
+	var intersection = {};
+	if (!JSM.RayTriangleModelIntersectionWithOctree (ray, this.renderData.model, intersection)) {
+		return color;
+	}
+	
+	var body = this.renderData.model.GetBody (intersection.bodyIndex);
+	var triangle = body.GetTriangle (intersection.triangleIndex);
+	var material = this.renderData.model.GetMaterial (triangle.mat);
+	var intersectionPosition = intersection.position;
+	var intersectionNormal = body.GetTriangleNormal (intersection.triangleIndex, intersectionPosition);
+	
+	var colorFromLight = TraceLights (this, intersectionPosition, intersectionNormal);
+	var colorFromModel = TraceModel (this, intersectionPosition, intersectionNormal, iteration);
+	var lightModelRatio = 0.75;
+	color = JSM.CoordAdd (JSM.VectorMultiply (colorFromLight, lightModelRatio), JSM.VectorMultiply (colorFromModel, 1.0 - lightModelRatio));
+	
+	if (material.reflection > 0.0) {
+		var reflectedDirection = GetReflectedDirection (ray.GetDirection (), intersectionNormal);
+		var reflectedRay = new JSM.Ray (intersection.position, reflectedDirection);
+		var reflectedColor = this.TracePath (reflectedRay, iteration + 1);
 		color = JSM.CoordAdd (color, JSM.VectorMultiply (reflectedColor, material.reflection));
 	}
 	

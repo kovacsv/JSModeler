@@ -3211,6 +3211,17 @@
 					"returns" : [
 						["boolean", "true if found intersection, false otherwise"]
 					]
+				},
+				"RayTriangleModelIntersectionWithOctree" : {
+					"description" : "Calculates the nearest intersection between a ray and a triangle model. Caches the octrees for all bodies in the model.",
+					"parameters" : [
+						["ray", "Ray", "the ray"],
+						["model", "TriangleModel", "the triangle model"],
+						["intersection", "object", "the result data (position, distance, triangleIndex, bodyIndex)"]
+					],
+					"returns" : [
+						["boolean", "true if found intersection, false otherwise"]
+					]
 				}
 			},
 			"classes" : {
@@ -3688,6 +3699,16 @@
 							"description" : "Returns the normal vector at the given index.",
 							"parameters" : [
 								["index", "integer", "the normal vector index"]
+							],
+							"returns" : [
+								["Vector", "the result"]
+							]
+						},
+						"GetTriangleNormal" : {
+							"description" : "Returns the normal vector of a triangle at the given position.",
+							"parameters" : [
+								["triangleIndex", "integer", "the triangle index"],
+								["normalPosition", "Coord", "the position of the normal inside the triangle"]
 							],
 							"returns" : [
 								["Vector", "the result"]
