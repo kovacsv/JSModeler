@@ -1,73 +1,20 @@
-JSM.RayTracerRect = function (size, canvasWidth, canvasHeight)
+JSM.RayTracerRect = function (x, y, width, height)
 {
-	this.valid = true;
-	this.size = size;
-	this.canvasWidth = canvasWidth;
-	this.canvasHeight = canvasHeight;
-	this.Reset ();
-};
-
-JSM.RayTracerRect.prototype.IsValid = function ()
-{
-	return this.valid;
-};
-
-JSM.RayTracerRect.prototype.RectCount = function ()
-{
-	var rowCount = Math.ceil (this.canvasHeight / this.size);
-	var columnCount = Math.ceil (this.canvasHeight / this.size);
-	return rowCount * columnCount;
-};
-
-JSM.RayTracerRect.prototype.Step = function ()
-{
-	if (!this.valid) {
-		return;
-	}
-	
-	this.width = this.size;
-	this.height = this.size;
-
-	this.x += this.size;
-	if (this.x >= this.canvasWidth) {
-		this.x = 0;
-		this.y += this.size;
-	}
-	this.AdjustWidth ();
-	
-	if (this.y >= this.canvasHeight) {
-		this.y += this.size;
-	}
-	this.AdjustHeight ();
-	
-	if (this.y >= this.canvasHeight) {
-		this.Reset ();
-		this.valid = false;
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+	this.colors = [];
+	var i;
+	for (i = 0; i < this.width * this.height; i++) {
+		this.colors.push (new JSM.Coord (0.0, 0.0, 0.0));
 	}
 };
 
-JSM.RayTracerRect.prototype.Reset = function ()
+JSM.RayTracerRect.prototype.AddColor = function (row, column, color)
 {
-	this.x = 0;
-	this.y = 0;
-	this.width = this.size;
-	this.height = this.size;
-	this.AdjustWidth ();
-	this.AdjustHeight ();
-};
-
-JSM.RayTracerRect.prototype.AdjustWidth = function ()
-{
-	if (this.x + this.width >= this.canvasWidth) {
-		this.width = this.canvasWidth - this.x;
-	}
-};
-
-JSM.RayTracerRect.prototype.AdjustHeight = function ()
-{
-	if (this.y + this.height >= this.canvasHeight) {
-		this.height = this.canvasHeight - this.y;
-	}
+	var index = row * this.width + column;
+	this.colors[index] = JSM.CoordAdd (this.colors[index], color);
 };
 
 JSM.RayTracerImage = function (camera, resolutionX, resolutionY, distance)
@@ -125,18 +72,64 @@ JSM.RayTracer.prototype.Init = function (canvas)
 
 JSM.RayTracer.prototype.Render = function (model, camera, lights, sampleCount, rectSize, onFinish)
 {
-	function RenderRect ()
+	function InitRects (rectSize, canvasWidth, canvasHeight)
 	{
-		var colors = [];
+		function RectCount (rectSize, canvasWidth, canvasHeight)
+		{
+			var rowCount = Math.ceil (canvasHeight / rectSize);
+			var columnCount = Math.ceil (canvasWidth / rectSize);
+			return rowCount * columnCount;
+		}
+		
+		function CreateRect (row, column, rectSize, canvasWidth, canvasHeight)
+		{
+			var x = column * rectSize;
+			var y = row * rectSize;
+			var width = rectSize;
+			if (x + width >= canvasWidth) {
+				width = canvasWidth - x;
+			}
+			var height = rectSize;
+			if (y + height >= canvasHeight) {
+				height = canvasHeight - y;
+			}
+			var result = new JSM.RayTracerRect (x, y, width, height);
+			return result;
+		}
+		
+		var result = [];
+		var rowCount = Math.ceil (canvasHeight / rectSize);
+		var columnCount = Math.ceil (canvasWidth / rectSize);
+		var i, j, rect;
+		for (i = 0; i < rowCount; i++) {
+			for (j = 0; j < columnCount; j++) {
+				rect = CreateRect (i, j, rectSize, canvasWidth, canvasHeight);
+				result.push (rect);
+			}
+		}
+		return result;
+	}
+
+	function RenderCurrentRect ()
+	{
+		var currentRect = renderRects[currentRectIndex];
+
 		var i, j, color;
 		for (i = currentRect.y; i < currentRect.y + currentRect.height; i++) {
 			for (j = currentRect.x; j < currentRect.x + currentRect.width; j++) {
-				color = this.GetPixelColor (j, this.canvas.height - i - 1);
-				colors.push (color);
+				color = this.GetPixelColor (j, this.canvas.height - i - 1, currentSample, maxSampleCount);
+				currentRect.AddColor (i - currentRect.y, j - currentRect.x, color);
 			}
 		}
-		this.PutPixelRect (currentRect, colors);
-		currentRect.Step ();
+		this.PutPixelRect (currentRect, currentSample);
+
+		if (currentRectIndex < renderRects.length - 1) {
+			currentRectIndex += 1;
+		} else {
+			currentRectIndex = 0;
+			currentSample += 1;
+		}
+
 		return true;
 	}
 	
@@ -144,10 +137,14 @@ JSM.RayTracer.prototype.Render = function (model, camera, lights, sampleCount, r
 	this.renderData.model = model;
 	this.renderData.camera = camera;
 	this.renderData.lights = lights;
-	this.renderData.sampleCount = sampleCount;
 	this.renderData.image = new JSM.RayTracerImage (camera, this.canvas.width, this.canvas.height, 1.0);
 	
-	var currentRect = new JSM.RayTracerRect (rectSize, this.canvas.width, this.canvas.height);
+	var currentRectIndex = 0;
+	var currentSample = 1;
+	var maxSampleCount = sampleCount;
+	var renderRects = InitRects (rectSize, this.canvas.width, this.canvas.height);
+	var runCount = renderRects.length * maxSampleCount;
+
 	var asyncEnv = new JSM.AsyncEnvironment ({
 		onFinish : function () {
 			if (onFinish !== undefined && onFinish !== null) {
@@ -155,21 +152,14 @@ JSM.RayTracer.prototype.Render = function (model, camera, lights, sampleCount, r
 			}
 		}
 	});
-	var runCount = currentRect.RectCount ();
-	JSM.AsyncRunTask (RenderRect.bind (this), asyncEnv, runCount, 0, null);
+	JSM.AsyncRunTask (RenderCurrentRect.bind (this), asyncEnv, runCount, 0, null);
 };
 
-JSM.RayTracer.prototype.GetPixelColor = function (x, y)
+JSM.RayTracer.prototype.GetPixelColor = function (x, y, currentSample, maxSampleCount)
 {
-	var color = new JSM.Coord (0.0, 0.0, 0.0);
-	var i, sample, ray;
-	for (i = 0; i < this.renderData.sampleCount; i++) {
-		sample = this.renderData.image.GetFieldFixSample (x, y, i, this.renderData.sampleCount);
-		ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (sample, this.renderData.camera.eye));
-		color = JSM.CoordAdd (color, this.Trace (ray, 0));
-	}
-	color = JSM.VectorMultiply (color, 1.0 / this.renderData.sampleCount);
-	return color;
+	var sample = this.renderData.image.GetFieldFixSample (x, y, currentSample, maxSampleCount);
+	var ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (sample, this.renderData.camera.eye));
+	return this.Trace (ray, 0);
 };
 
 JSM.RayTracer.prototype.Trace = function (ray, iteration)
@@ -259,15 +249,15 @@ JSM.RayTracer.prototype.PhongShading = function (material, light, shadedPoint, s
 	return color;
 };
 
-JSM.RayTracer.prototype.PutPixelRect = function (rect, colors)
+JSM.RayTracer.prototype.PutPixelRect = function (rect, sampleCount)
 {
 	var imageData = this.context.createImageData (rect.width, rect.height);
 	var i, color;
 	for (i = 0; i < imageData.data.length / 4; i++) {
-		color = colors[i];
-		imageData.data[4 * i + 0] = color.x * 255.0;
-		imageData.data[4 * i + 1] = color.y * 255.0;
-		imageData.data[4 * i + 2] = color.z * 255.0;
+		color = rect.colors[i];
+		imageData.data[4 * i + 0] = (color.x / sampleCount) * 255.0;
+		imageData.data[4 * i + 1] = (color.y / sampleCount) * 255.0;
+		imageData.data[4 * i + 2] = (color.z / sampleCount) * 255.0;
 		imageData.data[4 * i + 3] = 255.0;
 	}
 	this.context.putImageData (imageData, rect.x, rect.y);
