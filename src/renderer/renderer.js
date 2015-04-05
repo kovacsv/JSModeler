@@ -27,9 +27,9 @@ JSM.RenderMaterial.prototype.Compile = function (context, textureLoaded)
 		this.textureImage.src = this.texture;
 		this.textureImage.onload = function () {
 			context.bindTexture (context.TEXTURE_2D, myThis.textureBuffer);
-			context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, myThis.textureImage);
 			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.LINEAR);
 			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR_MIPMAP_LINEAR);
+			context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, myThis.textureImage);
 			context.generateMipmap (context.TEXTURE_2D);
 			context.bindTexture (context.TEXTURE_2D, null);
 			myThis.textureLoaded = true;
