@@ -515,9 +515,9 @@ JSM.CoordRotate = function (coord, axis, angle, origo)
 	var si = Math.sin (angle);
 	var co = Math.cos (angle);
 	var result = new JSM.Coord (0.0, 0.0, 0.0);
-	result.x = - u * (- u * x - v * y - w * z) * (1 - co) + x * co + (- w * y + v * z) * si;
-	result.y = - v * (- u * x - v * y - w * z) * (1 - co) + y * co + (w * x - u * z) * si;
-	result.z = - w * (- u * x - v * y - w * z) * (1 - co) + z * co + (- v * x + u * y) * si;
+	result.x = - u * (- u * x - v * y - w * z) * (1.0 - co) + x * co + (- w * y + v * z) * si;
+	result.y = - v * (- u * x - v * y - w * z) * (1.0 - co) + y * co + (w * x - u * z) * si;
+	result.z = - w * (- u * x - v * y - w * z) * (1.0 - co) + z * co + (- v * x + u * y) * si;
 	
 	result = JSM.CoordAdd (result, origo);
 	return result;

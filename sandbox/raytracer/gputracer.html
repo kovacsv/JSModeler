@@ -94,9 +94,14 @@
 			padding : 0px;
 		}
 	
-		textarea.shadertext
+		#vertexshader
 		{
-			width : 49%;
+			display : none;
+		}
+
+		#fragmentshader
+		{
+			width : 100%;
 			height : 500px;
 			border : 1px solid #cccccc;
 		}
@@ -184,17 +189,17 @@
 			triangleCount = triangleBody.TriangleCount ();
 			
 			var result = '';
-			result += '\tint triangleCount = ' + triangleCount + ';\n';
-			result += '\ttriangle triangles[' + triangleCount + '];\n';
+			result += 'const int triangleCount = ' + triangleCount + ';\n';
+			result += 'Triangle triangles[' + triangleCount + '];\n';
 			var i, triangle, v0, v1, v2, currentIntersection;
 			for (i = 0; i < triangleCount; i++) {
 				triangle = triangleBody.GetTriangle (i);
 				v0 = triangleBody.GetVertex (triangle.v0);
 				v1 = triangleBody.GetVertex (triangle.v1);
 				v2 = triangleBody.GetVertex (triangle.v2);
-				result += '\ttriangles[' + i + '].v0 = vec3 (' + v0.x + ', ' + v0.y + ', ' + v0.z + ');\n';
-				result += '\ttriangles[' + i + '].v1 = vec3 (' + v1.x + ', ' + v1.y + ', ' + v1.z + ');\n';
-				result += '\ttriangles[' + i + '].v2 = vec3 (' + v2.x + ', ' + v2.y + ', ' + v2.z + ');\n';
+				result += 'triangles[' + i + '].v0 = vec3 (' + v0.x + ', ' + v0.y + ', ' + v0.z + ');\n';
+				result += 'triangles[' + i + '].v1 = vec3 (' + v1.x + ', ' + v1.y + ', ' + v1.z + ');\n';
+				result += 'triangles[' + i + '].v2 = vec3 (' + v2.x + ', ' + v2.y + ', ' + v2.z + ');\n';
 			}
 			return result;
 		}
@@ -202,10 +207,10 @@
 		function ConvertCameraToShaderCode (camera)
 		{
 			var result = '';
-			result += '\tcamera cam;\n';
-			result += '\tcam.eye = vec3 (' + camera.eye.x + ', ' + camera.eye.y + ', ' + camera.eye.z + ');\n';
-			result += '\tcam.center = vec3 (' + camera.center.x + ', ' + camera.center.y + ', ' + camera.center.z + ');\n';
-			result += '\tcam.up = vec3 (' + camera.up.x + ', ' + camera.up.y + ', ' + camera.up.z + ');\n';
+			result += 'Camera camera;\n';
+			result += 'camera.eye = vec3 (' + camera.eye.x + ', ' + camera.eye.y + ', ' + camera.eye.z + ');\n';
+			result += 'camera.center = vec3 (' + camera.center.x + ', ' + camera.center.y + ', ' + camera.center.z + ');\n';
+			result += 'camera.up = vec3 (' + camera.up.x + ', ' + camera.up.y + ', ' + camera.up.z + ');\n';
 			return result;
 		}
 
@@ -218,12 +223,17 @@
 			);
 			
 			var body = JSM.GenerateCuboid (1, 1, 1);
+			body.Transform (JSM.RotationZTransformation (-0.35));
+			body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
+			
 			var generatedCode = '';
+			generatedCode += '// GENERATED CODE BEGIN\n';
 			generatedCode += ConvertBodyToShaderCode (body);
 			generatedCode += ConvertCameraToShaderCode (camera);
-
+			generatedCode += '// GENERATED CODE END\n';
+			
 			var fragmentShader = document.getElementById ('fragmentshader');
-			fragmentShader.value = fragmentShader.value.replace ('// GENERATED CODE', generatedCode);
+			fragmentShader.value = fragmentShader.value.replace ('[GENERATEDCODE]', generatedCode);
 		}
 	
 	    window.onload = function ()
@@ -242,44 +252,150 @@
 
 <body>
 	<div>
-<textarea id="vertexshader" class="shadertext">
+<textarea id="vertexshader">
 precision highp float;
 attribute vec2 aVertexPosition;
 varying vec2 vVertexPosition;
 
 void main (void) {
-	vVertexPosition = (aVertexPosition + vec2 (1.0, 1.0)) / 2.0;
-	gl_Position = vec4 (aVertexPosition.x, -aVertexPosition.y, 0.0, 1.0);
+	vVertexPosition = aVertexPosition;
+	gl_Position = vec4 (aVertexPosition.x, aVertexPosition.y, 0.0, 1.0);
 }
 </textarea>
-<textarea id="fragmentshader" class="shadertext">
+<textarea id="fragmentshader">
 precision highp float;
+
 varying vec2 vVertexPosition;
 uniform highp float uWidth;
 uniform highp float uHeight;
 
-struct triangle
+struct Triangle
 {
 	vec3 v0;
 	vec3 v1;
 	vec3 v2;
 };
 
-struct camera
+struct Camera
 {
 	vec3 eye;
 	vec3 center;
 	vec3 up;
 };
 
-void main (void) {
-// GENERATED CODE
-	
-	float x = floor (vVertexPosition.x * uWidth);
-	float y = floor (vVertexPosition.y * uHeight);
+struct Ray
+{
+	vec3 origin;
+	vec3 direction;
+};
 
-	if (mod (x, 2.0) != mod (y, 2.0)) {
-		gl_FragColor = vec4 (1.0, 1.0, 1.0, 1.0);
+struct Intersection
+{
+	vec3 position;
+	float distance;
+};
+
+vec3 CoordRotate (in vec3 coord, in vec3 axis, in float angle)
+{
+	vec3 normal = normalize (axis);
+
+	float u = normal.x;
+	float v = normal.y;
+	float w = normal.z;
+
+	float x = coord.x;
+	float y = coord.y;
+	float z = coord.z;
+
+	float si = sin (angle);
+	float co = cos (angle);
+
+	vec3 result;
+	result.x = - u * (- u * x - v * y - w * z) * (1.0 - co) + x * co + (- w * y + v * z) * si;
+	result.y = - v * (- u * x - v * y - w * z) * (1.0 - co) + y * co + (w * x - u * z) * si;
+	result.z = - w * (- u * x - v * y - w * z) * (1.0 - co) + z * co + (- v * x + u * y) * si;
+	return result;
+}
+
+bool RayTriangleIntersection (in Ray ray, in vec3 v0, in vec3 v1, in vec3 v2, out Intersection intersection)
+{
+	vec3 rayOrigin = ray.origin;
+	vec3 rayDirection = ray.direction;
+
+	vec3 edgeDir1 = v1 - v0;
+	vec3 edgeDir2 = v2 - v0;
+	vec3 pVector = cross (rayDirection, edgeDir2);
+
+	float determinant = dot (edgeDir1, pVector);
+	if (determinant == 0.0) {
+		return false;
+	}
+	
+	bool isFrontFacing = determinant > 0.0;
+	if (!isFrontFacing) {
+		return false;
+	}
+
+	float invDeterminant = 1.0 / determinant;
+
+	vec3 tVector = rayOrigin - v0;
+	float u = dot (tVector, pVector) * invDeterminant;
+	if (u < 0.0 || u > 1.0) {
+		return false;
+	}
+
+	vec3 qVector = cross (tVector, edgeDir1);
+	float v = dot (rayDirection, qVector) * invDeterminant;
+	if (v < 0.0 || u + v > 1.0) {
+		return false;
+	}
+ 
+	float distance = dot (edgeDir2, qVector) * invDeterminant;
+	if (distance <= 0.0) {
+		return false;
+	}
+
+	intersection.position = rayOrigin + rayDirection * distance;
+	intersection.distance = distance;
+	return true;
+}
+
+Ray GetRay (in vec2 vertexPosition, in Camera camera)
+{
+	Ray result;
+	result.origin = camera.eye;
+
+	vec3 eyeCenterDir = normalize (camera.center - camera.eye);
+	vec3 horizontalDir = normalize (cross (eyeCenterDir, camera.up));
+	vec3 verticalDir = normalize (cross (horizontalDir, eyeCenterDir ));
+
+	float cameraDistance = 1.5;
+	float horizontalAngle = -atan (vertexPosition.x / cameraDistance);
+	float verticalAngle = atan (vertexPosition.y / cameraDistance);
+	
+	result.direction = eyeCenterDir;
+	result.direction = CoordRotate (result.direction, verticalDir, horizontalAngle);
+	result.direction = CoordRotate (result.direction, horizontalDir, verticalAngle);
+
+	return result;
+}
+
+void main (void) {
+
+[GENERATEDCODE]
+	
+	Ray ray = GetRay (vVertexPosition, camera);
+	bool hasIntersection = false;
+	for (int i = 0; i < triangleCount; i++) {
+		Triangle triangle = triangles[i];
+		Intersection intersection;
+		if (RayTriangleIntersection (ray, triangle.v0, triangle.v1, triangle.v2, intersection)) {
+			hasIntersection = true;
+			break;
+		}
+	}
+	if (hasIntersection) {
+		gl_FragColor = vec4 (1.0, 0.0, 0.0, 1.0);
 	} else {
 		gl_FragColor = vec4 (0.0, 0.0, 0.0, 1.0);
 	}
