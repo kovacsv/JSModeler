@@ -85,9 +85,23 @@
 	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
 	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
-	<script type="text/javascript" src="raytracer.js"></script>
 	<title>Example</title>
-
+	
+	<style>
+		html, body
+		{
+			margin : 5px;
+			padding : 0px;
+		}
+	
+		textarea.shadertext
+		{
+			width : 49%;
+			height : 500px;
+			border : 1px solid #cccccc;
+		}
+	</style>
+	
 	<script type="text/javascript">
 		function GetModel (index)
 		{
@@ -98,44 +112,22 @@
 			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0x0000ff}));
 			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xcc0000, reflection : 0.2}));
 			
-			if (index < 3) {
-				var body = JSM.GenerateCuboid (1, 1, 1);
-				body.SetPolygonsMaterialIndex (1);
-				body.Transform (JSM.RotationZTransformation (-0.35));
-				body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
-				model.AddBody (body);
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			body.SetPolygonsMaterialIndex (1);
+			body.Transform (JSM.RotationZTransformation (-0.35));
+			body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
+			model.AddBody (body);
 
-				var body2 = JSM.GenerateCuboid (0.5, 0.5, 0.5);
-				body2.SetPolygonsMaterialIndex (2);
-				body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.2, 0.0, -0.25)));
-				model.AddBody (body2);
-			}
+			var body2 = JSM.GenerateCuboid (0.5, 0.5, 0.5);
+			body2.SetPolygonsMaterialIndex (2);
+			body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.2, 0.0, -0.25)));
+			model.AddBody (body2);
 
-			if (index == 0) {
-				var body3 = JSM.GenerateCuboid (3, 0.1, 2);
-				body3.SetPolygonsMaterialIndex (3);
-				body3.Transform (JSM.RotationZTransformation (-0.3));
-				body3.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, -0.7, 0.5)));
-				model.AddBody (body3);
-			} else if (index == 1) {
-				var body3 = JSM.GenerateCylinder (1.0, 2.0, 50, true, true);
-				body3.SetPolygonsMaterialIndex (3);
-				body3.Transform (JSM.RotationZTransformation (-0.3));
-				body3.Transform (JSM.TranslationTransformation (new JSM.Coord (-1.0, -1.0, 0.0)));
-				model.AddBody (body3);
-			} else if (index == 2) {
-				var body3 = JSM.GenerateSphere (1.0, 25, true);
-				body3.SetPolygonsMaterialIndex (3);
-				body3.Transform (JSM.RotationZTransformation (-0.3));
-				body3.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.8, -0.8, 0.5)));
-				model.AddBody (body3);
-			} else if (index == 3) {
-				var body3 = JSM.GenerateLegoBrick (3, 2, true, true, false, 30, true);
-				body3.SetPolygonsMaterialIndex (2);
-				body3.Transform (JSM.RotationZTransformation (-0.5));
-				body3.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.8, 0.0, -0.5)));
-				model.AddBody (body3);
-			}
+			var body3 = JSM.GenerateCuboid (3, 0.1, 2);
+			body3.SetPolygonsMaterialIndex (3);
+			body3.Transform (JSM.RotationZTransformation (-0.3));
+			body3.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, -0.7, 0.5)));
+			model.AddBody (body3);
 
 			var box = JSM.GenerateCuboid (10, 10, 10);
 			box.SetPolygonsMaterialIndex (0);
@@ -145,71 +137,160 @@
 			
 			return JSM.ConvertModelToTriangleModel (model, materials);
 		}
-
-		function RayTrace (model, onFinish)
+		
+		function Compile ()
 		{
-			var size = 400;
-			var sampleCount = 16;
-			var rectSize = 50;
+			var vertexShader = document.getElementById ('vertexshader').value;
+			var fragmentShader = document.getElementById ('fragmentshader').value;
+			var errorDiv = document.getElementById ('error');
+			errorDiv.innerHTML = '';
 
-			var renders = document.getElementById ('renders');
-			var canvas = document.createElement ('canvas');
-			canvas.width = size;
-			canvas.height = size;
-			renders.appendChild (canvas);
+			var canvas = document.getElementById ('example');
+			var context = JSM.WebGLInitContext (canvas);
+			var floatExtension = context.getExtension ('OES_texture_float');
+			var shader = JSM.WebGLInitShaderProgram (context, vertexShader, fragmentShader, function (error) {
+				errorDiv.innerHTML += error.replace ('\n', '<br>');
+			});
 			
+			var vertices = new Float32Array ([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]);
+			var vertexAttribLocation = context.getAttribLocation (shader, 'aVertexPosition');
+			var buffer = context.createBuffer ();
+			context.bindBuffer (context.ARRAY_BUFFER, buffer);
+			context.bufferData (context.ARRAY_BUFFER, vertices, context.STATIC_DRAW);
+			context.vertexAttribPointer (vertexAttribLocation, 2, context.FLOAT, false, 0, 0);
+			context.enableVertexAttribArray (vertexAttribLocation);
+			context.bindBuffer (context.ARRAY_BUFFER, null);
+
+			context.uniform1f (context.getUniformLocation (shader, 'uWidth'), canvas.width);
+			context.uniform1f (context.getUniformLocation (shader, 'uHeight'), canvas.height);
+			
+			context.clear (context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
+			context.drawArrays (context.TRIANGLE_FAN, 0, 4);			
+		}
+
+		function TextAreaKeyDown (event)
+		{
+			if (event.which == 9) {
+				event.preventDefault ();
+				var selectionStart = this.selectionStart;
+				this.value = this.value.substring (0, this.selectionStart) + '\t' + this.value.substring (this.selectionEnd);
+				this.selectionEnd = selectionStart + 1; 
+			}		
+		}
+		
+		function ConvertBodyToShaderCode (body)
+		{
+			var triangleBody = new JSM.ConvertBodyToTriangleBody (body);
+			triangleCount = triangleBody.TriangleCount ();
+			
+			var result = '';
+			result += '\tint triangleCount = ' + triangleCount + ';\n';
+			result += '\ttriangle triangles[' + triangleCount + '];\n';
+			var i, triangle, v0, v1, v2, currentIntersection;
+			for (i = 0; i < triangleCount; i++) {
+				triangle = triangleBody.GetTriangle (i);
+				v0 = triangleBody.GetVertex (triangle.v0);
+				v1 = triangleBody.GetVertex (triangle.v1);
+				v2 = triangleBody.GetVertex (triangle.v2);
+				result += '\ttriangles[' + i + '].v0 = vec3 (' + v0.x + ', ' + v0.y + ', ' + v0.z + ');\n';
+				result += '\ttriangles[' + i + '].v1 = vec3 (' + v1.x + ', ' + v1.y + ', ' + v1.z + ');\n';
+				result += '\ttriangles[' + i + '].v2 = vec3 (' + v2.x + ', ' + v2.y + ', ' + v2.z + ');\n';
+			}
+			return result;
+		}
+		
+		function ConvertCameraToShaderCode (camera)
+		{
+			var result = '';
+			result += '\tcamera cam;\n';
+			result += '\tcam.eye = vec3 (' + camera.eye.x + ', ' + camera.eye.y + ', ' + camera.eye.z + ');\n';
+			result += '\tcam.center = vec3 (' + camera.center.x + ', ' + camera.center.y + ', ' + camera.center.z + ');\n';
+			result += '\tcam.up = vec3 (' + camera.up.x + ', ' + camera.up.y + ', ' + camera.up.z + ');\n';
+			return result;
+		}
+
+		function GenerateCode ()
+		{
 			var camera = new JSM.Camera (
 				new JSM.Coord (4, 1, 2),
 				new JSM.Coord (0, 0, 0),
 				new JSM.Coord (0, 0, 1)
 			);
-			var lights = [
-				{
-					position : new JSM.Coord (4, 2, 3),
-					radius : 0.5,
-					ambientIntensity : 1.0,
-					diffuseIntensity : 1.0
-				}				
-			];
 			
-			var rayTracer = new JSM.RayTracer ();
-			rayTracer.Init (canvas);
-			rayTracer.Render ('PathTrace', model, camera, lights, sampleCount, rectSize, onFinish);
-		}
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			var generatedCode = '';
+			generatedCode += ConvertBodyToShaderCode (body);
+			generatedCode += ConvertCameraToShaderCode (camera);
 
-		function RayTraceCurrent (index)
-		{
-			if (index > 2) {
-				return;
-			}
-			
-			var logDiv = document.getElementById ('log');
-			var model = GetModel (index);
-			var timer = new JSM.Timer ();
-			timer.Start ();
-			RayTrace (model, function () {
-				timer.Stop ();
-				logDiv.innerHTML += 'Elapsed time: ' + timer.Result () + '<br>';
-				RayTraceCurrent (index + 1);
-			});
-		}
-		
-		function Load ()
-		{
-			RayTraceCurrent (0);
+			var fragmentShader = document.getElementById ('fragmentshader');
+			fragmentShader.value = fragmentShader.value.replace ('// GENERATED CODE', generatedCode);
 		}
 	
 	    window.onload = function ()
 		{
-			Load ();			
+			var vertexShader = document.getElementById ('vertexshader');
+			var fragmentShader = document.getElementById ('fragmentshader');
+			vertexShader.onkeydown = TextAreaKeyDown;
+			fragmentShader.onkeydown = TextAreaKeyDown;
+
+			GenerateCode ();
+			Compile ();			
 		}
 	</script>
 
 </head>
 
 <body>
-	<div id="renders"></div>
-	<div id="log"></div>
+	<div>
+<textarea id="vertexshader" class="shadertext">
+precision highp float;
+attribute vec2 aVertexPosition;
+varying vec2 vVertexPosition;
+
+void main (void) {
+	vVertexPosition = (aVertexPosition + vec2 (1.0, 1.0)) / 2.0;
+	gl_Position = vec4 (aVertexPosition.x, -aVertexPosition.y, 0.0, 1.0);
+}
+</textarea>
+<textarea id="fragmentshader" class="shadertext">
+precision highp float;
+varying vec2 vVertexPosition;
+uniform highp float uWidth;
+uniform highp float uHeight;
+
+struct triangle
+{
+	vec3 v0;
+	vec3 v1;
+	vec3 v2;
+};
+
+struct camera
+{
+	vec3 eye;
+	vec3 center;
+	vec3 up;
+};
+
+void main (void) {
+// GENERATED CODE
+	
+	float x = floor (vVertexPosition.x * uWidth);
+	float y = floor (vVertexPosition.y * uHeight);
+
+	if (mod (x, 2.0) != mod (y, 2.0)) {
+		gl_FragColor = vec4 (1.0, 1.0, 1.0, 1.0);
+	} else {
+		gl_FragColor = vec4 (0.0, 0.0, 0.0, 1.0);
+	}
+}
+</textarea>
+	</div>
+	<div>
+		<input type="button" value="render" onclick="Compile ();"></input>
+	</div>
+	<div id="error"></div>
+	<canvas id="example" width="256" height="256"></canvas>
 </body>
 
 </html>

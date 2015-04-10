@@ -205,13 +205,11 @@ JSM.Renderer.prototype.InitContext = function (canvas)
 		return false;
 	}
 
-	this.context.viewportWidth = this.canvas.width;
-	this.context.viewportHeight = this.canvas.height;
-	
-	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
+	this.context = JSM.WebGLInitContext (canvas);
+	if (this.context === null) {
+		return false;
+	}
 
-	this.context.clearColor (1.0, 1.0, 1.0, 1.0);
-	
 	this.context.enable (this.context.DEPTH_TEST);
 	this.context.depthFunc (this.context.LEQUAL);
 	
@@ -224,36 +222,6 @@ JSM.Renderer.prototype.InitContext = function (canvas)
 
 JSM.Renderer.prototype.InitShaders = function ()
 {
-	function CompileShader (context, script, type)
-	{
-		var shader = context.createShader (type);
-		context.shaderSource (shader, script);
-		context.compileShader (shader);
-		if (!context.getShaderParameter (shader, context.COMPILE_STATUS)) {
-			return null;
-		}
-		return shader;
-	}
-	
-	function CreateShader (context, fragmentShaderScript, vertexShaderScript)
-	{
-		var fragmentShader = CompileShader (context, fragmentShaderScript, context.FRAGMENT_SHADER);
-		var vertexShader = CompileShader (context, vertexShaderScript, context.VERTEX_SHADER);
-		if (fragmentShader === null || vertexShader === null) {
-			return null;
-		}
-
-		var shader = context.createProgram ();
-		context.attachShader (shader, vertexShader);
-		context.attachShader (shader, fragmentShader);
-		context.linkProgram (shader);
-		if (!context.getProgramParameter (shader, context.LINK_STATUS)) {
-			return null;
-		}
-		
-		return shader;
-	}
-	
 	function GetFragmentShaderScript (isTextureShader)
 	{
 		var defineString = '';
@@ -370,7 +338,7 @@ JSM.Renderer.prototype.InitShaders = function ()
 	{
 		var fragmentShaderScript = GetFragmentShaderScript (false);
 		var vertexShaderScript = GetVertexShaderScript (false);
-		var shader = CreateShader (context, fragmentShaderScript, vertexShaderScript);
+		var shader = JSM.WebGLInitShaderProgram (context, vertexShaderScript, fragmentShaderScript, null);
 		if (shader === null) {
 			return null;
 		}
@@ -385,7 +353,7 @@ JSM.Renderer.prototype.InitShaders = function ()
 	{
 		var fragmentShaderScript = GetFragmentShaderScript (true);
 		var vertexShaderScript = GetVertexShaderScript (true);
-		var shader = CreateShader (context, fragmentShaderScript, vertexShaderScript);
+		var shader = JSM.WebGLInitShaderProgram (context, vertexShaderScript, fragmentShaderScript, null);
 		if (shader === null) {
 			return null;
 		}

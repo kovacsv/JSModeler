@@ -60,6 +60,7 @@
 ../src/extras/svgtomodel.js
 ../src/extras/csg.js
 ../src/extras/curves.js
+../src/renderer/webglutils.js
 ../src/renderer/renderer.js
 ../src/renderer/pointcloudrenderer.js
 ../src/renderer/rendererconverter.js
