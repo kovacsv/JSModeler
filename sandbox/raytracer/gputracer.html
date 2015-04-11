@@ -142,11 +142,11 @@
 			body3.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, -0.7, 0.5)));
 			model.AddBody (body3);
 
-			//var box = JSM.GenerateCuboid (10, 10, 10);
-			//box.SetPolygonsMaterialIndex (0);
-			//JSM.MakeBodyInsideOut (box);
-			//box.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 4.5)));
-			//model.AddBody (box);
+			var box = JSM.GenerateCuboid (10, 10, 10);
+			box.SetPolygonsMaterialIndex (0);
+			JSM.MakeBodyInsideOut (box);
+			box.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 4.5)));
+			model.AddBody (box);
 			
 			return JSM.ConvertModelToTriangleModel (model, materials);
 		}
@@ -155,7 +155,6 @@
 		{
 			var result = [];
 			var i, j, triangleBody, triangle, v0, v1, v2;
-			var currentIndex = 0;
 			for (i = 0; i < triangleModel.BodyCount (); i++) {
 				triangleBody = triangleModel.GetBody (i);
 				for (j = 0; j < triangleBody.TriangleCount (); j++) {
@@ -166,11 +165,24 @@
 					result.push (v0.x, v0.y, v0.z);
 					result.push (v1.x, v1.y, v1.z);
 					result.push (v2.x, v2.y, v2.z);
+					result.push (triangle.mat, 0.0, 0.0);
 				}
 			}
 			return result;
 		}
 		
+		function GenerateMaterialData (triangleModel)
+		{
+			var result = [];
+			var i, material;
+			for (i = 0; i < triangleModel.MaterialCount (); i++) {
+				material = triangleModel.GetMaterial (i);
+				result.push (material.ambient[0], material.ambient[1], material.ambient[2]);
+				result.push (material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+			}
+			return result;
+		}
+
 		WebGLGetTextureSizeForFloatArray = function (dataLength)
 		{
 			var neededSize = Math.ceil (Math.sqrt (dataLength / 3.0));
@@ -179,11 +191,7 @@
 		
 		WebGLCreateFloatTextureBufferFromArray = function (context, array, size)
 		{
-			while (array.length < size * size * 3) {
-				array.push (0.0);
-			}		
 			var floatArray = new Float32Array (array);
-
 			var textureBuffer = context.createTexture ();
 			context.bindTexture (context.TEXTURE_2D, textureBuffer);
 			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST);
@@ -192,6 +200,17 @@
 			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_T, context.CLAMP_TO_EDGE);
 			context.texImage2D (context.TEXTURE_2D, 0, context.RGB, size, size, 0, context.RGB, context.FLOAT, floatArray);
 			context.bindTexture (context.TEXTURE_2D, null);
+			return textureBuffer;
+		};
+		
+		WebGLCreateFloatTextureBuffer = function (context, array)
+		{
+			var textureSize = WebGLGetTextureSizeForFloatArray (array.length);
+			while (array.length < textureSize * textureSize * 3) {
+				array.push (0.0);
+			}		
+			var textureBuffer = WebGLCreateFloatTextureBufferFromArray (context, array, textureSize);
+			textureBuffer.textureSize = textureSize;
 			return textureBuffer;
 		};
 
@@ -226,15 +245,20 @@
 			context.uniform1f (context.getUniformLocation (shader, 'uHeight'), canvas.height);
 			
 			var triangleData = GenerateTriangleData (triangleModel);
-			var textureSize = WebGLGetTextureSizeForFloatArray (triangleData.length);
-			var textureBuffer = WebGLCreateFloatTextureBufferFromArray (context, triangleData, textureSize);
+			var triangleTextureBuffer = WebGLCreateFloatTextureBuffer (context, triangleData);
+			context.uniform1i (context.getUniformLocation (shader, 'uTiangleTextureSampler'), 0);
+			context.uniform1f (context.getUniformLocation (shader, 'uTriangleTextureSize'), triangleTextureBuffer.textureSize);
+			
+			var materialData = GenerateMaterialData (triangleModel);
+			var materialTextureBuffer = WebGLCreateFloatTextureBuffer (context, materialData);
+			context.uniform1i (context.getUniformLocation (shader, 'uMaterialTextureSampler'), 1);
+			context.uniform1f (context.getUniformLocation (shader, 'uMaterialTextureSize'), materialTextureBuffer.textureSize);
 			
 			context.activeTexture (context.TEXTURE0);
-			context.bindTexture (context.TEXTURE_2D, textureBuffer);				
+			context.bindTexture (context.TEXTURE_2D, triangleTextureBuffer);				
+			context.activeTexture (context.TEXTURE1);
+			context.bindTexture (context.TEXTURE_2D, materialTextureBuffer);				
 
-			context.uniform1i (context.getUniformLocation (shader, 'uTiangleTextureSampler'), 0);
-			context.uniform1f (context.getUniformLocation (shader, 'uTriangleTextureSize'), textureSize);
-			
 			context.clear (context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
 			context.drawArrays (context.TRIANGLE_FAN, 0, 4);			
 		}
@@ -286,17 +310,21 @@ uniform highp float uHeight;
 #define TRIANGLE_COUNT [TRIANGLE_COUNT]
 uniform sampler2D uTiangleTextureSampler;
 uniform highp float uTriangleTextureSize;
-
-struct Material
-{
-	vec3 diffuse;
-};
+uniform sampler2D uMaterialTextureSampler;
+uniform highp float uMaterialTextureSize;
 
 struct Triangle
 {
 	vec3 v0;
 	vec3 v1;
 	vec3 v2;
+	int mat;
+};
+
+struct Material
+{
+	vec3 ambient;
+	vec3 diffuse;
 };
 
 struct Camera
@@ -388,10 +416,20 @@ vec3 GetFloatVector (in sampler2D sampler, in float textureSize, in int index)
 Triangle GetTriangle (in int index)
 {
 	Triangle triangle;
-	triangle.v0 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 3);
-	triangle.v1 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 3 + 1);
-	triangle.v2 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 3 + 2);
+	triangle.v0 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 4 + 0);
+	triangle.v1 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 4 + 1);
+	triangle.v2 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 4 + 2);
+	vec3 vec = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 4 + 3);
+	triangle.mat = int (vec.x);
 	return triangle;
+}
+
+Material GetMaterial (in int index)
+{
+	Material material;
+	material.ambient = GetFloatVector (uMaterialTextureSampler, uMaterialTextureSize, index * 2 + 0);
+	material.diffuse = GetFloatVector (uMaterialTextureSampler, uMaterialTextureSize, index * 2 + 1);
+	return material;
 }
 
 bool RayModelIntersection (in Ray ray, out Intersection intersection)
@@ -416,6 +454,8 @@ bool RayModelIntersection (in Ray ray, out Intersection intersection)
 vec4 PhongShading (in Intersection intersection)
 {
 	Triangle triangle = GetTriangle (intersection.triangle);
+	Material material = GetMaterial (triangle.mat);
+	
 	vec3 shadedPointNormal = CalculateTriangleNormal (triangle.v0, triangle.v1, triangle.v2);
 	vec3 shadedPoint = intersection.position;
 	
@@ -423,15 +463,12 @@ vec4 PhongShading (in Intersection intersection)
 	float lightAmbientIntensity = 1.0;
 	float lightDiffuseIntensity = 1.0;
 	
-	vec3 materialAmbientColor = vec3 (0.0, 0.0, 0.0);
-	vec3 materialDiffuseColor = vec3 (1.0, 0.0, 0.0);
-	
-	vec3 ambientColor = materialAmbientColor * lightAmbientIntensity;
+	vec3 ambientColor = material.ambient * lightAmbientIntensity;
 	ambientColor = clamp (ambientColor, 0.0, 1.0);
 	
 	vec3 lightDirection = normalize (lightPosition - shadedPoint);
 	float diffuseCoeff = max (dot (lightDirection, shadedPointNormal), 0.0);
-	vec3 diffuseColor = materialDiffuseColor * lightDiffuseIntensity;
+	vec3 diffuseColor = material.diffuse * lightDiffuseIntensity;
 	diffuseColor = clamp (diffuseColor, 0.0, 1.0);
 	
 	vec3 color = ambientColor + diffuseColor * diffuseCoeff;
