@@ -99,8 +99,9 @@
 			return textureBuffer;
 		};
 		
-		WebGLCreateTextureBufferFromFloatArray = function (context, floatArray, width, height)
+		WebGLCreateFloatTextureBufferFromArray = function (context, array, width, height)
 		{
+			var floatArray = new Float32Array (array);
 			var textureBuffer = context.createTexture ();
 			context.bindTexture (context.TEXTURE_2D, textureBuffer);
 			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST);
@@ -207,8 +208,7 @@
 			context.uniform1f (textureWidthUniform0, width);
 			context.uniform1f (textureHeightUniform0, height);
 
-			var colorArray = new Float32Array (colors);
-			var textureBuffer = WebGLCreateTextureBufferFromFloatArray (context, colorArray, width, height);
+			var textureBuffer = WebGLCreateFloatTextureBufferFromArray (context, colors, width, height);
 			context.activeTexture (context.TEXTURE0);
 			context.bindTexture (context.TEXTURE_2D, textureBuffer);				
 			context.clear (context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);

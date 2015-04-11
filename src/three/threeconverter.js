@@ -1,21 +1,3 @@
-JSM.IsPowerOfTwo = function (x)
-{
-	return (x & (x - 1) === 0);
-};
-
-JSM.NextPowerOfTwo = function (x)
-{
-	if (JSM.IsPowerOfTwo (x)) {
-		return x;
-	}
-
-	var result = 1;
-	while (result < x) {
-		result *= 2;
-	}
-	return result;
-};
-
 JSM.ResizeImageToPowerOfTwoSides = function (image)
 {
 	if (JSM.IsPowerOfTwo (image.width) && !JSM.IsPowerOfTwo (image.height)) {
