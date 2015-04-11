@@ -349,14 +349,8 @@ bool RayModelIntersection (in Ray ray, out Intersection intersection)
 	return hasIntersection;
 }
 
-vec4 PhongShading (in Intersection intersection)
+vec4 PhongShading (in vec3 shadedPoint, in vec3 shadedPointNormal, in Material material)
 {
-	Triangle triangle = GetTriangle (intersection.triangle);
-	Material material = GetMaterial (triangle.mat);
-	
-	vec3 shadedPointNormal = CalculateTriangleNormal (triangle.v0, triangle.v1, triangle.v2);
-	vec3 shadedPoint = intersection.position;
-	
 	vec3 lightPosition = vec3 (4.0, 2.0, 4.0);
 	float lightAmbientIntensity = 1.0;
 	float lightDiffuseIntensity = 1.0;
@@ -403,7 +397,10 @@ void main (void) {
 	Intersection intersection;
 	bool hasIntersection = RayModelIntersection (ray, intersection);
 	if (hasIntersection) {
-		gl_FragColor = PhongShading (intersection);
+		Triangle triangle = GetTriangle (intersection.triangle);
+		Material material = GetMaterial (triangle.mat);
+		vec3 shadedPointNormal = CalculateTriangleNormal (triangle.v0, triangle.v1, triangle.v2);
+		gl_FragColor = PhongShading (intersection.position, shadedPointNormal, material);
 	} else {
 		gl_FragColor = vec4 (0.0, 0.0, 0.0, 1.0);
 	}	
