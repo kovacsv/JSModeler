@@ -110,15 +110,14 @@
 	<script type="text/javascript">
 		function GetModel ()
 		{
-			var model = new JSM.Model ();
-			var body = JSM.GenerateCuboid (1, 1, 1);
-			body.Transform (JSM.RotationZTransformation (-0.35));
-			body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
-			model.AddBody (body);
-			var triangleModel = JSM.ConvertModelToTriangleModel (model);
-			return triangleModel;
+			//var model = new JSM.Model ();
+			//var body = JSM.GenerateCuboid (1, 1, 1);
+			//body.Transform (JSM.RotationZTransformation (-0.35));
+			//body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
+			//model.AddBody (body);
+			//var triangleModel = JSM.ConvertModelToTriangleModel (model);
+			//return triangleModel;
 
-			/*
 			var model = new JSM.Model ();
 			var materials = new JSM.Materials ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xcccccc}));
@@ -143,14 +142,13 @@
 			body3.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, -0.7, 0.5)));
 			model.AddBody (body3);
 
-			var box = JSM.GenerateCuboid (10, 10, 10);
-			box.SetPolygonsMaterialIndex (0);
-			JSM.MakeBodyInsideOut (box);
-			box.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 4.5)));
-			model.AddBody (box);
+			//var box = JSM.GenerateCuboid (10, 10, 10);
+			//box.SetPolygonsMaterialIndex (0);
+			//JSM.MakeBodyInsideOut (box);
+			//box.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 4.5)));
+			//model.AddBody (box);
 			
 			return JSM.ConvertModelToTriangleModel (model, materials);
-			*/
 		}
 		
 		function GenerateTriangleData (triangleModel)
@@ -199,8 +197,12 @@
 
 		function Compile ()
 		{
+			var triangleModel = GetModel ();
+
 			var vertexShader = document.getElementById ('vertexshader').value;
 			var fragmentShader = document.getElementById ('fragmentshader').value;
+			fragmentShader = fragmentShader.replace ('[TRIANGLE_COUNT]', triangleModel.TriangleCount ());
+			
 			var errorDiv = document.getElementById ('error');
 			errorDiv.innerHTML = '';
 
@@ -223,7 +225,6 @@
 			context.uniform1f (context.getUniformLocation (shader, 'uWidth'), canvas.width);
 			context.uniform1f (context.getUniformLocation (shader, 'uHeight'), canvas.height);
 			
-			var triangleModel = GetModel ();
 			var triangleData = GenerateTriangleData (triangleModel);
 			var textureSize = WebGLGetTextureSizeForFloatArray (triangleData.length);
 			var textureBuffer = WebGLCreateFloatTextureBufferFromArray (context, triangleData, textureSize);
@@ -280,7 +281,9 @@ varying vec2 vVertexPosition;
 uniform highp float uWidth;
 uniform highp float uHeight;
 
-#define TRIANGLE_COUNT 12
+#define PI 3.1415926535897932384626433832795
+
+#define TRIANGLE_COUNT [TRIANGLE_COUNT]
 uniform sampler2D uTiangleTextureSampler;
 uniform highp float uTriangleTextureSize;
 
@@ -316,45 +319,17 @@ struct Intersection
 	int triangle;
 };
 
-vec3 GetFloatVector (in sampler2D sampler, in float textureWidth, in float textureHeight, in int index)
+vec3 CalculateTriangleNormal (in vec3 v0, in vec3 v1, in vec3 v2)
 {
-	float pixelSizeX = 1.0 / textureWidth;
-	float pixelSizeY = 1.0 / textureHeight;
-	float xCoordinate = mod (float (index), textureWidth) * pixelSizeX + pixelSizeX * 0.5;
-	float yCoordinate = floor (float (index) / textureWidth) * pixelSizeY + pixelSizeY * 0.5;
-	vec4 textureColor = texture2D (sampler, vec2 (xCoordinate, yCoordinate));
-	return textureColor.xyz;
-}
+	vec3 v = v1 - v0;
+	vec3 w = v2 - v0;
+	
+	vec3 normal;
+	normal.x = (v.y * w.z - v.z * w.y);
+	normal.y = (v.z * w.x - v.x * w.z);
+	normal.z = (v.x * w.y - v.y * w.x);
 
-Triangle GetTriangle (in sampler2D sampler, in float textureWidth, in float textureHeight, in int index)
-{
-	Triangle triangle;
-	triangle.v0 = GetFloatVector (sampler, textureWidth, textureHeight, index * 3);
-	triangle.v1 = GetFloatVector (sampler, textureWidth, textureHeight, index * 3 + 1);
-	triangle.v2 = GetFloatVector (sampler, textureWidth, textureHeight, index * 3 + 2);
-	return triangle;
-}
-
-vec3 CoordRotate (in vec3 coord, in vec3 axis, in float angle)
-{
-	vec3 normal = normalize (axis);
-
-	float u = normal.x;
-	float v = normal.y;
-	float w = normal.z;
-
-	float x = coord.x;
-	float y = coord.y;
-	float z = coord.z;
-
-	float si = sin (angle);
-	float co = cos (angle);
-
-	vec3 result;
-	result.x = - u * (- u * x - v * y - w * z) * (1.0 - co) + x * co + (- w * y + v * z) * si;
-	result.y = - v * (- u * x - v * y - w * z) * (1.0 - co) + y * co + (w * x - u * z) * si;
-	result.z = - w * (- u * x - v * y - w * z) * (1.0 - co) + z * co + (- v * x + u * y) * si;
-	return result;
+	return normalize (normal);
 }
 
 bool RayTriangleIntersection (in Ray ray, in vec3 v0, in vec3 v1, in vec3 v2, out Intersection intersection)
@@ -401,12 +376,30 @@ bool RayTriangleIntersection (in Ray ray, in vec3 v0, in vec3 v1, in vec3 v2, ou
 	return true;
 }
 
+vec3 GetFloatVector (in sampler2D sampler, in float textureSize, in int index)
+{
+	float pixelSize = 1.0 / textureSize;
+	float xCoordinate = mod (float (index), textureSize) * pixelSize + pixelSize * 0.5;
+	float yCoordinate = floor (float (index) / textureSize) * pixelSize + pixelSize * 0.5;
+	vec4 textureColor = texture2D (sampler, vec2 (xCoordinate, yCoordinate));
+	return textureColor.xyz;
+}
+
+Triangle GetTriangle (in int index)
+{
+	Triangle triangle;
+	triangle.v0 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 3);
+	triangle.v1 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 3 + 1);
+	triangle.v2 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 3 + 2);
+	return triangle;
+}
+
 bool RayModelIntersection (in Ray ray, out Intersection intersection)
 {
 	bool hasIntersection = false;
 	intersection.distance = 1.0 / 0.0; // infinite
 	for (int i = 0; i < TRIANGLE_COUNT; i++) {
-		Triangle triangle = GetTriangle (uTiangleTextureSampler, uTriangleTextureSize, uTriangleTextureSize, i);
+		Triangle triangle = GetTriangle (i);
 		Intersection currentIntersection;
 		if (RayTriangleIntersection (ray, triangle.v0, triangle.v1, triangle.v2, currentIntersection)) {
 			if (currentIntersection.distance < intersection.distance) {
@@ -420,6 +413,32 @@ bool RayModelIntersection (in Ray ray, out Intersection intersection)
 	return hasIntersection;
 }
 
+vec4 PhongShading (in Intersection intersection)
+{
+	Triangle triangle = GetTriangle (intersection.triangle);
+	vec3 shadedPointNormal = CalculateTriangleNormal (triangle.v0, triangle.v1, triangle.v2);
+	vec3 shadedPoint = intersection.position;
+	
+	vec3 lightPosition = vec3 (4.0, 2.0, 4.0);
+	float lightAmbientIntensity = 1.0;
+	float lightDiffuseIntensity = 1.0;
+	
+	vec3 materialAmbientColor = vec3 (0.0, 0.0, 0.0);
+	vec3 materialDiffuseColor = vec3 (1.0, 0.0, 0.0);
+	
+	vec3 ambientColor = materialAmbientColor * lightAmbientIntensity;
+	ambientColor = clamp (ambientColor, 0.0, 1.0);
+	
+	vec3 lightDirection = normalize (lightPosition - shadedPoint);
+	float diffuseCoeff = max (dot (lightDirection, shadedPointNormal), 0.0);
+	vec3 diffuseColor = materialDiffuseColor * lightDiffuseIntensity;
+	diffuseColor = clamp (diffuseColor, 0.0, 1.0);
+	
+	vec3 color = ambientColor + diffuseColor * diffuseCoeff;
+	color = clamp (color, 0.0, 1.0);
+	return vec4 (color, 1.0);
+}
+
 Ray GetRay (in vec2 vertexPosition, in Camera camera)
 {
 	Ray result;
@@ -429,14 +448,13 @@ Ray GetRay (in vec2 vertexPosition, in Camera camera)
 	vec3 horizontalDir = normalize (cross (eyeCenterDir, camera.up));
 	vec3 verticalDir = normalize (cross (horizontalDir, eyeCenterDir ));
 
-	float cameraDistance = 1.5;
-	float horizontalAngle = -atan (vertexPosition.x / cameraDistance);
-	float verticalAngle = atan (vertexPosition.y / cameraDistance);
+	float fieldOfView = PI / 3.0; // 60 degree
+	float cameraDistance = 1.0 / tan (fieldOfView / 2.0);
+	vec3 endPosition = camera.eye + eyeCenterDir * cameraDistance;
+	endPosition = endPosition + horizontalDir * vertexPosition.x;
+	endPosition = endPosition + verticalDir * vertexPosition.y;
 	
-	result.direction = eyeCenterDir;
-	result.direction = CoordRotate (result.direction, verticalDir, horizontalAngle);
-	result.direction = CoordRotate (result.direction, horizontalDir, verticalAngle);
-
+	result.direction = normalize (endPosition - camera.eye);
 	return result;
 }
 
@@ -450,7 +468,7 @@ void main (void) {
 	Intersection intersection;
 	bool hasIntersection = RayModelIntersection (ray, intersection);
 	if (hasIntersection) {
-		gl_FragColor = vec4 (1.0, 0.0, 0.0, 1.0);
+		gl_FragColor = PhongShading (intersection);
 	} else {
 		gl_FragColor = vec4 (0.0, 0.0, 0.0, 1.0);
 	}	
