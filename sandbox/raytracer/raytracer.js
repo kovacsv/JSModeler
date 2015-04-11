@@ -1,4 +1,4 @@
-JSM.RayTracerRect = function (x, y, width, height)
+RayTracerRect = function (x, y, width, height)
 {
 	this.x = x;
 	this.y = y;
@@ -11,13 +11,13 @@ JSM.RayTracerRect = function (x, y, width, height)
 	}
 };
 
-JSM.RayTracerRect.prototype.AddColor = function (row, column, color)
+RayTracerRect.prototype.AddColor = function (row, column, color)
 {
 	var index = row * this.width + column;
 	this.colors[index] = JSM.CoordAdd (this.colors[index], color);
 };
 
-JSM.RayTracerImage = function (camera, resolutionX, resolutionY, distance)
+RayTracerImage = function (camera, resolutionX, resolutionY, distance)
 {
 	var imageWidth = 2.0 * distance * Math.tan (camera.fieldOfView / 2.0);
 	var imageHeight = 2.0 * distance * Math.tan (camera.fieldOfView / 2.0);
@@ -34,7 +34,7 @@ JSM.RayTracerImage = function (camera, resolutionX, resolutionY, distance)
 	this.bottomLeft = JSM.CoordOffset (this.bottomLeft, JSM.VectorMultiply (this.yDirection, -1.0), imageHeight / 2.0);
 };
 
-JSM.RayTracerImage.prototype.GetFieldCenter = function (x, y)
+RayTracerImage.prototype.GetFieldCenter = function (x, y)
 {
 	var result = this.bottomLeft.Clone ();
 	result = JSM.CoordOffset (result, this.xDirection, x * this.fieldWidth + this.fieldWidth / 2.0);
@@ -42,14 +42,14 @@ JSM.RayTracerImage.prototype.GetFieldCenter = function (x, y)
 	return result;
 };
 
-JSM.RayTracerImage.prototype.GetFieldFixSample = function (x, y, currentSample, sampleCount)
+RayTracerImage.prototype.GetFieldFixSample = function (x, y, currentSample, sampleCount)
 {
     var sampleResolution = Math.sqrt (sampleCount);
 	var sampleWidth = this.fieldWidth / sampleResolution;
 	var sampleHeight = this.fieldHeight / sampleResolution;
     
-    var xSample = parseInt (currentSample / sampleResolution);
-    var ySample = parseInt (currentSample % sampleResolution);
+    var xSample = parseInt (currentSample / sampleResolution, 10);
+    var ySample = parseInt (currentSample % sampleResolution, 10);
 	
 	var result = this.bottomLeft.Clone ();
 	result = JSM.CoordOffset (result, this.xDirection, x * this.fieldWidth + xSample * sampleWidth);
@@ -57,7 +57,7 @@ JSM.RayTracerImage.prototype.GetFieldFixSample = function (x, y, currentSample, 
 	return result;
 };
 
-JSM.RayTracerImage.prototype.GetFieldRandomSample = function (x, y)
+RayTracerImage.prototype.GetFieldRandomSample = function (x, y)
 {
     var result = this.bottomLeft.Clone ();
 	result = JSM.CoordOffset (result, this.xDirection, x * this.fieldWidth + Math.random () * this.fieldWidth);
@@ -65,20 +65,20 @@ JSM.RayTracerImage.prototype.GetFieldRandomSample = function (x, y)
 	return result;
 };
 
-JSM.RayTracer = function ()
+RayTracer = function ()
 {
 	this.canvas = null;
 	this.context = null;
 	this.renderData = null;
 };
 
-JSM.RayTracer.prototype.Init = function (canvas)
+RayTracer.prototype.Init = function (canvas)
 {
 	this.canvas = canvas;
 	this.context = this.canvas.getContext ('2d');
 };
 
-JSM.RayTracer.prototype.Render = function (mode, model, camera, lights, sampleCount, rectSize, onFinish)
+RayTracer.prototype.Render = function (mode, model, camera, lights, sampleCount, rectSize, onFinish)
 {
 	function InitRects (rectSize, canvasWidth, canvasHeight)
 	{
@@ -101,7 +101,7 @@ JSM.RayTracer.prototype.Render = function (mode, model, camera, lights, sampleCo
 			if (y + height >= canvasHeight) {
 				height = canvasHeight - y;
 			}
-			var result = new JSM.RayTracerRect (x, y, width, height);
+			var result = new RayTracerRect (x, y, width, height);
 			return result;
 		}
 		
@@ -145,7 +145,7 @@ JSM.RayTracer.prototype.Render = function (mode, model, camera, lights, sampleCo
 	this.renderData.model = model;
 	this.renderData.camera = camera;
 	this.renderData.lights = lights;
-	this.renderData.image = new JSM.RayTracerImage (camera, this.canvas.width, this.canvas.height, 1.0);
+	this.renderData.image = new RayTracerImage (camera, this.canvas.width, this.canvas.height, 1.0);
 	
 	var currentRectIndex = 0;
 	var currentSample = 1;
@@ -169,14 +169,14 @@ JSM.RayTracer.prototype.Render = function (mode, model, camera, lights, sampleCo
 	JSM.AsyncRunTask (RenderCurrentRect.bind (this), asyncEnv, runCount, 0, null);
 };
 
-JSM.RayTracer.prototype.RayTraceGetPixelColor = function (x, y, currentSample, maxSampleCount)
+RayTracer.prototype.RayTraceGetPixelColor = function (x, y, currentSample, maxSampleCount)
 {
 	var sample = this.renderData.image.GetFieldFixSample (x, y, currentSample, maxSampleCount);
 	var ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (sample, this.renderData.camera.eye));
 	return this.TraceRay (ray, 0);
 };
 
-JSM.RayTracer.prototype.TraceRay = function (ray, iteration)
+RayTracer.prototype.TraceRay = function (ray, iteration)
 {
 	function GetReflectedDirection (direction, normal)
 	{
@@ -228,14 +228,14 @@ JSM.RayTracer.prototype.TraceRay = function (ray, iteration)
 	return color;
 };
 
-JSM.RayTracer.prototype.PathTraceGetPixelColor = function (x, y, currentSample, maxSampleCount)
+RayTracer.prototype.PathTraceGetPixelColor = function (x, y, currentSample, maxSampleCount)
 {
 	var sample = this.renderData.image.GetFieldRandomSample (x, y, currentSample, maxSampleCount);
 	var ray = new JSM.Ray (this.renderData.camera.eye, JSM.CoordSub (sample, this.renderData.camera.eye));
 	return this.TracePath (ray, 0);
 };
 
-JSM.RayTracer.prototype.TracePath = function (ray, iteration)
+RayTracer.prototype.TracePath = function (ray, iteration)
 {
 	function RandomDirectionOnHemisphere (normal)
 	{
@@ -300,7 +300,7 @@ JSM.RayTracer.prototype.TracePath = function (ray, iteration)
 		var result = new JSM.Coord (0.0, 0.0, 0.0);
 		var randomRayDir = RandomDirectionOnHemisphere (intersectionNormal);
 		var ray = new JSM.Ray (intersectionPosition, randomRayDir);
-		return renderer.TracePath (ray, iteration + 1)
+		return renderer.TracePath (ray, iteration + 1);
 	}	
 	
 	var color = new JSM.Coord (0.0, 0.0, 0.0);
@@ -335,7 +335,7 @@ JSM.RayTracer.prototype.TracePath = function (ray, iteration)
 	return color;
 };
 
-JSM.RayTracer.prototype.PhongShading = function (material, light, shadedPoint, shadedPointNormal)
+RayTracer.prototype.PhongShading = function (material, light, shadedPoint, shadedPointNormal)
 {
 	var materialAmbientColor = new JSM.Coord (material.ambient[0], material.ambient[1], material.ambient[2]);
 	var materialDiffuseColor = new JSM.Coord (material.diffuse[0], material.diffuse[1], material.diffuse[2]);
@@ -346,14 +346,14 @@ JSM.RayTracer.prototype.PhongShading = function (material, light, shadedPoint, s
 	var lightDirection = JSM.VectorNormalize (JSM.CoordSub (light.position, shadedPoint));
 	var diffuseCoeff = JSM.Maximum (JSM.VectorDot (lightDirection, shadedPointNormal), 0.0);
 	var diffuseColor = JSM.VectorMultiply (materialDiffuseColor, light.diffuseIntensity);
-	this.ClampColor (diffuseColor)
+	this.ClampColor (diffuseColor);
 	
 	var color = JSM.CoordAdd (ambientColor, JSM.VectorMultiply (diffuseColor, diffuseCoeff));
 	this.ClampColor (color);
 	return color;
 };
 
-JSM.RayTracer.prototype.PutPixelRect = function (rect, sampleCount)
+RayTracer.prototype.PutPixelRect = function (rect, sampleCount)
 {
 	var imageData = this.context.createImageData (rect.width, rect.height);
 	var i, color;
@@ -367,7 +367,7 @@ JSM.RayTracer.prototype.PutPixelRect = function (rect, sampleCount)
 	this.context.putImageData (imageData, rect.x, rect.y);
 };	
 
-JSM.RayTracer.prototype.ClampColor = function (value)
+RayTracer.prototype.ClampColor = function (value)
 {
 	if (value.x < 0.0) { value.x = 0.0; }
 	if (value.y < 0.0) { value.y = 0.0; }
@@ -375,4 +375,4 @@ JSM.RayTracer.prototype.ClampColor = function (value)
 	if (value.x > 1.0) { value.x = 1.0; }
 	if (value.y > 1.0) { value.y = 1.0; }
 	if (value.z > 1.0) { value.z = 1.0; }
-}
+};

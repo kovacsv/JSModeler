@@ -85,6 +85,7 @@
 	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
 	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
+	<script type="text/javascript" src="gputracer.js"></script>
 	<title>Example</title>
 	
 	<style>
@@ -110,14 +111,6 @@
 	<script type="text/javascript">
 		function GetModel ()
 		{
-			//var model = new JSM.Model ();
-			//var body = JSM.GenerateCuboid (1, 1, 1);
-			//body.Transform (JSM.RotationZTransformation (-0.35));
-			//body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
-			//model.AddBody (body);
-			//var triangleModel = JSM.ConvertModelToTriangleModel (model);
-			//return triangleModel;
-
 			var model = new JSM.Model ();
 			var materials = new JSM.Materials ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xcccccc}));
@@ -151,116 +144,21 @@
 			return JSM.ConvertModelToTriangleModel (model, materials);
 		}
 		
-		function GenerateTriangleData (triangleModel)
-		{
-			var result = [];
-			var i, j, triangleBody, triangle, v0, v1, v2;
-			for (i = 0; i < triangleModel.BodyCount (); i++) {
-				triangleBody = triangleModel.GetBody (i);
-				for (j = 0; j < triangleBody.TriangleCount (); j++) {
-					triangle = triangleBody.GetTriangle (j);
-					v0 = triangleBody.GetVertex (triangle.v0);
-					v1 = triangleBody.GetVertex (triangle.v1);
-					v2 = triangleBody.GetVertex (triangle.v2);
-					result.push (v0.x, v0.y, v0.z);
-					result.push (v1.x, v1.y, v1.z);
-					result.push (v2.x, v2.y, v2.z);
-					result.push (triangle.mat, 0.0, 0.0);
-				}
-			}
-			return result;
-		}
-		
-		function GenerateMaterialData (triangleModel)
-		{
-			var result = [];
-			var i, material;
-			for (i = 0; i < triangleModel.MaterialCount (); i++) {
-				material = triangleModel.GetMaterial (i);
-				result.push (material.ambient[0], material.ambient[1], material.ambient[2]);
-				result.push (material.diffuse[0], material.diffuse[1], material.diffuse[2]);
-			}
-			return result;
-		}
-
-		WebGLGetTextureSizeForFloatArray = function (dataLength)
-		{
-			var neededSize = Math.ceil (Math.sqrt (dataLength / 3.0));
-			return JSM.NextPowerOfTwo (neededSize);
-		};
-		
-		WebGLCreateFloatTextureBufferFromArray = function (context, array, size)
-		{
-			var floatArray = new Float32Array (array);
-			var textureBuffer = context.createTexture ();
-			context.bindTexture (context.TEXTURE_2D, textureBuffer);
-			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST);
-			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.NEAREST);
-			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_S, context.CLAMP_TO_EDGE);
-			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_T, context.CLAMP_TO_EDGE);
-			context.texImage2D (context.TEXTURE_2D, 0, context.RGB, size, size, 0, context.RGB, context.FLOAT, floatArray);
-			context.bindTexture (context.TEXTURE_2D, null);
-			return textureBuffer;
-		};
-		
-		WebGLCreateFloatTextureBuffer = function (context, array)
-		{
-			var textureSize = WebGLGetTextureSizeForFloatArray (array.length);
-			while (array.length < textureSize * textureSize * 3) {
-				array.push (0.0);
-			}		
-			var textureBuffer = WebGLCreateFloatTextureBufferFromArray (context, array, textureSize);
-			textureBuffer.textureSize = textureSize;
-			return textureBuffer;
-		};
-
 		function Compile ()
 		{
 			var triangleModel = GetModel ();
 
-			var vertexShader = document.getElementById ('vertexshader').value;
-			var fragmentShader = document.getElementById ('fragmentshader').value;
-			fragmentShader = fragmentShader.replace ('[TRIANGLE_COUNT]', triangleModel.TriangleCount ());
-			
 			var errorDiv = document.getElementById ('error');
 			errorDiv.innerHTML = '';
 
+			var fragmentShader = document.getElementById ('fragmentshader').value;
+
+			var gpuTracer = new GPUTracer ();
 			var canvas = document.getElementById ('example');
-			var context = JSM.WebGLInitContext (canvas);
-			var floatExtension = context.getExtension ('OES_texture_float');
-			var shader = JSM.WebGLInitShaderProgram (context, vertexShader, fragmentShader, function (error) {
+			gpuTracer.Init (canvas, triangleModel, fragmentShader, function (error) {
 				errorDiv.innerHTML += error.replace ('\n', '<br>');
 			});
-			
-			var vertices = new Float32Array ([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]);
-			var vertexAttribLocation = context.getAttribLocation (shader, 'aVertexPosition');
-			var buffer = context.createBuffer ();
-			context.bindBuffer (context.ARRAY_BUFFER, buffer);
-			context.bufferData (context.ARRAY_BUFFER, vertices, context.STATIC_DRAW);
-			context.vertexAttribPointer (vertexAttribLocation, 2, context.FLOAT, false, 0, 0);
-			context.enableVertexAttribArray (vertexAttribLocation);
-			context.bindBuffer (context.ARRAY_BUFFER, null);
-
-			context.uniform1f (context.getUniformLocation (shader, 'uWidth'), canvas.width);
-			context.uniform1f (context.getUniformLocation (shader, 'uHeight'), canvas.height);
-			
-			var triangleData = GenerateTriangleData (triangleModel);
-			var triangleTextureBuffer = WebGLCreateFloatTextureBuffer (context, triangleData);
-			context.uniform1i (context.getUniformLocation (shader, 'uTiangleTextureSampler'), 0);
-			context.uniform1f (context.getUniformLocation (shader, 'uTriangleTextureSize'), triangleTextureBuffer.textureSize);
-			
-			var materialData = GenerateMaterialData (triangleModel);
-			var materialTextureBuffer = WebGLCreateFloatTextureBuffer (context, materialData);
-			context.uniform1i (context.getUniformLocation (shader, 'uMaterialTextureSampler'), 1);
-			context.uniform1f (context.getUniformLocation (shader, 'uMaterialTextureSize'), materialTextureBuffer.textureSize);
-			
-			context.activeTexture (context.TEXTURE0);
-			context.bindTexture (context.TEXTURE_2D, triangleTextureBuffer);				
-			context.activeTexture (context.TEXTURE1);
-			context.bindTexture (context.TEXTURE_2D, materialTextureBuffer);				
-
-			context.clear (context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
-			context.drawArrays (context.TRIANGLE_FAN, 0, 4);			
+			gpuTracer.Render ();
 		}
 
 		function TextAreaKeyDown (event)
