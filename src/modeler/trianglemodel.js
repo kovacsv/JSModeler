@@ -124,6 +124,40 @@ JSM.TriangleModel.prototype.GetBody = function (index)
 };
 
 /**
+* Function: TriangleModel.VertexCount
+* Description: Returns the vertex count of the model.
+* Returns:
+*	{integer} the result
+*/
+JSM.TriangleModel.prototype.VertexCount = function ()
+{
+	var result = 0;
+	var i, body;
+	for (i = 0; i < this.bodies.length; i++) {
+		body = this.bodies[i];
+		result += body.VertexCount ();
+	}
+	return result;
+};
+
+/**
+* Function: TriangleModel.TriangleCount
+* Description: Returns the triangle count of the model.
+* Returns:
+*	{integer} the result
+*/
+JSM.TriangleModel.prototype.TriangleCount = function ()
+{
+	var result = 0;
+	var i, body;
+	for (i = 0; i < this.bodies.length; i++) {
+		body = this.bodies[i];
+		result += body.TriangleCount ();
+	}
+	return result;
+};
+
+/**
 * Function: TriangleModel.BodyCount
 * Description: Returns the body count of the model.
 * Returns:

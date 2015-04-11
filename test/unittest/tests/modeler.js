@@ -1960,6 +1960,9 @@ raySuite.AddTest ('RayTriangleModelIntersectionTest', function (test)
 	model.AddBody (body2);
 	model.Finalize ();
 
+	test.Assert (model.VertexCount () == 8);
+	test.Assert (model.TriangleCount () == 4);
+	
 	var ray = new JSM.Ray (new JSM.Coord (2.0, 2.0, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
 	test.Assert (!JSM.RayTriangleModelIntersection (ray, model));
 

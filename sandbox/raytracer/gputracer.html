@@ -182,31 +182,45 @@
 				this.selectionEnd = selectionStart + 1; 
 			}		
 		}
-		
-		function ConvertBodyToShaderCode (body)
+
+		function GenerateHeaderCode (model)
 		{
-			var triangleBody = new JSM.ConvertBodyToTriangleBody (body);
-			triangleCount = triangleBody.TriangleCount ();
+			var triangleModel = new JSM.ConvertModelToTriangleModel (model);
+			var triangleCount = triangleModel.TriangleCount ();
+			var materialCount = triangleModel.MaterialCount ();
 			
 			var result = '';
 			result += 'const int triangleCount = ' + triangleCount + ';\n';
+			result += 'const int materialCount = ' + materialCount + ';\n';
 			result += 'Triangle triangles[' + triangleCount + '];\n';
-			var i, triangle, v0, v1, v2, currentIntersection;
-			for (i = 0; i < triangleCount; i++) {
-				triangle = triangleBody.GetTriangle (i);
-				v0 = triangleBody.GetVertex (triangle.v0);
-				v1 = triangleBody.GetVertex (triangle.v1);
-				v2 = triangleBody.GetVertex (triangle.v2);
-				result += 'triangles[' + i + '].v0 = vec3 (' + v0.x + ', ' + v0.y + ', ' + v0.z + ');\n';
-				result += 'triangles[' + i + '].v1 = vec3 (' + v1.x + ', ' + v1.y + ', ' + v1.z + ');\n';
-				result += 'triangles[' + i + '].v2 = vec3 (' + v2.x + ', ' + v2.y + ', ' + v2.z + ');\n';
-			}
+			result += 'Material materials[' + materialCount + '];\n';
 			return result;
 		}
 		
-		function ConvertCameraToShaderCode (camera)
+		function GenerateMainCode (model, camera)
 		{
+			var triangleModel = new JSM.ConvertModelToTriangleModel (model);
 			var result = '';
+			var i, j, triangleBody, material, triangle, v0, v1, v2, currentIntersection;
+			var currentIndex = 0;
+			for (i = 0; i < triangleModel.BodyCount (); i++) {
+				triangleBody = triangleModel.GetBody (i);
+				for (j = 0; j < triangleBody.TriangleCount (); j++) {
+					triangle = triangleBody.GetTriangle (j);
+					v0 = triangleBody.GetVertex (triangle.v0);
+					v1 = triangleBody.GetVertex (triangle.v1);
+					v2 = triangleBody.GetVertex (triangle.v2);
+					result += 'triangles[' + currentIndex + '].v0 = vec3 (' + v0.x + ', ' + v0.y + ', ' + v0.z + ');\n';
+					result += 'triangles[' + currentIndex + '].v1 = vec3 (' + v1.x + ', ' + v1.y + ', ' + v1.z + ');\n';
+					result += 'triangles[' + currentIndex + '].v2 = vec3 (' + v2.x + ', ' + v2.y + ', ' + v2.z + ');\n';
+					result += 'triangles[' + currentIndex + '].material = ' + triangle.mat + ';\n';
+					currentIndex += 1;
+				}
+			}
+			for (i = 0; i < triangleModel.MaterialCount (); i++) {
+				material = triangleModel.GetMaterial (i);
+				result += 'materials[' + i + '].diffuse = vec3 (' + material.diffuse[0] + ', ' + material.diffuse[1] + ', ' + material.diffuse[2] + ');\n';
+			}
 			result += 'Camera camera;\n';
 			result += 'camera.eye = vec3 (' + camera.eye.x + ', ' + camera.eye.y + ', ' + camera.eye.z + ');\n';
 			result += 'camera.center = vec3 (' + camera.center.x + ', ' + camera.center.y + ', ' + camera.center.z + ');\n';
@@ -225,15 +239,17 @@
 			var body = JSM.GenerateCuboid (1, 1, 1);
 			body.Transform (JSM.RotationZTransformation (-0.35));
 			body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
+			var model = new JSM.Model ();
+			model.AddBody (body);
 			
-			var generatedCode = '';
-			generatedCode += '// GENERATED CODE BEGIN\n';
-			generatedCode += ConvertBodyToShaderCode (body);
-			generatedCode += ConvertCameraToShaderCode (camera);
-			generatedCode += '// GENERATED CODE END\n';
+			var genCodeBegin = '// GENERATED CODE BEGIN\n';
+			var genCodeEnd = '// GENERATED CODE END\n';
+			var generatedHeaderCode = genCodeBegin + GenerateHeaderCode (model) + genCodeEnd;
+			var generatedMainCode = genCodeBegin + GenerateMainCode (model, camera) + genCodeEnd;
 			
 			var fragmentShader = document.getElementById ('fragmentshader');
-			fragmentShader.value = fragmentShader.value.replace ('[GENERATEDCODE]', generatedCode);
+			fragmentShader.value = fragmentShader.value.replace ('[GENERATEDHEADERCODE]', generatedHeaderCode);
+			fragmentShader.value = fragmentShader.value.replace ('[GENERATEDMAINCODE]', generatedMainCode);
 		}
 	
 	    window.onload = function ()
@@ -269,11 +285,17 @@ varying vec2 vVertexPosition;
 uniform highp float uWidth;
 uniform highp float uHeight;
 
+struct Material
+{
+	vec3 diffuse;
+};
+
 struct Triangle
 {
 	vec3 v0;
 	vec3 v1;
 	vec3 v2;
+	int material;
 };
 
 struct Camera
@@ -293,6 +315,7 @@ struct Intersection
 {
 	vec3 position;
 	float distance;
+	int triangle;
 };
 
 vec3 CoordRotate (in vec3 coord, in vec3 axis, in float angle)
@@ -357,6 +380,7 @@ bool RayTriangleIntersection (in Ray ray, in vec3 v0, in vec3 v1, in vec3 v2, ou
 
 	intersection.position = rayOrigin + rayDirection * distance;
 	intersection.distance = distance;
+	intersection.triangle = -1;
 	return true;
 }
 
@@ -380,22 +404,42 @@ Ray GetRay (in vec2 vertexPosition, in Camera camera)
 	return result;
 }
 
-void main (void) {
+[GENERATEDHEADERCODE]
 
-[GENERATEDCODE]
-	
-	Ray ray = GetRay (vVertexPosition, camera);
+bool RayModelIntersection (in Ray ray, out Intersection intersection)
+{
 	bool hasIntersection = false;
+	intersection.distance = 1.0 / 0.0; // infinite
 	for (int i = 0; i < triangleCount; i++) {
 		Triangle triangle = triangles[i];
-		Intersection intersection;
-		if (RayTriangleIntersection (ray, triangle.v0, triangle.v1, triangle.v2, intersection)) {
+		Intersection currentIntersection;
+		if (RayTriangleIntersection (ray, triangle.v0, triangle.v1, triangle.v2, currentIntersection)) {
+			if (currentIntersection.distance < intersection.distance) {
+				intersection.position = currentIntersection.position;
+				intersection.distance = currentIntersection.distance;
+				intersection.triangle = i;
+			}
 			hasIntersection = true;
-			break;
 		}
 	}
+	return hasIntersection;
+}
+
+vec4 PhongShading (in Intersection intersection)
+{
+
+	return vec4 (1.0, 0.0, 0.0, 1.0);
+}
+
+void main (void) {
+
+[GENERATEDMAINCODE]
+	
+	Ray ray = GetRay (vVertexPosition, camera);
+	Intersection intersection;
+	bool hasIntersection = RayModelIntersection (ray, intersection);
 	if (hasIntersection) {
-		gl_FragColor = vec4 (1.0, 0.0, 0.0, 1.0);
+		gl_FragColor = PhongShading (intersection);
 	} else {
 		gl_FragColor = vec4 (0.0, 0.0, 0.0, 1.0);
 	}
