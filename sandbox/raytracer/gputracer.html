@@ -155,10 +155,18 @@
 
 			var gpuTracer = new GPUTracer ();
 			var canvas = document.getElementById ('example');
+			var timer = new JSM.Timer ();
+			timer.Start ();
 			gpuTracer.Init (canvas, triangleModel, fragmentShader, function (error) {
 				errorDiv.innerHTML += error.replace ('\n', '<br>');
 			});
+			timer.Stop ();
+			errorDiv.innerHTML += 'Compile time: ' + timer.Result () + '<br>';
+			
+			timer.Start ();
 			gpuTracer.Render ();
+			timer.Stop ();
+			errorDiv.innerHTML += 'Render time: ' + timer.Result () + '<br>';
 		}
 
 		function TextAreaKeyDown (event)
@@ -223,6 +231,7 @@ struct Material
 {
 	vec3 ambient;
 	vec3 diffuse;
+	float reflection;
 };
 
 struct Camera
@@ -242,6 +251,7 @@ struct Intersection
 {
 	vec3 position;
 	float distance;
+	vec3 normal;
 	int triangle;
 };
 
@@ -332,8 +342,10 @@ Triangle GetTriangle (in int index)
 Material GetMaterial (in int index)
 {
 	Material material;
-	material.ambient = GetFloatVector (uMaterialTextureSampler, uMaterialTextureSize, index * 2 + 0);
-	material.diffuse = GetFloatVector (uMaterialTextureSampler, uMaterialTextureSize, index * 2 + 1);
+	material.ambient = GetFloatVector (uMaterialTextureSampler, uMaterialTextureSize, index * 3 + 0);
+	material.diffuse = GetFloatVector (uMaterialTextureSampler, uMaterialTextureSize, index * 3 + 1);
+	vec3 vec = GetFloatVector (uMaterialTextureSampler, uMaterialTextureSize, index * 3 + 2);
+	material.reflection = vec.x;
 	return material;
 }
 
@@ -372,29 +384,27 @@ bool RayModelIntersection (in Ray ray, out Intersection intersection)
 			hasIntersection = true;
 		}
 	}
+
+	if (hasIntersection) {
+		Triangle minTriangle = GetTriangle (intersection.triangle);
+		intersection.normal = CalculateTriangleNormal (minTriangle.v0, minTriangle.v1, minTriangle.v2);
+	}
 	return hasIntersection;
 }
 
-bool TraceRay (in Ray ray, out vec3 shadedColor)
+vec3 GetShadedColor (in Intersection intersection)
 {
-	Intersection intersection;
-	bool hasIntersection = RayModelIntersection (ray, intersection);
-	if (!hasIntersection) {
-		shadedColor = vec3 (0.0, 0.0, 0.0);
-		return false;
-	}
 	Triangle triangle = GetTriangle (intersection.triangle);
-	Material material = GetMaterial (triangle.mat);
-	vec3 shadedPointNormal = CalculateTriangleNormal (triangle.v0, triangle.v1, triangle.v2);
-	shadedColor = PhongShading (intersection.position, shadedPointNormal, material);
-	return true;
+	Material shadedMaterial = GetMaterial (triangle.mat);
+	return PhongShading (intersection.position, intersection.normal, shadedMaterial);
 }
 
 vec3 TraceMainRay (in Ray ray)
 {
 	vec3 shadedColor = vec3 (0.0, 0.0, 0.0);
-	if (TraceRay (ray, shadedColor)) {
-
+	Intersection mainIntersection;
+	if (RayModelIntersection (ray, mainIntersection)) {
+		shadedColor = GetShadedColor (mainIntersection);
 	}
 	return shadedColor;
 }

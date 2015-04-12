@@ -94,6 +94,7 @@ GPUTracer.prototype.InitBuffers = function (model)
 			material = model.GetMaterial (i);
 			result.push (material.ambient[0], material.ambient[1], material.ambient[2]);
 			result.push (material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+			result.push (material.reflection, 0.0, 0.0);
 		}
 		return result;
 	}
