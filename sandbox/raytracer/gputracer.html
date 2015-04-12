@@ -302,6 +302,13 @@ bool RayTriangleIntersection (in Ray ray, in vec3 v0, in vec3 v1, in vec3 v2, ou
 	return true;
 }
 
+vec3 GetReflectedDirection (in vec3 direction, in vec3 normal)
+{
+	float dotProduct = dot (normal, direction);
+	vec3 reflected = direction - normal * 2.0 * dotProduct;
+	return normalize (reflected);
+}
+	
 vec3 GetFloatVector (in sampler2D sampler, in float textureSize, in int index)
 {
 	float pixelSize = 1.0 / textureSize;
@@ -330,6 +337,25 @@ Material GetMaterial (in int index)
 	return material;
 }
 
+vec3 PhongShading (in vec3 shadedPoint, in vec3 shadedPointNormal, in Material material)
+{
+	vec3 lightPosition = vec3 (4.0, 2.0, 4.0);
+	float lightAmbientIntensity = 1.0;
+	float lightDiffuseIntensity = 1.0;
+	
+	vec3 ambientColor = material.ambient * lightAmbientIntensity;
+	ambientColor = clamp (ambientColor, 0.0, 1.0);
+	
+	vec3 lightDirection = normalize (lightPosition - shadedPoint);
+	float diffuseCoeff = max (dot (lightDirection, shadedPointNormal), 0.0);
+	vec3 diffuseColor = material.diffuse * lightDiffuseIntensity;
+	diffuseColor = clamp (diffuseColor, 0.0, 1.0);
+	
+	vec3 color = ambientColor + diffuseColor * diffuseCoeff;
+	color = clamp (color, 0.0, 1.0);
+	return color;
+}
+
 bool RayModelIntersection (in Ray ray, out Intersection intersection)
 {
 	bool hasIntersection = false;
@@ -349,23 +375,28 @@ bool RayModelIntersection (in Ray ray, out Intersection intersection)
 	return hasIntersection;
 }
 
-vec4 PhongShading (in vec3 shadedPoint, in vec3 shadedPointNormal, in Material material)
+bool TraceRay (in Ray ray, out vec3 shadedColor)
 {
-	vec3 lightPosition = vec3 (4.0, 2.0, 4.0);
-	float lightAmbientIntensity = 1.0;
-	float lightDiffuseIntensity = 1.0;
-	
-	vec3 ambientColor = material.ambient * lightAmbientIntensity;
-	ambientColor = clamp (ambientColor, 0.0, 1.0);
-	
-	vec3 lightDirection = normalize (lightPosition - shadedPoint);
-	float diffuseCoeff = max (dot (lightDirection, shadedPointNormal), 0.0);
-	vec3 diffuseColor = material.diffuse * lightDiffuseIntensity;
-	diffuseColor = clamp (diffuseColor, 0.0, 1.0);
-	
-	vec3 color = ambientColor + diffuseColor * diffuseCoeff;
-	color = clamp (color, 0.0, 1.0);
-	return vec4 (color, 1.0);
+	Intersection intersection;
+	bool hasIntersection = RayModelIntersection (ray, intersection);
+	if (!hasIntersection) {
+		shadedColor = vec3 (0.0, 0.0, 0.0);
+		return false;
+	}
+	Triangle triangle = GetTriangle (intersection.triangle);
+	Material material = GetMaterial (triangle.mat);
+	vec3 shadedPointNormal = CalculateTriangleNormal (triangle.v0, triangle.v1, triangle.v2);
+	shadedColor = PhongShading (intersection.position, shadedPointNormal, material);
+	return true;
+}
+
+vec3 TraceMainRay (in Ray ray)
+{
+	vec3 shadedColor = vec3 (0.0, 0.0, 0.0);
+	if (TraceRay (ray, shadedColor)) {
+
+	}
+	return shadedColor;
 }
 
 Ray GetRay (in vec2 vertexPosition, in Camera camera)
@@ -387,23 +418,16 @@ Ray GetRay (in vec2 vertexPosition, in Camera camera)
 	return result;
 }
 
-void main (void) {
+void main (void)
+{
 	Camera camera;
 	camera.eye = vec3 (4, 1, 2);
 	camera.center = vec3 (0, 0, 0);
 	camera.up = vec3 (0, 0, 1);
 	
 	Ray ray = GetRay (vVertexPosition, camera);
-	Intersection intersection;
-	bool hasIntersection = RayModelIntersection (ray, intersection);
-	if (hasIntersection) {
-		Triangle triangle = GetTriangle (intersection.triangle);
-		Material material = GetMaterial (triangle.mat);
-		vec3 shadedPointNormal = CalculateTriangleNormal (triangle.v0, triangle.v1, triangle.v2);
-		gl_FragColor = PhongShading (intersection.position, shadedPointNormal, material);
-	} else {
-		gl_FragColor = vec4 (0.0, 0.0, 0.0, 1.0);
-	}	
+	vec3 shadedColor = TraceMainRay (ray);
+	gl_FragColor = vec4 (shadedColor, 1.0);
 }
 </textarea>
 	</div>

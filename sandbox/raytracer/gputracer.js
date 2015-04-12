@@ -154,7 +154,8 @@ GPUTracer.prototype.GetVertexShader = function ()
 		'precision highp float;',
 		'attribute vec2 aVertexPosition;',
 		'varying vec2 vVertexPosition;',
-		'void main (void) {',
+		'void main (void)',
+		'{',
 		'	vVertexPosition = aVertexPosition;',
 		'	gl_Position = vec4 (aVertexPosition.x, aVertexPosition.y, 0.0, 1.0);',
 		'}'
