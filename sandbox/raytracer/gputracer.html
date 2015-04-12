@@ -245,6 +245,7 @@ struct Ray
 {
 	vec3 origin;
 	vec3 direction;
+	float length;
 };
 
 struct Intersection
@@ -306,6 +307,10 @@ bool RayTriangleIntersection (in Ray ray, in vec3 v0, in vec3 v1, in vec3 v2, ou
 		return false;
 	}
 
+	if (ray.length < distance) {
+		return false;
+	}	
+	
 	intersection.position = rayOrigin + rayDirection * distance;
 	intersection.distance = distance;
 	intersection.triangle = -1;
@@ -394,6 +399,16 @@ bool RayModelIntersection (in Ray ray, out Intersection intersection)
 
 vec3 GetShadedColor (in Intersection intersection)
 {
+	//vec3 lightPosition = vec3 (4.0, 2.0, 4.0);
+	//Ray shadowRay;
+	//shadowRay.origin = intersection.position;
+	//shadowRay.direction = normalize (lightPosition - intersection.position);
+	//shadowRay.length = length (lightPosition - intersection.position);
+	//Intersection shadowIntersection;
+	//if (RayModelIntersection (shadowRay, shadowIntersection)) {
+	//	return vec3 (0.0, 0.0, 0.0);
+	//}
+	
 	Triangle triangle = GetTriangle (intersection.triangle);
 	Material shadedMaterial = GetMaterial (triangle.mat);
 	return PhongShading (intersection.position, intersection.normal, shadedMaterial);
@@ -411,9 +426,6 @@ vec3 TraceMainRay (in Ray ray)
 
 Ray GetRay (in vec2 vertexPosition, in Camera camera)
 {
-	Ray result;
-	result.origin = camera.eye;
-
 	vec3 eyeCenterDir = normalize (camera.center - camera.eye);
 	vec3 horizontalDir = normalize (cross (eyeCenterDir, camera.up));
 	vec3 verticalDir = normalize (cross (horizontalDir, eyeCenterDir ));
@@ -424,7 +436,10 @@ Ray GetRay (in vec2 vertexPosition, in Camera camera)
 	endPosition = endPosition + horizontalDir * vertexPosition.x;
 	endPosition = endPosition + verticalDir * vertexPosition.y;
 	
+	Ray result;
+	result.origin = camera.eye;
 	result.direction = normalize (endPosition - camera.eye);
+	result.length = 1.0 / 0.0; // infinite
 	return result;
 }
 
