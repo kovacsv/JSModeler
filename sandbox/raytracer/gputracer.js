@@ -1,10 +1,13 @@
 GPUTracer = function ()
 {
+	this.camera = null;
 	this.canvas = null;
 	this.context = null;
 	this.shader = null;
 	this.triangleBuffer = null;
 	this.materialBuffer = null;
+	this.cameraUniformLocation = null;
+	this.lightUniformLocation = null;
 };
 
 GPUTracer.prototype.Init = function (canvas, model, fragmentShader, onError)
@@ -21,11 +24,25 @@ GPUTracer.prototype.Init = function (canvas, model, fragmentShader, onError)
 		return false;
 	}
 
+	if (!this.InitNavigation ()) {
+		return false;
+	}
+
 	return true;
 };
 
 GPUTracer.prototype.Render = function ()
 {
+	this.context.uniform3fv (this.cameraUniformLocation, new Float32Array ([
+		this.camera.eye.x, this.camera.eye.y, this.camera.eye.z,
+		this.camera.center.x, this.camera.center.y, this.camera.center.z,
+		this.camera.up.x, this.camera.up.y, this.camera.up.z
+	]));
+
+	this.context.uniform3fv (this.lightUniformLocation, new Float32Array ([
+		4.0, 2.0, 4.0
+	]));
+
 	this.context.activeTexture (this.context.TEXTURE0);
 	this.context.bindTexture (this.context.TEXTURE_2D, this.triangleBuffer);
 	
@@ -34,6 +51,11 @@ GPUTracer.prototype.Render = function ()
 
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	this.context.drawArrays (this.context.TRIANGLE_FAN, 0, 4);	
+};
+
+GPUTracer.prototype.Resize = function ()
+{
+
 };
 
 GPUTracer.prototype.InitContext = function (canvas)
@@ -145,7 +167,25 @@ GPUTracer.prototype.InitBuffers = function (model)
 	this.materialBuffer = CreateFloatTextureBuffer (this.context, materialData);
 	this.context.uniform1i (this.context.getUniformLocation (this.shader, 'uMaterialTextureSampler'), 1);
 	this.context.uniform1f (this.context.getUniformLocation (this.shader, 'uMaterialTextureSize'), this.materialBuffer.textureSize);
+
+	return true;
+};
+
+GPUTracer.prototype.InitNavigation = function ()
+{
+	this.camera = new JSM.Camera (
+		new JSM.Coord (4, 1, 2),
+		new JSM.Coord (0, 0, 0),
+		new JSM.Coord (0, 0, 1)
+	);
 	
+	this.navigation = new JSM.Navigation ();
+	if (!this.navigation.Init (this.canvas, this.camera, this.Render.bind (this), this.Resize.bind (this))) {
+		return false;
+	}
+
+	this.cameraUniformLocation = this.context.getUniformLocation (this.shader, 'uCameraData');
+	this.lightUniformLocation = this.context.getUniformLocation (this.shader, 'uLightPosition');
 	return true;
 };
 
