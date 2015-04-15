@@ -211,6 +211,9 @@ struct Triangle
 	vec3 v0;
 	vec3 v1;
 	vec3 v2;
+	vec3 n0;
+	vec3 n1;
+	vec3 n2;
 	int mat;
 };
 
@@ -243,16 +246,61 @@ struct Intersection
 	int triangle;
 };
 
-vec3 CalculateTriangleNormal (in vec3 v0, in vec3 v1, in vec3 v2)
+vec3 CalculateTriangleNormal (in Triangle triangle)
 {
-	vec3 v = v1 - v0;
-	vec3 w = v2 - v0;
+	vec3 v = triangle.v1 - triangle.v0;
+	vec3 w = triangle.v2 - triangle.v0;
 	
 	vec3 normal;
 	normal.x = (v.y * w.z - v.z * w.y);
 	normal.y = (v.z * w.x - v.x * w.z);
 	normal.z = (v.x * w.y - v.y * w.x);
 
+	return normalize (normal);
+}
+
+float GetTriangleArea (in float a, in float b, in float c)
+{
+	float s = (a + b + c) / 2.0;
+	float areaSquare = s * (s - a) * (s - b) * (s - c);
+	if (areaSquare < 0.0) {
+		return 0.0;
+	}
+	return sqrt (areaSquare);
+}
+
+vec3 BarycentricInterpolation (in vec3 vertex0, in vec3 vertex1, in vec3 vertex2, in vec3 value0, in vec3 value1, in vec3 value2, in vec3 position)
+{
+	float edge0 = length (vertex0 - vertex1);
+	float edge1 = length (vertex1 - vertex2);
+	float edge2 = length (vertex2 - vertex0);
+	
+	float distance0 = length (vertex0 - position);
+	float distance1 = length (vertex1 - position);
+	float distance2 = length (vertex2 - position);
+	
+	float area = GetTriangleArea (edge0, edge1, edge2);
+	if (area == 0.0) {
+		return value0;
+	}
+	
+	float area0 = GetTriangleArea (edge0, distance0, distance1);
+	float area1 = GetTriangleArea (edge1, distance1, distance2);
+	float area2 = GetTriangleArea (edge2, distance0, distance2);
+	
+	vec3 interpolated0 = value0 * area1;
+	vec3 interpolated1 = value1 * area2;
+	vec3 interpolated2 = value2 * area0;
+	vec3 interpolated = interpolated0 + interpolated1 + interpolated2;
+	return interpolated / area;
+}
+
+vec3 GetTriangleNormal (in Triangle triangle, in vec3 normalPosition)
+{
+	vec3 normal = BarycentricInterpolation (
+		triangle.v0, triangle.v1, triangle.v2,
+		triangle.n0, triangle.n1, triangle.n2,
+		normalPosition);
 	return normalize (normal);
 }
 
@@ -323,10 +371,13 @@ vec3 GetFloatVector (in sampler2D sampler, in float textureSize, in int index)
 Triangle GetTriangle (in int index)
 {
 	Triangle triangle;
-	triangle.v0 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 4 + 0);
-	triangle.v1 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 4 + 1);
-	triangle.v2 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 4 + 2);
-	vec3 vec = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 4 + 3);
+	triangle.v0 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 7 + 0);
+	triangle.v1 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 7 + 1);
+	triangle.v2 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 7 + 2);
+	triangle.n0 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 7 + 3);
+	triangle.n1 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 7 + 4);
+	triangle.n2 = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 7 + 5);
+	vec3 vec = GetFloatVector (uTiangleTextureSampler, uTriangleTextureSize, index * 7 + 6);
 	triangle.mat = int (vec.x);
 	return triangle;
 }
@@ -378,7 +429,7 @@ bool RayModelIntersection (in Ray ray, out Intersection intersection)
 
 	if (hasIntersection) {
 		Triangle minTriangle = GetTriangle (intersection.triangle);
-		intersection.normal = CalculateTriangleNormal (minTriangle.v0, minTriangle.v1, minTriangle.v2);
+		intersection.normal = GetTriangleNormal (minTriangle, intersection.position);
 	}
 	return hasIntersection;
 }
@@ -419,17 +470,27 @@ vec3 TraceMainRay (in Ray ray)
 	return shadedColor;
 }
 
-Ray GetRay (in vec2 vertexPosition, in Camera camera)
+float Random (vec2 co)
+{
+    return fract (sin (dot (co.xy, vec2(12.9898,78.233))) * 43758.5453);
+}
+
+Ray GetRay (in vec2 vertexPosition, in Camera camera, in float iteration)
 {
 	vec3 eyeCenterDir = normalize (camera.center - camera.eye);
 	vec3 horizontalDir = normalize (cross (eyeCenterDir, camera.up));
 	vec3 verticalDir = normalize (cross (horizontalDir, eyeCenterDir ));
 
+	float pixelSizeX = 2.0 / uWidth;
+	float pixelSizeY = 2.0 / uHeight;
+	
 	float fieldOfView = PI / 3.0; // 60 degree
 	float cameraDistance = 1.0 / tan (fieldOfView / 2.0);
 	vec3 endPosition = camera.eye + eyeCenterDir * cameraDistance;
-	endPosition = endPosition + horizontalDir * vertexPosition.x;
-	endPosition = endPosition + verticalDir * vertexPosition.y;
+	
+	float random = Random (vec2 (iteration, iteration));
+	endPosition = endPosition + horizontalDir * (vertexPosition.x + random * pixelSizeX);
+	endPosition = endPosition + verticalDir * (vertexPosition.y + random * pixelSizeY);
 	
 	Ray result;
 	result.origin = camera.eye;
@@ -445,9 +506,13 @@ void main (void)
 	camera.center = uCameraData[1];
 	camera.up = uCameraData[2];
 	
-	Ray ray = GetRay (vVertexPosition, camera);
-	vec3 shadedColor = TraceMainRay (ray);
-	gl_FragColor = vec4 (shadedColor, 1.0);
+	const int iterations = 1;
+	vec3 shadedColor;
+	for (int i = 0; i < iterations; i++) {
+		Ray ray = GetRay (vVertexPosition, camera, float (i));
+		shadedColor += TraceMainRay (ray);
+	}
+	gl_FragColor = vec4 (shadedColor / float (iterations), 1.0);
 }
 </textarea>
 	</div>

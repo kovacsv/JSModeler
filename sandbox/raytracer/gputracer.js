@@ -91,7 +91,7 @@ GPUTracer.prototype.InitBuffers = function (model)
 	function GenerateTriangleData (model)
 	{
 		var result = [];
-		var i, j, body, triangle, v0, v1, v2;
+		var i, j, body, triangle, v0, v1, v2, n0, n1, n2;
 		for (i = 0; i < model.BodyCount (); i++) {
 			body = model.GetBody (i);
 			for (j = 0; j < body.TriangleCount (); j++) {
@@ -99,9 +99,15 @@ GPUTracer.prototype.InitBuffers = function (model)
 				v0 = body.GetVertex (triangle.v0);
 				v1 = body.GetVertex (triangle.v1);
 				v2 = body.GetVertex (triangle.v2);
+				n0 = body.GetNormal (triangle.n0);
+				n1 = body.GetNormal (triangle.n1);
+				n2 = body.GetNormal (triangle.n2);
 				result.push (v0.x, v0.y, v0.z);
 				result.push (v1.x, v1.y, v1.z);
 				result.push (v2.x, v2.y, v2.z);
+				result.push (n0.x, n0.y, n0.z);
+				result.push (n1.x, n1.y, n1.z);
+				result.push (n2.x, n2.y, n2.z);
 				result.push (triangle.mat, 0.0, 0.0);
 			}
 		}
