@@ -3,11 +3,10 @@ GPUTracer = function ()
 	this.camera = null;
 	this.canvas = null;
 	this.context = null;
-	this.shader = null;
+	this.size = null;
+	this.mainShader = null;
 	this.triangleBuffer = null;
 	this.materialBuffer = null;
-	this.cameraUniformLocation = null;
-	this.lightUniformLocation = null;
 };
 
 GPUTracer.prototype.Init = function (canvas, model, fragmentShader, onError)
@@ -33,13 +32,13 @@ GPUTracer.prototype.Init = function (canvas, model, fragmentShader, onError)
 
 GPUTracer.prototype.Render = function ()
 {
-	this.context.uniform3fv (this.cameraUniformLocation, new Float32Array ([
+	this.context.uniform3fv (this.mainShader.cameraUniform, new Float32Array ([
 		this.camera.eye.x, this.camera.eye.y, this.camera.eye.z,
 		this.camera.center.x, this.camera.center.y, this.camera.center.z,
 		this.camera.up.x, this.camera.up.y, this.camera.up.z
 	]));
 
-	this.context.uniform3fv (this.lightUniformLocation, new Float32Array ([
+	this.context.uniform3fv (this.mainShader.lightUniform, new Float32Array ([
 		4.0, 2.0, 4.0
 	]));
 
@@ -71,6 +70,7 @@ GPUTracer.prototype.InitContext = function (canvas)
 		return false;
 	}
 	
+	this.size = this.canvas.width;
 	return true;
 };
 
@@ -78,8 +78,8 @@ GPUTracer.prototype.InitShaders = function (fragmentShader, model, onError)
 {
 	var vertexShader = this.GetVertexShader ();
 	fragmentShader = fragmentShader.replace ('[TRIANGLE_COUNT]', model.TriangleCount ());
-	this.shader = JSM.WebGLInitShaderProgram (this.context, vertexShader, fragmentShader, onError);
-	if (this.shader === null) {
+	this.mainShader = JSM.WebGLInitShaderProgram (this.context, vertexShader, fragmentShader, onError);
+	if (this.mainShader === null) {
 		return false;
 	}
 	
@@ -153,7 +153,7 @@ GPUTracer.prototype.InitBuffers = function (model)
 	}
 
 	var vertices = new Float32Array ([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]);
-	var vertexAttribLocation = this.context.getAttribLocation (this.shader, 'aVertexPosition');
+	var vertexAttribLocation = this.context.getAttribLocation (this.mainShader, 'aVertexPosition');
 	var buffer = this.context.createBuffer ();
 	this.context.bindBuffer (this.context.ARRAY_BUFFER, buffer);
 	this.context.bufferData (this.context.ARRAY_BUFFER, vertices, this.context.STATIC_DRAW);
@@ -161,18 +161,17 @@ GPUTracer.prototype.InitBuffers = function (model)
 	this.context.enableVertexAttribArray (vertexAttribLocation);
 	this.context.bindBuffer (this.context.ARRAY_BUFFER, null);
 	
-	this.context.uniform1f (this.context.getUniformLocation (this.shader, 'uWidth'), this.canvas.width);
-	this.context.uniform1f (this.context.getUniformLocation (this.shader, 'uHeight'), this.canvas.height);
+	this.context.uniform1f (this.context.getUniformLocation (this.mainShader, 'uSize'), this.size);
 	
 	var triangleData = GenerateTriangleData (model);
 	this.triangleBuffer = CreateFloatTextureBuffer (this.context, triangleData);
-	this.context.uniform1i (this.context.getUniformLocation (this.shader, 'uTiangleTextureSampler'), 0);
-	this.context.uniform1f (this.context.getUniformLocation (this.shader, 'uTriangleTextureSize'), this.triangleBuffer.textureSize);
+	this.context.uniform1i (this.context.getUniformLocation (this.mainShader, 'uTiangleTextureSampler'), 0);
+	this.context.uniform1f (this.context.getUniformLocation (this.mainShader, 'uTriangleTextureSize'), this.triangleBuffer.textureSize);
 	
 	var materialData = GenerateMaterialData (model);
 	this.materialBuffer = CreateFloatTextureBuffer (this.context, materialData);
-	this.context.uniform1i (this.context.getUniformLocation (this.shader, 'uMaterialTextureSampler'), 1);
-	this.context.uniform1f (this.context.getUniformLocation (this.shader, 'uMaterialTextureSize'), this.materialBuffer.textureSize);
+	this.context.uniform1i (this.context.getUniformLocation (this.mainShader, 'uMaterialTextureSampler'), 1);
+	this.context.uniform1f (this.context.getUniformLocation (this.mainShader, 'uMaterialTextureSize'), this.materialBuffer.textureSize);
 
 	return true;
 };
@@ -190,8 +189,8 @@ GPUTracer.prototype.InitNavigation = function ()
 		return false;
 	}
 
-	this.cameraUniformLocation = this.context.getUniformLocation (this.shader, 'uCameraData');
-	this.lightUniformLocation = this.context.getUniformLocation (this.shader, 'uLightPosition');
+	this.mainShader.cameraUniform = this.context.getUniformLocation (this.mainShader, 'uCameraData');
+	this.mainShader.lightUniform = this.context.getUniformLocation (this.mainShader, 'uLightPosition');
 	return true;
 };
 

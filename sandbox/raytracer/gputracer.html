@@ -191,8 +191,7 @@
 precision highp float;
 
 varying vec2 vVertexPosition;
-uniform float uWidth;
-uniform float uHeight;
+uniform float uSize;
 
 #define PI 3.1415926535897932384626433832795
 #define INF 1.0 / 0.0
@@ -481,16 +480,14 @@ Ray GetRay (in vec2 vertexPosition, in Camera camera, in float iteration)
 	vec3 horizontalDir = normalize (cross (eyeCenterDir, camera.up));
 	vec3 verticalDir = normalize (cross (horizontalDir, eyeCenterDir ));
 
-	float pixelSizeX = 2.0 / uWidth;
-	float pixelSizeY = 2.0 / uHeight;
-	
 	float fieldOfView = PI / 3.0; // 60 degree
 	float cameraDistance = 1.0 / tan (fieldOfView / 2.0);
 	vec3 endPosition = camera.eye + eyeCenterDir * cameraDistance;
 	
 	float random = Random (vec2 (iteration, iteration));
-	endPosition = endPosition + horizontalDir * (vertexPosition.x + random * pixelSizeX);
-	endPosition = endPosition + verticalDir * (vertexPosition.y + random * pixelSizeY);
+	float pixelSize = 2.0 / uSize;
+	endPosition = endPosition + horizontalDir * (vertexPosition.x + random * pixelSize);
+	endPosition = endPosition + verticalDir * (vertexPosition.y + random * pixelSize);
 	
 	Ray result;
 	result.origin = camera.eye;
