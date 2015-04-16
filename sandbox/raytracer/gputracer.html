@@ -333,13 +333,13 @@ bool RayTriangleIntersection (in Ray ray, in vec3 v0, in vec3 v1, in vec3 v2, bo
 
 	vec3 tVector = rayOrigin - v0;
 	float u = dot (tVector, pVector) * invDeterminant;
-	if (u < EPS || u > 1.0 + EPS) {
+	if (u < -EPS || u > 1.0 - EPS) {
 		return false;
 	}
 
 	vec3 qVector = cross (tVector, edgeDir1);
 	float v = dot (rayDirection, qVector) * invDeterminant;
-	if (v < EPS || u + v > 1.0 + EPS) {
+	if (v < -EPS || u + v > 1.0 - EPS) {
 		return false;
 	}
  
