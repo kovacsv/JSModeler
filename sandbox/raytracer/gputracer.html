@@ -139,6 +139,8 @@
 			return JSM.ConvertModelToTriangleModel (model, materials);
 		}
 		
+		var gpuTracer = null;
+		
 		function Compile ()
 		{
 			var triangleModel = GetModel ();
@@ -148,7 +150,7 @@
 
 			var fragmentShader = document.getElementById ('fragmentshader').value;
 
-			var gpuTracer = new GPUTracer ();
+			gpuTracer = new GPUTracer ();
 			var canvas = document.getElementById ('example');
 			var timer = new JSM.Timer ();
 			timer.Start ();
@@ -158,10 +160,7 @@
 			timer.Stop ();
 			errorDiv.innerHTML += 'Compile time: ' + timer.Result () + '<br>';
 			
-			timer.Start ();
-			gpuTracer.Render ();
-			timer.Stop ();
-			errorDiv.innerHTML += 'Render time: ' + timer.Result () + '<br>';
+			gpuTracer.Start ();
 		}
 
 		function TextAreaKeyDown (event)
@@ -197,6 +196,7 @@ uniform float uSize;
 #define INF 1.0 / 0.0
 
 #define TRIANGLE_COUNT [TRIANGLE_COUNT]
+uniform sampler2D uOriginalTextureSampler;
 uniform sampler2D uTiangleTextureSampler;
 uniform float uTriangleTextureSize;
 uniform sampler2D uMaterialTextureSampler;
@@ -204,6 +204,7 @@ uniform float uMaterialTextureSize;
 
 uniform vec3 uCameraData[3];
 uniform vec3 uLightPosition;
+uniform float uIteration;
 
 struct Triangle
 {
@@ -244,6 +245,11 @@ struct Intersection
 	vec3 normal;
 	int triangle;
 };
+
+float Random (vec2 co)
+{
+    return fract (sin (dot (co.xy, vec2(12.9898,78.233))) * 43758.5453);
+}
 
 vec3 CalculateTriangleNormal (in Triangle triangle)
 {
@@ -469,11 +475,6 @@ vec3 TraceMainRay (in Ray ray)
 	return shadedColor;
 }
 
-float Random (vec2 co)
-{
-    return fract (sin (dot (co.xy, vec2(12.9898,78.233))) * 43758.5453);
-}
-
 Ray GetRay (in vec2 vertexPosition, in Camera camera, in float iteration)
 {
 	vec3 eyeCenterDir = normalize (camera.center - camera.eye);
@@ -503,13 +504,12 @@ void main (void)
 	camera.center = uCameraData[1];
 	camera.up = uCameraData[2];
 	
-	const int iterations = 1;
-	vec3 shadedColor;
-	for (int i = 0; i < iterations; i++) {
-		Ray ray = GetRay (vVertexPosition, camera, float (i));
-		shadedColor += TraceMainRay (ray);
-	}
-	gl_FragColor = vec4 (shadedColor / float (iterations), 1.0);
+	Ray ray = GetRay (vVertexPosition, camera, uIteration);
+	vec3 shadedColor = TraceMainRay (ray);
+	vec2 originalPosition = (vVertexPosition + vec2 (1.0, 1.0)) / 2.0;;
+	vec3 originalColor = texture2D (uOriginalTextureSampler, originalPosition).xyz;
+	float weight = uIteration / (uIteration + 1.0);
+	gl_FragColor = vec4 (mix (shadedColor, originalColor, weight), 1.0);
 }
 </textarea>
 	</div>
