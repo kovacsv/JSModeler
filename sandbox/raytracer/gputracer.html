@@ -192,6 +192,7 @@ precision highp float;
 varying vec2 vVertexPosition;
 uniform float uSize;
 
+#define EPS 0.00005
 #define PI 3.1415926535897932384626433832795
 #define INF 1.0 / 0.0
 
@@ -268,7 +269,7 @@ float GetTriangleArea (in float a, in float b, in float c)
 {
 	float s = (a + b + c) / 2.0;
 	float areaSquare = s * (s - a) * (s - b) * (s - c);
-	if (areaSquare < 0.0) {
+	if (areaSquare < EPS) {
 		return 0.0;
 	}
 	return sqrt (areaSquare);
@@ -309,7 +310,7 @@ vec3 GetTriangleNormal (in Triangle triangle, in vec3 normalPosition)
 	return normalize (normal);
 }
 
-bool RayTriangleIntersection (in Ray ray, in vec3 v0, in vec3 v1, in vec3 v2, out Intersection intersection)
+bool RayTriangleIntersection (in Ray ray, in vec3 v0, in vec3 v1, in vec3 v2, bool frontFacing, out Intersection intersection)
 {
 	vec3 rayOrigin = ray.origin;
 	vec3 rayDirection = ray.direction;
@@ -319,12 +320,12 @@ bool RayTriangleIntersection (in Ray ray, in vec3 v0, in vec3 v1, in vec3 v2, ou
 	vec3 pVector = cross (rayDirection, edgeDir2);
 
 	float determinant = dot (edgeDir1, pVector);
-	if (determinant == 0.0) {
+	if (abs (determinant) < EPS) {
 		return false;
 	}
 	
 	bool isFrontFacing = determinant > 0.0;
-	if (!isFrontFacing) {
+	if (frontFacing && !isFrontFacing) {
 		return false;
 	}
 
@@ -332,18 +333,18 @@ bool RayTriangleIntersection (in Ray ray, in vec3 v0, in vec3 v1, in vec3 v2, ou
 
 	vec3 tVector = rayOrigin - v0;
 	float u = dot (tVector, pVector) * invDeterminant;
-	if (u < 0.0 || u > 1.0) {
+	if (u < EPS || u > 1.0 + EPS) {
 		return false;
 	}
 
 	vec3 qVector = cross (tVector, edgeDir1);
 	float v = dot (rayDirection, qVector) * invDeterminant;
-	if (v < 0.0 || u + v > 1.0) {
+	if (v < EPS || u + v > 1.0 + EPS) {
 		return false;
 	}
  
 	float distance = dot (edgeDir2, qVector) * invDeterminant;
-	if (distance <= 0.0) {
+	if (distance < EPS) {
 		return false;
 	}
 
@@ -415,14 +416,14 @@ vec3 PhongShading (in vec3 shadedPoint, in vec3 shadedPointNormal, in Material s
 	return color;
 }
 
-bool RayModelIntersection (in Ray ray, out Intersection intersection)
+bool RayModelIntersection (in Ray ray, bool frontFacing, out Intersection intersection)
 {
 	bool hasIntersection = false;
 	intersection.distance = INF;
 	for (int i = 0; i < TRIANGLE_COUNT; i++) {
 		Triangle triangle = GetTriangle (i);
 		Intersection currentIntersection;
-		if (RayTriangleIntersection (ray, triangle.v0, triangle.v1, triangle.v2, currentIntersection)) {
+		if (RayTriangleIntersection (ray, triangle.v0, triangle.v1, triangle.v2, frontFacing, currentIntersection)) {
 			if (currentIntersection.distance < intersection.distance) {
 				intersection.position = currentIntersection.position;
 				intersection.distance = currentIntersection.distance;
@@ -463,7 +464,7 @@ vec3 TraceMainRay (in Ray ray)
 	float currentIntensity = 1.0;
 	for (int i = 0; i < 5; i++) {
 		Intersection intersection;
-		if (!RayModelIntersection (currentRay, intersection)) {
+		if (!RayModelIntersection (currentRay, true, intersection)) {
 			break;
 		}
 		
@@ -476,10 +477,11 @@ vec3 TraceMainRay (in Ray ray)
 		shadowRay.length = length (uLightPosition - intersection.position);
 		
 		Intersection shadowIntersection;
-		if (!RayModelIntersection (shadowRay, shadowIntersection)) {
-			shadedColor += PhongShading (intersection.position, intersection.normal, material) * currentIntensity;
+		if (RayModelIntersection (shadowRay, false, shadowIntersection)) {
+			break;
 		}
 
+		shadedColor += PhongShading (intersection.position, intersection.normal, material) * currentIntensity;
 		currentIntensity *= material.reflection;
 		if (currentIntensity == 0.0) {
 			break;
