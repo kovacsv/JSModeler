@@ -476,11 +476,10 @@ vec3 TraceMainRay (in Ray ray)
 		shadowRay.length = length (uLightPosition - intersection.position);
 		
 		Intersection shadowIntersection;
-		if (RayModelIntersection (shadowRay, shadowIntersection)) {
-			break;
+		if (!RayModelIntersection (shadowRay, shadowIntersection)) {
+			shadedColor += PhongShading (intersection.position, intersection.normal, material) * currentIntensity;
 		}
 
-		shadedColor += PhongShading (intersection.position, intersection.normal, material) * currentIntensity;
 		currentIntensity *= material.reflection;
 		if (currentIntensity == 0.0) {
 			break;
