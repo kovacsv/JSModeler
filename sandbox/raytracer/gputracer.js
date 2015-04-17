@@ -63,7 +63,6 @@ GPUTracer.prototype.RenderFrame = function ()
 	]));
 
 	this.context.uniform1f (this.traceShader.iterationUniform, this.iteration);
-
 	this.context.activeTexture (this.context.TEXTURE0);
 	this.context.bindTexture (this.context.TEXTURE_2D, this.texturePingPong[0]);
 	
@@ -84,8 +83,6 @@ GPUTracer.prototype.RenderFrame = function ()
 	
 	this.context.useProgram (this.renderShader);
 
-	this.context.uniform1f (this.renderShader.iterationUniform, this.iteration);
-    
 	this.context.activeTexture (this.context.TEXTURE0);
 	this.context.bindTexture (this.context.TEXTURE_2D, this.texturePingPong[1]);
     
@@ -253,7 +250,6 @@ GPUTracer.prototype.InitBuffers = function (model)
 		InitVertexBuffer (vertices, context, shader);
 		
 		context.uniform1i (context.getUniformLocation (shader, 'uOriginalTextureSampler'), 0);
-		shader.iterationUniform = context.getUniformLocation (shader, 'uIteration');
 	}
 
 	var vertices = new Float32Array ([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]);
@@ -302,7 +298,6 @@ GPUTracer.prototype.GetRenderFragmentShader = function ()
 	var vertexShader = [
 		'precision highp float;',
 		'uniform sampler2D uOriginalTextureSampler;',
-		'uniform float uIteration;',
 		'varying vec2 vVertexPosition;',
 		'void main (void)',
 		'{',
