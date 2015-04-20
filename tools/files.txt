@@ -5,6 +5,7 @@
 ../src/core/check.js
 ../src/geometry/coord.js
 ../src/geometry/determinant.js
+../src/geometry/coordutils2d.js
 ../src/geometry/coordutils.js
 ../src/geometry/matrix.js
 ../src/geometry/coordsystem.js

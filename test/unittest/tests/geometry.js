@@ -3,6 +3,25 @@ module.exports = function (unitTest)
 
 var generalSuite = unitTest.AddTestSuite ('GeometryGeneral');
 
+generalSuite.AddTest ('Vector2DTest', function (test) {
+	var coord1 = new JSM.Coord2D (1.0, 0.0);
+	var coord2 = new JSM.Coord2D (0.0, 1.0);
+	test.Assert (JSM.CoordIsEqual2D (JSM.CoordAdd2D (coord1, coord2), new JSM.Coord2D (1, 1)));
+	test.Assert (JSM.IsEqual (JSM.CoordDistance2D (coord1, coord2), Math.sqrt (2.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.MidCoord2D (coord1, coord2), new JSM.Coord2D (0.5, 0.5)));
+	var coord3 = JSM.VectorMultiply2D (coord1, 10);
+	test.Assert (JSM.CoordIsEqual2D (coord3, new JSM.Coord2D (10, 0)));
+	test.Assert (JSM.IsEqual (JSM.VectorLength2D (coord3), 10.0));
+	var coord4 = JSM.VectorNormalize2D (coord3, 10);
+	test.Assert (JSM.CoordIsEqual2D (coord4, new JSM.Coord2D (1, 0)));
+	test.Assert (JSM.IsEqual (JSM.VectorLength2D (coord4), 1.0));
+	var coord5 = JSM.VectorSetLength2D (coord3, 5);
+	test.Assert (JSM.CoordIsEqual2D (coord5, new JSM.Coord2D (5, 0)));
+	test.Assert (JSM.IsEqual (JSM.VectorLength2D (coord5), 5.0));
+	var coord6 = JSM.CoordOffset2D (coord1, coord2, 3.0);
+	test.Assert (JSM.CoordIsEqual2D (coord6, new JSM.Coord2D (1, 3)));
+});
+
 generalSuite.AddTest ('VectorTest', function (test) {
 	var coord2d1 = new JSM.Coord2D (1, 2);
 	var coord2d2 = new JSM.Coord2D (3, 4);
@@ -766,6 +785,44 @@ generalSuite.AddTest ('CoordSectorPosition2DTest', function (test)
 	test.Assert (JSM.CoordSectorPosition2D (new JSM.Coord2D (1.123456789, 1.0), sector3) == 'CoordInsideOfSector');
 
 	test.Assert (JSM.CoordSectorPosition2D (new JSM.Coord2D (0.0, 0.0), sector4) == 'CoordOutsideOfSector');
+});
+
+generalSuite.AddTest ('ProjectCoordToSector2DTest', function (test)
+{
+	var sector1 = new JSM.Sector2D (new JSM.Coord2D (1.0, 2.0), new JSM.Coord2D (1.0, 2.0));
+	var sector2 = new JSM.Sector2D (new JSM.Coord2D (1.0, 2.0), new JSM.Coord2D (4.0, 3.0));
+	var sector3 = new JSM.Sector2D (new JSM.Coord2D (1.0, 1.0), new JSM.Coord2D (3.0, 1.0));
+	var sector4 = new JSM.Sector2D (new JSM.Coord2D (0.0, 1.0), new JSM.Coord2D (1.0, 1.0));
+
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (0.0, 0.0), sector1), new JSM.Coord2D (1.0, 2.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (1.0, 2.0), sector1), new JSM.Coord2D (1.0, 2.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (1.0, 2.001), sector1), new JSM.Coord2D (1.0, 2.0)));
+    
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (0.0, 0.0), sector2), new JSM.Coord2D (1.0, 2.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (7.0, 5.0), sector2), new JSM.Coord2D (4.0, 3.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (-2.0, 2.0), sector2), new JSM.Coord2D (1, 2)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (2.0, 2.0), sector2), new JSM.Coord2D (1.9, 2.3)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (3.0, 2.5), sector2), new JSM.Coord2D (2.95, 2.65)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (2.0, 3.0), sector2), new JSM.Coord2D (2.2, 2.4)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (3.0, 3.0), sector2), new JSM.Coord2D (3.1, 2.7)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (1.0, 2.0), sector2), new JSM.Coord2D (1.0, 2.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (4.0, 3.0), sector2), new JSM.Coord2D (4.0, 3.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (2.5, 2.5), sector2), new JSM.Coord2D (2.5, 2.5)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (1.75, 2.25), sector2), new JSM.Coord2D (1.75, 2.25)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (2.5, 2.501), sector2), new JSM.Coord2D (2.5003, 2.5001)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (1.75, 2.26), sector2), new JSM.Coord2D (1.753, 2.251)));
+    
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (4.0, 1.0), sector3), new JSM.Coord2D (3.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (3.001, 1.0), sector3), new JSM.Coord2D (3.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (0.0, 1.0), sector3), new JSM.Coord2D (1.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (0.999, 1.0), sector3), new JSM.Coord2D (1.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (1.0, 1.0), sector3), new JSM.Coord2D (1.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (3.0, 1.0), sector3), new JSM.Coord2D (3.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (1.1, 1.0), sector3), new JSM.Coord2D (1.1, 1.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (2.0, 0.0), sector3), new JSM.Coord2D (2.0, 1.0)));
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (1.123456789, 1.0), sector3), new JSM.Coord2D (1.123456789, 1.0)));
+    
+	test.Assert (JSM.CoordIsEqual2D (JSM.ProjectCoordToSector2D (new JSM.Coord2D (0.0, 0.0), sector4), new JSM.Coord2D (0.0, 1.0)));
 });
 
 generalSuite.AddTest ('SectorSectorPositionTest', function (test)

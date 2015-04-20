@@ -9,6 +9,7 @@ unitTest.AddSourceFile ('../../src/core/async.js');
 unitTest.AddSourceFile ('../../src/core/check.js');
 unitTest.AddSourceFile ('../../src/geometry/coord.js');
 unitTest.AddSourceFile ('../../src/geometry/determinant.js');
+unitTest.AddSourceFile ('../../src/geometry/coordutils2d.js');
 unitTest.AddSourceFile ('../../src/geometry/coordutils.js');
 unitTest.AddSourceFile ('../../src/geometry/matrix.js');
 unitTest.AddSourceFile ('../../src/geometry/coordsystem.js');

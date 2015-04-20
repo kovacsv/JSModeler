@@ -44,6 +44,44 @@ JSM.CoordSectorPosition2D = function (coord, sector)
 };
 
 /**
+* Function: ProjectCoordToSector2D
+* Description: Projects a coordinate to a sector.
+* Parameters:
+*	coord {Coord2D} the coordinate
+*	sector {Sector2D} the sector
+* Returns:
+*	{Coord2D} the projected coordinate
+*/
+JSM.ProjectCoordToSector2D = function (coord, sector)
+{
+	var x = coord.x;
+	var y = coord.y;
+
+	var beg = sector.beg;
+	var end = sector.end;
+	var x1 = beg.x;
+	var y1 = beg.y;
+	var x2 = end.x;
+	var y2 = end.y;
+
+	var denom = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+	if (JSM.IsZero (denom)) {
+		return beg;
+	}
+
+	var u = ((x2 - x1) * (x - x1) + (y2 - y1) * (y - y1)) / denom;
+	if (JSM.IsLower (u, 0.0)) {
+		return beg;
+	} else if (JSM.IsGreater (u, 1.0)) {
+		return end;
+	}
+	
+	var dir = JSM.CoordSub2D (end, beg);
+	var result = JSM.CoordAdd2D (beg, JSM.VectorMultiply2D (dir, u));
+	return result;
+};
+
+/**
 * Function: CoordSectorPosition
 * Description: Calculates the position of a coordinate and a sector.
 * Parameters:

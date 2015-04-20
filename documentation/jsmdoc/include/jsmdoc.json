@@ -316,22 +316,13 @@
 						["Coord2D", "the result"]
 					]
 				},
-				"CoordFromArray" : {
-					"description" : "Returns a coordinate from an array of components.",
-					"parameters" : [
-						["array", "number[3]", "the array of components"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CoordToArray" : {
+				"CoordToArray2D" : {
 					"description" : "Returns array of components from a coordinate.",
 					"parameters" : [
-						["coord", "Coord", "the coordinate"]
+						["coord", "Coord2D", "the coordinate"]
 					],
 					"returns" : [
-						["array", "number[3]"]
+						["array", "number[2]"]
 					]
 				},
 				"CoordIsEqual2D" : {
@@ -355,6 +346,26 @@
 						["boolean", "the result"]
 					]
 				},
+				"CoordAdd2D" : {
+					"description" : "Adds two coordinates.",
+					"parameters" : [
+						["a", "Coord2D", "the first coordinate"],
+						["b", "Coord2D", "the second coordinate"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
+				"CoordSub2D" : {
+					"description" : "Subs two coordinates.",
+					"parameters" : [
+						["a", "Coord2D", "the first coordinate"],
+						["b", "Coord2D", "the second coordinate"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
 				"CoordDistance2D" : {
 					"description" : "Calculates the distance of two coordinates.",
 					"parameters" : [
@@ -368,8 +379,57 @@
 				"MidCoord2D" : {
 					"description" : "Calculates the coordinate in the middle of two coordinates.",
 					"parameters" : [
-						["a", "Coord2D", "the first coordinate"],
-						["b", "Coord2D", "the second coordinate"]
+						["a", "Coord2D", "first coordinate"],
+						["b", "Coord2D", "second coordinate"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
+				"VectorMultiply2D" : {
+					"description" : "Multiplies a vector with a scalar.",
+					"parameters" : [
+						["vector", "Vector2D", "the vector"],
+						["scalar", "number", "the scalar"]
+					],
+					"returns" : [
+						["Vector2D", "the result"]
+					]
+				},
+				"VectorLength2D" : {
+					"description" : "Calculates length of a vector.",
+					"parameters" : [
+						["vector", "Vector2D", "the vector"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"VectorNormalize2D" : {
+					"description" : "Normalize a vector.",
+					"parameters" : [
+						["vector", "Vector2D", "the vector"]
+					],
+					"returns" : [
+						["Vector2D", "the result"]
+					]
+				},
+				"VectorSetLength2D" : {
+					"description" : "Sets the length of a vector.",
+					"parameters" : [
+						["vector", "Vector2D", "the vector"],
+						["length", "number", "the length"]
+					],
+					"returns" : [
+						["Vector2D", "the result"]
+					]
+				},
+				"CoordOffset2D" : {
+					"description" : "Offsets a coordinate.",
+					"parameters" : [
+						["coord", "Coord2D", "the coordinate"],
+						["direction", "Vector2D", "the direction of the offset"],
+						["distance", "number", "the distance of the offset"]
 					],
 					"returns" : [
 						["Coord2D", "the result"]
@@ -416,6 +476,24 @@
 						["string", "'CounterClockwise', 'Clockwise', or 'Collinear'"]
 					]
 				},
+				"CoordFromArray" : {
+					"description" : "Returns a coordinate from an array of components.",
+					"parameters" : [
+						["array", "number[3]", "the array of components"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"CoordToArray" : {
+					"description" : "Returns array of components from a coordinate.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"]
+					],
+					"returns" : [
+						["array", "number[3]"]
+					]
+				},
 				"CoordIsEqual" : {
 					"description" : "Determines if the given coordinates are equal.",
 					"parameters" : [
@@ -435,6 +513,26 @@
 					],
 					"returns" : [
 						["boolean", "the result"]
+					]
+				},
+				"CoordAdd" : {
+					"description" : "Adds two coordinates.",
+					"parameters" : [
+						["a", "Coord", "the first coordinate"],
+						["b", "Coord", "the second coordinate"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"CoordSub" : {
+					"description" : "Subs two coordinates.",
+					"parameters" : [
+						["a", "Coord", "the first coordinate"],
+						["b", "Coord", "the second coordinate"]
+					],
+					"returns" : [
+						["Coord", "the result"]
 					]
 				},
 				"SphericalCoordIsEqual" : {
@@ -536,6 +634,29 @@
 						["Vector", "the result"]
 					]
 				},
+				"CoordOffset" : {
+					"description" : "Offsets a coordinate.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["direction", "Vector", "the direction of the offset"],
+						["distance", "number", "the distance of the offset"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"CoordRotate" : {
+					"description" : "Rotates a coordinate.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"],
+						["axis", "Vector", "the axis of the rotation"],
+						["angle", "number", "the angle of the rotation"],
+						["origo", "Coord", "the origo of the rotation"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
 				"GetVectorsAngle" : {
 					"description" : "Calculates the angle of two vectors.",
 					"parameters" : [
@@ -565,49 +686,6 @@
 					],
 					"returns" : [
 						["boolean", "the result"]
-					]
-				},
-				"CoordAdd" : {
-					"description" : "Adds two coordinates.",
-					"parameters" : [
-						["a", "Coord", "the first coordinate"],
-						["b", "Coord", "the second coordinate"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CoordSub" : {
-					"description" : "Subs two coordinates.",
-					"parameters" : [
-						["a", "Coord", "the first coordinate"],
-						["b", "Coord", "the second coordinate"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CoordOffset" : {
-					"description" : "Offsets a coordinate.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["direction", "Vector", "the direction of the offset"],
-						["distance", "number", "the distance of the offset"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CoordRotate" : {
-					"description" : "Rotates a coordinate.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["axis", "Vector", "the axis of the rotation"],
-						["angle", "number", "the angle of the rotation"],
-						["origo", "Coord", "the origo of the rotation"]
-					],
-					"returns" : [
-						["Coord", "the result"]
 					]
 				},
 				"GetCoord2DFromCoord" : {
@@ -940,6 +1018,16 @@
 					],
 					"returns" : [
 						["string", "'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'"]
+					]
+				},
+				"ProjectCoordToSector2D" : {
+					"description" : "Projects a coordinate to a sector.",
+					"parameters" : [
+						["coord", "Coord2D", "the coordinate"],
+						["sector", "Sector2D", "the sector"]
+					],
+					"returns" : [
+						["Coord2D", "the projected coordinate"]
 					]
 				},
 				"CoordSectorPosition" : {
@@ -3863,6 +3951,18 @@
 							],
 							"returns" : [
 								["TriangleBody", "the result"]
+							]
+						},
+						"VertexCount" : {
+							"description" : "Returns the vertex count of the model.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"TriangleCount" : {
+							"description" : "Returns the triangle count of the model.",
+							"returns" : [
+								["integer", "the result"]
 							]
 						},
 						"BodyCount" : {
