@@ -112,7 +112,8 @@
 			var errorDiv = document.getElementById ('error');
 			errorDiv.innerHTML = '';
 
-			var fragmentShader = document.getElementById ('fragmentshader').value;
+			var fragmentShaderTag = document.getElementById ('fragmentshader');
+			var fragmentShader = fragmentShaderTag.childNodes[0].nodeValue;
 
 			gpuTracer = new GPUTracer ();
 			var canvas = document.getElementById ('example');
@@ -146,11 +147,7 @@
 		}
 	</script>
 
-</head>
-
-<body>
-	<div>
-<textarea id="fragmentshader">
+<script id="fragmentshader">
 precision highp float;
 
 varying vec2 vVertexPosition;
@@ -199,62 +196,6 @@ struct Sphere
 	float radius;
 };
 
-bool SphereContainsPoint (in Sphere sphere, in vec3 point)
-{
-	float distance = length (point - sphere.origin);
-	return distance <= sphere.radius;
-}
-
-bool RaySphereIntersection (in Ray ray, in Sphere sphere, out Intersection intersection)
-{
-	vec3 rayOrigin = ray.origin;
-	vec3 rayDirection = ray.direction;
-	if (SphereContainsPoint (sphere, rayOrigin)) {
-		return false;
-	}
-
-	vec3 sphereToRay = rayOrigin - sphere.origin;
-	float a = dot (rayDirection, rayDirection);
-	float b = 2.0 * dot (sphereToRay, rayDirection);
-	float c = dot (sphereToRay, sphereToRay) - sphere.radius * sphere.radius;
-
-	float disc = b * b - 4.0 * a * c;
-	if (disc <= 0.0) {
-		return false;
-	}
-
-	float q = 0.0;
-	if (b < 0.0) {
-		q = (-b - sqrt (disc)) * 0.5;
-	} else {
-		q = (-b + sqrt (disc)) * 0.5;
-	}
-
-	float t0 = q / a;
-	float t1 = c / q;
-	float maxT = max (t0, t1);
-	if (maxT < 0.0) {
-		return false;
-	}
-
-	float distance = 0.0;
-	float minT = min (t0, t1);
-	if (minT < 0.0) {
-		distance = maxT;
-	} else {
-		distance = minT;
-	}
-
-	if (ray.length < distance) {
-		return false;
-	}
-
-	intersection.position = rayOrigin + distance * rayDirection;
-	intersection.distance = distance;
-	intersection.normal = normalize (intersection.position - sphere.origin);
-	return true;
-}
-
 vec3 PhongShading (in vec3 shadedPoint, in vec3 shadedPointNormal, in Material shadedMaterial)
 {
 	float lightAmbientIntensity = 1.0;
@@ -273,9 +214,40 @@ vec3 PhongShading (in vec3 shadedPoint, in vec3 shadedPointNormal, in Material s
 	return color;
 }
 
+float PointSphereDistance (in vec3 point, in Sphere sphere)
+{
+	float distance = length (sphere.origin - point);
+	return abs (distance - sphere.radius);
+}
+
 float Random (vec2 seed)
 {
     return fract (sin (dot (seed, vec2 (12.9898,78.233))) * 43758.5453);
+}
+
+bool RayModelIntersection (in Ray ray, out Intersection intersection)
+{
+	Sphere sphere;
+	sphere.origin = vec3 (0.0, 0.0, 0.0);
+	sphere.radius = 1.0;
+
+	const int maxSteps = 100;
+	const float minDistance = 0.00001;
+	
+	vec3 shadedColor = vec3 (0.0, 0.0, 0.0);
+	float distance = 0.0;
+	for (int i = 0; i < maxSteps; i++) {
+		vec3 currentPoint = ray.origin + ray.direction * distance;
+		float currentDistance = PointSphereDistance (currentPoint, sphere);
+		distance += currentDistance;
+		if (currentDistance < minDistance) {
+			intersection.position = currentPoint;
+			intersection.distance = distance;
+			intersection.normal = normalize (currentPoint - sphere.origin);
+			return true;
+		}
+	}
+	return false;
 }
 
 Ray GetRay (in vec2 vertexPosition, in Camera camera, in float iteration)
@@ -302,17 +274,13 @@ Ray GetRay (in vec2 vertexPosition, in Camera camera, in float iteration)
 
 vec3 TraceRay (in Ray ray)
 {
-	Sphere sphere;
-	sphere.origin = vec3 (0.0, 0.0, 0.0);
-	sphere.radius = 1.0;
-	
 	Material material;
 	material.ambient = vec3 (0.0, 0.0, 0.0);
 	material.diffuse = vec3 (1.0, 0.0, 0.0);
-
+	
 	vec3 shadedColor = vec3 (0.0, 0.0, 0.0);
 	Intersection intersection;
-	if (RaySphereIntersection (ray, sphere, intersection)) {
+	if (RayModelIntersection (ray, intersection)) {
 		shadedColor = PhongShading (intersection.position, intersection.normal, material);
 	}
 	return shadedColor;
@@ -334,11 +302,11 @@ void main (void)
 	float weight = uIteration / (uIteration + 1.0);
 	gl_FragColor = vec4 (mix (shadedColor, originalColor, weight), 1.0);
 }
-</textarea>
-	</div>
-	<div>
-		<input type="button" value="render" onclick="Compile ();"></input>
-	</div>
+</script>
+	
+</head>
+
+<body>
 	<div id="error"></div>
 	<canvas id="example" width="256" height="256"></canvas>
 </body>

@@ -36,7 +36,7 @@ GPUTracer.prototype.Init = function (canvas, fragmentShader, onError)
 GPUTracer.prototype.Start = function ()
 {
 	this.iteration = 0;
-	this.maxIteration = 32;
+	this.maxIteration = 0;
 	this.RenderFrame ();
 };
 
