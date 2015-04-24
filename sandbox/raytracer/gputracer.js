@@ -6,22 +6,23 @@ GPUTracer = function ()
 	this.size = null;
 	this.traceShader = null;
 	this.renderShader = null;
+	this.textureBuffers = null;
 	this.texturePingPong = null;
 	this.iteration = null;
 	this.maxIteration = null;
 };
 
-GPUTracer.prototype.Init = function (canvas, model, fragmentShader, onError)
+GPUTracer.prototype.Init = function (canvas, fragmentShader, onError)
 {
 	if (!this.InitContext (canvas)) {
 		return false;
 	}
 
-	if (!this.InitShaders (fragmentShader, model, onError)) {
+	if (!this.InitShaders (fragmentShader, onError)) {
 		return false;
 	}	
 	
-	if (!this.InitBuffers (model)) {
+	if (!this.InitBuffers ()) {
 		return false;
 	}
 
@@ -37,6 +38,17 @@ GPUTracer.prototype.Start = function ()
 	this.iteration = 0;
 	this.maxIteration = 32;
 	this.RenderFrame ();
+};
+
+GPUTracer.prototype.AddTextureBuffer = function (data, name)
+{
+	var index = this.textureBuffers.length + 1;
+	this.context.useProgram (this.traceShader);
+	var textureSize = JSM.WebGLGetFloatTextureBufferSize (data);
+	var textureBuffer = JSM.WebGLCreateFloatTextureBuffer (this.context, data, textureSize);
+	this.context.uniform1i (this.context.getUniformLocation (this.traceShader, 'u' + name + 'Sampler'), index);
+	this.context.uniform1f (this.context.getUniformLocation (this.traceShader, 'u' + name + 'Size'), textureSize);
+	this.textureBuffers.push (textureBuffer);
 };
 
 GPUTracer.prototype.ClearRender = function ()
@@ -66,11 +78,11 @@ GPUTracer.prototype.RenderFrame = function ()
 	this.context.activeTexture (this.context.TEXTURE0);
 	this.context.bindTexture (this.context.TEXTURE_2D, this.texturePingPong[0]);
 	
-	this.context.activeTexture (this.context.TEXTURE1);
-	this.context.bindTexture (this.context.TEXTURE_2D, this.traceShader.triangleBuffer);
-	
-	this.context.activeTexture (this.context.TEXTURE2);
-	this.context.bindTexture (this.context.TEXTURE_2D, this.traceShader.materialBuffer);				
+	var i;
+	for (i = 0; i < this.textureBuffers.length; i++) {
+		this.context.activeTexture (this.context['TEXTURE' + (i + 1)]);
+		this.context.bindTexture (this.context.TEXTURE_2D, this.textureBuffers[i]);
+	}
 
 	this.context.bindFramebuffer (this.context.FRAMEBUFFER, this.traceShader.frameBuffer);
 	this.context.framebufferTexture2D (this.context.FRAMEBUFFER, this.context.COLOR_ATTACHMENT0, this.context.TEXTURE_2D, this.texturePingPong[1], 0);
@@ -119,10 +131,9 @@ GPUTracer.prototype.InitContext = function (canvas)
 	return true;
 };
 
-GPUTracer.prototype.InitShaders = function (fragmentShader, model, onError)
+GPUTracer.prototype.InitShaders = function (fragmentShader, onError)
 {
 	var vertexShader = this.GetVertexShader ();
-	fragmentShader = fragmentShader.replace ('[TRIANGLE_COUNT]', model.TriangleCount ());
 	this.traceShader = JSM.WebGLInitShaderProgram (this.context, vertexShader, fragmentShader, onError);
 	if (this.traceShader === null) {
 		return false;
@@ -137,75 +148,8 @@ GPUTracer.prototype.InitShaders = function (fragmentShader, model, onError)
 	return true;
 };
 
-GPUTracer.prototype.InitBuffers = function (model)
+GPUTracer.prototype.InitBuffers = function ()
 {
-	function GenerateTriangleData (model)
-	{
-		var result = [];
-		var i, j, body, triangle, v0, v1, v2, n0, n1, n2;
-		for (i = 0; i < model.BodyCount (); i++) {
-			body = model.GetBody (i);
-			for (j = 0; j < body.TriangleCount (); j++) {
-				triangle = body.GetTriangle (j);
-				v0 = body.GetVertex (triangle.v0);
-				v1 = body.GetVertex (triangle.v1);
-				v2 = body.GetVertex (triangle.v2);
-				n0 = body.GetNormal (triangle.n0);
-				n1 = body.GetNormal (triangle.n1);
-				n2 = body.GetNormal (triangle.n2);
-				result.push (v0.x, v0.y, v0.z);
-				result.push (v1.x, v1.y, v1.z);
-				result.push (v2.x, v2.y, v2.z);
-				result.push (n0.x, n0.y, n0.z);
-				result.push (n1.x, n1.y, n1.z);
-				result.push (n2.x, n2.y, n2.z);
-				result.push (triangle.mat, 0.0, 0.0);
-			}
-		}
-		return result;
-	}
-	
-	function GenerateMaterialData (model)
-	{
-		var result = [];
-		var i, material;
-		for (i = 0; i < model.MaterialCount (); i++) {
-			material = model.GetMaterial (i);
-			result.push (material.ambient[0], material.ambient[1], material.ambient[2]);
-			result.push (material.diffuse[0], material.diffuse[1], material.diffuse[2]);
-			result.push (material.reflection, 0.0, 0.0);
-		}
-		return result;
-	}
-
-	function CreateFloatTextureBufferFromArray (context, array, size)
-	{
-		var floatArray = null;
-		if (array != null) {
-			floatArray = new Float32Array (array)
-		}
-		var textureBuffer = context.createTexture ();
-		context.bindTexture (context.TEXTURE_2D, textureBuffer);
-		context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST);
-		context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.NEAREST);
-		context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_S, context.CLAMP_TO_EDGE);
-		context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_T, context.CLAMP_TO_EDGE);
-		context.texImage2D (context.TEXTURE_2D, 0, context.RGB, size, size, 0, context.RGB, context.FLOAT, floatArray);
-		context.bindTexture (context.TEXTURE_2D, null);
-		return textureBuffer;
-	}
-	
-	function CreateFloatTextureBuffer (context, array)
-	{
-		var textureSize = JSM.NextPowerOfTwo (Math.ceil (Math.sqrt (array.length / 3.0)));
-		while (array.length < textureSize * textureSize * 3) {
-			array.push (0.0);
-		}
-		var textureBuffer = CreateFloatTextureBufferFromArray (context, array, textureSize);
-		textureBuffer.textureSize = textureSize;
-		return textureBuffer;
-	}
-
 	function InitVertexBuffer (vertices, context, shader)
 	{
 		var vertexAttribLocation = context.getAttribLocation (shader, 'aVertexPosition');
@@ -224,16 +168,6 @@ GPUTracer.prototype.InitBuffers = function (model)
 		
 		context.uniform1f (context.getUniformLocation (shader, 'uSize'), size);
 		context.uniform1i (context.getUniformLocation (shader, 'uOriginalTextureSampler'), 0);
-
-		var triangleData = GenerateTriangleData (model);
-		shader.triangleBuffer = CreateFloatTextureBuffer (context, triangleData);
-		context.uniform1i (context.getUniformLocation (shader, 'uTiangleTextureSampler'), 1);
-		context.uniform1f (context.getUniformLocation (shader, 'uTriangleTextureSize'), shader.triangleBuffer.textureSize);
-		
-		var materialData = GenerateMaterialData (model);
-		shader.materialBuffer = CreateFloatTextureBuffer (context, materialData);
-		context.uniform1i (context.getUniformLocation (shader, 'uMaterialTextureSampler'), 2);
-		context.uniform1f (context.getUniformLocation (shader, 'uMaterialTextureSize'), shader.materialBuffer.textureSize);
 		
 		shader.frameBuffer = context.createFramebuffer ();
 		context.bindFramebuffer (context.FRAMEBUFFER, shader.frameBuffer);
@@ -255,9 +189,11 @@ GPUTracer.prototype.InitBuffers = function (model)
 	var vertices = new Float32Array ([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]);
 	InitTraceBuffers (vertices, this.context, this.traceShader, this.size);
 	InitRenderBuffers (vertices, this.context, this.renderShader, this.size);
+	
+	this.textureBuffers = [];
 	this.texturePingPong = [
-		CreateFloatTextureBufferFromArray (this.context, null, this.size),
-		CreateFloatTextureBufferFromArray (this.context, null, this.size)
+		JSM.WebGLCreateFloatTextureBuffer (this.context, null, this.size),
+		JSM.WebGLCreateFloatTextureBuffer (this.context, null, this.size)
 	];
 	return true;
 };

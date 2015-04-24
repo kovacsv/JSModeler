@@ -1,0 +1,346 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<script type="text/javascript" src="../build/three.min.js"></script>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../../src/core/timer.js"></script>
+	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../../src/core/async.js"></script>
+	<script type="text/javascript" src="../../src/core/check.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordutils2d.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystemutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sectorutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../../src/geometry/lineutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/box.js"></script>
+	<script type="text/javascript" src="../../src/geometry/boxutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sphere.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformationutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../../src/geometry/planeutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygonutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/octree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../../src/geometry/ray.js"></script>
+	<script type="text/javascript" src="../../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../../src/modeler/light.js"></script>
+	<script type="text/javascript" src="../../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../../src/modeler/explode.js"></script>
+	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglebody.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglemodel.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglebodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/converter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/rayutils.js"></script>
+	<script type="text/javascript" src="../../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../../src/import/importer.js"></script>
+	<script type="text/javascript" src="../../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../../src/import/importercommon.js"></script>
+	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../../src/renderer/webglutils.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/rendererconverter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/jsonfileloader.js"></script>
+	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
+<!-- JSModeler includes end -->
+	<script type="text/javascript" src="gputracer.js"></script>
+	<title>Example</title>
+	
+	<style>
+		html, body
+		{
+			margin : 5px;
+			padding : 0px;
+		}
+
+		#fragmentshader
+		{
+			width : 100%;
+			height : 500px;
+			border : 1px solid #cccccc;
+		}
+	</style>
+	
+	<script type="text/javascript">
+
+		var gpuTracer = null;
+		function Compile ()
+		{
+			var errorDiv = document.getElementById ('error');
+			errorDiv.innerHTML = '';
+
+			var fragmentShader = document.getElementById ('fragmentshader').value;
+
+			gpuTracer = new GPUTracer ();
+			var canvas = document.getElementById ('example');
+			var timer = new JSM.Timer ();
+			timer.Start ();
+			gpuTracer.Init (canvas, fragmentShader, function (error) {
+				errorDiv.innerHTML += error.replace ('\n', '<br>');
+			});
+			timer.Stop ();
+			errorDiv.innerHTML += 'Compile time: ' + timer.Result () + '<br>';
+			
+			gpuTracer.Start ();
+		}
+
+		function TextAreaKeyDown (event)
+		{
+			if (event.which == 9) {
+				event.preventDefault ();
+				var selectionStart = this.selectionStart;
+				this.value = this.value.substring (0, this.selectionStart) + '\t' + this.value.substring (this.selectionEnd);
+				this.selectionEnd = selectionStart + 1; 
+			}		
+		}
+		
+	    window.onload = function ()
+		{
+			var fragmentShader = document.getElementById ('fragmentshader');
+			fragmentShader.onkeydown = TextAreaKeyDown;
+
+			Compile ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<div>
+<textarea id="fragmentshader">
+precision highp float;
+
+varying vec2 vVertexPosition;
+uniform float uSize;
+
+#define EPS 0.000005
+#define BIGEPS 0.005
+#define PI 3.1415926535897932384626433832795
+#define INF 1.0 / 0.0
+
+uniform sampler2D uOriginalTextureSampler;
+uniform vec3 uCameraData[3];
+uniform vec3 uLightPosition;
+uniform float uIteration;
+
+struct Material
+{
+	vec3 ambient;
+	vec3 diffuse;
+};
+
+struct Camera
+{
+	vec3 eye;
+	vec3 center;
+	vec3 up;
+};
+
+struct Ray
+{
+	vec3 origin;
+	vec3 direction;
+	float length;
+};
+
+struct Intersection
+{
+	vec3 position;
+	float distance;
+	vec3 normal;
+};
+
+struct Sphere
+{
+	vec3 origin;
+	float radius;
+};
+
+bool SphereContainsPoint (in Sphere sphere, in vec3 point)
+{
+	float distance = length (point - sphere.origin);
+	return distance <= sphere.radius;
+}
+
+bool RaySphereIntersection (in Ray ray, in Sphere sphere, out Intersection intersection)
+{
+	vec3 rayOrigin = ray.origin;
+	vec3 rayDirection = ray.direction;
+	if (SphereContainsPoint (sphere, rayOrigin)) {
+		return false;
+	}
+
+	vec3 sphereToRay = rayOrigin - sphere.origin;
+	float a = dot (rayDirection, rayDirection);
+	float b = 2.0 * dot (sphereToRay, rayDirection);
+	float c = dot (sphereToRay, sphereToRay) - sphere.radius * sphere.radius;
+
+	float disc = b * b - 4.0 * a * c;
+	if (disc <= 0.0) {
+		return false;
+	}
+
+	float q = 0.0;
+	if (b < 0.0) {
+		q = (-b - sqrt (disc)) * 0.5;
+	} else {
+		q = (-b + sqrt (disc)) * 0.5;
+	}
+
+	float t0 = q / a;
+	float t1 = c / q;
+	float maxT = max (t0, t1);
+	if (maxT < 0.0) {
+		return false;
+	}
+
+	float distance = 0.0;
+	float minT = min (t0, t1);
+	if (minT < 0.0) {
+		distance = maxT;
+	} else {
+		distance = minT;
+	}
+
+	if (ray.length < distance) {
+		return false;
+	}
+
+	intersection.position = rayOrigin + distance * rayDirection;
+	intersection.distance = distance;
+	intersection.normal = normalize (intersection.position - sphere.origin);
+	return true;
+}
+
+vec3 PhongShading (in vec3 shadedPoint, in vec3 shadedPointNormal, in Material shadedMaterial)
+{
+	float lightAmbientIntensity = 1.0;
+	float lightDiffuseIntensity = 1.0;
+	
+	vec3 ambientColor = shadedMaterial.ambient * lightAmbientIntensity;
+	ambientColor = clamp (ambientColor, 0.0, 1.0);
+	
+	vec3 lightDirection = normalize (uLightPosition - shadedPoint);
+	float diffuseCoeff = max (dot (lightDirection, shadedPointNormal), 0.0);
+	vec3 diffuseColor = shadedMaterial.diffuse * lightDiffuseIntensity;
+	diffuseColor = clamp (diffuseColor, 0.0, 1.0);
+	
+	vec3 color = ambientColor + diffuseColor * diffuseCoeff;
+	color = clamp (color, 0.0, 1.0);
+	return color;
+}
+
+float Random (vec2 seed)
+{
+    return fract (sin (dot (seed, vec2 (12.9898,78.233))) * 43758.5453);
+}
+
+Ray GetRay (in vec2 vertexPosition, in Camera camera, in float iteration)
+{
+	vec3 eyeCenterDir = normalize (camera.center - camera.eye);
+	vec3 horizontalDir = normalize (cross (eyeCenterDir, camera.up));
+	vec3 verticalDir = normalize (cross (horizontalDir, eyeCenterDir ));
+
+	float fieldOfView = PI / 3.0; // 60 degree
+	float cameraDistance = 1.0 / tan (fieldOfView / 2.0);
+	vec3 endPosition = camera.eye + eyeCenterDir * cameraDistance;
+	
+	float random = Random (vec2 (iteration, iteration));
+	float pixelSize = 2.0 / uSize;
+	endPosition = endPosition + horizontalDir * (vertexPosition.x + random * pixelSize);
+	endPosition = endPosition + verticalDir * (vertexPosition.y + random * pixelSize);
+	
+	Ray result;
+	result.origin = camera.eye;
+	result.direction = normalize (endPosition - camera.eye);
+	result.length = INF;
+	return result;
+}
+
+vec3 TraceRay (in Ray ray)
+{
+	Sphere sphere;
+	sphere.origin = vec3 (0.0, 0.0, 0.0);
+	sphere.radius = 1.0;
+	
+	Material material;
+	material.ambient = vec3 (0.0, 0.0, 0.0);
+	material.diffuse = vec3 (1.0, 0.0, 0.0);
+
+	vec3 shadedColor = vec3 (0.0, 0.0, 0.0);
+	Intersection intersection;
+	if (RaySphereIntersection (ray, sphere, intersection)) {
+		shadedColor = PhongShading (intersection.position, intersection.normal, material);
+	}
+	return shadedColor;
+}
+
+void main (void)
+{
+	Camera camera;
+	camera.eye = uCameraData[0];
+	camera.center = uCameraData[1];
+	camera.up = uCameraData[2];
+	
+	Ray ray = GetRay (vVertexPosition, camera, uIteration);
+	vec3 shadedColor = TraceRay (ray);
+	
+	
+	vec2 originalPosition = (vVertexPosition + vec2 (1.0, 1.0)) / 2.0;;
+	vec3 originalColor = texture2D (uOriginalTextureSampler, originalPosition).xyz;
+	float weight = uIteration / (uIteration + 1.0);
+	gl_FragColor = vec4 (mix (shadedColor, originalColor, weight), 1.0);
+}
+</textarea>
+	</div>
+	<div>
+		<input type="button" value="render" onclick="Compile ();"></input>
+	</div>
+	<div id="error"></div>
+	<canvas id="example" width="256" height="256"></canvas>
+</body>
+
+</html>

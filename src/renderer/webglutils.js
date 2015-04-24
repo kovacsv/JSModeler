@@ -81,3 +81,28 @@ JSM.WebGLInitShaderProgram = function (context, vertexShader, fragmentShader, on
 	context.useProgram (shader);
 	return shader;
 };
+
+JSM.WebGLGetFloatTextureBufferSize = function (array)
+{
+	return JSM.NextPowerOfTwo (Math.ceil (Math.sqrt (array.length / 3.0)));
+};
+
+JSM.WebGLCreateFloatTextureBuffer = function (context, array, size)
+{
+	var floatArray = null;
+	if (array !== null) {
+		while (array.length < size * size * 3) {
+			array.push (0.0);
+		}
+		floatArray = new Float32Array (array);
+	}
+	var textureBuffer = context.createTexture ();
+	context.bindTexture (context.TEXTURE_2D, textureBuffer);
+	context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST);
+	context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.NEAREST);
+	context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_S, context.CLAMP_TO_EDGE);
+	context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_T, context.CLAMP_TO_EDGE);
+	context.texImage2D (context.TEXTURE_2D, 0, context.RGB, size, size, 0, context.RGB, context.FLOAT, floatArray);
+	context.bindTexture (context.TEXTURE_2D, null);
+	return textureBuffer;
+};
