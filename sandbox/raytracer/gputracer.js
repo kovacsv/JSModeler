@@ -1,13 +1,12 @@
 GPUTracer = function ()
 {
-	this.camera = null;
 	this.canvas = null;
 	this.context = null;
 	this.size = null;
 	this.traceShader = null;
 	this.renderShader = null;
-	this.textureBuffers = null;
 	this.texturePingPong = null;
+	this.camera = null;
 	this.iteration = null;
 	this.maxIteration = null;
 };
@@ -36,19 +35,34 @@ GPUTracer.prototype.Init = function (canvas, fragmentShader, onError)
 GPUTracer.prototype.Start = function ()
 {
 	this.iteration = 0;
-	this.maxIteration = 0;
+	this.maxIteration = 256;
 	this.RenderFrame ();
 };
 
 GPUTracer.prototype.AddTextureBuffer = function (data, name)
 {
-	var index = this.textureBuffers.length + 1;
 	this.context.useProgram (this.traceShader);
+	var index = this.textureBuffers.length + 1;
 	var textureSize = JSM.WebGLGetFloatTextureBufferSize (data);
 	var textureBuffer = JSM.WebGLCreateFloatTextureBuffer (this.context, data, textureSize);
 	this.context.uniform1i (this.context.getUniformLocation (this.traceShader, 'u' + name + 'Sampler'), index);
 	this.context.uniform1f (this.context.getUniformLocation (this.traceShader, 'u' + name + 'Size'), textureSize);
 	this.textureBuffers.push (textureBuffer);
+};
+
+GPUTracer.prototype.SetUniformFloat = function (name, value)
+{
+	this.context.useProgram (this.traceShader);
+	var location = this.context.getUniformLocation (this.traceShader, name);
+	this.context.uniform1f (location, value);
+};
+
+GPUTracer.prototype.SetUniformVector = function (name, value)
+{
+	this.context.useProgram (this.traceShader);
+	var location = this.context.getUniformLocation (this.traceShader, name);
+	var floatArray = new Float32Array ([value.x, value.y, value.z])
+	this.context.uniform3fv (location, floatArray);
 };
 
 GPUTracer.prototype.ClearRender = function ()
@@ -68,10 +82,6 @@ GPUTracer.prototype.RenderFrame = function ()
 		this.camera.eye.x, this.camera.eye.y, this.camera.eye.z,
 		this.camera.center.x, this.camera.center.y, this.camera.center.z,
 		this.camera.up.x, this.camera.up.y, this.camera.up.z
-	]));
-
-	this.context.uniform3fv (this.traceShader.lightUniform, new Float32Array ([
-		4.0, 2.0, 4.0
 	]));
 
 	this.context.uniform1f (this.traceShader.iterationUniform, this.iteration);
@@ -174,7 +184,6 @@ GPUTracer.prototype.InitBuffers = function ()
 		context.bindFramebuffer (context.FRAMEBUFFER, null);
 		
 		shader.cameraUniform = context.getUniformLocation (shader, 'uCameraData');
-		shader.lightUniform = context.getUniformLocation (shader, 'uLightPosition');
 		shader.iterationUniform = context.getUniformLocation (shader, 'uIteration');
 	}
 
