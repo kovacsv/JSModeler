@@ -36,7 +36,7 @@ GPUTracer.prototype.Init = function (canvas, fragmentShader, onError)
 
 GPUTracer.prototype.Start = function ()
 {
-	this.maxIteration = 32;
+	this.maxIteration = 256;
 	this.StartInPreviewMode ();
 };
 
@@ -44,9 +44,6 @@ GPUTracer.prototype.StartInPreviewMode = function ()
 {
 	this.iteration = 0;
 	this.previewMode = true;
-	if (this.previewTimeout !== null) {
-		window.clearTimeout (this.previewTimeout);
-	}
 	this.RenderFrame ();
 };
 
@@ -54,9 +51,6 @@ GPUTracer.prototype.StartInNormalMode = function ()
 {
 	this.iteration = 0;
 	this.previewMode = false;
-	if (this.previewTimeout !== null) {
-		window.clearTimeout (this.previewTimeout);
-	}
 	this.RenderFrame ();
 };
 
@@ -131,6 +125,10 @@ GPUTracer.prototype.RenderFrame = function ()
 
 	this.texturePingPong.reverse ();
 	if (this.previewMode) {
+		if (this.previewTimeout !== null) {
+			window.clearTimeout (this.previewTimeout);
+			this.previewTimeout = null;
+		}
 		this.previewTimeout = window.setTimeout (this.StartInNormalMode.bind (this), 2000);
 	} else if (this.iteration < this.maxIteration) {
 		this.iteration += 1;
