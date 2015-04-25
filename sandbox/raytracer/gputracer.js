@@ -36,8 +36,7 @@ GPUTracer.prototype.Init = function (canvas, fragmentShader, onError)
 
 GPUTracer.prototype.Start = function ()
 {
-	this.maxIteration = 256;
-	this.StartInPreviewMode ();
+	this.StartInNormalMode ();
 };
 
 GPUTracer.prototype.StartInPreviewMode = function ()
@@ -222,6 +221,9 @@ GPUTracer.prototype.InitBuffers = function ()
 		JSM.WebGLCreateFloatTextureBuffer (this.context, null, this.size),
 		JSM.WebGLCreateFloatTextureBuffer (this.context, null, this.size)
 	];
+	
+	this.iteration = 0;
+	this.maxIteration = 256;
 	return true;
 };
 
