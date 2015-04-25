@@ -104,140 +104,7 @@
 		}
 	</style>
 	
-	<script type="text/javascript">
-		function GetModel ()
-		{
-			var model = new JSM.Model ();
-			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xaaaaaa}));
-			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0x00aa00}));
-			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0x0000aa}));
-			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xaa0000}));
-			
-			var body = JSM.GenerateCuboid (1, 1, 1);
-			body.SetPolygonsMaterialIndex (1);
-			body.Transform (JSM.RotationZTransformation (-0.35));
-			body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
-			model.AddBody (body);
-
-			var body2 = JSM.GenerateCuboid (0.5, 0.5, 0.5);
-			body2.SetPolygonsMaterialIndex (2);
-			body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.2, 0.0, -0.25)));
-			model.AddBody (body2);
-
-			var body3 = JSM.GenerateCuboid (3, 0.1, 2);
-			//var body3 = JSM.GenerateCylinder (0.8, 2.0, 25, true, true);
-			//var body3 = JSM.GenerateTorus (1.0, 0.3, 20, 20, true);
-			body3.SetPolygonsMaterialIndex (3);
-			body3.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, -0.7, 0.5)));
-			body3.Transform (JSM.RotationZTransformation (-0.3));
-			model.AddBody (body3);
-
-			var box = JSM.GenerateCuboid (10, 10, 10);
-			box.SetPolygonsMaterialIndex (0);
-			JSM.MakeBodyInsideOut (box);
-			box.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 4.5)));
-			model.AddBody (box);
-			
-			return JSM.ConvertModelToTriangleModel (model, materials);
-		}
-		
-		function GenerateTriangleData (model)
-		{
-			var result = [];
-			var i, j, body, triangle, v0, v1, v2, n0, n1, n2;
-			for (i = 0; i < model.BodyCount (); i++) {
-				body = model.GetBody (i);
-				for (j = 0; j < body.TriangleCount (); j++) {
-					triangle = body.GetTriangle (j);
-					v0 = body.GetVertex (triangle.v0);
-					v1 = body.GetVertex (triangle.v1);
-					v2 = body.GetVertex (triangle.v2);
-					n0 = body.GetNormal (triangle.n0);
-					n1 = body.GetNormal (triangle.n1);
-					n2 = body.GetNormal (triangle.n2);
-					result.push (v0.x, v0.y, v0.z);
-					result.push (v1.x, v1.y, v1.z);
-					result.push (v2.x, v2.y, v2.z);
-					result.push (n0.x, n0.y, n0.z);
-					result.push (n1.x, n1.y, n1.z);
-					result.push (n2.x, n2.y, n2.z);
-					result.push (triangle.mat, 0.0, 0.0);
-				}
-			}
-			return result;
-		}
-		
-		function GenerateMaterialData (model)
-		{
-			var result = [];
-			var i, material;
-			for (i = 0; i < model.MaterialCount (); i++) {
-				material = model.GetMaterial (i);
-				result.push (material.ambient[0], material.ambient[1], material.ambient[2]);
-				result.push (material.diffuse[0], material.diffuse[1], material.diffuse[2]);
-				result.push (material.reflection, 0.0, 0.0);
-			}
-			return result;
-		}
-
-		var gpuTracer = null;
-		
-		function Compile ()
-		{
-			var model = GetModel ();
-
-			var errorDiv = document.getElementById ('error');
-			errorDiv.innerHTML = '';
-
-			var fragmentShader = document.getElementById ('fragmentshader').value;
-			fragmentShader = fragmentShader.replace ('[TRIANGLE_COUNT]', model.TriangleCount ());
-
-			gpuTracer = new GPUTracer ();
-			var canvas = document.getElementById ('example');
-			var timer = new JSM.Timer ();
-			timer.Start ();
-			gpuTracer.Init (canvas, fragmentShader, function (error) {
-				errorDiv.innerHTML += error.replace ('\n', '<br>');
-			});
-			timer.Stop ();
-			errorDiv.innerHTML += 'Compile time: ' + timer.Result () + '<br>';
-			
-			gpuTracer.SetUniformVector ('uLightPosition', new JSM.Vector (4.0, 2.0, 4.0));
-			gpuTracer.SetUniformFloat ('uLightRadius', 0.5);
-			
-			var triangleData = GenerateTriangleData (model);
-			gpuTracer.AddTextureBuffer (triangleData, 'TriangleTexture');
-			var materialData = GenerateMaterialData (model);
-			gpuTracer.AddTextureBuffer (materialData, 'MaterialTexture');
-			
-			gpuTracer.Start ();
-		}
-
-		function TextAreaKeyDown (event)
-		{
-			if (event.which == 9) {
-				event.preventDefault ();
-				var selectionStart = this.selectionStart;
-				this.value = this.value.substring (0, this.selectionStart) + '\t' + this.value.substring (this.selectionEnd);
-				this.selectionEnd = selectionStart + 1; 
-			}
-		}
-		
-	    window.onload = function ()
-		{
-			var fragmentShader = document.getElementById ('fragmentshader');
-			fragmentShader.onkeydown = TextAreaKeyDown;
-
-			Compile ();			
-		}
-	</script>
-
-</head>
-
-<body>
-	<div>
-<textarea id="fragmentshader">
+<script id="fragmentshader">
 precision highp float;
 
 varying vec2 vVertexPosition;
@@ -259,6 +126,7 @@ uniform vec3 uCameraData[3];
 uniform vec3 uLightPosition;
 uniform float uLightRadius;
 uniform float uIteration;
+uniform int uPreview;
 
 struct Triangle
 {
@@ -302,7 +170,8 @@ struct Intersection
 
 float Random (vec2 seed)
 {
-    return fract (sin (dot (seed, vec2 (12.9898,78.233))) * 43758.5453);
+	vec2 theSeed = seed + vec2 (uIteration, -uIteration);
+    return fract (sin (dot (theSeed, vec2 (12.9898,78.233))) * 43758.5453);
 }
 
 vec3 CalculateTriangleNormal (in Triangle triangle)
@@ -517,10 +386,14 @@ vec3 TraceMainRay (in Ray ray)
 		if (intersection.distance == INF) {
 			break;
 		}
-		
+
 		Triangle triangle = GetTriangle (intersection.triangle);
 		Material material = GetMaterial (triangle.mat);
-
+		if (uPreview == 1) {
+			shadedColor = PhongShading (intersection.position, intersection.normal, uLightPosition, material);
+			break;
+		}
+		
 		vec3 materialColor = material.diffuse;
 		currentColor *= materialColor;
 
@@ -552,10 +425,11 @@ Ray GetRay (in vec2 vertexPosition, in Camera camera, in float iteration)
 	float cameraDistance = 1.0 / tan (fieldOfView / 2.0);
 	vec3 endPosition = camera.eye + eyeCenterDir * cameraDistance;
 	
-	float random = Random (vec2 (iteration, iteration));
+	float randomX = Random (vVertexPosition);
+	float randomY = Random (-vVertexPosition);
 	float pixelSize = 2.0 / uSize;
-	endPosition = endPosition + horizontalDir * (vertexPosition.x + random * pixelSize);
-	endPosition = endPosition + verticalDir * (vertexPosition.y + random * pixelSize);
+	endPosition = endPosition + horizontalDir * (vertexPosition.x + randomX * pixelSize);
+	endPosition = endPosition + verticalDir * (vertexPosition.y + randomY * pixelSize);
 	
 	Ray result;
 	result.origin = camera.eye;
@@ -578,13 +452,143 @@ void main (void)
 	float weight = uIteration / (uIteration + 1.0);
 	gl_FragColor = vec4 (mix (shadedColor, originalColor, weight), 1.0);
 }
-</textarea>
-	</div>
-	<div>
-		<input type="button" value="render" onclick="Compile ();"></input>
-	</div>
+</script>
+	
+	<script type="text/javascript">
+		function GetModel ()
+		{
+			var model = new JSM.Model ();
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xaaaaaa}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0x00aa00}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0x0000aa}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xaa0000}));
+			
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			body.SetPolygonsMaterialIndex (1);
+			body.Transform (JSM.RotationZTransformation (-0.35));
+			body.Transform (JSM.TranslationTransformation (new JSM.Coord (-0.2, 1.2, 0.0)));
+			model.AddBody (body);
+
+			var body2 = JSM.GenerateCuboid (0.5, 0.5, 0.5);
+			body2.SetPolygonsMaterialIndex (2);
+			body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.2, 0.0, -0.25)));
+			model.AddBody (body2);
+
+			var body3 = JSM.GenerateCuboid (3, 0.1, 2);
+			//var body3 = JSM.GenerateCylinder (0.8, 2.0, 25, true, true);
+			//var body3 = JSM.GenerateTorus (1.0, 0.3, 20, 20, true);
+			body3.SetPolygonsMaterialIndex (3);
+			body3.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, -0.7, 0.5)));
+			body3.Transform (JSM.RotationZTransformation (-0.3));
+			model.AddBody (body3);
+
+			var box = JSM.GenerateCuboid (10, 10, 10);
+			box.SetPolygonsMaterialIndex (0);
+			JSM.MakeBodyInsideOut (box);
+			box.Transform (JSM.TranslationTransformation (new JSM.Coord (0.0, 0.0, 4.5)));
+			model.AddBody (box);
+			
+			return JSM.ConvertModelToTriangleModel (model, materials);
+		}
+		
+		function GenerateTriangleData (model)
+		{
+			var result = [];
+			var i, j, body, triangle, v0, v1, v2, n0, n1, n2;
+			for (i = 0; i < model.BodyCount (); i++) {
+				body = model.GetBody (i);
+				for (j = 0; j < body.TriangleCount (); j++) {
+					triangle = body.GetTriangle (j);
+					v0 = body.GetVertex (triangle.v0);
+					v1 = body.GetVertex (triangle.v1);
+					v2 = body.GetVertex (triangle.v2);
+					n0 = body.GetNormal (triangle.n0);
+					n1 = body.GetNormal (triangle.n1);
+					n2 = body.GetNormal (triangle.n2);
+					result.push (v0.x, v0.y, v0.z);
+					result.push (v1.x, v1.y, v1.z);
+					result.push (v2.x, v2.y, v2.z);
+					result.push (n0.x, n0.y, n0.z);
+					result.push (n1.x, n1.y, n1.z);
+					result.push (n2.x, n2.y, n2.z);
+					result.push (triangle.mat, 0.0, 0.0);
+				}
+			}
+			return result;
+		}
+		
+		function GenerateMaterialData (model)
+		{
+			var result = [];
+			var i, material;
+			for (i = 0; i < model.MaterialCount (); i++) {
+				material = model.GetMaterial (i);
+				result.push (material.ambient[0], material.ambient[1], material.ambient[2]);
+				result.push (material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+				result.push (material.reflection, 0.0, 0.0);
+			}
+			return result;
+		}
+
+		var gpuTracer = null;
+		
+		function Compile ()
+		{
+			var model = GetModel ();
+
+			var errorDiv = document.getElementById ('error');
+			errorDiv.innerHTML = '';
+
+			var fragmentShaderTag = document.getElementById ('fragmentshader');
+			var fragmentShader = fragmentShaderTag.childNodes[0].nodeValue;
+			fragmentShader = fragmentShader.replace ('[TRIANGLE_COUNT]', model.TriangleCount ());
+
+			gpuTracer = new GPUTracer ();
+			var canvas = document.getElementById ('example');
+			var timer = new JSM.Timer ();
+			timer.Start ();
+			gpuTracer.Init (canvas, fragmentShader, function (error) {
+				errorDiv.innerHTML += error.replace ('\n', '<br>');
+			});
+			timer.Stop ();
+			errorDiv.innerHTML += 'Compile time: ' + timer.Result () + '<br>';
+			
+			gpuTracer.SetUniformVector ('uLightPosition', new JSM.Vector (4.0, 2.0, 4.0));
+			gpuTracer.SetUniformFloat ('uLightRadius', 0.5);
+			
+			var triangleData = GenerateTriangleData (model);
+			gpuTracer.AddTextureBuffer (triangleData, 'TriangleTexture');
+			var materialData = GenerateMaterialData (model);
+			gpuTracer.AddTextureBuffer (materialData, 'MaterialTexture');
+			
+			gpuTracer.Start ();
+		}
+
+		function TextAreaKeyDown (event)
+		{
+			if (event.which == 9) {
+				event.preventDefault ();
+				var selectionStart = this.selectionStart;
+				this.value = this.value.substring (0, this.selectionStart) + '\t' + this.value.substring (this.selectionEnd);
+				this.selectionEnd = selectionStart + 1; 
+			}
+		}
+		
+	    window.onload = function ()
+		{
+			var fragmentShader = document.getElementById ('fragmentshader');
+			fragmentShader.onkeydown = TextAreaKeyDown;
+
+			Compile ();			
+		}
+	</script>
+
+</head>
+
+<body>
 	<div id="error"></div>
-	<canvas id="example" width="256" height="256"></canvas>
+	<canvas id="example" width="512" height="512"></canvas>
 </body>
 
 </html>

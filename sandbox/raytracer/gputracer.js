@@ -9,6 +9,8 @@ GPUTracer = function ()
 	this.camera = null;
 	this.iteration = null;
 	this.maxIteration = null;
+	this.previewIteration = null;
+	this.previewMaxIteration = null;
 };
 
 GPUTracer.prototype.Init = function (canvas, fragmentShader, onError)
@@ -36,6 +38,8 @@ GPUTracer.prototype.Start = function ()
 {
 	this.iteration = 0;
 	this.maxIteration = 256;
+	this.previewIteration = 0;
+	this.previewMaxIteration = 50;
 	this.RenderFrame ();
 };
 
@@ -69,6 +73,7 @@ GPUTracer.prototype.ClearRender = function ()
 {
 	if (this.iteration < this.maxIteration) {
 		this.iteration = 0;
+		this.previewIteration = 0;
 	} else {
 		this.Start ();
 	}
@@ -84,7 +89,9 @@ GPUTracer.prototype.RenderFrame = function ()
 		this.camera.up.x, this.camera.up.y, this.camera.up.z
 	]));
 
-	this.context.uniform1f (this.traceShader.iterationUniform, this.iteration);
+	var isPreview = this.previewIteration < this.previewMaxIteration;
+	this.context.uniform1f (this.traceShader.iterationUniform, isPreview ? 0 : this.iteration);
+	this.context.uniform1i (this.traceShader.previewUniform, isPreview);
 	this.context.activeTexture (this.context.TEXTURE0);
 	this.context.bindTexture (this.context.TEXTURE_2D, this.texturePingPong[0]);
 	
@@ -112,9 +119,13 @@ GPUTracer.prototype.RenderFrame = function ()
 	this.context.drawArrays (this.context.TRIANGLE_FAN, 0, 4);
 
 	this.texturePingPong.reverse ();
-	this.iteration += 1;
+	if (isPreview) {
+		this.previewIteration += 1;
+	} else {
+		this.iteration += 1;
+	}
 	
-	if (this.iteration < this.maxIteration) {
+	if (this.previewIteration < this.previewMaxIteration || this.iteration < this.maxIteration) {
 		requestAnimationFrame (this.RenderFrame.bind (this));
 	}
 };
@@ -185,6 +196,7 @@ GPUTracer.prototype.InitBuffers = function ()
 		
 		shader.cameraUniform = context.getUniformLocation (shader, 'uCameraData');
 		shader.iterationUniform = context.getUniformLocation (shader, 'uIteration');
+		shader.previewUniform = context.getUniformLocation (shader, 'uPreview');
 	}
 
 	function InitRenderBuffers (vertices, context, shader)
