@@ -552,10 +552,12 @@
 				new JSM.Coord (0, 0, 0),
 				new JSM.Coord (0, 0, 1)
 			);
+			
+			var maxIteration = 256;
 
 			var timer = new JSM.Timer ();
 			timer.Start ();
-			gpuTracer.Init (canvas, camera, fragmentShader, function (error) {
+			gpuTracer.Init (canvas, camera, maxIteration, fragmentShader, function (error) {
 				errorDiv.innerHTML += error.replace ('\n', '<br>');
 			});
 			timer.Stop ();

@@ -13,7 +13,7 @@ GPUTracer = function ()
 	this.previewTimeout = null;
 };
 
-GPUTracer.prototype.Init = function (canvas, camera, fragmentShader, onError)
+GPUTracer.prototype.Init = function (canvas, camera, maxIteration, fragmentShader, onError)
 {
 	if (!this.InitContext (canvas)) {
 		return false;
@@ -23,7 +23,7 @@ GPUTracer.prototype.Init = function (canvas, camera, fragmentShader, onError)
 		return false;
 	}	
 	
-	if (!this.InitBuffers ()) {
+	if (!this.InitBuffers (maxIteration)) {
 		return false;
 	}
 
@@ -182,7 +182,7 @@ GPUTracer.prototype.InitShaders = function (fragmentShader, onError)
 	return true;
 };
 
-GPUTracer.prototype.InitBuffers = function ()
+GPUTracer.prototype.InitBuffers = function (maxIteration)
 {
 	function InitVertexBuffer (vertices, context, shader)
 	{
@@ -231,7 +231,7 @@ GPUTracer.prototype.InitBuffers = function ()
 	];
 	
 	this.iteration = 0;
-	this.maxIteration = 32;
+	this.maxIteration = maxIteration;
 	return true;
 };
 
