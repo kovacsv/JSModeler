@@ -1,0 +1,42 @@
+html, body
+{
+	color : #222222;
+	background : #ffffff;
+	font-size : 14px;
+	font-family : Arial, cursive;
+}
+
+div.frame
+{
+	width : 920px;
+	margin : 0px auto;
+}
+
+div.title
+{
+	text-align : center;
+	font-size : 27px;
+	font-weight : bold;
+	margin : 50px 0px;
+}
+
+div.container
+{
+	overflow : auto;
+}
+
+div.canvas
+{
+	float : left;
+}
+
+div.controls
+{
+	margin-left : 20px;
+	float : left;
+}
+
+canvas
+{
+	margin : 0px;
+}

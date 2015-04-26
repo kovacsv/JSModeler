@@ -13,13 +13,13 @@ GPUTracer = function ()
 	this.previewTimeout = null;
 };
 
-GPUTracer.prototype.Init = function (canvas, camera, maxIteration, fragmentShader, onError)
+GPUTracer.prototype.Init = function (canvas, camera, maxIteration)
 {
 	if (!this.InitContext (canvas)) {
 		return false;
 	}
 
-	if (!this.InitShaders (fragmentShader, onError)) {
+	if (!this.InitShaders ()) {
 		return false;
 	}	
 	
@@ -34,6 +34,31 @@ GPUTracer.prototype.Init = function (canvas, camera, maxIteration, fragmentShade
 	return true;
 };
 
+GPUTracer.prototype.Compile = function (fragmentShader, onError)
+{
+	var vertexShader = this.GetVertexShader ();
+	this.traceShader = JSM.WebGLInitShaderProgram (this.context, vertexShader, fragmentShader, onError);
+	if (this.traceShader === null) {
+		return false;
+	}
+
+	this.context.useProgram (this.traceShader);
+	this.InitVertexBuffer (this.traceShader);
+	
+	this.context.uniform1f (this.context.getUniformLocation (this.traceShader, 'uSize'), this.size);
+	this.context.uniform1i (this.context.getUniformLocation (this.traceShader, 'uOriginalTextureSampler'), 0);
+	
+	this.traceShader.frameBuffer = this.context.createFramebuffer ();
+	this.context.bindFramebuffer (this.context.FRAMEBUFFER, this.traceShader.frameBuffer);
+	this.context.bindFramebuffer (this.context.FRAMEBUFFER, null);
+	
+	this.traceShader.cameraUniform = this.context.getUniformLocation (this.traceShader, 'uCameraData');
+	this.traceShader.iterationUniform = this.context.getUniformLocation (this.traceShader, 'uIteration');
+	this.traceShader.previewUniform = this.context.getUniformLocation (this.traceShader, 'uPreview');
+
+	return true;
+};
+
 GPUTracer.prototype.Start = function ()
 {
 	this.StartInNormalMode ();
@@ -41,9 +66,16 @@ GPUTracer.prototype.Start = function ()
 
 GPUTracer.prototype.StartInPreviewMode = function ()
 {
+	var isRendering = false;
+	if (!this.previewMode && this.iteration < this.maxIteration) {
+		isRendering = true;
+	}
+	
 	this.iteration = 0;
 	this.previewMode = true;
-	this.RenderFrame ();
+	if (!isRendering) {
+		this.RenderFrame ();
+	}
 };
 
 GPUTracer.prototype.StartInNormalMode = function ()
@@ -85,11 +117,6 @@ GPUTracer.prototype.SetUniformArray = function (name, value)
 	var location = this.context.getUniformLocation (this.traceShader, name);
 	var floatArray = new Float32Array (value);
 	this.context.uniform1fv (location, floatArray, value.length);
-};
-
-GPUTracer.prototype.ClearRender = function ()
-{
-	this.StartInPreviewMode ();
 };
 
 GPUTracer.prototype.RenderFrame = function ()
@@ -165,16 +192,11 @@ GPUTracer.prototype.InitContext = function (canvas)
 	return true;
 };
 
-GPUTracer.prototype.InitShaders = function (fragmentShader, onError)
+GPUTracer.prototype.InitShaders = function ()
 {
 	var vertexShader = this.GetVertexShader ();
-	this.traceShader = JSM.WebGLInitShaderProgram (this.context, vertexShader, fragmentShader, onError);
-	if (this.traceShader === null) {
-		return false;
-	}
-	
 	var renderFragmentShader = this.GetRenderFragmentShader ();
-	this.renderShader = JSM.WebGLInitShaderProgram (this.context, vertexShader, renderFragmentShader, onError);
+	this.renderShader = JSM.WebGLInitShaderProgram (this.context, vertexShader, renderFragmentShader);
 	if (this.renderShader === null) {
 		return false;
 	}
@@ -184,45 +206,9 @@ GPUTracer.prototype.InitShaders = function (fragmentShader, onError)
 
 GPUTracer.prototype.InitBuffers = function (maxIteration)
 {
-	function InitVertexBuffer (vertices, context, shader)
-	{
-		var vertexAttribLocation = context.getAttribLocation (shader, 'aVertexPosition');
-		shader.vertexBuffer = context.createBuffer ();
-		context.bindBuffer (context.ARRAY_BUFFER, shader.vertexBuffer);
-		context.bufferData (context.ARRAY_BUFFER, vertices, context.STATIC_DRAW);
-		context.vertexAttribPointer (vertexAttribLocation, 2, context.FLOAT, false, 0, 0);
-		context.enableVertexAttribArray (vertexAttribLocation);
-		context.bindBuffer (context.ARRAY_BUFFER, null);		
-	}
-
-	function InitTraceBuffers (vertices, context, shader, size)
-	{
-		context.useProgram (shader);
-		InitVertexBuffer (vertices, context, shader);
-		
-		context.uniform1f (context.getUniformLocation (shader, 'uSize'), size);
-		context.uniform1i (context.getUniformLocation (shader, 'uOriginalTextureSampler'), 0);
-		
-		shader.frameBuffer = context.createFramebuffer ();
-		context.bindFramebuffer (context.FRAMEBUFFER, shader.frameBuffer);
-		context.bindFramebuffer (context.FRAMEBUFFER, null);
-		
-		shader.cameraUniform = context.getUniformLocation (shader, 'uCameraData');
-		shader.iterationUniform = context.getUniformLocation (shader, 'uIteration');
-		shader.previewUniform = context.getUniformLocation (shader, 'uPreview');
-	}
-
-	function InitRenderBuffers (vertices, context, shader)
-	{
-		context.useProgram (shader);
-		InitVertexBuffer (vertices, context, shader);
-		
-		context.uniform1i (context.getUniformLocation (shader, 'uOriginalTextureSampler'), 0);
-	}
-
-	var vertices = new Float32Array ([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]);
-	InitTraceBuffers (vertices, this.context, this.traceShader, this.size);
-	InitRenderBuffers (vertices, this.context, this.renderShader, this.size);
+	this.context.useProgram (this.renderShader);
+	this.InitVertexBuffer (this.renderShader);
+	this.context.uniform1i (this.context.getUniformLocation (this.renderShader, 'uOriginalTextureSampler'), 0);
 	
 	this.textureBuffers = [];
 	this.texturePingPong = [
@@ -235,11 +221,23 @@ GPUTracer.prototype.InitBuffers = function (maxIteration)
 	return true;
 };
 
+GPUTracer.prototype.InitVertexBuffer = function (shader)
+{
+	var vertices = new Float32Array ([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]);
+	var vertexAttribLocation = this.context.getAttribLocation (shader, 'aVertexPosition');
+	shader.vertexBuffer = this.context.createBuffer ();
+	this.context.bindBuffer (this.context.ARRAY_BUFFER, shader.vertexBuffer);
+	this.context.bufferData (this.context.ARRAY_BUFFER, vertices, this.context.STATIC_DRAW);
+	this.context.vertexAttribPointer (vertexAttribLocation, 2, this.context.FLOAT, false, 0, 0);
+	this.context.enableVertexAttribArray (vertexAttribLocation);
+	this.context.bindBuffer (this.context.ARRAY_BUFFER, null);		
+};
+
 GPUTracer.prototype.InitNavigation = function (camera)
 {
 	this.camera = camera;
 	this.navigation = new JSM.Navigation ();
-	if (!this.navigation.Init (this.canvas, this.camera, this.ClearRender.bind (this), this.Resize.bind (this))) {
+	if (!this.navigation.Init (this.canvas, this.camera, this.StartInPreviewMode.bind (this), this.Resize.bind (this))) {
 		return false;
 	}
 

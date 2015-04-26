@@ -6,7 +6,7 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="distancefield.css">
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../../src/core/timer.js"></script>
@@ -87,23 +87,9 @@
 	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
 	<script type="text/javascript" src="gputracer.js"></script>
+	<script type="text/javascript" src="distancefield.js"></script>
 	<title>Example</title>
 	
-	<style>
-		html, body
-		{
-			margin : 5px;
-			padding : 0px;
-		}
-
-		#fragmentshader
-		{
-			width : 100%;
-			height : 500px;
-			border : 1px solid #cccccc;
-		}
-	</style>
-
 	<script id="fragmentshader" type="x-shader/fragment">
 		precision highp float;
 
@@ -359,54 +345,26 @@
 	</script>
 	
 	<script type="text/javascript">
-
-		var gpuTracer = null;
-		function Compile ()
-		{
-			var errorDiv = document.getElementById ('error');
-			errorDiv.innerHTML = '';
-
-			var fragmentShaderTag = document.getElementById ('fragmentshader');
-			var fragmentShader = fragmentShaderTag.childNodes[0].nodeValue;
-
-			gpuTracer = new GPUTracer ();
-			var canvas = document.getElementById ('example');
-			
-			var camera = new JSM.Camera (
-				new JSM.Coord (4, -1, 2),
-				new JSM.Coord (0, 0, 0),
-				new JSM.Coord (0, 0, 1)
-			);
-			
-			var maxIteration = 256;
-	
-			var timer = new JSM.Timer ();
-			timer.Start ();
-			gpuTracer.Init (canvas, camera, maxIteration, fragmentShader, function (error) {
-				errorDiv.innerHTML += error.replace ('\n', '<br>');
-			});
-			timer.Stop ();
-			errorDiv.innerHTML += 'Compile time: ' + timer.Result () + '<br>';
-			
-			gpuTracer.SetUniformVector ('uLightPosition', [4.0, 2.0, 3.0]);
-			gpuTracer.SetUniformFloat ('uLightRadius', 0.5);
-			
-			gpuTracer.SetUniformVector ('uShapeData1', [1.0, 0.0, 0.0, 0.0]);
-			
-			gpuTracer.Start ();
-		}
-		
-	    window.onload = function ()
-		{
-			Compile ();			
+		window.onload = function () {
+			var distanceField = new DistanceField ();
+			distanceField.Init ();
 		}
 	</script>
 	
 </head>
 
 <body>
-	<div id="error"></div>
-	<canvas id="example" width="512" height="512"></canvas>
+	<div class="frame">
+		<div class="title">Solid Operations With Distance Field Path Tracing</div>
+		<div class="container">
+			<div class="canvas">
+				<canvas id="example" width="512" height="512"></canvas>
+			</div>
+			<div class="controls">
+				controls...
+			</div>
+		</div>
+	</div>
 </body>
 
 </html>

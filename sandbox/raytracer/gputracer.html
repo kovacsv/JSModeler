@@ -557,7 +557,8 @@
 
 			var timer = new JSM.Timer ();
 			timer.Start ();
-			gpuTracer.Init (canvas, camera, maxIteration, fragmentShader, function (error) {
+			gpuTracer.Init (canvas, camera, maxIteration);
+			gpuTracer.Compile (fragmentShader, function (error) {
 				errorDiv.innerHTML += error.replace ('\n', '<br>');
 			});
 			timer.Stop ();
