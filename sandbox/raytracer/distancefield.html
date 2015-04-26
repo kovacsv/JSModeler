@@ -120,6 +120,7 @@
 		uniform vec3 uLightPosition;
 		uniform float uLightRadius;
 		uniform float uIteration;
+		uniform float uShapeData1[4];
 		uniform int uPreview;
 
 		struct Camera
@@ -163,11 +164,7 @@
 			vec3 lightDirection = normalize (lightPosition - shadedPoint);
 			float diffuseCoeff = max (dot (lightDirection, shadedPointNormal), 0.0);
 			vec3 diffuseColor = materialDiffuseColor * lightDiffuseIntensity;
-			diffuseColor = clamp (diffuseColor, 0.0, 1.0);
-			
-			vec3 color = diffuseColor * diffuseCoeff;
-			color = clamp (color, 0.0, 1.0);
-			return color;
+			return diffuseColor * diffuseCoeff;
 		}
 
 		float PointBoxDistance (vec3 point, vec3 origin, vec3 size)
@@ -183,21 +180,32 @@
 			return length (offseted) - radius;
 		}
 
+		#define OPERATION 2
 		Estimation DistanceEstimation (in vec3 point)
 		{
 			float planeDistance = point.z + 1.0;
-			float sphereDistance = PointSphereDistance (point, vec3 (0.0, 0.0, 0.0), 1.0);
-			float cubeDistance = PointBoxDistance (point, vec3 (1.0, 0.0, 0.5), vec3 (0.5, 0.5, 0.5));
-			float subDistance = max (sphereDistance, -cubeDistance);
+			float shape1Distance = PointSphereDistance (point, vec3 (0.0, 0.0, 0.0), 1.0);
+			float shape2Distance = PointBoxDistance (point, vec3 (1.0, 0.0, 0.5), vec3 (0.5, 0.5, 0.5));
+			
+			#if OPERATION == 1
+				float operationDistance = min (shape1Distance, shape2Distance);
+			#elif OPERATION == 2
+				float operationDistance = max (shape1Distance, -shape2Distance);
+				shape1Distance *= -1.0;
+			#elif OPERATION == 3
+				float operationDistance = max (shape1Distance, shape2Distance);
+				//shape1Distance *= -1.0;
+			#endif
 			//float b = PointSphereDistance (point, vec3 (0.0, 0.0, 0.0), 1.0);
+			
 			Estimation result;
-			result.distance = min (planeDistance, subDistance);
+			result.distance = min (planeDistance, operationDistance);
 			result.fog = false;
-			if (planeDistance < subDistance) {
+			if (planeDistance < operationDistance) {
 				result.color = vec3 (0.7, 0.7, 0.7);
 				result.fog = true;
 			} else {
-				if (sphereDistance > -cubeDistance) {
+				if (shape1Distance < shape2Distance) {
 					result.color = vec3 (0.8, 0.0, 0.0);
 				} else {
 					result.color = vec3 (0.0, 0.8, 0.0);
@@ -365,14 +373,24 @@
 			var canvas = document.getElementById ('example');
 			var timer = new JSM.Timer ();
 			timer.Start ();
-			gpuTracer.Init (canvas, fragmentShader, function (error) {
+			
+			var camera = new JSM.Camera (
+				new JSM.Coord (4, -1, 2),
+				new JSM.Coord (0, 0, 0),
+				new JSM.Coord (0, 0, 1)
+			);
+	
+			gpuTracer.Init (canvas, camera, fragmentShader, function (error) {
 				errorDiv.innerHTML += error.replace ('\n', '<br>');
 			});
 			timer.Stop ();
 			errorDiv.innerHTML += 'Compile time: ' + timer.Result () + '<br>';
 			
-			gpuTracer.SetUniformVector ('uLightPosition', new JSM.Vector (4.0, 2.0, 3.0));
+			gpuTracer.SetUniformVector ('uLightPosition', [4.0, 2.0, 3.0]);
 			gpuTracer.SetUniformFloat ('uLightRadius', 0.5);
+			
+			gpuTracer.SetUniformVector ('uShapeData1', [1.0, 0.0, 0.0, 0.0]);
+			
 			gpuTracer.Start ();
 		}
 		

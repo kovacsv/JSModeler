@@ -13,7 +13,7 @@ GPUTracer = function ()
 	this.previewTimeout = null;
 };
 
-GPUTracer.prototype.Init = function (canvas, fragmentShader, onError)
+GPUTracer.prototype.Init = function (canvas, camera, fragmentShader, onError)
 {
 	if (!this.InitContext (canvas)) {
 		return false;
@@ -27,7 +27,7 @@ GPUTracer.prototype.Init = function (canvas, fragmentShader, onError)
 		return false;
 	}
 
-	if (!this.InitNavigation ()) {
+	if (!this.InitNavigation (camera)) {
 		return false;
 	}
 
@@ -75,8 +75,16 @@ GPUTracer.prototype.SetUniformVector = function (name, value)
 {
 	this.context.useProgram (this.traceShader);
 	var location = this.context.getUniformLocation (this.traceShader, name);
-	var floatArray = new Float32Array ([value.x, value.y, value.z]);
+	var floatArray = new Float32Array (value);
 	this.context.uniform3fv (location, floatArray);
+};
+
+GPUTracer.prototype.SetUniformArray = function (name, value)
+{
+	this.context.useProgram (this.traceShader);
+	var location = this.context.getUniformLocation (this.traceShader, name);
+	var floatArray = new Float32Array (value);
+	this.context.uniform1fv (location, floatArray, value.length);
 };
 
 GPUTracer.prototype.ClearRender = function ()
@@ -223,18 +231,13 @@ GPUTracer.prototype.InitBuffers = function ()
 	];
 	
 	this.iteration = 0;
-	this.maxIteration = 256;
+	this.maxIteration = 32;
 	return true;
 };
 
-GPUTracer.prototype.InitNavigation = function ()
+GPUTracer.prototype.InitNavigation = function (camera)
 {
-	this.camera = new JSM.Camera (
-		new JSM.Coord (4, 1, 2),
-		new JSM.Coord (0, 0, 0),
-		new JSM.Coord (0, 0, 1)
-	);
-	
+	this.camera = camera;
 	this.navigation = new JSM.Navigation ();
 	if (!this.navigation.Init (this.canvas, this.camera, this.ClearRender.bind (this), this.Resize.bind (this))) {
 		return false;
