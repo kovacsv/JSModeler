@@ -140,15 +140,24 @@
 		{
 			vec3 position;
 			float distance;
+			vec3 color;
+			bool fog;
 		};
 
+		struct Estimation
+		{
+			float distance;
+			vec3 color;
+			bool fog;
+		};
+		
 		float Random (vec2 seed)
 		{
 			vec2 theSeed = seed + vec2 (uIteration, -uIteration);
 			return fract (sin (dot (theSeed, vec2 (12.9898,78.233))) * 43758.5453);
 		}
 
-		vec3 PhongShading (in vec3 shadedPoint, in vec3 shadedPointNormal, in vec3 lightPosition, in vec3 materialDiffuseColor)
+		vec3 Shading (in vec3 shadedPoint, in vec3 shadedPointNormal, in vec3 lightPosition, in vec3 materialDiffuseColor)
 		{
 			float lightDiffuseIntensity = 1.0;
 			vec3 lightDirection = normalize (lightPosition - shadedPoint);
@@ -174,12 +183,27 @@
 			return length (offseted) - radius;
 		}
 
-		float DistanceEstimation (in vec3 point)
+		Estimation DistanceEstimation (in vec3 point)
 		{
-			float a = point.z + 1.0;
-			float b = max (PointSphereDistance (point, vec3 (0.0, 0.0, 0.0), 1.0), -PointBoxDistance (point, vec3 (1.0, 0.0, 0.5), vec3 (0.5, 0.5, 0.5)));
+			float planeDistance = point.z + 1.0;
+			float sphereDistance = PointSphereDistance (point, vec3 (0.0, 0.0, 0.0), 1.0);
+			float cubeDistance = PointBoxDistance (point, vec3 (1.0, 0.0, 0.5), vec3 (0.5, 0.5, 0.5));
+			float subDistance = max (sphereDistance, -cubeDistance);
 			//float b = PointSphereDistance (point, vec3 (0.0, 0.0, 0.0), 1.0);
-			return min (a, b);
+			Estimation result;
+			result.distance = min (planeDistance, subDistance);
+			result.fog = false;
+			if (planeDistance < subDistance) {
+				result.color = vec3 (0.7, 0.7, 0.7);
+				result.fog = true;
+			} else {
+				if (sphereDistance > -cubeDistance) {
+					result.color = vec3 (0.8, 0.0, 0.0);
+				} else {
+					result.color = vec3 (0.0, 0.8, 0.0);
+				}
+			}
+			return result;
 		}
 
 		vec3 CalculateNormal (in vec3 point)
@@ -188,9 +212,9 @@
 			vec3 yDir = vec3 (0.0, EPS, 0.0);
 			vec3 zDir = vec3 (0.0, 0.0, EPS);
 			vec3 normal = vec3 (
-				DistanceEstimation (point + xDir) - DistanceEstimation (point - xDir),
-				DistanceEstimation (point + yDir) - DistanceEstimation (point - yDir),
-				DistanceEstimation (point + zDir) - DistanceEstimation (point - zDir)
+				DistanceEstimation (point + xDir).distance - DistanceEstimation (point - xDir).distance,
+				DistanceEstimation (point + yDir).distance - DistanceEstimation (point - yDir).distance,
+				DistanceEstimation (point + zDir).distance - DistanceEstimation (point - zDir).distance
 			);
 			return normalize (normal);
 		}
@@ -205,11 +229,13 @@
 			float distance = 0.0;
 			for (int i = 0; i < maxSteps; i++) {
 				vec3 currentPoint = ray.origin + ray.direction * distance;
-				float currentDistance = DistanceEstimation (currentPoint);
-				distance += currentDistance;
-				if (currentDistance < EPS) {
+				Estimation estimation = DistanceEstimation (currentPoint);
+				distance += estimation.distance;
+				if (estimation.distance < EPS) {
 					result.position = currentPoint;
 					result.distance = distance;
+					result.color = estimation.color;
+					result.fog = estimation.fog;
 					break;
 				}
 			}
@@ -236,9 +262,9 @@
 			return (dot (randomDir, normal) < 0.0) ? -randomDir : randomDir;
 		}
 
-		vec3 TraceRay (in Ray ray)
+		vec3 TraceRay (in Ray ray, in Camera camera)
 		{
-			vec3 materialDiffuseColor = vec3 (0.8, 0.0, 0.0);
+			vec3 backgroundColor = vec3 (0.7, 0.7, 0.7);
 			
 			vec3 shadedColor = vec3 (0.0, 0.0, 0.0);
 			vec3 currentColor = vec3 (1.0, 1.0, 1.0);
@@ -246,16 +272,19 @@
 			for (int i = 0; i < 3; i++) {
 				Intersection intersection = RayModelIntersection (currentRay);
 				if (intersection.distance == INF) {
+					if (i == 0) {
+						shadedColor = backgroundColor;
+					}
 					break;
 				}
 
 				vec3 intersectionNormal = CalculateNormal (intersection.position);
 				if (uPreview == 1) {
-					shadedColor = PhongShading (intersection.position, intersectionNormal, uLightPosition, materialDiffuseColor);
+					shadedColor = Shading (intersection.position, intersectionNormal, uLightPosition, intersection.color);
 					break;
 				}
 			
-				currentColor *= materialDiffuseColor;
+				currentColor *= intersection.color;
 
 				Ray lightRay;
 				vec3 randomLightPoint = uLightPosition + RandomDirOnSphere (intersection.position.xy) * uLightRadius;
@@ -265,8 +294,12 @@
 				lightRay.length = length (randomLightPoint - intersection.position);
 				Intersection lightIntersection = RayModelIntersection (lightRay);
 				if (lightIntersection.distance == INF) {
-					vec3 directLightColor = PhongShading (intersection.position, intersectionNormal, randomLightPoint, materialDiffuseColor);
+					vec3 directLightColor = Shading (intersection.position, intersectionNormal, randomLightPoint, intersection.color);
 					shadedColor += currentColor * directLightColor;
+					if (i == 0 && intersection.fog) {
+						float fog = 1.0 - exp (-intersection.distance * 0.1);
+						shadedColor = mix (shadedColor, backgroundColor, fog);
+					}
 				}
 				
 				vec3 newDirection = RandomDirOnHemisphere (intersectionNormal, intersection.position.xy);
@@ -308,7 +341,7 @@
 			camera.up = uCameraData[2];
 			
 			Ray ray = GetRay (vVertexPosition, camera, uIteration);
-			vec3 shadedColor = TraceRay (ray);
+			vec3 shadedColor = TraceRay (ray, camera);
 			
 			vec2 originalPosition = (vVertexPosition + vec2 (1.0, 1.0)) / 2.0;;
 			vec3 originalColor = texture2D (uOriginalTextureSampler, originalPosition).xyz;

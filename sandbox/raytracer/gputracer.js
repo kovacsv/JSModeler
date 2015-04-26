@@ -75,7 +75,7 @@ GPUTracer.prototype.SetUniformVector = function (name, value)
 {
 	this.context.useProgram (this.traceShader);
 	var location = this.context.getUniformLocation (this.traceShader, name);
-	var floatArray = new Float32Array ([value.x, value.y, value.z])
+	var floatArray = new Float32Array ([value.x, value.y, value.z]);
 	this.context.uniform3fv (location, floatArray);
 };
 
