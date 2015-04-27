@@ -180,15 +180,13 @@
 				shape1Distance *= -1.0;
 			#elif OPERATION == 3
 				float operationDistance = max (shape1Distance, shape2Distance);
-				//shape1Distance *= -1.0;
 			#endif
-			//float b = PointSphereDistance (point, vec3 (0.0, 0.0, 0.0), 1.0);
 			
 			Estimation result;
 			result.distance = min (planeDistance, operationDistance);
 			result.fog = false;
 			if (planeDistance < operationDistance) {
-				result.color = vec3 (0.5, 0.5, 0.5);
+				result.color = vec3 (0.4, 0.4, 0.4);
 				result.fog = true;
 			} else {
 				if (shape1Distance < shape2Distance) {
@@ -215,28 +213,6 @@
 
 		Intersection RayModelIntersection (in Ray ray)
 		{
-//#define OLDMETHOD
-#ifdef OLDMETHOD
-			Intersection result;
-			result.distance = INF;
-			const int maxSteps = 500;
-			
-			vec3 shadedColor = vec3 (0.0, 0.0, 0.0);
-			float distance = 0.0;
-			for (int i = 0; i < maxSteps; i++) {
-				vec3 currentPoint = ray.origin + ray.direction * distance;
-				Estimation estimation = DistanceEstimation (currentPoint);
-				distance += estimation.distance;
-				if (estimation.distance < EPS) {
-					result.position = currentPoint;
-					result.distance = distance;
-					result.color = estimation.color;
-					result.fog = estimation.fog;
-					break;
-				}
-			}
-			return result;
-#else
 			Intersection result;
 			result.distance = INF;
 			const int maxSteps = 150;
@@ -261,7 +237,6 @@
 				result.distance = INF;
 			}
 			return result;
-#endif
 		}
 
 		vec3 GetReflectedDirection (in vec3 direction, in vec3 normal)
@@ -303,8 +278,6 @@
 				vec3 intersectionNormal = CalculateNormal (intersection.position);
 				currentColor *= intersection.color;
 
-#define SHADOWS
-#ifdef SHADOWS
 				Ray lightRay;
 				vec3 randomLightPoint = uLightPosition + RandomDirOnSphere (intersection.position.xy) * uLightRadius;
 				vec3 lightRayDirection = normalize (randomLightPoint - intersection.position);
@@ -320,15 +293,7 @@
 						shadedColor = mix (shadedColor, backgroundColor, fog);
 					}
 				}
-#else
-				vec3 randomLightPoint = uLightPosition + RandomDirOnSphere (intersection.position.xy) * uLightRadius;
-				vec3 directLightColor = Shading (intersection.position, intersectionNormal, randomLightPoint, intersection.color);
-				shadedColor += currentColor * directLightColor;
-				if (i == 0 && intersection.fog) {
-					float fog = 1.0 - exp (-intersection.distance * 1.1);
-					shadedColor = mix (shadedColor, backgroundColor, fog);
-				}
-#endif
+
 				if (uPreview == 1) {
 					break;
 				}
