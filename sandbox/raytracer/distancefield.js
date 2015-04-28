@@ -134,7 +134,7 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 		var mainElem = null;
 		AddTitle (controlsElem, name + ' shape type');
 		mainElem = AddMainElem (controlsElem);
-		AddSelectControl (mainElem, ['off', 'sphere', 'cube', 'cylinder'], shapeData.type, function (index) {
+		AddSelectControl (mainElem, ['off', 'sphere', 'cube', 'cylinder', 'torus'], shapeData.type, function (index) {
 			shapeData.type = index;
 			myThis.Compile ();
 			myThis.StartRender (false);

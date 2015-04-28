@@ -167,7 +167,7 @@
 			return length (offseted) - radius;
 		}
 
-		float PointCylinderDistance (in vec3 point, in vec3 origin, float radius, float height)
+		float PointCylinderDistance (in vec3 point, in vec3 origin, in float radius, in float height)
 		{
 			vec3 offseted = point - origin;
 			float distance = length (offseted.xy) - radius;
@@ -175,7 +175,13 @@
 			distance = max (distance, offseted.z - height);
 			return distance;
 		}
-		
+	
+		float PointTorusDistance (in vec3 point, in vec3 origin, float outerRadius, float innerRadius)
+		{
+			vec3 offseted = point - origin;
+			return length (vec2 (length (offseted.xy) - outerRadius, offseted.z)) - innerRadius;
+		}
+	
 		Estimation DistanceEstimation (in vec3 point)
 		{
 			float planeDistance = point.z + 0.0;
@@ -187,6 +193,8 @@
 				shape1Distance = PointBoxDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), vec3 (uShapeData1[3], uShapeData1[3], uShapeData1[3]));
 			#elif SHAPETYPE1 == 3
 				shape1Distance = PointCylinderDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), uShapeData1[3], uShapeData1[3]);
+			#elif SHAPETYPE1 == 4
+				shape1Distance = PointTorusDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), uShapeData1[3], uShapeData1[3] * 0.5);
 			#endif
 			#if SHAPETYPE2 == 1
 				shape2Distance = PointSphereDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), uShapeData2[3]);
@@ -194,6 +202,8 @@
 				shape2Distance = PointBoxDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), vec3 (uShapeData2[3], uShapeData2[3], uShapeData2[3]));
 			#elif SHAPETYPE2 == 3
 				shape2Distance = PointCylinderDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), uShapeData2[3], uShapeData2[3]);
+			#elif SHAPETYPE2 == 4
+				shape2Distance = PointTorusDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), uShapeData2[3], uShapeData2[3] * 0.5);
 			#endif
 			
 			float operationDistance = INF;
