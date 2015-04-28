@@ -59,6 +59,11 @@ GPUTracer.prototype.Compile = function (fragmentShader, onError)
 	return true;
 };
 
+GPUTracer.prototype.GetNavigation = function ()
+{
+	return this.navigation;
+};
+
 GPUTracer.prototype.Start = function ()
 {
 	this.StartInNormalMode ();
@@ -66,11 +71,7 @@ GPUTracer.prototype.Start = function ()
 
 GPUTracer.prototype.StartInPreviewMode = function ()
 {
-	var isRendering = false;
-	if (!this.previewMode && this.iteration < this.maxIteration) {
-		isRendering = true;
-	}
-	
+	var isRendering = this.iteration > 0;
 	this.iteration = 0;
 	this.previewMode = true;
 	if (!isRendering) {
@@ -80,9 +81,12 @@ GPUTracer.prototype.StartInPreviewMode = function ()
 
 GPUTracer.prototype.StartInNormalMode = function ()
 {
+	var isRendering = this.iteration > 0;
 	this.iteration = 0;
 	this.previewMode = false;
-	this.RenderFrame ();
+	if (!isRendering) {
+		this.RenderFrame ();
+	}
 };
 
 GPUTracer.prototype.AddTextureBuffer = function (data, name)
@@ -167,6 +171,8 @@ GPUTracer.prototype.RenderFrame = function ()
 	} else if (this.iteration < this.maxIteration) {
 		this.iteration += 1;
 		requestAnimationFrame (this.RenderFrame.bind (this));
+	} else {
+		this.iteration = 0;
 	}
 };
 

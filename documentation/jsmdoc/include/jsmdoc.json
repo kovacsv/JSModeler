@@ -435,6 +435,17 @@
 						["Coord2D", "the result"]
 					]
 				},
+				"CoordRotate2D" : {
+					"description" : "Rotates a coordinate.",
+					"parameters" : [
+						["coord", "Coord2D", "the coordinate"],
+						["angle", "number", "the angle of the rotation"],
+						["origo", "Coord2D", "the origo of the rotation"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
 				"PolarToCartesian" : {
 					"description" : "Converts a polar coordinate to a cartesian coordinate.",
 					"parameters" : [

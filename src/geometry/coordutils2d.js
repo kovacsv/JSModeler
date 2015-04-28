@@ -201,6 +201,28 @@ JSM.CoordOffset2D = function (coord, direction, distance)
 };
 
 /**
+* Function: CoordRotate2D
+* Description: Rotates a coordinate.
+* Parameters:
+*	coord {Coord2D} the coordinate
+*	angle {number} the angle of the rotation
+*	origo {Coord2D} the origo of the rotation
+* Returns:
+*	{Coord} the result
+*/
+JSM.CoordRotate2D = function (coord, angle, origo)
+{
+	var offseted = JSM.CoordSub2D (coord, origo);
+	var result = new JSM.Coord2D ();
+	var co = Math.cos (angle);
+	var si = Math.sin (angle);
+	result.x = offseted.x * co - offseted.y * si;
+	result.y = offseted.x * si + offseted.y * co;
+	result = JSM.CoordAdd2D (result, origo);
+	return result;	
+};
+
+/**
 * Function: PolarToCartesian
 * Description: Converts a polar coordinate to a cartesian coordinate.
 * Parameters:

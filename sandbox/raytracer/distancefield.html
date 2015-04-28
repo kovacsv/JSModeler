@@ -107,6 +107,7 @@
 		uniform float uLightRadius;
 		uniform float uIteration;
 		uniform float uShapeData1[4];
+		uniform float uShapeData2[4];
 		uniform int uPreview;
 
 		struct Camera
@@ -166,20 +167,30 @@
 			return length (offseted) - radius;
 		}
 
-		#define OPERATION 2
 		Estimation DistanceEstimation (in vec3 point)
 		{
-			float planeDistance = point.z + 1.0;
-			float shape1Distance = PointSphereDistance (point, vec3 (0.0, 0.0, 0.0), 1.0);
-			float shape2Distance = PointBoxDistance (point, vec3 (1.0, 0.0, 0.5), vec3 (0.5, 0.5, 0.5));
+			float planeDistance = point.z + 0.0;
+			float shape1Distance = INF;
+			float shape2Distance = INF;
+			#if SHAPETYPE1 == 1
+				shape1Distance = PointSphereDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), uShapeData1[3]);
+			#elif SHAPETYPE1 == 2
+				shape1Distance = PointBoxDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), vec3 (uShapeData1[3], uShapeData1[3], uShapeData1[3]));
+			#endif
+			#if SHAPETYPE2 == 1
+				shape2Distance = PointSphereDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), uShapeData2[3]);
+			#elif SHAPETYPE2 == 2
+				shape2Distance = PointBoxDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), vec3 (uShapeData2[3], uShapeData2[3], uShapeData2[3]));
+			#endif
 			
+			float operationDistance = INF;
 			#if OPERATION == 1
-				float operationDistance = min (shape1Distance, shape2Distance);
+				operationDistance = min (shape1Distance, shape2Distance);
 			#elif OPERATION == 2
-				float operationDistance = max (shape1Distance, -shape2Distance);
+				operationDistance = max (shape1Distance, -shape2Distance);
 				shape1Distance *= -1.0;
 			#elif OPERATION == 3
-				float operationDistance = max (shape1Distance, shape2Distance);
+				operationDistance = max (shape1Distance, shape2Distance);
 			#endif
 			
 			Estimation result;
@@ -216,7 +227,7 @@
 			Intersection result;
 			result.distance = INF;
 			const int maxSteps = 150;
-			const float maxDistance = 30.0;
+			const float maxDistance = 50.0;
 			
 			vec3 shadedColor = vec3 (0.0, 0.0, 0.0);
 			float distance = 0.0;
@@ -348,8 +359,11 @@
 	
 	<script type="text/javascript">
 		window.onload = function () {
+			var controlsElem = document.getElementById ('controls');
+			var fragmentShaderElem = document.getElementById ('fragmentshader');
+
 			var distanceField = new DistanceField ();
-			distanceField.Init ();
+			distanceField.Init (controlsElem, fragmentShaderElem);
 		}
 	</script>
 	
@@ -362,8 +376,7 @@
 			<div class="canvas">
 				<canvas id="example" width="512" height="512"></canvas>
 			</div>
-			<div class="controls">
-				controls...
+			<div class="controls" id="controls">
 			</div>
 		</div>
 	</div>

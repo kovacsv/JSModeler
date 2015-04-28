@@ -20,6 +20,26 @@ generalSuite.AddTest ('Vector2DTest', function (test) {
 	test.Assert (JSM.IsEqual (JSM.VectorLength2D (coord5), 5.0));
 	var coord6 = JSM.CoordOffset2D (coord1, coord2, 3.0);
 	test.Assert (JSM.CoordIsEqual2D (coord6, new JSM.Coord2D (1, 3)));
+	
+	var origo = new JSM.Coord2D (0.0, 0.0);
+	var rotated = JSM.CoordRotate2D (coord1, Math.PI / 2.0, origo);
+	test.Assert (JSM.CoordIsEqual2D (rotated, new JSM.Coord2D (0, 1)));
+	var rotated = JSM.CoordRotate2D (coord1, Math.PI, origo);
+	test.Assert (JSM.CoordIsEqual2D (rotated, new JSM.Coord2D (-1, 0)));
+	var rotated = JSM.CoordRotate2D (coord1, Math.PI * 3.0 / 2.0, origo);
+	test.Assert (JSM.CoordIsEqual2D (rotated, new JSM.Coord2D (0, -1)));
+	var rotated = JSM.CoordRotate2D (coord1, Math.PI * 2.0, origo);
+	test.Assert (JSM.CoordIsEqual2D (rotated, new JSM.Coord2D (1, 0)));
+
+	var origo = new JSM.Coord2D (-1.0, 0.0);
+	var rotated = JSM.CoordRotate2D (coord1, Math.PI / 2.0, origo);
+	test.Assert (JSM.CoordIsEqual2D (rotated, new JSM.Coord2D (-1, 2)));
+	var rotated = JSM.CoordRotate2D (coord1, Math.PI, origo);
+	test.Assert (JSM.CoordIsEqual2D (rotated, new JSM.Coord2D (-3, 0)));
+	var rotated = JSM.CoordRotate2D (coord1, Math.PI * 3.0 / 2.0, origo);
+	test.Assert (JSM.CoordIsEqual2D (rotated, new JSM.Coord2D (-1, -2)));
+	var rotated = JSM.CoordRotate2D (coord1, Math.PI * 2.0, origo);
+	test.Assert (JSM.CoordIsEqual2D (rotated, new JSM.Coord2D (1, 0)));
 });
 
 generalSuite.AddTest ('VectorTest', function (test) {

@@ -2,13 +2,13 @@ html, body
 {
 	color : #222222;
 	background : #ffffff;
-	font-size : 14px;
+	font-size : 12px;
 	font-family : Arial, cursive;
 }
 
 div.frame
 {
-	width : 920px;
+	width : 800px;
 	margin : 0px auto;
 }
 
@@ -17,7 +17,7 @@ div.title
 	text-align : center;
 	font-size : 27px;
 	font-weight : bold;
-	margin : 50px 0px;
+	margin : 40px 0px;
 }
 
 div.container
@@ -34,6 +34,62 @@ div.controls
 {
 	margin-left : 20px;
 	float : left;
+}
+
+div.controltitle
+{
+	font-weight : bold;
+}
+
+div.controlmain
+{
+	margin : 5px 0px 5px 15px;
+	overflow : auto;
+}
+
+div.controlmainsub
+{
+	margin-bottom : 5px;
+	overflow : auto;
+}
+
+div.slidertitle
+{
+	float : left;
+	width : 60px;
+}
+
+div.slider
+{
+	color : #000000;
+	background : #ffffff;
+	border : 1px solid #cccccc;
+	width : 150px;
+	height : 15px;
+	float : left;
+}
+
+div.slidercontent
+{
+	color : #000000;
+	background : #dddddd;
+	height : 15px;
+}
+
+div.selectitem
+{
+	color : #222222;
+	background : transparent;
+	padding : 2px 5px;
+	float : left;
+	cursor : pointer;
+}
+
+div.selectitem.selected
+{
+	color : #222222;
+	background : #dddddd;
+	border : 1px solid #cccccc;
 }
 
 canvas

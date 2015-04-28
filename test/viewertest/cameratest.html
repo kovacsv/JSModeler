@@ -95,6 +95,7 @@
 
 	<script type="text/javascript">
 		var viewer = null;
+		var distanceLimitSet = false;
 
 		function Resize ()
 		{
@@ -112,7 +113,9 @@
 			info.innerHTML += 'fixUp: ' + viewer.navigation.cameraFixUp + ', ';
 			info.innerHTML += 'orbit: ' + viewer.navigation.cameraEnableOrbit + ', ';
 			info.innerHTML += 'pan: ' + viewer.navigation.cameraEnablePan + ', ';
-			info.innerHTML += 'zoom: ' + viewer.navigation.cameraEnableZoom;
+			info.innerHTML += 'zoom: ' + viewer.navigation.cameraEnableZoom + ', ';
+			info.innerHTML += 'near limit: ' + viewer.navigation.cameraNearDistanceLimit + ', ';
+			info.innerHTML += 'far limit: ' + viewer.navigation.cameraFarDistanceLimit;
 		}
 		
 		function Reset1 ()
@@ -151,8 +154,21 @@
 			WriteCameraInfo ();
 		}
 
+		function SwitchDistanceLimit ()
+		{
+			if (!distanceLimitSet) {
+				viewer.navigation.SetNearDistanceLimit (5.0);
+				viewer.navigation.SetFarDistanceLimit (10.0);
+			} else {
+				viewer.navigation.SetNearDistanceLimit (0.1);
+				viewer.navigation.SetFarDistanceLimit (1000.0);
+			}
+			WriteCameraInfo ();
+		}
+
 		function SwitchZoom ()
 		{
+			viewer.navigation.cameraEnableZoom
 			viewer.navigation.EnableZoom (!viewer.navigation.cameraEnableZoom);
 			WriteCameraInfo ();
 		}
@@ -210,6 +226,7 @@
 			<a class="button" href="javascript:SwitchOrbit ()">orbit</a>
 			<a class="button" href="javascript:SwitchPan ()">pan</a>
 			<a class="button" href="javascript:SwitchZoom ()">zoom</a>
+			<a class="button" href="javascript:SwitchDistanceLimit ()">distance limit</a>
 		</div>
 		<div id="info"></div>
 	</div>
