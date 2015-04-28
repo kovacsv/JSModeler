@@ -41,13 +41,13 @@ div.controltitle
 	font-weight : bold;
 }
 
-div.controlmain
+div.controldiv
 {
 	margin : 5px 0px 5px 15px;
 	overflow : auto;
 }
 
-div.controlmainsub
+div.controlsubdiv
 {
 	margin-bottom : 5px;
 	overflow : auto;
@@ -82,6 +82,7 @@ div.selectitem
 	background : transparent;
 	padding : 2px 5px;
 	float : left;
+	border : 1px solid #ffffff;
 	cursor : pointer;
 }
 

@@ -32,7 +32,7 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 	function AddMainElem (parent)
 	{
 		var div = document.createElement ('div');
-		div.className = 'controlmain';
+		div.className = 'controldiv';
 		parent.appendChild (div);
 		return div;
 	}
@@ -65,7 +65,7 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 		}
 		
 		var div = document.createElement ('div');
-		div.className = 'controlmainsub';
+		div.className = 'controlsubdiv';
 		var i;
 		for (i = 0; i < elements.length; i++) {
 			AddElem (div, i);
@@ -95,7 +95,7 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 		}
 		
 		var div = document.createElement ('div');
-		div.className = 'controlmainsub';
+		div.className = 'controlsubdiv';
 		
 		var sliderTitle = document.createElement ('div');
 		sliderTitle.innerHTML = title;
@@ -111,14 +111,14 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 		var mouseDown = false;
 		div.addEventListener ('mousedown', function (event) {
 			mouseDown = true;
-			MouseEvent (slider, sliderContent, event)
+			MouseEvent (slider, sliderContent, event);
 		});
 		window.addEventListener ('mouseup', function (event) {
 			mouseDown = false;
 		});
 		window.addEventListener ('mousemove', function (event) {
 			if (mouseDown) {
-				MouseEvent (slider, sliderContent, event)
+				MouseEvent (slider, sliderContent, event);
 			}
 		});
 		
@@ -134,7 +134,7 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 		var mainElem = null;
 		AddTitle (controlsElem, name + ' shape type');
 		mainElem = AddMainElem (controlsElem);
-		AddSelectControl (mainElem, ['off', 'sphere', 'cube'], shapeData.type, function (index) {
+		AddSelectControl (mainElem, ['off', 'sphere', 'cube', 'cylinder'], shapeData.type, function (index) {
 			shapeData.type = index;
 			myThis.Compile ();
 			myThis.StartRender (false);
@@ -192,7 +192,7 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 			height : 8.0,
 			radius : 0.5
 		}
-	}
+	};
 	
 	var myThis = this;
 	var mainElem = null;
