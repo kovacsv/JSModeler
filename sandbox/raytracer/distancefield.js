@@ -37,14 +37,14 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 		return div;
 	}
 
-	function AddSelectControl (parent, elements, defaultIndex, elemClicked)
+	function AddSelectControl (parent, title, elements, defaultIndex, elemClicked)
 	{
 		function SetActiveElem (parent, index)
 		{
 			var i, div;
-			for (i = 0; i < parent.childNodes.length; i++) {
+			for (i = 1; i < parent.childNodes.length; i++) {
 				div = parent.childNodes[i];
-				if (i == index) {
+				if (i == index + 1) {
 					div.className = 'selectitem selected';
 				} else {
 					div.className = 'selectitem';
@@ -66,6 +66,12 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 		
 		var div = document.createElement ('div');
 		div.className = 'controlsubdiv';
+
+		var controlTitle = document.createElement ('div');
+		controlTitle.innerHTML = title;
+		controlTitle.className = 'selecttitle';
+		div.appendChild (controlTitle);
+
 		var i;
 		for (i = 0; i < elements.length; i++) {
 			AddElem (div, i);
@@ -132,16 +138,13 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 	function AddShapeParameters (controlsElem, shapeData, name, myThis)
 	{
 		var mainElem = null;
-		AddTitle (controlsElem, name + ' shape type');
+		AddTitle (controlsElem, name + ' shape');
 		mainElem = AddMainElem (controlsElem);
-		AddSelectControl (mainElem, ['off', 'sphere', 'cube', 'cylinder', 'torus'], shapeData.type, function (index) {
+		AddSelectControl (mainElem, 'type', ['off', 'sphere', 'cube', 'cylinder', 'torus'], shapeData.type, function (index) {
 			shapeData.type = index;
 			myThis.Compile ();
 			myThis.StartRender (false);
 		});		
-		
-		AddTitle (controlsElem, name + ' shape parameters');
-		mainElem = AddMainElem (controlsElem);
 		AddSliderControl (mainElem, 'x position', InternalToInteface (shapeData.position[0], -5.0, 5.0), function (ratio) {
 			shapeData.position[0] = InterfaceToInternal (ratio, -5.0, 5.0);
 			myThis.UpdateUniforms ();
@@ -157,11 +160,21 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 			myThis.UpdateUniforms ();
 			myThis.StartRender (true);
 		});
-		AddSliderControl (mainElem, 'size', InternalToInteface (shapeData.size, 0.2, 2.0), function (ratio) {
-			shapeData.size = InterfaceToInternal (ratio, 0.2, 2.0);
+		AddSliderControl (mainElem, 'size 1', InternalToInteface (shapeData.size[0], 0.2, 2.0), function (ratio) {
+			shapeData.size[0] = InterfaceToInternal (ratio, 0.2, 2.0);
 			myThis.UpdateUniforms ();
 			myThis.StartRender (true);
-		});		
+		});
+		AddSliderControl (mainElem, 'size 2', InternalToInteface (shapeData.size[1], 0.2, 2.0), function (ratio) {
+			shapeData.size[1] = InterfaceToInternal (ratio, 0.2, 2.0);
+			myThis.UpdateUniforms ();
+			myThis.StartRender (true);
+		});
+		AddSliderControl (mainElem, 'size 3', InternalToInteface (shapeData.size[2], 0.2, 2.0), function (ratio) {
+			shapeData.size[2] = InterfaceToInternal (ratio, 0.2, 2.0);
+			myThis.UpdateUniforms ();
+			myThis.StartRender (true);
+		});
 	}
 	
 	function InterfaceToInternal (value, min, max)
@@ -178,16 +191,16 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
 		shape1 : {
 			type : 1,
 			position : [0.0, 0.0, 1.0],
-			size : 1.0
+			size : [1.0, 1.0, 1.0]
 		},
 		shape2 : {
 			type : 2,
 			position : [1.0, 0.0, 1.5],
-			size : 0.6
+			size : [0.6, 0.6, 0.6]
 		},
 		operation : 2,
 		light : {
-			rotation : 0.2,
+			rotation : Math.PI / 8.0,
 			distance : 10.0,
 			height : 8.0,
 			radius : 0.5
@@ -225,7 +238,7 @@ DistanceField.prototype.InitUserInterface = function (controlsElem)
     
 	AddTitle (controlsElem, 'operation');
 	mainElem = AddMainElem (controlsElem);
-	AddSelectControl (mainElem, ['union', 'difference', 'intersection'], 1, function (index) {
+	AddSelectControl (mainElem, 'type', ['union', 'difference', 'intersection'], 1, function (index) {
 		myThis.settings.operation = index + 1;
 		myThis.Compile ();
 		myThis.StartRender (false);
@@ -298,8 +311,8 @@ DistanceField.prototype.UpdateUniforms = function ()
 	var lightPosition = GetLightPosition (this.settings.light);
 	this.gpuTracer.SetUniformVector ('uLightPosition', [lightPosition.x, lightPosition.y, lightPosition.z]);
 	this.gpuTracer.SetUniformFloat ('uLightRadius', this.settings.light.radius);
-	this.gpuTracer.SetUniformArray ('uShapeData1', [this.settings.shape1.position[0], this.settings.shape1.position[1], this.settings.shape1.position[2], this.settings.shape1.size]);
-	this.gpuTracer.SetUniformArray ('uShapeData2', [this.settings.shape2.position[0], this.settings.shape2.position[1], this.settings.shape2.position[2], this.settings.shape2.size]);
+	this.gpuTracer.SetUniformArray ('uShapeData1', [this.settings.shape1.position[0], this.settings.shape1.position[1], this.settings.shape1.position[2], this.settings.shape1.size[0], this.settings.shape1.size[1], this.settings.shape1.size[2]]);
+	this.gpuTracer.SetUniformArray ('uShapeData2', [this.settings.shape2.position[0], this.settings.shape2.position[1], this.settings.shape2.position[2], this.settings.shape2.size[0], this.settings.shape2.size[1], this.settings.shape2.size[2]]);
 	return true;
 };
 

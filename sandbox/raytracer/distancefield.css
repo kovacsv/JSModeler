@@ -8,7 +8,7 @@ html, body
 
 div.frame
 {
-	width : 800px;
+	width : 840px;
 	margin : 0px auto;
 }
 
@@ -43,7 +43,7 @@ div.controltitle
 
 div.controldiv
 {
-	margin : 5px 0px 5px 15px;
+	margin : 3px 0px 3px 15px;
 	overflow : auto;
 }
 
@@ -53,27 +53,11 @@ div.controlsubdiv
 	overflow : auto;
 }
 
-div.slidertitle
+div.selecttitle
 {
-	float : left;
 	width : 60px;
-}
-
-div.slider
-{
-	color : #000000;
-	background : #ffffff;
-	border : 1px solid #cccccc;
-	width : 180px;
-	height : 15px;
 	float : left;
-}
-
-div.slidercontent
-{
-	color : #000000;
-	background : #dddddd;
-	height : 15px;
+	padding : 2px 0px;
 }
 
 div.selectitem
@@ -91,6 +75,29 @@ div.selectitem.selected
 	color : #222222;
 	background : #dddddd;
 	border : 1px solid #cccccc;
+}
+
+div.slidertitle
+{
+	width : 60px;
+	float : left;
+}
+
+div.slider
+{
+	color : #000000;
+	background : #ffffff;
+	border : 1px solid #cccccc;
+	width : 220px;
+	height : 15px;
+	float : left;
+}
+
+div.slidercontent
+{
+	color : #000000;
+	background : #dddddd;
+	height : 15px;
 }
 
 canvas

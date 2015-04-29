@@ -99,15 +99,15 @@
 		#define EPS 0.000005
 		#define BIGEPS 0.005
 		#define PI 3.1415926535897932384626433832795
-		#define INF 1.0 / 0.0
+		#define INF 10e10
 
 		uniform sampler2D uOriginalTextureSampler;
 		uniform vec3 uCameraData[3];
 		uniform vec3 uLightPosition;
 		uniform float uLightRadius;
 		uniform float uIteration;
-		uniform float uShapeData1[4];
-		uniform float uShapeData2[4];
+		uniform float uShapeData1[6];
+		uniform float uShapeData2[6];
 		uniform int uPreview;
 
 		struct Camera
@@ -190,20 +190,20 @@
 			#if SHAPETYPE1 == 1
 				shape1Distance = PointSphereDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), uShapeData1[3]);
 			#elif SHAPETYPE1 == 2
-				shape1Distance = PointBoxDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), vec3 (uShapeData1[3], uShapeData1[3], uShapeData1[3]));
+				shape1Distance = PointBoxDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), vec3 (uShapeData1[3], uShapeData1[4], uShapeData1[5]));
 			#elif SHAPETYPE1 == 3
-				shape1Distance = PointCylinderDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), uShapeData1[3], uShapeData1[3]);
+				shape1Distance = PointCylinderDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), uShapeData1[3], uShapeData1[4]);
 			#elif SHAPETYPE1 == 4
-				shape1Distance = PointTorusDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), uShapeData1[3], uShapeData1[3] * 0.5);
+				shape1Distance = PointTorusDistance (point, vec3 (uShapeData1[0], uShapeData1[1], uShapeData1[2]), uShapeData1[3], uShapeData1[4]);
 			#endif
 			#if SHAPETYPE2 == 1
 				shape2Distance = PointSphereDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), uShapeData2[3]);
 			#elif SHAPETYPE2 == 2
-				shape2Distance = PointBoxDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), vec3 (uShapeData2[3], uShapeData2[3], uShapeData2[3]));
+				shape2Distance = PointBoxDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), vec3 (uShapeData2[3], uShapeData2[4], uShapeData2[5]));
 			#elif SHAPETYPE2 == 3
-				shape2Distance = PointCylinderDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), uShapeData2[3], uShapeData2[3]);
+				shape2Distance = PointCylinderDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), uShapeData2[3], uShapeData2[4]);
 			#elif SHAPETYPE2 == 4
-				shape2Distance = PointTorusDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), uShapeData2[3], uShapeData2[3] * 0.5);
+				shape2Distance = PointTorusDistance (point, vec3 (uShapeData2[0], uShapeData2[1], uShapeData2[2]), uShapeData2[3], uShapeData2[4]);
 			#endif
 			
 			float operationDistance = INF;
