@@ -6,9 +6,12 @@ header = '/* JSModeler [mainVersion].[subVersion] - http://www.github.com/kovacs
 versionFileName = '../src/core/jsm.js'
 filesFileName = 'files.txt'
 
-externsFileName = 'externs.js'
+externsFileName = 'jsmodeler.externs.js'
+externsViewerFileName = 'jsmodeler.viewer.externs.js'
 mergedFileName = 'jsmodeler_merged.js'
+mergedViewerFileName = 'jsmodeler.viewer_merged.js'
 resultFileName = '../build/jsmodeler.js'
+resultViewerFileName = '../build/jsmodeler.viewer.js'
 
 def PrintInfo (message):
 	print ('Info: ' + message)
@@ -100,41 +103,19 @@ def DeleteFile (fileName):
 
 	os.remove (fileName)
 	return True
-	
-def Main (argv):
-	currentPath = os.path.dirname (os.path.abspath (__file__))
-	os.chdir (currentPath)
 
-	keepMergedFile = False
-	for i in range (1, len (argv)):
-		if argv[i] == 'keepMergedFile':
-			keepMergedFile = True
-	
+def Build (inputFileNames, mergedFilePath, resultFilePath, externsFilePath, keepMergedFile):
 	versionsPath = os.path.abspath (versionFileName)
-	filesFilePath = os.path.abspath (filesFileName)
-	mergedFilePath = os.path.abspath (mergedFileName)
-	externsFilePath = os.path.abspath (externsFileName)
-	resultFilePath = os.path.abspath (resultFileName)
-	
-	PrintInfo ('Get version from file <' + versionsPath + '>.')
 	version = GetVersion (versionsPath);
 	if version == [0, 0]:
 		PrintError ('Invalid version.');
 		return 1
 
-	PrintInfo ('Collect files to merge from <' + filesFilePath + '>.')
-	inputFileNames = GetLinesFromFile (filesFilePath);
-	if len (inputFileNames) == 0:
-		PrintError ('Invalid file list.');
-		return 1
-
-	PrintInfo ('Merge files to <' + mergedFilePath + '>.')
 	succeeded = MergeFiles (inputFileNames, mergedFilePath)
 	if not succeeded:
 		PrintError ('Not existing file in file list.');
 		return 1
 
-	PrintInfo ('Compile merged file to <' + resultFilePath + '>.')
 	succeeded = CompileFile (mergedFilePath, externsFilePath, resultFilePath)
 	if not succeeded:
 		PrintError ('Compilation failed.');
@@ -142,7 +123,6 @@ def Main (argv):
 		DeleteFile (mergedFilePath)
 		return 1
 	
-	PrintInfo ('Write header to compiled file <' + resultFilePath + '>.')
 	currentHeader = GetHeader (version, header)
 	if len (currentHeader) == 0:
 		PrintError ('Invalid header.');
@@ -158,7 +138,6 @@ def Main (argv):
 		return 1
 	
 	if not keepMergedFile:
-		PrintInfo ('Delete merged file <' + mergedFilePath + '>.')
 		succeeded = DeleteFile (mergedFilePath)
 		if not succeeded:
 			PrintError ('Delete failed.');
@@ -166,6 +145,46 @@ def Main (argv):
 			DeleteFile (mergedFilePath)
 			return 1
 	
+	return 0
+			
+def Main (argv):
+	currentPath = os.path.dirname (os.path.abspath (__file__))
+	os.chdir (currentPath)
+
+	keepMergedFiles = False
+	for i in range (1, len (argv)):
+		if argv[i] == 'keepMergedFiles':
+			keepMergedFiles = True
+
+	filesFilePath = os.path.abspath (filesFileName)
+	PrintInfo ('Collect files to merge from <' + filesFilePath + '>.')
+	inputFileNames = GetLinesFromFile (filesFilePath);
+	if len (inputFileNames) == 0:
+		PrintError ('Invalid file list.');
+		return 1
+
+	coreFiles = []
+	viewerFiles = []
+	for fileName in inputFileNames:
+		if '../src/three' in fileName:
+			viewerFiles.append (fileName)
+		else:
+			coreFiles.append (fileName)
+
+	mergedFilePath = os.path.abspath (mergedFileName)
+	resultFilePath = os.path.abspath (resultFileName)
+	externsFilePath = os.path.abspath (externsFileName)
+	PrintInfo ('Compile files to <' + resultFilePath + '>.')
+	if Build (coreFiles, mergedFilePath, resultFilePath, externsFilePath, keepMergedFiles) != 0:
+		return 1
+	
+	mergedFilePath = os.path.abspath (mergedViewerFileName)
+	resultFilePath = os.path.abspath (resultViewerFileName)
+	externsFilePath = os.path.abspath (externsViewerFileName)
+	PrintInfo ('Compile files to <' + resultFilePath + '>.')
+	if Build (viewerFiles, mergedFilePath, resultFilePath, externsFilePath, keepMergedFiles) != 0:
+		return 1
+		
 	return 0
 	
 sys.exit (Main (sys.argv))

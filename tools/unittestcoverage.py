@@ -31,9 +31,12 @@ def Main (argv):
 	shutil.copytree (unitTestFolder, coverageTempFolder)
 	
 	mergedFileName = 'jsmodeler_merged.js'
+	mergedViewerFileName = 'jsmodeler.viewer_merged.js'
 	resultBuildPath = os.path.join (coverageTempFolder, mergedFileName)
-	os.system ('python build.py keepMergedFile')
+	resultBuildViewerPath = os.path.join (coverageTempFolder, mergedViewerFileName)
+	os.system ('python build.py keepMergedFiles')
 	shutil.move (mergedFileName, resultBuildPath)
+	shutil.move (mergedViewerFileName, resultBuildViewerPath)
 	
 	AddContentToFile (resultBuildPath, 'module.exports = JSM;', True)
 	
