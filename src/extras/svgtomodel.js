@@ -18,7 +18,11 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			point.x = x;
 			point.y = y;
 			
-			var transformed = point.matrixTransform (elem.getCTM ());
+			var transformed = point;
+			var matrix = elem.getCTM ();
+			if (matrix !== undefined && matrix !== null) {
+				transformed = point.matrixTransform (matrix);				
+			}
 			var transformedCoord = new JSM.Coord2D (transformed.x, transformed.y);
 			var resultCoord = new JSM.Coord2D (x, y);
 			
