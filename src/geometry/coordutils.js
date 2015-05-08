@@ -1,17 +1,4 @@
 /**
-* Function: CoordFromArray2D
-* Description: Returns a coordinate from an array of components.
-* Parameters:
-*	array {number[2]} the array of components
-* Returns:
-*	{Coord2D} the result
-*/
-JSM.CoordFromArray2D = function (array)
-{
-	return new JSM.Coord2D (array[0], array[1]);
-};
-
-/**
 * Function: CoordFromArray
 * Description: Returns a coordinate from an array of components.
 * Parameters:
@@ -25,146 +12,16 @@ JSM.CoordFromArray = function (array)
 };
 
 /**
-* Function: CoordIsEqual2D
-* Description: Determines if the given coordinates are equal.
+* Function: CoordToArray
+* Description: Returns array of components from a coordinate.
 * Parameters:
-*	a {Coord2D} the first coordinate
-*	b {Coord2D} the second coordinate
+*	coord {Coord} the coordinate
 * Returns:
-*	{boolean} the result
+*	array {number[3]} the result
 */
-JSM.CoordIsEqual2D = function (a, b)
+JSM.CoordToArray = function (coord)
 {
-	return JSM.IsEqual (a.x, b.x) && JSM.IsEqual (a.y, b.y);
-};
-
-/**
-* Function: CoordIsEqual2DWithEps
-* Description: Determines if the given coordinates are equal. Uses the given epsilon for comparison.
-* Parameters:
-*	a {Coord2D} the first coordinate
-*	b {Coord2D} the second coordinate
-*	eps {number} the epsilon value
-* Returns:
-*	{boolean} the result
-*/
-JSM.CoordIsEqual2DWithEps = function (a, b, eps)
-{
-	return JSM.IsEqualWithEps (a.x, b.x, eps) && JSM.IsEqualWithEps (a.y, b.y, eps);
-};
-
-/**
-* Function: CoordDistance2D
-* Description: Calculates the distance of two coordinates.
-* Parameters:
-*	a {Coord2D} the first coordinate
-*	b {Coord2D} the second coordinate
-* Returns:
-*	{number} the result
-*/
-JSM.CoordDistance2D = function (a, b)
-{
-	var x1 = a.x;
-	var y1 = a.y;
-	var x2 = b.x;
-	var y2 = b.y;
-
-	return Math.sqrt ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-};
-
-/**
-* Function: MidCoord2D
-* Description: Calculates the coordinate in the middle of two coordinates.
-* Parameters:
-*	a {Coord2D} the first coordinate
-*	b {Coord2D} the second coordinate
-* Returns:
-*	{Coord2D} the result
-*/
-JSM.MidCoord2D = function (a, b)
-{
-	return new JSM.Coord2D ((a.x + b.x) / 2.0, (a.y + b.y) / 2.0);
-};
-
-/**
-* Function: PolarToCartesian
-* Description: Converts a polar coordinate to a cartesian coordinate.
-* Parameters:
-*	radius {number} the radius component
-*	theta {number} the angle component
-* Returns:
-*	{Coord2D} the result
-*/
-JSM.PolarToCartesian = function (radius, theta)
-{
-	var result = new JSM.Coord2D (0.0, 0.0);
-	result.x = radius * Math.cos (theta);
-	result.y = radius * Math.sin (theta);
-	return result;
-};
-
-/**
-* Function: GetArcLengthFromAngle
-* Description: Calculates arc length from radius and angle.
-* Parameters:
-*	radius {number} the radius of the circle
-*	theta {number} the angle of rotation
-* Returns:
-*	{number} the result
-*/
-JSM.GetArcLengthFromAngle = function (radius, theta)
-{
-	return theta * radius;
-};
-
-/**
-* Function: GetAngleFromArcLength
-* Description: Calculates angle from arc length.
-* Parameters:
-*	radius {number} the radius of the circle
-*	arcLength {number} the arc length
-* Returns:
-*	{number} the result
-*/
-JSM.GetAngleFromArcLength = function (radius, arcLength)
-{
-	if (JSM.IsEqual (radius, 0.0)) {
-		return 0.0;
-	}
-	
-	return arcLength / radius;
-};
-
-/**
-* Function: CoordTurnType2D
-* Description: Calculates the turn type of three coordinates.
-* Parameters:
-*	a {Coord2D} the first coordinate
-*	b {Coord2D} the second coordinate
-*	c {Coord2D} the third coordinate
-* Returns:
-*	{string} 'CounterClockwise', 'Clockwise', or 'Collinear'
-*/
-JSM.CoordTurnType2D = function (a, b, c)
-{
-	var m00 = a.x;
-	var m01 = a.y;
-	var m02 = 1.0;
-	var m10 = b.x;
-	var m11 = b.y;
-	var m12 = 1.0;
-	var m20 = c.x;
-	var m21 = c.y;
-	var m22 = 1.0;
-
-	var determinant = JSM.MatrixDeterminant3x3 (m00, m01, m02, m10, m11, m12, m20, m21, m22);
-	if (JSM.IsPositive (determinant)) {
-		return 'CounterClockwise';
-	} else if (JSM.IsNegative (determinant)) {
-		return 'Clockwise';
-	} else {
-		return 'Collinear';
-	}
+	return [coord.x, coord.y, coord.z];
 };
 
 /**
@@ -194,6 +51,35 @@ JSM.CoordIsEqual = function (a, b)
 JSM.CoordIsEqualWithEps = function (a, b, eps)
 {
 	return JSM.IsEqualWithEps (a.x, b.x, eps) && JSM.IsEqualWithEps (a.y, b.y, eps) && JSM.IsEqualWithEps (a.z, b.z, eps);
+};
+
+
+/**
+* Function: CoordAdd
+* Description: Adds two coordinates.
+* Parameters:
+*	a {Coord} the first coordinate
+*	b {Coord} the second coordinate
+* Returns:
+*	{Coord} the result
+*/
+JSM.CoordAdd = function (a, b)
+{
+	return new JSM.Coord (a.x + b.x, a.y + b.y, a.z + b.z);
+};
+
+/**
+* Function: CoordSub
+* Description: Subs two coordinates.
+* Parameters:
+*	a {Coord} the first coordinate
+*	b {Coord} the second coordinate
+* Returns:
+*	{Coord} the result
+*/
+JSM.CoordSub = function (a, b)
+{
+	return new JSM.Coord (a.x - b.x, a.y - b.y, a.z - b.z);
 };
 
 /**
@@ -369,6 +255,62 @@ JSM.VectorSetLength = function (vector, length)
 	return result;
 };
 
+
+/**
+* Function: CoordOffset
+* Description: Offsets a coordinate.
+* Parameters:
+*	coord {Coord} the coordinate
+*	direction {Vector} the direction of the offset
+*	distance {number} the distance of the offset
+* Returns:
+*	{Coord} the result
+*/
+JSM.CoordOffset = function (coord, direction, distance)
+{
+	var normal = JSM.VectorNormalize (direction);
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
+	result.x = coord.x + normal.x * distance;
+	result.y = coord.y + normal.y * distance;
+	result.z = coord.z + normal.z * distance;
+	return result;
+};
+
+/**
+* Function: CoordRotate
+* Description: Rotates a coordinate.
+* Parameters:
+*	coord {Coord} the coordinate
+*	axis {Vector} the axis of the rotation
+*	angle {number} the angle of the rotation
+*	origo {Coord} the origo of the rotation
+* Returns:
+*	{Coord} the result
+*/
+JSM.CoordRotate = function (coord, axis, angle, origo)
+{
+	var offseted = JSM.CoordSub (coord, origo);
+	var normal = JSM.VectorNormalize (axis);
+
+	var u = normal.x;
+	var v = normal.y;
+	var w = normal.z;
+
+	var x = offseted.x;
+	var y = offseted.y;
+	var z = offseted.z;
+
+	var si = Math.sin (angle);
+	var co = Math.cos (angle);
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
+	result.x = - u * (- u * x - v * y - w * z) * (1.0 - co) + x * co + (- w * y + v * z) * si;
+	result.y = - v * (- u * x - v * y - w * z) * (1.0 - co) + y * co + (w * x - u * z) * si;
+	result.z = - w * (- u * x - v * y - w * z) * (1.0 - co) + z * co + (- v * x + u * y) * si;
+	
+	result = JSM.CoordAdd (result, origo);
+	return result;
+};
+
 /**
 * Function: GetVectorsAngle
 * Description: Calculates the angle of two vectors.
@@ -425,89 +367,6 @@ JSM.VectorsAreCollinear = function (a, b)
 {
 	var angle = JSM.GetVectorsAngle (a, b);
 	return JSM.IsEqual (angle, 0.0) || JSM.IsEqual (angle, Math.PI);
-};
-
-/**
-* Function: CoordAdd
-* Description: Adds two coordinates.
-* Parameters:
-*	a {Coord} the first coordinate
-*	b {Coord} the second coordinate
-* Returns:
-*	{Coord} the result
-*/
-JSM.CoordAdd = function (a, b)
-{
-	return new JSM.Vector (a.x + b.x, a.y + b.y, a.z + b.z);
-};
-
-/**
-* Function: CoordSub
-* Description: Subs two coordinates.
-* Parameters:
-*	a {Coord} the first coordinate
-*	b {Coord} the second coordinate
-* Returns:
-*	{Coord} the result
-*/
-JSM.CoordSub = function (a, b)
-{
-	return new JSM.Vector (a.x - b.x, a.y - b.y, a.z - b.z);
-};
-
-/**
-* Function: CoordOffset
-* Description: Offsets a coordinate.
-* Parameters:
-*	coord {Coord} the coordinate
-*	direction {Vector} the direction of the offset
-*	distance {number} the distance of the offset
-* Returns:
-*	{Coord} the result
-*/
-JSM.CoordOffset = function (coord, direction, distance)
-{
-	var normal = JSM.VectorNormalize (direction);
-	var result = new JSM.Coord (0.0, 0.0, 0.0);
-	result.x = coord.x + normal.x * distance;
-	result.y = coord.y + normal.y * distance;
-	result.z = coord.z + normal.z * distance;
-	return result;
-};
-
-/**
-* Function: CoordRotate
-* Description: Rotates a coordinate.
-* Parameters:
-*	coord {Coord} the coordinate
-*	axis {Vector} the axis of the rotation
-*	angle {number} the angle of the rotation
-*	origo {Coord} the origo of the rotation
-* Returns:
-*	{Coord} the result
-*/
-JSM.CoordRotate = function (coord, axis, angle, origo)
-{
-	var offseted = JSM.CoordSub (coord, origo);
-	var normal = JSM.VectorNormalize (axis);
-
-	var u = normal.x;
-	var v = normal.y;
-	var w = normal.z;
-
-	var x = offseted.x;
-	var y = offseted.y;
-	var z = offseted.z;
-
-	var si = Math.sin (angle);
-	var co = Math.cos (angle);
-	var result = new JSM.Coord (0.0, 0.0, 0.0);
-	result.x = - u * (- u * x - v * y - w * z) * (1 - co) + x * co + (- w * y + v * z) * si;
-	result.y = - v * (- u * x - v * y - w * z) * (1 - co) + y * co + (w * x - u * z) * si;
-	result.z = - w * (- u * x - v * y - w * z) * (1 - co) + z * co + (- v * x + u * y) * si;
-	
-	result = JSM.CoordAdd (result, origo);
-	return result;
 };
 
 /**
@@ -639,6 +498,52 @@ JSM.CalculateNormal = function (coords)
 
 	var normalized = JSM.VectorNormalize (normal);
 	return normalized;
+};
+
+/**
+* Function: BarycentricInterpolation
+* Description: Calculates barycentric interpolation for the given values.
+* Parameters:
+*	vertex0, vertex1, vertex2 {Coord} the vertices of interpolation
+*	value0, value1, value2 {Coord} the values to interpolate
+*	position {Coord} the position of interpolation
+* Returns:
+*	{Coord} the result
+*/
+JSM.BarycentricInterpolation = function (vertex0, vertex1, vertex2, value0, value1, value2, position)
+{
+	function GetTriangleArea (a, b, c)
+	{
+		var s = (a + b + c) / 2.0;
+		var areaSquare = s * (s - a) * (s - b) * (s - c);
+		if (areaSquare < 0.0) {
+			return 0.0;
+		}
+		return Math.sqrt (areaSquare);
+	}
+	
+	var edge0 = JSM.CoordDistance (vertex0, vertex1);
+	var edge1 = JSM.CoordDistance (vertex1, vertex2);
+	var edge2 = JSM.CoordDistance (vertex2, vertex0);
+	
+	var distance0 = JSM.CoordDistance (vertex0, position);
+	var distance1 = JSM.CoordDistance (vertex1, position);
+	var distance2 = JSM.CoordDistance (vertex2, position);
+	
+	var area = GetTriangleArea (edge0, edge1, edge2);
+	if (JSM.IsZero (area)) {
+		return value0;
+	}
+	
+	var area0 = GetTriangleArea (edge0, distance0, distance1);
+	var area1 = GetTriangleArea (edge1, distance1, distance2);
+	var area2 = GetTriangleArea (edge2, distance0, distance2);
+	
+	var interpolated0 = JSM.VectorMultiply (value0, area1);
+	var interpolated1 = JSM.VectorMultiply (value1, area2);
+	var interpolated2 = JSM.VectorMultiply (value2, area0);
+	var interpolated = JSM.CoordAdd (JSM.CoordAdd (interpolated0, interpolated1), interpolated2);
+	return JSM.VectorMultiply (interpolated, 1.0 / area);
 };
 
 /**

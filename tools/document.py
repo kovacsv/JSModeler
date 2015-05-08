@@ -7,6 +7,6 @@ os.chdir (currentPath)
 projectName = 'JSModeler'
 
 def Main ():
-	return os.system (os.path.join ('documentation', 'generatejson.py') + ' ' + projectName + ' files.txt' + ' ' + os.path.join ('..', 'documentation', 'jsmdoc', 'include', 'jsmdoc.json'))
+	return os.system ('python ' + os.path.join ('documentation', 'generatejson.py') + ' ' + projectName + ' files.txt' + ' ' + os.path.join ('..', 'documentation', 'jsmdoc', 'include', 'jsmdoc.json'))
 	
 sys.exit (Main ())

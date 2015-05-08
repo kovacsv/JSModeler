@@ -2,7 +2,7 @@
 * Class: AsyncEnvironment
 * Description: Environment for asynchronous calls.
 * Parameters:
-*	parameters {object} callback functions for calls
+*	parameters {object} callback functions for calls (onStart, onProcess, onFinish)
 */
 JSM.AsyncEnvironment = function (parameters)
 {

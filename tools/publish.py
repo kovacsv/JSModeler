@@ -12,7 +12,7 @@ def Main ():
 	if result == 0:
 		result = os.system ('unittest.py');
 	if result == 0:
-		result = os.system ('jshint.py');
+		result = os.system ('jshintcheck.py');
 	if result == 0:
 		result = os.system ('build.py');
 	if result == 0:

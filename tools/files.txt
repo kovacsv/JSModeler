@@ -5,6 +5,7 @@
 ../src/core/check.js
 ../src/geometry/coord.js
 ../src/geometry/determinant.js
+../src/geometry/coordutils2d.js
 ../src/geometry/coordutils.js
 ../src/geometry/matrix.js
 ../src/geometry/coordsystem.js
@@ -15,6 +16,7 @@
 ../src/geometry/lineutils.js
 ../src/geometry/box.js
 ../src/geometry/boxutils.js
+../src/geometry/sphere.js
 ../src/geometry/transformation.js
 ../src/geometry/transformationutils.js
 ../src/geometry/plane.js
@@ -26,6 +28,7 @@
 ../src/geometry/octree.js
 ../src/geometry/bsptree.js
 ../src/geometry/utilities.js
+../src/geometry/ray.js
 ../src/modeler/body.js
 ../src/modeler/model.js
 ../src/modeler/color.js
@@ -39,7 +42,11 @@
 ../src/modeler/camera.js
 ../src/modeler/explode.js
 ../src/modeler/exporter.js
-../src/import/trianglemodel.js
+../src/modeler/trianglebody.js
+../src/modeler/trianglemodel.js
+../src/modeler/trianglebodyutils.js
+../src/modeler/converter.js
+../src/modeler/rayutils.js
 ../src/import/binaryreader.js
 ../src/import/importer.js
 ../src/import/importer3ds.js
@@ -54,9 +61,10 @@
 ../src/extras/svgtomodel.js
 ../src/extras/csg.js
 ../src/extras/curves.js
+../src/renderer/webglutils.js
 ../src/renderer/renderer.js
 ../src/renderer/pointcloudrenderer.js
-../src/renderer/converter.js
+../src/renderer/rendererconverter.js
 ../src/viewer/jsonfileloader.js
 ../src/viewer/mouse.js
 ../src/viewer/touch.js

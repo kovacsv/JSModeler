@@ -84,6 +84,17 @@ JSM.Box.prototype.GetCenter = function ()
 };
 
 /**
+* Function: Box.GetSize
+* Description: Returns the size of the box.
+* Returns:
+*	{Coord} the result
+*/
+JSM.Box.prototype.GetSize = function ()
+{
+	return JSM.CoordSub (this.max, this.min);
+};
+
+/**
 * Function: Box.Clone
 * Description: Clones the box.
 * Returns:

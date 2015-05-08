@@ -519,12 +519,12 @@ JSM.Body.prototype.GetCenter = function ()
 };
 
 /**
-* Function: Body.GetBoundingSphereRadius
-* Description: Returns the radius of the bounding sphere of the body.
+* Function: Body.GetBoundingSphere
+* Description: Returns the bounding sphere of the body.
 * Returns:
-*	{number} the result
+*	{Sphere} the result
 */
-JSM.Body.prototype.GetBoundingSphereRadius = function ()
+JSM.Body.prototype.GetBoundingSphere = function ()
 {
 	var center = this.GetCenter ();
 	var radius = 0.0;
@@ -537,7 +537,8 @@ JSM.Body.prototype.GetBoundingSphereRadius = function ()
 		}
 	}
 	
-	return radius;
+	var result = new JSM.Sphere (center, radius);
+	return result;
 };
 
 /**

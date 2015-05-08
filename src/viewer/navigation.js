@@ -12,6 +12,8 @@ JSM.Navigation = function ()
 	this.cameraEnableOrbit = null;
 	this.cameraEnablePan = null;
 	this.cameraEnableZoom = null;
+	this.cameraNearDistanceLimit = null;
+	this.cameraFarDistanceLimit = null;
 	
 	this.orbitCenter = null;
 };
@@ -30,6 +32,8 @@ JSM.Navigation.prototype.Init = function (canvas, camera, drawCallback, resizeCa
 	this.cameraEnableOrbit = true;
 	this.cameraEnablePan = true;
 	this.cameraEnableZoom = true;
+	this.cameraNearDistanceLimit = 0.1;
+	this.cameraFarDistanceLimit = 1000.0;
 	
 	this.orbitCenter = this.camera.center.Clone ();
 
@@ -78,6 +82,16 @@ JSM.Navigation.prototype.EnablePan = function (enable)
 JSM.Navigation.prototype.EnableZoom = function (enable)
 {
 	this.cameraEnableZoom = enable;
+};
+
+JSM.Navigation.prototype.SetNearDistanceLimit = function (limit)
+{
+	this.cameraNearDistanceLimit = limit;
+};
+
+JSM.Navigation.prototype.SetFarDistanceLimit = function (limit)
+{
+	this.cameraFarDistanceLimit = limit;
 };
 
 JSM.Navigation.prototype.SetOrbitCenter = function (orbitCenter)
@@ -153,7 +167,9 @@ JSM.Navigation.prototype.Zoom = function (zoomIn)
 {
 	var direction = JSM.CoordSub (this.camera.center, this.camera.eye);
 	var distance = JSM.VectorLength (direction);
-	if (zoomIn && distance < 0.1) {
+	if (zoomIn && distance < this.cameraNearDistanceLimit) {
+		return 0;
+	} else if (!zoomIn && distance > this.cameraFarDistanceLimit) {
 		return 0;
 	}
 

@@ -58,9 +58,8 @@ JSM.PointCloudViewer.prototype.RemovePoints = function ()
 
 JSM.PointCloudViewer.prototype.FitInWindow = function ()
 {
-	var center = this.GetCenter ();
-	var radius = this.GetBoundingSphereRadius (center);
-	this.navigation.FitInWindow (center, radius);
+	var sphere = this.GetBoundingSphere ();
+	this.navigation.FitInWindow (sphere.GetCenter (), sphere.GetRadius ());
 	this.Draw ();
 };
 
@@ -92,11 +91,9 @@ JSM.PointCloudViewer.prototype.GetBoundingBox = function ()
 	return new JSM.Box (min, max);
 };
 
-JSM.PointCloudViewer.prototype.GetBoundingSphereRadius = function (center)
+JSM.PointCloudViewer.prototype.GetBoundingSphere = function ()
 {
-	if (center === undefined || center === null) {
-		center = this.GetCenter ();
-	}
+	var center = this.GetCenter ();
 	var radius = 0.0;
 
 	var i, j, points, point, distance;
@@ -111,7 +108,8 @@ JSM.PointCloudViewer.prototype.GetBoundingSphereRadius = function (center)
 		}
 	}
 
-	return radius;
+	var sphere = new JSM.Sphere (center, radius);
+	return sphere;
 };
 
 JSM.PointCloudViewer.prototype.Resize = function ()

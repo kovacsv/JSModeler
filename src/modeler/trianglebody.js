@@ -1,3 +1,7 @@
+/**
+* Class: TriangleBody
+* Description: Represents a 3D body which contains only triangles.
+*/
 JSM.TriangleBody = function (name)
 {
 	this.name = name;
@@ -8,59 +12,166 @@ JSM.TriangleBody = function (name)
 	this.defaultUVIndex = -1;
 };
 
+/**
+* Function: TriangleBody.SetName
+* Description: Sets the name of the body.
+* Parameters:
+*	name {string} the name
+*/
 JSM.TriangleBody.prototype.SetName = function (name)
 {
 	this.name = name;
 };
 
+/**
+* Function: TriangleBody.GetName
+* Description: Returns the name of the body.
+* Returns:
+*	{string} the result
+*/
 JSM.TriangleBody.prototype.GetName = function ()
 {
 	return this.name;
 };
 
+/**
+* Function: TriangleBody.AddVertex
+* Description: Adds a vertex to the body.
+* Parameters:
+*	x, y, z {number} the coordinates of the vertex
+* Returns:
+*	{integer} the index of the added vertex
+*/
 JSM.TriangleBody.prototype.AddVertex = function (x, y, z)
 {
 	this.vertices.push (new JSM.Coord (x, y, z));
 	return this.vertices.length - 1;
 };
 
+/**
+* Function: TriangleBody.GetVertex
+* Description: Returns the vertex at the given index.
+* Parameters:
+*	index {integer} the vertex index
+* Returns:
+*	{Coord} the result
+*/
 JSM.TriangleBody.prototype.GetVertex = function (index)
 {
 	return this.vertices[index];
 };
 
+/**
+* Function: TriangleBody.SetVertex
+* Description: Sets the position of the vertex at the given index.
+* Parameters:
+*	index {integer} the vertex index
+*	x, y, z {number} the new coordinates of the vertex
+*/
 JSM.TriangleBody.prototype.SetVertex = function (index, x, y, z)
 {
 	this.vertices[index] = new JSM.Coord (x, y, z);
 };
 
+/**
+* Function: TriangleBody.VertexCount
+* Description: Returns the vertex count of the body.
+* Returns:
+*	{integer} the result
+*/
 JSM.TriangleBody.prototype.VertexCount = function ()
 {
 	return this.vertices.length;
 };
 
+/**
+* Function: TriangleBody.AddNormal
+* Description: Adds a normal vector to the body.
+* Parameters:
+*	x, y, z {number} the coordinates of the normal vector
+* Returns:
+*	{integer} the index of the added normal vector
+*/
 JSM.TriangleBody.prototype.AddNormal = function (x, y, z)
 {
-	this.normals.push (new JSM.Coord (x, y, z));
+	this.normals.push (new JSM.Vector (x, y, z));
 	return this.normals.length - 1;
 };
 
+/**
+* Function: TriangleBody.GetNormal
+* Description: Returns the normal vector at the given index.
+* Parameters:
+*	index {integer} the normal vector index
+* Returns:
+*	{Vector} the result
+*/
 JSM.TriangleBody.prototype.GetNormal = function (index)
 {
 	return this.normals[index];
 };
 
+
+/**
+* Function: TriangleBody.GetTriangleNormal
+* Description: Returns the normal vector of a triangle at the given position.
+* Parameters:
+*	triangleIndex {integer} the triangle index
+*	normalPosition {Coord} the position of the normal inside the triangle
+* Returns:
+*	{Vector} the result
+*/
+JSM.TriangleBody.prototype.GetTriangleNormal = function (triangleIndex, normalPosition)
+{
+	var normal = null;
+	var triangle = this.triangles[triangleIndex];
+	if (triangle.curve == -1) {
+		normal = this.GetNormal (triangle.n0);
+	} else {
+		var v0 = this.GetVertex (triangle.v0);
+		var v1 = this.GetVertex (triangle.v1);
+		var v2 = this.GetVertex (triangle.v2);
+		var n0 = this.GetNormal (triangle.n0);
+		var n1 = this.GetNormal (triangle.n1);
+		var n2 = this.GetNormal (triangle.n2);
+		normal = JSM.BarycentricInterpolation (v0, v1, v2, n0, n1, n2, normalPosition);
+	}
+	return normal;
+};
+
+/**
+* Function: TriangleBody.NormalCount
+* Description: Returns the normal vector count of the body.
+* Returns:
+*	{integer} the result
+*/
 JSM.TriangleBody.prototype.NormalCount = function ()
 {
 	return this.normals.length;
 };
 
+/**
+* Function: TriangleBody.AddUV
+* Description: Adds a texture coordinate to the body.
+* Parameters:
+*	x, y {number} the coordinates of the texture coordinate
+* Returns:
+*	{integer} the index of the added texture coordinate
+*/
 JSM.TriangleBody.prototype.AddUV = function (x, y)
 {
 	this.uvs.push (new JSM.Coord2D (x, y));
 	return this.uvs.length - 1;
 };
 
+/**
+* Function: TriangleBody.AddDefaultUV
+* Description:
+*	Adds a default texture coordinate to the body.
+*	The default texture coordinate is stored only once.
+* Returns:
+*	{integer} the index of the default texture coordinate
+*/
 JSM.TriangleBody.prototype.AddDefaultUV = function ()
 {
 	if (this.defaultUVIndex != -1) {
@@ -71,16 +182,42 @@ JSM.TriangleBody.prototype.AddDefaultUV = function ()
 	return this.defaultUVIndex;
 };
 
+/**
+* Function: TriangleBody.GetUV
+* Description: Returns the texture coordinate at the given index.
+* Parameters:
+*	index {integer} the texture coordinate index
+* Returns:
+*	{Coord2D} the result
+*/
 JSM.TriangleBody.prototype.GetUV = function (index)
 {
 	return this.uvs[index];
 };
 
+/**
+* Function: TriangleBody.UVCount
+* Description: Returns the texture coordinate count of the body.
+* Returns:
+*	{integer} the result
+*/
 JSM.TriangleBody.prototype.UVCount = function ()
 {
 	return this.uvs.length;
 };
 
+/**
+* Function: TriangleBody.AddTriangle
+* Description: Adds a triangle to the body.
+* Parameters:
+*	v0, v1, v2 {integer} the vertex indices of the triangle
+*	n0, n1, n2 {integer} the normal vector indices of the triangle
+*	u0, u1, u2 {integer} the texture coordinate indices of the triangle
+*	mat {integer} the material index of the triangle
+*	curve {integer} the curve group index of the triangle
+* Returns:
+*	{integer} the index of the added triangle
+*/
 JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, u0, u1, u2, mat, curve)
 {
 	this.triangles.push ({
@@ -99,16 +236,63 @@ JSM.TriangleBody.prototype.AddTriangle = function (v0, v1, v2, n0, n1, n2, u0, u
 	return this.triangles.length - 1;
 };
 
+/**
+* Function: TriangleBody.GetTriangle
+* Description: Returns the triangle at the given index.
+* Parameters:
+*	index {integer} the triangle index
+* Returns:
+*	{object} the result
+*/
 JSM.TriangleBody.prototype.GetTriangle = function (index)
 {
 	return this.triangles[index];
 };
 
+/**
+* Function: TriangleBody.TriangleCount
+* Description: Returns the triangle count of the body.
+* Returns:
+*	{integer} the result
+*/
 JSM.TriangleBody.prototype.TriangleCount = function ()
 {
 	return this.triangles.length;
 };
 
+/**
+* Function: TriangleBody.GetBoundingBox
+* Description: Returns the bounding box of the body.
+* Returns:
+*	{Box} the result
+*/
+JSM.TriangleBody.prototype.GetBoundingBox = function ()
+{
+	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
+	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
+
+	var i, coord;
+	for (i = 0; i < this.vertices.length; i++) {
+		coord = this.vertices[i];
+		min.x = JSM.Minimum (min.x, coord.x);
+		min.y = JSM.Minimum (min.y, coord.y);
+		min.z = JSM.Minimum (min.z, coord.z);
+		max.x = JSM.Maximum (max.x, coord.x);
+		max.y = JSM.Maximum (max.y, coord.y);
+		max.z = JSM.Maximum (max.z, coord.z);
+	}
+	
+	return new JSM.Box (min, max);
+};
+
+/**
+* Function: TriangleBody.Finalize
+* Description:
+*	Finalizes the body. This operation calculates normal vectors
+*	and fixes the body if some data is missing from it.
+* Parameters:
+*	model {TriangleModel} the triangle index
+*/
 JSM.TriangleBody.prototype.Finalize = function (model)
 {
 	function FinalizeTriangle (body, triangleIndex, triangleNormals, vertexToTriangles)
@@ -136,18 +320,19 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 		}
 	
 		var triangle = body.triangles[i];
-		if (triangle.mat === undefined) {
+		if (triangle.mat === undefined || triangle.mat < 0) {
 			triangle.mat = model.GetDefaultMaterialIndex ();
 		}
 		
 		var normal, normalIndex;
 		if (triangle.n0 === undefined || triangle.n1 === undefined || triangle.n2 === undefined) {
-			if (triangle.curve === undefined || triangle.curve === 0) {
+			if (triangle.curve === undefined || triangle.curve < 0) {
 				normal = triangleNormals[i];
 				normalIndex = body.AddNormal (normal.x, normal.y, normal.z);
 				triangle.n0 = normalIndex;
 				triangle.n1 = normalIndex;
 				triangle.n2 = normalIndex;
+				triangle.curve = -1;
 			} else {
 				triangle.n0 = AddAverageNormal (body, triangle.v0, triangleIndex, triangleNormals, vertexToTriangles);
 				triangle.n1 = AddAverageNormal (body, triangle.v1, triangleIndex, triangleNormals, vertexToTriangles);
@@ -185,6 +370,12 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 	}
 };
 
+/**
+* Function: TriangleBody.Clone
+* Description: Clones the body.
+* Returns:
+*	{TriangleBody} a cloned instance
+*/
 JSM.TriangleBody.prototype.Clone = function ()
 {
 	var result = new JSM.TriangleBody (this.name);
@@ -221,111 +412,4 @@ JSM.TriangleBody.prototype.Clone = function ()
 	}
 	
 	return result;
-};
-
-JSM.TriangleModel = function ()
-{
-	this.materials = [];
-	this.bodies = [];
-	this.defaultMaterial = -1;
-};
-
-JSM.TriangleModel.prototype.AddMaterial = function (material)
-{
-	if (material === undefined || material === null) {
-		material = {};
-	}
-	
-	var newMaterial = {};
-	JSM.CopyObjectProperties (material, newMaterial, true);
-	
-	this.materials.push (newMaterial);
-	return this.materials.length - 1;
-};
-
-JSM.TriangleModel.prototype.GetMaterial = function (index)
-{
-	return this.materials[index];
-};
-
-JSM.TriangleModel.prototype.AddDefaultMaterial = function ()
-{
-	if (this.defaultMaterial == -1) {
-		this.defaultMaterial = this.AddMaterial ();
-	}
-	return this.defaultMaterial;
-};
-
-JSM.TriangleModel.prototype.GetDefaultMaterialIndex = function ()
-{
-	return this.AddDefaultMaterial ();
-};
-
-JSM.TriangleModel.prototype.MaterialCount = function ()
-{
-	return this.materials.length;
-};
-
-JSM.TriangleModel.prototype.AddBody = function (body)
-{
-	this.bodies.push (body);
-	return this.bodies.length - 1;
-};
-
-JSM.TriangleModel.prototype.AddBodyToIndex = function (body, index)
-{
-	this.bodies.splice (index, 0, body);
-	return index;
-};
-
-JSM.TriangleModel.prototype.GetBody = function (index)
-{
-	return this.bodies[index];
-};
-
-JSM.TriangleModel.prototype.BodyCount = function ()
-{
-	return this.bodies.length;
-};
-
-JSM.TriangleModel.prototype.GetBody = function (index)
-{
-	return this.bodies[index];
-};
-
-JSM.TriangleModel.prototype.FinalizeMaterials = function ()
-{
-	var defaultMaterialData = {
-		name : 'Default',
-		ambient : [0.5, 0.5, 0.5],
-		diffuse : [0.5, 0.5, 0.5],
-		specular : [0.1, 0.1, 0.1],
-		shininess : 0.0,
-		opacity : 1.0,
-		texture : null,
-		offset : null,
-		scale : null,
-		rotation : null
-	};
-	
-	var i, material;
-	for (i = 0; i < this.materials.length; i++) {
-		material = this.materials[i];
-		JSM.CopyObjectProperties (defaultMaterialData, material, false);
-	}
-};
-
-JSM.TriangleModel.prototype.FinalizeBodies = function ()
-{
-	var i, body;
-	for (i = 0; i < this.bodies.length; i++) {
-		body = this.bodies[i];
-		body.Finalize (this);
-	}
-};
-
-JSM.TriangleModel.prototype.Finalize = function ()
-{
-	this.FinalizeBodies ();
-	this.FinalizeMaterials ();
 };

@@ -14,6 +14,7 @@ JSM.Material = function (parameters)
 		specular : 0x000000,
 		shininess : 0.0,
 		opacity : 1.0,
+		reflection : 0.0,
 		texture : null,
 		textureWidth : 1.0,
 		textureHeight : 1.0

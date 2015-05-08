@@ -773,7 +773,7 @@ JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)
 				}
 				
 				smoothingGroup = currentMeshData.faceToSmoothingGroup[i];
-				if (smoothingGroup !== undefined) {
+				if (smoothingGroup !== undefined && smoothingGroup > 0) {
 					triangle.curve = smoothingGroup;
 				}
 			}

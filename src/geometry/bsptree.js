@@ -19,7 +19,7 @@ JSM.BSPTree = function ()
 JSM.BSPTree.prototype.AddPolygon = function (polygon, userData)
 {
 	if (this.root === null) {
-		this.root = this.GetNewNode ();
+		this.root = this.CreateNewNode ();
 	}
 	
 	return this.AddPolygonToNode (this.root, polygon, userData);
@@ -40,7 +40,7 @@ JSM.BSPTree.prototype.Traverse = function (nodeFound)
 * Function: BSPTree.TraverseNode
 * Description: Traverses a node and its children and calls a function on node found.
 * Parameters:
-*	node {BSPNode} the node
+*	node {object} the node
 *	nodeFound {function} the callback function
 */
 JSM.BSPTree.prototype.TraverseNode = function (node, nodeFound)
@@ -56,7 +56,7 @@ JSM.BSPTree.prototype.TraverseNode = function (node, nodeFound)
 * Function: BSPTree.GetNodes
 * Description: Returns the nodes as an array.
 * Returns:
-*	{BSPNode[*]} the result
+*	{object[*]} the result
 */
 JSM.BSPTree.prototype.GetNodes = function ()
 {
@@ -82,6 +82,16 @@ JSM.BSPTree.prototype.NodeCount = function ()
 	return count;
 };
 
+/**
+* Function: BSPTree.AddPolygonToNode
+* Description: Adds a polygon to a node.
+* Parameters:
+*	node {object} the node
+*	polygon {Polygon} the polygon
+*	userData {anything} user data for polygon
+* Returns:
+*	{boolean} success
+*/
 JSM.BSPTree.prototype.AddPolygonToNode = function (node, polygon, userData)
 {
 	if (polygon.VertexCount () < 3) {
@@ -123,10 +133,18 @@ JSM.BSPTree.prototype.AddPolygonToNode = function (node, polygon, userData)
 	return true;
 };
 
+/**
+* Function: BSPTree.AddInsidePolygonsToNode
+* Description: Adds inside polygons to a node.
+* Parameters:
+*	node {object} the node
+*	polygon {Polygon[*]} the polygons
+*	userData {anything} user data for polygons
+*/
 JSM.BSPTree.prototype.AddInsidePolygonsToNode = function (node, polygons, userData)
 {
 	if (node.inside === null) {
-		node.inside = this.GetNewNode ();
+		node.inside = this.CreateNewNode ();
 		node.inside.parent = node;
 	}
 	var i;
@@ -135,10 +153,18 @@ JSM.BSPTree.prototype.AddInsidePolygonsToNode = function (node, polygons, userDa
 	}
 };
 
+/**
+* Function: BSPTree.AddOutsidePolygonsToNode
+* Description: Adds outside polygons to a node.
+* Parameters:
+*	node {object} the node
+*	polygon {Polygon[*]} the polygons
+*	userData {anything} user data for polygons
+*/
 JSM.BSPTree.prototype.AddOutsidePolygonsToNode = function (node, polygons, userData)
 {
 	if (node.outside === null) {
-		node.outside = this.GetNewNode ();
+		node.outside = this.CreateNewNode ();
 		node.outside.parent = node;
 	}
 	var i;
@@ -147,7 +173,13 @@ JSM.BSPTree.prototype.AddOutsidePolygonsToNode = function (node, polygons, userD
 	}
 };
 
-JSM.BSPTree.prototype.GetNewNode = function ()
+/**
+* Function: BSPTree.CreateNewNode
+* Description: Creates a new node.
+* Returns:
+*	{object} the result
+*/
+JSM.BSPTree.prototype.CreateNewNode = function ()
 {
 	var node = {
 		polygon : null,

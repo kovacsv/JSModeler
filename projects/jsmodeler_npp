@@ -10,12 +10,12 @@
 			</Folder>
 			<Folder name="extras">
 				<File name="..\src\extras\csg.js" />
+				<File name="..\src\extras\curves.js" />
 				<File name="..\src\extras\drawing.js" />
 				<File name="..\src\extras\extgenerator.js" />
 				<File name="..\src\extras\painter.js" />
 				<File name="..\src\extras\solidgenerator.js" />
 				<File name="..\src\extras\subdivision.js" />
-				<File name="..\src\extras\surfaces.js" />
 				<File name="..\src\extras\svgtomodel.js" />
 			</Folder>
 			<Folder name="geometry">
@@ -37,6 +37,7 @@
 				<File name="..\src\geometry\polygon.js" />
 				<File name="..\src\geometry\polygonutils.js" />
 				<File name="..\src\geometry\projection.js" />
+				<File name="..\src\geometry\ray.js" />
 				<File name="..\src\geometry\sector.js" />
 				<File name="..\src\geometry\sectorutils.js" />
 				<File name="..\src\geometry\transformation.js" />
@@ -50,7 +51,6 @@
 				<File name="..\src\import\importercommon.js" />
 				<File name="..\src\import\importerobj.js" />
 				<File name="..\src\import\importerstl.js" />
-				<File name="..\src\import\trianglemodel.js" />
 			</Folder>
 			<Folder name="modeler">
 				<File name="..\src\modeler\adjacencylist.js" />
@@ -58,6 +58,7 @@
 				<File name="..\src\modeler\bodyutils.js" />
 				<File name="..\src\modeler\camera.js" />
 				<File name="..\src\modeler\color.js" />
+				<File name="..\src\modeler\converter.js" />
 				<File name="..\src\modeler\cututils.js" />
 				<File name="..\src\modeler\explode.js" />
 				<File name="..\src\modeler\exporter.js" />
@@ -65,12 +66,15 @@
 				<File name="..\src\modeler\light.js" />
 				<File name="..\src\modeler\material.js" />
 				<File name="..\src\modeler\model.js" />
+				<File name="..\src\modeler\rayutils.js" />
 				<File name="..\src\modeler\textureutils.js" />
+				<File name="..\src\modeler\trianglebody.js" />
+				<File name="..\src\modeler\trianglemodel.js" />
 			</Folder>
 			<Folder name="renderer">
-				<File name="..\src\renderer\converter.js" />
 				<File name="..\src\renderer\pointcloudrenderer.js" />
 				<File name="..\src\renderer\renderer.js" />
+				<File name="..\src\renderer\rendererconverter.js" />
 			</Folder>
 			<Folder name="three">
 				<File name="..\src\three\threeconverter.js" />

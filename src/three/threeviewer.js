@@ -293,17 +293,15 @@ JSM.ThreeViewer.prototype.FitInWindow = function ()
 		return;
 	}
 	
-	var center = this.GetCenter ();
-	var radius = this.GetBoundingSphereRadius (center);
-	this.navigation.FitInWindow (center, radius);
+	var sphere = this.GetBoundingSphere ();
+	this.navigation.FitInWindow (sphere.GetCenter (), sphere.GetRadius ());
 	this.DrawIfNeeded ();
 };
 
 JSM.ThreeViewer.prototype.AdjustClippingPlanes = function (radiusLimit)
 {
-	var center = this.GetCenter ();
-	var radius = this.GetBoundingSphereRadius (center);
-	if (radius < radiusLimit) {
+	var sphere = this.GetBoundingSphere ();
+	if (sphere.GetRadius () < radiusLimit) {
 		this.camera.near = 0.1;
 		this.camera.far = 1000.0;
 	} else {
@@ -346,11 +344,9 @@ JSM.ThreeViewer.prototype.GetBoundingBox = function ()
 	return new JSM.Box (min, max);
 };
 
-JSM.ThreeViewer.prototype.GetBoundingSphereRadius = function (center)
+JSM.ThreeViewer.prototype.GetBoundingSphere = function ()
 {
-	if (center === undefined || center === null) {
-		center = this.GetCenter ();
-	}
+	var center = this.GetCenter ();
 	var radius = 0.0;
 
 	var geometry, coord, distance;
@@ -369,7 +365,8 @@ JSM.ThreeViewer.prototype.GetBoundingSphereRadius = function (center)
 		}
 	});
 
-	return radius;
+	var sphere = new JSM.Sphere (center, radius);
+	return sphere;
 };
 
 JSM.ThreeViewer.prototype.GetObjectsUnderPosition = function (x, y)

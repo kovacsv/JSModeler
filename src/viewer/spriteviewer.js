@@ -112,9 +112,8 @@ JSM.SpriteViewer.prototype.NearestPointUnderTouch = function (maxDistance)
 
 JSM.SpriteViewer.prototype.FitInWindow = function ()
 {
-	var center = this.GetCenter ();
-	var radius = this.GetBoundingSphereRadius (center);
-	this.navigation.FitInWindow (center, radius);
+	var sphere = this.GetBoundingSphere ();
+	this.navigation.FitInWindow (sphere.GetCenter (), sphere.GetRadius ());
 	this.Draw ();
 };
 
@@ -143,11 +142,9 @@ JSM.SpriteViewer.prototype.GetBoundingBox = function ()
 	return new JSM.Box (min, max);
 };
 
-JSM.SpriteViewer.prototype.GetBoundingSphereRadius = function (center)
+JSM.SpriteViewer.prototype.GetBoundingSphere = function ()
 {
-	if (center === undefined || center === null) {
-		center = this.GetCenter ();
-	}
+	var center = this.GetCenter ();
 	var radius = 0.0;
 
 	var i, coord, distance;
@@ -159,7 +156,8 @@ JSM.SpriteViewer.prototype.GetBoundingSphereRadius = function (center)
 		}
 	}
 
-	return radius;
+	var sphere = new JSM.Sphere (center, radius);
+	return sphere;
 };
 
 JSM.SpriteViewer.prototype.Draw = function ()
