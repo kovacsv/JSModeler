@@ -222,6 +222,26 @@ importSuite.AddTest ('ConvertObjToJsonDataTest', function (test)
 	};
 	test.Assert (JSON.stringify (jsonData) == JSON.stringify (refJsonData));
 	
+	var jsonData = JSM.ConvertObjToJsonData (GetStringBufferFromFile ('../testfiles/invalidindices.obj'));
+	var refJsonData = {
+		"version":1,
+		"materials":[
+			{"name":"Default","ambient":[0.5,0.5,0.5],"diffuse":[0.5,0.5,0.5],"specular":[0.1,0.1,0.1],"shininess":0,"opacity":1}
+		],
+		"meshes":[
+			{
+				"name":"Mesh1 Model",
+				"vertices":[-1.94623,0,0.600186,-1.94623,0,-0.979814,1.51377,0,-0.979814,1.51377,0,0.600186,-1.94623,0.69,0.600186,-1.94623,0.69,-0.979814,1.51377,0.69,0.600186,1.51377,0.69,-0.979814],
+				"normals":[0,-1,0,0,-1,0,-1,0,0,-1,0,0,0,0,1,0,0,1,1,0,0,1,0,0,0,0,-1,0,0,-1,0,1,0,0,1,0],
+				"uvs":[0,0],
+				"triangles":[
+					{"material":0,"parameters":[0,1,2,0,0,0,0,0,0,0,2,3,1,1,1,0,0,0,1,0,4,2,2,2,0,0,0,1,4,5,3,3,3,0,0,0,0,3,6,4,4,4,0,0,0,0,6,4,5,5,5,0,0,0,3,2,7,6,6,6,0,0,0,3,7,6,7,7,7,0,0,0,2,1,5,8,8,8,0,0,0,2,5,7,9,9,9,0,0,0,5,4,6,10,10,10,0,0,0,5,6,7,11,11,11,0,0,0]}
+				]
+			}
+		]
+	};
+	test.Assert (JSON.stringify (jsonData) == JSON.stringify (refJsonData));
+
 	var jsonData = JSM.ConvertObjToJsonData (GetStringBufferFromFile ('../testfiles/cubeobj.obj'), {
 		onFileRequested : function (fileName) {
 			test.Assert (fileName == 'cubeobj.mtl');
