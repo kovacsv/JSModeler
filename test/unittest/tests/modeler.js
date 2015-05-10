@@ -1991,8 +1991,23 @@ raySuite.AddTest ('RayTriangleModelIntersectionTest2', function (test)
 	var box = body.GetBoundingBox ();
 	test.Assert (JSM.CoordIsEqual (box.min, new JSM.Coord (-0.5, -0.5, -0.5)));
 	test.Assert (JSM.CoordIsEqual (box.max, new JSM.Coord (0.5, 0.5, 0.5)));
+	var center = body.GetCenter ();
+	test.Assert (JSM.CoordIsEqual (center, new JSM.Coord (0.0, 0.0, 0.0)));
+	var sphere = body.GetBoundingSphere ();
+	test.Assert (JSM.CoordIsEqual (sphere.center, new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (JSM.IsEqual (sphere.radius, JSM.CoordDistance (sphere.center, box.max)));
 
 	var triangleModel = JSM.ConvertModelToTriangleModel (model);
+	var triangleBody = triangleModel.GetBody (0);
+	var box = triangleBody.GetBoundingBox ();
+	test.Assert (JSM.CoordIsEqual (box.min, new JSM.Coord (-0.5, -0.5, -0.5)));
+	test.Assert (JSM.CoordIsEqual (box.max, new JSM.Coord (0.5, 0.5, 0.5)));
+	var center = triangleBody.GetCenter ();
+	test.Assert (JSM.CoordIsEqual (center, new JSM.Coord (0.0, 0.0, 0.0)));
+	var sphere = triangleBody.GetBoundingSphere ();
+	test.Assert (JSM.CoordIsEqual (sphere.center, new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (JSM.IsEqual (sphere.radius, JSM.CoordDistance (sphere.center, box.max)));	
+	
 	var ray = new JSM.Ray (new JSM.Coord (2, 0, 0), JSM.CoordSub (new JSM.Coord (0, 0, 0), new JSM.Coord (2, 0, 0.1)), 10.0);
 	var intersection = {};
 	test.Assert (JSM.RayTriangleModelIntersection (ray, triangleModel, intersection));

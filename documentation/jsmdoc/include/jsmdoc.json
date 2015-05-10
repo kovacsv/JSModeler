@@ -3883,6 +3883,18 @@
 								["Box", "the result"]
 							]
 						},
+						"GetCenter" : {
+							"description" : "Returns the center of the bounding box of the body.",
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"GetBoundingSphere" : {
+							"description" : "Returns the bounding sphere of the body.",
+							"returns" : [
+								["Sphere", "the result"]
+							]
+						},
 						"Finalize" : {
 							"description" : "Finalizes the body. This operation calculates normal vectors and fixes the body if some data is missing from it.",
 							"parameters" : [
