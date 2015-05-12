@@ -237,6 +237,7 @@ JSM.ThreeViewer.prototype.GetMesh = function (index)
 
 JSM.ThreeViewer.prototype.RemoveMesh = function (mesh)
 {
+	mesh.geometry.dispose ();
 	this.scene.remove (mesh);
 	this.DrawIfNeeded ();
 };
@@ -248,6 +249,7 @@ JSM.ThreeViewer.prototype.RemoveMeshes = function ()
 	for (i = 0; i < this.scene.children.length; i++) {
 		current = this.scene.children[i];
 		if (current instanceof THREE.Mesh) {
+			current.geometry.dispose ();
 			this.scene.remove (current);
 			i--;
 		}
