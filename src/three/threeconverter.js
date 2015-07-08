@@ -33,7 +33,7 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		var specular = material.specular;
 		var shininess = material.shininess;
 		if (shininess === 0.0) {
-			specular = 0;
+			specular = 0x000000;
 			shininess = 1;
 		}
 
