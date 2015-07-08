@@ -28,11 +28,20 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		var hasTexture = (material.texture !== null);
 		var hasOpacity = (material.opacity !== 1.0);
 
+		var ambient = material.ambient;
+		var diffuse = material.diffuse;
+		var specular = material.specular;
+		var shininess = material.shininess;
+		if (shininess === 0.0) {
+			specular = 0;
+			shininess = 1;
+		}
+
 		var threeMaterial = new THREE.MeshPhongMaterial ({
-			ambient : material.ambient,
-			color : material.diffuse,
-			specular : material.specular,
-			shininess : material.shininess
+			ambient : ambient,
+			color : diffuse,
+			specular : specular,
+			shininess : shininess
 		});
 		
 		if (theConversionData.doubleSided) {
@@ -181,6 +190,11 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, en
 				if (textureRotation === undefined || textureRotation === null) {
 					textureRotation = 0.0;
 				}
+			}
+
+			if (shininess === 0.0) {
+				specularColor.setRGB (0.0, 0.0, 0.0);
+				shininess = 1;
 			}
 			
 			var material = new THREE.MeshPhongMaterial ({
