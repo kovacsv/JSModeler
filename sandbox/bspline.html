@@ -13,6 +13,7 @@
 	<script type="text/javascript" src="../src/core/algorithm.js"></script>
 	<script type="text/javascript" src="../src/core/async.js"></script>
 	<script type="text/javascript" src="../src/core/check.js"></script>
+	<script type="text/javascript" src="../src/geometry/coord2d.js"></script>
 	<script type="text/javascript" src="../src/geometry/coord.js"></script>
 	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
 	<script type="text/javascript" src="../src/geometry/coordutils2d.js"></script>
@@ -103,7 +104,7 @@
 			var fullDistance = 0.0;
 			var i, distance;
 			for (i = 0; i < this.dataPoints.length - 1; i++) {
-				distance = JSM.CoordDistance2D (this.dataPoints[i], this.dataPoints[i + 1]);
+				distance = this.dataPoints[i].DistanceTo (this.dataPoints[i + 1]);
 				distances.push (distance);
 				fullDistance += distance;
 			}

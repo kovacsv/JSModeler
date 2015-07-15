@@ -32,7 +32,7 @@ JSM.Sector2D.prototype.Set = function (beg, end)
 */
 JSM.Sector2D.prototype.GetLength = function ()
 {
-	return JSM.CoordDistance2D (this.beg, this.end);
+	return this.beg.DistanceTo (this.end);
 };
 
 /**

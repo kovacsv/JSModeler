@@ -90,7 +90,7 @@ JSM.SpriteViewer.prototype.NearestPointUnderPosition = function (maxDistance, x,
 	var i, projected, distance;
 	for (i = 0; i < this.projected.length; i++) {
 		projected = this.projected[i];
-		distance = JSM.CoordDistance2D (new JSM.Coord2D (projected.position.x, projected.position.y), position);
+		distance = position.DistanceTo (new JSM.Coord2D (projected.position.x, projected.position.y));
 		if (JSM.IsLower (distance, maxDistance) && JSM.IsLower (distance, minDistance)) {
 			minIndex = projected.originalIndex;
 			minDistance = distance;

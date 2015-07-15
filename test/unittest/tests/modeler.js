@@ -1451,20 +1451,20 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	var textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
 	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.0, 0.2), new JSM.Coord (0.0, 0.0, 1.0), new JSM.Coord (0.0, -1.0, 0.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (-0.2, -0.2)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (-0.2, 0.8)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (0.8, 0.8)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0.8, -0.2)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (-0.2, -0.2)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (-0.2, 0.8)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (0.8, 0.8)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0.8, -0.2)));
 
 	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
 
@@ -1478,15 +1478,15 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0].length == 4);
 	test.Assert (textureCoords[1].length == 4);
 
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][1], new JSM.Coord2D (0, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][2], new JSM.Coord2D (0, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][3], new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[1][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[1][1].IsEqual (new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[1][2].IsEqual (new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[1][3].IsEqual (new JSM.Coord2D (0, 0)));
 
 	var body = new JSM.Body ();
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 0.0, 0.0)));
@@ -1502,10 +1502,10 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
 	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (10.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -20.0));
 
@@ -1513,10 +1513,10 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
 	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));
 
@@ -1524,10 +1524,10 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (-0.2, -0.2)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (0.8, -0.2)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (0.8, 0.8)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (-0.2, 0.8)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (-0.2, -0.2)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (0.8, -0.2)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (0.8, 0.8)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (-0.2, 0.8)));
 
 	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.3, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));	
 
@@ -1535,10 +1535,10 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (-0.2, -0.3)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (0.8, -0.3)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (0.8, 0.7)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (-0.2, 0.7)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (-0.2, -0.3)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (0.8, -0.3)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (0.8, 0.7)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (-0.2, 0.7)));
 });
 
 textureSuite.AddTest ('BodyCubicTextureCoordTest', function (test)
@@ -1566,20 +1566,20 @@ textureSuite.AddTest ('BodyCubicTextureCoordTest', function (test)
 	test.Assert (textureCoords[1].length == 4);
 	test.Assert (textureCoords[2].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][1], new JSM.Coord2D (0, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][3], new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[1][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[1][1].IsEqual (new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[1][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[1][3].IsEqual (new JSM.Coord2D (1, 0)));
 
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[2][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[2][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[2][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[2][3].IsEqual (new JSM.Coord2D (0, 1)));
 
 	body.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (10.0, 0.0, 0.0), new JSM.Coord (0.0, 12.0, 0.0), new JSM.Coord (0.0, 0.0, 30.0));	
 	
@@ -1589,20 +1589,20 @@ textureSuite.AddTest ('BodyCubicTextureCoordTest', function (test)
 	test.Assert (textureCoords[1].length == 4);
 	test.Assert (textureCoords[2].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][1], new JSM.Coord2D (0, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][3], new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[1][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[1][1].IsEqual (new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[1][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[1][3].IsEqual (new JSM.Coord2D (1, 0)));
 
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[2][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[2][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[2][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[2][3].IsEqual (new JSM.Coord2D (0, 1)));
 });
 
 textureSuite.AddTest ('BodyCylindricalTextureCoordTest', function (test)
@@ -1621,17 +1621,17 @@ textureSuite.AddTest ('BodyCylindricalTextureCoordTest', function (test)
 	test.Assert (textureCoords[5].length == 4);
 	
 	var radius = 2.0 * Math.PI;
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (radius, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (radius * 5.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (radius * 5.0 / 6.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (radius, 0.0)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (radius, 1.0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (radius * 5.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (radius * 5.0 / 6.0, 0.0)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (radius, 0.0)));
 
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (radius * 6.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][0], new JSM.Coord2D (radius * 5.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][0], new JSM.Coord2D (radius * 4.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[3][0], new JSM.Coord2D (radius * 3.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[4][0], new JSM.Coord2D (radius * 2.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[5][0], new JSM.Coord2D (radius * 1.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (radius * 6.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[1][0].IsEqual (new JSM.Coord2D (radius * 5.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[2][0].IsEqual (new JSM.Coord2D (radius * 4.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[3][0].IsEqual (new JSM.Coord2D (radius * 3.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[4][0].IsEqual (new JSM.Coord2D (radius * 2.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[5][0].IsEqual (new JSM.Coord2D (radius * 1.0 / 6.0, 1.0)));
 });
 
 var utilsSuite = unitTest.AddTestSuite ('ModelerUtils');

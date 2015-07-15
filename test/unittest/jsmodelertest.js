@@ -7,6 +7,7 @@ unitTest.AddSourceFile ('../../src/core/timer.js');
 unitTest.AddSourceFile ('../../src/core/algorithm.js');
 unitTest.AddSourceFile ('../../src/core/async.js');
 unitTest.AddSourceFile ('../../src/core/check.js');
+unitTest.AddSourceFile ('../../src/geometry/coord2d.js');
 unitTest.AddSourceFile ('../../src/geometry/coord.js');
 unitTest.AddSourceFile ('../../src/geometry/determinant.js');
 unitTest.AddSourceFile ('../../src/geometry/coordutils2d.js');

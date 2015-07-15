@@ -25,35 +25,6 @@ JSM.CoordToArray2D = function (coord)
 };
 
 /**
-* Function: CoordIsEqual2D
-* Description: Determines if the given coordinates are equal.
-* Parameters:
-*	a {Coord2D} the first coordinate
-*	b {Coord2D} the second coordinate
-* Returns:
-*	{boolean} the result
-*/
-JSM.CoordIsEqual2D = function (a, b)
-{
-	return JSM.IsEqual (a.x, b.x) && JSM.IsEqual (a.y, b.y);
-};
-
-/**
-* Function: CoordIsEqual2DWithEps
-* Description: Determines if the given coordinates are equal. Uses the given epsilon for comparison.
-* Parameters:
-*	a {Coord2D} the first coordinate
-*	b {Coord2D} the second coordinate
-*	eps {number} the epsilon value
-* Returns:
-*	{boolean} the result
-*/
-JSM.CoordIsEqual2DWithEps = function (a, b, eps)
-{
-	return JSM.IsEqualWithEps (a.x, b.x, eps) && JSM.IsEqualWithEps (a.y, b.y, eps);
-};
-
-/**
 * Function: CoordAdd2D
 * Description: Adds two coordinates.
 * Parameters:
@@ -82,25 +53,6 @@ JSM.CoordSub2D = function (a, b)
 };
 
 /**
-* Function: CoordDistance2D
-* Description: Calculates the distance of two coordinates.
-* Parameters:
-*	a {Coord2D} the first coordinate
-*	b {Coord2D} the second coordinate
-* Returns:
-*	{number} the result
-*/
-JSM.CoordDistance2D = function (a, b)
-{
-	var x1 = a.x;
-	var y1 = a.y;
-	var x2 = b.x;
-	var y2 = b.y;
-
-	return Math.sqrt ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-};
-
-/**
 * Function: MidCoord2D
 * Description: Calculates the coordinate in the middle of two coordinates.
 * Parameters:
@@ -115,73 +67,6 @@ JSM.MidCoord2D = function (a, b)
 };
 
 /**
-* Function: VectorMultiply2D
-* Description: Multiplies a vector with a scalar.
-* Parameters:
-*	vector {Vector2D} the vector
-*	scalar {number} the scalar
-* Returns:
-*	{Vector2D} the result
-*/
-JSM.VectorMultiply2D = function (vector, scalar)
-{
-	var result = new JSM.Vector2D (0.0, 0.0, 0.0);
-	result.x = vector.x * scalar;
-	result.y = vector.y * scalar;
-	return result;
-};
-
-/**
-* Function: VectorLength2D
-* Description: Calculates length of a vector.
-* Parameters:
-*	vector {Vector2D} the vector
-* Returns:
-*	{number} the result
-*/
-JSM.VectorLength2D = function (vector)
-{
-	var x = vector.x;
-	var y = vector.y;
-
-	return Math.sqrt (x * x + y * y);
-};
-
-/**
-* Function: VectorNormalize2D
-* Description: Normalize a vector.
-* Parameters:
-*	vector {Vector2D} the vector
-* Returns:
-*	{Vector2D} the result
-*/
-JSM.VectorNormalize2D = function (vector)
-{
-	var length = JSM.VectorLength2D (vector);
-	var result = new JSM.Vector2D (0.0, 0.0);
-	if (JSM.IsGreater (length, 0.0)) {
-		result = JSM.VectorMultiply2D (vector, 1.0 / length);
-	}
-	return result;
-};
-
-/**
-* Function: VectorSetLength2D
-* Description: Sets the length of a vector.
-* Parameters:
-*	vector {Vector2D} the vector
-*	length {number} the length
-* Returns:
-*	{Vector2D} the result
-*/
-JSM.VectorSetLength2D = function (vector, length)
-{
-	var ratio = length / JSM.VectorLength2D (vector);
-	var result = JSM.VectorMultiply2D (vector, ratio);
-	return result;
-};
-
-/**
 * Function: CoordOffset2D
 * Description: Offsets a coordinate.
 * Parameters:
@@ -193,7 +78,7 @@ JSM.VectorSetLength2D = function (vector, length)
 */
 JSM.CoordOffset2D = function (coord, direction, distance)
 {
-	var normal = JSM.VectorNormalize2D (direction);
+	var normal = direction.Clone ().Normalize ();
 	var result = new JSM.Coord2D (0.0, 0.0);
 	result.x = coord.x + normal.x * distance;
 	result.y = coord.y + normal.y * distance;

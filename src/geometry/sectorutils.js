@@ -18,7 +18,7 @@ JSM.CoordSectorPosition2D = function (coord, sector)
 
 	var length = sector.GetLength ();
 	if (JSM.IsZero (length)) {
-		if (JSM.CoordIsEqual2D (coord, sector.beg)) {
+		if (coord.IsEqual (sector.beg)) {
 			return 'CoordOnSectorEndCoord';
 		}
 
@@ -76,8 +76,8 @@ JSM.ProjectCoordToSector2D = function (coord, sector)
 		return end;
 	}
 	
-	var dir = JSM.CoordSub2D (end, beg);
-	var result = JSM.CoordAdd2D (beg, JSM.VectorMultiply2D (dir, u));
+	var dir = JSM.CoordSub2D (end, beg).MultiplyScalar (u);
+	var result = JSM.CoordAdd2D (beg, dir);
 	return result;
 };
 

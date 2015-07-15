@@ -208,11 +208,11 @@ JSM.CoordPolygonPosition2D = function (coord, polygon)
 		if (ssp === 'SectorsIntersectsOnePoint') {
 			intersections++;
 		} else if (ssp === 'SectorsIntersectsEndPoint') {
-			if (JSM.CoordIsEqual2D (intersection, sector.beg)) {
+			if (intersection.IsEqual (sector.beg)) {
 				if (JSM.IsGreater (sector.beg.y, sector.end.y)) {
 					intersections++;
 				}
-			} else if (JSM.CoordIsEqual2D (intersection, sector.end)) {
+			} else if (intersection.IsEqual (sector.end)) {
 				if (JSM.IsLower (sector.beg.y, sector.end.y)) {
 					intersections++;
 				}

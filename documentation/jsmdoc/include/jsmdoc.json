@@ -325,27 +325,6 @@
 						["array", "number[2]"]
 					]
 				},
-				"CoordIsEqual2D" : {
-					"description" : "Determines if the given coordinates are equal.",
-					"parameters" : [
-						["a", "Coord2D", "the first coordinate"],
-						["b", "Coord2D", "the second coordinate"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CoordIsEqual2DWithEps" : {
-					"description" : "Determines if the given coordinates are equal. Uses the given epsilon for comparison.",
-					"parameters" : [
-						["a", "Coord2D", "the first coordinate"],
-						["b", "Coord2D", "the second coordinate"],
-						["eps", "number", "the epsilon value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
 				"CoordAdd2D" : {
 					"description" : "Adds two coordinates.",
 					"parameters" : [
@@ -366,16 +345,6 @@
 						["Coord2D", "the result"]
 					]
 				},
-				"CoordDistance2D" : {
-					"description" : "Calculates the distance of two coordinates.",
-					"parameters" : [
-						["a", "Coord2D", "the first coordinate"],
-						["b", "Coord2D", "the second coordinate"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
 				"MidCoord2D" : {
 					"description" : "Calculates the coordinate in the middle of two coordinates.",
 					"parameters" : [
@@ -384,44 +353,6 @@
 					],
 					"returns" : [
 						["Coord2D", "the result"]
-					]
-				},
-				"VectorMultiply2D" : {
-					"description" : "Multiplies a vector with a scalar.",
-					"parameters" : [
-						["vector", "Vector2D", "the vector"],
-						["scalar", "number", "the scalar"]
-					],
-					"returns" : [
-						["Vector2D", "the result"]
-					]
-				},
-				"VectorLength2D" : {
-					"description" : "Calculates length of a vector.",
-					"parameters" : [
-						["vector", "Vector2D", "the vector"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"VectorNormalize2D" : {
-					"description" : "Normalize a vector.",
-					"parameters" : [
-						["vector", "Vector2D", "the vector"]
-					],
-					"returns" : [
-						["Vector2D", "the result"]
-					]
-				},
-				"VectorSetLength2D" : {
-					"description" : "Sets the length of a vector.",
-					"parameters" : [
-						["vector", "Vector2D", "the vector"],
-						["length", "number", "the length"]
-					],
-					"returns" : [
-						["Vector2D", "the result"]
 					]
 				},
 				"CoordOffset2D" : {
@@ -1621,6 +1552,64 @@
 								["y", "number", "the second component"]
 							]
 						},
+						"IsEqual" : {
+							"description" : "Returns if the coordinate is equal with the given one.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"IsEqualWithEps" : {
+							"description" : "Returns if the coordinate is equal with the given one. Uses the given epsilon for comparison.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"],
+								["eps", "number", "the epsilon"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"DistanceTo" : {
+							"description" : "Calculates the coordinate distance to the given one.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"Length" : {
+							"description" : "Calculates the length of the coordinate vector.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"MultiplyScalar" : {
+							"description" : "Multiplies the vector with a scalar.",
+							"parameters" : [
+								["scalar", "number", "the scalar"]
+							],
+							"returns" : [
+								["Coord2D", "this pointer"]
+							]
+						},
+						"Normalize" : {
+							"description" : "Normalizes the coordinate vector.",
+							"returns" : [
+								["Coord2D", "this pointer"]
+							]
+						},
+						"SetLength" : {
+							"description" : "Sets the length of the coordinate vector.",
+							"parameters" : [
+								["length", "number", "the length"]
+							],
+							"returns" : [
+								["Coord2D", "this pointer"]
+							]
+						},
 						"ToString" : {
 							"description" : "Converts the coordinate values to string.",
 							"returns" : [
@@ -1634,6 +1623,9 @@
 							]
 						}
 					}
+				},
+				"Vector2D" : {
+					"description" : "Same as Coord2D."
 				},
 				"PolarCoord" : {
 					"description" : "Represents a 2D polar coordinate.",
@@ -1693,6 +1685,9 @@
 						}
 					}
 				},
+				"Vector" : {
+					"description" : "Same as Coord."
+				},
 				"SphericalCoord" : {
 					"description" : "Represents a 3D spherical coordinate.",
 					"parameters" : [
@@ -1722,12 +1717,6 @@
 							]
 						}
 					}
-				},
-				"Vector2D" : {
-					"description" : "Same as Coord2D."
-				},
-				"Vector" : {
-					"description" : "Same as Coord."
 				},
 				"CoordSystem" : {
 					"description" : "Represents coordinate system.",

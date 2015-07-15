@@ -28,7 +28,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			
 			var contourVertexCount = result.VertexCount (contour);
 			if (contourVertexCount > 0) {
-				if (JSM.CoordIsEqual2DWithEps (result.GetVertex (contour, contourVertexCount - 1), transformedCoord, 0.1)) {
+				if (result.GetVertex (contour, contourVertexCount - 1).IsEqualWithEps (transformedCoord, 0.1)) {
 					return resultCoord;
 				}
 			}
@@ -128,7 +128,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			
 			var firstCoord = polygon.GetVertex (contour, 0);
 			var lastCoord = polygon.GetVertex (contour, vertexCount - 1);
-			if (JSM.CoordIsEqual2DWithEps (firstCoord, lastCoord, 0.1)) {
+			if (firstCoord.IsEqualWithEps (lastCoord, 0.1)) {
 				polygon.GetContour (contour).vertices.pop ();
 			}
 		}
