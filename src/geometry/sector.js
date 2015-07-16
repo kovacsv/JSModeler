@@ -81,7 +81,7 @@ JSM.Sector.prototype.Set = function (beg, end)
 */
 JSM.Sector.prototype.GetLength = function ()
 {
-	return JSM.CoordDistance (this.beg, this.end);
+	return this.beg.DistanceTo (this.end);
 };
 
 /**

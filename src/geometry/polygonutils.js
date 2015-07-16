@@ -64,18 +64,18 @@ JSM.PolygonArea2D = function (polygon)
 * Parameters:
 *	polygon {Polygon2D} the polygon
 * Returns:
-*	{string} 'CounterClockwise', 'Clockwise', or 'Invalid'
+*	{Orientation} the result
 */
 JSM.PolygonOrientation2D = function (polygon)
 {
 	var signedArea = JSM.PolygonSignedArea2D (polygon);
 	if (JSM.IsPositive (signedArea)) {
-		return 'CounterClockwise';
+		return JSM.Orientation.CounterClockwise;
 	} else if (JSM.IsNegative (signedArea)) {
-		return 'Clockwise';
+		return JSM.Orientation.Clockwise;
 	}
 	
-	return 'Invalid';
+	return JSM.Orientation.Invalid;
 };
 
 /**
@@ -107,7 +107,7 @@ JSM.ChangePolygonOrientation2D = function (polygon)
 JSM.CreateCCWPolygonFromVertices = function (vertices)
 {
 	var polygon = JSM.CreatePolygonFromVertices (vertices);
-	if (JSM.PolygonOrientation2D (polygon) != 'CounterClockwise') {
+	if (JSM.PolygonOrientation2D (polygon) != JSM.Orientation.CounterClockwise) {
 		JSM.ChangePolygonOrientation2D (polygon);
 	}
 	return polygon;
@@ -119,7 +119,7 @@ JSM.CreateCCWPolygonFromVertices = function (vertices)
 * Parameters:
 *	polygon {Polygon2D} the polygon
 * Returns:
-*	{string} 'Concave', 'Convex', or 'Invalid'
+*	{Complexity} the result
 */
 JSM.PolygonComplexity2D = function (polygon)
 {
@@ -129,7 +129,7 @@ JSM.PolygonComplexity2D = function (polygon)
 	var count = polygon.VertexCount ();
 	
 	var i, prevIndex, currIndex, nextIndex;
-	var prev, curr, next, turnType;
+	var prev, curr, next, orientation;
 	for (i = 0; i < count; i++) {
 		prevIndex = (i === 0 ? count - 1 : i - 1);
 		currIndex = i;
@@ -139,23 +139,23 @@ JSM.PolygonComplexity2D = function (polygon)
 		curr = polygon.GetVertex (currIndex);
 		next = polygon.GetVertex (nextIndex);
 
-		turnType = JSM.CoordTurnType2D (prev, curr, next);
-		if (turnType === 'CounterClockwise') {
+		orientation = JSM.CoordOrientation2D (prev, curr, next);
+		if (orientation == JSM.Orientation.CounterClockwise) {
 			hasCounterClockwiseVertex = true;
-		} else if (turnType === 'Clockwise') {
+		} else if (orientation == JSM.Orientation.Clockwise) {
 			hasClockWiseVertex = true;
 		}
 
 		if (hasCounterClockwiseVertex && hasClockWiseVertex) {
-			return 'Concave';
+			return JSM.Complexity.Concave;
 		}
 	}
 
 	if (!hasCounterClockwiseVertex && !hasClockWiseVertex) {
-		return 'Invalid';
+		return JSM.Complexity.Invalid;
 	}
 	
-	return 'Convex';
+	return JSM.Complexity.Convex;
 };
 
 /**
@@ -544,7 +544,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 				continue;
 			}
 			
-			if (orientation === 'CounterClockwise') {
+			if (orientation == JSM.Orientation.CounterClockwise) {
 				result.push (resultPolygon);
 			} else {
 				resultTriangle = [];
@@ -622,11 +622,11 @@ JSM.PolygonTriangulate2D = function (polygon)
 
 	var complexity = JSM.PolygonComplexity2D (workPolygon);
 	var orientation = JSM.PolygonOrientation2D (workPolygon);
-	if (complexity === 'Invalid' || orientation === 'Invalid') {
+	if (complexity == JSM.Complexity.Invalid || orientation == JSM.Orientation.Invalid) {
 		return [];
 	}
 	
-	if (orientation !== 'CounterClockwise') {
+	if (orientation !== JSM.Orientation.CounterClockwise) {
 		var i1, i2, tmp;
 		for (i = 0; i < count / 2; i++) {
 			i1 = i;
@@ -637,7 +637,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 		}
 	}
 	
-	if (complexity === 'Convex') {
+	if (complexity == JSM.Complexity.Convex) {
 		var triangle;
 		for (i = 0; i < count - 2; i++) {
 			triangle = [];
@@ -818,13 +818,14 @@ JSM.OffsetPolygonContour = function (polygon, width)
 		prevDir = JSM.CoordSub (prevVertex, currVertex);
 		nextDir = JSM.CoordSub (nextVertex, currVertex);
 		angle = JSM.GetVectorsAngle (prevDir, nextDir) / 2.0;
-		if (JSM.CoordTurnType (prevVertex, currVertex, nextVertex, normal) === 'Clockwise') {
+		if (JSM.CoordOrientation (prevVertex, currVertex, nextVertex, normal) == JSM.Orientation.Clockwise) {
 			angle = Math.PI - angle;
 		}
 
 		distance = width / Math.sin (angle);
-		offsetedCoord = JSM.CoordOffset (currVertex, nextDir, distance);
-		offsetedCoord = JSM.CoordRotate (offsetedCoord, normal, angle, currVertex);
+		offsetedCoord = currVertex.Clone ();
+		offsetedCoord.Offset (nextDir, distance);
+		offsetedCoord.Rotate (normal, angle, currVertex);
 		result.AddVertex (offsetedCoord.x, offsetedCoord.y, offsetedCoord.z);
 	}
 	

@@ -492,19 +492,19 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 
 	var result = GenerateIcosahedron ();
 	
-	var currentRadius = JSM.VectorLength (result.GetVertexPosition (0));
+	var currentRadius = result.GetVertexPosition (0).Length ();
 	var scale = radius / currentRadius;
 
 	var i, j, vertex;
 	for (i = 0; i < result.VertexCount (); i++) {
 		vertex = result.GetVertex (i);
-		vertex.SetPosition (JSM.VectorMultiply (vertex.GetPosition (), scale));
+		vertex.position.MultiplyScalar (scale);
 	}
 	
 	var iteration, oldVertexCoord, oldBody, adjacencyInfo;
 	var currentEdge, edgeVertexIndices;
 	var currentPgon, polygonVertexIndices;
-	var midCoord, edgeCoord, currentPolyEdge;
+	var edgeCoord, currentPolyEdge;
 	for (iteration = 0; iteration < iterations; iteration++) {
 		oldBody = result;
 		
@@ -518,9 +518,8 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 		edgeVertexIndices = [];
 		for (i = 0; i < adjacencyInfo.edges.length; i++) {
 			currentEdge = adjacencyInfo.edges[i];
-			midCoord = JSM.MidCoord (oldBody.GetVertexPosition (currentEdge.vert1), oldBody.GetVertexPosition (currentEdge.vert2));
-			edgeCoord = JSM.VectorMultiply (JSM.VectorNormalize (midCoord), radius);
-			edgeVertexIndices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));
+			edgeCoord = JSM.MidCoord (oldBody.GetVertexPosition (currentEdge.vert1), oldBody.GetVertexPosition (currentEdge.vert2));
+			edgeVertexIndices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord.SetLength (radius))));
 		}
 
 		for (i = 0; i < adjacencyInfo.pgons.length; i++) {
@@ -796,7 +795,7 @@ JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
 	var i;
 	for (i = 0; i < count; i++) {
 		result.AddVertex (new JSM.BodyVertex (basePolygon[i]));
-		result.AddVertex (new JSM.BodyVertex (JSM.CoordOffset (basePolygon[i], direction, height)));
+		result.AddVertex (new JSM.BodyVertex (basePolygon[i].Clone ().Offset (direction, height)));
 	}
 
 	var current, next;
@@ -820,9 +819,9 @@ JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
 		result.AddPolygon (bottomPolygon);
 	}
 
-	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolygon[1], basePolygon[0]));
+	var firstDirection = JSM.CoordSub (basePolygon[1], basePolygon[0]).Normalize ();
 	var origo = new JSM.Coord (basePolygon[0].x, basePolygon[0].y, basePolygon[0].z);
-	var e3 = JSM.VectorNormalize (direction);
+	var e3 = direction.Clone ().Normalize ();
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
@@ -883,7 +882,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 		for (i = 0; i < basePolygon.length; i++) {
 			if (basePolygon[i] !== null) {
 				result.AddVertex (new JSM.BodyVertex (basePolygon[i]));
-				result.AddVertex (new JSM.BodyVertex (JSM.CoordOffset (basePolygon[i], direction, height)));
+				result.AddVertex (new JSM.BodyVertex (basePolygon[i].Clone ().Offset (direction, height)));
 			}
 		}
 	}
@@ -979,9 +978,9 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 		AddTopBottomPolygons ();
 	}
 
-	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolygon[1], basePolygon[0]));
+	var firstDirection = JSM.CoordSub (basePolygon[1], basePolygon[0]).Normalize ();
 	var origo = new JSM.Coord (basePolygon[0].x, basePolygon[0].y, basePolygon[0].z);
-	var e3 = JSM.VectorNormalize (direction);
+	var e3 = direction.Clone ().Normalize ();
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
@@ -1056,12 +1055,12 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 
 	var offseted;
 	for (i = 0; i < count; i++) {
-		offseted = JSM.CoordOffset (basePolygon[i], direction, height);
+		offseted = basePolygon[i].Clone ().Offset (direction, height);
 		result.AddVertex (new JSM.BodyVertex (offseted));
 	}
 
 	for (i = 0; i < count; i++) {
-		offseted = JSM.CoordOffset (innerBasePolygon[i], direction, height);
+		offseted = innerBasePolygon[i].Clone ().Offset (direction, height);
 		result.AddVertex (new JSM.BodyVertex (offseted));
 	}
 
@@ -1094,9 +1093,9 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 		}
 	}
 
-	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolygon[1], basePolygon[0]));
+	var firstDirection = JSM.CoordSub (basePolygon[1], basePolygon[0]).Normalize ();
 	var origo = new JSM.Coord (basePolygon[0].x, basePolygon[0].y, basePolygon[0].z);
-	var e3 = JSM.VectorNormalize (direction);
+	var e3 = direction.Clone ().Normalize ();
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
@@ -1181,7 +1180,7 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 			nextDir = JSM.CoordSub (basePolyLine[next], basePolyLine[curr]);
 			prevDir = JSM.CoordSub (basePolyLine[prev], basePolyLine[curr]);
 			angle = JSM.GetVectorsAngle (nextDir, prevDir) / 2.0;
-			if (JSM.CoordTurnType (basePolyLine[prev], basePolyLine[curr], basePolyLine[next], direction) === 'Clockwise') {
+			if (JSM.CoordOrientation (basePolyLine[prev], basePolyLine[curr], basePolyLine[next], direction) == JSM.Orientation.Clockwise) {
 				angle = Math.PI - angle;
 			}
 		}
@@ -1203,8 +1202,9 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 
 		angle = angles[curr];
 		distance = width / Math.sin (angle);
-		innerCoord = JSM.CoordOffset (basePolyLine[curr], offsetDirection, distance);
-		innerCoord = JSM.CoordRotate (innerCoord, normal, -(Math.PI - angle), basePolyLine[curr]);
+		innerCoord = basePolyLine[curr].Clone ();
+		innerCoord.Offset (offsetDirection, distance);
+		innerCoord.Rotate (normal, -(Math.PI - angle), basePolyLine[curr]);
 		innerBasePolyLine.push (innerCoord);
 	}
 
@@ -1218,12 +1218,12 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 
 	var offseted;
 	for (i = 0; i < count; i++) {
-		offseted = JSM.CoordOffset (basePolyLine[i], direction, height);
+		offseted = basePolyLine[i].Clone ().Offset (direction, height);
 		result.AddVertex (new JSM.BodyVertex (offseted));
 	}
 
 	for (i = 0; i < count; i++) {
-		offseted = JSM.CoordOffset (innerBasePolyLine[i], direction, height);
+		offseted = innerBasePolyLine[i].Clone ().Offset (direction, height);
 		result.AddVertex (new JSM.BodyVertex (offseted));
 	}
 
@@ -1262,9 +1262,9 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 		}
 	}
 
-	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolyLine[1], basePolyLine[0]));
+	var firstDirection = JSM.CoordSub (basePolyLine[1], basePolyLine[0]).Normalize ();
 	var origo = new JSM.Coord (basePolyLine[0].x, basePolyLine[0].y, basePolyLine[0].z);
-	var e3 = JSM.VectorNormalize (direction);
+	var e3 = direction.Clone ().Normalize ();
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
@@ -1308,7 +1308,7 @@ JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, inner
 	var j, rotated;
 	for (i = 0; i < outerSegmentation; i++) {
 		for (j = 0; j < innerSegmentation; j++) {
-			rotated = JSM.CoordRotate (circle[j], axisDir, i * step, origo);
+			rotated = circle[j].Clone ().Rotate (axisDir, i * step, origo);
 			result.AddVertex (new JSM.BodyVertex (rotated));
 		}
 	}
@@ -1383,7 +1383,7 @@ JSM.GeneratePolyTorus = function (basePolygon, outerRadius, outerSegmentation, i
 	var j, rotated;
 	for (i = 0; i < outerSegmentation; i++) {
 		for (j = 0; j < innerSegmentation; j++) {
-			rotated = JSM.CoordRotate (circle[j], axisDir, i * step, origo);
+			rotated = circle[j].Clone ().Rotate (axisDir, i * step, origo);
 			result.AddVertex (new JSM.BodyVertex (rotated));
 		}
 	}
@@ -1678,7 +1678,7 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 				continue;
 			}
 
-			rotated = JSM.CoordRotate (polyLine[i], axisDir, j * step, axis.beg);
+			rotated = polyLine[i].Clone ().Rotate (axisDir, j * step, axis.beg);
 			result.AddVertex (new JSM.BodyVertex (rotated));
 		}
 	}
@@ -1730,22 +1730,22 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 		result.AddPolygon (bottomPolygon);
 	}
 
-	var axisLine = new JSM.Line (axis.beg, JSM.VectorNormalize (axisDir));
+	var axisNormalDir = axisDir.Clone ().Normalize ();
+	var axisLine = new JSM.Line (axis.beg, axisNormalDir);
 	var avgRadius = 0.0;
 	var projected;
 	for (i = 0; i < count; i++) {
 		projected = JSM.ProjectCoordToLine (polyLine[i], axisLine);
-		avgRadius = avgRadius + JSM.CoordDistance (projected, polyLine[i]);
+		avgRadius = avgRadius + projected.DistanceTo (polyLine[i]);
 	}
 	avgRadius = avgRadius / count;
 	
 	var origo = new JSM.Coord (axis.beg.x, axis.beg.y, axis.beg.z);
-	var cylinderNormal = JSM.VectorNormalize (axisDir);
 	var baseLine = new JSM.Line (origo, axisDir);
 	var projectedToBaseLine = JSM.ProjectCoordToLine (polyLine[0], baseLine);
-	var xDirection = JSM.VectorNormalize (JSM.CoordSub (polyLine[0], projectedToBaseLine));
+	var xDirection = JSM.CoordSub (polyLine[0], projectedToBaseLine).Normalize ();
 	
-	result.SetCylindricalTextureProjection (origo, avgRadius, xDirection, cylinderNormal);
+	result.SetCylindricalTextureProjection (origo, avgRadius, xDirection, axisNormalDir);
 	return result;
 };
 

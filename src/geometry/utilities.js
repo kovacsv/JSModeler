@@ -90,14 +90,14 @@ JSM.GetRuledMesh = function (aCoords, bCoords, segmentation, vertices, polygons)
 	var i, j;
 	for (i = 0; i <= lineSegmentation; i++) {
 		directions.push (JSM.CoordSub (bCoords[i], aCoords[i]));
-		lengths.push (JSM.CoordDistance (aCoords[i], bCoords[i]));
+		lengths.push (aCoords[i].DistanceTo (bCoords[i]));
 	}
 
 	var step, coord;
 	for (i = 0; i <= lineSegmentation; i++) {
 		step = lengths[i] / meshSegmentation;
 		for (j = 0; j <= meshSegmentation; j++) {
-			coord = JSM.CoordOffset (aCoords[i], directions[i], step * j);
+			coord = aCoords[i].Clone ().Offset (directions[i], step * j);
 			vertices.push (coord);
 		}
 	}

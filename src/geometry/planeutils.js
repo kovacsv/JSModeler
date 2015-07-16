@@ -10,7 +10,7 @@
 JSM.GetPlaneFromCoordAndDirection = function (coord, direction)
 {
 	var plane = new JSM.Plane ();
-	var normal = JSM.VectorNormalize (direction);
+	var normal = direction.Clone ().Normalize ();
 	var pa = normal.x;
 	var pb = normal.y;
 	var pc = normal.z;
@@ -82,7 +82,7 @@ JSM.CoordPlanePosition = function (coord, plane)
 */
 JSM.LinePlanePosition = function (line, plane, intersection)
 {
-	var	direction = JSM.VectorNormalize (line.direction);
+	var	direction = line.direction.Clone ().Normalize ();
 
 	var x1 = line.start.x;
 	var y1 = line.start.y;
@@ -104,7 +104,8 @@ JSM.LinePlanePosition = function (line, plane, intersection)
 
 	var u = (a * x1 + b * y1 + c * z1 + d) / denom;
 	if (intersection !== undefined) {
-		var i = JSM.CoordAdd (line.start, JSM.VectorMultiply (direction, u));
+		direction.MultiplyScalar (u);
+		var i = JSM.CoordAdd (line.start, direction);
 		intersection.Set (i.x, i.y, i.z);
 	}
 
@@ -122,7 +123,7 @@ JSM.LinePlanePosition = function (line, plane, intersection)
 */
 JSM.LinePlaneIntersection = function (line, plane)
 {
-	var	direction = JSM.VectorNormalize (line.direction);
+	var	direction = line.direction.Clone ().Normalize ();
 
 	var x1 = line.start.x;
 	var y1 = line.start.y;
@@ -144,7 +145,8 @@ JSM.LinePlaneIntersection = function (line, plane)
 	}
 
 	var u = (a * x1 + b * y1 + c * z1 + d) / denom;
-	result = JSM.CoordAdd (line.start, JSM.VectorMultiply (direction, u));
+	direction.MultiplyScalar (u);
+	result = JSM.CoordAdd (line.start, direction);
 	return result;
 };
 
@@ -198,7 +200,7 @@ JSM.CoordPlaneDistance = function (coord, plane)
 */
 JSM.CoordPlaneSignedDirectionalDistance = function (coord, direction, plane)
 {
-	var	normal = JSM.VectorNormalize (direction);
+	var	normal = direction.Clone ().Normalize ();
 
 	var x1 = coord.x;
 	var y1 = coord.y;
@@ -219,8 +221,9 @@ JSM.CoordPlaneSignedDirectionalDistance = function (coord, direction, plane)
 	}
 
 	var u = (a * x1 + b * y1 + c * z1 + d) / denom;
-	var intersection = JSM.CoordAdd (coord, JSM.VectorMultiply (normal, u));
-	var distance = JSM.CoordDistance (coord, intersection);
+	normal.MultiplyScalar (u);
+	var intersection = JSM.CoordAdd (coord, normal);
+	var distance = coord.DistanceTo (intersection);
 	var s = a * x1 + b * y1 + c * z1 + d;
 	if (JSM.IsNegative (s)) {
 		distance = -distance;
@@ -270,8 +273,8 @@ JSM.ProjectCoordToPlane = function (coord, plane)
 		distance = -distance;
 	}
 
-	var normal = JSM.VectorNormalize (new JSM.Coord (a, b, c));
-	var result = JSM.CoordOffset (coord, normal, distance);
+	var normal = new JSM.Coord (a, b, c).Normalize ();
+	var result = coord.Clone ().Offset (normal, distance);
 
 	return result;
 };

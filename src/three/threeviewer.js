@@ -359,7 +359,7 @@ JSM.ThreeViewer.prototype.GetBoundingSphere = function ()
 			for (j = 0; j < geometry.vertices.length; j++) {
 				coord = geometry.vertices[j].clone ();
 				coord.add (current.position);
-				distance = JSM.CoordDistance (center, new JSM.Coord (coord.x, coord.y, coord.z));
+				distance = center.DistanceTo (new JSM.Coord (coord.x, coord.y, coord.z));
 				if (JSM.IsGreater (distance, radius)) {
 					radius = distance;
 				}

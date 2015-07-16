@@ -51,7 +51,6 @@ JSM.Coord2D.prototype.IsEqualWithEps = function (coord, eps)
 	return JSM.IsEqualWithEps (this.x, coord.x, eps) && JSM.IsEqualWithEps (this.y, coord.y, eps);
 };
 
-
 /**
 * Function: Coord2D.DistanceTo
 * Description: Calculates the coordinate distance to the given one.
@@ -124,6 +123,43 @@ JSM.Coord2D.prototype.SetLength = function (length)
 };
 
 /**
+* Function: Coord2D.Offset
+* Description: Offsets the coordinate.
+* Parameters:
+*	direction {Vector2D} the direction of the offset
+*	distance {number} the distance of the offset
+* Returns:
+*	{Coord2D} this pointer
+*/
+JSM.Coord2D.prototype.Offset = function (direction, distance)
+{
+	var normal = direction.Clone ().Normalize ();
+	this.x += normal.x * distance;
+	this.y += normal.y * distance;
+	return this;
+};
+
+/**
+* Function: Coord2D.Rotate
+* Description: Rotates the coordinate.
+* Parameters:
+*	angle {number} the angle of the rotation
+*	origo {Coord2D} the origo of the rotation
+* Returns:
+*	{Coord2D} this pointer
+*/
+JSM.Coord2D.prototype.Rotate = function (angle, origo)
+{
+	var x = this.x - origo.x;
+	var y = this.y - origo.y;
+	var co = Math.cos (angle);
+	var si = Math.sin (angle);
+	this.x = x * co - y * si + origo.x;
+	this.y = x * si + y * co + origo.y;
+	return this;
+};
+
+/**
 * Function: Coord2D.ToString
 * Description: Converts the coordinate values to string.
 * Returns:
@@ -152,49 +188,98 @@ JSM.Coord2D.prototype.Clone = function ()
 JSM.Vector2D = JSM.Coord2D;
 
 /**
-* Class: PolarCoord
-* Description: Represents a 2D polar coordinate.
+* Function: CoordFromArray2D
+* Description: Returns a coordinate from an array of components.
 * Parameters:
-*	radius {number} the first component
-*	angle {number} the second component
+*	array {number[2]} the array of components
+* Returns:
+*	{Coord2D} the result
 */
-JSM.PolarCoord = function (radius, angle)
+JSM.CoordFromArray2D = function (array)
 {
-	this.radius = radius;
-	this.angle = angle;
+	return new JSM.Coord2D (array[0], array[1]);
 };
 
 /**
-* Function: PolarCoord.Set
-* Description: Sets the coordinate.
+* Function: CoordToArray2D
+* Description: Returns array of components from a coordinate.
 * Parameters:
-*	radius {number} the first component
-*	angle {number} the second component
+*	coord {Coord2D} the coordinate
+* Returns:
+*	array {number[2]} the result
 */
-JSM.PolarCoord.prototype.Set = function (radius, angle)
+JSM.CoordToArray2D = function (coord)
 {
-	this.radius = radius;
-	this.angle = angle;
+	return [coord.x, coord.y];
 };
 
 /**
-* Function: PolarCoord.ToString
-* Description: Converts the coordinate values to string.
+* Function: CoordAdd2D
+* Description: Adds two coordinates.
+* Parameters:
+*	a {Coord2D} the first coordinate
+*	b {Coord2D} the second coordinate
 * Returns:
-*	{string} the string representation of the coordinate
+*	{Coord2D} the result
 */
-JSM.PolarCoord.prototype.ToString = function ()
+JSM.CoordAdd2D = function (a, b)
 {
-	return ('(' + this.radius + ', ' + this.angle + ')');
+	return new JSM.Coord2D (a.x + b.x, a.y + b.y);
 };
 
 /**
-* Function: PolarCoord.Clone
-* Description: Clones the coordinate.
+* Function: CoordSub2D
+* Description: Subs two coordinates.
+* Parameters:
+*	a {Coord2D} the first coordinate
+*	b {Coord2D} the second coordinate
 * Returns:
-*	{PolarCoord} a cloned instance
+*	{Coord2D} the result
 */
-JSM.PolarCoord.prototype.Clone = function ()
+JSM.CoordSub2D = function (a, b)
 {
-	return new JSM.PolarCoord (this.radius, this.angle);
+	return new JSM.Coord2D (a.x - b.x, a.y - b.y, a.z - b.z);
+};
+
+/**
+* Function: MidCoord2D
+* Description: Calculates the coordinate in the middle of two coordinates.
+* Parameters:
+*	a {Coord2D} first coordinate
+*	b {Coord2D} second coordinate
+* Returns:
+*	{Coord2D} the result
+*/
+JSM.MidCoord2D = function (a, b)
+{
+	return new JSM.Coord2D ((a.x + b.x) / 2.0, (a.y + b.y) / 2.0);
+};
+
+/**
+* Function: CoordOrientation2D
+* Description: Calculates the turn type of three coordinates.
+* Parameters:
+*	a {Coord2D} the first coordinate
+*	b {Coord2D} the second coordinate
+*	c {Coord2D} the third coordinate
+* Returns:
+*	{Orientation} the result
+*/
+JSM.CoordOrientation2D = function (a, b, c)
+{
+	var m00 = a.x;
+	var m01 = a.y;
+	var m10 = b.x;
+	var m11 = b.y;
+	var m20 = c.x;
+	var m21 = c.y;
+    
+	var determinant = m00 * m11 + m01 * m20 + m10 * m21 - m11 * m20 - m01 * m10 - m00 * m21;
+	if (JSM.IsPositive (determinant)) {
+		return JSM.Orientation.CounterClockwise;
+	} else if (JSM.IsNegative (determinant)) {
+		return JSM.Orientation.Clockwise;
+	}
+	
+	return JSM.Orientation.Invalid;	
 };

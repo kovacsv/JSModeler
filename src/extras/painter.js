@@ -28,13 +28,13 @@ JSM.OrderPolygons = function (body, eye, center)
 			result = JSM.CoordAdd (result, coord);
 		}
 		
-		result = JSM.VectorMultiply (result, 1.0 / polygon.VertexIndexCount ());
+		result.MultiplyScalar (1.0 / polygon.VertexIndexCount ());
 		return result;
 	}
 	
 	function CalculatePolygonValues ()
 	{
-		var viewDirection = JSM.VectorNormalize (JSM.CoordSub (center, eye));
+		var viewDirection = JSM.CoordSub (center, eye).Normalize ();
 		var cameraPlane = JSM.GetPlaneFromCoordAndDirection (eye, viewDirection);
 		
 		var i, j, polygon, coord, distance, minDistance, maxDistance;
@@ -64,10 +64,10 @@ JSM.OrderPolygons = function (body, eye, center)
 			polygonCenterDistances.push (polygonCenterDistance);
 
 			polygonNormal = JSM.CalculateBodyPolygonNormal (body, i);
-			polygonViewVector = JSM.VectorNormalize (JSM.CoordSub (polygonCenter, eye));
+			polygonViewVector = JSM.CoordSub (polygonCenter, eye).Normalize ();
 			polygonDirection = JSM.VectorDot (polygonNormal, polygonViewVector);
 			if (JSM.IsGreaterOrEqual (polygonDirection, 0.0)) {
-				polygonNormal = JSM.VectorMultiply (polygonNormal, -1);
+				polygonNormal.MultiplyScalar (-1);
 			}
 
 			polygonPlane = JSM.GetPlaneFromCoordAndDirection (polygonCenter, polygonNormal);

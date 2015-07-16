@@ -150,7 +150,7 @@ JSM.SpriteViewer.prototype.GetBoundingSphere = function ()
 	var i, coord, distance;
 	for (i = 0; i < this.points.length; i++) {
 		coord = this.points[i];
-		distance = JSM.CoordDistance (center, coord);
+		distance = center.DistanceTo (coord);
 		if (JSM.IsGreater (distance, radius)) {
 			radius = distance;
 		}

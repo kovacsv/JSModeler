@@ -85,11 +85,11 @@ JSM.GenerateSolidWithRadius = function (solidName, radius)
 	
 		var maxRadius = 0.0;
 		if (equalRadius) {
-			maxRadius = JSM.VectorLength (result.GetVertexPosition (0));
+			maxRadius = result.GetVertexPosition (0).Length ();
 		} else {
 			var currentRadius;
 			for (i = 0; i < result.VertexCount (); i++) {
-				currentRadius = JSM.VectorLength (result.GetVertexPosition (i));
+				currentRadius = result.GetVertexPosition (i).Length ();
 				if (JSM.IsGreater (currentRadius, maxRadius)) {
 					maxRadius = currentRadius;
 				}
@@ -101,7 +101,7 @@ JSM.GenerateSolidWithRadius = function (solidName, radius)
 		var vertex;
 		for (i = 0; i < result.VertexCount (); i++) {
 			vertex = result.GetVertex (i);
-			vertex.SetPosition (JSM.VectorMultiply (vertex.GetPosition (), scale));
+			vertex.position.MultiplyScalar (scale);
 		}
 	}
 	
@@ -1721,7 +1721,7 @@ JSM.AddCumulatedPolygonToBody = function (body, vertices, height)
 	var centroidCoord = new JSM.Coord (0.0, 0.0, 0.0);
 	var normalVector = new JSM.Vector (0.0, 0.0, 0.0);
 	CalculatePolygonCentroidAndNormal (vertices, centroidCoord, normalVector);
-	centroidCoord = JSM.CoordOffset (centroidCoord, normalVector, height);
+	centroidCoord.Offset (normalVector, height);
 	
 	var centroid = body.VertexCount ();
 	JSM.AddVertexToBody (body, centroidCoord.x, centroidCoord.y, centroidCoord.z);

@@ -36,7 +36,7 @@ JSM.ConvexHull2D = function (coords)
 			if (current == next) {
 				next = i;
 			} else {
-				if (JSM.CoordTurnType2D (coords[current], coords[next], coords[i]) == 'Clockwise') {
+				if (JSM.CoordOrientation2D (coords[current], coords[next], coords[i]) == JSM.Orientation.Clockwise) {
 					next = i;
 				}
 			}

@@ -12,7 +12,7 @@ JSM.CalculateSphericalTextureCoord = function (coord, normal, system)
 {
 	var result = new JSM.Coord2D (0.0, 0.0);
 
-	var e3Direction = JSM.VectorNormalize (system.e3);
+	var e3Direction = system.e3.Clone ().Normalize ();
 	if (JSM.VectorsAreCollinear (e3Direction, normal)) {
 		result = JSM.CalculateCubicTextureCoord (coord, normal, system);
 		return [result, 0.0];
@@ -20,11 +20,11 @@ JSM.CalculateSphericalTextureCoord = function (coord, normal, system)
 
 	var baseLine = new JSM.Line (system.origo, e3Direction);
 	var projectedCoord = JSM.ProjectCoordToLine (coord, baseLine);
-	var radius = JSM.VectorLength (system.e1);
+	var radius = system.e1.Length ();
 
-	if (!JSM.CoordIsEqual (coord, projectedCoord)) {
+	if (!coord.IsEqual (projectedCoord)) {
 		var coordDirection = JSM.CoordSub (coord, projectedCoord);
-		var e1Direction = JSM.VectorNormalize (system.e1);
+		var e1Direction = system.e1.Clone ().Normalize ();
 		var longitudeAngle = JSM.GetVectorsFullAngle (coordDirection, e1Direction, e3Direction);
 		result.x = longitudeAngle * radius;
 	} else {
@@ -32,7 +32,7 @@ JSM.CalculateSphericalTextureCoord = function (coord, normal, system)
 	}
 
 	var projectedDistance = JSM.CoordSignedDistance (system.origo, projectedCoord, e3Direction);
-	var coordDistance = JSM.CoordDistance (system.origo, coord);
+	var coordDistance = system.origo.DistanceTo (coord);
 	var latitudeAngle = JSM.ArcCos (projectedDistance / coordDistance);
 	result.y = -latitudeAngle * radius;
 	

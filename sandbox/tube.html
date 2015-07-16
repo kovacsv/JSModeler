@@ -13,14 +13,13 @@
 	<script type="text/javascript" src="../src/core/algorithm.js"></script>
 	<script type="text/javascript" src="../src/core/async.js"></script>
 	<script type="text/javascript" src="../src/core/check.js"></script>
+	<script type="text/javascript" src="../src/geometry/definitions.js"></script>
 	<script type="text/javascript" src="../src/geometry/coord2d.js"></script>
 	<script type="text/javascript" src="../src/geometry/coord.js"></script>
 	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
-	<script type="text/javascript" src="../src/geometry/coordutils2d.js"></script>
 	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
 	<script type="text/javascript" src="../src/geometry/matrix.js"></script>
 	<script type="text/javascript" src="../src/geometry/coordsystem.js"></script>
-	<script type="text/javascript" src="../src/geometry/coordsystemutils.js"></script>
 	<script type="text/javascript" src="../src/geometry/sector.js"></script>
 	<script type="text/javascript" src="../src/geometry/sectorutils.js"></script>
 	<script type="text/javascript" src="../src/geometry/line.js"></script>
@@ -116,10 +115,10 @@
 			var origo = new JSM.Coord (0.0, 0.0, 0.0);
 			var i, j, circle, currOrigo;
 			for (i = 0; i < 25; i++) {
-				currOrigo = JSM.CoordRotate (origo, new JSM.Coord (1.0, 0.0, 0.0), -i * 10 * JSM.DegRad, new JSM.Coord (0.0, 8.0, 0.0));
+				currOrigo = origo.Clone ().Rotate (new JSM.Coord (1.0, 0.0, 0.0), -i * 10 * JSM.DegRad, new JSM.Coord (0.0, 8.0, 0.0));
 				circle = JSM.GenerateCirclePoints (i * 0.2, 30, currOrigo);
 				for (j = 0; j < circle.length; j++) {
-					circle[j] = JSM.CoordRotate (circle[j], new JSM.Coord (1.0, 0.0, 0.0), -i * 10 * JSM.DegRad, currOrigo);
+					circle[j].Rotate (new JSM.Coord (1.0, 0.0, 0.0), -i * 10 * JSM.DegRad, currOrigo);
 				}
 				polygons.push (circle);
 			}

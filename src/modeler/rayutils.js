@@ -49,8 +49,9 @@ JSM.RayTriangleIntersection = function (ray, v0, v1, v2)
 		return null;
 	}
 	
+	var scaledDirection = rayDirection.Clone ().MultiplyScalar (distance);
 	var intersection = {
-		position : JSM.CoordAdd (rayOrigin, JSM.VectorMultiply (rayDirection, distance)),
+		position : JSM.CoordAdd (rayOrigin, scaledDirection),
 		distance : distance
 	};
 	return intersection;
@@ -135,7 +136,7 @@ JSM.RayBoxIntersection = function (ray, min, max)
 	}
 
 	var intersectionCoord = JSM.CoordFromArray (xCoord);
-	var distance = JSM.CoordDistance (rayOriginVec, intersectionCoord);
+	var distance = rayOriginVec.DistanceTo (intersectionCoord);
 	if (ray.IsLengthReached (distance)) {
 		return null;
 	}

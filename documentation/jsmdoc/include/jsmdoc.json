@@ -3,132 +3,6 @@
 	"modules" : {
 		"Core" : {
 			"functions" : {
-				"IsZero" : {
-					"description" : "Determines if the given value is near zero. Uses epsilon for comparison.",
-					"parameters" : [
-						["a", "number", "the value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"IsPositive" : {
-					"description" : "Determines if the given value is positive. Uses epsilon for comparison.",
-					"parameters" : [
-						["a", "number", "the value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"IsNegative" : {
-					"description" : "Determines if the given value is negative. Uses epsilon for comparison.",
-					"parameters" : [
-						["a", "number", "the value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"IsLower" : {
-					"description" : "Determines if a value is lower than an other. Uses epsilon for comparison.",
-					"parameters" : [
-						["a", "number", "first value"],
-						["b", "number", "second value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"IsGreater" : {
-					"description" : "Determines if a value is greater than an other. Uses epsilon for comparison.",
-					"parameters" : [
-						["a", "number", "first value"],
-						["b", "number", "second value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"IsEqual" : {
-					"description" : "Determines if two values are equal. Uses epsilon for comparison.",
-					"parameters" : [
-						["a", "number", "first value"],
-						["b", "number", "second value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"IsEqualWithEps" : {
-					"description" : "Determines if two values are equal. Uses the given epsilon for comparison.",
-					"parameters" : [
-						["a", "number", "first value"],
-						["b", "number", "second value"],
-						["eps", "number", "epsilon value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"IsLowerOrEqual" : {
-					"description" : "Determines if a value is lower or equal to an other. Uses epsilon for comparison.",
-					"parameters" : [
-						["a", "number", "first value"],
-						["b", "number", "second value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"IsGreaterOrEqual" : {
-					"description" : "Determines if a value is greater or equal to an other. Uses epsilon for comparison.",
-					"parameters" : [
-						["a", "number", "first value"],
-						["b", "number", "second value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"Minimum" : {
-					"description" : "Returns the minimum of two values. Uses epsilon for comparison.",
-					"parameters" : [
-						["a", "number", "first value"],
-						["b", "number", "second value"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"Maximum" : {
-					"description" : "Returns the maximum of two values. Uses epsilon for comparison.",
-					"parameters" : [
-						["a", "number", "first value"],
-						["b", "number", "second value"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"ArcSin" : {
-					"description" : "Calculates the arcus sinus value.",
-					"parameters" : [
-						["value", "number", "the value"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"ArcCos" : {
-					"description" : "Calculates the arcus cosinus value.",
-					"parameters" : [
-						["value", "number", "the value"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
 				"RandomNumber" : {
 					"description" : "Generates a random number between two numbers.",
 					"parameters" : [
@@ -280,28 +154,127 @@
 		},
 		"Geometry" : {
 			"functions" : {
-				"MatrixDeterminant2x2" : {
-					"description" : "Calculates the determinant of a 2x2 matrix.",
+				"IsZero" : {
+					"description" : "Determines if the given value is near zero. Uses epsilon for comparison.",
 					"parameters" : [
-						["m00..m11", "4 numbers", "the matrix values"]
+						["a", "number", "the value"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsPositive" : {
+					"description" : "Determines if the given value is positive. Uses epsilon for comparison.",
+					"parameters" : [
+						["a", "number", "the value"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsNegative" : {
+					"description" : "Determines if the given value is negative. Uses epsilon for comparison.",
+					"parameters" : [
+						["a", "number", "the value"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsLower" : {
+					"description" : "Determines if a value is lower than an other. Uses epsilon for comparison.",
+					"parameters" : [
+						["a", "number", "first value"],
+						["b", "number", "second value"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsGreater" : {
+					"description" : "Determines if a value is greater than an other. Uses epsilon for comparison.",
+					"parameters" : [
+						["a", "number", "first value"],
+						["b", "number", "second value"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsEqual" : {
+					"description" : "Determines if two values are equal. Uses epsilon for comparison.",
+					"parameters" : [
+						["a", "number", "first value"],
+						["b", "number", "second value"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsEqualWithEps" : {
+					"description" : "Determines if two values are equal. Uses the given epsilon for comparison.",
+					"parameters" : [
+						["a", "number", "first value"],
+						["b", "number", "second value"],
+						["eps", "number", "epsilon value"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsLowerOrEqual" : {
+					"description" : "Determines if a value is lower or equal to an other. Uses epsilon for comparison.",
+					"parameters" : [
+						["a", "number", "first value"],
+						["b", "number", "second value"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsGreaterOrEqual" : {
+					"description" : "Determines if a value is greater or equal to an other. Uses epsilon for comparison.",
+					"parameters" : [
+						["a", "number", "first value"],
+						["b", "number", "second value"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"Minimum" : {
+					"description" : "Returns the minimum of two values. Uses epsilon for comparison.",
+					"parameters" : [
+						["a", "number", "first value"],
+						["b", "number", "second value"]
 					],
 					"returns" : [
 						["number", "the result"]
 					]
 				},
-				"MatrixDeterminant3x3" : {
-					"description" : "Calculates the determinant of a 3x3 matrix.",
+				"Maximum" : {
+					"description" : "Returns the maximum of two values. Uses epsilon for comparison.",
 					"parameters" : [
-						["m00..m22", "9 numbers", "the matrix values"]
+						["a", "number", "first value"],
+						["b", "number", "second value"]
 					],
 					"returns" : [
 						["number", "the result"]
 					]
 				},
-				"MatrixDeterminant4x4" : {
-					"description" : "Calculates the determinant of a 4x4 matrix.",
+				"ArcSin" : {
+					"description" : "Calculates the arcus sinus value.",
 					"parameters" : [
-						["m00..m33", "16 numbers", "the matrix values"]
+						["value", "number", "the value"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"ArcCos" : {
+					"description" : "Calculates the arcus cosinus value.",
+					"parameters" : [
+						["value", "number", "the value"]
 					],
 					"returns" : [
 						["number", "the result"]
@@ -355,59 +328,7 @@
 						["Coord2D", "the result"]
 					]
 				},
-				"CoordOffset2D" : {
-					"description" : "Offsets a coordinate.",
-					"parameters" : [
-						["coord", "Coord2D", "the coordinate"],
-						["direction", "Vector2D", "the direction of the offset"],
-						["distance", "number", "the distance of the offset"]
-					],
-					"returns" : [
-						["Coord2D", "the result"]
-					]
-				},
-				"CoordRotate2D" : {
-					"description" : "Rotates a coordinate.",
-					"parameters" : [
-						["coord", "Coord2D", "the coordinate"],
-						["angle", "number", "the angle of the rotation"],
-						["origo", "Coord2D", "the origo of the rotation"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"PolarToCartesian" : {
-					"description" : "Converts a polar coordinate to a cartesian coordinate.",
-					"parameters" : [
-						["radius", "number", "the radius component"],
-						["theta", "number", "the angle component"]
-					],
-					"returns" : [
-						["Coord2D", "the result"]
-					]
-				},
-				"GetArcLengthFromAngle" : {
-					"description" : "Calculates arc length from radius and angle.",
-					"parameters" : [
-						["radius", "number", "the radius of the circle"],
-						["theta", "number", "the angle of rotation"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"GetAngleFromArcLength" : {
-					"description" : "Calculates angle from arc length.",
-					"parameters" : [
-						["radius", "number", "the radius of the circle"],
-						["arcLength", "number", "the arc length"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"CoordTurnType2D" : {
+				"CoordOrientation2D" : {
 					"description" : "Calculates the turn type of three coordinates.",
 					"parameters" : [
 						["a", "Coord2D", "the first coordinate"],
@@ -415,7 +336,7 @@
 						["c", "Coord2D", "the third coordinate"]
 					],
 					"returns" : [
-						["string", "'CounterClockwise', 'Clockwise', or 'Collinear'"]
+						["Orientation", "the result"]
 					]
 				},
 				"CoordFromArray" : {
@@ -434,27 +355,6 @@
 					],
 					"returns" : [
 						["array", "number[3]"]
-					]
-				},
-				"CoordIsEqual" : {
-					"description" : "Determines if the given coordinates are equal.",
-					"parameters" : [
-						["a", "Coord", "first coordinate"],
-						["b", "Coord", "second coordinate"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CoordIsEqualWithEps" : {
-					"description" : "Determines if the given coordinates are equal. Uses the given epsilon for comparison.",
-					"parameters" : [
-						["a", "Coord", "first coordinate"],
-						["b", "Coord", "second coordinate"],
-						["eps", "number", "epsilon value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
 					]
 				},
 				"CoordAdd" : {
@@ -477,37 +377,6 @@
 						["Coord", "the result"]
 					]
 				},
-				"SphericalCoordIsEqual" : {
-					"description" : "Determines if the given coordinates are equal.",
-					"parameters" : [
-						["a", "SpericalCoord", "first coordinate"],
-						["b", "SpericalCoord", "second coordinate"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CoordDistance" : {
-					"description" : "Calculates the distance of two coordinates.",
-					"parameters" : [
-						["a", "Coord", "first coordinate"],
-						["b", "Coord", "second coordinate"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"CoordSignedDistance" : {
-					"description" : "Calculates the distance of two coordinates along a direction vector.",
-					"parameters" : [
-						["a", "Coord", "first coordinate"],
-						["b", "Coord", "second coordinate"],
-						["direction", "Vector", "direction vector"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
 				"MidCoord" : {
 					"description" : "Calculates the coordinate in the middle of two coordinates.",
 					"parameters" : [
@@ -516,16 +385,6 @@
 					],
 					"returns" : [
 						["Coord", "the result"]
-					]
-				},
-				"VectorMultiply" : {
-					"description" : "Multiplies a vector with a scalar.",
-					"parameters" : [
-						["vector", "Vector", "the vector"],
-						["scalar", "number", "the scalar"]
-					],
-					"returns" : [
-						["Vector", "the result"]
 					]
 				},
 				"VectorDot" : {
@@ -548,55 +407,42 @@
 						["Vector", "the result"]
 					]
 				},
-				"VectorLength" : {
-					"description" : "Calculates length of a vector.",
+				"MatrixDeterminant2x2" : {
+					"description" : "Calculates the determinant of a 2x2 matrix.",
 					"parameters" : [
-						["vector", "Vector", "the vector"]
+						["m00..m11", "4 numbers", "the matrix values"]
 					],
 					"returns" : [
 						["number", "the result"]
 					]
 				},
-				"VectorNormalize" : {
-					"description" : "Normalize a vector.",
+				"MatrixDeterminant3x3" : {
+					"description" : "Calculates the determinant of a 3x3 matrix.",
 					"parameters" : [
-						["vector", "Vector", "the vector"]
+						["m00..m22", "9 numbers", "the matrix values"]
 					],
 					"returns" : [
-						["Vector", "the result"]
+						["number", "the result"]
 					]
 				},
-				"VectorSetLength" : {
-					"description" : "Sets the length of a vector.",
+				"MatrixDeterminant4x4" : {
+					"description" : "Calculates the determinant of a 4x4 matrix.",
 					"parameters" : [
-						["vector", "Vector", "the vector"],
-						["length", "number", "the length"]
+						["m00..m33", "16 numbers", "the matrix values"]
 					],
 					"returns" : [
-						["Vector", "the result"]
+						["number", "the result"]
 					]
 				},
-				"CoordOffset" : {
-					"description" : "Offsets a coordinate.",
+				"CoordSignedDistance" : {
+					"description" : "Calculates the distance of two coordinates along a direction vector.",
 					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["direction", "Vector", "the direction of the offset"],
-						["distance", "number", "the distance of the offset"]
+						["a", "Coord", "first coordinate"],
+						["b", "Coord", "second coordinate"],
+						["direction", "Vector", "direction vector"]
 					],
 					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CoordRotate" : {
-					"description" : "Rotates a coordinate.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["axis", "Vector", "the axis of the rotation"],
-						["angle", "number", "the angle of the rotation"],
-						["origo", "Coord", "the origo of the rotation"]
-					],
-					"returns" : [
-						["Coord", "the result"]
+						["number", "the result"]
 					]
 				},
 				"GetVectorsAngle" : {
@@ -641,7 +487,7 @@
 						["Coord2D", "the result"]
 					]
 				},
-				"CoordTurnType" : {
+				"CoordOrientation" : {
 					"description" : "Calculates the turn type of three coordinates.",
 					"parameters" : [
 						["a", "Coord", "the first coordinate"],
@@ -650,7 +496,7 @@
 						["normal", "Vector", "normal vector for calculation"]
 					],
 					"returns" : [
-						["string", "'CounterClockwise', 'Clockwise', or 'Collinear'"]
+						["Orientation", "the result"]
 					]
 				},
 				"CalculateCentroid" : {
@@ -691,94 +537,6 @@
 					],
 					"returns" : [
 						["Coord", "the result"]
-					]
-				},
-				"SphericalToCartesian" : {
-					"description" : "Converts a spherical coordinate to a cartesian coordinate.",
-					"parameters" : [
-						["radius", "number", "the radius component"],
-						["theta", "number", "the angle component"],
-						["phi", "number", "the phi component"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CartesianToSpherical" : {
-					"description" : "Converts a cartesian coordinate to a spherical coordinate.",
-					"parameters" : [
-						["x", "number", "the x component"],
-						["y", "number", "the y component"],
-						["z", "number", "the z component"]
-					],
-					"returns" : [
-						["SphericalCoord", "the result"]
-					]
-				},
-				"SphericalToCartesianWithOrigo" : {
-					"description" : "Converts a spherical coordinate to a cartesian coordinate with the given origo.",
-					"parameters" : [
-						["spherical", "SphericalCoord", "the coordinate"],
-						["origo", "Coord", "the origo"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CartesianToSphericalWithOrigo" : {
-					"description" : "Converts a cartesian coordinate to a spherical coordinate with the given origo.",
-					"parameters" : [
-						["cartesian", "Coord", "the coordinate"],
-						["origo", "Coord", "the origo"]
-					],
-					"returns" : [
-						["SphericalCoord", "the result"]
-					]
-				},
-				"MoveCoordOnSphere" : {
-					"description" : "Moves a coordinate on a surface of a sphere with the given angles.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["origo", "Coord", "the origo"],
-						["thetaAngle", "number", "the theta angle"],
-						["phiAngle", "number", "the phi angle"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CylindricalToCartesian" : {
-					"description" : "Converts a cylindrical coordinate to a cartesian coordinate.",
-					"parameters" : [
-						["radius", "number", "the radius component"],
-						["height", "number", "the height component"],
-						["theta", "number", "the theta component"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"GetArcLength" : {
-					"description" : "Calculates arc length between two vectors.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"],
-						["radius", "number", "the radius component"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"GetFullArcLength" : {
-					"description" : "Calculates arc length between two vectors with the given normal vector.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"],
-						["radius", "number", "the radius component"],
-						["normal", "Vector", "the normal vector"]
-					],
-					"returns" : [
-						["number", "the result"]
 					]
 				},
 				"MatrixIdentity" : {
@@ -950,6 +708,81 @@
 					],
 					"returns" : [
 						["CoordSystem", "the result"]
+					]
+				},
+				"PolarToCartesian" : {
+					"description" : "Converts a polar coordinate to a cartesian coordinate.",
+					"parameters" : [
+						["radius", "number", "the radius component"],
+						["theta", "number", "the angle component"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
+				"GetArcLengthFromAngle" : {
+					"description" : "Calculates arc length from radius and angle.",
+					"parameters" : [
+						["radius", "number", "the radius of the circle"],
+						["theta", "number", "the angle of rotation"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"GetAngleFromArcLength" : {
+					"description" : "Calculates angle from arc length.",
+					"parameters" : [
+						["radius", "number", "the radius of the circle"],
+						["arcLength", "number", "the arc length"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"SphericalToCartesian" : {
+					"description" : "Converts a spherical coordinate to a cartesian coordinate.",
+					"parameters" : [
+						["radius", "number", "the radius component"],
+						["theta", "number", "the angle component"],
+						["phi", "number", "the phi component"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"CylindricalToCartesian" : {
+					"description" : "Converts a cylindrical coordinate to a cartesian coordinate.",
+					"parameters" : [
+						["radius", "number", "the radius component"],
+						["height", "number", "the height component"],
+						["theta", "number", "the theta component"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"GetArcLength" : {
+					"description" : "Calculates arc length between two vectors.",
+					"parameters" : [
+						["a", "Vector", "the first vector"],
+						["b", "Vector", "the second vector"],
+						["radius", "number", "the radius component"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"GetFullArcLength" : {
+					"description" : "Calculates arc length between two vectors with the given normal vector.",
+					"parameters" : [
+						["a", "Vector", "the first vector"],
+						["b", "Vector", "the second vector"],
+						["radius", "number", "the radius component"],
+						["normal", "Vector", "the normal vector"]
+					],
+					"returns" : [
+						["number", "the result"]
 					]
 				},
 				"CoordSectorPosition2D" : {
@@ -1324,7 +1157,7 @@
 						["polygon", "Polygon2D", "the polygon"]
 					],
 					"returns" : [
-						["string", "'CounterClockwise', 'Clockwise', or 'Invalid'"]
+						["Orientation", "the result"]
 					]
 				},
 				"ChangePolygonOrientation2D" : {
@@ -1348,7 +1181,7 @@
 						["polygon", "Polygon2D", "the polygon"]
 					],
 					"returns" : [
-						["string", "'Concave', 'Convex', or 'Invalid'"]
+						["Complexity", "the result"]
 					]
 				},
 				"CoordPolygonPosition2D" : {
@@ -1610,6 +1443,26 @@
 								["Coord2D", "this pointer"]
 							]
 						},
+						"Offset" : {
+							"description" : "Offsets the coordinate.",
+							"parameters" : [
+								["direction", "Vector2D", "the direction of the offset"],
+								["distance", "number", "the distance of the offset"]
+							],
+							"returns" : [
+								["Coord2D", "this pointer"]
+							]
+						},
+						"Rotate" : {
+							"description" : "Rotates the coordinate.",
+							"parameters" : [
+								["angle", "number", "the angle of the rotation"],
+								["origo", "Coord2D", "the origo of the rotation"]
+							],
+							"returns" : [
+								["Coord2D", "this pointer"]
+							]
+						},
 						"ToString" : {
 							"description" : "Converts the coordinate values to string.",
 							"returns" : [
@@ -1627,34 +1480,6 @@
 				"Vector2D" : {
 					"description" : "Same as Coord2D."
 				},
-				"PolarCoord" : {
-					"description" : "Represents a 2D polar coordinate.",
-					"parameters" : [
-						["radius", "number", "the first component"],
-						["angle", "number", "the second component"]
-					],
-					"functions" : {
-						"Set" : {
-							"description" : "Sets the coordinate.",
-							"parameters" : [
-								["radius", "number", "the first component"],
-								["angle", "number", "the second component"]
-							]
-						},
-						"ToString" : {
-							"description" : "Converts the coordinate values to string.",
-							"returns" : [
-								["string", "the string representation of the coordinate"]
-							]
-						},
-						"Clone" : {
-							"description" : "Clones the coordinate.",
-							"returns" : [
-								["PolarCoord", "a cloned instance"]
-							]
-						}
-					}
-				},
 				"Coord" : {
 					"description" : "Represents a 3D coordinate.",
 					"parameters" : [
@@ -1669,6 +1494,85 @@
 								["x", "number", "the first component"],
 								["y", "number", "the second component"],
 								["z", "number", "the third component"]
+							]
+						},
+						"IsEqual" : {
+							"description" : "Returns if the coordinate is equal with the given one.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"IsEqualWithEps" : {
+							"description" : "Returns if the coordinate is equal with the given one. Uses the given epsilon for comparison.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"],
+								["eps", "number", "the epsilon"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"DistanceTo" : {
+							"description" : "Calculates the coordinate distance to the given one.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"Length" : {
+							"description" : "Calculates the length of the coordinate vector.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"MultiplyScalar" : {
+							"description" : "Multiplies the vector with a scalar.",
+							"parameters" : [
+								["scalar", "number", "the scalar"]
+							],
+							"returns" : [
+								["Coord", "this pointer"]
+							]
+						},
+						"Normalize" : {
+							"description" : "Normalizes the coordinate vector.",
+							"returns" : [
+								["Coord", "this pointer"]
+							]
+						},
+						"SetLength" : {
+							"description" : "Sets the length of the coordinate vector.",
+							"parameters" : [
+								["length", "number", "the length"]
+							],
+							"returns" : [
+								["Coord", "this pointer"]
+							]
+						},
+						"Offset" : {
+							"description" : "Offsets the coordinate.",
+							"parameters" : [
+								["direction", "Vector", "the direction of the offset"],
+								["distance", "number", "the distance of the offset"]
+							],
+							"returns" : [
+								["Coord", "this pointer"]
+							]
+						},
+						"Rotate" : {
+							"description" : "Rotates the coordinate.",
+							"parameters" : [
+								["axis", "Vector", "the axis of the rotation"],
+								["angle", "number", "the angle of the rotation"],
+								["origo", "Coord", "the origo of the rotation"]
+							],
+							"returns" : [
+								["Coord", "this pointer"]
 							]
 						},
 						"ToString" : {
@@ -1687,36 +1591,6 @@
 				},
 				"Vector" : {
 					"description" : "Same as Coord."
-				},
-				"SphericalCoord" : {
-					"description" : "Represents a 3D spherical coordinate.",
-					"parameters" : [
-						["radius", "number", "the first component"],
-						["theta", "number", "the second component"],
-						["phi", "number", "the third component"]
-					],
-					"functions" : {
-						"Set" : {
-							"description" : "Sets the coordinate.",
-							"parameters" : [
-								["radius", "number", "the first component"],
-								["theta", "number", "the second component"],
-								["phi", "number", "the third component"]
-							]
-						},
-						"ToString" : {
-							"description" : "Converts the coordinate values to string.",
-							"returns" : [
-								["string", "the string representation of the coordinate"]
-							]
-						},
-						"Clone" : {
-							"description" : "Clones the coordinate.",
-							"returns" : [
-								["SphericalCoord", "a cloned instance"]
-							]
-						}
-					}
 				},
 				"CoordSystem" : {
 					"description" : "Represents coordinate system.",
@@ -2387,6 +2261,24 @@
 							]
 						}
 					}
+				}
+			},
+			"enums" : {
+				"Orientation" : {
+					"description" : "Orientation of coordinates.",
+					"values" : [
+						["Invalid", "invalid orientation or collinear"],
+						["CounterClockwise", "counter clockwise orientation"],
+						["Clockwise", "clockwise orientation"]
+					]
+				},
+				"Complexity" : {
+					"description" : "Complexity of polygon.",
+					"values" : [
+						["Invalid", "invalid polygon"],
+						["Convex", "convex polygon"],
+						["Concave", "concave polygon"]
+					]
 				}
 			}
 		},

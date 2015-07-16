@@ -43,7 +43,8 @@ JSM.CreateOctreeChildNodes = function (originalBox, createNodeCallback)
 {
 	function CreateNode (originalBox, createNodeCallback, dirX, dirY, dirZ)
 	{
-		var size = JSM.VectorMultiply (originalBox.GetSize (), 0.5);
+		var size = originalBox.GetSize ().Clone ();
+		size.MultiplyScalar (0.5);
 		var min = new JSM.Coord (
 			originalBox.min.x + dirX * size.x,
 			originalBox.min.y + dirY * size.y,
@@ -137,7 +138,7 @@ JSM.Octree.prototype.FindCoordInNode = function (coord, node)
 	var i, current;
 	for (i = 0; i < node.coords.length; i++) {
 		current = node.coords[i];
-		if (JSM.CoordIsEqual (coord, this.coords[current])) {
+		if (coord.IsEqual (this.coords[current])) {
 			return current;
 		}
 	}

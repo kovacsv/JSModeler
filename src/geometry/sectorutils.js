@@ -76,7 +76,8 @@ JSM.ProjectCoordToSector2D = function (coord, sector)
 		return end;
 	}
 	
-	var dir = JSM.CoordSub2D (end, beg).MultiplyScalar (u);
+	var dir = JSM.CoordSub2D (end, beg);
+	dir.MultiplyScalar (u);
 	var result = JSM.CoordAdd2D (beg, dir);
 	return result;
 };
@@ -108,15 +109,16 @@ JSM.CoordSectorPosition = function (coord, sector)
 
 	var denom = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1);
 	if (JSM.IsZero (denom)) {
-		if (JSM.CoordIsEqual (a, coord)) {
+		if (a.IsEqual (coord)) {
 			return 'CoordOnSectorEndCoord';
 		}
 		return 'CoordOutsideOfSector';
 	}
 
 	var u = ((x2 - x1) * (x - x1) + (y2 - y1) * (y - y1) + (z2 - z1) * (z - z1)) / denom;
-	var c = JSM.CoordAdd (a, JSM.VectorMultiply (b, u));
-	var distance = JSM.CoordDistance (coord, c);
+	var bu = b.Clone ().MultiplyScalar (u);
+	var c = JSM.CoordAdd (a, bu);
+	var distance = coord.DistanceTo (c);
 	if (JSM.IsZero (distance)) {
 		if (JSM.IsLower (u, 0.0) || JSM.IsGreater (u, 1.0)) {
 			return 'CoordOutsideOfSector';
@@ -213,13 +215,14 @@ JSM.SectorSectorPosition2D = function (aSector, bSector, intersection)
 JSM.GetSectorSegmentation = function (sector, segmentation, coords)
 {
 	var direction = JSM.CoordSub (sector.end, sector.beg);
-	var length = JSM.CoordDistance (sector.beg, sector.end);
+	var length = sector.beg.DistanceTo (sector.end);
 	var step = length / segmentation;
 	var distance = 0.0;
 
-	var i;
+	var i, offseted;
 	for (i = 0; i <= segmentation; i++) {
-		coords.push (JSM.CoordOffset (sector.beg, direction, distance));
+		offseted = sector.beg.Clone ().Offset (direction, distance);
+		coords.push (offseted);
 		distance += step;
 	}
 };

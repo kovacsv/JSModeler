@@ -294,7 +294,7 @@ JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, 
 		for (i = 0; i < body.PolygonCount (); i++) {
 			polygon = body.GetPolygon (i);
 			projected = GetProjectedPolygonFromBody (polygon);
-			if (JSM.PolygonOrientation2D (projected) == 'CounterClockwise') {
+			if (JSM.PolygonOrientation2D (projected) == JSM.Orientation.CounterClockwise) {
 				materialIndex = polygon.GetMaterialIndex ();
 				color = materials.GetMaterial (materialIndex).diffuse;
 				drawer.DrawPolygon (projected, color, true);

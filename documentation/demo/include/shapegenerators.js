@@ -367,7 +367,7 @@ JSM.PrismGenerator.prototype.Check = function ()
 	if (!JSM.IsPositive (this.parameters.height.value)) {
 		return false;
 	}
-	if (JSM.IsZero (JSM.VectorLength (this.parameters.direction.value))) {
+	if (JSM.IsZero (this.parameters.direction.value.Length ())) {
 		return false;
 	}
 	return true;
@@ -421,7 +421,7 @@ JSM.PrismShellGenerator.prototype.Check = function ()
 	if (!JSM.IsPositive (this.parameters.width.value)) {
 		return false;
 	}
-	if (JSM.IsZero (JSM.VectorLength (this.parameters.direction.value))) {
+	if (JSM.IsZero (this.parameters.direction.value.Length ())) {
 		return false;
 	}
 	return true;
@@ -477,7 +477,7 @@ JSM.LineShellGenerator.prototype.Check = function ()
 	if (!JSM.IsPositive (this.parameters.width.value)) {
 		return false;
 	}
-	if (JSM.IsZero (JSM.VectorLength (this.parameters.direction.value))) {
+	if (JSM.IsZero (this.parameters.direction.value.Length ())) {
 		return false;
 	}
 	return true;
@@ -570,7 +570,7 @@ JSM.RevolveGenerator.prototype.Check = function ()
 	if (this.parameters.basePolyLine.value[1].length < 2) {
 		return false;
 	}
-	if (JSM.IsZero (JSM.CoordDistance (this.parameters.axisBeg.value, this.parameters.axisEnd.value))) {
+	if (JSM.IsZero (this.parameters.axisBeg.value.DistanceTo (this.parameters.axisEnd.value))) {
 		return false;
 	}
 	if (!JSM.IsPositive (this.parameters.angle.value)) {

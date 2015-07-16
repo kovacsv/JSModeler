@@ -37,8 +37,8 @@ JSM.TranslationTransformation = function (translation)
 */
 JSM.OffsetTransformation = function (direction, distance)
 {
-	var normal = JSM.VectorNormalize (direction);
-	var translation = JSM.VectorMultiply (normal, distance);
+	var normal = direction.Clone ().Normalize ();
+	var translation = normal.Clone ().MultiplyScalar (distance);
 	return JSM.TranslationTransformation (translation);
 };
 

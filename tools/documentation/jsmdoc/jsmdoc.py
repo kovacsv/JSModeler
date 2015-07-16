@@ -5,6 +5,8 @@ import re
 keywords = [
 	'Function:',
 	'Class:',
+	'Enum:',
+	'Values:',
 	'Description:',
 	'Parameters:',
 	'Returns:',
@@ -15,10 +17,12 @@ classFunctionSeparator = '.'
 
 functionKeyword = keywords[0]
 classKeyword = keywords[1]
-descriptionKeyword = keywords[2]
-parametersKeyword = keywords[3]
-returnsKeyword = keywords[4]
-exampleKeyword = keywords[5]
+enumKeyword = keywords[2]
+enumValuesKeyword = keywords[3]
+descriptionKeyword = keywords[4]
+parametersKeyword = keywords[5]
+returnsKeyword = keywords[6]
+exampleKeyword = keywords[7]
 
 class SourceFileParser:
 	def __init__ (self, fileName):
@@ -42,6 +46,8 @@ class SourceFileParser:
 				current['partType'] = functionKeyword
 			elif classKeyword in docPart.keys ():
 				current['partType'] = classKeyword
+			elif enumKeyword in docPart.keys ():
+				current['partType'] = enumKeyword
 			current['partContent'] = docPart
 			docParts.append (current)
 		return docParts
@@ -127,7 +133,7 @@ class SourceFileParser:
 			line = lines[i].strip ()
 			keyword = self.GetKeyword (line)
 			if keyword != None:
-				if keyword == parametersKeyword or keyword == returnsKeyword:
+				if keyword == parametersKeyword or keyword == returnsKeyword or keyword == enumValuesKeyword:
 					i = ProcessParameterLine (keyword, line, lines, i, sections)
 				elif keyword == exampleKeyword:
 					i = ProcessExampleLine (keyword, line, lines, i, sections)
@@ -181,6 +187,17 @@ class Return:
 
 	def WriteJSON (self, tabs, file, comma):
 		content = '["' + self.type + '", "' + self.description + '"]'
+		if comma:
+			content += ','
+		file.Write (tabs, content, False)
+
+class Value:
+	def __init__ (self, value, description):
+		self.value = value
+		self.description = description
+
+	def WriteJSON (self, tabs, file, comma):
+		content = '["' + self.value + '", "' + self.description + '"]'
 		if comma:
 			content += ','
 		file.Write (tabs, content, False)
@@ -239,7 +256,7 @@ class Function:
 		if self.HasExample ():
 			file.Write (tabs + 1, '"example" : "' + self.example + '"', False)
 		file.Write (tabs, '}', comma)
-
+		
 class Class:
 	def __init__ (self, name):
 		self.name = name
@@ -294,12 +311,56 @@ class Class:
 		if self.HasExample ():
 			file.Write (tabs + 1, '"example" : "' + self.example + '"', False)
 		file.Write (tabs, '}', comma)
+
+
+class Enum:
+	def __init__ (self, name):
+		self.name = name
+		self.description = ''
+		self.values = []
+		self.example = ''
+
+	def GetName (self):
+		return self.name
+
+	def HasDescription (self):
+		return self.description != ''
+		
+	def HasValues (self):
+		return len (self.values) > 0
+
+	def HasExample (self):
+		return self.example != ''
+
+	def SetDescription (self, description):
+		self.description = description
+
+	def AddValue (self, value):
+		self.values.append (value)
+		
+	def SetExample (self, example):
+		self.example = example
+
+	def WriteJSON (self, tabs, file, comma):
+		file.Write (tabs, '"' + self.name + '" : {', False)
+		if self.HasDescription ():
+			file.Write (tabs + 1, '"description" : "' + self.description + '"', self.HasValues () or self.HasExample ())
+		if self.HasValues ():
+			file.Write (tabs + 1, '"values" : [', False)
+			for i in range (0, len (self.values)):
+				parameter = self.values[i]
+				parameter.WriteJSON (tabs + 2, file, i < len (self.values) - 1)
+			file.Write (tabs + 1, ']', self.HasExample ())
+		if self.HasExample ():
+			file.Write (tabs + 1, '"example" : "' + self.example + '"', False)
+		file.Write (tabs, '}', comma)
 		
 class Module:
 	def __init__ (self, name):
 		self.name = name
 		self.functions = []
 		self.classes = []
+		self.enums = []
 
 	def IsEmpty (self):
 		if len (self.functions) > 0:
@@ -314,6 +375,9 @@ class Module:
 	def HasClasses (self):
 		return len (self.classes) > 0
 
+	def HasEnums (self):
+		return len (self.enums) > 0
+
 	def AddFunction (self, function):
 		self.functions.append (function)
 
@@ -326,6 +390,9 @@ class Module:
 				classVal.AddFunction (function)
 				break
 
+	def AddEnum (self, classVal):
+		self.enums.append (classVal)
+
 	def WriteJSON (self, tabs, file, comma):
 		file.Write (tabs, '"' + self.name + '" : {', False)
 		if self.HasFunctions ():
@@ -333,12 +400,18 @@ class Module:
 			for i in range (0, len (self.functions)):
 				function = self.functions[i]
 				function.WriteJSON (tabs + 2, file, i < len (self.functions) - 1)
-			file.Write (tabs + 1, '}', self.HasClasses ())
+			file.Write (tabs + 1, '}', self.HasClasses () or self.HasEnums ())
 		if self.HasClasses ():
 			file.Write (tabs + 1, '"classes" : {', False)
 			for i in range (0, len (self.classes)):
 				classVal = self.classes[i]
 				classVal.WriteJSON (tabs + 2, file, i < len (self.classes) - 1)
+			file.Write (tabs + 1, '}', self.HasEnums ())
+		if self.HasEnums ():
+			file.Write (tabs + 1, '"enums" : {', False)
+			for i in range (0, len (self.enums)):
+				enumVal = self.enums[i]
+				enumVal.WriteJSON (tabs + 2, file, i < len (self.enums) - 1)
 			file.Write (tabs + 1, '}', False)
 		file.Write (tabs, '}', comma)
 
@@ -404,6 +477,17 @@ class Documentation:
 				if exampleKeyword in partContent.keys ():
 					theClass.SetExample (partContent[exampleKeyword])
 				module.AddClass (theClass)
+			elif partType == enumKeyword:
+				theEnum = Enum (partName)
+				if descriptionKeyword in partContent.keys ():
+					theEnum.SetDescription (partContent[descriptionKeyword])
+				if enumValuesKeyword in partContent.keys ():
+					for value in partContent[enumValuesKeyword]:
+						theValue = Value (value[0], value[1])
+						theEnum.AddValue (theValue)
+				if exampleKeyword in partContent.keys ():
+					theEnum.SetExample (partContent[exampleKeyword])
+				module.AddEnum (theEnum)
 				
 	def WriteJSON (self, fileName):
 		file = JSONFile (fileName)

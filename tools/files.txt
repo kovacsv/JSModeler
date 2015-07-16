@@ -3,14 +3,13 @@
 ../src/core/algorithm.js
 ../src/core/async.js
 ../src/core/check.js
+../src/geometry/definitions.js
 ../src/geometry/coord2d.js
 ../src/geometry/coord.js
 ../src/geometry/determinant.js
-../src/geometry/coordutils2d.js
 ../src/geometry/coordutils.js
 ../src/geometry/matrix.js
 ../src/geometry/coordsystem.js
-../src/geometry/coordsystemutils.js
 ../src/geometry/sector.js
 ../src/geometry/sectorutils.js
 ../src/geometry/line.js

@@ -310,7 +310,7 @@ JSM.TriangleBody.prototype.GetBoundingSphere = function ()
 	
 	var i, current;
 	for (i = 0; i < this.vertices.length; i++) {
-		current = JSM.CoordDistance (center, this.vertices[i]);
+		current = center.DistanceTo (this.vertices[i]);
 		if (JSM.IsGreater (current, radius)) {
 			radius = current;
 		}
@@ -349,8 +349,8 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 				}
 			}
 			
-			averageNormal = JSM.VectorMultiply (averageNormal, 1.0 / averageCount);
-			averageNormal = JSM.VectorNormalize (averageNormal);
+			averageNormal.MultiplyScalar (1.0 / averageCount);
+			averageNormal.Normalize ();
 			return body.AddNormal (averageNormal.x, averageNormal.y, averageNormal.z);
 		}
 	

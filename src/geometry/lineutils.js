@@ -56,7 +56,7 @@ JSM.CoordLinePosition = function (coord, line, projected)
 			projected.Set (a.x, a.y, a.z);
 		}
 
-		if (JSM.CoordIsEqual (a, coord)) {
+		if (a.IsEqual (coord)) {
 			return 'CoordOnLine';
 		}
 
@@ -64,12 +64,13 @@ JSM.CoordLinePosition = function (coord, line, projected)
 	}
 
 	var u = ((x2 - x1) * (x - x1) + (y2 - y1) * (y - y1) + (z2 - z1) * (z - z1)) / denom;
-	var c = JSM.CoordAdd (a, JSM.VectorMultiply (b, u));
+	var bu = b.Clone ().MultiplyScalar (u);
+	var c = JSM.CoordAdd (a, bu);
 	if (projected !== undefined) {
 		projected.Set (c.x, c.y, c.z);
 	}
 
-	var distance = JSM.CoordDistance (coord, c);
+	var distance = coord.DistanceTo (c);
 	if (JSM.IsZero (distance)) {
 		return 'CoordOnLine';
 	}
@@ -111,7 +112,8 @@ JSM.ProjectCoordToLine = function (coord, line)
 	}
 
 	var u = ((x2 - x1) * (x - x1) + (y2 - y1) * (y - y1) + (z2 - z1) * (z - z1)) / denom;
-	var c = JSM.CoordAdd (a, JSM.VectorMultiply (b, u));
+	var bu = b.Clone ().MultiplyScalar (u);
+	var c = JSM.CoordAdd (a, bu);
 
 	result.Set (c.x, c.y, c.z);
 	return result;
@@ -136,11 +138,11 @@ JSM.LineLineClosestPoint = function (aLine, bLine, aClosestPoint, bClosestPoint)
 		return result;
 	}
 
-	var aDir = JSM.VectorNormalize (aLine.direction);
+	var aDir = aLine.direction.Clone ().Normalize ();
 	var aStart = aLine.start;
 	var aEnd = JSM.CoordAdd (aStart, aDir);
 
-	var bDir = JSM.VectorNormalize (bLine.direction);
+	var bDir = bLine.direction.Clone ().Normalize ();
 	var bStart = bLine.start;
 	var bEnd = JSM.CoordAdd (bStart, bDir);
 	
@@ -161,13 +163,14 @@ JSM.LineLineClosestPoint = function (aLine, bLine, aClosestPoint, bClosestPoint)
 	var mub = (d0232 + mua * d3210) / d3232;
 
 	if (aClosestPoint !== undefined) {
-		aDir = JSM.VectorNormalize (JSM.CoordSub (aEnd, aStart));
-		var aClosest = JSM.CoordAdd (aStart, JSM.VectorMultiply (aDir, mua));
+		aDir.MultiplyScalar (mua);
+		var aClosest = JSM.CoordAdd (aStart, aDir);
 		aClosestPoint.Set (aClosest.x, aClosest.y, aClosest.z);
 	}
 	
 	if (bClosestPoint !== undefined) {
-		var bClosest = JSM.CoordAdd (bStart, JSM.VectorMultiply (bDir, mub));
+		bDir.MultiplyScalar (mub);
+		var bClosest = JSM.CoordAdd (bStart, bDir);
 		bClosestPoint.Set (bClosest.x, bClosest.y, bClosest.z);
 	}
 	
@@ -192,7 +195,7 @@ JSM.LineLinePosition = function (aLine, bLine, intersection)
 		return 'LinesIntersectsCoincident';
 	}
 	
-	if (JSM.CoordIsEqual (aClosestPoint, bClosestPoint)) {
+	if (aClosestPoint.IsEqual (bClosestPoint)) {
 		if (intersection !== undefined) {
 			intersection.Set (aClosestPoint.x, aClosestPoint.y, aClosestPoint.z);
 		}

@@ -54,8 +54,8 @@ JSM.CalculateBodyPolygonNormal = function (body, index)
 		}
 	}
 
-	var normalized = JSM.VectorNormalize (normal);
-	return normalized;
+	normal.Normalize ();
+	return normal;
 };
 
 /**
@@ -117,8 +117,8 @@ JSM.CalculateBodyVertexNormals = function (body)
 					}
 				}
 				
-				average = JSM.VectorMultiply (average, 1.0 / count);
-				average = JSM.VectorNormalize (average);
+				average.MultiplyScalar (1.0 / count);
+				average.Normalize ();
 				result[i].push (average);
 			}
 		} else {
@@ -164,25 +164,22 @@ JSM.MakeBodyInsideOut = function (body)
 */
 JSM.SoftMoveBodyVertex = function (body, index, radius, direction, distance)
 {
-	var referenceCoord = body.GetVertex (index).position;
+	var referenceCoord = body.GetVertexPosition (index).Clone ();
 
 	var eps = 0.00001;
 	var a = distance;
 	var b = 0.0;
 	var c = JSM.GetGaussianCParameter (radius, a, b, eps);
 
-	var i, x, currentDistance, newDistance, currentCoord;
+	var i, currentDistance, newDistance;
 	for (i = 0; i < body.VertexCount (); i++) {
-		currentDistance = JSM.CoordDistance (referenceCoord, body.GetVertex (i).position);
+		currentDistance = referenceCoord.DistanceTo (body.GetVertex (i).position);
 		if (JSM.IsGreater (currentDistance, radius)) {
 			continue;
 		}
 
-		x = currentDistance;
-		newDistance = JSM.GetGaussianValue (x, distance, b, c);
-
-		currentCoord = body.GetVertex (i).position;
-		body.GetVertex (i).position = JSM.CoordOffset (currentCoord, direction, newDistance);
+		newDistance = JSM.GetGaussianValue (currentDistance, distance, b, c);
+		body.GetVertexPosition (i).Offset (direction, newDistance);
 	}
 };
 
@@ -206,7 +203,7 @@ JSM.CalculatePolygonCentroid = function (body, index)
 		result = JSM.CoordAdd (result, body.GetVertexPosition (polygon.GetVertexIndex (i)));
 	}
 	
-	result = JSM.VectorMultiply (result, 1.0 / count);
+	result.MultiplyScalar (1.0 / count);
 	return result;
 };
 

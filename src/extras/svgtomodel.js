@@ -297,7 +297,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			var basePolygon = [];
 			
 			var i, coord;
-			if (orientation == 'Clockwise') {
+			if (orientation == JSM.Orientation.Clockwise) {
 				for (i = 0; i < polygon.VertexCount (); i++) {
 					coord = polygon.GetVertex (i);
 					basePolygon.push (new JSM.Coord (coord.x, 0.0, -coord.y));
@@ -317,7 +317,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			basePolygon.push (null);
 		
 			var i, coord;
-			if (orientation == 'CounterClockwise') {
+			if (orientation == JSM.Orientation.CounterClockwise) {
 				for (i = 0; i < polygon.VertexCount (); i++) {
 					coord = polygon.GetVertex (i);
 					basePolygon.push (new JSM.Coord (coord.x, 0.0, -coord.y));

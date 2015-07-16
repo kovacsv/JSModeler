@@ -11,8 +11,8 @@ JSM.CalculatePlanarTextureCoord = function (coord, system)
 {
 	var result = new JSM.Coord2D (0.0, 0.0);
 
-	var e1 = JSM.VectorNormalize (system.e1);
-	var e2 = JSM.VectorNormalize (system.e2);
+	var e1 = system.e1.Clone ().Normalize ();
+	var e2 = system.e2.Clone ().Normalize ();
 	var e3 = JSM.VectorCross (system.e1, system.e2);
 
 	var xyPlane = JSM.GetPlaneFromCoordAndDirection (system.origo, e3);
@@ -40,9 +40,9 @@ JSM.CalculateCubicTextureCoord = function (coord, normal, system)
 {
 	var result = new JSM.Coord2D (0.0, 0.0);
 
-	var e1 = JSM.VectorNormalize (system.e1);
-	var e2 = JSM.VectorNormalize (system.e2);
-	var e3 = JSM.VectorNormalize (system.e3);
+	var e1 = system.e1.Clone ().Normalize ();
+	var e2 = system.e2.Clone ().Normalize ();
+	var e3 = system.e3.Clone ().Normalize ();
 
 	var correctPlane = -1;
 	var maxProduct = 0.0;
@@ -113,7 +113,7 @@ JSM.CalculateCylindricalTextureCoord = function (coord, normal, system)
 {
 	var result = new JSM.Coord2D (0.0, 0.0);
 
-	var e3Direction = JSM.VectorNormalize (system.e3);
+	var e3Direction = system.e3.Clone ().Normalize ();
 	if (JSM.VectorsAreCollinear (e3Direction, normal)) {
 		result = JSM.CalculateCubicTextureCoord (coord, normal, system);
 		return [result, 0.0];
@@ -123,10 +123,10 @@ JSM.CalculateCylindricalTextureCoord = function (coord, normal, system)
 	var projectedCoord = JSM.ProjectCoordToLine (coord, baseLine);
 	var projectedDistance = JSM.CoordSignedDistance (system.origo, projectedCoord, e3Direction);
 
-	var e1Direction = JSM.VectorNormalize (system.e1);
+	var e1Direction = system.e1.Clone ().Normalize ();
 	var coordDirection = JSM.CoordSub (coord, projectedCoord);
 	var angle = JSM.GetVectorsFullAngle (coordDirection, e1Direction, e3Direction);
-	var radius = JSM.VectorLength (system.e1);
+	var radius = system.e1.Length ();
 
 	result.x = angle * radius;
 	result.y = projectedDistance;
@@ -208,7 +208,7 @@ JSM.CalculatePolygonCylindricalTextureCoords = function (body, index, normal)
 		angles.push (textureValues[1]);
 	}
 
-	var e3Direction = JSM.VectorNormalize (system.e3);
+	var e3Direction = system.e3.Clone ().Normalize ();
 	if (JSM.VectorsAreCollinear (e3Direction, normal)) {
 		return result;
 	}
@@ -227,7 +227,7 @@ JSM.CalculatePolygonCylindricalTextureCoords = function (body, index, normal)
 	}
 
 	if (needRepair) {
-		var radius = JSM.VectorLength (system.e1);
+		var radius = system.e1.Length ();
 		for (i = 0; i < angles.length; i++) {
 			if (JSM.IsLower (angles[i], Math.PI)) {
 				result[i].x = radius * (angles[i] + 2.0 * Math.PI);

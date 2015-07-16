@@ -98,7 +98,7 @@ JSM.Viewer.prototype.GetBoundingSphere = function ()
 		geometry = this.renderer.geometries[i];
 		for (j = 0; j < geometry.VertexCount (); j = j + 1) {
 			vertex = geometry.GetTransformedVertex (j);
-			distance = JSM.CoordDistance (center, vertex);
+			distance = center.DistanceTo (vertex);
 			if (JSM.IsGreater (distance, radius)) {
 				radius = distance;
 			}

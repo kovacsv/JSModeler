@@ -452,8 +452,8 @@ JSM.Body.prototype.SetCylindricalTextureProjection = function (origo, radius, xD
 	this.SetTextureProjectionType ('Cylindrical');
 	this.SetTextureProjectionCoords (new JSM.CoordSystem (
 		origo,
-		JSM.VectorSetLength (xDirection, radius),
-		JSM.VectorSetLength (JSM.VectorCross (zDirection, xDirection), radius),
+		xDirection.Clone ().SetLength (radius),
+		JSM.VectorCross (zDirection, xDirection).SetLength (radius),
 		zDirection
 	));
 };
@@ -531,7 +531,7 @@ JSM.Body.prototype.GetBoundingSphere = function ()
 	
 	var i, current;
 	for (i = 0; i < this.vertices.length; i++) {
-		current = JSM.CoordDistance (center, this.vertices[i].position);
+		current = center.DistanceTo (this.vertices[i].position);
 		if (JSM.IsGreater (current, radius)) {
 			radius = current;
 		}
@@ -547,8 +547,8 @@ JSM.Body.prototype.GetBoundingSphere = function ()
 */
 JSM.Body.prototype.OffsetToOrigo = function ()
 {
-	var center = this.GetCenter ();
-	center = JSM.VectorMultiply (center, -1.0);
+	var center = this.GetCenter ().Clone ();
+	center.MultiplyScalar (-1.0);
 
 	var i;
 	for (i = 0; i < this.vertices.length; i++) {
