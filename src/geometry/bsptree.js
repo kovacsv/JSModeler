@@ -288,12 +288,12 @@ JSM.TraverseBSPTreeForEyePosition = function (bspTree, eyePosition, nodeFound)
 	function TraverseNode (node)
 	{
 		if (node !== null) {
-			var coordPlanePosition = JSM.CoordPlanePosition (eyePosition, node.plane);
-			if (coordPlanePosition == 'CoordInFrontOfPlane') {
+			var coordPlanePosition = node.plane.CoordPosition (eyePosition);
+			if (coordPlanePosition == JSM.CoordPlanePosition.CoordInFrontOfPlane) {
 				TraverseNode (node.inside);
 				nodeFound (node);
 				TraverseNode (node.outside);
-			} else if (coordPlanePosition == 'CoordAtBackOfPlane') {
+			} else if (coordPlanePosition == JSM.CoordPlanePosition.CoordAtBackOfPlane) {
 				TraverseNode (node.outside);
 				nodeFound (node);
 				TraverseNode (node.inside);

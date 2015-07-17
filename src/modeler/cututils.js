@@ -21,7 +21,7 @@ JSM.CutBodyByPlane = function (body, plane)
 		{
 			direction = JSM.CoordSub (polygon[to], polygon[from]).Normalize ();
 			line = new JSM.Line (polygon[from], direction);
-			intersection = JSM.LinePlaneIntersection (line, plane);
+			intersection = plane.LineIntersection (line);
 			rawResult.push (new JSM.Coord (intersection.x, intersection.y, intersection.z));
 			rawIndexTable.push (-1);
 		}
@@ -35,8 +35,8 @@ JSM.CutBodyByPlane = function (body, plane)
 		var i, position, vertex;
 		for (i = 0; i < count; i++) {
 			vertex = polygon[i];
-			position = JSM.CoordPlanePosition (vertex, plane);
-			front.push (position !== 'CoordAtBackOfPlane');
+			position = plane.CoordPosition (vertex);
+			front.push (position !== JSM.CoordPlanePosition.CoordAtBackOfPlane);
 			if (i > 0 && front[i - 1] !== front[i]) {
 				needCut = true;
 			}

@@ -309,7 +309,7 @@ JSM.TriangleOctree.prototype.AddTriangleToNode = function (v0, v1, v2, root, use
 {
 	function IsTriangleInNode (v0, v1, v2, node)
 	{
-		return JSM.IsCoordInBox (v0, node.box) && JSM.IsCoordInBox (v1, node.box) && JSM.IsCoordInBox (v2, node.box);
+		return node.box.IsCoordInside (v0) && node.box.IsCoordInside (v1) && node.box.IsCoordInside (v2);
 	}
 	
 	if (!IsTriangleInNode (v0, v1, v2, root)) {

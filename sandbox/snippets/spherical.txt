@@ -13,13 +13,13 @@ JSM.CalculateSphericalTextureCoord = function (coord, normal, system)
 	var result = new JSM.Coord2D (0.0, 0.0);
 
 	var e3Direction = system.e3.Clone ().Normalize ();
-	if (JSM.VectorsAreCollinear (e3Direction, normal)) {
+	if (e3Direction.IsCollinearWith (normal)) {
 		result = JSM.CalculateCubicTextureCoord (coord, normal, system);
 		return [result, 0.0];
 	}
 
 	var baseLine = new JSM.Line (system.origo, e3Direction);
-	var projectedCoord = JSM.ProjectCoordToLine (coord, baseLine);
+	var projectedCoord = baseLine.ProjectCoord (coord);
 	var radius = system.e1.Length ();
 
 	if (!coord.IsEqual (projectedCoord)) {

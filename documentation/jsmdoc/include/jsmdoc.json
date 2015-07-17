@@ -318,27 +318,6 @@
 						["Coord2D", "the result"]
 					]
 				},
-				"MidCoord2D" : {
-					"description" : "Calculates the coordinate in the middle of two coordinates.",
-					"parameters" : [
-						["a", "Coord2D", "first coordinate"],
-						["b", "Coord2D", "second coordinate"]
-					],
-					"returns" : [
-						["Coord2D", "the result"]
-					]
-				},
-				"CoordOrientation2D" : {
-					"description" : "Calculates the turn type of three coordinates.",
-					"parameters" : [
-						["a", "Coord2D", "the first coordinate"],
-						["b", "Coord2D", "the second coordinate"],
-						["c", "Coord2D", "the third coordinate"]
-					],
-					"returns" : [
-						["Orientation", "the result"]
-					]
-				},
 				"CoordFromArray" : {
 					"description" : "Returns a coordinate from an array of components.",
 					"parameters" : [
@@ -372,16 +351,6 @@
 					"parameters" : [
 						["a", "Coord", "the first coordinate"],
 						["b", "Coord", "the second coordinate"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"MidCoord" : {
-					"description" : "Calculates the coordinate in the middle of two coordinates.",
-					"parameters" : [
-						["a", "Coord", "first coordinate"],
-						["b", "Coord", "second coordinate"]
 					],
 					"returns" : [
 						["Coord", "the result"]
@@ -434,22 +403,73 @@
 						["number", "the result"]
 					]
 				},
+				"MidCoord2D" : {
+					"description" : "Calculates the coordinate in the middle of two coordinates.",
+					"parameters" : [
+						["a", "Coord2D", "first coordinate"],
+						["b", "Coord2D", "second coordinate"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
+				"CoordOrientation2D" : {
+					"description" : "Calculates the turn type of three coordinates.",
+					"parameters" : [
+						["a", "Coord2D", "the first coordinate"],
+						["b", "Coord2D", "the second coordinate"],
+						["c", "Coord2D", "the third coordinate"]
+					],
+					"returns" : [
+						["Orientation", "the result"]
+					]
+				},
+				"PolarToCartesian" : {
+					"description" : "Converts a polar coordinate to a cartesian coordinate.",
+					"parameters" : [
+						["radius", "number", "the radius component"],
+						["theta", "number", "the angle component"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
+				"GetArcLengthFromAngle" : {
+					"description" : "Calculates arc length from radius and angle.",
+					"parameters" : [
+						["radius", "number", "the radius of the circle"],
+						["theta", "number", "the angle of rotation"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"GetAngleFromArcLength" : {
+					"description" : "Calculates angle from arc length.",
+					"parameters" : [
+						["radius", "number", "the radius of the circle"],
+						["arcLength", "number", "the arc length"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"MidCoord" : {
+					"description" : "Calculates the coordinate in the middle of two coordinates.",
+					"parameters" : [
+						["a", "Coord", "first coordinate"],
+						["b", "Coord", "second coordinate"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
 				"CoordSignedDistance" : {
 					"description" : "Calculates the distance of two coordinates along a direction vector.",
 					"parameters" : [
 						["a", "Coord", "first coordinate"],
 						["b", "Coord", "second coordinate"],
 						["direction", "Vector", "direction vector"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"GetVectorsAngle" : {
-					"description" : "Calculates the angle of two vectors.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"]
 					],
 					"returns" : [
 						["number", "the result"]
@@ -466,27 +486,6 @@
 						["number", "the result"]
 					]
 				},
-				"VectorsAreCollinear" : {
-					"description" : "Determines if two vectors are collinear.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"GetCoord2DFromCoord" : {
-					"description" : "Transforms a 3D coordinate to a 2D coordinate.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["origo", "Coord", "the origo of transformation"],
-						["normal", "Vector", "the normal vector of transformation"]
-					],
-					"returns" : [
-						["Coord2D", "the result"]
-					]
-				},
 				"CoordOrientation" : {
 					"description" : "Calculates the turn type of three coordinates.",
 					"parameters" : [
@@ -497,6 +496,51 @@
 					],
 					"returns" : [
 						["Orientation", "the result"]
+					]
+				},
+				"SphericalToCartesian" : {
+					"description" : "Converts a spherical coordinate to a cartesian coordinate.",
+					"parameters" : [
+						["radius", "number", "the radius component"],
+						["theta", "number", "the angle component"],
+						["phi", "number", "the phi component"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"CylindricalToCartesian" : {
+					"description" : "Converts a cylindrical coordinate to a cartesian coordinate.",
+					"parameters" : [
+						["radius", "number", "the radius component"],
+						["height", "number", "the height component"],
+						["theta", "number", "the theta component"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"GetArcLength" : {
+					"description" : "Calculates arc length between two vectors.",
+					"parameters" : [
+						["a", "Vector", "the first vector"],
+						["b", "Vector", "the second vector"],
+						["radius", "number", "the radius component"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"GetFullArcLength" : {
+					"description" : "Calculates arc length between two vectors with the given normal vector.",
+					"parameters" : [
+						["a", "Vector", "the first vector"],
+						["b", "Vector", "the second vector"],
+						["radius", "number", "the radius component"],
+						["normal", "Vector", "the normal vector"]
+					],
+					"returns" : [
+						["number", "the result"]
 					]
 				},
 				"CalculateCentroid" : {
@@ -692,199 +736,12 @@
 						["Coord", "the result"]
 					]
 				},
-				"CoordSystemToDirectionVectors" : {
-					"description" : "Converts coordinate system vectors to origo relative direction vectors.",
-					"parameters" : [
-						["system", "CoordSystem", "the coordinate system"]
-					],
-					"returns" : [
-						["CoordSystem", "the result"]
-					]
-				},
-				"CoordSystemToAbsoluteCoords" : {
-					"description" : "Converts coordinate system vectors to absolute coordinates.",
-					"parameters" : [
-						["system", "CoordSystem", "the coordinate system"]
-					],
-					"returns" : [
-						["CoordSystem", "the result"]
-					]
-				},
-				"PolarToCartesian" : {
-					"description" : "Converts a polar coordinate to a cartesian coordinate.",
-					"parameters" : [
-						["radius", "number", "the radius component"],
-						["theta", "number", "the angle component"]
-					],
-					"returns" : [
-						["Coord2D", "the result"]
-					]
-				},
-				"GetArcLengthFromAngle" : {
-					"description" : "Calculates arc length from radius and angle.",
-					"parameters" : [
-						["radius", "number", "the radius of the circle"],
-						["theta", "number", "the angle of rotation"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"GetAngleFromArcLength" : {
-					"description" : "Calculates angle from arc length.",
-					"parameters" : [
-						["radius", "number", "the radius of the circle"],
-						["arcLength", "number", "the arc length"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"SphericalToCartesian" : {
-					"description" : "Converts a spherical coordinate to a cartesian coordinate.",
-					"parameters" : [
-						["radius", "number", "the radius component"],
-						["theta", "number", "the angle component"],
-						["phi", "number", "the phi component"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CylindricalToCartesian" : {
-					"description" : "Converts a cylindrical coordinate to a cartesian coordinate.",
-					"parameters" : [
-						["radius", "number", "the radius component"],
-						["height", "number", "the height component"],
-						["theta", "number", "the theta component"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"GetArcLength" : {
-					"description" : "Calculates arc length between two vectors.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"],
-						["radius", "number", "the radius component"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"GetFullArcLength" : {
-					"description" : "Calculates arc length between two vectors with the given normal vector.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"],
-						["radius", "number", "the radius component"],
-						["normal", "Vector", "the normal vector"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"CoordSectorPosition2D" : {
-					"description" : "Calculates the position of a coordinate and a sector.",
-					"parameters" : [
-						["coord", "Coord2D", "the coordinate"],
-						["sector", "Sector2D", "the sector"]
-					],
-					"returns" : [
-						["string", "'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'"]
-					]
-				},
-				"ProjectCoordToSector2D" : {
-					"description" : "Projects a coordinate to a sector.",
-					"parameters" : [
-						["coord", "Coord2D", "the coordinate"],
-						["sector", "Sector2D", "the sector"]
-					],
-					"returns" : [
-						["Coord2D", "the projected coordinate"]
-					]
-				},
-				"CoordSectorPosition" : {
-					"description" : "Calculates the position of a coordinate and a sector.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["sector", "Sector", "the sector"]
-					],
-					"returns" : [
-						["string", "'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'"]
-					]
-				},
-				"SectorSectorPosition2D" : {
-					"description" : "Calculates the position of two sectors.",
-					"parameters" : [
-						["aSector", "Sector2D", "the first sector"],
-						["bSector", "Sector2D", "the second sector"]
-					],
-					"returns" : [
-						["string", "'SectorsIntersectsCoincident', 'SectorsIntersectsEndPoint', 'SectorsIntersectsOnePoint', or 'SectorsDontIntersects'"]
-					]
-				},
 				"GetSectorSegmentation" : {
 					"description" : "Returns the segmented coordinates of a sector.",
 					"parameters" : [
 						["sector", "Sector", "the sector"],
 						["segmentation", "integer", "the segmentation"],
 						["coords", "Coord[*]", "(out) the result coordinates"]
-					]
-				},
-				"CoordLinePosition2D" : {
-					"description" : "Calculates the position of a coordinate and a line.",
-					"parameters" : [
-						["coord", "Coord2D", "the coordinate"],
-						["line", "Line2D", "the line"]
-					],
-					"returns" : [
-						["string", "'CoordAtLineLeft', 'CoordAtLineRight', or 'CoordOnLine'"]
-					]
-				},
-				"CoordLinePosition" : {
-					"description" : "Calculates the position of a coordinate and a line.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["line", "Line", "the line"],
-						["projected", "Coord", "the projected coordinate"]
-					],
-					"returns" : [
-						["string", "'CoordOutsideOfLine', or 'CoordOnLine'"]
-					]
-				},
-				"ProjectCoordToLine" : {
-					"description" : "Projects a coordinate to a line.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["line", "Line", "the line"]
-					],
-					"returns" : [
-						["Coord", "the projected coordinate"]
-					]
-				},
-				"LineLineClosestPoint" : {
-					"description" : "Calculates the closest points between two lines.",
-					"parameters" : [
-						["aLine", "Line", "first line"],
-						["bLine", "Line", "second line"],
-						["aClosestPoint", "Coord", "(out) the closest point on first line"],
-						["bClosestPoint", "Coord", "(out) the closest point on second line"]
-					],
-					"returns" : [
-						["boolean", "success"]
-					]
-				},
-				"LineLinePosition" : {
-					"description" : "Calculates the position of two lines.",
-					"parameters" : [
-						["aLine", "Line", "first line"],
-						["bLine", "Line", "second line"],
-						["intersection", "Coord", "(out) the intersection point if it exists"]
-					],
-					"returns" : [
-						["string", "'LinesIntersectsCoincident', 'LinesIntersectsOnePoint', or 'LinesDontIntersects'"]
 					]
 				},
 				"BoxUnion" : {
@@ -895,16 +752,6 @@
 					],
 					"returns" : [
 						["Box", "the result"]
-					]
-				},
-				"IsCoordInBox" : {
-					"description" : "Determines if a coordinate is inside a box.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["box", "Box", "the box"]
-					],
-					"returns" : [
-						["boolean", "the result"]
 					]
 				},
 				"IdentityTransformation" : {
@@ -1006,57 +853,6 @@
 						["Plane", "the result"]
 					]
 				},
-				"CoordPlanePosition" : {
-					"description" : "Calculates the position of a coordinate and a plane.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["plane", "Plane", "the plane"]
-					],
-					"returns" : [
-						["string", "'CoordInFrontOfPlane', 'CoordAtBackOfPlane', or 'CoordOnPlane'"]
-					]
-				},
-				"LinePlanePosition" : {
-					"description" : "Calculates the position of a line and a plane.",
-					"parameters" : [
-						["line", "Line", "the line"],
-						["plane", "Plane", "the plane"],
-						["intersection", "Coord", "(out) the intersection point if it exists"]
-					],
-					"returns" : [
-						["string", "'LineParallelToPlane', or 'LineIntersectsPlane'"]
-					]
-				},
-				"LinePlaneIntersection" : {
-					"description" : "Calculates the intersection point of a line and a plane.",
-					"parameters" : [
-						["line", "Line", "the line"],
-						["plane", "Plane", "the plane"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CoordPlaneSignedDistance" : {
-					"description" : "Calculates the signed distance of a coordinate and a plane.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["plane", "Plane", "the plane"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"CoordPlaneDistance" : {
-					"description" : "Calculates the distance of a coordinate and a plane.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["plane", "Plane", "the plane"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
 				"CoordPlaneSignedDirectionalDistance" : {
 					"description" : "Calculates the signed distance of a coordinate and a plane along a direction vector.",
 					"parameters" : [
@@ -1077,16 +873,6 @@
 					],
 					"returns" : [
 						["number", "the result"]
-					]
-				},
-				"ProjectCoordToPlane" : {
-					"description" : "Projects a coordinate to a plane.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["plane", "Plane", "the plane"]
-					],
-					"returns" : [
-						["Coord", "the projected coordinate"]
 					]
 				},
 				"Project" : {
@@ -1524,6 +1310,24 @@
 								["number", "the result"]
 							]
 						},
+						"AngleTo" : {
+							"description" : "Calculates the coordinate vector angle to the given one.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"IsCollinearWith" : {
+							"description" : "Calculates the coordinate vector is collinear with the given one.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
 						"Length" : {
 							"description" : "Calculates the length of the coordinate vector.",
 							"returns" : [
@@ -1581,6 +1385,15 @@
 								["string", "the string representation of the coordinate"]
 							]
 						},
+						"ToCoord2D" : {
+							"description" : "Converts the coordinate to a 2D coordinate.",
+							"parameters" : [
+								["normal", "Vector", "the normal vector for conversion"]
+							],
+							"returns" : [
+								["Coord2D", "the result"]
+							]
+						},
 						"Clone" : {
 							"description" : "Clones the coordinate.",
 							"returns" : [
@@ -1610,6 +1423,18 @@
 								["e3", "Vector", "third direction vector"]
 							]
 						},
+						"CoordSystemToDirectionVectors" : {
+							"description" : "Converts coordinate system vectors to origo relative direction vectors.",
+							"returns" : [
+								["CoordSystem", "this pointer"]
+							]
+						},
+						"CoordSystemToAbsoluteCoords" : {
+							"description" : "Converts the coordinate system vectors to absolute coordinates.",
+							"returns" : [
+								["CoordSystem", "this pointer"]
+							]
+						},
 						"Clone" : {
 							"description" : "Clones the coordinate system.",
 							"returns" : [
@@ -1630,6 +1455,34 @@
 							"parameters" : [
 								["beg", "Coord2D", "the beginning coordinate"],
 								["end", "Coord2D", "the ending coordinate"]
+							]
+						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of the sector and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["CoordSectorPosition2D", "the result"]
+							]
+						},
+						"SectorPosition" : {
+							"description" : "Calculates the position of the sector and the given sector.",
+							"parameters" : [
+								["sector", "Sector2D", "the sector"],
+								["intersection", "Coord2D", "(out) the intersection point if it exists"]
+							],
+							"returns" : [
+								["SectorSectorPosition2D", "the result"]
+							]
+						},
+						"ProjectCoord" : {
+							"description" : "Calculates the projected coordinate of the given coordinate.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["Coord2D", "the projected coordinate"]
 							]
 						},
 						"Clone" : {
@@ -1660,6 +1513,15 @@
 								["number", "the result"]
 							]
 						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of the sector and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["CoordSectorPosition", "the result"]
+							]
+						},
 						"Clone" : {
 							"description" : "Clones the sector.",
 							"returns" : [
@@ -1682,6 +1544,15 @@
 								["direction", "Vector2D", "the direction of the line"]
 							]
 						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of the line and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["CoordLinePosition2D", "the result"]
+							]
+						},
 						"Clone" : {
 							"description" : "Clones the line.",
 							"returns" : [
@@ -1702,6 +1573,46 @@
 							"parameters" : [
 								["start", "Coord", "the start point of the line"],
 								["direction", "Vector", "the direction of the line"]
+							]
+						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of the line and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"],
+								["projected", "Coord", "(out) the projected coordinate"]
+							],
+							"returns" : [
+								["CoordLinePosition", "the result"]
+							]
+						},
+						"ProjectCoord" : {
+							"description" : "Calculates the projected coordinate of the given coordinate.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"ClosestPoint" : {
+							"description" : "Calculates the closest points between the line and a given line.",
+							"parameters" : [
+								["line", "Line", "the line"],
+								["thisClosestPoint", "Coord", "(out) the closest point on the current line"],
+								["lineClosestPoint", "Coord", "(out) the closest point on the given line"]
+							],
+							"returns" : [
+								["boolean", "success"]
+							]
+						},
+						"LinePosition" : {
+							"description" : "Calculates the position of the line and the given line.",
+							"parameters" : [
+								["line", "Line", "the line"],
+								["intersection", "Coord", "(out) the intersection point if it exists"]
+							],
+							"returns" : [
+								["LineLinePosition", "the result"]
 							]
 						},
 						"Clone" : {
@@ -1764,6 +1675,15 @@
 							"description" : "Returns the size of the box.",
 							"returns" : [
 								["Coord", "the result"]
+							]
+						},
+						"IsCoordInside" : {
+							"description" : "Determines if the given coordinate is inside the box.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["boolean", "the result"]
 							]
 						},
 						"Clone" : {
@@ -1868,6 +1788,61 @@
 							"description" : "Calculates the normal vector of the plane.",
 							"returns" : [
 								["Vector", "the result"]
+							]
+						},
+						"CoordSignedDistance" : {
+							"description" : "Calculates the signed distance of a coordinate and the plane.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"CoordDistance" : {
+							"description" : "Calculates the distance of a coordinate and the plane.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"ProjectCoord" : {
+							"description" : "Projects a coordinate to the plane.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["Coord", "the projected coordinate"]
+							]
+						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of the plane and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["CoordPlanePosition", "thre result"]
+							]
+						},
+						"LinePosition" : {
+							"description" : "Calculates the position of the plane and the given line.",
+							"parameters" : [
+								["line", "Line", "the line"],
+								["intersection", "Coord", "(out) the intersection point if it exists"]
+							],
+							"returns" : [
+								["CoordLinePosition", "the result"]
+							]
+						},
+						"LineIntersection" : {
+							"description" : "Calculates the intersection point of a line and a plane. The line should not be parallel to the plane.",
+							"parameters" : [
+								["line", "Line", "the line"]
+							],
+							"returns" : [
+								["Coord", "the result"]
 							]
 						},
 						"Clone" : {
@@ -2278,6 +2253,69 @@
 						["Invalid", "invalid polygon"],
 						["Convex", "convex polygon"],
 						["Concave", "concave polygon"]
+					]
+				},
+				"CoordSectorPosition2D" : {
+					"description" : "Position of a coordinate and a sector.",
+					"values" : [
+						["CoordInsideOfSector", "coordinate lies inside of sector"],
+						["CoordOnSectorEndCoord", "coordinate lies at the end of the sector"],
+						["CoordOutsideOfSector", "coordinate lies outside of the sector"]
+					]
+				},
+				"SectorSectorPosition2D" : {
+					"description" : "Position of two sectors.",
+					"values" : [
+						["SectorsDontIntersect", "sectors do not intersect"],
+						["SectorsIntersectCoincident", "sectors intersect coincident"],
+						["SectorsIntersectEndPoint", "sectors intersect at end point"],
+						["SectorsIntersectOnePoint", "sectors intersect one point"]
+					]
+				},
+				"CoordSectorPosition" : {
+					"description" : "Position of a coordinate and a sector.",
+					"values" : [
+						["CoordInsideOfSector", "coordinate lies inside of sector"],
+						["CoordOnSectorEndCoord", "coordinate lies at the end of the sector"],
+						["CoordOutsideOfSector", "coordinate lies outside of the sector"]
+					]
+				},
+				"CoordLinePosition2D" : {
+					"description" : "Position of a coordinate and a line.",
+					"values" : [
+						["CoordOnLine", "coordinate lies on the line"],
+						["CoordAtLineLeft", "coordinate lies on the left side of the line"],
+						["CoordAtLineRight", "coordinate lies on the left side right the line"]
+					]
+				},
+				"CoordLinePosition" : {
+					"description" : "Position of a coordinate and a line.",
+					"values" : [
+						["CoordOnLine", "coordinate lies on the line"],
+						["CoordOutsideOfLine", "coordinate lies outside of the line"]
+					]
+				},
+				"LineLinePosition" : {
+					"description" : "Position of two lines.",
+					"values" : [
+						["LinesDontIntersect", "lines do not intersect"],
+						["LinesIntersectsCoincident", "lines intersect coincident"],
+						["LinesIntersectsOnePoint", "lines intersect one point"]
+					]
+				},
+				"CoordPlanePosition" : {
+					"description" : "Position of a coordinate and a plane.",
+					"values" : [
+						["CoordOnPlane", "coordinate lies on the plane"],
+						["CoordInFrontOfPlane", "coordinate lies in front of of the plane"],
+						["CoordAtBackOfPlane", "coordinate lies at the back of the plane"]
+					]
+				},
+				"LinePlanePosition" : {
+					"description" : "Position of a line and a plane.",
+					"values" : [
+						["LineParallelToPlane", "line is parallel to the plane"],
+						["LineIntersectsPlane", "line intersects the plane"]
 					]
 				}
 			}

@@ -472,12 +472,12 @@ JSM.Body.prototype.Transform = function (transformation)
 	}
 	
 	if (this.coords !== null) {
-		var absoluteSystem = JSM.CoordSystemToAbsoluteCoords (this.coords);
-		absoluteSystem.origo = transformation.Apply (absoluteSystem.origo);
-		absoluteSystem.e1 = transformation.Apply (absoluteSystem.e1);
-		absoluteSystem.e2 = transformation.Apply (absoluteSystem.e2);
-		absoluteSystem.e3 = transformation.Apply (absoluteSystem.e3);
-		this.coords = JSM.CoordSystemToDirectionVectors (absoluteSystem);
+		this.coords.ToAbsoluteCoords ();
+		this.coords.origo = transformation.Apply (this.coords.origo);
+		this.coords.e1 = transformation.Apply (this.coords.e1);
+		this.coords.e2 = transformation.Apply (this.coords.e2);
+		this.coords.e3 = transformation.Apply (this.coords.e3);
+		this.coords.ToDirectionVectors ();
 	}
 };
 

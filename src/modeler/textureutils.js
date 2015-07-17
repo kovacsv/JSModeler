@@ -19,9 +19,9 @@ JSM.CalculatePlanarTextureCoord = function (coord, system)
 	var xzPlane = JSM.GetPlaneFromCoordAndDirection (system.origo, e2);
 	var yzPlane = JSM.GetPlaneFromCoordAndDirection (system.origo, e1);
 	
-	var projected = JSM.ProjectCoordToPlane (coord, xyPlane);
-	result.x = JSM.CoordPlaneSignedDistance (projected, yzPlane);
-	result.y = JSM.CoordPlaneSignedDistance (projected, xzPlane);
+	var projected = xyPlane.ProjectCoord (coord);
+	result.x = yzPlane.CoordSignedDistance (projected);
+	result.y = xzPlane.CoordSignedDistance (projected);
 
 	return result;
 };
@@ -114,13 +114,13 @@ JSM.CalculateCylindricalTextureCoord = function (coord, normal, system)
 	var result = new JSM.Coord2D (0.0, 0.0);
 
 	var e3Direction = system.e3.Clone ().Normalize ();
-	if (JSM.VectorsAreCollinear (e3Direction, normal)) {
+	if (e3Direction.IsCollinearWith (normal)) {
 		result = JSM.CalculateCubicTextureCoord (coord, normal, system);
 		return [result, 0.0];
 	}
 
 	var baseLine = new JSM.Line (system.origo, e3Direction);
-	var projectedCoord = JSM.ProjectCoordToLine (coord, baseLine);
+	var projectedCoord = baseLine.ProjectCoord (coord);
 	var projectedDistance = JSM.CoordSignedDistance (system.origo, projectedCoord, e3Direction);
 
 	var e1Direction = system.e1.Clone ().Normalize ();
@@ -209,7 +209,7 @@ JSM.CalculatePolygonCylindricalTextureCoords = function (body, index, normal)
 	}
 
 	var e3Direction = system.e3.Clone ().Normalize ();
-	if (JSM.VectorsAreCollinear (e3Direction, normal)) {
+	if (e3Direction.IsCollinearWith (normal)) {
 		return result;
 	}
 	

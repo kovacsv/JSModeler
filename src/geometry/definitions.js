@@ -1,4 +1,3 @@
-
 JSM.Eps = 0.00000001;
 JSM.Inf = 9999999999;
 JSM.RadDeg = 57.29577951308232;
@@ -192,32 +191,4 @@ JSM.ArcCos = function (value)
 	}
 	
 	return Math.acos (value);
-};
-
-/**
-* Enum: Orientation
-* Description: Orientation of coordinates.
-* Values:
-*	{Invalid} invalid orientation or collinear
-*	{CounterClockwise} counter clockwise orientation
-*	{Clockwise} clockwise orientation
-*/
-JSM.Orientation = {
-	Invalid : 0,
-	CounterClockwise : 1,
-	Clockwise : 2
-};
-
-/**
-* Enum: Complexity
-* Description: Complexity of polygon.
-* Values:
-*	{Invalid} invalid polygon
-*	{Convex} convex polygon
-*	{Concave} concave polygon
-*/
-JSM.Complexity = {
-	Invalid : 0,
-	Convex : 1,
-	Concave : 2
 };

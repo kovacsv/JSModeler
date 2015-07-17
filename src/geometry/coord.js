@@ -69,6 +69,39 @@ JSM.Coord.prototype.DistanceTo = function (coord)
 };
 
 /**
+* Function: Coord.AngleTo
+* Description: Calculates the coordinate vector angle to the given one.
+* Parameters:
+*	coord {Coord} the coordinate
+* Returns:
+*	{number} the result
+*/
+JSM.Coord.prototype.AngleTo = function (coord)
+{
+	var aDirection = this.Clone ().Normalize ();
+	var bDirection = coord.Clone ().Normalize ();
+	if (aDirection.IsEqual (bDirection)) {
+		return 0.0;
+	}
+	var product = JSM.VectorDot (aDirection, bDirection);
+	return JSM.ArcCos (product);
+};
+
+/**
+* Function: Coord.IsCollinearWith
+* Description: Calculates the coordinate vector is collinear with the given one.
+* Parameters:
+*	coord {Coord} the coordinate
+* Returns:
+*	{boolean} the result
+*/
+JSM.Coord.prototype.IsCollinearWith = function (coord)
+{
+	var angle = this.AngleTo (coord);
+	return JSM.IsEqual (angle, 0.0) || JSM.IsEqual (angle, Math.PI);
+};
+
+/**
 * Function: Coord.Length
 * Description: Calculates the length of the coordinate vector.
 * Returns:
@@ -193,6 +226,24 @@ JSM.Coord.prototype.ToString = function ()
 };
 
 /**
+* Function: Coord.ToCoord2D
+* Description: Converts the coordinate to a 2D coordinate.
+* Parameters:
+*	normal {Vector} the normal vector for conversion
+* Returns:
+*	{Coord2D} the result
+*/
+JSM.Coord.prototype.ToCoord2D = function (normal)
+{
+	var origo = new JSM.Coord (0.0, 0.0, 0.0);
+	var zNormal = new JSM.Vector (0.0, 0.0, 1.0);
+	var axis = JSM.VectorCross (normal, zNormal);
+	var angle = normal.AngleTo (zNormal);
+	var rotated = this.Clone ().Rotate (axis, angle, origo);
+	return new JSM.Coord2D (rotated.x, rotated.y);
+};
+
+/**
 * Function: Coord.Clone
 * Description: Clones the coordinate.
 * Returns:
@@ -261,20 +312,6 @@ JSM.CoordAdd = function (a, b)
 JSM.CoordSub = function (a, b)
 {
 	return new JSM.Coord (a.x - b.x, a.y - b.y, a.z - b.z);
-};
-
-/**
-* Function: MidCoord
-* Description: Calculates the coordinate in the middle of two coordinates.
-* Parameters:
-*	a {Coord} first coordinate
-*	b {Coord} second coordinate
-* Returns:
-*	{Coord} the result
-*/
-JSM.MidCoord = function (a, b)
-{
-	return new JSM.Coord ((a.x + b.x) / 2.0, (a.y + b.y) / 2.0, (a.z + b.z) / 2.0);
 };
 
 /**

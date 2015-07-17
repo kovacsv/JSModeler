@@ -1179,7 +1179,7 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 
 			nextDir = JSM.CoordSub (basePolyLine[next], basePolyLine[curr]);
 			prevDir = JSM.CoordSub (basePolyLine[prev], basePolyLine[curr]);
-			angle = JSM.GetVectorsAngle (nextDir, prevDir) / 2.0;
+			angle = nextDir.AngleTo (prevDir) / 2.0;
 			if (JSM.CoordOrientation (basePolyLine[prev], basePolyLine[curr], basePolyLine[next], direction) == JSM.Orientation.Clockwise) {
 				angle = Math.PI - angle;
 			}
@@ -1735,14 +1735,14 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 	var avgRadius = 0.0;
 	var projected;
 	for (i = 0; i < count; i++) {
-		projected = JSM.ProjectCoordToLine (polyLine[i], axisLine);
+		projected = axisLine.ProjectCoord (polyLine[i]);
 		avgRadius = avgRadius + projected.DistanceTo (polyLine[i]);
 	}
 	avgRadius = avgRadius / count;
 	
 	var origo = new JSM.Coord (axis.beg.x, axis.beg.y, axis.beg.z);
 	var baseLine = new JSM.Line (origo, axisDir);
-	var projectedToBaseLine = JSM.ProjectCoordToLine (polyLine[0], baseLine);
+	var projectedToBaseLine = baseLine.ProjectCoord (polyLine[0]);
 	var xDirection = JSM.CoordSub (polyLine[0], projectedToBaseLine).Normalize ();
 	
 	result.SetCylindricalTextureProjection (origo, avgRadius, xDirection, axisNormalDir);

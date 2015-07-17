@@ -160,4 +160,66 @@ visualSuite.AddTest ('BooleanOperationTest', function (test)
 	test.Assert (DrawAndCheck (body, 'Wireframe', 'csg_intersection_03.svg'));
 });
 
+visualSuite.AddTest ('GeneratorFunctionTest', function (test)
+{
+	function Test (body, name)
+	{
+		return DrawAndCheck (body, 'Wireframe', 'generator_' + name + '.svg')
+	}
+	
+	var exampleFunc = function (x, y)
+	{
+		return x * x + y * y;
+	};
+
+	var polyLine = [
+		new JSM.Coord (0, 0, 0),
+		new JSM.Coord (1, 0, 0),
+		new JSM.Coord (1, 1, 0)
+	];
+
+	var polyLine2 = [
+		new JSM.Coord (0.5, 0, 0),
+		new JSM.Coord (1, 0.5, 0),
+		new JSM.Coord (1, 1, 0)
+	];
+
+	var polyLine2D = [
+		new JSM.Coord2D (0, 0),
+		new JSM.Coord2D (1, 0),
+		new JSM.Coord2D (1, 1)
+	];	
+	
+	var circlePoints1 = JSM.GenerateCirclePoints (1, 10);
+	var circlePoints2 = JSM.GenerateCirclePoints (0.5, 10, new JSM.Coord (0, 0, 0.5));
+	var circlePoints3 = JSM.GenerateCirclePoints (0.2, 10, new JSM.Coord (0, 0, 1));
+	
+	test.Assert (Test (JSM.GenerateCircle (1, 10), 'circle'));
+	test.Assert (Test (JSM.GenerateCone (0.5, 1, 1, 10, true, false), 'cone1'));
+	test.Assert (Test (JSM.GenerateCone (0, 1, 1, 10, true, false), 'cone2'));
+	test.Assert (Test (JSM.GenerateCuboid (1, 1, 1), 'cuboid'));
+	test.Assert (Test (JSM.GenerateCuboidSides (1, 1, 1, [1, 0, 0, 0, 0, 1]), 'cuboidsides'));
+	test.Assert (Test (JSM.GenerateCylinder (0.5, 1, 10, true, false), 'cylinder'));
+	test.Assert (Test (JSM.GenerateCylinderShell (0.5, 1, 0.1, 10, true, false), 'cylindershell'));
+	test.Assert (Test (JSM.GenerateFunctionSurface (exampleFunc, new JSM.Coord2D (-0.5, -0.5), new JSM.Coord2D (0.5, 0.5), 10, false), 'function'));
+	test.Assert (Test (JSM.GenerateFunctionSurfaceSolid (exampleFunc, new JSM.Coord2D (-0.5, -0.5), new JSM.Coord2D (0.5, 0.5), 10, false, 0.5), 'functionsolid'));
+	test.Assert (Test (JSM.GenerateGrid (1, 1, 10, 10, false), 'grid'));
+	test.Assert (Test (JSM.GenerateLineShell (polyLine, new JSM.Vector (0, 0, 1), 1, 0.1, true, true), 'lineshell'));
+	test.Assert (Test (JSM.GeneratePie (0.5, 0.2, Math.PI * 3 / 2, 10, true, false), 'pie'));
+	test.Assert (Test (JSM.GeneratePolyTorus (polyLine2D, 0.5, 10, false), 'polytorus'));
+	test.Assert (Test (JSM.GeneratePrism (polyLine, new JSM.Vector (0, 0, 1), 1, true), 'prism'));
+	test.Assert (Test (JSM.GeneratePrismShell (polyLine, new JSM.Vector (0, 0, 1), 1, 0.1, true), 'prismshell'));
+	test.Assert (Test (JSM.GenerateRectangle (1, 1), 'rectangle'));
+	test.Assert (Test (JSM.GenerateRevolved (polyLine2, new JSM.Sector (new JSM.Coord (0, 0, 0), new JSM.Coord (0, 1, 0)), Math.PI * 3 / 2, 10, true, 'None'), 'revolved1'));
+	test.Assert (Test (JSM.GenerateRevolved (polyLine2, new JSM.Sector (new JSM.Coord (0, 0, 0), new JSM.Coord (0, 1, 0)), 2 * Math.PI, 10, true, 'None'), 'revolved2'));
+	test.Assert (Test (JSM.GenerateRuledFromSectors (new JSM.Sector (new JSM.Coord (0, 0, 0), new JSM.Coord (1, 0, 0)), new JSM.Sector (new JSM.Coord (0, 1, 0), new JSM.Coord (0, 1, 1)), 10, 10, false), 'ruled'));
+	test.Assert (Test (JSM.GenerateSegmentedCuboid (1, 1, 1, 5), 'segmentedcuboid'));
+	test.Assert (Test (JSM.GenerateSegmentedRectangle (1, 1, 3, 5), 'segmentedrectangle'));
+	test.Assert (Test (JSM.GenerateSphere (0.5, 10, false), 'sphere'));
+	test.Assert (Test (JSM.GenerateSquareGrid (1, 5, false), 'squaregrid'));
+	test.Assert (Test (JSM.GenerateTorus (0.5, 0.2, 10, 10, false), 'torus'));
+	test.Assert (Test (JSM.GenerateTriangulatedSphere (0.5, 2, false), 'triangulatedsphere'));
+	test.Assert (Test (JSM.GenerateTube ([circlePoints1, circlePoints2, circlePoints3], true), 'tube'));
+});
+
 }

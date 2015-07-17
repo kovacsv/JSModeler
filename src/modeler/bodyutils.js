@@ -369,7 +369,7 @@ JSM.MergeCoplanarPolygons = function (body)
 			var coplanarPgons = [];
 			var angle;
 			JSM.TraversePgonsAlongEdges (pgonIndex, adjacency, function (currentIndex) {
-				angle = JSM.GetVectorsAngle (pgonNormals[pgonIndex], pgonNormals[currentIndex]);
+				angle = pgonNormals[pgonIndex].AngleTo (pgonNormals[currentIndex]);
 				if (JSM.IsEqual (angle, 0.0)) {
 					coplanarPgons.push (currentIndex);
 					processedPgons[currentIndex] = true;

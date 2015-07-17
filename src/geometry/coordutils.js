@@ -1,4 +1,139 @@
 /**
+* Enum: Orientation
+* Description: Orientation of coordinates.
+* Values:
+*	{Invalid} invalid orientation or collinear
+*	{CounterClockwise} counter clockwise orientation
+*	{Clockwise} clockwise orientation
+*/
+JSM.Orientation = {
+	Invalid : 0,
+	CounterClockwise : 1,
+	Clockwise : 2
+};
+
+/**
+* Enum: Complexity
+* Description: Complexity of polygon.
+* Values:
+*	{Invalid} invalid polygon
+*	{Convex} convex polygon
+*	{Concave} concave polygon
+*/
+JSM.Complexity = {
+	Invalid : 0,
+	Convex : 1,
+	Concave : 2
+};
+
+/**
+* Function: MidCoord2D
+* Description: Calculates the coordinate in the middle of two coordinates.
+* Parameters:
+*	a {Coord2D} first coordinate
+*	b {Coord2D} second coordinate
+* Returns:
+*	{Coord2D} the result
+*/
+JSM.MidCoord2D = function (a, b)
+{
+	return new JSM.Coord2D ((a.x + b.x) / 2.0, (a.y + b.y) / 2.0);
+};
+
+/**
+* Function: CoordOrientation2D
+* Description: Calculates the turn type of three coordinates.
+* Parameters:
+*	a {Coord2D} the first coordinate
+*	b {Coord2D} the second coordinate
+*	c {Coord2D} the third coordinate
+* Returns:
+*	{Orientation} the result
+*/
+JSM.CoordOrientation2D = function (a, b, c)
+{
+	var m00 = a.x;
+	var m01 = a.y;
+	var m10 = b.x;
+	var m11 = b.y;
+	var m20 = c.x;
+	var m21 = c.y;
+    
+	var determinant = m00 * m11 + m01 * m20 + m10 * m21 - m11 * m20 - m01 * m10 - m00 * m21;
+	if (JSM.IsPositive (determinant)) {
+		return JSM.Orientation.CounterClockwise;
+	} else if (JSM.IsNegative (determinant)) {
+		return JSM.Orientation.Clockwise;
+	}
+	
+	return JSM.Orientation.Invalid;	
+};
+
+
+/**
+* Function: PolarToCartesian
+* Description: Converts a polar coordinate to a cartesian coordinate.
+* Parameters:
+*	radius {number} the radius component
+*	theta {number} the angle component
+* Returns:
+*	{Coord2D} the result
+*/
+JSM.PolarToCartesian = function (radius, theta)
+{
+	var result = new JSM.Coord2D (0.0, 0.0);
+	result.x = radius * Math.cos (theta);
+	result.y = radius * Math.sin (theta);
+	return result;
+};
+
+/**
+* Function: GetArcLengthFromAngle
+* Description: Calculates arc length from radius and angle.
+* Parameters:
+*	radius {number} the radius of the circle
+*	theta {number} the angle of rotation
+* Returns:
+*	{number} the result
+*/
+JSM.GetArcLengthFromAngle = function (radius, theta)
+{
+	return theta * radius;
+};
+
+/**
+* Function: GetAngleFromArcLength
+* Description: Calculates angle from arc length.
+* Parameters:
+*	radius {number} the radius of the circle
+*	arcLength {number} the arc length
+* Returns:
+*	{number} the result
+*/
+JSM.GetAngleFromArcLength = function (radius, arcLength)
+{
+	if (JSM.IsEqual (radius, 0.0)) {
+		return 0.0;
+	}
+	
+	return arcLength / radius;
+};
+
+/**
+* Function: MidCoord
+* Description: Calculates the coordinate in the middle of two coordinates.
+* Parameters:
+*	a {Coord} first coordinate
+*	b {Coord} second coordinate
+* Returns:
+*	{Coord} the result
+*/
+JSM.MidCoord = function (a, b)
+{
+	return new JSM.Coord ((a.x + b.x) / 2.0, (a.y + b.y) / 2.0, (a.z + b.z) / 2.0);
+};
+
+/**
 * Function: CoordSignedDistance
 * Description: Calculates the distance of two coordinates along a direction vector.
 * Parameters:
@@ -13,33 +148,12 @@ JSM.CoordSignedDistance = function (a, b, direction)
 	var abDirection = JSM.CoordSub (b, a);
 	var distance = a.DistanceTo (b);
 	
-	var angle = JSM.GetVectorsAngle (abDirection, direction);
+	var angle = abDirection.AngleTo (direction);
 	if (JSM.IsPositive (angle)) {
 		distance = -distance;
 	}
 
 	return distance;
-};
-
-/**
-* Function: GetVectorsAngle
-* Description: Calculates the angle of two vectors.
-* Parameters:
-*	a {Vector} the first vector
-*	b {Vector} the second vector
-* Returns:
-*	{number} the result
-*/
-JSM.GetVectorsAngle = function (a, b)
-{
-	var aDirection = a.Clone ().Normalize ();
-	var bDirection = b.Clone ().Normalize ();
-	if (aDirection.IsEqual (bDirection)) {
-		return 0.0;
-	}
-	
-	var product = JSM.VectorDot (aDirection, bDirection);
-	return JSM.ArcCos (product);
 };
 
 /**
@@ -54,7 +168,7 @@ JSM.GetVectorsAngle = function (a, b)
 */
 JSM.GetVectorsFullAngle = function (a, b, normal)
 {
-	var angle = JSM.GetVectorsAngle (a, b);
+	var angle = a.AngleTo (b);
 	var origo = new JSM.Coord (0.0, 0.0, 0.0);
 	
 	if (JSM.CoordOrientation (a, origo, b, normal) == JSM.Orientation.Clockwise) {
@@ -62,41 +176,6 @@ JSM.GetVectorsFullAngle = function (a, b, normal)
 	}
 	
 	return angle;
-};
-
-/**
-* Function: VectorsAreCollinear
-* Description: Determines if two vectors are collinear.
-* Parameters:
-*	a {Vector} the first vector
-*	b {Vector} the second vector
-* Returns:
-*	{boolean} the result
-*/
-JSM.VectorsAreCollinear = function (a, b)
-{
-	var angle = JSM.GetVectorsAngle (a, b);
-	return JSM.IsEqual (angle, 0.0) || JSM.IsEqual (angle, Math.PI);
-};
-
-/**
-* Function: GetCoord2DFromCoord
-* Description: Transforms a 3D coordinate to a 2D coordinate.
-* Parameters:
-*	coord {Coord} the coordinate
-*	origo {Coord} the origo of transformation
-*	normal {Vector} the normal vector of transformation
-* Returns:
-*	{Coord2D} the result
-*/
-JSM.GetCoord2DFromCoord = function (coord, origo, normal)
-{
-	var zNormal = new JSM.Vector (0.0, 0.0, 1.0);
-	var axis = JSM.VectorCross (normal, zNormal);
-	var angle = JSM.GetVectorsAngle (normal, zNormal);
-
-	var rotated = coord.Clone ().Rotate (axis, angle, origo);
-	return new JSM.Coord2D (rotated.x, rotated.y);
 };
 
 /**
@@ -112,14 +191,13 @@ JSM.GetCoord2DFromCoord = function (coord, origo, normal)
 */
 JSM.CoordOrientation = function (a, b, c, normal)
 {
-	var origo = new JSM.Coord (0.0, 0.0, 0.0);
-	var a2 = JSM.GetCoord2DFromCoord (a, origo, normal);
-	var b2 = JSM.GetCoord2DFromCoord (b, origo, normal);
-	var c2 = JSM.GetCoord2DFromCoord (c, origo, normal);
+	var a2 = a.ToCoord2D (normal);
+	var b2 = b.ToCoord2D (normal);
+	var c2 = c.ToCoord2D (normal);
 	var orientation = JSM.CoordOrientation2D (a2, b2, c2);
 
 	var zNormal = new JSM.Vector (0.0, 0.0, 1.0);
-	var angle = JSM.GetVectorsAngle (normal, zNormal);
+	var angle = normal.AngleTo (zNormal);
 	if (JSM.IsEqual (angle, Math.PI)) {
 		if (orientation == JSM.Orientation.CounterClockwise) {
 			orientation = JSM.Orientation.Clockwise;
@@ -129,6 +207,77 @@ JSM.CoordOrientation = function (a, b, c, normal)
 	}
 	
 	return orientation;
+};
+
+/**
+* Function: SphericalToCartesian
+* Description: Converts a spherical coordinate to a cartesian coordinate.
+* Parameters:
+*	radius {number} the radius component
+*	theta {number} the angle component
+*	phi {number} the phi component
+* Returns:
+*	{Coord} the result
+*/
+JSM.SphericalToCartesian = function (radius, theta, phi)
+{
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
+	result.x = radius * Math.sin (theta) * Math.cos (phi);
+	result.y = radius * Math.sin (theta) * Math.sin (phi);
+	result.z = radius * Math.cos (theta);
+	return result;
+};
+
+/**
+* Function: CylindricalToCartesian
+* Description: Converts a cylindrical coordinate to a cartesian coordinate.
+* Parameters:
+*	radius {number} the radius component
+*	height {number} the height component
+*	theta {number} the theta component
+* Returns:
+*	{Coord} the result
+*/
+JSM.CylindricalToCartesian = function (radius, height, theta)
+{
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
+	result.x = radius * Math.cos (theta);
+	result.y = radius * Math.sin (theta);
+	result.z = height;
+	return result;
+};
+
+/**
+* Function: GetArcLength
+* Description: Calculates arc length between two vectors.
+* Parameters:
+*	a {Vector} the first vector
+*	b {Vector} the second vector
+*	radius {number} the radius component
+* Returns:
+*	{number} the result
+*/
+JSM.GetArcLength = function (a, b, radius)
+{
+	var angle = a.AngleTo (b);
+	return angle * radius;
+};
+
+/**
+* Function: GetFullArcLength
+* Description: Calculates arc length between two vectors with the given normal vector.
+* Parameters:
+*	a {Vector} the first vector
+*	b {Vector} the second vector
+*	radius {number} the radius component
+*	normal {Vector} the normal vector
+* Returns:
+*	{number} the result
+*/
+JSM.GetFullArcLength = function (a, b, radius, normal)
+{
+	var angle = JSM.GetVectorsFullAngle (a, b, normal);
+	return angle * radius;
 };
 
 /**

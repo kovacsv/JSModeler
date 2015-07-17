@@ -46,7 +46,7 @@ JSM.OrderPolygons = function (body, eye, center)
 			polygon = body.GetPolygon (i);
 			for (j = 0; j < polygon.VertexIndexCount (); j++) {
 				coord = body.GetVertexPosition (polygon.GetVertexIndex (j));
-				distance = JSM.CoordPlaneDistance (coord, cameraPlane);
+				distance = cameraPlane.CoordDistance (coord);
 				if (JSM.IsLower (distance, minDistance)) {
 					minDistance = distance;
 				}
@@ -59,7 +59,7 @@ JSM.OrderPolygons = function (body, eye, center)
 			maxViewDistances.push (maxDistance);
 			
 			polygonCenter = GetPolygonCenter (i);
-			polygonCenterDistance = JSM.CoordPlaneDistance (polygonCenter, cameraPlane);
+			polygonCenterDistance = cameraPlane.CoordDistance (polygonCenter);
 			polygonCenters.push (polygonCenter);
 			polygonCenterDistances.push (polygonCenterDistance);
 
@@ -91,7 +91,7 @@ JSM.OrderPolygons = function (body, eye, center)
 		var sPolygon = body.GetPolygon (s);
 		for (i = 0; i < sPolygon.VertexIndexCount (); i++) {
 			coord = body.GetVertexPosition (sPolygon.GetVertexIndex (i));
-			if (JSM.CoordPlanePosition (coord, pPlane) === 'CoordInFrontOfPlane') {
+			if (pPlane.CoordPosition (coord) === JSM.CoordPlanePosition.CoordInFrontOfPlane) {
 				isSBehindP = false;
 				break;
 			}
@@ -105,7 +105,7 @@ JSM.OrderPolygons = function (body, eye, center)
 		var pPolygon = body.GetPolygon (p);
 		for (i = 0; i < pPolygon.VertexIndexCount (); i++) {
 			coord = body.GetVertexPosition (pPolygon.GetVertexIndex (i));
-			if (JSM.CoordPlanePosition (coord, sPlane) === 'CoordAtBackOfPlane') {
+			if (sPlane.CoordPosition (coord) === JSM.CoordPlanePosition.CoordAtBackOfPlane) {
 				isPFrontOfS = false;
 				break;
 			}

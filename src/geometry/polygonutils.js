@@ -176,7 +176,8 @@ JSM.CoordPolygonPosition2D = function (coord, polygon)
 		current = polygon.GetVertex (i);
 		next = polygon.GetVertex ((i + 1) % count);
 		sector = new JSM.Sector2D (current, next);
-		if (JSM.CoordSectorPosition2D (coord, sector) !== 'CoordOutsideOfSector') {
+		
+		if (sector.CoordPosition (coord) != JSM.CoordSectorPosition2D.CoordOutsideOfSector) {
 			return 'CoordOnPolygonEdge';
 		}
 	}
@@ -200,14 +201,14 @@ JSM.CoordPolygonPosition2D = function (coord, polygon)
 
 		sector = new JSM.Sector2D (current, next);
 		intersection = new JSM.Coord2D (0.0, 0.0);
-		ssp = JSM.SectorSectorPosition2D (ray, sector, intersection);
-		if (ssp === 'SectorsDontIntersects') {
+		ssp = ray.SectorPosition (sector, intersection);
+		if (ssp === JSM.SectorSectorPosition2D.SectorsDontIntersect) {
 			continue;
 		}
 
-		if (ssp === 'SectorsIntersectsOnePoint') {
+		if (ssp === JSM.SectorSectorPosition2D.SectorsIntersectOnePoint) {
 			intersections++;
-		} else if (ssp === 'SectorsIntersectsEndPoint') {
+		} else if (ssp === JSM.SectorSectorPosition2D.SectorsIntersectEndPoint) {
 			if (intersection.IsEqual (sector.beg)) {
 				if (JSM.IsGreater (sector.beg.y, sector.end.y)) {
 					intersections++;
@@ -253,8 +254,8 @@ JSM.SectorIntersectsPolygon2D = function (polygon, sector, from, to)
 		}
 		
 		currentSector = new JSM.Sector2D (polygon.GetVertex (sectorBeg), polygon.GetVertex (sectorEnd));
-		position = JSM.SectorSectorPosition2D (sector, currentSector);
-		if (position !== 'SectorsDontIntersects') {
+		position = sector.SectorPosition (currentSector);
+		if (position !== JSM.SectorSectorPosition2D.SectorsDontIntersect) {
 			return true;
 		}
 	}
@@ -385,7 +386,7 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 		var currentSector;
 		for (i = 0; i < originalPolygon.VertexCount (); i++) {
 			for (j = 0; j < currentHolePolygon.VertexCount (); j++) {
-				currentSector = new JSM.Sector (originalPolygon.GetVertex (i), currentHolePolygon.GetVertex (j));
+				currentSector = new JSM.Sector2D (originalPolygon.GetVertex (i), currentHolePolygon.GetVertex (j));
 				if (IsNotIntersectingSector (currentSector, i, j, originalPolygon, currentHolePolygon, contourPolygons, finishedContours)) {
 					entryPoint = [resultIndices[i], j + from];
 					break;
@@ -741,14 +742,11 @@ JSM.CreatePolygonWithHole = function (vertices)
 	}
 
 	var normal = JSM.CalculateNormal (noNullVertices);
-
-	var origo = new JSM.Coord (0.0, 0.0, 0.0);
 	var vertices2D = [];
-
 	var vertex;
 	for (i = 0; i < vertices.length; i++) {
 		if (vertices[i] !== null) {
-			vertex = JSM.GetCoord2DFromCoord (vertices[i], origo, normal);
+			vertex = vertices[i].ToCoord2D (normal);
 			vertices2D.push (vertex);
 		} else {
 			vertices2D.push (null);
@@ -773,11 +771,10 @@ JSM.PolygonTriangulate = function (polygon)
 	var polygon2D = new JSM.Polygon2D ();
 	var normal = JSM.CalculateNormal (polygon.vertices);
 
-	var origo = new JSM.Coord (0.0, 0.0, 0.0);
 	var vertexCount = polygon.VertexCount ();
 	var i, vertex;
 	for (i = 0; i < vertexCount; i++) {
-		vertex = JSM.GetCoord2DFromCoord (polygon.GetVertex (i), origo, normal);
+		vertex = polygon.GetVertex (i).ToCoord2D (normal);
 		polygon2D.AddVertex (vertex.x, vertex.y);
 	}
 	
@@ -817,7 +814,7 @@ JSM.OffsetPolygonContour = function (polygon, width)
 
 		prevDir = JSM.CoordSub (prevVertex, currVertex);
 		nextDir = JSM.CoordSub (nextVertex, currVertex);
-		angle = JSM.GetVectorsAngle (prevDir, nextDir) / 2.0;
+		angle = prevDir.AngleTo (nextDir) / 2.0;
 		if (JSM.CoordOrientation (prevVertex, currVertex, nextVertex, normal) == JSM.Orientation.Clockwise) {
 			angle = Math.PI - angle;
 		}
@@ -860,8 +857,8 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 					var currVertex = polygon.GetVertex (currIndex);
 					var line = new JSM.Line (currVertex, JSM.CoordSub (currVertex, prevVertex));
 					var intersection = new JSM.Coord (0.0, 0.0, 0.0);
-					var linePlanePosition = JSM.LinePlanePosition (line, plane, intersection);
-					if (linePlanePosition == 'LineIntersectsPlane') {
+					var linePlanePosition = plane.LinePosition (line, intersection);
+					if (linePlanePosition == JSM.LinePlanePosition.LineIntersectsPlane) {
 						cutPolygon.AddVertex (intersection.x, intersection.y, intersection.z);
 						vertexTypes.push (0);
 					}
@@ -906,12 +903,12 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 		var i, position, currVertex, currType;
 		for (i = 0; i < polygon.VertexCount (); i++) {
 			currVertex = polygon.GetVertex (i);
-			position = JSM.CoordPlanePosition (currVertex, plane);
+			position = plane.CoordPosition (currVertex);
 			currType = 0;
-			if (position == 'CoordInFrontOfPlane') {
+			if (position == JSM.CoordPlanePosition.CoordInFrontOfPlane) {
 				currType = 1;
 				frontFound = true;
-			} else if (position == 'CoordAtBackOfPlane') {
+			} else if (position == JSM.CoordPlanePosition.CoordAtBackOfPlane) {
 				currType = -1;
 				backFound = true;
 			}
@@ -1000,7 +997,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 			var distances = [];
 			for (i = 0; i < entryVertices.length; i++) {
 				vertex = cutPolygon.GetVertex (entryVertices[i]);
-				distances.push (JSM.CoordPlaneSignedDistance (vertex, referencePlane));
+				distances.push (referencePlane.CoordSignedDistance (vertex));
 			}
 
 			for (i = 0; i < entryVertices.length - 1; i++) {
