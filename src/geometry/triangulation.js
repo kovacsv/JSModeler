@@ -232,6 +232,10 @@ JSM.TriangulatePolygon2D = function (polygon)
 	}
 	
 	var complexity = polygon.GetComplexity ();
+	if (complexity === JSM.Complexity.Invalid) {
+		return null;
+	}
+	
 	if (complexity == JSM.Complexity.Convex) {
 		return JSM.TriangulateConvexPolygon (polygon);
 	}
