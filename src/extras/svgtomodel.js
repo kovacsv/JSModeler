@@ -181,7 +181,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			return result;
 		}
 	
-		var result = new JSM.ContourPolygon2D ();
+		var result = new JSM.OldContourPolygon2D ();
 
 		var dummySVG = document.createElementNS ('http://www.w3.org/2000/svg', 'svg');
 

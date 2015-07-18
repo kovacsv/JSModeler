@@ -18,8 +18,10 @@
 ../src/geometry/plane.js
 ../src/geometry/projection.js
 ../src/geometry/convexhull.js
-../src/geometry/polygon.js
-../src/geometry/polygonutils.js
+../src/geometry/polygon2d.js
+../src/geometry/triangulation.js
+../src/geometry/oldpolygon.js
+../src/geometry/oldpolygonutils.js
 ../src/geometry/octree.js
 ../src/geometry/bsptree.js
 ../src/geometry/utilities.js

@@ -13,20 +13,6 @@ JSM.Orientation = {
 };
 
 /**
-* Enum: Complexity
-* Description: Complexity of polygon.
-* Values:
-*	{Invalid} invalid polygon
-*	{Convex} convex polygon
-*	{Concave} concave polygon
-*/
-JSM.Complexity = {
-	Invalid : 0,
-	Convex : 1,
-	Concave : 2
-};
-
-/**
 * Function: MidCoord2D
 * Description: Calculates the coordinate in the middle of two coordinates.
 * Parameters:

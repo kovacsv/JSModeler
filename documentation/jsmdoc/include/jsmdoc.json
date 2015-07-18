@@ -916,13 +916,13 @@
 						["vertices", "Coord2D[*]", "the vertices"]
 					],
 					"returns" : [
-						["Polygon2D", "the result"]
+						["OldPolygon2D", "the result"]
 					]
 				},
 				"PolygonSignedArea2D" : {
 					"description" : "Calculates the signed area of a polygon. The result is positive if the polygon has counter clockwise orientation, negative if it has clockwise orientation.",
 					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
+						["polygon", "OldPolygon2D", "the polygon"]
 					],
 					"returns" : [
 						["number", "the result"]
@@ -931,7 +931,7 @@
 				"PolygonArea2D" : {
 					"description" : "Calculates the area of a polygon.",
 					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
+						["polygon", "OldPolygon2D", "the polygon"]
 					],
 					"returns" : [
 						["number", "the result"]
@@ -940,7 +940,7 @@
 				"PolygonOrientation2D" : {
 					"description" : "Calculates the orientation of a polygon.",
 					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
+						["polygon", "OldPolygon2D", "the polygon"]
 					],
 					"returns" : [
 						["Orientation", "the result"]
@@ -949,7 +949,7 @@
 				"ChangePolygonOrientation2D" : {
 					"description" : "Reverses the orientation of a polygon.",
 					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
+						["polygon", "OldPolygon2D", "the polygon"]
 					]
 				},
 				"CreateCCWPolygonFromVertices" : {
@@ -958,13 +958,13 @@
 						["vertices", "Coord2D[*]", "the vertices"]
 					],
 					"returns" : [
-						["Polygon2D", "the result"]
+						["OldPolygon2D", "the result"]
 					]
 				},
 				"PolygonComplexity2D" : {
 					"description" : "Calculates the complexity of a polygon.",
 					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
+						["polygon", "OldPolygon2D", "the polygon"]
 					],
 					"returns" : [
 						["Complexity", "the result"]
@@ -974,7 +974,7 @@
 					"description" : "Calculates the position of a coordinate and a polygon.",
 					"parameters" : [
 						["coord", "Coord", "the coordinate"],
-						["polygon", "Polygon2D", "the polygon"]
+						["polygon", "OldPolygon2D", "the polygon"]
 					],
 					"returns" : [
 						["string", "'CoordOutsideOfPolygon', 'CoordInsideOfPolygon', or 'CoordOnPolygonEdge'"]
@@ -983,7 +983,7 @@
 				"SectorIntersectsPolygon2D" : {
 					"description" : "Determines if a sector intersects a polygon. The sides next to the starting and ending vertices will be skipped. To avoid this, give -1 for these values.",
 					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"],
+						["polygon", "OldPolygon2D", "the polygon"],
 						["sector", "Sector2D", "the sector"],
 						["from", "integer", "index of starting vertex"],
 						["end", "integer", "index of ending vertex"]
@@ -995,7 +995,7 @@
 				"IsPolygonVertexVisible2D" : {
 					"description" : "Determines if a polygons vertex is visible from an another vertex. It means that the sector between the vertices does not intersects any side of the polygon and the sector lies fully inside the polygon.",
 					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"],
+						["polygon", "OldPolygon2D", "the polygon"],
 						["from", "integer", "index of starting vertex"],
 						["end", "integer", "index of ending vertex"]
 					],
@@ -1015,7 +1015,7 @@
 				"PolygonTriangulate2D" : {
 					"description" : "Triangulates a polygon. The result defines triangles as an array of arrays with three original vertex indices.",
 					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
+						["polygon", "OldPolygon2D", "the polygon"]
 					],
 					"returns" : [
 						["integer[3][*]", "the result"]
@@ -1024,7 +1024,7 @@
 				"CheckTriangulation2D" : {
 					"description" : "Checks a triangulation created with PolygonTriangulate2D. It checks if the area of triangles equal to the area of the original polygon.",
 					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"],
+						["polygon", "OldPolygon2D", "the polygon"],
 						["triangles", "integer[3][*]", "the triangulation"]
 					],
 					"returns" : [
@@ -1466,6 +1466,16 @@
 								["CoordSectorPosition2D", "the result"]
 							]
 						},
+						"OldSectorPosition" : {
+							"description" : "Calculates the position of the sector and the given sector.",
+							"parameters" : [
+								["sector", "Sector2D", "the sector"],
+								["intersection", "Coord2D", "(out) the intersection point if it exists"]
+							],
+							"returns" : [
+								["OldSectorSectorPosition2D", "the result"]
+							]
+						},
 						"SectorPosition" : {
 							"description" : "Calculates the position of the sector and the given sector.",
 							"parameters" : [
@@ -1853,7 +1863,7 @@
 						}
 					}
 				},
-				"Polygon2D" : {
+				"OldPolygon2D" : {
 					"description" : "Represents a 2D polygon.",
 					"functions" : {
 						"AddVertex" : {
@@ -1892,12 +1902,12 @@
 						"Clone" : {
 							"description" : "Clones the polygon.",
 							"returns" : [
-								["Polygon2D", "a cloned instance"]
+								["OldPolygon2D", "a cloned instance"]
 							]
 						}
 					}
 				},
-				"ContourPolygon2D" : {
+				"OldContourPolygon2D" : {
 					"description" : "Represents a 2D polygon with more contours.",
 					"functions" : {
 						"AddVertex" : {
@@ -1951,7 +1961,7 @@
 								["contour", "integer", "the index of the contour"]
 							],
 							"returns" : [
-								["Polygon2D", "the contour"]
+								["OldPolygon2D", "the contour"]
 							]
 						},
 						"Clear" : {
@@ -1960,7 +1970,7 @@
 						"Clone" : {
 							"description" : "Clones the polygon.",
 							"returns" : [
-								["ContourPolygon2D", "a cloned instance"]
+								["OldContourPolygon2D", "a cloned instance"]
 							]
 						}
 					}
@@ -2247,20 +2257,21 @@
 						["Clockwise", "clockwise orientation"]
 					]
 				},
-				"Complexity" : {
-					"description" : "Complexity of polygon.",
-					"values" : [
-						["Invalid", "invalid polygon"],
-						["Convex", "convex polygon"],
-						["Concave", "concave polygon"]
-					]
-				},
 				"CoordSectorPosition2D" : {
 					"description" : "Position of a coordinate and a sector.",
 					"values" : [
 						["CoordInsideOfSector", "coordinate lies inside of sector"],
 						["CoordOnSectorEndCoord", "coordinate lies at the end of the sector"],
 						["CoordOutsideOfSector", "coordinate lies outside of the sector"]
+					]
+				},
+				"OldSectorSectorPosition2D" : {
+					"description" : "Position of two sectors.",
+					"values" : [
+						["SectorsDontIntersect", "sectors do not intersect"],
+						["SectorsIntersectCoincident", "sectors intersect coincident"],
+						["SectorsIntersectEndPoint", "sectors intersect at end point"],
+						["SectorsIntersectOnePoint", "sectors intersect one point"]
 					]
 				},
 				"SectorSectorPosition2D" : {
@@ -4344,7 +4355,7 @@
 						"DrawPolygon" : {
 							"description" : "Draws a polygon to the target.",
 							"parameters" : [
-								["polygon", "Polygon2D", "the polygon"],
+								["polygon", "OldPolygon2D", "the polygon"],
 								["color", "string", "the hex color string"],
 								["contour", "boolean", "need to draw contour"]
 							]
@@ -4382,7 +4393,7 @@
 						"DrawPolygon" : {
 							"description" : "Draws a polygon to the target.",
 							"parameters" : [
-								["polygon", "Polygon2D", "the polygon"],
+								["polygon", "OldPolygon2D", "the polygon"],
 								["color", "string", "the hex color string"],
 								["contour", "boolean", "need to draw contour"]
 							]

@@ -62,7 +62,7 @@ JSM.CanvasDrawer.prototype.DrawLine = function (from, to)
 * Function: CanvasDrawer.DrawPolygon
 * Description: Draws a polygon to the target.
 * Parameters:
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 *	color {string} the hex color string
 *	contour {boolean} need to draw contour
 */
@@ -168,7 +168,7 @@ JSM.SVGDrawer.prototype.DrawLine = function (from, to)
 * Function: SVGDrawer.DrawPolygon
 * Description: Draws a polygon to the target.
 * Parameters:
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 *	color {string} the hex color string
 *	contour {boolean} need to draw contour
 */
@@ -222,7 +222,7 @@ JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, 
 
 	function GetProjectedPolygonFromBody (polygon)
 	{
-		var projectedPolygon = new JSM.Polygon2D ();
+		var projectedPolygon = new JSM.OldPolygon2D ();
 		var i, coord;
 		for (i = 0; i < polygon.VertexIndexCount (); i++) {
 			coord = body.GetVertexPosition (polygon.GetVertexIndex (i));
@@ -233,7 +233,7 @@ JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, 
 
 	function GetProjectedPolygonFromPolygon (polygon)
 	{
-		var projectedPolygon = new JSM.Polygon2D ();
+		var projectedPolygon = new JSM.OldPolygon2D ();
 		var i, coord;
 		for (i = 0; i < polygon.VertexCount (); i++) {
 			coord = polygon.GetVertex (i);

@@ -74,7 +74,7 @@ JSMTriangulationDemo.prototype =
 			return false;
 		}
 		
-		var polygon = new JSM.Polygon2D ();
+		var polygon = new JSM.OldPolygon2D ();
 		
 		var i, current;
 		for (i = 0; i < coords.length; i++) {

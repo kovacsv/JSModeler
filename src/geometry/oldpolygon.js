@@ -1,79 +1,79 @@
 /**
-* Class: Polygon2D
+* Class: OldPolygon2D
 * Description: Represents a 2D polygon.
 */
-JSM.Polygon2D = function ()
+JSM.OldPolygon2D = function ()
 {
 	this.vertices = [];
 };
 
 /**
-* Function: Polygon2D.AddVertex
+* Function: OldPolygon2D.AddVertex
 * Description: Adds a vertex to the polygon.
 * Parameters:
 *	x {number} the x coordinate of the vertex
 *	y {number} the y coordinate of the vertex
 */
-JSM.Polygon2D.prototype.AddVertex = function (x, y)
+JSM.OldPolygon2D.prototype.AddVertex = function (x, y)
 {
 	this.vertices.push (new JSM.Coord2D (x, y));
 };
 
 /**
-* Function: Polygon2D.GetVertex
+* Function: OldPolygon2D.GetVertex
 * Description: Returns the vertex with the given index.
 * Parameters:
 *	index {integer} the index of the vertex
 * Returns:
 *	{Coord2D} the vertex
 */
-JSM.Polygon2D.prototype.GetVertex = function (index)
+JSM.OldPolygon2D.prototype.GetVertex = function (index)
 {
 	return this.vertices[index];
 };
 
 /**
-* Function: Polygon2D.SetVertex
+* Function: OldPolygon2D.SetVertex
 * Description: Modifies the coordinates of an existing vertex.
 * Parameters:
 *	index {integer} the index of the vertex
 *	x {number} the x coordinate of the vertex
 *	y {number} the y coordinate of the vertex
 */
-JSM.Polygon2D.prototype.SetVertex = function (index, x, y)
+JSM.OldPolygon2D.prototype.SetVertex = function (index, x, y)
 {
 	this.vertices[index].Set (x, y);
 };
 
 /**
-* Function: Polygon2D.VertexCount
+* Function: OldPolygon2D.VertexCount
 * Description: Returns the vertex count of the polygon.
 * Returns:
 *	{integer} vertex count
 */
-JSM.Polygon2D.prototype.VertexCount = function ()
+JSM.OldPolygon2D.prototype.VertexCount = function ()
 {
 	return this.vertices.length;
 };
 
 /**
-* Function: Polygon2D.Clear
+* Function: OldPolygon2D.Clear
 * Description: Makes the polygon empty.
 */
-JSM.Polygon2D.prototype.Clear = function ()
+JSM.OldPolygon2D.prototype.Clear = function ()
 {
 	this.vertices = [];
 };
 
 /**
-* Function: Polygon2D.Clone
+* Function: OldPolygon2D.Clone
 * Description: Clones the polygon.
 * Returns:
-*	{Polygon2D} a cloned instance
+*	{OldPolygon2D} a cloned instance
 */
-JSM.Polygon2D.prototype.Clone = function ()
+JSM.OldPolygon2D.prototype.Clone = function ()
 {
-	var result = new JSM.Polygon2D ();
+	var result = new JSM.OldPolygon2D ();
 	var i;
 	for (i = 0; i < this.vertices.length; i++) {
 		result.vertices.push (this.vertices[i].Clone ());
@@ -82,39 +82,39 @@ JSM.Polygon2D.prototype.Clone = function ()
 };
 
 /**
-* Class: ContourPolygon2D
+* Class: OldContourPolygon2D
 * Description: Represents a 2D polygon with more contours.
 */
-JSM.ContourPolygon2D = function ()
+JSM.OldContourPolygon2D = function ()
 {
 	this.polygons = [];
 };
 
 /**
-* Function: ContourPolygon2D.AddVertex
+* Function: OldContourPolygon2D.AddVertex
 * Description: Adds a vertex to a contour of the polygon.
 * Parameters:
 *	contour {integer} the index of the contour
 *	x {number} the x coordinate of the vertex
 *	y {number} the y coordinate of the vertex
 */
-JSM.ContourPolygon2D.prototype.AddVertex = function (contour, x, y)
+JSM.OldContourPolygon2D.prototype.AddVertex = function (contour, x, y)
 {
 	if (this.polygons[contour] === undefined) {
-		this.polygons[contour] = new JSM.Polygon2D ();
+		this.polygons[contour] = new JSM.OldPolygon2D ();
 	}
 	this.polygons[contour].AddVertex (x, y);
 };
 
 /**
-* Function: ContourPolygon2D.VertexCount
+* Function: OldContourPolygon2D.VertexCount
 * Description: Returns the vertex count of a contour of the polygon.
 * Parameters:
 *	contour {integer} the index of the contour
 * Returns:
 *	{integer} vertex count
 */
-JSM.ContourPolygon2D.prototype.VertexCount = function (contour)
+JSM.OldContourPolygon2D.prototype.VertexCount = function (contour)
 {
 	if (this.polygons[contour] === undefined) {
 		return 0;
@@ -123,7 +123,7 @@ JSM.ContourPolygon2D.prototype.VertexCount = function (contour)
 };
 
 /**
-* Function: ContourPolygon2D.GetVertex
+* Function: OldContourPolygon2D.GetVertex
 * Description: Returns the vertex of a contour with the given index.
 * Parameters:
 *	contour {integer} the index of the contour
@@ -131,13 +131,13 @@ JSM.ContourPolygon2D.prototype.VertexCount = function (contour)
 * Returns:
 *	{Coord2D} the vertex
 */
-JSM.ContourPolygon2D.prototype.GetVertex = function (contour, index)
+JSM.OldContourPolygon2D.prototype.GetVertex = function (contour, index)
 {
 	return this.polygons[contour].GetVertex (index);
 };
 
 /**
-* Function: ContourPolygon2D.SetVertex
+* Function: OldContourPolygon2D.SetVertex
 * Description: Modifies the coordinates of an existing vertex of a contour.
 * Parameters:
 *	contour {integer} the index of the contour
@@ -145,62 +145,62 @@ JSM.ContourPolygon2D.prototype.GetVertex = function (contour, index)
 *	x {number} the x coordinate of the vertex
 *	y {number} the y coordinate of the vertex
 */
-JSM.ContourPolygon2D.prototype.SetVertex = function (contour, index, x, y)
+JSM.OldContourPolygon2D.prototype.SetVertex = function (contour, index, x, y)
 {
 	this.polygons[contour].SetVertex (index, x, y);
 };
 
 /**
-* Function: ContourPolygon2D.AddContour
+* Function: OldContourPolygon2D.AddContour
 * Description: Adds new contour to the polygon.
 */
-JSM.ContourPolygon2D.prototype.AddContour = function ()
+JSM.OldContourPolygon2D.prototype.AddContour = function ()
 {
-	this.polygons.push (new JSM.Polygon2D ());
+	this.polygons.push (new JSM.OldPolygon2D ());
 };
 
 /**
-* Function: ContourPolygon2D.ContourCount
+* Function: OldContourPolygon2D.ContourCount
 * Description: Returns the contour count of the polygon.
 * Returns:
 *	{integer} contour count
 */
-JSM.ContourPolygon2D.prototype.ContourCount = function ()
+JSM.OldContourPolygon2D.prototype.ContourCount = function ()
 {
 	return this.polygons.length;
 };
 
 /**
-* Function: ContourPolygon2D.GetContour
+* Function: OldContourPolygon2D.GetContour
 * Description: Returns the contour with the given index.
 * Parameters:
 *	contour {integer} the index of the contour
 * Returns:
-*	{Polygon2D} the contour
+*	{OldPolygon2D} the contour
 */
-JSM.ContourPolygon2D.prototype.GetContour = function (contour)
+JSM.OldContourPolygon2D.prototype.GetContour = function (contour)
 {
 	return this.polygons[contour];
 };
 
 /**
-* Function: ContourPolygon2D.Clear
+* Function: OldContourPolygon2D.Clear
 * Description: Makes the polygon empty.
 */
-JSM.ContourPolygon2D.prototype.Clear = function ()
+JSM.OldContourPolygon2D.prototype.Clear = function ()
 {
 	this.polygons = [];
 };
 
 /**
-* Function: ContourPolygon2D.Clone
+* Function: OldContourPolygon2D.Clone
 * Description: Clones the polygon.
 * Returns:
-*	{ContourPolygon2D} a cloned instance
+*	{OldContourPolygon2D} a cloned instance
 */
-JSM.ContourPolygon2D.prototype.Clone = function ()
+JSM.OldContourPolygon2D.prototype.Clone = function ()
 {
-	var result = new JSM.ContourPolygon2D ();
+	var result = new JSM.OldContourPolygon2D ();
 	var i;
 	for (i = 0; i < this.polygons.length; i++) {
 		result.polygons.push (this.polygons[i].Clone ());

@@ -4,11 +4,11 @@
 * Parameters:
 *	vertices {Coord2D[*]} the vertices
 * Returns:
-*	{Polygon2D} the result
+*	{OldPolygon2D} the result
 */
 JSM.CreatePolygonFromVertices = function (vertices)
 {
-	var polygon = new JSM.Polygon2D ();
+	var polygon = new JSM.OldPolygon2D ();
 
 	var i, current;
 	for (i = 0; i < vertices.length; i++) {
@@ -25,7 +25,7 @@ JSM.CreatePolygonFromVertices = function (vertices)
 *	Calculates the signed area of a polygon. The result is positive if the polygon has
 *	counter clockwise orientation, negative if it has clockwise orientation.
 * Parameters:
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 * Returns:
 *	{number} the result
 */
@@ -49,7 +49,7 @@ JSM.PolygonSignedArea2D = function (polygon)
 * Function: PolygonArea2D
 * Description: Calculates the area of a polygon.
 * Parameters:
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 * Returns:
 *	{number} the result
 */
@@ -62,7 +62,7 @@ JSM.PolygonArea2D = function (polygon)
 * Function: PolygonOrientation2D
 * Description: Calculates the orientation of a polygon.
 * Parameters:
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 * Returns:
 *	{Orientation} the result
 */
@@ -82,7 +82,7 @@ JSM.PolygonOrientation2D = function (polygon)
 * Function: ChangePolygonOrientation2D
 * Description: Reverses the orientation of a polygon.
 * Parameters:
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 */
 JSM.ChangePolygonOrientation2D = function (polygon)
 {
@@ -102,7 +102,7 @@ JSM.ChangePolygonOrientation2D = function (polygon)
 * Parameters:
 *	vertices {Coord2D[*]} the vertices
 * Returns:
-*	{Polygon2D} the result
+*	{OldPolygon2D} the result
 */
 JSM.CreateCCWPolygonFromVertices = function (vertices)
 {
@@ -117,7 +117,7 @@ JSM.CreateCCWPolygonFromVertices = function (vertices)
 * Function: PolygonComplexity2D
 * Description: Calculates the complexity of a polygon.
 * Parameters:
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 * Returns:
 *	{Complexity} the result
 */
@@ -163,7 +163,7 @@ JSM.PolygonComplexity2D = function (polygon)
 * Description: Calculates the position of a coordinate and a polygon.
 * Parameters:
 *	coord {Coord} the coordinate
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 * Returns:
 *	{string} 'CoordOutsideOfPolygon', 'CoordInsideOfPolygon', or 'CoordOnPolygonEdge'
 */
@@ -201,14 +201,14 @@ JSM.CoordPolygonPosition2D = function (coord, polygon)
 
 		sector = new JSM.Sector2D (current, next);
 		intersection = new JSM.Coord2D (0.0, 0.0);
-		ssp = ray.SectorPosition (sector, intersection);
-		if (ssp === JSM.SectorSectorPosition2D.SectorsDontIntersect) {
+		ssp = ray.OldSectorPosition (sector, intersection);
+		if (ssp === JSM.OldSectorSectorPosition2D.SectorsDontIntersect) {
 			continue;
 		}
 
-		if (ssp === JSM.SectorSectorPosition2D.SectorsIntersectOnePoint) {
+		if (ssp === JSM.OldSectorSectorPosition2D.SectorsIntersectOnePoint) {
 			intersections++;
-		} else if (ssp === JSM.SectorSectorPosition2D.SectorsIntersectEndPoint) {
+		} else if (ssp === JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint) {
 			if (intersection.IsEqual (sector.beg)) {
 				if (JSM.IsGreater (sector.beg.y, sector.end.y)) {
 					intersections++;
@@ -234,7 +234,7 @@ JSM.CoordPolygonPosition2D = function (coord, polygon)
 *	Determines if a sector intersects a polygon. The sides next to the starting and
 *	ending vertices will be skipped. To avoid this, give -1 for these values.
 * Parameters:
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 *	sector {Sector2D} the sector
 *	from {integer} index of starting vertex
 *	end {integer} index of ending vertex
@@ -254,8 +254,8 @@ JSM.SectorIntersectsPolygon2D = function (polygon, sector, from, to)
 		}
 		
 		currentSector = new JSM.Sector2D (polygon.GetVertex (sectorBeg), polygon.GetVertex (sectorEnd));
-		position = sector.SectorPosition (currentSector);
-		if (position !== JSM.SectorSectorPosition2D.SectorsDontIntersect) {
+		position = sector.OldSectorPosition (currentSector);
+		if (position !== JSM.OldSectorSectorPosition2D.SectorsDontIntersect) {
 			return true;
 		}
 	}
@@ -270,7 +270,7 @@ JSM.SectorIntersectsPolygon2D = function (polygon, sector, from, to)
 *	sector between the vertices does not intersects any side of the polygon and the sector
 *	lies fully inside the polygon.
 * Parameters:
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 *	from {integer} index of starting vertex
 *	end {integer} index of ending vertex
 * Returns:
@@ -336,7 +336,7 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 		for (i = 0; i < contourCount; i++) {
 			from = contourEnds[i] + 1;
 			to = contourEnds[i + 1];
-			polygon = new JSM.Polygon2D ();
+			polygon = new JSM.OldPolygon2D ();
 			for (j = from; j < to; j++) {
 				vertex = vertices[j];
 				polygon.AddVertex (vertex.x, vertex.y);
@@ -372,7 +372,7 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 			return true;
 		}
 		
-		var originalPolygon = new JSM.Polygon2D ();
+		var originalPolygon = new JSM.OldPolygon2D ();
 		var i, j, vertex;
 		for (i = 0; i < resultIndices.length; i++) {
 			vertex = vertices[resultIndices[i]];
@@ -511,7 +511,7 @@ JSM.CreatePolygonWithHole2D = function (vertices)
 *	Triangulates a polygon. The result defines triangles as an
 *	array of arrays with three original vertex indices.
 * Parameters:
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 * Returns:
 *	{integer[3][*]} the result
 */
@@ -658,7 +658,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 			continue;
 		}
 
-		currentPolygon2D = new JSM.Polygon2D ();
+		currentPolygon2D = new JSM.OldPolygon2D ();
 		for (j = 0; j < currentVertexCount; j++) {
 			vertex = workPolygon.GetVertex (currentPolygon[j]);
 			currentPolygon2D.AddVertex (vertex.x, vertex.y);
@@ -688,7 +688,7 @@ JSM.PolygonTriangulate2D = function (polygon)
 *	Checks a triangulation created with PolygonTriangulate2D. It checks if
 *	the area of triangles equal to the area of the original polygon.
 * Parameters:
-*	polygon {Polygon2D} the polygon
+*	polygon {OldPolygon2D} the polygon
 *	triangles {integer[3][*]} the triangulation
 * Returns:
 *	{boolean} the result
@@ -705,7 +705,7 @@ JSM.CheckTriangulation2D = function (polygon, triangles)
 			return false;
 		}
 		
-		currentTriangle = new JSM.Polygon2D ();
+		currentTriangle = new JSM.OldPolygon2D ();
 		for (j = 0; j < triangle.length; j++) {
 			vertex = polygon.GetVertex (triangle[j]);
 			currentTriangle.AddVertex (vertex.x, vertex.y);
@@ -768,7 +768,7 @@ JSM.CreatePolygonWithHole = function (vertices)
 */
 JSM.PolygonTriangulate = function (polygon)
 {
-	var polygon2D = new JSM.Polygon2D ();
+	var polygon2D = new JSM.OldPolygon2D ();
 	var normal = JSM.CalculateNormal (polygon.vertices);
 
 	var vertexCount = polygon.VertexCount ();
