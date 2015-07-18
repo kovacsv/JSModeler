@@ -73,7 +73,7 @@ function CheckCalculatedTriangulation (polygon, triangles)
 
 function CheckSimpleTriangulation (polygon, triangles)
 {
-	var triangles = JSM.TriangulateSimplePolygon (polygon);
+	var triangles = JSM.TriangulatePolygon2D (polygon);
 	return CheckCalculatedTriangulation (polygon, triangles);
 }
 
@@ -82,15 +82,15 @@ var simplePolygonSuite = unitTest.AddTestSuite ('SimplePolygonTriangulationTest'
 simplePolygonSuite.AddTest ('InvalidPolygonTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();
-	var triangles = JSM.TriangulateSimplePolygon (polygon);
+	var triangles = JSM.TriangulatePolygon2D (polygon);
 	test.AssertEqual (triangles, null);
 	
 	polygon.AddVertex (0.0, 0.0);
-	triangles = JSM.TriangulateSimplePolygon (polygon);
+	triangles = JSM.TriangulatePolygon2D (polygon);
 	test.AssertEqual (triangles, null);
 
 	polygon.AddVertex (1.0, 0.0);
-	triangles = JSM.TriangulateSimplePolygon (polygon);
+	triangles = JSM.TriangulatePolygon2D (polygon);
 	test.AssertEqual (triangles, null);
 });
 
@@ -124,6 +124,694 @@ simplePolygonSuite.AddTest ('ConvexTriangulationTest', function (test)
 	polygon2.AddVertex (1.0, 1.0);
 	polygon2.AddVertex (1.0, 0.0);
 	test.Assert (CheckSimpleTriangulation (polygon2));
+});
+
+simplePolygonSuite.AddTest ('OldTriangulationTest01', function (test)
+{
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (3.0, 0.0);
+	polygon.AddVertex (3.0, 2.0);
+	polygon.AddVertex (1.5, 3.0);
+	polygon.AddVertex (0.0, 2.0);
+	
+	var triangles = JSM.TriangulatePolygon2D (polygon);
+	test.Assert (CheckSimpleTriangulation (polygon, triangles));
+
+	var polygon2 = new JSM.Polygon2D ();
+	polygon2.AddVertex (0.0, 0.0);
+	polygon2.AddVertex (3.0, 0.0);
+	polygon2.AddVertex (3.0, 2.0);
+	polygon2.AddVertex (2.0, 2.0);
+	polygon2.AddVertex (2.0, 1.0);
+	polygon2.AddVertex (1.0, 1.0);
+	polygon2.AddVertex (1.0, 2.0);
+	polygon2.AddVertex (0.0, 2.0);
+	
+	var triangles = JSM.TriangulatePolygon2D (polygon2);
+	test.Assert (CheckSimpleTriangulation (polygon2, triangles));
+	
+	var polygon2cw = new JSM.Polygon2D ();
+	polygon2cw.AddVertex (0.0, 0.0);
+	polygon2cw.AddVertex (0.0, 2.0);
+	polygon2cw.AddVertex (1.0, 2.0);
+	polygon2cw.AddVertex (1.0, 1.0);
+	polygon2cw.AddVertex (2.0, 1.0);
+	polygon2cw.AddVertex (2.0, 2.0);
+	polygon2cw.AddVertex (3.0, 2.0);
+	polygon2cw.AddVertex (3.0, 0.0);
+	
+	var triangles = JSM.TriangulatePolygon2D (polygon2cw);
+	test.Assert (CheckSimpleTriangulation (polygon2cw, triangles));
+
+	var polygon3 = new JSM.Polygon2D ();
+	polygon3.AddVertex (0.0, 0.0);
+	polygon3.AddVertex (5.0, 0.0);
+	polygon3.AddVertex (5.0, 1.0);
+	polygon3.AddVertex (1.0, 1.0);
+	polygon3.AddVertex (1.0, 5.0);
+	polygon3.AddVertex (4.0, 5.0);
+	polygon3.AddVertex (4.0, 3.0);
+	polygon3.AddVertex (3.0, 3.0);
+	polygon3.AddVertex (3.0, 4.0);
+	polygon3.AddVertex (2.0, 4.0);
+	polygon3.AddVertex (2.0, 2.0);
+	polygon3.AddVertex (5.0, 2.0);
+	polygon3.AddVertex (5.0, 6.0);
+	polygon3.AddVertex (0.0, 6.0);
+
+	var triangles = JSM.TriangulatePolygon2D (polygon3);
+	test.Assert (CheckSimpleTriangulation (polygon3, triangles));
+
+	var polygon4 = new JSM.Polygon2D ();
+	polygon4.AddVertex (52, 221);
+	polygon4.AddVertex (101, 89);
+	polygon4.AddVertex (244, 89);
+	polygon4.AddVertex (188, 222);
+	polygon4.AddVertex (104, 219);
+	polygon4.AddVertex (135, 139);
+	polygon4.AddVertex (167, 140);
+	polygon4.AddVertex (152, 189);
+	polygon4.AddVertex (170, 189);
+	polygon4.AddVertex (192, 118);
+	polygon4.AddVertex (118, 121);
+	polygon4.AddVertex (77, 223);
+	
+	var triangles = JSM.TriangulatePolygon2D (polygon4);
+	test.Assert (CheckSimpleTriangulation (polygon4, triangles));
+
+	var polygon5 = new JSM.Polygon2D ();
+	polygon5.AddVertex (1, 0);
+	polygon5.AddVertex (2, 0);
+	polygon5.AddVertex (2, 1);
+	polygon5.AddVertex (3, 1);
+	polygon5.AddVertex (3, 2);
+	polygon5.AddVertex (2, 2);
+	polygon5.AddVertex (2, 3);
+	polygon5.AddVertex (1, 3);
+	polygon5.AddVertex (1, 2);
+	polygon5.AddVertex (0, 2);
+	polygon5.AddVertex (0, 1);
+	polygon5.AddVertex (1, 1);	
+
+	var triangles = JSM.TriangulatePolygon2D (polygon5);
+	test.Assert (CheckSimpleTriangulation (polygon5, triangles));
+});
+
+simplePolygonSuite.AddTest ('OldTriangulationTest02', function (test)
+{
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0, 0);
+	polygon.AddVertex (3, 0);
+	polygon.AddVertex (3, 3);
+	polygon.AddVertex (0, 3);
+	polygon.AddVertex (0, 0);
+	polygon.AddVertex (1, 1);
+	polygon.AddVertex (1, 2);
+	polygon.AddVertex (2, 2);
+	polygon.AddVertex (2, 1);
+	polygon.AddVertex (1, 1);
+
+	test.Assert (JSM.IsEqual (polygon.GetSignedArea (), 8.0));
+
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 0.0)) == JSM.CoordPosition.OnVertex);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.0, 1.0)) == JSM.CoordPosition.OnVertex);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (2.0, 2.0)) == JSM.CoordPosition.OnVertex);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (3.0, 3.0)) == JSM.CoordPosition.OnVertex);
+
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (-1.0, -1.0)) == JSM.CoordPosition.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (4.0, 4.0)) == JSM.CoordPosition.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (-1.0, 1.5)) == JSM.CoordPosition.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (4.0, 1.5)) == JSM.CoordPosition.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 1.5)) == JSM.CoordPosition.Outside);
+
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 0.5)) == JSM.CoordPosition.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (2.5, 1.5)) == JSM.CoordPosition.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 2.5)) == JSM.CoordPosition.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.5, 1.5)) == JSM.CoordPosition.Inside);
+
+	var triangles = JSM.TriangulatePolygon2D (polygon);
+	test.Assert (CheckCalculatedTriangulation (polygon, triangles));
+
+	var polygon2 = new JSM.Polygon2D ();
+	polygon2.AddVertex (0, 0);
+	polygon2.AddVertex (6, 0);
+	polygon2.AddVertex (6, 3);
+	polygon2.AddVertex (5, 2);
+	polygon2.AddVertex (5, 1);
+	polygon2.AddVertex (4, 1);
+	polygon2.AddVertex (4, 2);
+	polygon2.AddVertex (5, 2);
+	polygon2.AddVertex (6, 3);
+	polygon2.AddVertex (0, 3);
+	polygon2.AddVertex (1, 2);
+	polygon2.AddVertex (2, 2);
+	polygon2.AddVertex (2, 1);
+	polygon2.AddVertex (1, 1);
+	polygon2.AddVertex (1, 2);
+	polygon2.AddVertex (0, 3);
+
+	test.Assert (JSM.IsEqual (polygon2.GetSignedArea (), 16.0));
+
+	var triangles = JSM.TriangulatePolygon2D (polygon2);
+	test.Assert (CheckCalculatedTriangulation (polygon2, triangles));
+
+	var polygon3 = new JSM.Polygon2D ();
+	polygon3.AddVertex (0, 0);
+	polygon3.AddVertex (5, 0);
+	polygon3.AddVertex (2.5, 5);
+	polygon3.AddVertex (2, 2);
+	polygon3.AddVertex (3, 2);
+	polygon3.AddVertex (3, 1);
+	polygon3.AddVertex (2, 1);
+	polygon3.AddVertex (2, 2);
+	polygon3.AddVertex (2.5, 5);
+
+	var triangles = JSM.TriangulatePolygon2D (polygon3);
+	test.Assert (CheckCalculatedTriangulation (polygon3, triangles));
+});
+
+simplePolygonSuite.AddTest ('OldTriangulationTest03', function (test)
+{
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (0, 0);
+	polygon.AddVertex (7, 0);
+	polygon.AddVertex (7, 3);
+	polygon.AddVertex (0, 3);
+	polygon.AddContour ();
+	polygon.AddVertex (1, 1);
+	polygon.AddVertex (1, 2);
+	polygon.AddVertex (2, 2);
+	polygon.AddVertex (2, 1);
+
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
+	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);
+	test.Assert (CheckSimpleTriangulation (simple));
+
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (0, 0);
+	polygon.AddVertex (7, 0);
+	polygon.AddVertex (7, 3);
+	polygon.AddVertex (0, 3);
+	polygon.AddContour ();
+	polygon.AddVertex (1, 1);
+	polygon.AddVertex (1, 2);
+	polygon.AddVertex (2, 2);
+	polygon.AddVertex (2, 1);	
+	polygon.AddContour ();
+	polygon.AddVertex (3, 1);
+	polygon.AddVertex (3, 2);
+	polygon.AddVertex (4, 2);
+	polygon.AddVertex (4, 1);	
+
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
+	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
+	test.Assert (CheckSimpleTriangulation (simple));
+
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (0, 0);
+	polygon.AddVertex (7, 0);
+	polygon.AddVertex (7, 3);
+	polygon.AddVertex (0, 3);
+	polygon.AddContour ();
+	polygon.AddVertex (1, 1);
+	polygon.AddVertex (1, 2);
+	polygon.AddVertex (2, 2);
+	polygon.AddVertex (2, 1);	
+	polygon.AddContour ();
+	polygon.AddVertex (3, 1);
+	polygon.AddVertex (3, 2);
+	polygon.AddVertex (4, 2);
+	polygon.AddVertex (4, 1);	
+	polygon.AddContour ();
+	polygon.AddVertex (5, 1);
+	polygon.AddVertex (5, 2);
+	polygon.AddVertex (6, 2);
+	polygon.AddVertex (6, 1);	
+
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
+	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);
+	test.Assert (CheckSimpleTriangulation (simple));
+
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (300.8485412597656, 319.4265441894531);
+	polygon.AddVertex (338.24835205078125, 396.81103515625);
+	polygon.AddVertex (421.9165954589844, 416.66839599609375);
+	polygon.AddVertex (489.1433410644531, 362.9385986328125);
+	polygon.AddVertex (489.543701171875, 276.95245361328125);
+	polygon.AddVertex (422.18115234375, 223.48004150390625);
+	polygon.AddVertex (337.93084716796875, 241.53892517089844);
+	polygon.AddContour ();
+	polygon.AddVertex (400.6557922363281, 231.74929809570312);
+	polygon.AddVertex (468.43548583984375, 264.9992980957031);
+	polygon.AddVertex (484.7142639160156, 338.9593505859375);
+	polygon.AddVertex (437.7185363769531, 398.06951904296875);
+	polygon.AddVertex (362.0542297363281, 397.45257568359375);
+	polygon.AddVertex (315.2279052734375, 338.1394348144531);
+	polygon.AddVertex (332.49664306640625, 264.4938659667969);
+
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
+	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
+	test.Assert (CheckSimpleTriangulation (simple));
+});
+
+simplePolygonSuite.AddTest ('OldTriangulationTest04', function (test)
+{
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (14.406249999999998, 0.004463199991732836);
+	polygon.AddVertex (12.273693084716795, -0.13337911665439606);
+	polygon.AddVertex (10.177939414978026, -0.5507046580314636);
+	polygon.AddVertex (8.158322334289549, -1.2485805749893188);
+	polygon.AddVertex (6.256920814514159, -2.2232589721679688);
+	polygon.AddVertex (4.518617153167724, -3.4653913974761963);
+	polygon.AddVertex (2.992141485214233, -4.959873676300049);
+	polygon.AddVertex (1.7292572259902952, -6.682513236999512);
+	polygon.AddVertex (0.7823054790496825, -8.596776962280273);
+	polygon.AddVertex (0.19680410623550412, -10.650409698486328);
+	polygon.AddVertex (2.7840769689646545e-9, -12.77676773071289);
+	polygon.AddVertex (2.7840769689646545e-9, -58.87051773071289);
+	polygon.AddVertex (0.19683623313903806, -60.99687194824219);
+	polygon.AddVertex (0.782375395298004, -63.05048370361328);
+	polygon.AddVertex (1.7292767763137815, -64.96475982666016);
+	polygon.AddVertex (2.992123126983642, -66.68743133544922);
+	polygon.AddVertex (4.5186753273010245, -68.18182373046875);
+	polygon.AddVertex (6.256915569305419, -69.42404174804688);
+	polygon.AddVertex (8.158330917358397, -70.398681640625);
+	polygon.AddVertex (10.17793846130371, -71.0965805053711);
+	polygon.AddVertex (12.273698806762694, -71.51383209228516);
+	polygon.AddVertex (14.406246185302733, -71.65176391601562);
+	polygon.AddVertex (385.18749999999994, -71.65176391601562);
+	polygon.AddVertex (387.32006835937494, -71.513916015625);
+	polygon.AddVertex (389.41580200195307, -71.0965805053711);
+	polygon.AddVertex (391.43542480468744, -70.398681640625);
+	polygon.AddVertex (393.33679199218744, -69.42398071289062);
+	polygon.AddVertex (395.0751342773437, -68.18187713623047);
+	polygon.AddVertex (396.6016235351562, -66.6874008178711);
+	polygon.AddVertex (397.86450195312494, -64.96475982666016);
+	polygon.AddVertex (398.8114624023437, -63.050498962402344);
+	polygon.AddVertex (399.39697265624994, -60.99687576293945);
+	polygon.AddVertex (399.59374999999994, -58.870513916015625);
+	polygon.AddVertex (399.59374999999994, -12.776763916015625);
+	polygon.AddVertex (399.39688110351557, -10.650407791137695);
+	polygon.AddVertex (398.8113708496093, -8.596782684326172);
+	polygon.AddVertex (397.8644714355468, -6.682509422302246);
+	polygon.AddVertex (396.6016235351562, -4.95983362197876);
+	polygon.AddVertex (395.07510375976557, -3.465416193008423);
+	polygon.AddVertex (393.3368530273437, -2.223223924636841);
+	polygon.AddVertex (391.43542480468744, -1.2485815286636353);
+	polygon.AddVertex (389.41580200195307, -0.5506518483161926);
+	polygon.AddVertex (387.3200378417968, -0.13342222571372986);
+	polygon.AddVertex (385.18749999999994, 0.004486083984375);
+	polygon.AddContour ();
+	polygon.AddVertex (357.99999999999994, -10.651786804199219);
+	polygon.AddVertex (360.0240173339843, -10.729362487792969);
+	polygon.AddVertex (362.0359497070312, -10.963029861450195);
+	polygon.AddVertex (364.0234985351562, -11.353105545043945);
+	polygon.AddVertex (365.97412109374994, -11.898651123046875);
+	polygon.AddVertex (367.87536621093744, -12.597009658813477);
+	polygon.AddVertex (369.7149047851562, -13.44465446472168);
+	polygon.AddVertex (371.4808044433593, -14.436634063720703);
+	polygon.AddVertex (373.1611938476562, -15.567431449890137);
+	polygon.AddVertex (374.7445983886718, -16.83041000366211);
+	polygon.AddVertex (376.2197875976562, -18.21826934814453);
+	polygon.AddVertex (377.57568359374994, -19.722864151000977);
+	polygon.AddVertex (378.80154418945307, -21.335163116455078);
+	polygon.AddVertex (379.88711547851557, -23.0450382232666);
+	polygon.AddVertex (380.82266235351557, -24.84136199951172);
+	polygon.AddVertex (381.5994262695312, -26.711843490600586);
+	polygon.AddVertex (382.2098999023437, -28.642974853515625);
+	polygon.AddVertex (382.64871215820307, -30.620220184326172);
+	polygon.AddVertex (382.91235351562494, -32.628326416015625);
+	polygon.AddVertex (382.99999999999994, -34.65178680419922);
+	polygon.AddVertex (382.91235351562494, -36.67523956298828);
+	polygon.AddVertex (382.6486206054687, -38.68333053588867);
+	polygon.AddVertex (382.2098083496093, -40.660552978515625);
+	polygon.AddVertex (381.59924316406244, -42.591670989990234);
+	polygon.AddVertex (380.8226013183593, -44.46219253540039);
+	polygon.AddVertex (379.8871459960937, -46.258583068847656);
+	polygon.AddVertex (378.8015747070312, -47.96845626831055);
+	polygon.AddVertex (377.5756530761718, -49.58070755004883);
+	polygon.AddVertex (376.2197875976562, -51.08530807495117);
+	polygon.AddVertex (374.7445983886718, -52.47315979003906);
+	polygon.AddVertex (373.16116333007807, -53.73616027832031);
+	polygon.AddVertex (371.4807739257812, -54.86695861816406);
+	polygon.AddVertex (369.7149353027343, -55.85900115966797);
+	polygon.AddVertex (367.87536621093744, -56.70659255981445);
+	polygon.AddVertex (365.97412109374994, -57.405006408691406);
+	polygon.AddVertex (364.0234985351562, -57.95049285888672);
+	polygon.AddVertex (362.0359497070312, -58.340576171875);
+	polygon.AddVertex (360.0239868164062, -58.574188232421875);
+	polygon.AddVertex (357.99999999999994, -58.65178680419922);
+	polygon.AddVertex (355.97598266601557, -58.57420349121094);
+	polygon.AddVertex (353.9640502929687, -58.340545654296875);
+	polygon.AddVertex (351.9765014648437, -57.95048141479492);
+	polygon.AddVertex (350.02587890624994, -57.40494155883789);
+	polygon.AddVertex (348.12463378906244, -56.706573486328125);
+	polygon.AddVertex (346.2850952148437, -55.85893249511719);
+	polygon.AddVertex (344.51919555664057, -54.866943359375);
+	polygon.AddVertex (342.8388061523437, -53.73613357543945);
+	polygon.AddVertex (341.25537109374994, -52.47316360473633);
+	polygon.AddVertex (339.78018188476557, -51.085304260253906);
+	polygon.AddVertex (338.4242858886718, -49.58070755004883);
+	polygon.AddVertex (337.1984252929687, -47.968421936035156);
+	polygon.AddVertex (336.1128845214843, -46.25852584838867);
+	polygon.AddVertex (335.1773071289062, -44.462196350097656);
+	polygon.AddVertex (334.40054321289057, -42.591712951660156);
+	polygon.AddVertex (333.79003906249994, -40.66058349609375);
+	polygon.AddVertex (333.3512878417968, -38.68334197998047);
+	polygon.AddVertex (333.08764648437494, -36.675235748291016);
+	polygon.AddVertex (332.99999999999994, -34.65178680419922);
+	polygon.AddVertex (333.08764648437494, -32.62833023071289);
+	polygon.AddVertex (333.3513793945312, -30.620243072509766);
+	polygon.AddVertex (333.79019165039057, -28.643016815185547);
+	polygon.AddVertex (334.4007263183593, -26.711898803710938);
+	polygon.AddVertex (335.17736816406244, -24.84137725830078);
+	polygon.AddVertex (336.11282348632807, -23.044984817504883);
+	polygon.AddVertex (337.1984252929687, -21.33512306213379);
+	polygon.AddVertex (338.42434692382807, -19.722867965698242);
+	polygon.AddVertex (339.7802429199218, -18.2182674407959);
+	polygon.AddVertex (341.25540161132807, -16.830411911010742);
+	polygon.AddVertex (342.8388061523437, -15.567415237426758);
+	polygon.AddVertex (344.51919555664057, -14.436615943908691);
+	polygon.AddVertex (346.28506469726557, -13.444568634033203);
+	polygon.AddVertex (348.12466430664057, -12.596980094909668);
+	polygon.AddVertex (350.02587890624994, -11.8985595703125);
+	polygon.AddVertex (351.9765014648437, -11.353080749511719);
+	polygon.AddVertex (353.9640502929687, -10.962987899780273);
+	polygon.AddVertex (355.9760131835937, -10.729391098022461);
+	polygon.AddContour ();
+	polygon.AddVertex (45.84374999999999, -10.683036804199219);
+	polygon.AddVertex (47.88229370117187, -10.759542465209961);
+	polygon.AddVertex (49.909187316894524, -10.990069389343262);
+	polygon.AddVertex (51.91246795654296, -11.375129699707031);
+	polygon.AddVertex (53.879959106445305, -11.913954734802246);
+	polygon.AddVertex (55.799419403076165, -12.604604721069336);
+	polygon.AddVertex (57.658760070800774, -13.443743705749512);
+	polygon.AddVertex (59.44597625732422, -14.427173614501953);
+	polygon.AddVertex (61.14910888671875, -15.54993724822998);
+	polygon.AddVertex (62.75645065307617, -16.805988311767578);
+	polygon.AddVertex (64.25637817382811, -18.188514709472656);
+	polygon.AddVertex (65.63724517822264, -19.689943313598633);
+	polygon.AddVertex (66.88774108886717, -21.301536560058594);
+	polygon.AddVertex (67.99694824218749, -23.013425827026367);
+	polygon.AddVertex (68.9541778564453, -24.814687728881836);
+	polygon.AddVertex (69.74999237060545, -26.69283676147461);
+	polygon.AddVertex (70.37625885009764, -28.63409423828125);
+	polygon.AddVertex (70.82669067382811, -30.623504638671875);
+	polygon.AddVertex (71.09741210937499, -32.64522933959961);
+	polygon.AddVertex (71.18749999999999, -34.68303298950195);
+	polygon.AddVertex (71.09748077392577, -36.72084426879883);
+	polygon.AddVertex (70.82672882080077, -38.74257278442383);
+	polygon.AddVertex (70.37628936767577, -40.731990814208984);
+	polygon.AddVertex (69.7500534057617, -42.67326354980469);
+	polygon.AddVertex (68.95420837402342, -44.55139923095703);
+	polygon.AddVertex (67.99696350097655, -46.3526496887207);
+	polygon.AddVertex (66.88782501220702, -48.06458282470703);
+	polygon.AddVertex (65.63726806640624, -49.67613983154297);
+	polygon.AddVertex (64.25634765624999, -51.17751693725586);
+	polygon.AddVertex (62.75646209716797, -52.56009292602539);
+	polygon.AddVertex (61.14913558959961, -53.816165924072266);
+	polygon.AddVertex (59.44598388671875, -54.93890380859375);
+	polygon.AddVertex (57.65877532958984, -55.9223518371582);
+	polygon.AddVertex (55.799427032470696, -56.761478424072266);
+	polygon.AddVertex (53.87994766235351, -57.45206832885742);
+	polygon.AddVertex (51.912464141845696, -57.99094009399414);
+	polygon.AddVertex (49.90919876098632, -58.37601852416992);
+	polygon.AddVertex (47.882305145263665, -58.60653305053711);
+	polygon.AddVertex (45.843757629394524, -58.68303298950195);
+	polygon.AddVertex (43.80521011352538, -58.60653305053711);
+	polygon.AddVertex (41.77831649780273, -58.37600326538086);
+	polygon.AddVertex (39.77503585815429, -57.99094009399414);
+	polygon.AddVertex (37.807544708251946, -57.45210647583008);
+	polygon.AddVertex (35.88808059692382, -56.761451721191406);
+	polygon.AddVertex (34.02873992919921, -55.92230987548828);
+	polygon.AddVertex (32.241523742675774, -54.93888473510742);
+	polygon.AddVertex (30.53838539123535, -53.81612777709961);
+	polygon.AddVertex (28.931024551391598, -52.56009292602539);
+	polygon.AddVertex (27.431098937988278, -51.17756652832031);
+	polygon.AddVertex (26.05021476745605, -49.676151275634766);
+	polygon.AddVertex (24.799709320068356, -48.06455612182617);
+	polygon.AddVertex (23.690509796142575, -46.3526611328125);
+	polygon.AddVertex (22.73331260681152, -44.55138397216797);
+	polygon.AddVertex (21.937499999999996, -42.67323303222656);
+	polygon.AddVertex (21.31124114990234, -40.731971740722656);
+	polygon.AddVertex (20.860818862915036, -38.7425537109375);
+	polygon.AddVertex (20.590082168579098, -36.720829010009766);
+	polygon.AddVertex (20.500007629394528, -34.68303298950195);
+	polygon.AddVertex (20.590051651000973, -32.645225524902344);
+	polygon.AddVertex (20.860799789428707, -30.623497009277344);
+	polygon.AddVertex (21.311223983764645, -28.634075164794922);
+	polygon.AddVertex (21.93748092651367, -26.692811965942383);
+	polygon.AddVertex (22.733314514160153, -24.814674377441406);
+	polygon.AddVertex (23.69057464599609, -23.013431549072266);
+	polygon.AddVertex (24.799715042114254, -21.301498413085938);
+	polygon.AddVertex (26.050258636474606, -19.6899356842041);
+	polygon.AddVertex (27.431152343749996, -18.188535690307617);
+	polygon.AddVertex (28.931035995483395, -16.80597496032715);
+	polygon.AddVertex (30.538366317749023, -15.549915313720703);
+	polygon.AddVertex (32.24151229858398, -14.427176475524902);
+	polygon.AddVertex (34.02872085571288, -13.443732261657715);
+	polygon.AddVertex (35.888069152832024, -12.604608535766602);
+	polygon.AddVertex (37.80755233764648, -11.914011001586914);
+	polygon.AddVertex (39.77502822875976, -11.375136375427246);
+	polygon.AddVertex (41.7782859802246, -10.990045547485352);
+	polygon.AddVertex (43.80519485473632, -10.75953197479248);
+	polygon.AddContour ();
+	polygon.AddVertex (107.71874999999999, -10.683036804199219);
+	polygon.AddVertex (295.56249999999994, -10.683036804199219);
+	polygon.AddVertex (297.7281188964843, -10.829914093017578);
+	polygon.AddVertex (299.85278320312494, -11.273558616638184);
+	polygon.AddVertex (301.8931274414062, -12.013519287109375);
+	polygon.AddVertex (303.8041687011718, -13.04211139678955);
+	polygon.AddVertex (305.53958129882807, -14.345172882080078);
+	polygon.AddVertex (307.05151367187494, -15.901714324951172);
+	polygon.AddVertex (308.2914733886718, -17.682279586791992);
+	polygon.AddVertex (309.2132263183593, -19.646312713623047);
+	polygon.AddVertex (309.77932739257807, -21.740589141845703);
+	polygon.AddVertex (309.96874999999994, -23.90178680419922);
+	polygon.AddVertex (309.96874999999994, -45.46428680419922);
+	polygon.AddVertex (309.77932739257807, -47.625484466552734);
+	polygon.AddVertex (309.21340942382807, -49.71982192993164);
+	polygon.AddVertex (308.2914733886718, -51.683753967285156);
+	polygon.AddVertex (307.0514831542968, -53.464298248291016);
+	polygon.AddVertex (305.53958129882807, -55.02088928222656);
+	polygon.AddVertex (303.80419921874994, -56.32395935058594);
+	polygon.AddVertex (301.8931274414062, -57.3525505065918);
+	polygon.AddVertex (299.85278320312494, -58.092491149902344);
+	polygon.AddVertex (297.7281188964843, -58.53616714477539);
+	polygon.AddVertex (295.56249999999994, -58.68303680419922);
+	polygon.AddVertex (107.71874999999999, -58.68303680419922);
+	polygon.AddVertex (105.55313873291014, -58.536163330078125);
+	polygon.AddVertex (103.42848205566405, -58.09251022338867);
+	polygon.AddVertex (101.3881378173828, -57.352508544921875);
+	polygon.AddVertex (99.47705078124999, -56.32398223876953);
+	polygon.AddVertex (97.74167633056639, -55.020896911621094);
+	polygon.AddVertex (96.22973632812499, -53.46435546875);
+	polygon.AddVertex (94.98975372314452, -51.68381118774414);
+	polygon.AddVertex (94.06801605224608, -49.71977615356445);
+	polygon.AddVertex (93.50196075439452, -47.625484466552734);
+	polygon.AddVertex (93.31249999999999, -45.46428680419922);
+	polygon.AddVertex (93.31249999999999, -23.90178680419922);
+	polygon.AddVertex (93.50192260742186, -21.740585327148438);
+	polygon.AddVertex (94.0679473876953, -19.646278381347656);
+	polygon.AddVertex (94.98979187011717, -17.682294845581055);
+	polygon.AddVertex (96.22973632812499, -15.901721954345703);
+	polygon.AddVertex (97.7416534423828, -14.345148086547852);
+	polygon.AddVertex (99.47707366943358, -13.04212474822998);
+	polygon.AddVertex (101.38810729980467, -12.01349925994873);
+	polygon.AddVertex (103.42847442626952, -11.27356243133545);
+	polygon.AddVertex (105.55313873291014, -10.829910278320312);
+
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqualNum (polygon.GetSignedArea (), simple.GetSignedArea (), 0.0001);
+	test.AssertEqualNum (polygon.GetArea (), simple.GetArea (), 0.0001);
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
+	test.Assert (CheckSimpleTriangulation (simple));
+
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (300.0, 0.0);
+	polygon.AddVertex (300.0, 300.0);
+	polygon.AddVertex (0.0, 300.0);
+	polygon.AddContour ();
+	polygon.AddVertex (100.0, 100.0);
+	polygon.AddVertex (100.0, 200.0);
+	polygon.AddVertex (200.0, 200.0);
+	polygon.AddVertex (200.0, 100.0);
+	polygon.AddContour ();
+	polygon.AddVertex (10.0, 10.0);
+	polygon.AddVertex (10.0, 50.0);
+	polygon.AddVertex (50.0, 50.0);
+	polygon.AddVertex (50.0, 10.0);
+	
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
+	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
+	test.Assert (CheckSimpleTriangulation (simple));
+
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (0, 0);
+	polygon.AddVertex (7, 0);
+	polygon.AddVertex (7, 3);
+	polygon.AddVertex (0, 3);
+	polygon.AddContour ();
+	polygon.AddVertex (1, 1);
+	polygon.AddVertex (1, 2);
+	polygon.AddVertex (2, 2);
+	polygon.AddVertex (2, 1);
+	polygon.AddContour ();
+	polygon.AddVertex (3, 1);
+	polygon.AddVertex (3, 2);
+	polygon.AddVertex (4, 2);
+	polygon.AddVertex (4, 1);
+	polygon.AddContour ();
+	polygon.AddVertex (5, 1);
+	polygon.AddVertex (5, 2);
+	polygon.AddVertex (6, 2);
+	polygon.AddVertex (6, 1);
+
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
+	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
+	test.Assert (CheckSimpleTriangulation (simple));
+
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (10.0, 0.0);
+	polygon.AddVertex (10.0, 10.0);
+	polygon.AddVertex (0.0, 10.0);
+	polygon.AddContour ();
+	polygon.AddVertex (5.0, 5.0);
+	polygon.AddVertex (5.0, 6.0);
+	polygon.AddVertex (6.0, 6.0);
+	polygon.AddVertex (6.0, 5.0);
+	polygon.AddContour ();
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (1.0, 9.0);
+	polygon.AddVertex (2.0, 9.0);
+	polygon.AddVertex (2.0, 2.0);
+	polygon.AddVertex (8.0, 2.0);
+	polygon.AddVertex (8.0, 9.0);
+	polygon.AddVertex (9.0, 9.0);
+	polygon.AddVertex (9.0, 1.0);
+	
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
+	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
+	test.Assert (CheckSimpleTriangulation (simple));
+
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (10.0, 0.0);
+	polygon.AddVertex (10.0, 10.0);
+	polygon.AddVertex (0.0, 10.0);
+	polygon.AddContour ();
+	polygon.AddVertex (5.0, 5.0);
+	polygon.AddVertex (5.0, 6.0);
+	polygon.AddVertex (6.0, 6.0);
+	polygon.AddVertex (6.0, 5.0);
+	polygon.AddContour ();
+	polygon.AddVertex (3.0, 3.0);
+	polygon.AddVertex (3.0, 4.0);
+	polygon.AddVertex (4.0, 4.0);
+	polygon.AddVertex (4.0, 3.0);
+	polygon.AddContour ();
+	polygon.AddVertex (5.0, 3.0);
+	polygon.AddVertex (5.0, 4.0);
+	polygon.AddVertex (6.0, 4.0);
+	polygon.AddVertex (6.0, 3.0);
+	polygon.AddContour ();
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (1.0, 9.0);
+	polygon.AddVertex (2.0, 9.0);
+	polygon.AddVertex (2.0, 2.0);
+	polygon.AddVertex (8.0, 2.0);
+	polygon.AddVertex (8.0, 9.0);
+	polygon.AddVertex (9.0, 9.0);
+	polygon.AddVertex (9.0, 1.0);
+	
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
+	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
+	test.Assert (CheckSimpleTriangulation (simple));
+
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (10.0, 0.0);
+	polygon.AddVertex (10.0, 10.0);
+	polygon.AddVertex (0.0, 10.0);
+	polygon.AddContour ();
+	polygon.AddVertex (5.0, 5.0);
+	polygon.AddVertex (5.0, 6.0);
+	polygon.AddVertex (6.0, 6.0);
+	polygon.AddVertex (6.0, 5.0);
+	polygon.AddContour ();
+	polygon.AddVertex (5.0, 3.0);
+	polygon.AddVertex (5.0, 4.0);
+	polygon.AddVertex (6.0, 4.0);
+	polygon.AddVertex (6.0, 3.0);
+	polygon.AddContour ();
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (1.0, 9.0);
+	polygon.AddVertex (2.0, 9.0);
+	polygon.AddVertex (2.0, 2.0);
+	polygon.AddVertex (8.0, 2.0);
+	polygon.AddVertex (8.0, 9.0);
+	polygon.AddVertex (9.0, 9.0);
+	polygon.AddVertex (9.0, 1.0);
+	polygon.AddContour ();
+	polygon.AddVertex (3.0, 3.0);
+	polygon.AddVertex (3.0, 4.0);
+	polygon.AddVertex (4.0, 4.0);
+	polygon.AddVertex (4.0, 3.0);
+	
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
+	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
+	test.Assert (CheckSimpleTriangulation (simple));
 });
 
 simplePolygonSuite.AddTest ('ConcaveTriangulationTest01', function (test)
@@ -197,7 +885,7 @@ convertToSimplePolygonSuite.AddTest ('SimplePolygonTest', function (test)
 	polygon.AddVertex (5.0, 4.0);
 	polygon.AddVertex (0.0, 4.0);
 	
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.AssertEqual (polygon.VertexCount (), simple.VertexCount ());
 	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
 	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
@@ -212,7 +900,7 @@ convertToSimplePolygonSuite.AddTest ('SimplePolygonTest', function (test)
 	polygon2.AddVertex (5.0, 4.0);
 	polygon2.AddVertex (5.0, 0.0);
 	
-	var simple2 = JSM.ConvertPolygonToSimplePolygon (polygon2);
+	var simple2 = JSM.ConvertContourPolygonToPolygon2D (polygon2);
 	test.AssertEqual (polygon2.VertexCount (), simple2.VertexCount ());
 	test.AssertEqual (polygon2.GetSignedArea (), simple2.GetSignedArea ());
 	test.AssertEqual (polygon2.GetArea (), simple2.GetArea ());
@@ -236,7 +924,7 @@ convertToSimplePolygonSuite.AddTest ('OneHoleTest01', function (test)
 	polygon.AddVertex (2.0, 2.0);
 	polygon.AddVertex (2.0, 1.0);
     
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.AssertEqual (polygon.VertexCount () + 2, simple.VertexCount ());
 	test.AssertEqualNum (polygon.GetSignedArea (), simple.GetSignedArea (), JSM.Eps);
 	test.AssertEqualNum (polygon.GetArea (), simple.GetArea (), JSM.Eps);
@@ -260,7 +948,7 @@ convertToSimplePolygonSuite.AddTest ('OneHoleTest02', function (test)
 	polygon.AddVertex (1.0, 1.0);
 	polygon.AddVertex (1.0, 2.0);
     
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.AssertEqual (polygon.VertexCount () + 2, simple.VertexCount ());
 	test.AssertEqualNum (polygon.GetSignedArea (), simple.GetSignedArea (), JSM.Eps);
 	test.AssertEqualNum (polygon.GetArea (), simple.GetArea (), JSM.Eps);
@@ -284,7 +972,7 @@ convertToSimplePolygonSuite.AddTest ('OneHoleTest03', function (test)
 	polygon.AddVertex (2.0, 3.0);
 	polygon.AddVertex (2.0, 1.0);
     
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.AssertEqual (polygon.VertexCount () + 2, simple.VertexCount ());
 	test.AssertEqualNum (polygon.GetSignedArea (), simple.GetSignedArea (), JSM.Eps);
 	test.AssertEqualNum (polygon.GetArea (), simple.GetArea (), JSM.Eps);
@@ -314,7 +1002,7 @@ convertToSimplePolygonSuite.AddTest ('TwoHolesTest', function (test)
 	polygon.AddVertex (4.0, 2.0);
 	polygon.AddVertex (4.0, 1.0);
 
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.AssertEqual (polygon.VertexCount () + 4, simple.VertexCount ());
 	test.AssertEqualNum (polygon.GetSignedArea (), simple.GetSignedArea (), JSM.Eps);
 	test.AssertEqualNum (polygon.GetArea (), simple.GetArea (), JSM.Eps);
@@ -339,7 +1027,7 @@ polygonSuite.AddTest ('OneHoleTriangulationTest', function (test)
 	polygon.AddVertex (2.0, 2.0);
 	polygon.AddVertex (2.0, 1.0);
     
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 
 	var polygon2 = new JSM.ContourPolygon2D ();
@@ -353,7 +1041,7 @@ polygonSuite.AddTest ('OneHoleTriangulationTest', function (test)
 	polygon2.AddVertex (2.0, 2.0);
 	polygon2.AddVertex (2.0, 1.0);
     
-	var simple2 = JSM.ConvertPolygonToSimplePolygon (polygon2);
+	var simple2 = JSM.ConvertContourPolygonToPolygon2D (polygon2);
 	test.Assert (CheckSimpleTriangulation (simple2));
 	
 	var polygon3 = new JSM.ContourPolygon2D ();
@@ -368,7 +1056,7 @@ polygonSuite.AddTest ('OneHoleTriangulationTest', function (test)
 	polygon3.AddVertex (90, 90);
 	polygon3.AddVertex (90, 10);
 	
-	var simple3 = JSM.ConvertPolygonToSimplePolygon (polygon3);
+	var simple3 = JSM.ConvertContourPolygonToPolygon2D (polygon3);
 	test.Assert (CheckSimpleTriangulation (simple3));
 });
 
@@ -393,7 +1081,7 @@ polygonSuite.AddTest ('TwoHolesTriangulationTest01', function (test)
 	polygon.AddVertex (4.0, 2.0);
 	polygon.AddVertex (4.0, 1.0);
 
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.AssertEqual (polygon.VertexCount () + 4, simple.VertexCount ());
 	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
 	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
@@ -425,7 +1113,7 @@ polygonSuite.AddTest ('TwoHolesTriangulationTest02', function (test)
 	polygon.AddVertex (2.0, 2.0);
 	polygon.AddVertex (2.0, 1.0);
     
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.AssertEqual (polygon.VertexCount () + 4, simple.VertexCount ());
 	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
 	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
@@ -455,7 +1143,7 @@ polygonSuite.AddTest ('TwoHolesTriangulationTest03', function (test)
 	polygon.AddVertex (1.0, 2.0);
 	polygon.AddVertex (2.0, 2.0);
     
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.AssertEqual (polygon.VertexCount () + 4, simple.VertexCount ());
 	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
 	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
@@ -485,8 +1173,8 @@ polygonSuite.AddTest ('TwoHolesTriangulationTest04', function (test)
 	polygon.AddVertex (3.0, 2.0);
 	polygon.AddVertex (4.0, 2.0);
 
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
-	var triangles = JSM.TriangulateSimplePolygon (simple);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	var triangles = JSM.TriangulatePolygon2D (simple);
 	test.Assert (CheckCalculatedTriangulation_Exists (simple, triangles));
 	test.Assert (CheckCalculatedTriangulation_TriangleCount (simple, triangles));
 	test.Assert (CheckCalculatedTriangulation_Area (simple, triangles));
@@ -875,7 +1563,7 @@ generatedSuite.AddTest ('Test12', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 28193, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.CounterClockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -957,7 +1645,7 @@ generatedSuite.AddTest ('Test13', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 151033, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Concave, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1058,7 +1746,7 @@ generatedSuite.AddTest ('Test14', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 163611, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Concave, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1149,7 +1837,7 @@ generatedSuite.AddTest ('Test15', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 132181.5, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Concave, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1180,7 +1868,7 @@ generatedSuite.AddTest ('Test16', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 33073, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.CounterClockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1259,7 +1947,7 @@ generatedSuite.AddTest ('Test17', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 87509, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1344,7 +2032,7 @@ generatedSuite.AddTest ('Test18', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 84071.5, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1377,7 +2065,7 @@ generatedSuite.AddTest ('Test19', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 190194.5, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1431,7 +2119,7 @@ generatedSuite.AddTest ('Test20', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 76049, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1501,7 +2189,7 @@ generatedSuite.AddTest ('Test21', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 109202, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1587,7 +2275,7 @@ generatedSuite.AddTest ('Test22', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 56177.5, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1606,7 +2294,7 @@ generatedSuite.AddTest ('Test23', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 15951, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.CounterClockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1718,7 +2406,7 @@ generatedSuite.AddTest ('Test24', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 207382.5, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 
@@ -1751,7 +2439,7 @@ generatedSuite.AddTest ('Test25', function (test) {
 	test.AssertEqualNum (polygon.GetArea (), 94397.5, JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise, JSM.Eps);
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex, JSM.Eps);
-	var simple = JSM.ConvertPolygonToSimplePolygon (polygon);
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
 	test.Assert (CheckSimpleTriangulation (simple));
 });
 

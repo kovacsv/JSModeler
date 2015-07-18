@@ -1021,16 +1021,6 @@
 						["integer[3][*]", "the result"]
 					]
 				},
-				"CheckTriangulation2D" : {
-					"description" : "Checks a triangulation created with PolygonTriangulate2D. It checks if the area of triangles equal to the area of the original polygon.",
-					"parameters" : [
-						["polygon", "OldPolygon2D", "the polygon"],
-						["triangles", "integer[3][*]", "the triangulation"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
 				"CreatePolygonWithHole" : {
 					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
 					"parameters" : [

@@ -1,4 +1,4 @@
-JSM.ConvertPolygonToSimplePolygon = function (inputPolygon)
+JSM.ConvertContourPolygonToPolygon2D = function (inputPolygon)
 {
 	function AddContour (inputPolygon, resultPolygon, holeIndex, conversionData)
 	{
@@ -119,7 +119,7 @@ JSM.ConvertPolygonToSimplePolygon = function (inputPolygon)
 	return resultPolygon;
 };
 
-JSM.TriangulateSimpleConvexPolygon = function (polygon)
+JSM.TriangulateConvexPolygon = function (polygon)
 {
 	var result = [];
 	var i;
@@ -129,7 +129,7 @@ JSM.TriangulateSimpleConvexPolygon = function (polygon)
 	return result;
 };
 
-JSM.TriangulateSimpleConcavePolygonDiagonal = function (inputPolygon, onProcess)
+JSM.TriangulateConcavePolygon2D = function (inputPolygon)
 {
 	function GetInitialVertexMap (count)
 	{
@@ -209,9 +209,6 @@ JSM.TriangulateSimpleConcavePolygonDiagonal = function (inputPolygon, onProcess)
 		if (diagonal === null) {
 			return null;
 		}
-		if (onProcess !== undefined && onProcess !== null) {
-			onProcess (polygonData.polygon, diagonal);
-		}
 		resultData = SplitPolygon (polygonData, diagonal);
 		polygonStack.push (resultData.resultData1);
 		polygonStack.push (resultData.resultData2);
@@ -219,12 +216,7 @@ JSM.TriangulateSimpleConcavePolygonDiagonal = function (inputPolygon, onProcess)
 	return result;
 };
 
-JSM.TriangulateSimpleConcavePolygon = function (polygon)
-{
-	return JSM.TriangulateSimpleConcavePolygonDiagonal (polygon);
-};
-
-JSM.TriangulateSimplePolygon = function (polygon)
+JSM.TriangulatePolygon2D = function (polygon)
 {
 	if (polygon === null) {
 		return null;
@@ -241,8 +233,8 @@ JSM.TriangulateSimplePolygon = function (polygon)
 	
 	var complexity = polygon.GetComplexity ();
 	if (complexity == JSM.Complexity.Convex) {
-		return JSM.TriangulateSimpleConvexPolygon (polygon);
+		return JSM.TriangulateConvexPolygon (polygon);
 	}
 	
-	return JSM.TriangulateSimpleConcavePolygon (polygon);
+	return JSM.TriangulateConcavePolygon2D (polygon);
 };

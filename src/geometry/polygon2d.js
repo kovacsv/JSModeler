@@ -5,7 +5,7 @@ JSM.Complexity = {
 	Complex : 3
 };
 
-JSM.PointPosition = {
+JSM.CoordPosition = {
 	OnVertex : 0,
 	OnEdge : 1,
 	Inside : 2,
@@ -162,7 +162,7 @@ JSM.Polygon2D.prototype.IsConcaveVertex = function (index)
 	return vertexOrientation != orientation;
 };
 
-JSM.Polygon2D.prototype.PointPosition = function (coord)
+JSM.Polygon2D.prototype.CoordPosition = function (coord)
 {
 	function IntersectionCount (coord, beg, end)
 	{
@@ -218,17 +218,17 @@ JSM.Polygon2D.prototype.PointPosition = function (coord)
 		sector = new JSM.Sector2D (edgeFrom, edgeTo);
 		position = sector.CoordPosition (coord);
 		if (position == JSM.CoordSectorPosition2D.CoordInsideOfSector) {
-			return JSM.PointPosition.OnEdge;
+			return JSM.CoordPosition.OnEdge;
 		} else if (position == JSM.CoordSectorPosition2D.CoordOnSectorEndCoord) {
-			return JSM.PointPosition.OnVertex;
+			return JSM.CoordPosition.OnVertex;
 		}
 		intersections += IntersectionCount (coord, edgeFrom, edgeTo);
 	}
 	
 	if (intersections % 2 !== 0) {
-		return JSM.PointPosition.Inside;
+		return JSM.CoordPosition.Inside;
 	}
-	return JSM.PointPosition.Outside;
+	return JSM.CoordPosition.Outside;
 };
 
 JSM.Polygon2D.prototype.SectorPosition = function (beg, end, begIndex, endIndex)
@@ -285,8 +285,8 @@ JSM.Polygon2D.prototype.IsDiagonal = function (from, to)
 			(fromVertex.x + toVertex.x) / 2.0,
 			(fromVertex.y + toVertex.y) / 2.0
 		);
-		var position = polygon.PointPosition (midCoord);
-		return position == JSM.PointPosition.Inside;
+		var position = polygon.CoordPosition (midCoord);
+		return position == JSM.CoordPosition.Inside;
 	}
 	
 	if (from == to) {

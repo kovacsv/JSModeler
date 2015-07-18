@@ -683,45 +683,6 @@ JSM.PolygonTriangulate2D = function (polygon)
 };
 
 /**
-* Function: CheckTriangulation2D
-* Description:
-*	Checks a triangulation created with PolygonTriangulate2D. It checks if
-*	the area of triangles equal to the area of the original polygon.
-* Parameters:
-*	polygon {OldPolygon2D} the polygon
-*	triangles {integer[3][*]} the triangulation
-* Returns:
-*	{boolean} the result
-*/
-JSM.CheckTriangulation2D = function (polygon, triangles)
-{
-	var polygonArea = JSM.PolygonSignedArea2D (polygon);
-	var trianglesArea = 0.0;
-	
-	var i, j, triangle, currentTriangle, vertex;
-	for (i = 0; i < triangles.length; i++) {
-		triangle = triangles[i];
-		if (triangle.length !== 3) {
-			return false;
-		}
-		
-		currentTriangle = new JSM.OldPolygon2D ();
-		for (j = 0; j < triangle.length; j++) {
-			vertex = polygon.GetVertex (triangle[j]);
-			currentTriangle.AddVertex (vertex.x, vertex.y);
-		}
-		
-		trianglesArea += JSM.PolygonSignedArea2D (currentTriangle);
-	}
-	
-	if (!JSM.IsEqual (polygonArea, trianglesArea)) {
-		return false;
-	}
-	
-	return true;
-};
-
-/**
 * Function: CreatePolygonWithHole
 * Description:
 *	Creates a simple polygon from multiple contours by creating in-out edges between

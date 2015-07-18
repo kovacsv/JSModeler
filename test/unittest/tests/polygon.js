@@ -386,26 +386,26 @@ pointInPolygonSuite.AddTest ('PointInPolygonConvexTest', function (test)
 	polygon.AddVertex (2.0, 2.0);
 	polygon.AddVertex (0.0, 2.0);
 	
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (0.0, 0.0)), JSM.PointPosition.OnVertex);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (2.0, 0.0)), JSM.PointPosition.OnVertex);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (2.0, 2.0)), JSM.PointPosition.OnVertex);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (0.0, 2.0)), JSM.PointPosition.OnVertex);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (0.0, 0.0)), JSM.CoordPosition.OnVertex);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (2.0, 0.0)), JSM.CoordPosition.OnVertex);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (2.0, 2.0)), JSM.CoordPosition.OnVertex);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (0.0, 2.0)), JSM.CoordPosition.OnVertex);
 
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (1.0, 0.0)), JSM.PointPosition.OnEdge);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (2.0, 1.0)), JSM.PointPosition.OnEdge);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (1.0, 2.0)), JSM.PointPosition.OnEdge);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (0.0, 1.0)), JSM.PointPosition.OnEdge);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (1.0, 0.0)), JSM.CoordPosition.OnEdge);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (2.0, 1.0)), JSM.CoordPosition.OnEdge);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (1.0, 2.0)), JSM.CoordPosition.OnEdge);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (0.0, 1.0)), JSM.CoordPosition.OnEdge);
 
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (1.0, 1.0)), JSM.PointPosition.Inside);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (-1.0, 1.0)), JSM.PointPosition.Outside);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (3.0, 1.0)), JSM.PointPosition.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (1.0, 1.0)), JSM.CoordPosition.Inside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 1.0)), JSM.CoordPosition.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 1.0)), JSM.CoordPosition.Outside);
     
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (-1.0, 0.0)), JSM.PointPosition.Outside);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (-1.0, 2.0)), JSM.PointPosition.Outside);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (3.0, 0.0)), JSM.PointPosition.Outside);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (3.0, 2.0)), JSM.PointPosition.Outside);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (-1.0, 3.0)), JSM.PointPosition.Outside);
-	test.AssertEqual (polygon.PointPosition (new JSM.Coord2D (3.0, 3.0)), JSM.PointPosition.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 0.0)), JSM.CoordPosition.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 2.0)), JSM.CoordPosition.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 0.0)), JSM.CoordPosition.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 2.0)), JSM.CoordPosition.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 3.0)), JSM.CoordPosition.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 3.0)), JSM.CoordPosition.Outside);
 	
 	var polygon2 = new JSM.Polygon2D ();
 	polygon2.AddVertex (0.0, 0.0);
@@ -413,13 +413,13 @@ pointInPolygonSuite.AddTest ('PointInPolygonConvexTest', function (test)
 	polygon2.AddVertex (0.0, 2.0);
 	polygon2.AddVertex (-1.0, 1.0);
 	
-	test.AssertEqual (polygon2.PointPosition (new JSM.Coord2D (0.0, 1.0)), JSM.PointPosition.Inside);
-	test.AssertEqual (polygon2.PointPosition (new JSM.Coord2D (-2.0, 1.0)), JSM.PointPosition.Outside);
-	test.AssertEqual (polygon2.PointPosition (new JSM.Coord2D (2.0, 1.0)), JSM.PointPosition.Outside);
-	test.AssertEqual (polygon2.PointPosition (new JSM.Coord2D (-0.5, 0.0)), JSM.PointPosition.Outside);
-	test.AssertEqual (polygon2.PointPosition (new JSM.Coord2D (0.5, 0.0)), JSM.PointPosition.Outside);
-	test.AssertEqual (polygon2.PointPosition (new JSM.Coord2D (-0.5, 2.0)), JSM.PointPosition.Outside);
-	test.AssertEqual (polygon2.PointPosition (new JSM.Coord2D (0.5, 2.0)), JSM.PointPosition.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (0.0, 1.0)), JSM.CoordPosition.Inside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (-2.0, 1.0)), JSM.CoordPosition.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (2.0, 1.0)), JSM.CoordPosition.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (-0.5, 0.0)), JSM.CoordPosition.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (0.5, 0.0)), JSM.CoordPosition.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (-0.5, 2.0)), JSM.CoordPosition.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (0.5, 2.0)), JSM.CoordPosition.Outside);
 });
 
 var diagonalSuite = unitTest.AddTestSuite ('IsDiagonalSuite');
