@@ -942,30 +942,6 @@
 						["integer[3][*]", "the result"]
 					]
 				},
-				"CreatePolygonFromVertices" : {
-					"description" : "Creates a cloned polygon from the given vertices.",
-					"parameters" : [
-						["vertices", "Coord2D[*]", "the vertices"]
-					],
-					"returns" : [
-						["Polygon2D", "the result"]
-					]
-				},
-				"ChangePolygonOrientation2D" : {
-					"description" : "Reverses the orientation of a polygon.",
-					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
-					]
-				},
-				"CreateCCWPolygonFromVertices" : {
-					"description" : "Creates a cloned polygon from the given vertices with couter clockwise orientation.",
-					"parameters" : [
-						["vertices", "Coord2D[*]", "the vertices"]
-					],
-					"returns" : [
-						["Polygon2D", "the result"]
-					]
-				},
 				"CreatePolygonWithHole2D" : {
 					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
 					"parameters" : [

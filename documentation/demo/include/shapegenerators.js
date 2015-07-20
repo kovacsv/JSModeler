@@ -1,3 +1,37 @@
+JSM.CreatePolygonFromVertices = function (vertices)
+{
+	var polygon = new JSM.Polygon2D ();
+
+	var i, current;
+	for (i = 0; i < vertices.length; i++) {
+		current = vertices[i];
+		polygon.AddVertex (current.x, current.y);
+	}
+	
+	return polygon;
+};
+
+JSM.ChangePolygonOrientation2D = function (polygon)
+{
+	var oldPolygon = polygon.Clone ();
+	polygon.Clear ();
+	
+	var i, oldVertex;
+	for (i = oldPolygon.VertexCount () - 1; i >= 0; i--) {
+		oldVertex = oldPolygon.GetVertex (i);
+		polygon.AddVertex (oldVertex.x, oldVertex.y);
+	}
+};
+
+JSM.CreateCCWPolygonFromVertices = function (vertices)
+{
+	var polygon = JSM.CreatePolygonFromVertices (vertices);
+	if (polygon.GetOrientation () != JSM.Orientation.CounterClockwise) {
+		JSM.ChangePolygonOrientation2D (polygon);
+	}
+	return polygon;
+};
+
 JSM.ShapeGenerator = function ()
 {
 	this.parameters = null;

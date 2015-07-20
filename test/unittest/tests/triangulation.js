@@ -71,7 +71,7 @@ function CheckCalculatedTriangulation (polygon, triangles)
 	return true;
 }
 
-function CheckSimpleTriangulation (polygon, triangles)
+function CheckSimpleTriangulation (polygon)
 {
 	var triangles = JSM.TriangulatePolygon2D (polygon);
 	return CheckCalculatedTriangulation (polygon, triangles);

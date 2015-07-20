@@ -376,6 +376,22 @@ simpleSuite.AddTest ('JsonTest', function (test)
 	test.AssertEqual (polygon.GetComplexity (), polygon2.GetComplexity ());	
 });
 
+simpleSuite.AddTest ('ChangeOrientation', function (test)
+{
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (1.0, 0.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (0.0, 1.0);
+
+	var polygon2 = new JSM.Polygon2D ();
+	polygon2.FromJson (polygon.ToJson ());
+	
+	test.AssertEqualNum (polygon.GetArea (), polygon2.GetArea (), JSM.Eps);
+	test.AssertEqual (polygon.GetOrientation (), polygon2.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), polygon2.GetComplexity ());	
+});
+
 var pointInPolygonSuite = unitTest.AddTestSuite ('PointInPolygonTest');
 
 pointInPolygonSuite.AddTest ('PointInPolygonConvexTest', function (test)
