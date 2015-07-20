@@ -8,8 +8,9 @@ JSM.ConvertContourPolygonToPolygon2D = function (inputPolygon)
 			{
 				function SegmentIntersectsPolygon (polygon, segmentBeg, segmentEnd)
 				{
-					var position = polygon.SectorPosition (segmentBeg, segmentEnd, -1, -1);
-					if (position == JSM.SectorPosition.IntersectionOnePoint || position == JSM.SectorPosition.IntersectionCoincident) {
+					var sector = new JSM.Sector2D (segmentBeg, segmentEnd);
+					var position = polygon.SectorPosition (sector, -1, -1);
+					if (position == JSM.SectorPolygonPosition.IntersectionOnePoint || position == JSM.SectorPolygonPosition.IntersectionCoincident) {
 						return true;
 					}
 					return false;
@@ -163,6 +164,12 @@ JSM.TriangulateConcavePolygon2D = function (inputPolygon)
 
 	function SplitPolygon (polygonData, diagonal)
 	{
+		function AddVertex (polygonData, resultData, index)
+		{
+			resultData.polygon.AddVertexCoord (polygonData.polygon.GetVertex (index));
+			resultData.map.push (polygonData.map[index]);
+		}
+		
 		var resultData1 = {
 			polygon : new JSM.Polygon2D (),
 			map : []
@@ -171,14 +178,23 @@ JSM.TriangulateConcavePolygon2D = function (inputPolygon)
 			polygon : new JSM.Polygon2D (),
 			map : []
 		};
-		polygonData.polygon.EnumerateVertices (diagonal.beg, diagonal.end, function (index) {
-			resultData1.polygon.AddVertexCoord (polygonData.polygon.GetVertex (index));
-			resultData1.map.push (polygonData.map[index]);
+
+		var beg, end;
+		
+		beg = diagonal.beg;
+		end = polygonData.polygon.GetPrevVertex (diagonal.end);
+		AddVertex (polygonData, resultData1, diagonal.end);
+		polygonData.polygon.EnumerateVertices (beg, end, function (index) {
+			AddVertex (polygonData, resultData1, index);
 		});
-		polygonData.polygon.EnumerateVertices (diagonal.end, diagonal.beg, function (index) {
-			resultData2.polygon.AddVertexCoord (polygonData.polygon.GetVertex (index));
-			resultData2.map.push (polygonData.map[index]);
+
+		beg = diagonal.end;
+		end = polygonData.polygon.GetPrevVertex (diagonal.beg);
+		AddVertex (polygonData, resultData2, diagonal.beg);
+		polygonData.polygon.EnumerateVertices (beg, end, function (index) {
+			AddVertex (polygonData, resultData2, index);
 		});
+		
 		return {
 			resultData1 : resultData1,
 			resultData2 : resultData2
@@ -241,4 +257,20 @@ JSM.TriangulatePolygon2D = function (polygon)
 	}
 	
 	return JSM.TriangulateConcavePolygon2D (polygon);
+};
+
+/**
+* Function: TriangulatePolygon
+* Description:
+*	Triangulates a polygon. The result defines triangles as an
+*	array of arrays with three original vertex indices.
+* Parameters:
+*	polygon {Polygon} the polygon
+* Returns:
+*	{integer[3][*]} the result
+*/
+JSM.TriangulatePolygon = function (polygon)
+{
+	var polygon2D = polygon.ToPolygon2D ();
+	return JSM.TriangulatePolygon2D (polygon2D);
 };

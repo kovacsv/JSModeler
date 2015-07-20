@@ -5,14 +5,14 @@ JSM.Complexity = {
 	Complex : 3
 };
 
-JSM.CoordPosition = {
+JSM.CoordPolygonPosition = {
 	OnVertex : 0,
 	OnEdge : 1,
 	Inside : 2,
 	Outside : 3
 };
 
-JSM.SectorPosition = {
+JSM.SectorPolygonPosition = {
 	IntersectionOnePoint : 0,
 	IntersectionCoincident : 1,
 	IntersectionOnVertex : 2,
@@ -218,29 +218,29 @@ JSM.Polygon2D.prototype.CoordPosition = function (coord)
 		sector = new JSM.Sector2D (edgeFrom, edgeTo);
 		position = sector.CoordPosition (coord);
 		if (position == JSM.CoordSectorPosition2D.CoordInsideOfSector) {
-			return JSM.CoordPosition.OnEdge;
+			return JSM.CoordPolygonPosition.OnEdge;
 		} else if (position == JSM.CoordSectorPosition2D.CoordOnSectorEndCoord) {
-			return JSM.CoordPosition.OnVertex;
+			return JSM.CoordPolygonPosition.OnVertex;
 		}
 		intersections += IntersectionCount (coord, edgeFrom, edgeTo);
 	}
 	
 	if (intersections % 2 !== 0) {
-		return JSM.CoordPosition.Inside;
+		return JSM.CoordPolygonPosition.Inside;
 	}
-	return JSM.CoordPosition.Outside;
+	return JSM.CoordPolygonPosition.Outside;
 };
 
-JSM.Polygon2D.prototype.SectorPosition = function (beg, end, begIndex, endIndex)
+JSM.Polygon2D.prototype.SectorPosition = function (sector, begIndex, endIndex)
 {
-	var result = JSM.SectorPosition.NoIntersection;
+	var result = JSM.SectorPolygonPosition.NoIntersection;
 	var vertexCount = this.vertices.length;
 	if (vertexCount < 3) {
 		return result;
 	}
 	
 	var i, edgeBegIndex, edgeEndIndex, edgeBeg, edgeEnd;
-	var sector1, sector2, position;
+	var currentSector, position;
 	for (i = 0; i < vertexCount; i++) {
 		edgeBegIndex = i;
 		edgeEndIndex = (i + 1) % vertexCount;
@@ -249,15 +249,14 @@ JSM.Polygon2D.prototype.SectorPosition = function (beg, end, begIndex, endIndex)
 		if (edgeBegIndex == begIndex || edgeEndIndex == begIndex || edgeBegIndex == endIndex || edgeEndIndex == endIndex) {
 			continue;
 		}
-		sector1 = new JSM.Sector2D (edgeBeg, edgeEnd);
-		sector2 = new JSM.Sector2D (beg, end);
-		position = sector1.SectorPosition (sector2);
+		currentSector = new JSM.Sector2D (edgeBeg, edgeEnd);
+		position = sector.SectorPosition (currentSector);
 		if (position == JSM.SectorSectorPosition2D.SectorsIntersectOnePoint) {
-			return JSM.SectorPosition.IntersectionOnePoint;
+			return JSM.SectorPolygonPosition.IntersectionOnePoint;
 		} else if (position == JSM.SectorSectorPosition2D.SectorsIntersectCoincident) {
-			return JSM.SectorPosition.IntersectionCoincident;
+			return JSM.SectorPolygonPosition.IntersectionCoincident;
 		} else if (position == JSM.SectorSectorPosition2D.SectorsIntersectEndPoint) {
-			result = JSM.SectorPosition.IntersectionOnVertex;
+			result = JSM.SectorPolygonPosition.IntersectionOnVertex;
 		}
 	}
 	
@@ -270,8 +269,9 @@ JSM.Polygon2D.prototype.IsDiagonal = function (from, to)
 	{
 		var fromVertex = polygon.GetVertex (from);
 		var toVertex = polygon.GetVertex (to);
-		var position = polygon.SectorPosition (fromVertex, toVertex, from, to);
-		if (position != JSM.SectorPosition.NoIntersection) {
+		var sector = new JSM.Sector2D (fromVertex, toVertex);
+		var position = polygon.SectorPosition (sector, from, to);
+		if (position != JSM.SectorPolygonPosition.NoIntersection) {
 			return true;
 		}
 		return false;
@@ -286,7 +286,7 @@ JSM.Polygon2D.prototype.IsDiagonal = function (from, to)
 			(fromVertex.y + toVertex.y) / 2.0
 		);
 		var position = polygon.CoordPosition (midCoord);
-		return position == JSM.CoordPosition.Inside;
+		return position == JSM.CoordPolygonPosition.Inside;
 	}
 	
 	if (from == to) {

@@ -65,7 +65,7 @@ JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
 					}
 					
 					var normal = JSM.CalculateBodyPolygonNormal (body, index);
-					var triangles = JSM.PolygonTriangulate (polygon3D, normal);
+					var triangles = JSM.TriangulatePolygon (polygon3D, normal);
 					if (triangles !== null) {
 						var triangle;
 						for (i = 0; i < triangles.length; i++) {

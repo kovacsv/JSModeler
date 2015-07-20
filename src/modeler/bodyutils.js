@@ -274,16 +274,18 @@ JSM.TriangulatePolygons = function (body)
 			coord = body.GetVertexPosition (bodyPolygon.GetVertexIndex (j));
 			polygon.AddVertex (coord.x, coord.y, coord.z);
 		}
-		triangleIndices = JSM.PolygonTriangulate (polygon);
-		for (j = 0; j < triangleIndices.length; j++) {
-			triangle = triangleIndices[j];
-			bodyTriangle = new JSM.BodyPolygon ([
-				bodyPolygon.GetVertexIndex (triangle[0]),
-				bodyPolygon.GetVertexIndex (triangle[1]),
-				bodyPolygon.GetVertexIndex (triangle[2])
-			]);
-			bodyTriangle.InheritAttributes (bodyPolygon);
-			result.AddPolygon (bodyTriangle);
+		triangleIndices = JSM.TriangulatePolygon (polygon);
+		if (triangleIndices !== null) {
+			for (j = 0; j < triangleIndices.length; j++) {
+				triangle = triangleIndices[j];
+				bodyTriangle = new JSM.BodyPolygon ([
+					bodyPolygon.GetVertexIndex (triangle[0]),
+					bodyPolygon.GetVertexIndex (triangle[1]),
+					bodyPolygon.GetVertexIndex (triangle[2])
+				]);
+				bodyTriangle.InheritAttributes (bodyPolygon);
+				result.AddPolygon (bodyTriangle);
+			}
 		}
 	}
 	

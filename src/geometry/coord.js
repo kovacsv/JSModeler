@@ -215,17 +215,6 @@ JSM.Coord.prototype.Rotate = function (axis, angle, origo)
 };
 
 /**
-* Function: Coord.ToString
-* Description: Converts the coordinate values to string.
-* Returns:
-*	{string} the string representation of the coordinate
-*/
-JSM.Coord.prototype.ToString = function ()
-{
-	return ('(' + this.x + ', ' + this.y + ', ' + this.z + ')');
-};
-
-/**
 * Function: Coord.ToCoord2D
 * Description: Converts the coordinate to a 2D coordinate.
 * Parameters:
@@ -241,6 +230,17 @@ JSM.Coord.prototype.ToCoord2D = function (normal)
 	var angle = normal.AngleTo (zNormal);
 	var rotated = this.Clone ().Rotate (axis, angle, origo);
 	return new JSM.Coord2D (rotated.x, rotated.y);
+};
+
+/**
+* Function: Coord.ToString
+* Description: Converts the coordinate values to string.
+* Returns:
+*	{string} the string representation of the coordinate
+*/
+JSM.Coord.prototype.ToString = function ()
+{
+	return ('(' + this.x + ', ' + this.y + ', ' + this.z + ')');
 };
 
 /**

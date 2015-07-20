@@ -234,21 +234,21 @@ simplePolygonSuite.AddTest ('OldTriangulationTest02', function (test)
 
 	test.Assert (JSM.IsEqual (polygon.GetSignedArea (), 8.0));
 
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 0.0)) == JSM.CoordPosition.OnVertex);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.0, 1.0)) == JSM.CoordPosition.OnVertex);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (2.0, 2.0)) == JSM.CoordPosition.OnVertex);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (3.0, 3.0)) == JSM.CoordPosition.OnVertex);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 0.0)) == JSM.CoordPolygonPosition.OnVertex);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.0, 1.0)) == JSM.CoordPolygonPosition.OnVertex);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (2.0, 2.0)) == JSM.CoordPolygonPosition.OnVertex);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (3.0, 3.0)) == JSM.CoordPolygonPosition.OnVertex);
 
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (-1.0, -1.0)) == JSM.CoordPosition.Outside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (4.0, 4.0)) == JSM.CoordPosition.Outside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (-1.0, 1.5)) == JSM.CoordPosition.Outside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (4.0, 1.5)) == JSM.CoordPosition.Outside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 1.5)) == JSM.CoordPosition.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (-1.0, -1.0)) == JSM.CoordPolygonPosition.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (4.0, 4.0)) == JSM.CoordPolygonPosition.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (-1.0, 1.5)) == JSM.CoordPolygonPosition.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (4.0, 1.5)) == JSM.CoordPolygonPosition.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 1.5)) == JSM.CoordPolygonPosition.Outside);
 
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 0.5)) == JSM.CoordPosition.Inside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (2.5, 1.5)) == JSM.CoordPosition.Inside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 2.5)) == JSM.CoordPosition.Inside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.5, 1.5)) == JSM.CoordPosition.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 0.5)) == JSM.CoordPolygonPosition.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (2.5, 1.5)) == JSM.CoordPolygonPosition.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 2.5)) == JSM.CoordPolygonPosition.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.5, 1.5)) == JSM.CoordPolygonPosition.Inside);
 
 	var triangles = JSM.TriangulatePolygon2D (polygon);
 	test.Assert (CheckCalculatedTriangulation (polygon, triangles));

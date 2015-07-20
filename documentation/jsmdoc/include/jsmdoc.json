@@ -910,135 +910,6 @@
 						["Coord[3][*]", "the result"]
 					]
 				},
-				"CreatePolygonFromVertices" : {
-					"description" : "Creates a cloned polygon from the given vertices.",
-					"parameters" : [
-						["vertices", "Coord2D[*]", "the vertices"]
-					],
-					"returns" : [
-						["OldPolygon2D", "the result"]
-					]
-				},
-				"PolygonSignedArea2D" : {
-					"description" : "Calculates the signed area of a polygon. The result is positive if the polygon has counter clockwise orientation, negative if it has clockwise orientation.",
-					"parameters" : [
-						["polygon", "OldPolygon2D", "the polygon"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"PolygonArea2D" : {
-					"description" : "Calculates the area of a polygon.",
-					"parameters" : [
-						["polygon", "OldPolygon2D", "the polygon"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"PolygonOrientation2D" : {
-					"description" : "Calculates the orientation of a polygon.",
-					"parameters" : [
-						["polygon", "OldPolygon2D", "the polygon"]
-					],
-					"returns" : [
-						["Orientation", "the result"]
-					]
-				},
-				"ChangePolygonOrientation2D" : {
-					"description" : "Reverses the orientation of a polygon.",
-					"parameters" : [
-						["polygon", "OldPolygon2D", "the polygon"]
-					]
-				},
-				"CreateCCWPolygonFromVertices" : {
-					"description" : "Creates a cloned polygon from the given vertices with couter clockwise orientation.",
-					"parameters" : [
-						["vertices", "Coord2D[*]", "the vertices"]
-					],
-					"returns" : [
-						["OldPolygon2D", "the result"]
-					]
-				},
-				"PolygonComplexity2D" : {
-					"description" : "Calculates the complexity of a polygon.",
-					"parameters" : [
-						["polygon", "OldPolygon2D", "the polygon"]
-					],
-					"returns" : [
-						["Complexity", "the result"]
-					]
-				},
-				"CoordPolygonPosition2D" : {
-					"description" : "Calculates the position of a coordinate and a polygon.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["polygon", "OldPolygon2D", "the polygon"]
-					],
-					"returns" : [
-						["string", "'CoordOutsideOfPolygon', 'CoordInsideOfPolygon', or 'CoordOnPolygonEdge'"]
-					]
-				},
-				"SectorIntersectsPolygon2D" : {
-					"description" : "Determines if a sector intersects a polygon. The sides next to the starting and ending vertices will be skipped. To avoid this, give -1 for these values.",
-					"parameters" : [
-						["polygon", "OldPolygon2D", "the polygon"],
-						["sector", "Sector2D", "the sector"],
-						["from", "integer", "index of starting vertex"],
-						["end", "integer", "index of ending vertex"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"IsPolygonVertexVisible2D" : {
-					"description" : "Determines if a polygons vertex is visible from an another vertex. It means that the sector between the vertices does not intersects any side of the polygon and the sector lies fully inside the polygon.",
-					"parameters" : [
-						["polygon", "OldPolygon2D", "the polygon"],
-						["from", "integer", "index of starting vertex"],
-						["end", "integer", "index of ending vertex"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CreatePolygonWithHole2D" : {
-					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
-					"parameters" : [
-						["vertices", "Coord2D[*]", "array of contour vertices with null values at contour ends"]
-					],
-					"returns" : [
-						["int[*]", "the result"]
-					]
-				},
-				"PolygonTriangulate2D" : {
-					"description" : "Triangulates a polygon. The result defines triangles as an array of arrays with three original vertex indices.",
-					"parameters" : [
-						["polygon", "OldPolygon2D", "the polygon"]
-					],
-					"returns" : [
-						["integer[3][*]", "the result"]
-					]
-				},
-				"CreatePolygonWithHole" : {
-					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
-					"parameters" : [
-						["vertices", "Coord[*]", "array of contour vertices with null values at contour ends"]
-					],
-					"returns" : [
-						["int[*]", "the result"]
-					]
-				},
-				"PolygonTriangulate" : {
-					"description" : "Triangulates a polygon. The result defines triangles as an array of arrays with three original vertex indices.",
-					"parameters" : [
-						["polygon", "Polygon", "the polygon"]
-					],
-					"returns" : [
-						["integer[3][*]", "the result"]
-					]
-				},
 				"OffsetPolygonContour" : {
 					"description" : "Offsets all vertices of a polygon.",
 					"parameters" : [
@@ -1060,6 +931,57 @@
 					],
 					"returns" : [
 						["boolean", "success"]
+					]
+				},
+				"TriangulatePolygon" : {
+					"description" : "Triangulates a polygon. The result defines triangles as an array of arrays with three original vertex indices.",
+					"parameters" : [
+						["polygon", "Polygon", "the polygon"]
+					],
+					"returns" : [
+						["integer[3][*]", "the result"]
+					]
+				},
+				"CreatePolygonFromVertices" : {
+					"description" : "Creates a cloned polygon from the given vertices.",
+					"parameters" : [
+						["vertices", "Coord2D[*]", "the vertices"]
+					],
+					"returns" : [
+						["Polygon2D", "the result"]
+					]
+				},
+				"ChangePolygonOrientation2D" : {
+					"description" : "Reverses the orientation of a polygon.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"]
+					]
+				},
+				"CreateCCWPolygonFromVertices" : {
+					"description" : "Creates a cloned polygon from the given vertices with couter clockwise orientation.",
+					"parameters" : [
+						["vertices", "Coord2D[*]", "the vertices"]
+					],
+					"returns" : [
+						["Polygon2D", "the result"]
+					]
+				},
+				"CreatePolygonWithHole2D" : {
+					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
+					"parameters" : [
+						["vertices", "Coord2D[*]", "array of contour vertices with null values at contour ends"]
+					],
+					"returns" : [
+						["int[*]", "the result"]
+					]
+				},
+				"CreatePolygonWithHole" : {
+					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
+					"parameters" : [
+						["vertices", "Coord[*]", "array of contour vertices with null values at contour ends"]
+					],
+					"returns" : [
+						["int[*]", "the result"]
 					]
 				},
 				"TraverseOctreeNodes" : {
@@ -1369,12 +1291,6 @@
 								["Coord", "this pointer"]
 							]
 						},
-						"ToString" : {
-							"description" : "Converts the coordinate values to string.",
-							"returns" : [
-								["string", "the string representation of the coordinate"]
-							]
-						},
 						"ToCoord2D" : {
 							"description" : "Converts the coordinate to a 2D coordinate.",
 							"parameters" : [
@@ -1382,6 +1298,12 @@
 							],
 							"returns" : [
 								["Coord2D", "the result"]
+							]
+						},
+						"ToString" : {
+							"description" : "Converts the coordinate values to string.",
+							"returns" : [
+								["string", "the string representation of the coordinate"]
 							]
 						},
 						"Clone" : {
@@ -1853,14 +1775,15 @@
 						}
 					}
 				},
-				"OldPolygon2D" : {
-					"description" : "Represents a 2D polygon.",
+				"Polygon" : {
+					"description" : "Represents a 3D polygon.",
 					"functions" : {
 						"AddVertex" : {
 							"description" : "Adds a vertex to the polygon.",
 							"parameters" : [
 								["x", "number", "the x coordinate of the vertex"],
-								["y", "number", "the y coordinate of the vertex"]
+								["y", "number", "the y coordinate of the vertex"],
+								["z", "number", "the z coordinate of the vertex"]
 							]
 						},
 						"GetVertex" : {
@@ -1869,7 +1792,7 @@
 								["index", "integer", "the index of the vertex"]
 							],
 							"returns" : [
-								["Coord2D", "the vertex"]
+								["Coord", "the vertex"]
 							]
 						},
 						"SetVertex" : {
@@ -1877,7 +1800,8 @@
 							"parameters" : [
 								["index", "integer", "the index of the vertex"],
 								["x", "number", "the x coordinate of the vertex"],
-								["y", "number", "the y coordinate of the vertex"]
+								["y", "number", "the y coordinate of the vertex"],
+								["z", "number", "the z coordinate of the vertex"]
 							]
 						},
 						"VertexCount" : {
@@ -1886,13 +1810,25 @@
 								["integer", "vertex count"]
 							]
 						},
+						"GetNormal" : {
+							"description" : "Calculates the normal vector of the polygon.",
+							"returns" : [
+								["Vector", "the result"]
+							]
+						},
+						"ToPolygon2D" : {
+							"description" : "Converts the polygon to a 2D polygon.",
+							"returns" : [
+								["Polygon2D", "the result"]
+							]
+						},
 						"Clear" : {
 							"description" : "Makes the polygon empty."
 						},
 						"Clone" : {
 							"description" : "Clones the polygon.",
 							"returns" : [
-								["OldPolygon2D", "a cloned instance"]
+								["Polygon", "a cloned instance"]
 							]
 						}
 					}
@@ -1951,7 +1887,7 @@
 								["contour", "integer", "the index of the contour"]
 							],
 							"returns" : [
-								["OldPolygon2D", "the contour"]
+								["Polygon2D", "the contour"]
 							]
 						},
 						"Clear" : {
@@ -1961,52 +1897,6 @@
 							"description" : "Clones the polygon.",
 							"returns" : [
 								["OldContourPolygon2D", "a cloned instance"]
-							]
-						}
-					}
-				},
-				"Polygon" : {
-					"description" : "Represents a 3D polygon.",
-					"functions" : {
-						"AddVertex" : {
-							"description" : "Adds a vertex to the polygon.",
-							"parameters" : [
-								["x", "number", "the x coordinate of the vertex"],
-								["y", "number", "the y coordinate of the vertex"],
-								["z", "number", "the z coordinate of the vertex"]
-							]
-						},
-						"GetVertex" : {
-							"description" : "Returns the vertex with the given index.",
-							"parameters" : [
-								["index", "integer", "the index of the vertex"]
-							],
-							"returns" : [
-								["Coord", "the vertex"]
-							]
-						},
-						"SetVertex" : {
-							"description" : "Modifies the coordinates of an existing vertex.",
-							"parameters" : [
-								["index", "integer", "the index of the vertex"],
-								["x", "number", "the x coordinate of the vertex"],
-								["y", "number", "the y coordinate of the vertex"],
-								["z", "number", "the z coordinate of the vertex"]
-							]
-						},
-						"VertexCount" : {
-							"description" : "Returns the vertex count of the polygon.",
-							"returns" : [
-								["integer", "vertex count"]
-							]
-						},
-						"Clear" : {
-							"description" : "Makes the polygon empty."
-						},
-						"Clone" : {
-							"description" : "Clones the polygon.",
-							"returns" : [
-								["Polygon", "a cloned instance"]
 							]
 						}
 					}
@@ -4345,7 +4235,7 @@
 						"DrawPolygon" : {
 							"description" : "Draws a polygon to the target.",
 							"parameters" : [
-								["polygon", "OldPolygon2D", "the polygon"],
+								["polygon", "Polygon2D", "the polygon"],
 								["color", "string", "the hex color string"],
 								["contour", "boolean", "need to draw contour"]
 							]
@@ -4383,7 +4273,7 @@
 						"DrawPolygon" : {
 							"description" : "Draws a polygon to the target.",
 							"parameters" : [
-								["polygon", "OldPolygon2D", "the polygon"],
+								["polygon", "Polygon2D", "the polygon"],
 								["color", "string", "the hex color string"],
 								["contour", "boolean", "need to draw contour"]
 							]

@@ -343,18 +343,18 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 		var basePolygon, baseOrientation, prism;
 		var contourCount = polygon.ContourCount ();
 		if (contourCount == 1) {
-			baseOrientation = JSM.PolygonOrientation2D (polygon.GetContour (0));
+			baseOrientation = polygon.GetContour (0).GetOrientation ();
 			basePolygon = CreateBasePolygon (polygon.GetContour (0), baseOrientation);
 			prism = JSM.GeneratePrism (basePolygon, direction, currentHeight, true);
 			prisms.push (prism);
 		} else if (contourCount > 1) {
-			baseOrientation = JSM.PolygonOrientation2D (polygon.GetContour (0));
+			baseOrientation = polygon.GetContour (0).GetOrientation ();
 			var holeBasePolygon = CreateBasePolygon (polygon.GetContour (0), baseOrientation);
 			var hasHoles = false;
 			
 			var i, orientation;
 			for (i = 1; i < polygon.ContourCount (); i++) {
-				orientation = JSM.PolygonOrientation2D (polygon.GetContour (i));
+				orientation = polygon.GetContour (i).GetOrientation ();
 				if (orientation == baseOrientation) {
 					basePolygon = CreateBasePolygon (polygon.GetContour (i), baseOrientation);
 					prism = JSM.GeneratePrism (basePolygon, direction, currentHeight, true);

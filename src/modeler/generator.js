@@ -954,19 +954,20 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 			vertex = basePolygon[polygonIndices[i]];
 			polygon.AddVertex (vertex.x, vertex.y, vertex.z);
 		}
-		var triangles = JSM.PolygonTriangulate (polygon);
-
-		var triangle, topTriangle, bottomTriangle;
-		for (i = 0; i < triangles.length; i++) {
-			triangle = triangles[i];
-			topTriangle = new JSM.BodyPolygon ([]);
-			bottomTriangle = new JSM.BodyPolygon ([]);
-			for (j = 0; j < 3; j++) {
-				topTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[j]]] + 1);
-				bottomTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[3 - j - 1]]]);
+		var triangles = JSM.TriangulatePolygon (polygon);
+		if (triangles !== null) {
+			var triangle, topTriangle, bottomTriangle;
+			for (i = 0; i < triangles.length; i++) {
+				triangle = triangles[i];
+				topTriangle = new JSM.BodyPolygon ([]);
+				bottomTriangle = new JSM.BodyPolygon ([]);
+				for (j = 0; j < 3; j++) {
+					topTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[j]]] + 1);
+					bottomTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[3 - j - 1]]]);
+				}
+				result.AddPolygon (topTriangle);
+				result.AddPolygon (bottomTriangle);
 			}
-			result.AddPolygon (topTriangle);
-			result.AddPolygon (bottomTriangle);
 		}
 	}
 
