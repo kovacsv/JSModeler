@@ -27,3 +27,18 @@ JSM.BubbleSort = function (array, compare)
 		}
 	}
 };
+
+/**
+* Function: ShiftArray
+* Description: Shifts an array.
+* Parameters:
+*	array {anything[]} the array to shift
+*	count {integer} shift count
+*/
+JSM.ShiftArray = function (array, count)
+{
+	var i;
+	for (i = 0; i < count; i++) {
+		array.push (array.shift ());
+	}
+};

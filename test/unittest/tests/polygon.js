@@ -360,7 +360,7 @@ simpleSuite.AddTest ('ComplexityTest', function (test)
 	test.AssertEqual (polygon6.GetComplexity (), JSM.Complexity.Convex);
 });
 
-simpleSuite.AddTest ('JsonTest', function (test)
+simpleSuite.AddTest ('FromToArrayTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
@@ -369,24 +369,40 @@ simpleSuite.AddTest ('JsonTest', function (test)
 	polygon.AddVertex (0.0, 1.0);
 
 	var polygon2 = new JSM.Polygon2D ();
-	polygon2.FromJson (polygon.ToJson ());
+	polygon2.FromArray (polygon.ToArray ());
 	
+	test.AssertEqual (polygon.VertexCount (), polygon2.VertexCount ());
+	test.AssertEqualNum (polygon.GetArea (), polygon2.GetArea (), JSM.Eps);
+	test.AssertEqual (polygon.GetOrientation (), polygon2.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), polygon2.GetComplexity ());
+	
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (5.0, 0.0);
+	polygon.AddVertex (5.0, 3.0);
+	polygon.AddVertex (0.0, 3.0);
+
+	var polygon2 = new JSM.ContourPolygon2D ();
+	polygon2.FromArray (polygon.ToArray ());
+	
+	test.AssertEqual (polygon.VertexCount (), polygon2.VertexCount ());
+	test.AssertEqual (polygon.ContourCount (), polygon2.ContourCount ());
 	test.AssertEqualNum (polygon.GetArea (), polygon2.GetArea (), JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), polygon2.GetOrientation ());
 	test.AssertEqual (polygon.GetComplexity (), polygon2.GetComplexity ());	
-});
-
-simpleSuite.AddTest ('ChangeOrientation', function (test)
-{
-	var polygon = new JSM.Polygon2D ();
-	polygon.AddVertex (0.0, 0.0);
-	polygon.AddVertex (1.0, 0.0);
-	polygon.AddVertex (1.0, 1.0);
-	polygon.AddVertex (0.0, 1.0);
-
-	var polygon2 = new JSM.Polygon2D ();
-	polygon2.FromJson (polygon.ToJson ());
 	
+	polygon.AddContour ();
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (1.0, 2.0);
+	polygon.AddVertex (2.0, 2.0);
+	polygon.AddVertex (2.0, 1.0);		
+
+	var polygon2 = new JSM.ContourPolygon2D ();
+	polygon2.FromArray (polygon.ToArray ());
+	
+	test.AssertEqual (polygon.VertexCount (), polygon2.VertexCount ());
+	test.AssertEqual (polygon.ContourCount (), polygon2.ContourCount ());
 	test.AssertEqualNum (polygon.GetArea (), polygon2.GetArea (), JSM.Eps);
 	test.AssertEqual (polygon.GetOrientation (), polygon2.GetOrientation ());
 	test.AssertEqual (polygon.GetComplexity (), polygon2.GetComplexity ());	

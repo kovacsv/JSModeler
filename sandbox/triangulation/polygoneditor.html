@@ -172,7 +172,6 @@
 				infoString += 'Area: ' + polygon.GetArea () + ' | ';
 
 				var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
-				console.log (simple.ToJson ());
 				var triangles = JSM.TriangulatePolygon2D (simple);
 				var orientation = polygon.GetOrientation ();
 				infoString += 'Orientation: ' + OrientationToString (polygon.GetOrientation ()) + ' | ';

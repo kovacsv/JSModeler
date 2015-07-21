@@ -72,10 +72,7 @@ JSM.Polygon2D.prototype.GetPrevVertex = function (index)
 
 JSM.Polygon2D.prototype.ShiftVertices = function (count)
 {
-	var i;
-	for (i = 0; i < count; i++) {
-		this.vertices.push (this.vertices.shift ());
-	}
+	JSM.ShiftArray (this.vertices, count);
 	this.ClearCache ();
 };
 
@@ -342,27 +339,31 @@ JSM.Polygon2D.prototype.GetComplexity = function ()
 	return result;
 };
 
-JSM.Polygon2D.prototype.ToJson = function ()
+JSM.Polygon2D.prototype.ToArray = function ()
 {
-	var result = {
-		vertices : []
-	};
+	var vertices = [];
 	var i, vertex;
 	for (i = 0; i < this.vertices.length; i++) {
 		vertex = this.vertices[i];
-		result.vertices.push ([vertex.x, vertex.y]);
+		vertices.push (vertex.Clone ());
 	}
-	return result;
+	return vertices;
 };
 
-JSM.Polygon2D.prototype.FromJson = function (json)
+JSM.Polygon2D.prototype.FromArray = function (vertices)
 {
 	this.Clear ();
 	var i, vertex;
-	for (i = 0; i < json.vertices.length; i++) {
-		vertex = json.vertices[i];
-		this.AddVertex (vertex[0], vertex[1]);
+	for (i = 0; i < vertices.length; i++) {
+		vertex = vertices[i];
+		this.AddVertex (vertex.x, vertex.y);
 	}
+};
+
+JSM.Polygon2D.prototype.Clear = function ()
+{
+	this.vertices = [];
+	this.ClearCache ();
 };
 
 JSM.Polygon2D.prototype.Clone = function ()
@@ -374,12 +375,6 @@ JSM.Polygon2D.prototype.Clone = function ()
 		result.AddVertex (vertex.x, vertex.y);
 	}
 	return result;
-};
-
-JSM.Polygon2D.prototype.Clear = function ()
-{
-	this.vertices = [];
-	this.ClearCache ();
 };
 
 JSM.Polygon2D.prototype.ClearCache = function ()
@@ -512,6 +507,38 @@ JSM.ContourPolygon2D.prototype.GetComplexity = function ()
 		}
 	}
 	return JSM.Complexity.Complex;
+};
+
+JSM.ContourPolygon2D.prototype.ToArray = function ()
+{
+	var vertices = [];
+	var i, j, contour, vertex;
+	for (i = 0; i < this.contours.length; i++) {
+		contour = this.contours[i];
+		for (j = 0; j < contour.VertexCount (); j++) {
+			vertex = contour.GetVertex (j);
+			vertices.push (vertex.Clone ());
+		}
+		if (i < this.contours.length - 1) {
+			vertices.push (null);
+		}
+	}
+	return vertices;
+};
+
+JSM.ContourPolygon2D.prototype.FromArray = function (vertices)
+{
+	this.Clear ();
+	this.AddContour ();
+	var i, vertex;
+	for (i = 0; i < vertices.length; i++) {
+		vertex = vertices[i];
+		if (vertex === null) {
+			this.AddContour ();
+		} else {
+			this.AddVertex (vertex.x, vertex.y);
+		}
+	}
 };
 
 JSM.ContourPolygon2D.prototype.Clear = function ()
