@@ -403,6 +403,16 @@ JSM.ContourPolygon2D.prototype.AddVertexCoord = function (coord)
 	this.lastContour.AddVertexCoord (coord);
 };
 
+JSM.ContourPolygon2D.prototype.AddContourVertex = function (contourIndex, x, y)
+{
+	return this.contours[contourIndex].AddVertex (x, y);
+};
+
+JSM.ContourPolygon2D.prototype.AddContourVertexCoord = function (contourIndex, coord)
+{
+	return this.contours[contourIndex].AddVertexCoord (coord);
+};
+
 JSM.ContourPolygon2D.prototype.GetVertex = function (index)
 {
 	var contourIndex = 0;

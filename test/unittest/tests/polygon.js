@@ -1027,6 +1027,8 @@ polygonSuite.AddTest ('AddVertexTest', function (test)
 	polygon.AddVertex (0.0, 3.0);
 	test.AssertEqual (polygon.ContourCount (), 1);
 	test.AssertEqual (polygon.VertexCount (), 4);
+	test.AssertEqualNum (polygon.GetArea (), 15.0, JSM.Eps);
+
 	test.AssertEqual (polygon.GetVertex (0).x, 0.0);
 	test.AssertEqual (polygon.GetVertex (0).y, 0.0);
 	test.AssertEqual (polygon.GetVertex (1).x, 5.0);
@@ -1044,6 +1046,8 @@ polygonSuite.AddTest ('AddVertexTest', function (test)
 
 	test.AssertEqual (polygon.ContourCount (), 2);
 	test.AssertEqual (polygon.VertexCount (), 8);
+	test.AssertEqualNum (polygon.GetArea (), 14.0, JSM.Eps);
+
 	test.AssertEqual (polygon.GetVertex (0).x, 0.0);
 	test.AssertEqual (polygon.GetVertex (0).y, 0.0);
 	test.AssertEqual (polygon.GetVertex (1).x, 5.0);
@@ -1069,6 +1073,7 @@ polygonSuite.AddTest ('AddVertexTest', function (test)
 
 	test.AssertEqual (polygon.ContourCount (), 3);
 	test.AssertEqual (polygon.VertexCount (), 12);
+	test.AssertEqualNum (polygon.GetArea (), 13.0, JSM.Eps);
 	
 	test.AssertEqual (polygon.GetVertex (0).x, 0.0);
 	test.AssertEqual (polygon.GetVertex (0).y, 0.0);
@@ -1107,6 +1112,12 @@ polygonSuite.AddTest ('AddVertexTest', function (test)
 	test.AssertEqual (polygon.GetVertex (9).IsEqual (polygon.GetContourVertex (2, 1)), true);
 	test.AssertEqual (polygon.GetVertex (10).IsEqual (polygon.GetContourVertex (2, 2)), true);
 	test.AssertEqual (polygon.GetVertex (11).IsEqual (polygon.GetContourVertex (2, 3)), true);
+	
+	polygon.AddContourVertex (0, -1.0, 3.0);
+	polygon.AddContourVertexCoord (0, new JSM.Coord2D (-1.0, 0.0));
+	test.AssertEqual (polygon.ContourCount (), 3);
+	test.AssertEqual (polygon.VertexCount (), 14);
+	test.AssertEqualNum (polygon.GetArea (), 16.0, JSM.Eps);
 });
 
 polygonSuite.AddTest ('CloneTest', function (test)
