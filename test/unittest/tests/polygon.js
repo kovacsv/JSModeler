@@ -3,6 +3,37 @@ module.exports = function (unitTest)
 
 var simpleSuite = unitTest.AddTestSuite ('PolygonTest');
 
+function IsEqualPolygons (a, b)
+{
+	if (a.VertexCount () != b.VertexCount ()) {
+		return false;
+	}
+	var i;
+	for (i = 0; i < a.VertexCount (); i++) {
+		if (!a.GetVertex (i).IsEqual (b.GetVertex (i))) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+function IsEqualContourPolygons (a, b)
+{
+	if (a.ContourCount () != b.ContourCount ()) {
+		return false;
+	}
+	var i;
+	for (i = 0; i < a.ContourCount (); i++) {
+		if (!IsEqualPolygons (a.GetContour (i), b.GetContour (i))) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+
 simpleSuite.AddTest ('AddVertexTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();
@@ -46,6 +77,15 @@ simpleSuite.AddTest ('CloneTest', function (test)
 	test.AssertEqual (polygon.GetArea (), cloned.GetArea ());
 	test.AssertEqual (polygon.GetOrientation (), cloned.GetOrientation ());
 	test.AssertEqual (polygon.GetComplexity (), cloned.GetComplexity ());
+	test.Assert (IsEqualPolygons (polygon, cloned));
+	
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0.0, 0.0, 1.0);
+	polygon.AddVertex (1.0, 0.0, 1.0);
+	polygon.AddVertex (1.0, 1.0, 1.0);
+	
+	var cloned = polygon.Clone ();
+	test.Assert (IsEqualPolygons (polygon, cloned));
 });
 
 simpleSuite.AddTest ('ShiftVerticesTest', function (test)
@@ -362,36 +402,6 @@ simpleSuite.AddTest ('ComplexityTest', function (test)
 
 simpleSuite.AddTest ('FromToArrayTest', function (test)
 {
-	function IsEqualPolygons (a, b)
-	{
-		if (a.VertexCount () != b.VertexCount ()) {
-			return false;
-		}
-		var i;
-		for (i = 0; i < a.VertexCount (); i++) {
-			if (!a.GetVertex (i).IsEqual (b.GetVertex (i))) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	function IsEqualContourPolygons (a, b)
-	{
-		if (a.ContourCount () != b.ContourCount ()) {
-			return false;
-		}
-		var i;
-		for (i = 0; i < a.ContourCount (); i++) {
-			if (!IsEqualPolygons (a.GetContour (i), b.GetContour (i))) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
 	polygon.AddVertex (1.0, 0.0);
@@ -1265,6 +1275,24 @@ polygonSuite.AddTest ('CloneTest', function (test)
 	test.AssertEqual (polygon.GetArea (), cloned.GetArea ());
 	test.AssertEqual (polygon.GetOrientation (), cloned.GetOrientation ());
 	test.AssertEqual (polygon.GetComplexity (), cloned.GetComplexity ());
+	test.Assert (IsEqualContourPolygons (polygon, cloned));
+
+	var polygon = new JSM.ContourPolygon ();
+	
+	polygon.AddContour ();
+	polygon.AddVertex (0.0, 0.0, 1.0);
+	polygon.AddVertex (5.0, 0.0, 1.0);
+	polygon.AddVertex (5.0, 3.0, 1.0);
+	polygon.AddVertex (0.0, 3.0, 1.0);
+	
+	polygon.AddContour ();
+	polygon.AddVertex (1.0, 1.0, 1.0);
+	polygon.AddVertex (1.0, 2.0, 1.0);
+	polygon.AddVertex (2.0, 2.0, 1.0);
+	polygon.AddVertex (2.0, 1.0, 1.0);
+	
+	var cloned = polygon.Clone ();
+	test.Assert (IsEqualContourPolygons (polygon, cloned));
 });
 
 polygonSuite.AddTest ('InvalidPolygonTest', function (test)
@@ -1451,6 +1479,33 @@ polygonSuite.AddTest ('ComplexityTest', function (test)
 	test.AssertEqual (polygon2.GetArea (), 18.0);
 	test.AssertEqual (polygon2.GetOrientation (), JSM.Orientation.CounterClockwise);
 	test.AssertEqual (polygon2.GetComplexity (), JSM.Complexity.Complex);	
+});
+
+polygonSuite.AddTest ('ToContourPolygon2DTest', function (test)
+{
+	var polygon = new JSM.ContourPolygon ();
+	polygon.AddContour ();
+	polygon.AddVertex (0.0, 0.0, 1.0);
+	polygon.AddVertex (5.0, 0.0, 1.0);
+	polygon.AddVertex (5.0, 3.0, 1.0);
+	polygon.AddVertex (0.0, 3.0, 1.0);
+	polygon.AddContour ();
+	polygon.AddVertex (1.0, 1.0, 1.0);
+	polygon.AddVertex (1.0, 2.0, 1.0);
+	polygon.AddVertex (2.0, 2.0, 1.0);
+	polygon.AddVertex (2.0, 1.0, 1.0);	
+	polygon.AddContour ();
+	polygon.AddVertexCoord (new JSM.Coord (3.0, 1.0, 1.0));
+	polygon.AddVertexCoord (new JSM.Coord (3.0, 2.0, 1.0));
+	polygon.AddVertexCoord (new JSM.Coord (4.0, 2.0, 1.0));
+	polygon.AddVertexCoord (new JSM.Coord (4.0, 1.0, 1.0));	
+	polygon.AddContourVertex (0, -1.0, 3.0, 1.0);
+	polygon.AddContourVertexCoord (0, new JSM.Coord (-1.0, 0.0, 1.0));
+	
+	var polygon2D = polygon.ToContourPolygon2D ();
+	test.AssertEqual (polygon.ContourCount (), polygon2D.ContourCount ());
+	test.AssertEqual (polygon.VertexCount (), polygon2D.VertexCount ());
+	test.AssertEqualNum (polygon2D.GetArea (), 16.0, JSM.Eps);
 });
 
 }

@@ -372,7 +372,7 @@ JSM.Polygon2D.prototype.Clone = function ()
 	var i, vertex;
 	for (i = 0; i < this.vertices.length; i++) {
 		vertex = this.vertices[i];
-		result.AddVertex (vertex.x, vertex.y);
+		result.AddVertexCoord (vertex.Clone ());
 	}
 	return result;
 };

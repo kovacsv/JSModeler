@@ -152,7 +152,7 @@ JSM.Polygon.prototype.Clone = function ()
 	var i, vertex;
 	for (i = 0; i < this.vertices.length; i++) {
 		vertex = this.vertices[i];
-		result.AddVertex (vertex.x, vertex.y);
+		result.AddVertexCoord (vertex.Clone ());
 	}
 	return result;
 };
@@ -216,6 +216,22 @@ JSM.ContourPolygon.prototype.GetContour = function (index)
 JSM.ContourPolygon.prototype.ContourCount = function ()
 {
 	return this.contours.length;
+};
+
+JSM.ContourPolygon.prototype.GetNormal = function ()
+{
+
+};
+
+JSM.ContourPolygon.prototype.ToContourPolygon2D = function ()
+{
+	var result = new JSM.ContourPolygon2D ();
+	var i, contour;
+	for (i = 0; i < this.contours.length; i++) {
+		contour = this.contours[i];
+		result.AddContour (contour.ToPolygon2D ());
+	}
+	return result;
 };
 
 JSM.ContourPolygon.prototype.ToArray = function ()
