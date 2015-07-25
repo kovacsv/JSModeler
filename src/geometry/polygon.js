@@ -17,7 +17,18 @@ JSM.Polygon = function ()
 */
 JSM.Polygon.prototype.AddVertex = function (x, y, z)
 {
-	this.vertices.push (new JSM.Coord (x, y, z));
+	this.AddVertexCoord (new JSM.Coord (x, y, z));
+};
+
+/**
+* Function: Polygon.AddVertexCoord
+* Description: Adds a vertex coordinate to the polygon.
+* Parameters:
+*	coord {coord} the coordinate
+*/
+JSM.Polygon.prototype.AddVertexCoord = function (coord)
+{
+	this.vertices.push (coord);
 };
 
 /**
@@ -88,6 +99,39 @@ JSM.Polygon.prototype.ToPolygon2D = function ()
 };
 
 /**
+* Function: Polygon.ToArray
+* Description: Creates an array of vertices from polygon.
+* Returns:
+*	{Coord[*]} the result
+*/
+JSM.Polygon.prototype.ToArray = function ()
+{
+	var vertices = [];
+	var i, vertex;
+	for (i = 0; i < this.vertices.length; i++) {
+		vertex = this.vertices[i];
+		vertices.push (vertex.Clone ());
+	}
+	return vertices;
+};
+
+/**
+* Function: Polygon.ToArray
+* Description: Creates the polygon from an array of vertices.
+* Parameters:
+*	vertices {Coord[*]} the array of vertices
+*/
+JSM.Polygon.prototype.FromArray = function (vertices)
+{
+	this.Clear ();
+	var i, vertex;
+	for (i = 0; i < vertices.length; i++) {
+		vertex = vertices[i];
+		this.AddVertex (vertex.x, vertex.y, vertex.z);
+	}
+};
+
+/**
 * Function: Polygon.Clear
 * Description: Makes the polygon empty.
 */
@@ -111,6 +155,117 @@ JSM.Polygon.prototype.Clone = function ()
 		result.AddVertex (vertex.x, vertex.y);
 	}
 	return result;
+};
+
+JSM.ContourPolygon = function ()
+{
+	this.contours = null;
+	this.Clear ();
+};
+
+JSM.ContourPolygon.prototype.AddVertex = function (x, y, z)
+{
+	this.lastContour.AddVertex (x, y, z);
+};
+
+JSM.ContourPolygon.prototype.AddVertexCoord = function (coord)
+{
+	this.lastContour.AddVertexCoord (coord);
+};
+
+JSM.ContourPolygon.prototype.AddContourVertex = function (contourIndex, x, y, z)
+{
+	return this.contours[contourIndex].AddVertex (x, y, z);
+};
+
+JSM.ContourPolygon.prototype.AddContourVertexCoord = function (contourIndex, coord)
+{
+	return this.contours[contourIndex].AddVertexCoord (coord);
+};
+
+JSM.ContourPolygon.prototype.VertexCount = function ()
+{
+	var vertexCount = 0;
+	var i;
+	for (i = 0; i < this.contours.length; i++) {
+		vertexCount += this.contours[i].VertexCount ();
+	}
+	return vertexCount;
+};
+
+JSM.ContourPolygon.prototype.AddContour = function (contour)
+{
+	if (contour === undefined || contour === null) {
+		this.lastContour = new JSM.Polygon ();
+	} else {
+		this.lastContour = contour;
+	}
+	this.contours.push (this.lastContour);
+};
+
+JSM.ContourPolygon.prototype.GetContourVertex = function (contourIndex, vertexIndex)
+{
+	return this.contours[contourIndex].GetVertex (vertexIndex);
+};
+
+JSM.ContourPolygon.prototype.GetContour = function (index)
+{
+	return this.contours[index];
+};
+
+JSM.ContourPolygon.prototype.ContourCount = function ()
+{
+	return this.contours.length;
+};
+
+JSM.ContourPolygon.prototype.ToArray = function ()
+{
+	var vertices = [];
+	var i, j, contour, vertex;
+	for (i = 0; i < this.contours.length; i++) {
+		contour = this.contours[i];
+		for (j = 0; j < contour.VertexCount (); j++) {
+			vertex = contour.GetVertex (j);
+			vertices.push (vertex.Clone ());
+		}
+		if (i < this.contours.length - 1) {
+			vertices.push (null);
+		}
+	}
+	return vertices;
+};
+
+JSM.ContourPolygon.prototype.FromArray = function (vertices)
+{
+	this.Clear ();
+	this.AddContour ();
+	var i, vertex;
+	for (i = 0; i < vertices.length; i++) {
+		vertex = vertices[i];
+		if (vertex === null) {
+			this.AddContour ();
+		} else {
+			this.AddVertex (vertex.x, vertex.y, vertex.z);
+		}
+	}
+};
+
+JSM.ContourPolygon.prototype.Clear = function ()
+{
+	this.contours = [];
+	this.lastContour = null;
+};
+
+JSM.ContourPolygon.prototype.Clone = function ()
+{
+	var result = new JSM.ContourPolygon ();
+	var i, contour;
+	for (i = 0; i < this.contours.length; i++) {
+		contour = this.contours[i];
+		result.AddContour (contour.Clone ());
+	}
+	return result;
+
 };
 
 /**

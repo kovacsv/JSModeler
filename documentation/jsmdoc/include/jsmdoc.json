@@ -66,6 +66,13 @@
 						["compare", "function", "the compare function"]
 					]
 				},
+				"ShiftArray" : {
+					"description" : "Shifts an array.",
+					"parameters" : [
+						["array", "anything[]", "the array to shift"],
+						["count", "integer", "shift count"]
+					]
+				},
 				"AsyncRunTask" : {
 					"description" : "Calls a function multiple times asynchronously. If the environment is not specified, it will run synchronously.",
 					"parameters" : [
@@ -1762,6 +1769,12 @@
 								["z", "number", "the z coordinate of the vertex"]
 							]
 						},
+						"AddVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the polygon.",
+							"parameters" : [
+								["coord", "coord", "the coordinate"]
+							]
+						},
 						"GetVertex" : {
 							"description" : "Returns the vertex with the given index.",
 							"parameters" : [
@@ -1796,6 +1809,18 @@
 							"description" : "Converts the polygon to a 2D polygon.",
 							"returns" : [
 								["Polygon2D", "the result"]
+							]
+						},
+						"ToArray" : {
+							"description" : "Creates an array of vertices from polygon.",
+							"returns" : [
+								["Coord[*]", "the result"]
+							]
+						},
+						"ToArray" : {
+							"description" : "Creates the polygon from an array of vertices.",
+							"parameters" : [
+								["vertices", "Coord[*]", "the array of vertices"]
 							]
 						},
 						"Clear" : {
