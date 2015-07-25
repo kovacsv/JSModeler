@@ -413,18 +413,6 @@ JSM.ContourPolygon2D.prototype.AddContourVertexCoord = function (contourIndex, c
 	return this.contours[contourIndex].AddVertexCoord (coord);
 };
 
-JSM.ContourPolygon2D.prototype.GetVertex = function (index)
-{
-	var contourIndex = 0;
-	var currentIndex = 0;
-	while (index >= currentIndex + this.contours[contourIndex].VertexCount ()) {
-		currentIndex += this.contours[contourIndex].VertexCount ();
-		contourIndex += 1;
-	}
-	var vertexIndex = index - currentIndex;
-	return this.GetContourVertex (contourIndex, vertexIndex);
-};
-
 JSM.ContourPolygon2D.prototype.VertexCount = function ()
 {
 	var vertexCount = 0;
