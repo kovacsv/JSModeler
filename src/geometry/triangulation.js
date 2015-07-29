@@ -1,6 +1,14 @@
-JSM.ConvertContourPolygonToPolygon2D = function (inputPolygon)
+JSM.ConvertContourPolygonToPolygon2D = function (inputPolygon, vertexMap)
 {
-	function AddContour (inputPolygon, resultPolygon, holeIndex, conversionData)
+	function AddResultVertex (resultPolygon, vertex, vertexMap, originalContour, originalVertex)
+	{
+		resultPolygon.AddVertexCoord (vertex);
+		if (vertexMap !== undefined && vertexMap !== null) {
+			vertexMap.push ([originalContour, originalVertex]);
+		}
+	}
+	
+	function AddContour (inputPolygon, resultPolygon, holeIndex, vertexMap, conversionData)
 	{
 		function GetEntryPoint (inputPolygon, resultPolygon, holeIndex, conversionData)
 		{
@@ -67,18 +75,28 @@ JSM.ConvertContourPolygonToPolygon2D = function (inputPolygon)
 			return null;
 		}
 		
-		function AddHole (resultPolygon, holePolygon, entryPoint)
+		function AddHole (resultPolygon, inputPolygon, holeIndex, entryPoint, vertexMap)
 		{
-			var entryVertex = resultPolygon.GetVertex (entryPoint.beg).Clone ();
-			resultPolygon.ShiftVertices (entryPoint.beg + 1);
+			var holePolygon = inputPolygon.GetContour (holeIndex);
+			var mainContourBeg = entryPoint.beg;
+			var mainEntryVertex = resultPolygon.GetVertex (mainContourBeg).Clone ();
+			resultPolygon.ShiftVertices (mainContourBeg + 1);
+
+			var mainEntryContourIndex = 0;
+			var mainEntryVertexIndex = 0;
+			if (vertexMap !== undefined && vertexMap !== null) {
+				mainEntryContourIndex = vertexMap[mainContourBeg][0];
+				mainEntryVertexIndex = vertexMap[mainContourBeg][1];
+				JSM.ShiftArray (vertexMap, mainContourBeg + 1);
+			}
 
 			var contourBeg = entryPoint.end;
 			var contourEnd = holePolygon.GetPrevVertex (contourBeg);
 			holePolygon.EnumerateVertices (contourBeg, contourEnd, function (index) {
-				resultPolygon.AddVertexCoord (holePolygon.GetVertex (index).Clone ());
+				AddResultVertex (resultPolygon, holePolygon.GetVertex (index).Clone (), vertexMap, holeIndex, index);
 			});
-			resultPolygon.AddVertexCoord (holePolygon.GetVertex (contourBeg).Clone ());
-			resultPolygon.AddVertexCoord (entryVertex);
+			AddResultVertex (resultPolygon, holePolygon.GetVertex (contourBeg).Clone (), vertexMap, holeIndex, contourBeg);
+			AddResultVertex (resultPolygon, mainEntryVertex, vertexMap, mainEntryContourIndex, mainEntryVertexIndex);
 		}
 		
 		var entryPoint = GetEntryPoint (inputPolygon, resultPolygon, holeIndex, conversionData);
@@ -86,14 +104,18 @@ JSM.ConvertContourPolygonToPolygon2D = function (inputPolygon)
 			return false;
 		}
 
-		var holePolygon = inputPolygon.GetContour (holeIndex);
-		AddHole (resultPolygon, holePolygon, entryPoint);
+		AddHole (resultPolygon, inputPolygon, holeIndex, entryPoint, vertexMap);
 		return true;
 	}
 	
 	var contourCount = inputPolygon.ContourCount ();
 	var mainContour = inputPolygon.GetContour (0);
-	var resultPolygon = mainContour.Clone ();
+	var resultPolygon = new JSM.Polygon2D ();
+	var i, vertex;
+	for (i = 0; i < mainContour.VertexCount (); i++) {
+		vertex = mainContour.GetVertex (i);
+		AddResultVertex (resultPolygon, vertex.Clone (), vertexMap, 0, i);
+	}
 	if (contourCount == 1) {
 		return resultPolygon;
 	}
@@ -106,13 +128,22 @@ JSM.ConvertContourPolygonToPolygon2D = function (inputPolygon)
 	
 	var conversionData = {
 		addedHoles : {},
+		holeTryouts : {},
 		entryPositions : []
 	};
+	
 	while (holeQueue.length > 0) {
 		holeIndex = holeQueue.shift ();
-		if (AddContour (inputPolygon, resultPolygon, holeIndex, conversionData)) {
+		if (AddContour (inputPolygon, resultPolygon, holeIndex, vertexMap, conversionData)) {
 			conversionData.addedHoles[holeIndex] = true;
 		} else {
+			if (conversionData.holeTryouts[holeIndex] === undefined) {
+				conversionData.holeTryouts[holeIndex] = 0;
+			}
+			conversionData.holeTryouts[holeIndex] += 1;
+			if (conversionData.holeTryouts[holeIndex] > 10) {
+				return null;
+			}
 			holeQueue.push (holeIndex);
 		}
 	}

@@ -876,55 +876,36 @@ JSM.GenerateCurvedPrism = function (basePolygon, curveGroups, direction, height,
 */
 JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAndBottom)
 {
-	function AddVertices ()
+	function AddVertices (contourPolygon, direction, height, result)
 	{
-		var i;
-		for (i = 0; i < basePolygon.length; i++) {
-			if (basePolygon[i] !== null) {
-				result.AddVertex (new JSM.BodyVertex (basePolygon[i]));
-				result.AddVertex (new JSM.BodyVertex (basePolygon[i].Clone ().Offset (direction, height)));
+		var i, j, contour, vertex1, vertex2;
+		for (i = 0; i < contourPolygon.ContourCount (); i++) {
+			contour = contourPolygon.GetContour (i);
+			for (j = 0; j < contour.VertexCount (); j++) {
+				vertex1 = contour.GetVertex (j).Clone ();
+				vertex2 = contour.GetVertex (j).Clone ().Offset (direction, height);
+				result.AddVertex (new JSM.BodyVertex (vertex1));
+				result.AddVertex (new JSM.BodyVertex (vertex2));
 			}
 		}
 	}
 
-	function GetContourEnds ()
+	function AddContours (contourPolygon, result)
 	{
-		var contourCount = 0;
-		var contourEnds = [];
-		contourEnds.push (0);
-	
-		var i;
-		for (i = 0; i < basePolygon.length; i++) {
-			if (basePolygon[i] === null) {
-				contourEnds.push (i - contourCount);
-				contourCount = contourCount + 1;
+		var offset = 0;
+		var i, j, contour, vertexCount, current, next;
+		for (i = 0; i < contourPolygon.ContourCount (); i++) {
+			contour = contourPolygon.GetContour (i);
+			vertexCount = contour.VertexCount ();
+			for (j = 0; j < vertexCount; j++) {
+				current = offset + 2 * j;
+				next = current + 2;
+				if (j == vertexCount - 1) {
+					next = offset;
+				}
+				result.AddPolygon (new JSM.BodyPolygon ([current, next, next + 1, current + 1]));
 			}
-		}
-		contourEnds.push (i - contourCount);
-		return contourEnds;
-	}
-
-	function AddContourPolygons (contourIndex, contourEnds)
-	{
-		var i, current, next;
-		var from = contourEnds[contourIndex];
-		var to = contourEnds[contourIndex + 1];
-		for (i = from; i < to; i++) {
-			current = 2 * i;
-			next = current + 2;
-			if (i === to - 1) {
-				next = 2 * from;
-			}
-			result.AddPolygon (new JSM.BodyPolygon ([current, next, next + 1, current + 1]));
-		}
-	}
-
-	function AddContours ()
-	{
-		var contourEnds = GetContourEnds ();
-		var i;
-		for (i = 0; i < contourEnds.length - 1; i++) {
-			AddContourPolygons (i, contourEnds);
+			offset += 2 * vertexCount;
 		}
 	}
 	
@@ -972,8 +953,10 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 	}
 
 	var result = new JSM.Body ();
-	AddVertices ();
-	AddContours ();
+	var contourPolygon = new JSM.ContourPolygon ();
+	contourPolygon.FromArray (basePolygon);
+	AddVertices (contourPolygon, direction, height, result);
+	AddContours (contourPolygon, result);
 
 	if (withTopAndBottom) {
 		AddTopBottomPolygons ();

@@ -77,6 +77,25 @@ function CheckSimpleTriangulation (polygon)
 	return CheckCalculatedTriangulation (polygon, triangles);
 }
 
+function CheckHoleVertexMapping (polygon)
+{
+	var mapping = [];
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon, mapping);
+	if (mapping.length != simple.VertexCount ()) {
+		return false;
+	}
+	var i, map, originalVertex, simpleVertex;
+	for (i = 0; i < mapping.length; i++) {
+		map = mapping[i];
+		originalVertex = polygon.GetContourVertex (map[0], map[1]);
+		simpleVertex = simple.GetVertex (i);
+		if (!simpleVertex.IsEqual (originalVertex)) {
+			return false;
+		}
+	}
+	return true;
+}
+
 var simplePolygonSuite = unitTest.AddTestSuite ('SimplePolygonTriangulationTest');
 
 simplePolygonSuite.AddTest ('InvalidPolygonTest', function (test)
@@ -306,12 +325,14 @@ simplePolygonSuite.AddTest ('OldTriangulationTest03', function (test)
 	polygon.AddVertex (2, 1);
 
 	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	
 	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
 	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
 	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);
 	test.Assert (CheckSimpleTriangulation (simple));
+	test.Assert (CheckHoleVertexMapping (polygon));
 
 	var polygon = new JSM.ContourPolygon2D ();
 	polygon.AddContour ();
@@ -337,6 +358,7 @@ simplePolygonSuite.AddTest ('OldTriangulationTest03', function (test)
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
 	test.Assert (CheckSimpleTriangulation (simple));
+	test.Assert (CheckHoleVertexMapping (polygon));
 
 	var polygon = new JSM.ContourPolygon2D ();
 	polygon.AddContour ();
@@ -367,6 +389,7 @@ simplePolygonSuite.AddTest ('OldTriangulationTest03', function (test)
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);
 	test.Assert (CheckSimpleTriangulation (simple));
+	test.Assert (CheckHoleVertexMapping (polygon));
 
 	var polygon = new JSM.ContourPolygon2D ();
 	polygon.AddContour ();
@@ -393,6 +416,7 @@ simplePolygonSuite.AddTest ('OldTriangulationTest03', function (test)
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
 	test.Assert (CheckSimpleTriangulation (simple));
+	test.Assert (CheckHoleVertexMapping (polygon));
 });
 
 simplePolygonSuite.AddTest ('OldTriangulationTest04', function (test)
@@ -650,6 +674,7 @@ simplePolygonSuite.AddTest ('OldTriangulationTest04', function (test)
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
 	test.Assert (CheckSimpleTriangulation (simple));
+	test.Assert (CheckHoleVertexMapping (polygon));
 
 	var polygon = new JSM.ContourPolygon2D ();
 	polygon.AddContour ();
@@ -675,6 +700,7 @@ simplePolygonSuite.AddTest ('OldTriangulationTest04', function (test)
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
 	test.Assert (CheckSimpleTriangulation (simple));
+	test.Assert (CheckHoleVertexMapping (polygon));
 
 	var polygon = new JSM.ContourPolygon2D ();
 	polygon.AddContour ();
@@ -705,6 +731,7 @@ simplePolygonSuite.AddTest ('OldTriangulationTest04', function (test)
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
 	test.Assert (CheckSimpleTriangulation (simple));
+	test.Assert (CheckHoleVertexMapping (polygon));
 
 	var polygon = new JSM.ContourPolygon2D ();
 	polygon.AddContour ();
@@ -734,6 +761,7 @@ simplePolygonSuite.AddTest ('OldTriangulationTest04', function (test)
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
 	test.Assert (CheckSimpleTriangulation (simple));
+	test.Assert (CheckHoleVertexMapping (polygon));
 
 	var polygon = new JSM.ContourPolygon2D ();
 	polygon.AddContour ();
@@ -773,6 +801,7 @@ simplePolygonSuite.AddTest ('OldTriangulationTest04', function (test)
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
 	test.Assert (CheckSimpleTriangulation (simple));
+	test.Assert (CheckHoleVertexMapping (polygon));
 
 	var polygon = new JSM.ContourPolygon2D ();
 	polygon.AddContour ();
@@ -812,6 +841,7 @@ simplePolygonSuite.AddTest ('OldTriangulationTest04', function (test)
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
 	test.Assert (CheckSimpleTriangulation (simple));
+	test.Assert (CheckHoleVertexMapping (polygon));
 });
 
 simplePolygonSuite.AddTest ('ConcaveTriangulationTest01', function (test)
@@ -892,6 +922,7 @@ convertToSimplePolygonSuite.AddTest ('SimplePolygonTest', function (test)
 	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Convex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Convex);	
+	test.Assert (CheckHoleVertexMapping (polygon));
 	
 	var polygon2 = new JSM.ContourPolygon2D ();
 	polygon2.AddContour ();
@@ -906,7 +937,8 @@ convertToSimplePolygonSuite.AddTest ('SimplePolygonTest', function (test)
 	test.AssertEqual (polygon2.GetArea (), simple2.GetArea ());
 	test.AssertEqual (polygon2.GetOrientation (), simple2.GetOrientation ());
 	test.AssertEqual (polygon2.GetComplexity (), JSM.Complexity.Convex);	
-	test.AssertEqual (simple2.GetComplexity (), JSM.Complexity.Convex);		
+	test.AssertEqual (simple2.GetComplexity (), JSM.Complexity.Convex);
+	test.Assert (CheckHoleVertexMapping (polygon));
 });
 
 convertToSimplePolygonSuite.AddTest ('OneHoleTest01', function (test)
@@ -931,6 +963,7 @@ convertToSimplePolygonSuite.AddTest ('OneHoleTest01', function (test)
 	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
+	test.Assert (CheckHoleVertexMapping (polygon));
 });
 
 convertToSimplePolygonSuite.AddTest ('OneHoleTest02', function (test)
@@ -955,6 +988,7 @@ convertToSimplePolygonSuite.AddTest ('OneHoleTest02', function (test)
 	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);
+	test.Assert (CheckHoleVertexMapping (polygon));
 });
 
 convertToSimplePolygonSuite.AddTest ('OneHoleTest03', function (test)
@@ -979,6 +1013,7 @@ convertToSimplePolygonSuite.AddTest ('OneHoleTest03', function (test)
 	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);
+	test.Assert (CheckHoleVertexMapping (polygon));
 });
 
 convertToSimplePolygonSuite.AddTest ('TwoHolesTest', function (test)
@@ -1009,6 +1044,63 @@ convertToSimplePolygonSuite.AddTest ('TwoHolesTest', function (test)
 	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
 	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
 	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);	
+	test.Assert (CheckHoleVertexMapping (polygon));
+});
+
+convertToSimplePolygonSuite.AddTest ('MappingTest', function (test)
+{
+	function EqualArrayOfArrays (a, b)
+	{
+		if (a.length != b.length) {
+			return false;
+		}
+		var i, j;
+		for (i = 0; i < a.length; i++) {
+			if (a[i].length != b[i].length) {
+				return false;
+			}
+			for (j = 0; j < a[i].length; j++) {
+				if (a[i][j] != b[i][j]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (5.0, 0.0);
+	polygon.AddVertex (5.0, 4.0);
+	polygon.AddVertex (0.0, 4.0);
+	
+	var mapping = [];
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon, mapping);
+	test.Assert (EqualArrayOfArrays (mapping, [[0, 0], [0, 1], [0, 2], [0, 3]]));
+	test.Assert (CheckHoleVertexMapping (polygon));
+	
+	polygon.AddContour ();
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (1.0, 2.0);
+	polygon.AddVertex (2.0, 2.0);
+	polygon.AddVertex (2.0, 1.0);
+    
+	var mapping = [];
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon, mapping);
+	test.Assert (EqualArrayOfArrays (mapping, [[0, 1], [0, 2], [0, 3], [0, 0], [1, 0], [1, 1], [1, 2], [1, 3], [1, 0], [0, 0]]));
+	test.Assert (CheckHoleVertexMapping (polygon));
+
+	polygon.AddContour ();
+	polygon.AddVertex (3.0, 1.0);
+	polygon.AddVertex (3.0, 2.0);
+	polygon.AddVertex (4.0, 2.0);
+	polygon.AddVertex (4.0, 1.0);
+
+	var mapping = [];
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon, mapping);
+	test.Assert (EqualArrayOfArrays (mapping, [[0, 2], [0, 3], [0, 0], [1, 0], [1, 1], [1, 2], [1, 3], [1, 0], [0, 0], [0, 1], [2, 0], [2, 1], [2, 2], [2, 3], [2, 0], [0, 1]]));
+	test.Assert (CheckHoleVertexMapping (polygon));
 });
 
 var polygonSuite = unitTest.AddTestSuite ('PolygonTriangulationTest');
