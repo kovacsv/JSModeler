@@ -1273,6 +1273,78 @@ polygonSuite.AddTest ('TwoHolesTriangulationTest04', function (test)
 	test.Assert (CheckCalculatedTriangulation_Orientation (simple, triangles));
 });
 
+
+polygonSuite.AddTest ('ThreeHolesTriangulationTest2D', function (test)
+{
+	var polygon = new JSM.ContourPolygon2D ();
+	polygon.AddContour ();
+	polygon.AddVertex (0, 0);
+	polygon.AddVertex (7, 0);
+	polygon.AddVertex (7, 3);
+	polygon.AddVertex (0, 3);
+	polygon.AddContour ();
+	polygon.AddVertex (1, 1);
+	polygon.AddVertex (1, 2);
+	polygon.AddVertex (2, 2);
+	polygon.AddContour ();
+	polygon.AddVertex (3, 1);
+	polygon.AddVertex (3, 2);
+	polygon.AddVertex (4, 2);
+	polygon.AddVertex (4, 1);
+	polygon.AddContour ();
+	polygon.AddVertex (5, 1);
+	polygon.AddVertex (5, 2);
+	polygon.AddVertex (6, 2);
+	polygon.AddVertex (6, 1);
+	polygon.AddVertex (5.5, 1.5);
+
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
+	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);		
+
+	var triangles = JSM.TriangulatePolygon2D (simple);
+	test.Assert (CheckCalculatedTriangulation (simple, triangles));
+});
+
+polygonSuite.AddTest ('ThreeHolesTriangulationTest', function (test)
+{
+	var polygon3D = new JSM.ContourPolygon ();
+	polygon3D.AddContour ();
+	polygon3D.AddVertex (0, 0, 0);
+	polygon3D.AddVertex (7, 0, 0);
+	polygon3D.AddVertex (7, 3, 0);
+	polygon3D.AddVertex (0, 3, 0);
+	polygon3D.AddContour ();
+	polygon3D.AddVertex (1, 1, 0);
+	polygon3D.AddVertex (1, 2, 0);
+	polygon3D.AddVertex (2, 2, 0);
+	polygon3D.AddContour ();
+	polygon3D.AddVertex (3, 1, 0);
+	polygon3D.AddVertex (3, 2, 0);
+	polygon3D.AddVertex (4, 2, 0);
+	polygon3D.AddVertex (4, 1, 0);
+	polygon3D.AddContour ();
+	polygon3D.AddVertex (5, 1, 0);
+	polygon3D.AddVertex (5, 2, 0);
+	polygon3D.AddVertex (6, 2, 0);
+	polygon3D.AddVertex (6, 1, 0);
+	polygon3D.AddVertex (5.5, 1.5, 0);
+
+	var polygon = polygon3D.ToContourPolygon2D ();
+	var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+	test.AssertEqual (polygon.GetSignedArea (), simple.GetSignedArea ());
+	test.AssertEqual (polygon.GetArea (), simple.GetArea ());
+	test.AssertEqual (polygon.GetOrientation (), simple.GetOrientation ());
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Complex);	
+	test.AssertEqual (simple.GetComplexity (), JSM.Complexity.Concave);		
+
+	var triangles = JSM.TriangulatePolygon2D (simple);
+	test.Assert (CheckCalculatedTriangulation (simple, triangles));
+});
+
 var generatedSuite = unitTest.AddTestSuite ('GeneratedTriangulationTest');
 
 generatedSuite.AddTest ('Test01', function (test) {

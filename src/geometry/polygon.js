@@ -225,11 +225,16 @@ JSM.ContourPolygon.prototype.GetNormal = function ()
 
 JSM.ContourPolygon.prototype.ToContourPolygon2D = function ()
 {
+	var normal = this.contours[0].GetNormal ();
 	var result = new JSM.ContourPolygon2D ();
-	var i, contour;
+	var i, j, contour, vertex;
 	for (i = 0; i < this.contours.length; i++) {
+		result.AddContour ();
 		contour = this.contours[i];
-		result.AddContour (contour.ToPolygon2D ());
+		for (j = 0; j < contour.VertexCount (); j++) {
+			vertex = contour.GetVertex (j);
+			result.AddVertexCoord (vertex.ToCoord2D (normal));
+		}
 	}
 	return result;
 };

@@ -26,7 +26,6 @@ unitTest.AddSourceFile ('../../src/geometry/polygon2d.js');
 unitTest.AddSourceFile ('../../src/geometry/polygon.js');
 unitTest.AddSourceFile ('../../src/geometry/triangulation.js');
 unitTest.AddSourceFile ('../../src/geometry/oldpolygon.js');
-unitTest.AddSourceFile ('../../src/geometry/oldpolygonutils.js');
 unitTest.AddSourceFile ('../../src/geometry/octree.js');
 unitTest.AddSourceFile ('../../src/geometry/bsptree.js');
 unitTest.AddSourceFile ('../../src/geometry/utilities.js');

@@ -890,76 +890,66 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 		}
 	}
 
-	function AddContours (contourPolygon, result)
+	function AddContours (contourPolygon, contourOffsets, result)
 	{
 		var offset = 0;
 		var i, j, contour, vertexCount, current, next;
 		for (i = 0; i < contourPolygon.ContourCount (); i++) {
 			contour = contourPolygon.GetContour (i);
 			vertexCount = contour.VertexCount ();
+			contourOffsets.push (offset);
 			for (j = 0; j < vertexCount; j++) {
-				current = offset + 2 * j;
+				current = 2 * offset + 2 * j;
 				next = current + 2;
 				if (j == vertexCount - 1) {
-					next = offset;
+					next = 2 *  offset;
 				}
 				result.AddPolygon (new JSM.BodyPolygon ([current, next, next + 1, current + 1]));
 			}
-			offset += 2 * vertexCount;
+			offset += vertexCount;
 		}
 	}
 	
-	function GetVertexMap ()
+	function AddTopBottomPolygons (contourPolygon, contourOffsets)
 	{
-		var contourCount = 0;
 		var vertexMap = [];
-	
-		var i;
-		for (i = 0; i < basePolygon.length; i++) {
-			if (basePolygon[i] === null) {
-				contourCount = contourCount + 1;
-			}
-			vertexMap.push (i - contourCount);
+		var contourPolygon2D = contourPolygon.ToContourPolygon2D ();
+		var simplePolygon = JSM.ConvertContourPolygonToPolygon2D (contourPolygon2D, vertexMap);
+		if (simplePolygon === null) {
+			return;
 		}
-		return vertexMap;
-	}
-
-	function AddTopBottomPolygons ()
-	{
-		var vertexMap = GetVertexMap ();
-
-		var polygonIndices = JSM.CreatePolygonWithHole (basePolygon);
-		var polygon = new JSM.Polygon ();
-		var i, j, vertex;
-		for (i = 0; i < polygonIndices.length; i++) {
-			vertex = basePolygon[polygonIndices[i]];
-			polygon.AddVertex (vertex.x, vertex.y, vertex.z);
+		
+		var triangles = JSM.TriangulatePolygon2D (simplePolygon);
+		if (triangles === null) {
+			return;
 		}
-		var triangles = JSM.TriangulatePolygon (polygon);
-		if (triangles !== null) {
-			var triangle, topTriangle, bottomTriangle;
-			for (i = 0; i < triangles.length; i++) {
-				triangle = triangles[i];
-				topTriangle = new JSM.BodyPolygon ([]);
-				bottomTriangle = new JSM.BodyPolygon ([]);
-				for (j = 0; j < 3; j++) {
-					topTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[j]]] + 1);
-					bottomTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[3 - j - 1]]]);
-				}
-				result.AddPolygon (topTriangle);
-				result.AddPolygon (bottomTriangle);
+		
+		var i, j, triangle, mapValue;
+		var topTriangle, bottomTriangle;
+		for (i = 0; i < triangles.length; i++) {
+			triangle = triangles[i];
+			topTriangle = new JSM.BodyPolygon ([]);
+			bottomTriangle = new JSM.BodyPolygon ([]);
+			for (j = 0; j < 3; j++) {
+				mapValue = vertexMap[triangle[j]];
+				topTriangle.AddVertexIndex (2 * contourOffsets[mapValue[0]] + 2 * mapValue[1] + 1);
+				mapValue = vertexMap[triangle[2 - j]];
+				bottomTriangle.AddVertexIndex (2 * contourOffsets[mapValue[0]] + 2 * mapValue[1]);
 			}
+			result.AddPolygon (topTriangle);
+			result.AddPolygon (bottomTriangle);
 		}
 	}
 
 	var result = new JSM.Body ();
+	var contourOffsets = [];
 	var contourPolygon = new JSM.ContourPolygon ();
 	contourPolygon.FromArray (basePolygon);
 	AddVertices (contourPolygon, direction, height, result);
-	AddContours (contourPolygon, result);
+	AddContours (contourPolygon, contourOffsets, result);
 
 	if (withTopAndBottom) {
-		AddTopBottomPolygons ();
+		AddTopBottomPolygons (contourPolygon, contourOffsets);
 	}
 
 	var firstDirection = JSM.CoordSub (basePolygon[1], basePolygon[0]).Normalize ();

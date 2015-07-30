@@ -949,24 +949,6 @@
 						["integer[3][*]", "the result"]
 					]
 				},
-				"CreatePolygonWithHole2D" : {
-					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
-					"parameters" : [
-						["vertices", "Coord2D[*]", "array of contour vertices with null values at contour ends"]
-					],
-					"returns" : [
-						["int[*]", "the result"]
-					]
-				},
-				"CreatePolygonWithHole" : {
-					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
-					"parameters" : [
-						["vertices", "Coord[*]", "array of contour vertices with null values at contour ends"]
-					],
-					"returns" : [
-						["int[*]", "the result"]
-					]
-				},
 				"TraverseOctreeNodes" : {
 					"description" : "Traverses the nodes of the tree, and calls the given callback when a node found. The return value of the callback determines if we need to continue traverse along that given node.",
 					"parameters" : [
