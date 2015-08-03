@@ -21,7 +21,6 @@
 ../src/geometry/polygon2d.js
 ../src/geometry/polygon.js
 ../src/geometry/triangulation.js
-../src/geometry/oldpolygon.js
 ../src/geometry/octree.js
 ../src/geometry/bsptree.js
 ../src/geometry/utilities.js

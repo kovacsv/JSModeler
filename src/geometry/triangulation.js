@@ -18,7 +18,7 @@ JSM.ConvertContourPolygonToPolygon2D = function (inputPolygon, vertexMap)
 				{
 					var sector = new JSM.Sector2D (segmentBeg, segmentEnd);
 					var position = polygon.SectorPosition (sector, -1, -1);
-					if (position == JSM.SectorPolygonPosition.IntersectionOnePoint || position == JSM.SectorPolygonPosition.IntersectionCoincident) {
+					if (position == JSM.SectorPolygonPosition2D.IntersectionOnePoint || position == JSM.SectorPolygonPosition2D.IntersectionCoincident) {
 						return true;
 					}
 					return false;

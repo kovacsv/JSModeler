@@ -1343,16 +1343,6 @@
 								["CoordSectorPosition2D", "the result"]
 							]
 						},
-						"OldSectorPosition" : {
-							"description" : "Calculates the position of the sector and the given sector.",
-							"parameters" : [
-								["sector", "Sector2D", "the sector"],
-								["intersection", "Coord2D", "(out) the intersection point if it exists"]
-							],
-							"returns" : [
-								["OldSectorSectorPosition2D", "the result"]
-							]
-						},
 						"SectorPosition" : {
 							"description" : "Calculates the position of the sector and the given sector.",
 							"parameters" : [
@@ -1740,6 +1730,306 @@
 						}
 					}
 				},
+				"Polygon2D" : {
+					"description" : "Represents a 2D polygon.",
+					"functions" : {
+						"AddVertex" : {
+							"description" : "Adds a vertex to the polygon.",
+							"parameters" : [
+								["x", "number", "the x coordinate of the vertex"],
+								["y", "number", "the y coordinate of the vertex"]
+							]
+						},
+						"AddVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the polygon.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							]
+						},
+						"GetVertex" : {
+							"description" : "Returns the vertex with the given index.",
+							"parameters" : [
+								["index", "integer", "the index of the vertex"]
+							],
+							"returns" : [
+								["Coord2D", "the vertex"]
+							]
+						},
+						"VertexCount" : {
+							"description" : "Returns the vertex count of the polygon.",
+							"returns" : [
+								["integer", "vertex count"]
+							]
+						},
+						"EnumerateVertices" : {
+							"description" : "Enumerates the vertices of the polygon, and calls a function for each vertex.",
+							"parameters" : [
+								["from", "integer", "the start vertex index"],
+								["to", "integer", "the end vertex index"],
+								["callback", "function", "the callback function"]
+							]
+						},
+						"GetNextVertex" : {
+							"description" : "Returns the vertex index after the given one.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetPrevVertex" : {
+							"description" : "Returns the vertex index before the given one.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"ShiftVertices" : {
+							"description" : "Shifts polygon vertices.",
+							"parameters" : [
+								["count", "integer", "the number of shifts"]
+							]
+						},
+						"GetSignedArea" : {
+							"description" : "Calculates the signed area of the polygon.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"GetArea" : {
+							"description" : "Calculates the area of the polygon.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"GetOrientation" : {
+							"description" : "Calculates the orientation of the polygon.",
+							"returns" : [
+								["Orientation", "the result"]
+							]
+						},
+						"GetComplexity" : {
+							"description" : "Calculates the complexity of the polygon.",
+							"returns" : [
+								["Complexity", "the result"]
+							]
+						},
+						"GetVertexOrientation" : {
+							"description" : "Calculates the orientation of the given vertex of the polygon.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["Orientation", "the result"]
+							]
+						},
+						"IsConvexVertex" : {
+							"description" : "Returns if the given vertex is convex.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"IsConcaveVertex" : {
+							"description" : "Returns if the given vertex is concave.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of a coordinate and the polygon.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["CoordPolygonPosition2D", "the result"]
+							]
+						},
+						"SectorPosition" : {
+							"description" : "Calculates the position of a sector and the polygon. The given begin and end vertex indices are omitted form intersection checking.",
+							"parameters" : [
+								["sector", "Sector3D", "the sector"],
+								["begIndex", "integer", "begin vertex index"],
+								["endIndex", "integer", "end vertex index"]
+							],
+							"returns" : [
+								["CoordSectorPosition2D", "the result"]
+							]
+						},
+						"IsDiagonal" : {
+							"description" : "Returns if the sector between two vertices is diagonal.",
+							"parameters" : [
+								["from", "integer", "begin vertex index"],
+								["to", "integer", "end vertex index"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"ToArray" : {
+							"description" : "Creates an array of vertices from polygon.",
+							"returns" : [
+								["Coord2D[*]", "the result"]
+							]
+						},
+						"FromArray" : {
+							"description" : "Creates the polygon from an array of vertices.",
+							"parameters" : [
+								["vertices", "Coord2D[*]", "the array of vertices"]
+							]
+						},
+						"Clear" : {
+							"description" : "Makes the polygon empty."
+						},
+						"ClearCache" : {
+							"description" : "Clears stored values from the polygon."
+						},
+						"Clone" : {
+							"description" : "Clones the polygon.",
+							"returns" : [
+								["Polygon2D", "a cloned instance"]
+							]
+						}
+					}
+				},
+				"ContourPolygon2D" : {
+					"description" : "Represents a 2D polygon with more contours.",
+					"functions" : {
+						"AddVertex" : {
+							"description" : "Adds a vertex to the last contour of the polygon.",
+							"parameters" : [
+								["x", "number", "the x coordinate of the vertex"],
+								["y", "number", "the y coordinate of the vertex"]
+							]
+						},
+						"AddVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the last contour of the polygon.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							]
+						},
+						"AddContourVertex" : {
+							"description" : "Adds a vertex to the given contour of the polygon.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["x", "number", "the x coordinate of the vertex"],
+								["y", "number", "the y coordinate of the vertex"]
+							]
+						},
+						"AddContourVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the given contour of the polygon.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["coord", "Coord2D", "the coordinate"]
+							]
+						},
+						"VertexCount" : {
+							"description" : "Returns the vertex count of the polygon.",
+							"returns" : [
+								["integer", "vertex count"]
+							]
+						},
+						"ContourVertexCount" : {
+							"description" : "Returns the vertex count of the given contour of the polygon.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"]
+							],
+							"returns" : [
+								["integer", "vertex count"]
+							]
+						},
+						"AddContour" : {
+							"description" : "Adds a contour to the polygon. If the given contour is null, an empty contour is added to the polygon.",
+							"parameters" : [
+								["contour", "Polygon2D", "the new contour"]
+							]
+						},
+						"GetLastContour" : {
+							"description" : "Returns the last contour of the polygon.",
+							"returns" : [
+								["Polygon2D", "the result"]
+							]
+						},
+						"GetContourVertex" : {
+							"description" : "Returns the vertex of the given contour with the given index.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["vertexIndex", "integer", "the index of the vertex"]
+							],
+							"returns" : [
+								["Coord2D", "the vertex"]
+							]
+						},
+						"GetContour" : {
+							"description" : "Returns the contour with the given index.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"]
+							],
+							"returns" : [
+								["Polygon2D", "the contour"]
+							]
+						},
+						"ContourCount" : {
+							"description" : "Returns the contour count of the polygon.",
+							"returns" : [
+								["integer", "contour count"]
+							]
+						},
+						"GetSignedArea" : {
+							"description" : "Calculates the signed area of the polygon.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"GetArea" : {
+							"description" : "Calculates the area of the polygon.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"GetOrientation" : {
+							"description" : "Calculates the orientation of the polygon.",
+							"returns" : [
+								["Orientation", "the result"]
+							]
+						},
+						"GetComplexity" : {
+							"description" : "Calculates the complexity of the polygon.",
+							"returns" : [
+								["Complexity", "the result"]
+							]
+						},
+						"ToArray" : {
+							"description" : "Creates an array of vertices from polygon. The result contains null values between contours.",
+							"returns" : [
+								["Coord2D[*]", "the result"]
+							]
+						},
+						"FromArray" : {
+							"description" : "Creates the polygon from an array of vertices. The input should contain null values between contours.",
+							"parameters" : [
+								["vertices", "Coord2D[*]", "the array of vertices"]
+							]
+						},
+						"Clear" : {
+							"description" : "Makes the polygon empty."
+						},
+						"Clone" : {
+							"description" : "Clones the polygon.",
+							"returns" : [
+								["ContourPolygon2D", "a cloned instance"]
+							]
+						}
+					}
+				},
 				"Polygon" : {
 					"description" : "Represents a 3D polygon.",
 					"functions" : {
@@ -1754,7 +2044,7 @@
 						"AddVertexCoord" : {
 							"description" : "Adds a vertex coordinate to the polygon.",
 							"parameters" : [
-								["coord", "coord", "the coordinate"]
+								["coord", "Coord", "the coordinate"]
 							]
 						},
 						"GetVertex" : {
@@ -1799,7 +2089,7 @@
 								["Coord[*]", "the result"]
 							]
 						},
-						"ToArray" : {
+						"FromArray" : {
 							"description" : "Creates the polygon from an array of vertices.",
 							"parameters" : [
 								["vertices", "Coord[*]", "the array of vertices"]
@@ -1816,47 +2106,84 @@
 						}
 					}
 				},
-				"OldContourPolygon2D" : {
-					"description" : "Represents a 2D polygon with more contours.",
+				"ContourPolygon" : {
+					"description" : "Represents a 3D polygon with more contours.",
 					"functions" : {
 						"AddVertex" : {
-							"description" : "Adds a vertex to a contour of the polygon.",
+							"description" : "Adds a vertex to the last contour of the polygon.",
 							"parameters" : [
-								["contour", "integer", "the index of the contour"],
 								["x", "number", "the x coordinate of the vertex"],
-								["y", "number", "the y coordinate of the vertex"]
+								["y", "number", "the y coordinate of the vertex"],
+								["z", "number", "the z coordinate of the vertex"]
+							]
+						},
+						"AddVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the last contour of the polygon.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							]
+						},
+						"AddContourVertex" : {
+							"description" : "Adds a vertex to the given contour of the polygon.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["x", "number", "the x coordinate of the vertex"],
+								["y", "number", "the y coordinate of the vertex"],
+								["z", "number", "the z coordinate of the vertex"]
+							]
+						},
+						"AddContourVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the given contour of the polygon.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["coord", "Coord", "the coordinate"]
 							]
 						},
 						"VertexCount" : {
-							"description" : "Returns the vertex count of a contour of the polygon.",
+							"description" : "Returns the vertex count of the polygon.",
+							"returns" : [
+								["integer", "vertex count"]
+							]
+						},
+						"ContourVertexCount" : {
+							"description" : "Returns the vertex count of the given contour of the polygon.",
 							"parameters" : [
-								["contour", "integer", "the index of the contour"]
+								["contourIndex", "integer", "the index of the contour"]
 							],
 							"returns" : [
 								["integer", "vertex count"]
 							]
 						},
-						"GetVertex" : {
-							"description" : "Returns the vertex of a contour with the given index.",
+						"AddContour" : {
+							"description" : "Adds a contour to the polygon. If the given contour is null, an empty contour is added to the polygon.",
 							"parameters" : [
-								["contour", "integer", "the index of the contour"],
-								["index", "integer", "the index of the vertex"]
+								["contour", "Polygon", "the new contour"]
+							]
+						},
+						"GetLastContour" : {
+							"description" : "Returns the last contour of the polygon.",
+							"returns" : [
+								["Polygon", "the result"]
+							]
+						},
+						"GetContourVertex" : {
+							"description" : "Returns the vertex of the given contour with the given index.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["vertexIndex", "integer", "the index of the vertex"]
 							],
 							"returns" : [
-								["Coord2D", "the vertex"]
+								["Coord", "the vertex"]
 							]
 						},
-						"SetVertex" : {
-							"description" : "Modifies the coordinates of an existing vertex of a contour.",
+						"GetContour" : {
+							"description" : "Returns the contour with the given index.",
 							"parameters" : [
-								["contour", "integer", "the index of the contour"],
-								["index", "integer", "the index of the vertex"],
-								["x", "number", "the x coordinate of the vertex"],
-								["y", "number", "the y coordinate of the vertex"]
+								["contourIndex", "integer", "the index of the contour"]
+							],
+							"returns" : [
+								["Polygon", "the contour"]
 							]
-						},
-						"AddContour" : {
-							"description" : "Adds new contour to the polygon."
 						},
 						"ContourCount" : {
 							"description" : "Returns the contour count of the polygon.",
@@ -1864,13 +2191,22 @@
 								["integer", "contour count"]
 							]
 						},
-						"GetContour" : {
-							"description" : "Returns the contour with the given index.",
-							"parameters" : [
-								["contour", "integer", "the index of the contour"]
-							],
+						"ToContourPolygon2D" : {
+							"description" : "Converts the polygon to a 2D polygon.",
 							"returns" : [
-								["Polygon2D", "the contour"]
+								["ContourPolygon2D", "the result"]
+							]
+						},
+						"ToArray" : {
+							"description" : "Creates an array of vertices from polygon. The result contains null values between contours.",
+							"returns" : [
+								["Coord[*]", "the result"]
+							]
+						},
+						"FromArray" : {
+							"description" : "Creates the polygon from an array of vertices. The input should contain null values between contours.",
+							"parameters" : [
+								["vertices", "Coord[*]", "the array of vertices"]
 							]
 						},
 						"Clear" : {
@@ -1879,7 +2215,7 @@
 						"Clone" : {
 							"description" : "Clones the polygon.",
 							"returns" : [
-								["OldContourPolygon2D", "a cloned instance"]
+								["ContourPolygon", "a cloned instance"]
 							]
 						}
 					}
@@ -2128,15 +2464,6 @@
 						["CoordOutsideOfSector", "coordinate lies outside of the sector"]
 					]
 				},
-				"OldSectorSectorPosition2D" : {
-					"description" : "Position of two sectors.",
-					"values" : [
-						["SectorsDontIntersect", "sectors do not intersect"],
-						["SectorsIntersectCoincident", "sectors intersect coincident"],
-						["SectorsIntersectEndPoint", "sectors intersect at end point"],
-						["SectorsIntersectOnePoint", "sectors intersect one point"]
-					]
-				},
 				"SectorSectorPosition2D" : {
 					"description" : "Position of two sectors.",
 					"values" : [
@@ -2190,6 +2517,33 @@
 					"values" : [
 						["LineParallelToPlane", "line is parallel to the plane"],
 						["LineIntersectsPlane", "line intersects the plane"]
+					]
+				},
+				"Complexity" : {
+					"description" : "Complexity of a polygon.",
+					"values" : [
+						["Invalid", "invalid polygon"],
+						["Convex", "convex polygon"],
+						["Concave", "concave polygon"],
+						["Complex", "complex polygon (contains holes)"]
+					]
+				},
+				"CoordPolygonPosition2D" : {
+					"description" : "Position of a coordinate and a polygon.",
+					"values" : [
+						["OnVertex", "coordinate lies on a vertex of the polygon"],
+						["OnEdge", "coordinate lies on an edge of the polygon"],
+						["Inside", "coordinate lies inside the polygon"],
+						["Outside", "coordinate lies outside of the polygon"]
+					]
+				},
+				"SectorPolygonPosition2D" : {
+					"description" : "Position of a sector and a polygon.",
+					"values" : [
+						["IntersectionOnePoint", "sector intersects polygon"],
+						["IntersectionCoincident", "sector lies on an edge of the polygon"],
+						["IntersectionOnVertex", "sector intersects polygon on a vertex"],
+						["NoIntersection", "sector does not intersect polygon"]
 					]
 				}
 			}

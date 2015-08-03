@@ -808,7 +808,7 @@ generalSuite.AddTest ('SectorSectorPositionTest', function (test)
 
 	var sector1 = new JSM.Sector2D (new JSM.Coord2D (0.0, 1.0), new JSM.Coord2D (1.0, 1.0));
 	var sector2 = new JSM.Sector2D (new JSM.Coord2D (0.0, 2.0), new JSM.Coord2D (1.0, 2.0));
-	test.Assert (sector1.OldSectorPosition (sector2) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (sector1.SectorPosition (sector2) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
 
 	var sector1 = new JSM.Sector2D (new JSM.Coord2D (1.0, 2.0), new JSM.Coord2D (1.0, 2.0));
 	var sector2 = new JSM.Sector2D (new JSM.Coord2D (1.0, 2.0), new JSM.Coord2D (4.0, 3.0));
@@ -816,50 +816,50 @@ generalSuite.AddTest ('SectorSectorPositionTest', function (test)
 	var sector4 = new JSM.Sector2D (new JSM.Coord2D (0.0, 1.0), new JSM.Coord2D (1.0, 1.0));
 
 	var intersection = new JSM.Coord2D (0.0, 0.0);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (0.0, 0.0, 0.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (0.0, 0.0, 1.0, 0.0)) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (0.0, 0.0, 1.0, 1.0), intersection) == JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint);
+	test.Assert (sector3.SectorPosition (GetSector2D (0.0, 0.0, 0.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (sector3.SectorPosition (GetSector2D (0.0, 0.0, 1.0, 0.0)) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (sector3.SectorPosition (GetSector2D (0.0, 0.0, 1.0, 1.0), intersection) == JSM.SectorSectorPosition2D.SectorsIntersectEndPoint);
 	test.Assert (intersection.IsEqual (new JSM.Coord2D (1.0, 1.0)));
-	test.Assert (sector3.OldSectorPosition (GetSector2D (0.0, 0.0, 3.0, 1.0), intersection) == JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint);
+	test.Assert (sector3.SectorPosition (GetSector2D (0.0, 0.0, 3.0, 1.0), intersection) == JSM.SectorSectorPosition2D.SectorsIntersectEndPoint);
 	test.Assert (intersection.IsEqual (new JSM.Coord2D (3.0, 1.0)));
-	test.Assert (sector3.OldSectorPosition (GetSector2D (1.0, 1.0, 3.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (3.0, 1.0, 1.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident);
+	test.Assert (sector3.SectorPosition (GetSector2D (1.0, 1.0, 3.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsIntersectCoincident);
+	test.Assert (sector3.SectorPosition (GetSector2D (3.0, 1.0, 1.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsIntersectCoincident);
 
-	test.Assert (sector3.OldSectorPosition (GetSector2D (1.0, 0.0, 1.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (1.0, 0.0, 1.0, 2.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (3.0, 0.0, 3.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (3.0, 0.0, 3.0, 2.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (2.0, 0.0, 4.0, 2.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint);
+	test.Assert (sector3.SectorPosition (GetSector2D (1.0, 0.0, 1.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsIntersectEndPoint);
+	test.Assert (sector3.SectorPosition (GetSector2D (1.0, 0.0, 1.0, 2.0)) == JSM.SectorSectorPosition2D.SectorsIntersectOnePoint);
+	test.Assert (sector3.SectorPosition (GetSector2D (3.0, 0.0, 3.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsIntersectEndPoint);
+	test.Assert (sector3.SectorPosition (GetSector2D (3.0, 0.0, 3.0, 2.0)) == JSM.SectorSectorPosition2D.SectorsIntersectOnePoint);
+	test.Assert (sector3.SectorPosition (GetSector2D (2.0, 0.0, 4.0, 2.0)) == JSM.SectorSectorPosition2D.SectorsIntersectOnePoint);
 
-	test.Assert (sector3.OldSectorPosition (GetSector2D (-1.0, 1.0, 0.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (4.0, 1.0, 5.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (0.0, 0.0, 2.0, 0.0)) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (1.0, 0.0, 3.0, 0.0)) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (1.0, 2.0, 3.0, 2.0)) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (0.0, 1.0, 1.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (3.0, 1.0, 4.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (0.0, 1.0, 2.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (2.0, 1.0, 2.5, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (2.0, 1.0, 3.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (2.0, 1.0, 4.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident);
+	test.Assert (sector3.SectorPosition (GetSector2D (-1.0, 1.0, 0.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (sector3.SectorPosition (GetSector2D (4.0, 1.0, 5.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (sector3.SectorPosition (GetSector2D (0.0, 0.0, 2.0, 0.0)) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (sector3.SectorPosition (GetSector2D (1.0, 0.0, 3.0, 0.0)) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (sector3.SectorPosition (GetSector2D (1.0, 2.0, 3.0, 2.0)) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (sector3.SectorPosition (GetSector2D (0.0, 1.0, 1.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsIntersectEndPoint);
+	test.Assert (sector3.SectorPosition (GetSector2D (3.0, 1.0, 4.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsIntersectEndPoint);
+	test.Assert (sector3.SectorPosition (GetSector2D (0.0, 1.0, 2.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsIntersectCoincident);
+	test.Assert (sector3.SectorPosition (GetSector2D (2.0, 1.0, 2.5, 1.0)) == JSM.SectorSectorPosition2D.SectorsIntersectCoincident);
+	test.Assert (sector3.SectorPosition (GetSector2D (2.0, 1.0, 3.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsIntersectCoincident);
+	test.Assert (sector3.SectorPosition (GetSector2D (2.0, 1.0, 4.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsIntersectCoincident);
                  
-	test.Assert (sector3.OldSectorPosition (GetSector2D (4.0, 1.0, 5.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (sector3.OldSectorPosition (GetSector2D (-1.0, 1.0, -3.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (sector3.SectorPosition (GetSector2D (4.0, 1.0, 5.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (sector3.SectorPosition (GetSector2D (-1.0, 1.0, -3.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
                  
-	test.Assert (GetSector2D (-1.0, 1.0, 0.0, 1.0).OldSectorPosition (sector3) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (GetSector2D (4.0, 1.0, 5.0, 1.0).OldSectorPosition (sector3) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (GetSector2D (0.0, 0.0, 2.0, 0.0).OldSectorPosition (sector3) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (GetSector2D (1.0, 0.0, 3.0, 0.0).OldSectorPosition (sector3) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (GetSector2D (1.0, 2.0, 3.0, 2.0).OldSectorPosition (sector3) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (GetSector2D (0.0, 1.0, 1.0, 1.0).OldSectorPosition (sector3) == JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint);
-	test.Assert (GetSector2D (3.0, 1.0, 4.0, 1.0).OldSectorPosition (sector3) == JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint);
-	test.Assert (GetSector2D (0.0, 1.0, 2.0, 1.0).OldSectorPosition (sector3) == JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident);
-	test.Assert (GetSector2D (2.0, 1.0, 2.5, 1.0).OldSectorPosition (sector3) == JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident);
-	test.Assert (GetSector2D (2.0, 1.0, 3.0, 1.0).OldSectorPosition (sector3) == JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident);
-	test.Assert (GetSector2D (2.0, 1.0, 4.0, 1.0).OldSectorPosition (sector3) == JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident);
+	test.Assert (GetSector2D (-1.0, 1.0, 0.0, 1.0).SectorPosition (sector3) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (GetSector2D (4.0, 1.0, 5.0, 1.0).SectorPosition (sector3) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (GetSector2D (0.0, 0.0, 2.0, 0.0).SectorPosition (sector3) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (GetSector2D (1.0, 0.0, 3.0, 0.0).SectorPosition (sector3) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (GetSector2D (1.0, 2.0, 3.0, 2.0).SectorPosition (sector3) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (GetSector2D (0.0, 1.0, 1.0, 1.0).SectorPosition (sector3) == JSM.SectorSectorPosition2D.SectorsIntersectEndPoint);
+	test.Assert (GetSector2D (3.0, 1.0, 4.0, 1.0).SectorPosition (sector3) == JSM.SectorSectorPosition2D.SectorsIntersectEndPoint);
+	test.Assert (GetSector2D (0.0, 1.0, 2.0, 1.0).SectorPosition (sector3) == JSM.SectorSectorPosition2D.SectorsIntersectCoincident);
+	test.Assert (GetSector2D (2.0, 1.0, 2.5, 1.0).SectorPosition (sector3) == JSM.SectorSectorPosition2D.SectorsIntersectCoincident);
+	test.Assert (GetSector2D (2.0, 1.0, 3.0, 1.0).SectorPosition (sector3) == JSM.SectorSectorPosition2D.SectorsIntersectCoincident);
+	test.Assert (GetSector2D (2.0, 1.0, 4.0, 1.0).SectorPosition (sector3) == JSM.SectorSectorPosition2D.SectorsIntersectCoincident);
 	             
-	test.Assert (GetSector2D (0.0, 0.0, 1.0, 1.0).OldSectorPosition (GetSector2D (3.0, 0.0, 3.0, 3.0)) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
-	test.Assert (GetSector2D (3.0, 0.0, 3.0, 3.0).OldSectorPosition (GetSector2D (0.0, 0.0, 1.0, 1.0)) == JSM.OldSectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (GetSector2D (0.0, 0.0, 1.0, 1.0).SectorPosition (GetSector2D (3.0, 0.0, 3.0, 3.0)) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
+	test.Assert (GetSector2D (3.0, 0.0, 3.0, 3.0).SectorPosition (GetSector2D (0.0, 0.0, 1.0, 1.0)) == JSM.SectorSectorPosition2D.SectorsDontIntersect);
 });
 
 generalSuite.AddTest ('SectorSectorPositionTest2', function (test)
@@ -1559,30 +1559,30 @@ polygonSuite.AddTest ('CoordPolygonPosition2DTest', function (test)
 	polygon.AddVertex (3.0, 2.0);
 	polygon.AddVertex (1.5, 3.0);
 
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 0.0)) == JSM.CoordPolygonPosition.Outside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.5, 5.0)) == JSM.CoordPolygonPosition.Outside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 3.0)) == JSM.CoordPolygonPosition.Outside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.0, 4.0)) == JSM.CoordPolygonPosition.Outside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (3.0, 0.0)) == JSM.CoordPolygonPosition.Outside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (2.5, 0.5)) == JSM.CoordPolygonPosition.Outside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (4.0, 2.0)) == JSM.CoordPolygonPosition.Outside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (-1.0, 1.0)) == JSM.CoordPolygonPosition.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 0.0)) == JSM.CoordPolygonPosition2D.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.5, 5.0)) == JSM.CoordPolygonPosition2D.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 3.0)) == JSM.CoordPolygonPosition2D.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.0, 4.0)) == JSM.CoordPolygonPosition2D.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (3.0, 0.0)) == JSM.CoordPolygonPosition2D.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (2.5, 0.5)) == JSM.CoordPolygonPosition2D.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (4.0, 2.0)) == JSM.CoordPolygonPosition2D.Outside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (-1.0, 1.0)) == JSM.CoordPolygonPosition2D.Outside);
 
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 1.5)) == JSM.CoordPolygonPosition.OnEdge);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.5, 1.0)) == JSM.CoordPolygonPosition.OnEdge);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.0, 0.5)) == JSM.CoordPolygonPosition.OnEdge);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 0.0)) == JSM.CoordPolygonPosition.OnEdge);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 1.5)) == JSM.CoordPolygonPosition2D.OnEdge);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.5, 1.0)) == JSM.CoordPolygonPosition2D.OnEdge);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.0, 0.5)) == JSM.CoordPolygonPosition2D.OnEdge);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 0.0)) == JSM.CoordPolygonPosition2D.OnEdge);
 
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 2.0)) == JSM.CoordPolygonPosition.OnVertex);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 1.0)) == JSM.CoordPolygonPosition.OnVertex);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.0, 1.0)) == JSM.CoordPolygonPosition.OnVertex);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (3.0, 2.0)) == JSM.CoordPolygonPosition.OnVertex);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 2.0)) == JSM.CoordPolygonPosition2D.OnVertex);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.0, 1.0)) == JSM.CoordPolygonPosition2D.OnVertex);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.0, 1.0)) == JSM.CoordPolygonPosition2D.OnVertex);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (3.0, 2.0)) == JSM.CoordPolygonPosition2D.OnVertex);
 
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.5, 1.5)) == JSM.CoordPolygonPosition.Inside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 0.5)) == JSM.CoordPolygonPosition.Inside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 1.5)) == JSM.CoordPolygonPosition.Inside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (2.5, 1.5)) == JSM.CoordPolygonPosition.Inside);
-	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 1.0)) == JSM.CoordPolygonPosition.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (0.5, 1.5)) == JSM.CoordPolygonPosition2D.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 0.5)) == JSM.CoordPolygonPosition2D.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 1.5)) == JSM.CoordPolygonPosition2D.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (2.5, 1.5)) == JSM.CoordPolygonPosition2D.Inside);
+	test.Assert (polygon.CoordPosition (new JSM.Coord2D (1.5, 1.0)) == JSM.CoordPolygonPosition2D.Inside);
 });
 
 polygonSuite.AddTest ('PolygonVertexVisibility2DTest', function (test)
@@ -1625,24 +1625,24 @@ polygonSuite.AddTest ('PolygonVertexVisibility2DTest', function (test)
 	test.Assert (GetVisibleVertices (polygon, 6).toString () == [0].toString ());
 	test.Assert (GetVisibleVertices (polygon, 7).toString () == [5].toString ());
 
-	test.Assert (polygon.SectorPosition (GetSector (0, 0, 1, 1), 0, 5) == JSM.SectorPolygonPosition.NoIntersection);
-	test.Assert (polygon.SectorPosition (GetSector (0, 0, 1, 1), 0, -1) == JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.Assert (polygon.SectorPosition (GetSector (0, 0, 1, 1), -1, -1) == JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.Assert (polygon.SectorPosition (GetSector (0, 0, 0.5, 0.5), 0, -1) == JSM.SectorPolygonPosition.NoIntersection);
-	test.Assert (polygon.SectorPosition (GetSector (0, 0, 0.5, 0.5), -1, -1) == JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.Assert (polygon.SectorPosition (GetSector (0.3, 0.3, 0.8, 0.8), -1, -1) == JSM.SectorPolygonPosition.NoIntersection);
-	test.Assert (polygon.SectorPosition (GetSector (0.3, 0.3, 1, 1), -1, -1) == JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.Assert (polygon.SectorPosition (GetSector (0.3, 0.3, 1.5, 1.5), -1, -1) == JSM.SectorPolygonPosition.IntersectionOnePoint);
-	test.Assert (polygon.SectorPosition (GetSector (0.5, 1.5, 0.8, 1.5), -1, -1) == JSM.SectorPolygonPosition.NoIntersection);
-	test.Assert (polygon.SectorPosition (GetSector (0.5, 1.5, 1, 1.5), -1, -1) == JSM.SectorPolygonPosition.IntersectionOnePoint);
-	test.Assert (polygon.SectorPosition (GetSector (0.5, 1.5, 1, 2), -1, -1) == JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.Assert (polygon.SectorPosition (GetSector (0.5, 1.5, 1, 2.5), -1, -1) == JSM.SectorPolygonPosition.IntersectionOnePoint);
-	test.Assert (polygon.SectorPosition (GetSector (1.1, 1.5, 1.9, 1.5), -1, -1) == JSM.SectorPolygonPosition.NoIntersection);
-	test.Assert (polygon.SectorPosition (GetSector (1, 2, 1.9, 1.5), -1, -1) == JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.Assert (polygon.SectorPosition (GetSector (1, 2, 1.9, 1.5), 6, -1) == JSM.SectorPolygonPosition.NoIntersection);
-	test.Assert (polygon.SectorPosition (GetSector (1, 2, 2, 2), -1, -1) == JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.Assert (polygon.SectorPosition (GetSector (1, 2, 2, 2), 6, -1) == JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.Assert (polygon.SectorPosition (GetSector (1, 2, 2, 2), 6, 3) == JSM.SectorPolygonPosition.NoIntersection);
+	test.Assert (polygon.SectorPosition (GetSector (0, 0, 1, 1), 0, 5) == JSM.SectorPolygonPosition2D.NoIntersection);
+	test.Assert (polygon.SectorPosition (GetSector (0, 0, 1, 1), 0, -1) == JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.Assert (polygon.SectorPosition (GetSector (0, 0, 1, 1), -1, -1) == JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.Assert (polygon.SectorPosition (GetSector (0, 0, 0.5, 0.5), 0, -1) == JSM.SectorPolygonPosition2D.NoIntersection);
+	test.Assert (polygon.SectorPosition (GetSector (0, 0, 0.5, 0.5), -1, -1) == JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.Assert (polygon.SectorPosition (GetSector (0.3, 0.3, 0.8, 0.8), -1, -1) == JSM.SectorPolygonPosition2D.NoIntersection);
+	test.Assert (polygon.SectorPosition (GetSector (0.3, 0.3, 1, 1), -1, -1) == JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.Assert (polygon.SectorPosition (GetSector (0.3, 0.3, 1.5, 1.5), -1, -1) == JSM.SectorPolygonPosition2D.IntersectionOnePoint);
+	test.Assert (polygon.SectorPosition (GetSector (0.5, 1.5, 0.8, 1.5), -1, -1) == JSM.SectorPolygonPosition2D.NoIntersection);
+	test.Assert (polygon.SectorPosition (GetSector (0.5, 1.5, 1, 1.5), -1, -1) == JSM.SectorPolygonPosition2D.IntersectionOnePoint);
+	test.Assert (polygon.SectorPosition (GetSector (0.5, 1.5, 1, 2), -1, -1) == JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.Assert (polygon.SectorPosition (GetSector (0.5, 1.5, 1, 2.5), -1, -1) == JSM.SectorPolygonPosition2D.IntersectionOnePoint);
+	test.Assert (polygon.SectorPosition (GetSector (1.1, 1.5, 1.9, 1.5), -1, -1) == JSM.SectorPolygonPosition2D.NoIntersection);
+	test.Assert (polygon.SectorPosition (GetSector (1, 2, 1.9, 1.5), -1, -1) == JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.Assert (polygon.SectorPosition (GetSector (1, 2, 1.9, 1.5), 6, -1) == JSM.SectorPolygonPosition2D.NoIntersection);
+	test.Assert (polygon.SectorPosition (GetSector (1, 2, 2, 2), -1, -1) == JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.Assert (polygon.SectorPosition (GetSector (1, 2, 2, 2), 6, -1) == JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.Assert (polygon.SectorPosition (GetSector (1, 2, 2, 2), 6, 3) == JSM.SectorPolygonPosition2D.NoIntersection);
 	
 	var polygon2 = new JSM.Polygon2D ();
 	polygon2.AddVertex (118, 121);
@@ -1689,8 +1689,8 @@ polygonSuite.AddTest ('PolygonVertexVisibility2DTest', function (test)
 	polygon4.AddVertex (3, 3);
 	polygon4.AddVertex (0, 3);
 	
-	test.Assert (polygon4.SectorPosition (GetSector (0, 0, 1, 1), -1, -1) == JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.Assert (polygon4.SectorPosition (GetSector (0, 0, 1, 1), 0, -1) == JSM.SectorPolygonPosition.NoIntersection);
+	test.Assert (polygon4.SectorPosition (GetSector (0, 0, 1, 1), -1, -1) == JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.Assert (polygon4.SectorPosition (GetSector (0, 0, 1, 1), 0, -1) == JSM.SectorPolygonPosition2D.NoIntersection);
 });
 
 polygonSuite.AddTest ('PolygonTriangulationTest', function (test)

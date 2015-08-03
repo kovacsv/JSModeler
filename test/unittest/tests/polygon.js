@@ -449,6 +449,8 @@ simpleSuite.AddTest ('FromToArrayTest', function (test)
 	test.AssertEqual (polygon.GetOrientation (), polygon2.GetOrientation ());
 	test.AssertEqual (polygon.GetComplexity (), polygon2.GetComplexity ());	
 	
+	test.AssertEqual (polygon.GetLastContour ().VertexCount (), polygon.GetContour (1).VertexCount ());
+	
 	var polygon = new JSM.Polygon ();
 	polygon.AddVertex (0, 0, 1);
 	polygon.AddVertex (1, 0, 1);
@@ -478,6 +480,8 @@ simpleSuite.AddTest ('FromToArrayTest', function (test)
 	var polygon2 = new JSM.ContourPolygon ();
 	polygon2.FromArray (polygon.ToArray ());
 	test.Assert (IsEqualContourPolygons (polygon, polygon2));
+	
+	test.AssertEqual (polygon.GetLastContour ().VertexCount (), polygon.GetContour (1).VertexCount ());
 });
 
 var pointInPolygonSuite = unitTest.AddTestSuite ('PointInPolygonTest');
@@ -490,26 +494,26 @@ pointInPolygonSuite.AddTest ('PointInPolygonConvexTest', function (test)
 	polygon.AddVertex (2.0, 2.0);
 	polygon.AddVertex (0.0, 2.0);
 	
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (0.0, 0.0)), JSM.CoordPolygonPosition.OnVertex);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (2.0, 0.0)), JSM.CoordPolygonPosition.OnVertex);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (2.0, 2.0)), JSM.CoordPolygonPosition.OnVertex);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (0.0, 2.0)), JSM.CoordPolygonPosition.OnVertex);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (0.0, 0.0)), JSM.CoordPolygonPosition2D.OnVertex);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (2.0, 0.0)), JSM.CoordPolygonPosition2D.OnVertex);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (2.0, 2.0)), JSM.CoordPolygonPosition2D.OnVertex);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (0.0, 2.0)), JSM.CoordPolygonPosition2D.OnVertex);
 
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (1.0, 0.0)), JSM.CoordPolygonPosition.OnEdge);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (2.0, 1.0)), JSM.CoordPolygonPosition.OnEdge);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (1.0, 2.0)), JSM.CoordPolygonPosition.OnEdge);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (0.0, 1.0)), JSM.CoordPolygonPosition.OnEdge);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (1.0, 0.0)), JSM.CoordPolygonPosition2D.OnEdge);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (2.0, 1.0)), JSM.CoordPolygonPosition2D.OnEdge);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (1.0, 2.0)), JSM.CoordPolygonPosition2D.OnEdge);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (0.0, 1.0)), JSM.CoordPolygonPosition2D.OnEdge);
 
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (1.0, 1.0)), JSM.CoordPolygonPosition.Inside);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 1.0)), JSM.CoordPolygonPosition.Outside);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 1.0)), JSM.CoordPolygonPosition.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (1.0, 1.0)), JSM.CoordPolygonPosition2D.Inside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 1.0)), JSM.CoordPolygonPosition2D.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 1.0)), JSM.CoordPolygonPosition2D.Outside);
     
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 0.0)), JSM.CoordPolygonPosition.Outside);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 2.0)), JSM.CoordPolygonPosition.Outside);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 0.0)), JSM.CoordPolygonPosition.Outside);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 2.0)), JSM.CoordPolygonPosition.Outside);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 3.0)), JSM.CoordPolygonPosition.Outside);
-	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 3.0)), JSM.CoordPolygonPosition.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 0.0)), JSM.CoordPolygonPosition2D.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 2.0)), JSM.CoordPolygonPosition2D.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 0.0)), JSM.CoordPolygonPosition2D.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 2.0)), JSM.CoordPolygonPosition2D.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (-1.0, 3.0)), JSM.CoordPolygonPosition2D.Outside);
+	test.AssertEqual (polygon.CoordPosition (new JSM.Coord2D (3.0, 3.0)), JSM.CoordPolygonPosition2D.Outside);
 	
 	var polygon2 = new JSM.Polygon2D ();
 	polygon2.AddVertex (0.0, 0.0);
@@ -517,13 +521,13 @@ pointInPolygonSuite.AddTest ('PointInPolygonConvexTest', function (test)
 	polygon2.AddVertex (0.0, 2.0);
 	polygon2.AddVertex (-1.0, 1.0);
 	
-	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (0.0, 1.0)), JSM.CoordPolygonPosition.Inside);
-	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (-2.0, 1.0)), JSM.CoordPolygonPosition.Outside);
-	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (2.0, 1.0)), JSM.CoordPolygonPosition.Outside);
-	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (-0.5, 0.0)), JSM.CoordPolygonPosition.Outside);
-	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (0.5, 0.0)), JSM.CoordPolygonPosition.Outside);
-	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (-0.5, 2.0)), JSM.CoordPolygonPosition.Outside);
-	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (0.5, 2.0)), JSM.CoordPolygonPosition.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (0.0, 1.0)), JSM.CoordPolygonPosition2D.Inside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (-2.0, 1.0)), JSM.CoordPolygonPosition2D.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (2.0, 1.0)), JSM.CoordPolygonPosition2D.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (-0.5, 0.0)), JSM.CoordPolygonPosition2D.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (0.5, 0.0)), JSM.CoordPolygonPosition2D.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (-0.5, 2.0)), JSM.CoordPolygonPosition2D.Outside);
+	test.AssertEqual (polygon2.CoordPosition (new JSM.Coord2D (0.5, 2.0)), JSM.CoordPolygonPosition2D.Outside);
 });
 
 var diagonalSuite = unitTest.AddTestSuite ('IsDiagonalSuite');
@@ -1036,24 +1040,24 @@ polygonSectorTest.AddTest ('PolygonSectorPositionTest01', function (test)
 	polygon.AddVertex (1.0, 1.0);
 	polygon.AddVertex (0.0, 1.0);
 	
-	test.AssertEqual (polygon.SectorPosition (GetSector (2, 0, 3, 0), -1, -1), JSM.SectorPolygonPosition.NoIntersection);
-	test.AssertEqual (polygon.SectorPosition (GetSector (2, 0, 2, 1), -1, -1), JSM.SectorPolygonPosition.NoIntersection);
+	test.AssertEqual (polygon.SectorPosition (GetSector (2, 0, 3, 0), -1, -1), JSM.SectorPolygonPosition2D.NoIntersection);
+	test.AssertEqual (polygon.SectorPosition (GetSector (2, 0, 2, 1), -1, -1), JSM.SectorPolygonPosition2D.NoIntersection);
 
-	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 2, 0), -1, -1), JSM.SectorPolygonPosition.IntersectionCoincident);
-	test.AssertEqual (polygon.SectorPosition (GetSector (2, 0, 0, 0), -1, -1), JSM.SectorPolygonPosition.IntersectionCoincident);
-	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 0.5, 0), -1, -1), JSM.SectorPolygonPosition.IntersectionCoincident);
-	test.AssertEqual (polygon.SectorPosition (GetSector (0.5, 0, 0, 0), -1, -1), JSM.SectorPolygonPosition.IntersectionCoincident);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 2, 0), -1, -1), JSM.SectorPolygonPosition2D.IntersectionCoincident);
+	test.AssertEqual (polygon.SectorPosition (GetSector (2, 0, 0, 0), -1, -1), JSM.SectorPolygonPosition2D.IntersectionCoincident);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 0.5, 0), -1, -1), JSM.SectorPolygonPosition2D.IntersectionCoincident);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0.5, 0, 0, 0), -1, -1), JSM.SectorPolygonPosition2D.IntersectionCoincident);
 
-	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 2, 2), -1, -1), JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.AssertEqual (polygon.SectorPosition (GetSector (2, 2, 1, 1), -1, -1), JSM.SectorPolygonPosition.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 2, 2), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (2, 2, 1, 1), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
 
-	test.AssertEqual (polygon.SectorPosition (GetSector (0.5, 0.5, 2, 0.5), -1, -1), JSM.SectorPolygonPosition.IntersectionOnePoint);
-	test.AssertEqual (polygon.SectorPosition (GetSector (2, 0.5, 0.5, 0.5), -1, -1), JSM.SectorPolygonPosition.IntersectionOnePoint);
-	test.AssertEqual (polygon.SectorPosition (GetSector (0.5, 0.5, 1, 1), -1, -1), JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 0.5, 0.5), -1, -1), JSM.SectorPolygonPosition.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0.5, 0.5, 2, 0.5), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnePoint);
+	test.AssertEqual (polygon.SectorPosition (GetSector (2, 0.5, 0.5, 0.5), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnePoint);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0.5, 0.5, 1, 1), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 0.5, 0.5), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
 
-	test.AssertEqual (polygon.SectorPosition (GetSector (-1.0, 0.5, 1, 1), -1, -1), JSM.SectorPolygonPosition.IntersectionOnePoint);
-	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1), new JSM.Coord2D (-1.0, 0.5), -1, -1), JSM.SectorPolygonPosition.IntersectionOnePoint);
+	test.AssertEqual (polygon.SectorPosition (GetSector (-1.0, 0.5, 1, 1), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnePoint);
+	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1), new JSM.Coord2D (-1.0, 0.5), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnePoint);
 });
 
 polygonSectorTest.AddTest ('PolygonSectorPositionTest02', function (test)
@@ -1072,19 +1076,19 @@ polygonSectorTest.AddTest ('PolygonSectorPositionTest02', function (test)
 	polygon.AddVertex (1.0, 1.0);
 	polygon.AddVertex (0.0, 1.0);
 	
-	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 0.5, 0.5), -1, -1), JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.AssertEqual (polygon.SectorPosition (GetSector (0.5, 0.5, 0, 0), -1, -1), JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 0.5, 0.5), 0, -1), JSM.SectorPolygonPosition.NoIntersection);
-	test.AssertEqual (polygon.SectorPosition (GetSector (0.5, 0.5, 0, 0), 0, -1), JSM.SectorPolygonPosition.NoIntersection);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 0.5, 0.5), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0.5, 0.5, 0, 0), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 0.5, 0.5), 0, -1), JSM.SectorPolygonPosition2D.NoIntersection);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0.5, 0.5, 0, 0), 0, -1), JSM.SectorPolygonPosition2D.NoIntersection);
 
-	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 1, 1), -1, -1), JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 0, 0), -1, -1), JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 1, 1), 0, -1), JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 0, 0), 0, -1), JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 1, 1), 0, 1), JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 0, 0), 0, 1), JSM.SectorPolygonPosition.IntersectionOnVertex);
-	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 1, 1), 0, 2), JSM.SectorPolygonPosition.NoIntersection);
-	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 0, 0), 0, 2), JSM.SectorPolygonPosition.NoIntersection);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 1, 1), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 0, 0), -1, -1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 1, 1), 0, -1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 0, 0), 0, -1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 1, 1), 0, 1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 0, 0), 0, 1), JSM.SectorPolygonPosition2D.IntersectionOnVertex);
+	test.AssertEqual (polygon.SectorPosition (GetSector (0, 0, 1, 1), 0, 2), JSM.SectorPolygonPosition2D.NoIntersection);
+	test.AssertEqual (polygon.SectorPosition (GetSector (1, 1, 0, 0), 0, 2), JSM.SectorPolygonPosition2D.NoIntersection);
 });
 
 var polygonSuite = unitTest.AddTestSuite ('ContourPolygonTest');

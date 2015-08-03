@@ -13,22 +13,6 @@ JSM.CoordSectorPosition2D = {
 };
 
 /**
-* Enum: OldSectorSectorPosition2D
-* Description: Position of two sectors.
-* Values:
-*	{SectorsDontIntersect} sectors do not intersect
-*	{SectorsIntersectCoincident} sectors intersect coincident
-*	{SectorsIntersectEndPoint} sectors intersect at end point
-*	{SectorsIntersectOnePoint} sectors intersect one point
-*/
-JSM.OldSectorSectorPosition2D = {
-	SectorsDontIntersect : 0,
-	SectorsIntersectCoincident : 1,
-	SectorsIntersectEndPoint : 2,
-	SectorsIntersectOnePoint : 3
-};
-
-/**
 * Enum: SectorSectorPosition2D
 * Description: Position of two sectors.
 * Values:
@@ -137,81 +121,6 @@ JSM.Sector2D.prototype.CoordPosition = function (coord)
 	}
 
 	return JSM.CoordSectorPosition2D.CoordInsideOfSector;
-};
-
-/**
-* Function: Sector2D.OldSectorPosition
-* Description: Calculates the position of the sector and the given sector.
-* Parameters:
-*	sector {Sector2D} the sector
-*	intersection {Coord2D} (out) the intersection point if it exists
-* Returns:
-*	{OldSectorSectorPosition2D} the result
-*/
-JSM.Sector2D.prototype.OldSectorPosition = function (sector, intersection)
-{
-	var aSector = this;
-	var bSector = sector;
-	
-	var x1 = aSector.beg.x;
-	var y1 = aSector.beg.y;
-	var x2 = aSector.end.x;
-	var y2 = aSector.end.y;
-	var x3 = bSector.beg.x;
-	var y3 = bSector.beg.y;
-	var x4 = bSector.end.x;
-	var y4 = bSector.end.y;
-	var ux = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3);
-	var uy = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3);
-
-	if (JSM.IsZero (ux) && JSM.IsZero (uy)) {
-		var aBeg = bSector.CoordPosition (aSector.beg);
-		var aEnd = bSector.CoordPosition (aSector.end);
-		var bBeg = aSector.CoordPosition (bSector.beg);
-		var bEnd = aSector.CoordPosition (bSector.end);
-		if (aBeg === JSM.CoordSectorPosition2D.CoordInsideOfSector || aEnd === JSM.CoordSectorPosition2D.CoordInsideOfSector || bBeg === JSM.CoordSectorPosition2D.CoordInsideOfSector || bEnd === JSM.CoordSectorPosition2D.CoordInsideOfSector) {
-			return JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident;
-		} else if (aBeg === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord && aEnd === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord && bBeg === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord && bEnd === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord) {
-			return JSM.OldSectorSectorPosition2D.SectorsIntersectCoincident;
-		} else if (aBeg === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord || aEnd === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord || bBeg === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord || bEnd === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord) {
-			if (intersection !== undefined) {
-				if (aBeg === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord) {
-					intersection = aSector.beg.Clone ();
-				} else if (aEnd === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord) {
-					intersection = aSector.end.Clone ();
-				} else if (bBeg === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord) {
-					intersection = bSector.beg.Clone ();
-				} else if (bEnd === JSM.CoordSectorPosition2D.CoordOnSectorEndCoord) {
-					intersection = bSector.end.Clone ();
-				}
-			}
-			return JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint;
-		}
-
-		return JSM.OldSectorSectorPosition2D.SectorsDontIntersect;
-	}
-
-	var denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
-	if (JSM.IsZero (denom)) {
-		return JSM.OldSectorSectorPosition2D.SectorsDontIntersect;
-	}
-
-	ux /= denom;
-	uy /= denom;
-	if (JSM.IsLower (ux, 0.0) || JSM.IsGreater (ux, 1.0) || JSM.IsLower (uy, 0.0) || JSM.IsGreater (uy, 1.0)) {
-		return JSM.OldSectorSectorPosition2D.SectorsDontIntersect;
-	}
-
-	if (intersection !== undefined) {
-		intersection.x = x1 + ux * (x2 - x1);
-		intersection.y = y1 + ux * (y2 - y1);
-	}
-
-	if (JSM.IsEqual (ux, 0.0) || JSM.IsEqual (ux, 1.0) || JSM.IsEqual (uy, 0.0) || JSM.IsEqual (uy, 1.0)) {
-		return JSM.OldSectorSectorPosition2D.SectorsIntersectEndPoint;
-	}
-
-	return JSM.OldSectorSectorPosition2D.SectorsIntersectOnePoint;
 };
 
 /**
