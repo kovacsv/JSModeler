@@ -34,7 +34,7 @@
 				return;
 			}
 
-			var modelAndMaterials = JSM.SvgToModel (svgObjects[index], 8, 5);
+			var modelAndMaterials = JSM.SvgToModel (svgObjects[index], 8, 5, null);
 			var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1]);
 			viewer.AddMeshes (meshes);
 

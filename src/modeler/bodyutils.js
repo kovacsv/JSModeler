@@ -133,6 +133,45 @@ JSM.CalculateBodyVertexNormals = function (body)
 };
 
 /**
+* Function: CalculatePolygonCurveGroups
+* Description: Calculates the curve groups for a given polygon.
+* Parameters:
+*	polygon {Polygon} the polygon
+*	curveAngle {number} the curve angle
+* Returns:
+*	{integer[*]} the curve groups
+*/
+JSM.CalculatePolygonCurveGroups = function (polygon, curveAngle)
+{
+	var curveGroups = [];
+	var count = polygon.VertexCount ();
+
+	var i, prev;
+	for (i = 0; i < count; i++) {
+		curveGroups.push (0);
+	}
+
+	for (i = 0; i < count; i++) {
+		prev = curveGroups[polygon.GetPrevVertex (i)];
+		if (polygon.GetVertexAngle (i) > curveAngle) {
+			curveGroups[i] = prev;
+		} else {
+			curveGroups[i] = prev + 1;
+		}
+	}
+	
+	var firstGroup = curveGroups[0];
+	var lastGroup = curveGroups[count - 1];
+	if (firstGroup === 0 && firstGroup != lastGroup) {
+		for (i = 0; curveGroups[i] == firstGroup; i++) {
+			curveGroups[i] = lastGroup;
+		}
+	}
+	
+	return curveGroups;
+};
+
+/**
 * Function: MakeBodyInsideOut
 * Description: Reverses all polygons orientation in the body.
 * Parameters:

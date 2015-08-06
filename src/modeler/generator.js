@@ -784,28 +784,41 @@ JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, with
 *	direction {Vector} the vector of the offset
 *	height {number} the height of the prism
 *	withTopAndBottom {boolean} generate top and bottom polygons
+*	curveAngle {number} if not null, defines the curve angle of the prism
 * Returns:
 *	{Body} the result
 */
-JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
+JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom, curveAngle)
 {
 	var result = new JSM.Body ();
-	var count = basePolygon.length;
+	
+	var polygon = new JSM.Polygon ();
+	polygon.FromArray (basePolygon);
+	var count = polygon.VertexCount ();
+
+	var curveGroups = null;
+	if (curveAngle !== undefined && curveAngle !== null) {
+		curveGroups = JSM.CalculatePolygonCurveGroups (polygon, curveAngle);
+	}
 
 	var i;
 	for (i = 0; i < count; i++) {
-		result.AddVertex (new JSM.BodyVertex (basePolygon[i]));
-		result.AddVertex (new JSM.BodyVertex (basePolygon[i].Clone ().Offset (direction, height)));
+		result.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i).Clone ()));
+		result.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i).Clone ().Clone ().Offset (direction, height)));
 	}
 
-	var current, next;
+	var current, next, bodyPolygon;
 	for (i = 0; i < count; i++) {
 		current = 2 * i;
 		next = current + 2;
 		if (i === count - 1) {
 			next = 0;
 		}
-		result.AddPolygon (new JSM.BodyPolygon ([current, next, next + 1, current + 1]));
+		bodyPolygon = new JSM.BodyPolygon ([current, next, next + 1, current + 1]);
+		if (curveGroups !== null) {
+			bodyPolygon.SetCurveGroup (curveGroups[i]);
+		}
+		result.AddPolygon (bodyPolygon);
 	}
 
 	if (withTopAndBottom) {
@@ -819,44 +832,14 @@ JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
 		result.AddPolygon (bottomPolygon);
 	}
 
-	var firstDirection = JSM.CoordSub (basePolygon[1], basePolygon[0]).Normalize ();
-	var origo = new JSM.Coord (basePolygon[0].x, basePolygon[0].y, basePolygon[0].z);
+	var origo = polygon.GetVertex (0).Clone ();
+	var firtVertex = polygon.GetVertex (1).Clone ();
+	var firstDirection = JSM.CoordSub (firtVertex, origo).Normalize ();
 	var e3 = direction.Clone ().Normalize ();
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
 	result.SetCubicTextureProjection (origo, e1, e2, e3);
-	return result;
-};
-
-/**
-* Function: GenerateCurvedPrism
-* Description: Same as GeneratePrism, but curve groups can be defined for all sides.
-* Parameters:
-*	basePolygon {Coord[*]} the base polygon
-*	curveGroups {integer[*]} the curve groups
-*	direction {Vector} the vector of the offset
-*	height {number} the height of the prism
-*	withTopAndBottom {boolean} generate top and bottom polygons
-* Returns:
-*	{Body} the result
-*/
-JSM.GenerateCurvedPrism = function (basePolygon, curveGroups, direction, height, withTopAndBottom)
-{
-	var result = JSM.GeneratePrism (basePolygon, direction, height, withTopAndBottom);
-	if (curveGroups === undefined || curveGroups === null) {
-		return result;
-	}
-	
-	if (basePolygon.length != curveGroups.length) {
-		return result;
-	}
-	
-	var i, current;
-	for (i = 0; i < basePolygon.length; i++) {
-		current = curveGroups[i];
-		result.GetPolygon (i).SetCurveGroup (current);
-	}
 	return result;
 };
 
@@ -871,10 +854,11 @@ JSM.GenerateCurvedPrism = function (basePolygon, curveGroups, direction, height,
 *	direction {Vector} the vector of the offset
 *	height {number} the height of the prism
 *	withTopAndBottom {boolean} generate top and bottom polygons
+*	curveAngle {number} if not null, defines the curve angle of the prism
 * Returns:
 *	{Body} the result
 */
-JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAndBottom)
+JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAndBottom, curveAngle)
 {
 	function AddVertices (contourPolygon, direction, height, result)
 	{
@@ -890,12 +874,17 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 		}
 	}
 
-	function AddContours (contourPolygon, contourOffsets, result)
+	function AddContours (contourPolygon, contourOffsets, curveAngle, result)
 	{
 		var offset = 0;
-		var i, j, contour, vertexCount, current, next;
+
+		var i, j, contour, vertexCount, current, next, bodyPolygon, curveGroups;
 		for (i = 0; i < contourPolygon.ContourCount (); i++) {
 			contour = contourPolygon.GetContour (i);
+			curveGroups = null;
+			if (curveAngle !== undefined && curveAngle !== null) {
+				curveGroups = JSM.CalculatePolygonCurveGroups (contour, curveAngle);
+			}		
 			vertexCount = contour.VertexCount ();
 			contourOffsets.push (offset);
 			for (j = 0; j < vertexCount; j++) {
@@ -904,7 +893,11 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 				if (j == vertexCount - 1) {
 					next = 2 *  offset;
 				}
-				result.AddPolygon (new JSM.BodyPolygon ([current, next, next + 1, current + 1]));
+				bodyPolygon = new JSM.BodyPolygon ([current, next, next + 1, current + 1]);
+				if (curveGroups !== null) {
+					bodyPolygon.SetCurveGroup (curveGroups[j]);
+				}
+				result.AddPolygon (bodyPolygon);
 			}
 			offset += vertexCount;
 		}
@@ -946,7 +939,7 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 	var contourPolygon = new JSM.ContourPolygon ();
 	contourPolygon.FromArray (basePolygon);
 	AddVertices (contourPolygon, direction, height, result);
-	AddContours (contourPolygon, contourOffsets, result);
+	AddContours (contourPolygon, contourOffsets, curveAngle, result);
 
 	if (withTopAndBottom) {
 		AddTopBottomPolygons (contourPolygon, contourOffsets);
@@ -959,41 +952,6 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 	var e1 = JSM.VectorCross (e2, e3);
 
 	result.SetCubicTextureProjection (origo, e1, e2, e3);
-	return result;
-};
-
-/**
-* Function: GenerateCurvedPrismWithHole
-* Description: Same as GeneratePrismWithHole, but curve groups can be defined for all sides.
-* Parameters:
-*	basePolygon {Coord[*]} the base polygon which can contain null values
-*	direction {Vector} the vector of the offset
-*	height {number} the height of the prism
-*	withTopAndBottom {boolean} generate top and bottom polygons
-* Returns:
-*	{Body} the result
-*/
-JSM.GenerateCurvedPrismWithHole = function (basePolygon, curveGroups, direction, height, withTopAndBottom)
-{
-	var result = JSM.GeneratePrismWithHole (basePolygon, direction, height, withTopAndBottom);
-	if (curveGroups === undefined || curveGroups === null) {
-		return result;
-	}
-	
-	if (basePolygon.length != curveGroups.length) {
-		return result;
-	}
-	
-	var index = 0;
-	var i, current;
-	for (i = 0; i < basePolygon.length; i++) {
-		current = curveGroups[i];
-		if (current === null) {
-			continue;
-		}
-		result.GetPolygon (index).SetCurveGroup (current);
-		index++;
-	}
 	return result;
 };
 

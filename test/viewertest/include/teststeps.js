@@ -203,8 +203,8 @@ function TestStep (viewer, mode, step, info)
 		];
 		var direction = new JSM.Coord (0.0, 0.0, 1.0);
 		
-		var body1 = JSM.GeneratePrism (basePolygon, direction, 1.0, true);
-		var body2 = JSM.GeneratePrism (basePolygon, direction, 1.2, false);
+		var body1 = JSM.GeneratePrism (basePolygon, direction, 1.0, true, null);
+		var body2 = JSM.GeneratePrism (basePolygon, direction, 1.2, false, null);
 		OffsetTwoBodies (body1, body2, 0.6, 0.0, 0.0);
 		
 		model.AddBody (body1);
@@ -622,22 +622,22 @@ function TestStep (viewer, mode, step, info)
 		];
 		var direction = new JSM.Coord (0.0, 0.0, 1.0);
 
-		var body1 = JSM.GeneratePrism (basePolygon, direction, 1.0, true);
+		var body1 = JSM.GeneratePrism (basePolygon, direction, 1.0, true, null);
 		body1.GetPolygon (3).SetMaterialIndex (0);	
 		body1.GetPolygon (5).SetMaterialIndex (1);	
 		body1 = JSM.CatmullClarkSubdivision (body1, 1);
 
-		var body2 = JSM.GeneratePrism (basePolygon, direction, 1.0, true);
+		var body2 = JSM.GeneratePrism (basePolygon, direction, 1.0, true, null);
 		body2.GetPolygon (3).SetMaterialIndex (0);	
 		body2.GetPolygon (5).SetMaterialIndex (1);
 		body2 = JSM.CatmullClarkSubdivision (body2, 2);
 
-		var body3 = JSM.GeneratePrism (basePolygon, direction, 1.0, true);
+		var body3 = JSM.GeneratePrism (basePolygon, direction, 1.0, true, null);
 		body3.GetPolygon (3).SetMaterialIndex (0);	
 		body3.GetPolygon (5).SetMaterialIndex (1);	
 		body3 = JSM.CatmullClarkSubdivision (body3, 3);
 
-		var body4 = JSM.GeneratePrism (basePolygon, direction, 1.0, true);
+		var body4 = JSM.GeneratePrism (basePolygon, direction, 1.0, true, null);
 		body4.GetPolygon (3).SetMaterialIndex (0);	
 		body4.GetPolygon (5).SetMaterialIndex (1);	
 		body4 = JSM.CatmullClarkSubdivision (body4, 4);
@@ -892,19 +892,8 @@ function TestStep (viewer, mode, step, info)
 			new JSM.Coord (-0.1, 0.4, 0)
 		];
 		
-		var curveGroups = [
-			-1,
-			0,
-			0,
-			0,
-			-1,
-			1,
-			1,
-			1
-		];
-		
 		var direction = new JSM.Vector (0.0, 0.0, 1.0);
-		var body1 = JSM.GenerateCurvedPrism (basePoints, curveGroups, direction, 0.3, true);
+		var body1 = JSM.GeneratePrism (basePoints, direction, 0.3, true, 160 * JSM.DegRad);
 		
 		var basePoints = [
 			new JSM.Coord (0, 0, 0),
@@ -926,28 +915,8 @@ function TestStep (viewer, mode, step, info)
 			new JSM.Coord (0.8, 0.2, 0)
 		];
 		
-		var curveGroups = [
-			-1,
-			0,
-			0,
-			0,
-			-1,
-			1,
-			1,
-			1,
-			null,
-			0,
-			0,
-			0,
-			-1,
-			0,
-			0,
-			0,
-			-1
-		];
-		
 		var direction = new JSM.Vector (0.0, 0.0, 1.0);
-		var body2 = JSM.GenerateCurvedPrismWithHole (basePoints, curveGroups, direction, 0.3, true);
+		var body2 = JSM.GeneratePrismWithHole (basePoints, direction, 0.3, true, 150 * JSM.DegRad);
 
 		OffsetTwoBodies (body1, body2, 0.8, 0.0, 0.0);
 

@@ -71,7 +71,7 @@ JSM.GenerateLegoBrick = function (rows, columns, isLarge, hasTopCylinders, hasBo
 		basePolygon[i].z = unitHeight - wallWidth;
 	}
 	
-	var top = JSM.GeneratePrism (basePolygon, normal, wallWidth, true);
+	var top = JSM.GeneratePrism (basePolygon, normal, wallWidth, true, null);
 	result.Merge (top);
 	
 	var cylinderCenter, cylinder;

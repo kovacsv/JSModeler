@@ -5,10 +5,11 @@
 *	svgObject {html svg element} the svg element
 *	height {number} the height of the result body
 *	segmentLength {number} the maximum length of curved segments
+*	curveAngle {number} if not null, defines the curve angle of the model
 * Returns:
 *	{Body} the result
 */
-JSM.SvgToModel = function (svgObject, height, segmentLength)
+JSM.SvgToModel = function (svgObject, height, segmentLength, curveAngle)
 {
 	function SegmentElem (elem, segmentLength)
 	{
@@ -291,7 +292,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 		return result;
 	}
 	
-	function ContourPolygonToPrisms (polygon, height)
+	function ContourPolygonToPrisms (polygon, height, curveAngle)
 	{
 		function CreateBasePolygon (polygon, orientation)
 		{
@@ -346,7 +347,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 		if (contourCount == 1) {
 			baseOrientation = polygon.GetContour (0).GetOrientation ();
 			basePolygon = CreateBasePolygon (polygon.GetContour (0), baseOrientation);
-			prism = JSM.GeneratePrism (basePolygon, direction, currentHeight, true);
+			prism = JSM.GeneratePrism (basePolygon, direction, currentHeight, true, curveAngle);
 			prisms.push (prism);
 		} else if (contourCount > 1) {
 			baseOrientation = polygon.GetContour (0).GetOrientation ();
@@ -358,7 +359,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 				orientation = polygon.GetContour (i).GetOrientation ();
 				if (orientation == baseOrientation) {
 					basePolygon = CreateBasePolygon (polygon.GetContour (i), baseOrientation);
-					prism = JSM.GeneratePrism (basePolygon, direction, currentHeight, true);
+					prism = JSM.GeneratePrism (basePolygon, direction, currentHeight, true, curveAngle);
 					prisms.push (prism);
 				} else {
 					AddHoleToBasePolygon (holeBasePolygon, polygon.GetContour (i), orientation);
@@ -367,10 +368,10 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 			}
 			
 			if (!hasHoles) {
-				prism = JSM.GeneratePrism (holeBasePolygon, direction, currentHeight, true);
+				prism = JSM.GeneratePrism (holeBasePolygon, direction, currentHeight, true, curveAngle);
 				prisms.push (prism);
 			} else {
-				prism = JSM.GeneratePrismWithHole (holeBasePolygon, direction, currentHeight, true);
+				prism = JSM.GeneratePrismWithHole (holeBasePolygon, direction, currentHeight, true, curveAngle);
 				prisms.push (prism);
 			}
 		}
@@ -390,7 +391,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength)
 	
 	var i, j, prismsAndMaterial, currentPrisms, currentPrism, currentMaterial;
 	for (i = 0; i < polygons.length; i++) {
-		prismsAndMaterial = ContourPolygonToPrisms (polygons[i], currentHeight);
+		prismsAndMaterial = ContourPolygonToPrisms (polygons[i], currentHeight, curveAngle);
 		currentPrisms = prismsAndMaterial[0];
 		currentMaterial = prismsAndMaterial[1];
 		materials.AddMaterial (currentMaterial);

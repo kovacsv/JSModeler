@@ -387,7 +387,8 @@ JSM.PrismGenerator = function ()
 		]], 'left'),
 		direction : new JSM.Parameter ('direction', 'coord', new JSM.Coord (0.0, 0.0, 1.0), 'right'),
 		height : new JSM.Parameter ('height', 'number', 1.0, 'right'),
-		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', true, 'right')
+		withTopAndBottom : new JSM.Parameter ('top and bottom', 'check', true, 'right'),
+		curveAngle : new JSM.Parameter ('curve angle', 'number', 150, 'right')
 	};
 };
 
@@ -420,7 +421,8 @@ JSM.PrismGenerator.prototype.Generate = function ()
 		basePolygon,
 		this.parameters.direction.value,
 		this.parameters.height.value,
-		this.parameters.withTopAndBottom.value
+		this.parameters.withTopAndBottom.value,
+		this.parameters.curveAngle.value * JSM.DegRad
 	);
 };
 

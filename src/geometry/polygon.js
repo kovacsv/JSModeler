@@ -4,7 +4,9 @@
 */
 JSM.Polygon = function ()
 {
-	this.vertices = [];
+	this.vertices = null;
+	this.cache = null;
+	this.Clear ();
 };
 
 /**
@@ -29,6 +31,7 @@ JSM.Polygon.prototype.AddVertex = function (x, y, z)
 JSM.Polygon.prototype.AddVertexCoord = function (coord)
 {
 	this.vertices.push (coord);
+	this.ClearCache ();
 };
 
 /**
@@ -45,20 +48,6 @@ JSM.Polygon.prototype.GetVertex = function (index)
 };
 
 /**
-* Function: Polygon.SetVertex
-* Description: Modifies the coordinates of an existing vertex.
-* Parameters:
-*	index {integer} the index of the vertex
-*	x {number} the x coordinate of the vertex
-*	y {number} the y coordinate of the vertex
-*	z {number} the z coordinate of the vertex
-*/
-JSM.Polygon.prototype.SetVertex = function (index, x, y, z)
-{
-	this.vertices[index].Set (x, y, z);
-};
-
-/**
 * Function: Polygon.VertexCount
 * Description: Returns the vertex count of the polygon.
 * Returns:
@@ -70,6 +59,52 @@ JSM.Polygon.prototype.VertexCount = function ()
 };
 
 /**
+* Function: Polygon.GetNextVertex
+* Description: Returns the vertex index after the given one.
+* Parameters:
+*	index {integer} the vertex index
+* Returns:
+*	{integer} the result
+*/
+JSM.Polygon.prototype.GetNextVertex = function (index)
+{
+	var count = this.vertices.length;
+	return (index < count - 1 ? index + 1 : 0);
+};
+
+/**
+* Function: Polygon.GetVertexAngle
+* Description: Returns the angle of the given vertex.
+* Parameters:
+*	index {integer} the vertex index
+* Returns:
+*	{number} the result
+*/
+JSM.Polygon.prototype.GetVertexAngle = function (index)
+{
+	var prev = this.vertices[this.GetPrevVertex (index)];
+	var curr = this.vertices[index];
+	var next = this.vertices[this.GetNextVertex (index)];
+	var prevDir = JSM.CoordSub (prev, curr);
+	var nextDir = JSM.CoordSub (next, curr);
+	return prevDir.AngleTo (nextDir);
+};
+
+/**
+* Function: Polygon.GetPrevVertex
+* Description: Returns the vertex index before the given one.
+* Parameters:
+*	index {integer} the vertex index
+* Returns:
+*	{integer} the result
+*/
+JSM.Polygon.prototype.GetPrevVertex = function (index)
+{
+	var count = this.vertices.length;
+	return (index > 0 ? index - 1 : count - 1);
+};
+
+/**
 * Function: Polygon.GetNormal
 * Description: Calculates the normal vector of the polygon.
 * Returns:
@@ -77,7 +112,12 @@ JSM.Polygon.prototype.VertexCount = function ()
 */
 JSM.Polygon.prototype.GetNormal = function ()
 {
-	return JSM.CalculateNormal (this.vertices);
+	if (this.cache.normal !== null) {
+		return this.cache.normal;
+	}
+	var result = JSM.CalculateNormal (this.vertices);
+	this.cache.normal = result;
+	return result;
 };
 
 /**
@@ -138,6 +178,18 @@ JSM.Polygon.prototype.FromArray = function (vertices)
 JSM.Polygon.prototype.Clear = function ()
 {
 	this.vertices = [];
+	this.ClearCache ();
+};
+
+/**
+* Function: Polygon.ClearCache
+* Description: Clears stored values from the polygon.
+*/
+JSM.Polygon.prototype.ClearCache = function ()
+{
+	this.cache = {
+		normal : null
+	};
 };
 
 /**
@@ -434,9 +486,9 @@ JSM.OffsetPolygonContour = function (polygon, width)
 	
 	var i, angle;
 	for (i = 0; i < count; i++) {
-		prev = (i === 0 ? count - 1 : i - 1);
+		prev = polygon.GetPrevVertex (i);
 		curr = i;
-		next = (i === count - 1 ? 0 : i + 1);
+		next = polygon.GetNextVertex (i);
 		
 		prevVertex = polygon.GetVertex (prev);
 		currVertex = polygon.GetVertex (curr);

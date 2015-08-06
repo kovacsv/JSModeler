@@ -2056,19 +2056,37 @@
 								["Coord", "the vertex"]
 							]
 						},
-						"SetVertex" : {
-							"description" : "Modifies the coordinates of an existing vertex.",
-							"parameters" : [
-								["index", "integer", "the index of the vertex"],
-								["x", "number", "the x coordinate of the vertex"],
-								["y", "number", "the y coordinate of the vertex"],
-								["z", "number", "the z coordinate of the vertex"]
-							]
-						},
 						"VertexCount" : {
 							"description" : "Returns the vertex count of the polygon.",
 							"returns" : [
 								["integer", "vertex count"]
+							]
+						},
+						"GetNextVertex" : {
+							"description" : "Returns the vertex index after the given one.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetVertexAngle" : {
+							"description" : "Returns the angle of the given vertex.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"GetPrevVertex" : {
+							"description" : "Returns the vertex index before the given one.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["integer", "the result"]
 							]
 						},
 						"GetNormal" : {
@@ -2097,6 +2115,9 @@
 						},
 						"Clear" : {
 							"description" : "Makes the polygon empty."
+						},
+						"ClearCache" : {
+							"description" : "Clears stored values from the polygon."
 						},
 						"Clone" : {
 							"description" : "Clones the polygon.",
@@ -2709,6 +2730,16 @@
 						["Vector[*][*]", "the result"]
 					]
 				},
+				"CalculatePolygonCurveGroups" : {
+					"description" : "Calculates the curve groups for a given polygon.",
+					"parameters" : [
+						["polygon", "Polygon", "the polygon"],
+						["curveAngle", "number", "the curve angle"]
+					],
+					"returns" : [
+						["integer[*]", "the curve groups"]
+					]
+				},
 				"MakeBodyInsideOut" : {
 					"description" : "Reverses all polygons orientation in the body.",
 					"parameters" : [
@@ -3024,20 +3055,8 @@
 						["basePolygon", "Coord[*]", "the base polygon"],
 						["direction", "Vector", "the vector of the offset"],
 						["height", "number", "the height of the prism"],
-						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
-					],
-					"returns" : [
-						["Body", "the result"]
-					]
-				},
-				"GenerateCurvedPrism" : {
-					"description" : "Same as GeneratePrism, but curve groups can be defined for all sides.",
-					"parameters" : [
-						["basePolygon", "Coord[*]", "the base polygon"],
-						["curveGroups", "integer[*]", "the curve groups"],
-						["direction", "Vector", "the vector of the offset"],
-						["height", "number", "the height of the prism"],
-						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
+						["curveAngle", "number", "if not null, defines the curve angle of the prism"]
 					],
 					"returns" : [
 						["Body", "the result"]
@@ -3049,19 +3068,8 @@
 						["basePolygon", "Coord[*]", "the base polygon which can contain null values"],
 						["direction", "Vector", "the vector of the offset"],
 						["height", "number", "the height of the prism"],
-						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
-					],
-					"returns" : [
-						["Body", "the result"]
-					]
-				},
-				"GenerateCurvedPrismWithHole" : {
-					"description" : "Same as GeneratePrismWithHole, but curve groups can be defined for all sides.",
-					"parameters" : [
-						["basePolygon", "Coord[*]", "the base polygon which can contain null values"],
-						["direction", "Vector", "the vector of the offset"],
-						["height", "number", "the height of the prism"],
-						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
+						["curveAngle", "number", "if not null, defines the curve angle of the prism"]
 					],
 					"returns" : [
 						["Body", "the result"]
@@ -4470,7 +4478,8 @@
 					"parameters" : [
 						["svgObject", "html svg element", "the svg element"],
 						["height", "number", "the height of the result body"],
-						["segmentLength", "number", "the maximum length of curved segments"]
+						["segmentLength", "number", "the maximum length of curved segments"],
+						["curveAngle", "number", "if not null, defines the curve angle of the model"]
 					],
 					"returns" : [
 						["Body", "the result"]

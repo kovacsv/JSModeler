@@ -400,6 +400,29 @@ simpleSuite.AddTest ('ComplexityTest', function (test)
 	test.AssertEqual (polygon6.GetComplexity (), JSM.Complexity.Convex);
 });
 
+simpleSuite.AddTest ('VertexAngleTest', function (test)
+{
+	var polygon = new JSM.Polygon ();
+	polygon.AddVertex (0, 0, 0);
+	polygon.AddVertex (2, 0, 0);
+	polygon.AddVertex (2, 2, 0);
+	polygon.AddVertex (1, 2, 0);
+	polygon.AddVertex (1, 1, 0);
+	polygon.AddVertex (0, 1, 0);
+	var i;
+	for (i = 0; i < polygon.VertexCount (); i++) {
+		test.AssertEqualNum (polygon.GetVertexAngle (i), Math.PI / 2.0, JSM.Eps);
+	}
+	
+	var circle = JSM.GenerateCirclePoints (1, 20, new JSM.Coord (0, 0, 0));
+	polygon.FromArray (circle);
+	test.AssertEqual (polygon.VertexCount (), 20);
+	var angleSum = (20 - 2) * Math.PI;
+	for (i = 0; i < polygon.VertexCount (); i++) {
+		test.AssertEqualNum (polygon.GetVertexAngle (i), angleSum / 20.0, JSM.Eps);
+	}
+});
+
 simpleSuite.AddTest ('FromToArrayTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();

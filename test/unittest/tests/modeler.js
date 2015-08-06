@@ -845,7 +845,7 @@ generatorSuite.AddTest ('GeneratePrismTest', function (test)
 	];
 	
 	var direction = new JSM.Vector (0.0, 0.0, 1.0);
-	var prism = JSM.GeneratePrism (basePoints, direction, 1.0, true);
+	var prism = JSM.GeneratePrism (basePoints, direction, 1.0, true, null);
 	test.Assert (prism.VertexCount () == 10 && prism.PolygonCount () == 7);
 	test.Assert (JSM.CheckSolidBody (prism));
 	test.Assert (prism.GetVertex (0).position.IsEqual (new JSM.Vector (0.0, 0.0, 0.0)));
@@ -873,7 +873,7 @@ generatorSuite.AddTest ('GeneratePrismTest', function (test)
 	];
 	
 	var direction2 = new JSM.Vector (0.0, 0.0, 1.0);
-	var prism2 = JSM.GeneratePrism (basePoints2, direction2, 1.0, true);
+	var prism2 = JSM.GeneratePrism (basePoints2, direction2, 1.0, true, null);
 	test.Assert (JSM.CheckSolidBody (prism2));
 
 	var vertexNormals = JSM.CalculateBodyVertexNormals (prism2);

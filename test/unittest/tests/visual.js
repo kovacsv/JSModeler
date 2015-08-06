@@ -88,7 +88,7 @@ visualSuite.AddTest ('DrawingTest', function (test)
 	];
 	
 	var direction = new JSM.Vector (0.0, 0.0, 1.0);
-	var body = JSM.GeneratePrism (basePoints, direction, 1.0, true);
+	var body = JSM.GeneratePrism (basePoints, direction, 1.0, true, null);
 
 	test.Assert (DrawAndCheck (body, 'Wireframe', 'drawing_wireframe.svg'));
 	test.Assert (DrawAndCheck (body, 'HiddenLinePainter', 'drawing_hiddenlinepainter.svg'));
@@ -121,7 +121,7 @@ visualSuite.AddTest ('CatmullClarkSubdivisionTest', function (test)
 	];
 	
 	var direction = new JSM.Vector (0.0, 0.0, 1.0);
-	var body = JSM.GeneratePrism (basePoints, direction, 1.0, true);
+	var body = JSM.GeneratePrism (basePoints, direction, 1.0, true, null);
 	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_00.svg'));
 	body = JSM.CatmullClarkSubdivisionOneIteration (body);
 	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_01.svg'));
@@ -207,7 +207,7 @@ visualSuite.AddTest ('GeneratorFunctionTest', function (test)
 	test.Assert (Test (JSM.GenerateLineShell (polyLine, new JSM.Vector (0, 0, 1), 1, 0.1, true, true), 'lineshell'));
 	test.Assert (Test (JSM.GeneratePie (0.5, 0.2, Math.PI * 3 / 2, 10, true, false), 'pie'));
 	test.Assert (Test (JSM.GeneratePolyTorus (polyLine2D, 0.5, 10, false), 'polytorus'));
-	test.Assert (Test (JSM.GeneratePrism (polyLine, new JSM.Vector (0, 0, 1), 1, true), 'prism'));
+	test.Assert (Test (JSM.GeneratePrism (polyLine, new JSM.Vector (0, 0, 1), 1, true, null), 'prism'));
 	test.Assert (Test (JSM.GeneratePrismShell (polyLine, new JSM.Vector (0, 0, 1), 1, 0.1, true), 'prismshell'));
 	test.Assert (Test (JSM.GenerateRectangle (1, 1), 'rectangle'));
 	test.Assert (Test (JSM.GenerateRevolved (polyLine2, new JSM.Sector (new JSM.Coord (0, 0, 0), new JSM.Coord (0, 1, 0)), Math.PI * 3 / 2, 10, true, 'None'), 'revolved1'));
