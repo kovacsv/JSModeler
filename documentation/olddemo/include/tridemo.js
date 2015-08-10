@@ -42,7 +42,7 @@ JSMTriangulationDemo.prototype =
 
 	DrawTriangulation : function (result)
 	{
-		if (result.length < 1) {
+		if (result === null || result.length < 1) {
 			return false;
 		}
 	
@@ -82,7 +82,7 @@ JSMTriangulationDemo.prototype =
 			polygon.AddVertex (current[0], current[1]);
 		}
 		
-		var result = JSM.PolygonTriangulate2D (polygon);
+		var result = JSM.TriangulatePolygon2D (polygon);
 		this.editor.Enable (false);
 		this.DrawTriangulation (result);
 		return true;

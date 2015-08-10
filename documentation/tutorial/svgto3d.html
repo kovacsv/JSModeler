@@ -30,7 +30,7 @@
 			}
 
 			var svgObject = document.getElementById ('svgid');
-			var modelAndMaterials = JSM.SvgToModel (svgObject, 8, 5);
+			var modelAndMaterials = JSM.SvgToModel (svgObject, 8, 5, null);
 			var model = modelAndMaterials[0];
 			var materials = modelAndMaterials[1];
 			var meshes = JSM.ConvertModelToThreeMeshes (model, materials);			
@@ -107,7 +107,7 @@ if (!viewer.Start (document.getElementById ('svgcanvas'), viewerSettings)) {
 }
 
 var svgObject = document.getElementById ('svgid');
-var modelAndMaterials = JSM.SvgToModel (svgObject, 8, 5);
+var modelAndMaterials = JSM.SvgToModel (svgObject, 8, 5, null);
 var model = modelAndMaterials[0];
 var materials = modelAndMaterials[1];
 var meshes = JSM.ConvertModelToThreeMeshes (model, materials);

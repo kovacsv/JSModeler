@@ -69,16 +69,22 @@ div.entrymark
 	float : left;
 }
 
+div.entrymark.enum
+{
+	color : #ffffff;
+	background : #008ab8;
+}
+
 div.entrymark.function
 {
 	color : #ffffff;
-	background : #279b61;
+	background : #cc3333;
 }
 
 div.entrymark.class
 {
 	color : #ffffff;
-	background : #cc3333;
+	background : #279b61;
 }
 
 div.entryname
