@@ -346,7 +346,7 @@ JSM.MatrixTranslation = function (x, y, z)
 */
 JSM.MatrixRotation = function (axis, angle, origo)
 {
-	var normal = JSM.VectorNormalize (axis);
+	var normal = axis.Clone ().Normalize ();
 
 	var u = normal.x;
 	var v = normal.y;
@@ -563,15 +563,15 @@ JSM.MatrixRotationZ = function (angle)
 */
 JSM.MatrixView = function (eye, center, up)
 {
-	if (JSM.CoordIsEqual (eye, center)) {
+	if (eye.IsEqual (center)) {
 		return JSM.MatrixIdentity ();
 	}
 	
 	var result = [];
 
-	var d = JSM.VectorNormalize (JSM.CoordSub (eye, center));
-	var v = JSM.VectorNormalize (JSM.VectorCross (up, d));
-	var u = JSM.VectorNormalize (JSM.VectorCross (d, v));
+	var d = JSM.CoordSub (eye, center).Normalize ();
+	var v = JSM.VectorCross (up, d).Normalize ();
+	var u = JSM.VectorCross (d, v).Normalize ();
 
 	result[0] = v.x;
 	result[1] = u.x;

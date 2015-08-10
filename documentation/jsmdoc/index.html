@@ -183,6 +183,27 @@
 			parentDiv.appendChild (indented);
 		}
 
+		function GenerateEnumDoc (entryArray, entryName, parentDiv)
+		{
+			parentDiv.appendChild (CreateElement ('div', 'doctitle1', entryName));
+			var indented = CreateElement ('div', 'moreindented')
+			var content = entryArray[entryName];
+			if (content.description !== undefined) {
+				indented.appendChild (CreateElement ('div', 'doccontent', content.description));
+			}
+			if (content.values !== undefined) {
+				indented.appendChild (CreateElement ('div', 'doctitle2', 'values'));
+				GenerateParameterTable (content.values, indented);
+			}
+			if (content.example !== undefined) {
+				indented.appendChild (CreateElement ('div', 'doctitle2', 'example'));
+				var example = CreateElement ('div', 'moreindented');
+				example.appendChild (CreateElement ('pre', 'example; brush: js; toolbar: false;', content.example));
+				indented.appendChild (example);
+			}
+			parentDiv.appendChild (indented);
+		}
+
 		function ShowFunction (entryArray, entryName)
 		{
 			var docDiv = document.getElementById ('documentation');
@@ -201,25 +222,38 @@
 			GenerateClassDoc (entryArray, entryName, docDiv);
 		}
 
+		function ShowEnum (entryArray, entryName)
+		{
+			var docDiv = document.getElementById ('documentation');
+			while (docDiv.lastChild) {
+				docDiv.removeChild (docDiv.lastChild);
+			}
+			GenerateEnumDoc (entryArray, entryName, docDiv);
+		}
+
 		function AddModule (module, parentDiv)
 		{
-			function AddEntry (entryArray, entryName, parentDiv, isFunction)
+			function AddEntry (entryArray, entryName, parentDiv, type)
 			{
 				var entryDiv = CreateElement ('div', 'entry');
 				entryDiv.onclick = function () {
 					window.location.hash = entryName;
 				}
-				if (isFunction) {
+				if (type == 'function') {
 					entryDiv.appendChild (CreateElement ('div', 'entrymark function', 'F'));
-				} else {
+				} else if (type == 'class') {
 					entryDiv.appendChild (CreateElement ('div', 'entrymark class', 'C'));
+				} else if (type == 'enum') {
+					entryDiv.appendChild (CreateElement ('div', 'entrymark enum', 'E'));
 				}
 
 				entryClickCommands[entryName] = function () {
-					if (isFunction) {
+					if (type == 'function') {
 						ShowFunction (entryArray, entryName);
-					} else {
+					} else if (type == 'class') {
 						ShowClass (entryArray, entryName);
+					} else if (type == 'enum') {
+						ShowEnum (entryArray, entryName);
 					}
 					SyntaxHighlighter.highlight ();
 				}
@@ -227,6 +261,20 @@
 				parentDiv.appendChild (entryDiv);
 			}
 			
+			if (module.enums !== undefined) {
+				var enumName;
+				
+				var enumNames = [];
+				for (enumName in module.enums) {
+					enumNames.push (enumName);
+				}
+				enumNames.sort ();
+				
+				var i;
+				for (i = 0; i < enumNames.length; i++) {
+					AddEntry (module.enums, enumNames[i], parentDiv, 'enum');
+				}
+			}
 			if (module.classes !== undefined) {
 				var className;
 				
@@ -237,7 +285,7 @@
 				classNames.sort ();
 
 				for (i = 0; i < classNames.length; i++) {
-					AddEntry (module.classes, classNames[i], parentDiv, false);
+					AddEntry (module.classes, classNames[i], parentDiv, 'class');
 				}
 			}
 			if (module.functions !== undefined) {
@@ -251,7 +299,7 @@
 				
 				var i;
 				for (i = 0; i < functionNames.length; i++) {
-					AddEntry (module.functions, functionNames[i], parentDiv, true);
+					AddEntry (module.functions, functionNames[i], parentDiv, 'function');
 				}
 			}
 		}	

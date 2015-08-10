@@ -11,7 +11,7 @@ extrasSuite.AddTest ('BezierCurveTest', function (test)
 		test.Assert (result.length == output.length);
 		var i;
 		for (i = 0; i < result.length; i++) {
-			test.Assert (JSM.CoordIsEqual2D (result[i], output[i]));
+			test.Assert (result[i].IsEqual (output[i]));
 		}
 	}
 

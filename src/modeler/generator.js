@@ -492,19 +492,19 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 
 	var result = GenerateIcosahedron ();
 	
-	var currentRadius = JSM.VectorLength (result.GetVertexPosition (0));
+	var currentRadius = result.GetVertexPosition (0).Length ();
 	var scale = radius / currentRadius;
 
 	var i, j, vertex;
 	for (i = 0; i < result.VertexCount (); i++) {
 		vertex = result.GetVertex (i);
-		vertex.SetPosition (JSM.VectorMultiply (vertex.GetPosition (), scale));
+		vertex.position.MultiplyScalar (scale);
 	}
 	
 	var iteration, oldVertexCoord, oldBody, adjacencyInfo;
 	var currentEdge, edgeVertexIndices;
 	var currentPgon, polygonVertexIndices;
-	var midCoord, edgeCoord, currentPolyEdge;
+	var edgeCoord, currentPolyEdge;
 	for (iteration = 0; iteration < iterations; iteration++) {
 		oldBody = result;
 		
@@ -518,9 +518,8 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 		edgeVertexIndices = [];
 		for (i = 0; i < adjacencyInfo.edges.length; i++) {
 			currentEdge = adjacencyInfo.edges[i];
-			midCoord = JSM.MidCoord (oldBody.GetVertexPosition (currentEdge.vert1), oldBody.GetVertexPosition (currentEdge.vert2));
-			edgeCoord = JSM.VectorMultiply (JSM.VectorNormalize (midCoord), radius);
-			edgeVertexIndices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));
+			edgeCoord = JSM.MidCoord (oldBody.GetVertexPosition (currentEdge.vert1), oldBody.GetVertexPosition (currentEdge.vert2));
+			edgeVertexIndices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord.SetLength (radius))));
 		}
 
 		for (i = 0; i < adjacencyInfo.pgons.length; i++) {
@@ -785,28 +784,41 @@ JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, with
 *	direction {Vector} the vector of the offset
 *	height {number} the height of the prism
 *	withTopAndBottom {boolean} generate top and bottom polygons
+*	curveAngle {number} if not null, defines the curve angle of the prism
 * Returns:
 *	{Body} the result
 */
-JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
+JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom, curveAngle)
 {
 	var result = new JSM.Body ();
-	var count = basePolygon.length;
+	
+	var polygon = new JSM.Polygon ();
+	polygon.FromArray (basePolygon);
+	var count = polygon.VertexCount ();
+
+	var curveGroups = null;
+	if (curveAngle !== undefined && curveAngle !== null) {
+		curveGroups = JSM.CalculatePolygonCurveGroups (polygon, curveAngle);
+	}
 
 	var i;
 	for (i = 0; i < count; i++) {
-		result.AddVertex (new JSM.BodyVertex (basePolygon[i]));
-		result.AddVertex (new JSM.BodyVertex (JSM.CoordOffset (basePolygon[i], direction, height)));
+		result.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i).Clone ()));
+		result.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i).Clone ().Clone ().Offset (direction, height)));
 	}
 
-	var current, next;
+	var current, next, bodyPolygon;
 	for (i = 0; i < count; i++) {
 		current = 2 * i;
 		next = current + 2;
 		if (i === count - 1) {
 			next = 0;
 		}
-		result.AddPolygon (new JSM.BodyPolygon ([current, next, next + 1, current + 1]));
+		bodyPolygon = new JSM.BodyPolygon ([current, next, next + 1, current + 1]);
+		if (curveGroups !== null) {
+			bodyPolygon.SetCurveGroup (curveGroups[i]);
+		}
+		result.AddPolygon (bodyPolygon);
 	}
 
 	if (withTopAndBottom) {
@@ -820,44 +832,14 @@ JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom)
 		result.AddPolygon (bottomPolygon);
 	}
 
-	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolygon[1], basePolygon[0]));
-	var origo = new JSM.Coord (basePolygon[0].x, basePolygon[0].y, basePolygon[0].z);
-	var e3 = JSM.VectorNormalize (direction);
+	var origo = polygon.GetVertex (0).Clone ();
+	var firtVertex = polygon.GetVertex (1).Clone ();
+	var firstDirection = JSM.CoordSub (firtVertex, origo).Normalize ();
+	var e3 = direction.Clone ().Normalize ();
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
 	result.SetCubicTextureProjection (origo, e1, e2, e3);
-	return result;
-};
-
-/**
-* Function: GenerateCurvedPrism
-* Description: Same as GeneratePrism, but curve groups can be defined for all sides.
-* Parameters:
-*	basePolygon {Coord[*]} the base polygon
-*	curveGroups {integer[*]} the curve groups
-*	direction {Vector} the vector of the offset
-*	height {number} the height of the prism
-*	withTopAndBottom {boolean} generate top and bottom polygons
-* Returns:
-*	{Body} the result
-*/
-JSM.GenerateCurvedPrism = function (basePolygon, curveGroups, direction, height, withTopAndBottom)
-{
-	var result = JSM.GeneratePrism (basePolygon, direction, height, withTopAndBottom);
-	if (curveGroups === undefined || curveGroups === null) {
-		return result;
-	}
-	
-	if (basePolygon.length != curveGroups.length) {
-		return result;
-	}
-	
-	var i, current;
-	for (i = 0; i < basePolygon.length; i++) {
-		current = curveGroups[i];
-		result.GetPolygon (i).SetCurveGroup (current);
-	}
 	return result;
 };
 
@@ -872,99 +854,80 @@ JSM.GenerateCurvedPrism = function (basePolygon, curveGroups, direction, height,
 *	direction {Vector} the vector of the offset
 *	height {number} the height of the prism
 *	withTopAndBottom {boolean} generate top and bottom polygons
+*	curveAngle {number} if not null, defines the curve angle of the prism
 * Returns:
 *	{Body} the result
 */
-JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAndBottom)
+JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAndBottom, curveAngle)
 {
-	function AddVertices ()
+	function AddVertices (contourPolygon, direction, height, result)
 	{
-		var i;
-		for (i = 0; i < basePolygon.length; i++) {
-			if (basePolygon[i] !== null) {
-				result.AddVertex (new JSM.BodyVertex (basePolygon[i]));
-				result.AddVertex (new JSM.BodyVertex (JSM.CoordOffset (basePolygon[i], direction, height)));
+		var i, j, contour, vertex1, vertex2;
+		for (i = 0; i < contourPolygon.ContourCount (); i++) {
+			contour = contourPolygon.GetContour (i);
+			for (j = 0; j < contour.VertexCount (); j++) {
+				vertex1 = contour.GetVertex (j).Clone ();
+				vertex2 = contour.GetVertex (j).Clone ().Offset (direction, height);
+				result.AddVertex (new JSM.BodyVertex (vertex1));
+				result.AddVertex (new JSM.BodyVertex (vertex2));
 			}
 		}
 	}
 
-	function GetContourEnds ()
+	function AddContours (contourPolygon, contourOffsets, curveAngle, result)
 	{
-		var contourCount = 0;
-		var contourEnds = [];
-		contourEnds.push (0);
-	
-		var i;
-		for (i = 0; i < basePolygon.length; i++) {
-			if (basePolygon[i] === null) {
-				contourEnds.push (i - contourCount);
-				contourCount = contourCount + 1;
-			}
-		}
-		contourEnds.push (i - contourCount);
-		return contourEnds;
-	}
+		var offset = 0;
 
-	function AddContourPolygons (contourIndex, contourEnds)
-	{
-		var i, current, next;
-		var from = contourEnds[contourIndex];
-		var to = contourEnds[contourIndex + 1];
-		for (i = from; i < to; i++) {
-			current = 2 * i;
-			next = current + 2;
-			if (i === to - 1) {
-				next = 2 * from;
+		var i, j, contour, vertexCount, current, next, bodyPolygon, curveGroups;
+		for (i = 0; i < contourPolygon.ContourCount (); i++) {
+			contour = contourPolygon.GetContour (i);
+			curveGroups = null;
+			if (curveAngle !== undefined && curveAngle !== null) {
+				curveGroups = JSM.CalculatePolygonCurveGroups (contour, curveAngle);
+			}		
+			vertexCount = contour.VertexCount ();
+			contourOffsets.push (offset);
+			for (j = 0; j < vertexCount; j++) {
+				current = 2 * offset + 2 * j;
+				next = current + 2;
+				if (j == vertexCount - 1) {
+					next = 2 *  offset;
+				}
+				bodyPolygon = new JSM.BodyPolygon ([current, next, next + 1, current + 1]);
+				if (curveGroups !== null) {
+					bodyPolygon.SetCurveGroup (curveGroups[j]);
+				}
+				result.AddPolygon (bodyPolygon);
 			}
-			result.AddPolygon (new JSM.BodyPolygon ([current, next, next + 1, current + 1]));
-		}
-	}
-
-	function AddContours ()
-	{
-		var contourEnds = GetContourEnds ();
-		var i;
-		for (i = 0; i < contourEnds.length - 1; i++) {
-			AddContourPolygons (i, contourEnds);
+			offset += vertexCount;
 		}
 	}
 	
-	function GetVertexMap ()
+	function AddTopBottomPolygons (contourPolygon, contourOffsets)
 	{
-		var contourCount = 0;
 		var vertexMap = [];
-	
-		var i;
-		for (i = 0; i < basePolygon.length; i++) {
-			if (basePolygon[i] === null) {
-				contourCount = contourCount + 1;
-			}
-			vertexMap.push (i - contourCount);
+		var contourPolygon2D = contourPolygon.ToContourPolygon2D ();
+		var simplePolygon = JSM.ConvertContourPolygonToPolygon2D (contourPolygon2D, vertexMap);
+		if (simplePolygon === null) {
+			return;
 		}
-		return vertexMap;
-	}
-
-	function AddTopBottomPolygons ()
-	{
-		var vertexMap = GetVertexMap ();
-
-		var polygonIndices = JSM.CreatePolygonWithHole (basePolygon);
-		var polygon = new JSM.Polygon ();
-		var i, j, vertex;
-		for (i = 0; i < polygonIndices.length; i++) {
-			vertex = basePolygon[polygonIndices[i]];
-			polygon.AddVertex (vertex.x, vertex.y, vertex.z);
+		
+		var triangles = JSM.TriangulatePolygon2D (simplePolygon);
+		if (triangles === null) {
+			return;
 		}
-		var triangles = JSM.PolygonTriangulate (polygon);
-
-		var triangle, topTriangle, bottomTriangle;
+		
+		var i, j, triangle, mapValue;
+		var topTriangle, bottomTriangle;
 		for (i = 0; i < triangles.length; i++) {
 			triangle = triangles[i];
 			topTriangle = new JSM.BodyPolygon ([]);
 			bottomTriangle = new JSM.BodyPolygon ([]);
 			for (j = 0; j < 3; j++) {
-				topTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[j]]] + 1);
-				bottomTriangle.AddVertexIndex (2 * vertexMap[polygonIndices[triangle[3 - j - 1]]]);
+				mapValue = vertexMap[triangle[j]];
+				topTriangle.AddVertexIndex (2 * contourOffsets[mapValue[0]] + 2 * mapValue[1] + 1);
+				mapValue = vertexMap[triangle[2 - j]];
+				bottomTriangle.AddVertexIndex (2 * contourOffsets[mapValue[0]] + 2 * mapValue[1]);
 			}
 			result.AddPolygon (topTriangle);
 			result.AddPolygon (bottomTriangle);
@@ -972,55 +935,23 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 	}
 
 	var result = new JSM.Body ();
-	AddVertices ();
-	AddContours ();
+	var contourOffsets = [];
+	var contourPolygon = new JSM.ContourPolygon ();
+	contourPolygon.FromArray (basePolygon);
+	AddVertices (contourPolygon, direction, height, result);
+	AddContours (contourPolygon, contourOffsets, curveAngle, result);
 
 	if (withTopAndBottom) {
-		AddTopBottomPolygons ();
+		AddTopBottomPolygons (contourPolygon, contourOffsets);
 	}
 
-	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolygon[1], basePolygon[0]));
+	var firstDirection = JSM.CoordSub (basePolygon[1], basePolygon[0]).Normalize ();
 	var origo = new JSM.Coord (basePolygon[0].x, basePolygon[0].y, basePolygon[0].z);
-	var e3 = JSM.VectorNormalize (direction);
+	var e3 = direction.Clone ().Normalize ();
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
 	result.SetCubicTextureProjection (origo, e1, e2, e3);
-	return result;
-};
-
-/**
-* Function: GenerateCurvedPrismWithHole
-* Description: Same as GeneratePrismWithHole, but curve groups can be defined for all sides.
-* Parameters:
-*	basePolygon {Coord[*]} the base polygon which can contain null values
-*	direction {Vector} the vector of the offset
-*	height {number} the height of the prism
-*	withTopAndBottom {boolean} generate top and bottom polygons
-* Returns:
-*	{Body} the result
-*/
-JSM.GenerateCurvedPrismWithHole = function (basePolygon, curveGroups, direction, height, withTopAndBottom)
-{
-	var result = JSM.GeneratePrismWithHole (basePolygon, direction, height, withTopAndBottom);
-	if (curveGroups === undefined || curveGroups === null) {
-		return result;
-	}
-	
-	if (basePolygon.length != curveGroups.length) {
-		return result;
-	}
-	
-	var index = 0;
-	var i, current;
-	for (i = 0; i < basePolygon.length; i++) {
-		current = curveGroups[i];
-		if (current === null) {
-			continue;
-		}
-		result.GetPolygon (index).SetCurveGroup (current);
-		index++;
-	}
 	return result;
 };
 
@@ -1056,12 +987,12 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 
 	var offseted;
 	for (i = 0; i < count; i++) {
-		offseted = JSM.CoordOffset (basePolygon[i], direction, height);
+		offseted = basePolygon[i].Clone ().Offset (direction, height);
 		result.AddVertex (new JSM.BodyVertex (offseted));
 	}
 
 	for (i = 0; i < count; i++) {
-		offseted = JSM.CoordOffset (innerBasePolygon[i], direction, height);
+		offseted = innerBasePolygon[i].Clone ().Offset (direction, height);
 		result.AddVertex (new JSM.BodyVertex (offseted));
 	}
 
@@ -1094,9 +1025,9 @@ JSM.GeneratePrismShell = function (basePolygon, direction, height, width, withTo
 		}
 	}
 
-	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolygon[1], basePolygon[0]));
+	var firstDirection = JSM.CoordSub (basePolygon[1], basePolygon[0]).Normalize ();
 	var origo = new JSM.Coord (basePolygon[0].x, basePolygon[0].y, basePolygon[0].z);
-	var e3 = JSM.VectorNormalize (direction);
+	var e3 = direction.Clone ().Normalize ();
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
@@ -1180,8 +1111,8 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 
 			nextDir = JSM.CoordSub (basePolyLine[next], basePolyLine[curr]);
 			prevDir = JSM.CoordSub (basePolyLine[prev], basePolyLine[curr]);
-			angle = JSM.GetVectorsAngle (nextDir, prevDir) / 2.0;
-			if (JSM.CoordTurnType (basePolyLine[prev], basePolyLine[curr], basePolyLine[next], direction) === 'Clockwise') {
+			angle = nextDir.AngleTo (prevDir) / 2.0;
+			if (JSM.CoordOrientation (basePolyLine[prev], basePolyLine[curr], basePolyLine[next], direction) == JSM.Orientation.Clockwise) {
 				angle = Math.PI - angle;
 			}
 		}
@@ -1203,8 +1134,9 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 
 		angle = angles[curr];
 		distance = width / Math.sin (angle);
-		innerCoord = JSM.CoordOffset (basePolyLine[curr], offsetDirection, distance);
-		innerCoord = JSM.CoordRotate (innerCoord, normal, -(Math.PI - angle), basePolyLine[curr]);
+		innerCoord = basePolyLine[curr].Clone ();
+		innerCoord.Offset (offsetDirection, distance);
+		innerCoord.Rotate (normal, -(Math.PI - angle), basePolyLine[curr]);
 		innerBasePolyLine.push (innerCoord);
 	}
 
@@ -1218,12 +1150,12 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 
 	var offseted;
 	for (i = 0; i < count; i++) {
-		offseted = JSM.CoordOffset (basePolyLine[i], direction, height);
+		offseted = basePolyLine[i].Clone ().Offset (direction, height);
 		result.AddVertex (new JSM.BodyVertex (offseted));
 	}
 
 	for (i = 0; i < count; i++) {
-		offseted = JSM.CoordOffset (innerBasePolyLine[i], direction, height);
+		offseted = innerBasePolyLine[i].Clone ().Offset (direction, height);
 		result.AddVertex (new JSM.BodyVertex (offseted));
 	}
 
@@ -1262,9 +1194,9 @@ JSM.GenerateLineShell = function (basePolyLine, direction, height, width, withSt
 		}
 	}
 
-	var firstDirection = JSM.VectorNormalize (JSM.CoordSub (basePolyLine[1], basePolyLine[0]));
+	var firstDirection = JSM.CoordSub (basePolyLine[1], basePolyLine[0]).Normalize ();
 	var origo = new JSM.Coord (basePolyLine[0].x, basePolyLine[0].y, basePolyLine[0].z);
-	var e3 = JSM.VectorNormalize (direction);
+	var e3 = direction.Clone ().Normalize ();
 	var e2 = JSM.VectorCross (e3, firstDirection);
 	var e1 = JSM.VectorCross (e2, e3);
 
@@ -1308,7 +1240,7 @@ JSM.GenerateTorus = function (outerRadius, innerRadius, outerSegmentation, inner
 	var j, rotated;
 	for (i = 0; i < outerSegmentation; i++) {
 		for (j = 0; j < innerSegmentation; j++) {
-			rotated = JSM.CoordRotate (circle[j], axisDir, i * step, origo);
+			rotated = circle[j].Clone ().Rotate (axisDir, i * step, origo);
 			result.AddVertex (new JSM.BodyVertex (rotated));
 		}
 	}
@@ -1383,7 +1315,7 @@ JSM.GeneratePolyTorus = function (basePolygon, outerRadius, outerSegmentation, i
 	var j, rotated;
 	for (i = 0; i < outerSegmentation; i++) {
 		for (j = 0; j < innerSegmentation; j++) {
-			rotated = JSM.CoordRotate (circle[j], axisDir, i * step, origo);
+			rotated = circle[j].Clone ().Rotate (axisDir, i * step, origo);
 			result.AddVertex (new JSM.BodyVertex (rotated));
 		}
 	}
@@ -1678,7 +1610,7 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 				continue;
 			}
 
-			rotated = JSM.CoordRotate (polyLine[i], axisDir, j * step, axis.beg);
+			rotated = polyLine[i].Clone ().Rotate (axisDir, j * step, axis.beg);
 			result.AddVertex (new JSM.BodyVertex (rotated));
 		}
 	}
@@ -1730,22 +1662,22 @@ JSM.GenerateRevolved = function (polyLine, axis, angle, segmentation, withTopAnd
 		result.AddPolygon (bottomPolygon);
 	}
 
-	var axisLine = new JSM.Line (axis.beg, JSM.VectorNormalize (axisDir));
+	var axisNormalDir = axisDir.Clone ().Normalize ();
+	var axisLine = new JSM.Line (axis.beg, axisNormalDir);
 	var avgRadius = 0.0;
 	var projected;
 	for (i = 0; i < count; i++) {
-		projected = JSM.ProjectCoordToLine (polyLine[i], axisLine);
-		avgRadius = avgRadius + JSM.CoordDistance (projected, polyLine[i]);
+		projected = axisLine.ProjectCoord (polyLine[i]);
+		avgRadius = avgRadius + projected.DistanceTo (polyLine[i]);
 	}
 	avgRadius = avgRadius / count;
 	
 	var origo = new JSM.Coord (axis.beg.x, axis.beg.y, axis.beg.z);
-	var cylinderNormal = JSM.VectorNormalize (axisDir);
 	var baseLine = new JSM.Line (origo, axisDir);
-	var projectedToBaseLine = JSM.ProjectCoordToLine (polyLine[0], baseLine);
-	var xDirection = JSM.VectorNormalize (JSM.CoordSub (polyLine[0], projectedToBaseLine));
+	var projectedToBaseLine = baseLine.ProjectCoord (polyLine[0]);
+	var xDirection = JSM.CoordSub (polyLine[0], projectedToBaseLine).Normalize ();
 	
-	result.SetCylindricalTextureProjection (origo, avgRadius, xDirection, cylinderNormal);
+	result.SetCylindricalTextureProjection (origo, avgRadius, xDirection, axisNormalDir);
 	return result;
 };
 

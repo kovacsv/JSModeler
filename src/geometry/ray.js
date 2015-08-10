@@ -9,7 +9,7 @@
 JSM.Ray = function (origin, direction, length)
 {
 	this.origin = origin;
-	this.direction = JSM.VectorNormalize (direction);
+	this.direction = direction.Normalize ();
 	this.length = length;
 };
 
@@ -24,7 +24,7 @@ JSM.Ray = function (origin, direction, length)
 JSM.Ray.prototype.Set = function (origin, direction, length)
 {
 	this.origin = origin;
-	this.direction = JSM.VectorNormalize (direction);
+	this.direction = direction.Normalize ();
 	this.length = length;
 };
 

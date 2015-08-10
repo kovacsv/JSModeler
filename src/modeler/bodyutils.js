@@ -54,8 +54,8 @@ JSM.CalculateBodyPolygonNormal = function (body, index)
 		}
 	}
 
-	var normalized = JSM.VectorNormalize (normal);
-	return normalized;
+	normal.Normalize ();
+	return normal;
 };
 
 /**
@@ -117,8 +117,8 @@ JSM.CalculateBodyVertexNormals = function (body)
 					}
 				}
 				
-				average = JSM.VectorMultiply (average, 1.0 / count);
-				average = JSM.VectorNormalize (average);
+				average.MultiplyScalar (1.0 / count);
+				average.Normalize ();
 				result[i].push (average);
 			}
 		} else {
@@ -130,6 +130,45 @@ JSM.CalculateBodyVertexNormals = function (body)
 	}
 	
 	return result;
+};
+
+/**
+* Function: CalculatePolygonCurveGroups
+* Description: Calculates the curve groups for a given polygon.
+* Parameters:
+*	polygon {Polygon} the polygon
+*	curveAngle {number} the curve angle
+* Returns:
+*	{integer[*]} the curve groups
+*/
+JSM.CalculatePolygonCurveGroups = function (polygon, curveAngle)
+{
+	var curveGroups = [];
+	var count = polygon.VertexCount ();
+
+	var i, prev;
+	for (i = 0; i < count; i++) {
+		curveGroups.push (0);
+	}
+
+	for (i = 0; i < count; i++) {
+		prev = curveGroups[polygon.GetPrevVertex (i)];
+		if (polygon.GetVertexAngle (i) > curveAngle) {
+			curveGroups[i] = prev;
+		} else {
+			curveGroups[i] = prev + 1;
+		}
+	}
+	
+	var firstGroup = curveGroups[0];
+	var lastGroup = curveGroups[count - 1];
+	if (firstGroup === 0 && firstGroup != lastGroup) {
+		for (i = 0; curveGroups[i] == firstGroup; i++) {
+			curveGroups[i] = lastGroup;
+		}
+	}
+	
+	return curveGroups;
 };
 
 /**
@@ -164,25 +203,22 @@ JSM.MakeBodyInsideOut = function (body)
 */
 JSM.SoftMoveBodyVertex = function (body, index, radius, direction, distance)
 {
-	var referenceCoord = body.GetVertex (index).position;
+	var referenceCoord = body.GetVertexPosition (index).Clone ();
 
 	var eps = 0.00001;
 	var a = distance;
 	var b = 0.0;
 	var c = JSM.GetGaussianCParameter (radius, a, b, eps);
 
-	var i, x, currentDistance, newDistance, currentCoord;
+	var i, currentDistance, newDistance;
 	for (i = 0; i < body.VertexCount (); i++) {
-		currentDistance = JSM.CoordDistance (referenceCoord, body.GetVertex (i).position);
+		currentDistance = referenceCoord.DistanceTo (body.GetVertex (i).position);
 		if (JSM.IsGreater (currentDistance, radius)) {
 			continue;
 		}
 
-		x = currentDistance;
-		newDistance = JSM.GetGaussianValue (x, distance, b, c);
-
-		currentCoord = body.GetVertex (i).position;
-		body.GetVertex (i).position = JSM.CoordOffset (currentCoord, direction, newDistance);
+		newDistance = JSM.GetGaussianValue (currentDistance, distance, b, c);
+		body.GetVertexPosition (i).Offset (direction, newDistance);
 	}
 };
 
@@ -206,7 +242,7 @@ JSM.CalculatePolygonCentroid = function (body, index)
 		result = JSM.CoordAdd (result, body.GetVertexPosition (polygon.GetVertexIndex (i)));
 	}
 	
-	result = JSM.VectorMultiply (result, 1.0 / count);
+	result.MultiplyScalar (1.0 / count);
 	return result;
 };
 
@@ -277,16 +313,18 @@ JSM.TriangulatePolygons = function (body)
 			coord = body.GetVertexPosition (bodyPolygon.GetVertexIndex (j));
 			polygon.AddVertex (coord.x, coord.y, coord.z);
 		}
-		triangleIndices = JSM.PolygonTriangulate (polygon);
-		for (j = 0; j < triangleIndices.length; j++) {
-			triangle = triangleIndices[j];
-			bodyTriangle = new JSM.BodyPolygon ([
-				bodyPolygon.GetVertexIndex (triangle[0]),
-				bodyPolygon.GetVertexIndex (triangle[1]),
-				bodyPolygon.GetVertexIndex (triangle[2])
-			]);
-			bodyTriangle.InheritAttributes (bodyPolygon);
-			result.AddPolygon (bodyTriangle);
+		triangleIndices = JSM.TriangulatePolygon (polygon);
+		if (triangleIndices !== null) {
+			for (j = 0; j < triangleIndices.length; j++) {
+				triangle = triangleIndices[j];
+				bodyTriangle = new JSM.BodyPolygon ([
+					bodyPolygon.GetVertexIndex (triangle[0]),
+					bodyPolygon.GetVertexIndex (triangle[1]),
+					bodyPolygon.GetVertexIndex (triangle[2])
+				]);
+				bodyTriangle.InheritAttributes (bodyPolygon);
+				result.AddPolygon (bodyTriangle);
+			}
 		}
 	}
 	
@@ -372,7 +410,7 @@ JSM.MergeCoplanarPolygons = function (body)
 			var coplanarPgons = [];
 			var angle;
 			JSM.TraversePgonsAlongEdges (pgonIndex, adjacency, function (currentIndex) {
-				angle = JSM.GetVectorsAngle (pgonNormals[pgonIndex], pgonNormals[currentIndex]);
+				angle = pgonNormals[pgonIndex].AngleTo (pgonNormals[currentIndex]);
 				if (JSM.IsEqual (angle, 0.0)) {
 					coplanarPgons.push (currentIndex);
 					processedPgons[currentIndex] = true;

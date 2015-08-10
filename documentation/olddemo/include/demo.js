@@ -375,7 +375,7 @@ JSMDemo.prototype =
 		this.GenerateUICanvasElement ('editorCanvas');
 		this.GenerateUITextElement ('height:');
 		this.GenerateUIInputElement ('1.0');
-		this.GenerateUITextElement ('other:');
+		
 		this.GenerateUICheckBoxElement ('with top and bottom', true);
 		
 		var settings = {
@@ -433,7 +433,7 @@ JSMDemo.prototype =
 			basePoints.push (new JSM.Coord (x, y, -height / 2.0));
 		}
 
-		this.body = JSM.GeneratePrism (basePoints, direction, height, withTopAndBottom);
+		this.body = JSM.GeneratePrism (basePoints, direction, height, withTopAndBottom, null);
 		this.AddBodyToViewer (this.body);
 	},
 

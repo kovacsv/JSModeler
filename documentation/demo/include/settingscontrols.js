@@ -413,7 +413,7 @@ JSM.PolygonControl.prototype.AddCoord = function (mouseCoord)
 				canAddCoord = true;
 			} else {
 				var lastCoord = this.coords[this.coords.length - 1];
-				if (!JSM.CoordIsEqual2D (lastCoord, mouseCoord)) {
+				if (!lastCoord.IsEqual (mouseCoord)) {
 					canAddCoord = true;
 				}
 			}
@@ -456,13 +456,13 @@ JSM.PolygonControl.prototype.UpdateMarker = function (mouseCoord)
 			refCoordIndex = this.coords.length - 1;
 		}
 		var refCoord = this.coords[refCoordIndex];
-		if (JSM.CoordDistance2D (mouseCoord, refCoord) < this.styles.editor.gridStep) {
+		if (mouseCoord.DistanceTo (refCoord) < this.styles.editor.gridStep) {
 			this.marker = refCoordIndex;
 		}
 	} else if (this.mode == 'Finished') {
 		var i;
 		for (i = 0; i < this.coords.length; i++) {
-			if (JSM.CoordDistance2D (mouseCoord, this.coords[i]) < this.styles.editor.gridStep) {
+			if (mouseCoord.DistanceTo (this.coords[i]) < this.styles.editor.gridStep) {
 				this.marker = i;
 				break;
 			}

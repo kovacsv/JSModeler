@@ -50,13 +50,15 @@ JSM.ConvertBodyToTriangleBody = function (body)
 			}
 			
 			normal = JSM.CalculateBodyPolygonNormal (body, i);
-			triangles = JSM.PolygonTriangulate (polygon3D, normal);
-			for (j = 0; j < triangles.length; j++) {
-				triangle = triangles[j];
-				v0 = polygon.GetVertexIndex (triangle[0]);
-				v1 = polygon.GetVertexIndex (triangle[1]);
-				v2 = polygon.GetVertexIndex (triangle[2]);
-				AddTriangle (result, polygon, v0, v1, v2);
+			triangles = JSM.TriangulatePolygon (polygon3D, normal);
+			if (triangles !== null) {
+				for (j = 0; j < triangles.length; j++) {
+					triangle = triangles[j];
+					v0 = polygon.GetVertexIndex (triangle[0]);
+					v1 = polygon.GetVertexIndex (triangle[1]);
+					v2 = polygon.GetVertexIndex (triangle[2]);
+					AddTriangle (result, polygon, v0, v1, v2);
+				}
 			}
 		}
 	}

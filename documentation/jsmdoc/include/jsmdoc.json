@@ -3,6 +3,164 @@
 	"modules" : {
 		"Core" : {
 			"functions" : {
+				"RandomNumber" : {
+					"description" : "Generates a random number between two numbers.",
+					"parameters" : [
+						["from", "number", "lowest random result"],
+						["to", "number", "highest random result"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"RandomInt" : {
+					"description" : "Generates a random integer between two integers.",
+					"parameters" : [
+						["from", "integer", "lowest random result"],
+						["to", "integer", "highest random result"]
+					],
+					"returns" : [
+						["integer", "the result"]
+					]
+				},
+				"SeededRandomInt" : {
+					"description" : "Generates a random integer between two integers. A seed number can be specified.",
+					"parameters" : [
+						["from", "integer", "lowest random result"],
+						["to", "integer", "highest random result"],
+						["seed", "integer", "seed value"]
+					],
+					"returns" : [
+						["integer", "the result"]
+					]
+				},
+				"ValueOrDefault" : {
+					"description" : "Returns the given value, or a default if it is undefined.",
+					"parameters" : [
+						["val", "anything", "new value"],
+						["def", "anything", "default value"]
+					],
+					"returns" : [
+						["anything", "the result"]
+					]
+				},
+				"CopyObjectProperties" : {
+					"description" : "Copies one object properties to another object.",
+					"parameters" : [
+						["source", "anything", "source object"],
+						["target", "anything", "target object"],
+						["overwrite", "boolean", "overwrite existing properties"]
+					]
+				},
+				"Assert" : {
+					"description" : "Shows up an alert with the given message if the condition is false.",
+					"parameters" : [
+						["condition", "boolean", "the condition to check"],
+						["message", "string", "error message"]
+					]
+				},
+				"BubbleSort" : {
+					"description" : "Sorts an array with bubble sort.",
+					"parameters" : [
+						["array", "anything[]", "the array to sort"],
+						["compare", "function", "the compare function"]
+					]
+				},
+				"ShiftArray" : {
+					"description" : "Shifts an array.",
+					"parameters" : [
+						["array", "anything[]", "the array to shift"],
+						["count", "integer", "shift count"]
+					]
+				},
+				"AsyncRunTask" : {
+					"description" : "Calls a function multiple times asynchronously. If the environment is not specified, it will run synchronously.",
+					"parameters" : [
+						["taskFunction", "function", "the function to run"],
+						["environment", "AsyncEnvironment", "environment with callbackss"],
+						["runCount", "integer", "the count of runs"],
+						["timeout", "integer", "the timeout between runs"],
+						["userData", "anything", "task specific data"]
+					]
+				},
+				"IsWebGLEnabled" : {
+					"description" : "Returns if WebGL is enabled in the browser.",
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
+				"IsFileApiEnabled" : {
+					"description" : "Returns if file api is enabled in the browser.",
+					"returns" : [
+						["boolean", "the result"]
+					]
+				}
+			},
+			"classes" : {
+				"Timer" : {
+					"description" : "Utility class for time measure.",
+					"functions" : {
+						"Start" : {
+							"description" : "Starts the timer."
+						},
+						"Stop" : {
+							"description" : "Stops the timer."
+						},
+						"Result" : {
+							"description" : "Returns the time between start and stop.",
+							"returns" : [
+								["number", "The result."]
+							]
+						}
+					}
+				},
+				"FPSCounter" : {
+					"description" : "Utility class for FPS count. It calculates the frames and returns FPS count for the last interval with the given length. The Get function should called in every frame.",
+					"functions" : {
+						"Get" : {
+							"description" : "Returns the FPS count for the last interval with the given length.",
+							"parameters" : [
+								["interval", "integer", "the interval length in milliseconds"]
+							],
+							"returns" : [
+								["integer", "The result."]
+							]
+						}
+					}
+				},
+				"AsyncEnvironment" : {
+					"description" : "Environment for asynchronous calls.",
+					"parameters" : [
+						["parameters", "object", "callback functions for calls (onStart, onProcess, onFinish)"]
+					],
+					"functions" : {
+						"OnStart" : {
+							"description" : "Calls the onStart callback of the environment.",
+							"parameters" : [
+								["taskCount", "integer", "count of all tasks"],
+								["userData", "anything", "task specific data"]
+							]
+						},
+						"OnProcess" : {
+							"description" : "Calls the onProcess callback of the environment.",
+							"parameters" : [
+								["currentTask", "integer", "number of the current task"],
+								["userData", "anything", "task specific data"]
+							]
+						},
+						"OnFinish" : {
+							"description" : "Calls the onFinish callback of the environment.",
+							"parameters" : [
+								["result", "anything", "the result of the operation"],
+								["userData", "anything", "task specific data"]
+							]
+						}
+					}
+				}
+			}
+		},
+		"Geometry" : {
+			"functions" : {
 				"IsZero" : {
 					"description" : "Determines if the given value is near zero. Uses epsilon for comparison.",
 					"parameters" : [
@@ -129,157 +287,102 @@
 						["number", "the result"]
 					]
 				},
-				"RandomNumber" : {
-					"description" : "Generates a random number between two numbers.",
+				"CoordFromArray2D" : {
+					"description" : "Returns a coordinate from an array of components.",
 					"parameters" : [
-						["from", "number", "lowest random result"],
-						["to", "number", "highest random result"]
+						["array", "number[2]", "the array of components"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
+				"CoordToArray2D" : {
+					"description" : "Returns array of components from a coordinate.",
+					"parameters" : [
+						["coord", "Coord2D", "the coordinate"]
+					],
+					"returns" : [
+						["array", "number[2]"]
+					]
+				},
+				"CoordAdd2D" : {
+					"description" : "Adds two coordinates.",
+					"parameters" : [
+						["a", "Coord2D", "the first coordinate"],
+						["b", "Coord2D", "the second coordinate"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
+				"CoordSub2D" : {
+					"description" : "Subs two coordinates.",
+					"parameters" : [
+						["a", "Coord2D", "the first coordinate"],
+						["b", "Coord2D", "the second coordinate"]
+					],
+					"returns" : [
+						["Coord2D", "the result"]
+					]
+				},
+				"CoordFromArray" : {
+					"description" : "Returns a coordinate from an array of components.",
+					"parameters" : [
+						["array", "number[3]", "the array of components"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"CoordToArray" : {
+					"description" : "Returns array of components from a coordinate.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate"]
+					],
+					"returns" : [
+						["array", "number[3]"]
+					]
+				},
+				"CoordAdd" : {
+					"description" : "Adds two coordinates.",
+					"parameters" : [
+						["a", "Coord", "the first coordinate"],
+						["b", "Coord", "the second coordinate"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"CoordSub" : {
+					"description" : "Subs two coordinates.",
+					"parameters" : [
+						["a", "Coord", "the first coordinate"],
+						["b", "Coord", "the second coordinate"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"VectorDot" : {
+					"description" : "Calculates the dot product of two vectors.",
+					"parameters" : [
+						["a", "Vector", "the first vector"],
+						["b", "Vector", "the second vector"]
 					],
 					"returns" : [
 						["number", "the result"]
 					]
 				},
-				"RandomInt" : {
-					"description" : "Generates a random integer between two integers.",
+				"VectorCross" : {
+					"description" : "Calculates the cross product of two vectors.",
 					"parameters" : [
-						["from", "integer", "lowest random result"],
-						["to", "integer", "highest random result"]
+						["a", "Vector", "the first vector"],
+						["b", "Vector", "the second vector"]
 					],
 					"returns" : [
-						["integer", "the result"]
+						["Vector", "the result"]
 					]
 				},
-				"SeededRandomInt" : {
-					"description" : "Generates a random integer between two integers. A seed number can be specified.",
-					"parameters" : [
-						["from", "integer", "lowest random result"],
-						["to", "integer", "highest random result"],
-						["seed", "integer", "seed value"]
-					],
-					"returns" : [
-						["integer", "the result"]
-					]
-				},
-				"ValueOrDefault" : {
-					"description" : "Returns the given value, or a default if it is undefined.",
-					"parameters" : [
-						["val", "anything", "new value"],
-						["def", "anything", "default value"]
-					],
-					"returns" : [
-						["anything", "the result"]
-					]
-				},
-				"CopyObjectProperties" : {
-					"description" : "Copies one object properties to another object.",
-					"parameters" : [
-						["source", "anything", "source object"],
-						["target", "anything", "target object"],
-						["overwrite", "boolean", "overwrite existing properties"]
-					]
-				},
-				"Assert" : {
-					"description" : "Shows up an alert with the given message if the condition is false.",
-					"parameters" : [
-						["condition", "boolean", "the condition to check"],
-						["message", "string", "error message"]
-					]
-				},
-				"BubbleSort" : {
-					"description" : "Sorts an array with bubble sort.",
-					"parameters" : [
-						["array", "anything[]", "the array to sort"],
-						["compare", "function", "the compare function"]
-					]
-				},
-				"AsyncRunTask" : {
-					"description" : "Calls a function multiple times asynchronously. If the environment is not specified, it will run synchronously.",
-					"parameters" : [
-						["taskFunction", "function", "the function to run"],
-						["environment", "AsyncEnvironment", "environment with callbackss"],
-						["runCount", "integer", "the count of runs"],
-						["timeout", "integer", "the timeout between runs"],
-						["userData", "anything", "task specific data"]
-					]
-				},
-				"IsWebGLEnabled" : {
-					"description" : "Returns if WebGL is enabled in the browser.",
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"IsFileApiEnabled" : {
-					"description" : "Returns if file api is enabled in the browser.",
-					"returns" : [
-						["boolean", "the result"]
-					]
-				}
-			},
-			"classes" : {
-				"Timer" : {
-					"description" : "Utility class for time measure.",
-					"functions" : {
-						"Start" : {
-							"description" : "Starts the timer."
-						},
-						"Stop" : {
-							"description" : "Stops the timer."
-						},
-						"Result" : {
-							"description" : "Returns the time between start and stop.",
-							"returns" : [
-								["number", "The result."]
-							]
-						}
-					}
-				},
-				"FPSCounter" : {
-					"description" : "Utility class for FPS count. It calculates the frames and returns FPS count for the last interval with the given length. The Get function should called in every frame.",
-					"functions" : {
-						"Get" : {
-							"description" : "Returns the FPS count for the last interval with the given length.",
-							"parameters" : [
-								["interval", "integer", "the interval length in milliseconds"]
-							],
-							"returns" : [
-								["integer", "The result."]
-							]
-						}
-					}
-				},
-				"AsyncEnvironment" : {
-					"description" : "Environment for asynchronous calls.",
-					"parameters" : [
-						["parameters", "object", "callback functions for calls (onStart, onProcess, onFinish)"]
-					],
-					"functions" : {
-						"OnStart" : {
-							"description" : "Calls the onStart callback of the environment.",
-							"parameters" : [
-								["taskCount", "integer", "count of all tasks"],
-								["userData", "anything", "task specific data"]
-							]
-						},
-						"OnProcess" : {
-							"description" : "Calls the onProcess callback of the environment.",
-							"parameters" : [
-								["currentTask", "integer", "number of the current task"],
-								["userData", "anything", "task specific data"]
-							]
-						},
-						"OnFinish" : {
-							"description" : "Calls the onFinish callback of the environment.",
-							"parameters" : [
-								["result", "anything", "the result of the operation"],
-								["userData", "anything", "task specific data"]
-							]
-						}
-					}
-				}
-			}
-		},
-		"Geometry" : {
-			"functions" : {
 				"MatrixDeterminant2x2" : {
 					"description" : "Calculates the determinant of a 2x2 matrix.",
 					"parameters" : [
@@ -307,75 +410,6 @@
 						["number", "the result"]
 					]
 				},
-				"CoordFromArray2D" : {
-					"description" : "Returns a coordinate from an array of components.",
-					"parameters" : [
-						["array", "number[2]", "the array of components"]
-					],
-					"returns" : [
-						["Coord2D", "the result"]
-					]
-				},
-				"CoordToArray2D" : {
-					"description" : "Returns array of components from a coordinate.",
-					"parameters" : [
-						["coord", "Coord2D", "the coordinate"]
-					],
-					"returns" : [
-						["array", "number[2]"]
-					]
-				},
-				"CoordIsEqual2D" : {
-					"description" : "Determines if the given coordinates are equal.",
-					"parameters" : [
-						["a", "Coord2D", "the first coordinate"],
-						["b", "Coord2D", "the second coordinate"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CoordIsEqual2DWithEps" : {
-					"description" : "Determines if the given coordinates are equal. Uses the given epsilon for comparison.",
-					"parameters" : [
-						["a", "Coord2D", "the first coordinate"],
-						["b", "Coord2D", "the second coordinate"],
-						["eps", "number", "the epsilon value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CoordAdd2D" : {
-					"description" : "Adds two coordinates.",
-					"parameters" : [
-						["a", "Coord2D", "the first coordinate"],
-						["b", "Coord2D", "the second coordinate"]
-					],
-					"returns" : [
-						["Coord2D", "the result"]
-					]
-				},
-				"CoordSub2D" : {
-					"description" : "Subs two coordinates.",
-					"parameters" : [
-						["a", "Coord2D", "the first coordinate"],
-						["b", "Coord2D", "the second coordinate"]
-					],
-					"returns" : [
-						["Coord2D", "the result"]
-					]
-				},
-				"CoordDistance2D" : {
-					"description" : "Calculates the distance of two coordinates.",
-					"parameters" : [
-						["a", "Coord2D", "the first coordinate"],
-						["b", "Coord2D", "the second coordinate"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
 				"MidCoord2D" : {
 					"description" : "Calculates the coordinate in the middle of two coordinates.",
 					"parameters" : [
@@ -386,64 +420,15 @@
 						["Coord2D", "the result"]
 					]
 				},
-				"VectorMultiply2D" : {
-					"description" : "Multiplies a vector with a scalar.",
+				"CoordOrientation2D" : {
+					"description" : "Calculates the turn type of three coordinates.",
 					"parameters" : [
-						["vector", "Vector2D", "the vector"],
-						["scalar", "number", "the scalar"]
+						["a", "Coord2D", "the first coordinate"],
+						["b", "Coord2D", "the second coordinate"],
+						["c", "Coord2D", "the third coordinate"]
 					],
 					"returns" : [
-						["Vector2D", "the result"]
-					]
-				},
-				"VectorLength2D" : {
-					"description" : "Calculates length of a vector.",
-					"parameters" : [
-						["vector", "Vector2D", "the vector"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"VectorNormalize2D" : {
-					"description" : "Normalize a vector.",
-					"parameters" : [
-						["vector", "Vector2D", "the vector"]
-					],
-					"returns" : [
-						["Vector2D", "the result"]
-					]
-				},
-				"VectorSetLength2D" : {
-					"description" : "Sets the length of a vector.",
-					"parameters" : [
-						["vector", "Vector2D", "the vector"],
-						["length", "number", "the length"]
-					],
-					"returns" : [
-						["Vector2D", "the result"]
-					]
-				},
-				"CoordOffset2D" : {
-					"description" : "Offsets a coordinate.",
-					"parameters" : [
-						["coord", "Coord2D", "the coordinate"],
-						["direction", "Vector2D", "the direction of the offset"],
-						["distance", "number", "the distance of the offset"]
-					],
-					"returns" : [
-						["Coord2D", "the result"]
-					]
-				},
-				"CoordRotate2D" : {
-					"description" : "Rotates a coordinate.",
-					"parameters" : [
-						["coord", "Coord2D", "the coordinate"],
-						["angle", "number", "the angle of the rotation"],
-						["origo", "Coord2D", "the origo of the rotation"]
-					],
-					"returns" : [
-						["Coord", "the result"]
+						["Orientation", "the result"]
 					]
 				},
 				"PolarToCartesian" : {
@@ -476,107 +461,6 @@
 						["number", "the result"]
 					]
 				},
-				"CoordTurnType2D" : {
-					"description" : "Calculates the turn type of three coordinates.",
-					"parameters" : [
-						["a", "Coord2D", "the first coordinate"],
-						["b", "Coord2D", "the second coordinate"],
-						["c", "Coord2D", "the third coordinate"]
-					],
-					"returns" : [
-						["string", "'CounterClockwise', 'Clockwise', or 'Collinear'"]
-					]
-				},
-				"CoordFromArray" : {
-					"description" : "Returns a coordinate from an array of components.",
-					"parameters" : [
-						["array", "number[3]", "the array of components"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CoordToArray" : {
-					"description" : "Returns array of components from a coordinate.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"]
-					],
-					"returns" : [
-						["array", "number[3]"]
-					]
-				},
-				"CoordIsEqual" : {
-					"description" : "Determines if the given coordinates are equal.",
-					"parameters" : [
-						["a", "Coord", "first coordinate"],
-						["b", "Coord", "second coordinate"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CoordIsEqualWithEps" : {
-					"description" : "Determines if the given coordinates are equal. Uses the given epsilon for comparison.",
-					"parameters" : [
-						["a", "Coord", "first coordinate"],
-						["b", "Coord", "second coordinate"],
-						["eps", "number", "epsilon value"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CoordAdd" : {
-					"description" : "Adds two coordinates.",
-					"parameters" : [
-						["a", "Coord", "the first coordinate"],
-						["b", "Coord", "the second coordinate"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CoordSub" : {
-					"description" : "Subs two coordinates.",
-					"parameters" : [
-						["a", "Coord", "the first coordinate"],
-						["b", "Coord", "the second coordinate"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"SphericalCoordIsEqual" : {
-					"description" : "Determines if the given coordinates are equal.",
-					"parameters" : [
-						["a", "SpericalCoord", "first coordinate"],
-						["b", "SpericalCoord", "second coordinate"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CoordDistance" : {
-					"description" : "Calculates the distance of two coordinates.",
-					"parameters" : [
-						["a", "Coord", "first coordinate"],
-						["b", "Coord", "second coordinate"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"CoordSignedDistance" : {
-					"description" : "Calculates the distance of two coordinates along a direction vector.",
-					"parameters" : [
-						["a", "Coord", "first coordinate"],
-						["b", "Coord", "second coordinate"],
-						["direction", "Vector", "direction vector"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
 				"MidCoord" : {
 					"description" : "Calculates the coordinate in the middle of two coordinates.",
 					"parameters" : [
@@ -587,92 +471,12 @@
 						["Coord", "the result"]
 					]
 				},
-				"VectorMultiply" : {
-					"description" : "Multiplies a vector with a scalar.",
+				"CoordSignedDistance" : {
+					"description" : "Calculates the distance of two coordinates along a direction vector.",
 					"parameters" : [
-						["vector", "Vector", "the vector"],
-						["scalar", "number", "the scalar"]
-					],
-					"returns" : [
-						["Vector", "the result"]
-					]
-				},
-				"VectorDot" : {
-					"description" : "Calculates the dot product of two vectors.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"VectorCross" : {
-					"description" : "Calculates the cross product of two vectors.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"]
-					],
-					"returns" : [
-						["Vector", "the result"]
-					]
-				},
-				"VectorLength" : {
-					"description" : "Calculates length of a vector.",
-					"parameters" : [
-						["vector", "Vector", "the vector"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"VectorNormalize" : {
-					"description" : "Normalize a vector.",
-					"parameters" : [
-						["vector", "Vector", "the vector"]
-					],
-					"returns" : [
-						["Vector", "the result"]
-					]
-				},
-				"VectorSetLength" : {
-					"description" : "Sets the length of a vector.",
-					"parameters" : [
-						["vector", "Vector", "the vector"],
-						["length", "number", "the length"]
-					],
-					"returns" : [
-						["Vector", "the result"]
-					]
-				},
-				"CoordOffset" : {
-					"description" : "Offsets a coordinate.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["direction", "Vector", "the direction of the offset"],
-						["distance", "number", "the distance of the offset"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CoordRotate" : {
-					"description" : "Rotates a coordinate.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["axis", "Vector", "the axis of the rotation"],
-						["angle", "number", "the angle of the rotation"],
-						["origo", "Coord", "the origo of the rotation"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"GetVectorsAngle" : {
-					"description" : "Calculates the angle of two vectors.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"]
+						["a", "Coord", "first coordinate"],
+						["b", "Coord", "second coordinate"],
+						["direction", "Vector", "direction vector"]
 					],
 					"returns" : [
 						["number", "the result"]
@@ -689,28 +493,7 @@
 						["number", "the result"]
 					]
 				},
-				"VectorsAreCollinear" : {
-					"description" : "Determines if two vectors are collinear.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"GetCoord2DFromCoord" : {
-					"description" : "Transforms a 3D coordinate to a 2D coordinate.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["origo", "Coord", "the origo of transformation"],
-						["normal", "Vector", "the normal vector of transformation"]
-					],
-					"returns" : [
-						["Coord2D", "the result"]
-					]
-				},
-				"CoordTurnType" : {
+				"CoordOrientation" : {
 					"description" : "Calculates the turn type of three coordinates.",
 					"parameters" : [
 						["a", "Coord", "the first coordinate"],
@@ -719,7 +502,52 @@
 						["normal", "Vector", "normal vector for calculation"]
 					],
 					"returns" : [
-						["string", "'CounterClockwise', 'Clockwise', or 'Collinear'"]
+						["Orientation", "the result"]
+					]
+				},
+				"SphericalToCartesian" : {
+					"description" : "Converts a spherical coordinate to a cartesian coordinate.",
+					"parameters" : [
+						["radius", "number", "the radius component"],
+						["theta", "number", "the angle component"],
+						["phi", "number", "the phi component"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"CylindricalToCartesian" : {
+					"description" : "Converts a cylindrical coordinate to a cartesian coordinate.",
+					"parameters" : [
+						["radius", "number", "the radius component"],
+						["height", "number", "the height component"],
+						["theta", "number", "the theta component"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"GetArcLength" : {
+					"description" : "Calculates arc length between two vectors.",
+					"parameters" : [
+						["a", "Vector", "the first vector"],
+						["b", "Vector", "the second vector"],
+						["radius", "number", "the radius component"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"GetFullArcLength" : {
+					"description" : "Calculates arc length between two vectors with the given normal vector.",
+					"parameters" : [
+						["a", "Vector", "the first vector"],
+						["b", "Vector", "the second vector"],
+						["radius", "number", "the radius component"],
+						["normal", "Vector", "the normal vector"]
+					],
+					"returns" : [
+						["number", "the result"]
 					]
 				},
 				"CalculateCentroid" : {
@@ -760,94 +588,6 @@
 					],
 					"returns" : [
 						["Coord", "the result"]
-					]
-				},
-				"SphericalToCartesian" : {
-					"description" : "Converts a spherical coordinate to a cartesian coordinate.",
-					"parameters" : [
-						["radius", "number", "the radius component"],
-						["theta", "number", "the angle component"],
-						["phi", "number", "the phi component"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CartesianToSpherical" : {
-					"description" : "Converts a cartesian coordinate to a spherical coordinate.",
-					"parameters" : [
-						["x", "number", "the x component"],
-						["y", "number", "the y component"],
-						["z", "number", "the z component"]
-					],
-					"returns" : [
-						["SphericalCoord", "the result"]
-					]
-				},
-				"SphericalToCartesianWithOrigo" : {
-					"description" : "Converts a spherical coordinate to a cartesian coordinate with the given origo.",
-					"parameters" : [
-						["spherical", "SphericalCoord", "the coordinate"],
-						["origo", "Coord", "the origo"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CartesianToSphericalWithOrigo" : {
-					"description" : "Converts a cartesian coordinate to a spherical coordinate with the given origo.",
-					"parameters" : [
-						["cartesian", "Coord", "the coordinate"],
-						["origo", "Coord", "the origo"]
-					],
-					"returns" : [
-						["SphericalCoord", "the result"]
-					]
-				},
-				"MoveCoordOnSphere" : {
-					"description" : "Moves a coordinate on a surface of a sphere with the given angles.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["origo", "Coord", "the origo"],
-						["thetaAngle", "number", "the theta angle"],
-						["phiAngle", "number", "the phi angle"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CylindricalToCartesian" : {
-					"description" : "Converts a cylindrical coordinate to a cartesian coordinate.",
-					"parameters" : [
-						["radius", "number", "the radius component"],
-						["height", "number", "the height component"],
-						["theta", "number", "the theta component"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"GetArcLength" : {
-					"description" : "Calculates arc length between two vectors.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"],
-						["radius", "number", "the radius component"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"GetFullArcLength" : {
-					"description" : "Calculates arc length between two vectors with the given normal vector.",
-					"parameters" : [
-						["a", "Vector", "the first vector"],
-						["b", "Vector", "the second vector"],
-						["radius", "number", "the radius component"],
-						["normal", "Vector", "the normal vector"]
-					],
-					"returns" : [
-						["number", "the result"]
 					]
 				},
 				"MatrixIdentity" : {
@@ -1003,124 +743,12 @@
 						["Coord", "the result"]
 					]
 				},
-				"CoordSystemToDirectionVectors" : {
-					"description" : "Converts coordinate system vectors to origo relative direction vectors.",
-					"parameters" : [
-						["system", "CoordSystem", "the coordinate system"]
-					],
-					"returns" : [
-						["CoordSystem", "the result"]
-					]
-				},
-				"CoordSystemToAbsoluteCoords" : {
-					"description" : "Converts coordinate system vectors to absolute coordinates.",
-					"parameters" : [
-						["system", "CoordSystem", "the coordinate system"]
-					],
-					"returns" : [
-						["CoordSystem", "the result"]
-					]
-				},
-				"CoordSectorPosition2D" : {
-					"description" : "Calculates the position of a coordinate and a sector.",
-					"parameters" : [
-						["coord", "Coord2D", "the coordinate"],
-						["sector", "Sector2D", "the sector"]
-					],
-					"returns" : [
-						["string", "'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'"]
-					]
-				},
-				"ProjectCoordToSector2D" : {
-					"description" : "Projects a coordinate to a sector.",
-					"parameters" : [
-						["coord", "Coord2D", "the coordinate"],
-						["sector", "Sector2D", "the sector"]
-					],
-					"returns" : [
-						["Coord2D", "the projected coordinate"]
-					]
-				},
-				"CoordSectorPosition" : {
-					"description" : "Calculates the position of a coordinate and a sector.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["sector", "Sector", "the sector"]
-					],
-					"returns" : [
-						["string", "'CoordOnSectorEndCoord', 'CoordOutsideOfSector', or 'CoordInsideOfSector'"]
-					]
-				},
-				"SectorSectorPosition2D" : {
-					"description" : "Calculates the position of two sectors.",
-					"parameters" : [
-						["aSector", "Sector2D", "the first sector"],
-						["bSector", "Sector2D", "the second sector"]
-					],
-					"returns" : [
-						["string", "'SectorsIntersectsCoincident', 'SectorsIntersectsEndPoint', 'SectorsIntersectsOnePoint', or 'SectorsDontIntersects'"]
-					]
-				},
 				"GetSectorSegmentation" : {
 					"description" : "Returns the segmented coordinates of a sector.",
 					"parameters" : [
 						["sector", "Sector", "the sector"],
 						["segmentation", "integer", "the segmentation"],
 						["coords", "Coord[*]", "(out) the result coordinates"]
-					]
-				},
-				"CoordLinePosition2D" : {
-					"description" : "Calculates the position of a coordinate and a line.",
-					"parameters" : [
-						["coord", "Coord2D", "the coordinate"],
-						["line", "Line2D", "the line"]
-					],
-					"returns" : [
-						["string", "'CoordAtLineLeft', 'CoordAtLineRight', or 'CoordOnLine'"]
-					]
-				},
-				"CoordLinePosition" : {
-					"description" : "Calculates the position of a coordinate and a line.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["line", "Line", "the line"],
-						["projected", "Coord", "the projected coordinate"]
-					],
-					"returns" : [
-						["string", "'CoordOutsideOfLine', or 'CoordOnLine'"]
-					]
-				},
-				"ProjectCoordToLine" : {
-					"description" : "Projects a coordinate to a line.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["line", "Line", "the line"]
-					],
-					"returns" : [
-						["Coord", "the projected coordinate"]
-					]
-				},
-				"LineLineClosestPoint" : {
-					"description" : "Calculates the closest points between two lines.",
-					"parameters" : [
-						["aLine", "Line", "first line"],
-						["bLine", "Line", "second line"],
-						["aClosestPoint", "Coord", "(out) the closest point on first line"],
-						["bClosestPoint", "Coord", "(out) the closest point on second line"]
-					],
-					"returns" : [
-						["boolean", "success"]
-					]
-				},
-				"LineLinePosition" : {
-					"description" : "Calculates the position of two lines.",
-					"parameters" : [
-						["aLine", "Line", "first line"],
-						["bLine", "Line", "second line"],
-						["intersection", "Coord", "(out) the intersection point if it exists"]
-					],
-					"returns" : [
-						["string", "'LinesIntersectsCoincident', 'LinesIntersectsOnePoint', or 'LinesDontIntersects'"]
 					]
 				},
 				"BoxUnion" : {
@@ -1131,16 +759,6 @@
 					],
 					"returns" : [
 						["Box", "the result"]
-					]
-				},
-				"IsCoordInBox" : {
-					"description" : "Determines if a coordinate is inside a box.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["box", "Box", "the box"]
-					],
-					"returns" : [
-						["boolean", "the result"]
 					]
 				},
 				"IdentityTransformation" : {
@@ -1242,57 +860,6 @@
 						["Plane", "the result"]
 					]
 				},
-				"CoordPlanePosition" : {
-					"description" : "Calculates the position of a coordinate and a plane.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["plane", "Plane", "the plane"]
-					],
-					"returns" : [
-						["string", "'CoordInFrontOfPlane', 'CoordAtBackOfPlane', or 'CoordOnPlane'"]
-					]
-				},
-				"LinePlanePosition" : {
-					"description" : "Calculates the position of a line and a plane.",
-					"parameters" : [
-						["line", "Line", "the line"],
-						["plane", "Plane", "the plane"],
-						["intersection", "Coord", "(out) the intersection point if it exists"]
-					],
-					"returns" : [
-						["string", "'LineParallelToPlane', or 'LineIntersectsPlane'"]
-					]
-				},
-				"LinePlaneIntersection" : {
-					"description" : "Calculates the intersection point of a line and a plane.",
-					"parameters" : [
-						["line", "Line", "the line"],
-						["plane", "Plane", "the plane"]
-					],
-					"returns" : [
-						["Coord", "the result"]
-					]
-				},
-				"CoordPlaneSignedDistance" : {
-					"description" : "Calculates the signed distance of a coordinate and a plane.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["plane", "Plane", "the plane"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"CoordPlaneDistance" : {
-					"description" : "Calculates the distance of a coordinate and a plane.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["plane", "Plane", "the plane"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
 				"CoordPlaneSignedDirectionalDistance" : {
 					"description" : "Calculates the signed distance of a coordinate and a plane along a direction vector.",
 					"parameters" : [
@@ -1313,16 +880,6 @@
 					],
 					"returns" : [
 						["number", "the result"]
-					]
-				},
-				"ProjectCoordToPlane" : {
-					"description" : "Projects a coordinate to a plane.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["plane", "Plane", "the plane"]
-					],
-					"returns" : [
-						["Coord", "the projected coordinate"]
 					]
 				},
 				"Project" : {
@@ -1360,145 +917,6 @@
 						["Coord[3][*]", "the result"]
 					]
 				},
-				"CreatePolygonFromVertices" : {
-					"description" : "Creates a cloned polygon from the given vertices.",
-					"parameters" : [
-						["vertices", "Coord2D[*]", "the vertices"]
-					],
-					"returns" : [
-						["Polygon2D", "the result"]
-					]
-				},
-				"PolygonSignedArea2D" : {
-					"description" : "Calculates the signed area of a polygon. The result is positive if the polygon has counter clockwise orientation, negative if it has clockwise orientation.",
-					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"PolygonArea2D" : {
-					"description" : "Calculates the area of a polygon.",
-					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"PolygonOrientation2D" : {
-					"description" : "Calculates the orientation of a polygon.",
-					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
-					],
-					"returns" : [
-						["string", "'CounterClockwise', 'Clockwise', or 'Invalid'"]
-					]
-				},
-				"ChangePolygonOrientation2D" : {
-					"description" : "Reverses the orientation of a polygon.",
-					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
-					]
-				},
-				"CreateCCWPolygonFromVertices" : {
-					"description" : "Creates a cloned polygon from the given vertices with couter clockwise orientation.",
-					"parameters" : [
-						["vertices", "Coord2D[*]", "the vertices"]
-					],
-					"returns" : [
-						["Polygon2D", "the result"]
-					]
-				},
-				"PolygonComplexity2D" : {
-					"description" : "Calculates the complexity of a polygon.",
-					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
-					],
-					"returns" : [
-						["string", "'Concave', 'Convex', or 'Invalid'"]
-					]
-				},
-				"CoordPolygonPosition2D" : {
-					"description" : "Calculates the position of a coordinate and a polygon.",
-					"parameters" : [
-						["coord", "Coord", "the coordinate"],
-						["polygon", "Polygon2D", "the polygon"]
-					],
-					"returns" : [
-						["string", "'CoordOutsideOfPolygon', 'CoordInsideOfPolygon', or 'CoordOnPolygonEdge'"]
-					]
-				},
-				"SectorIntersectsPolygon2D" : {
-					"description" : "Determines if a sector intersects a polygon. The sides next to the starting and ending vertices will be skipped. To avoid this, give -1 for these values.",
-					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"],
-						["sector", "Sector2D", "the sector"],
-						["from", "integer", "index of starting vertex"],
-						["end", "integer", "index of ending vertex"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"IsPolygonVertexVisible2D" : {
-					"description" : "Determines if a polygons vertex is visible from an another vertex. It means that the sector between the vertices does not intersects any side of the polygon and the sector lies fully inside the polygon.",
-					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"],
-						["from", "integer", "index of starting vertex"],
-						["end", "integer", "index of ending vertex"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CreatePolygonWithHole2D" : {
-					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
-					"parameters" : [
-						["vertices", "Coord2D[*]", "array of contour vertices with null values at contour ends"]
-					],
-					"returns" : [
-						["int[*]", "the result"]
-					]
-				},
-				"PolygonTriangulate2D" : {
-					"description" : "Triangulates a polygon. The result defines triangles as an array of arrays with three original vertex indices.",
-					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"]
-					],
-					"returns" : [
-						["integer[3][*]", "the result"]
-					]
-				},
-				"CheckTriangulation2D" : {
-					"description" : "Checks a triangulation created with PolygonTriangulate2D. It checks if the area of triangles equal to the area of the original polygon.",
-					"parameters" : [
-						["polygon", "Polygon2D", "the polygon"],
-						["triangles", "integer[3][*]", "the triangulation"]
-					],
-					"returns" : [
-						["boolean", "the result"]
-					]
-				},
-				"CreatePolygonWithHole" : {
-					"description" : "Creates a simple polygon from multiple contours by creating in-out edges between contours. The input array should contain null values at contour ends.",
-					"parameters" : [
-						["vertices", "Coord[*]", "array of contour vertices with null values at contour ends"]
-					],
-					"returns" : [
-						["int[*]", "the result"]
-					]
-				},
-				"PolygonTriangulate" : {
-					"description" : "Triangulates a polygon. The result defines triangles as an array of arrays with three original vertex indices.",
-					"parameters" : [
-						["polygon", "Polygon", "the polygon"]
-					],
-					"returns" : [
-						["integer[3][*]", "the result"]
-					]
-				},
 				"OffsetPolygonContour" : {
 					"description" : "Offsets all vertices of a polygon.",
 					"parameters" : [
@@ -1520,6 +938,15 @@
 					],
 					"returns" : [
 						["boolean", "success"]
+					]
+				},
+				"TriangulatePolygon" : {
+					"description" : "Triangulates a polygon. The result defines triangles as an array of arrays with three original vertex indices.",
+					"parameters" : [
+						["polygon", "Polygon", "the polygon"]
+					],
+					"returns" : [
+						["integer[3][*]", "the result"]
 					]
 				},
 				"TraverseOctreeNodes" : {
@@ -1621,6 +1048,84 @@
 								["y", "number", "the second component"]
 							]
 						},
+						"IsEqual" : {
+							"description" : "Returns if the coordinate is equal with the given one.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"IsEqualWithEps" : {
+							"description" : "Returns if the coordinate is equal with the given one. Uses the given epsilon for comparison.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"],
+								["eps", "number", "the epsilon"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"DistanceTo" : {
+							"description" : "Calculates the coordinate distance to the given one.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"Length" : {
+							"description" : "Calculates the length of the coordinate vector.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"MultiplyScalar" : {
+							"description" : "Multiplies the vector with a scalar.",
+							"parameters" : [
+								["scalar", "number", "the scalar"]
+							],
+							"returns" : [
+								["Coord2D", "this pointer"]
+							]
+						},
+						"Normalize" : {
+							"description" : "Normalizes the coordinate vector.",
+							"returns" : [
+								["Coord2D", "this pointer"]
+							]
+						},
+						"SetLength" : {
+							"description" : "Sets the length of the coordinate vector.",
+							"parameters" : [
+								["length", "number", "the length"]
+							],
+							"returns" : [
+								["Coord2D", "this pointer"]
+							]
+						},
+						"Offset" : {
+							"description" : "Offsets the coordinate.",
+							"parameters" : [
+								["direction", "Vector2D", "the direction of the offset"],
+								["distance", "number", "the distance of the offset"]
+							],
+							"returns" : [
+								["Coord2D", "this pointer"]
+							]
+						},
+						"Rotate" : {
+							"description" : "Rotates the coordinate.",
+							"parameters" : [
+								["angle", "number", "the angle of the rotation"],
+								["origo", "Coord2D", "the origo of the rotation"]
+							],
+							"returns" : [
+								["Coord2D", "this pointer"]
+							]
+						},
 						"ToString" : {
 							"description" : "Converts the coordinate values to string.",
 							"returns" : [
@@ -1635,33 +1140,8 @@
 						}
 					}
 				},
-				"PolarCoord" : {
-					"description" : "Represents a 2D polar coordinate.",
-					"parameters" : [
-						["radius", "number", "the first component"],
-						["angle", "number", "the second component"]
-					],
-					"functions" : {
-						"Set" : {
-							"description" : "Sets the coordinate.",
-							"parameters" : [
-								["radius", "number", "the first component"],
-								["angle", "number", "the second component"]
-							]
-						},
-						"ToString" : {
-							"description" : "Converts the coordinate values to string.",
-							"returns" : [
-								["string", "the string representation of the coordinate"]
-							]
-						},
-						"Clone" : {
-							"description" : "Clones the coordinate.",
-							"returns" : [
-								["PolarCoord", "a cloned instance"]
-							]
-						}
-					}
+				"Vector2D" : {
+					"description" : "Same as Coord2D."
 				},
 				"Coord" : {
 					"description" : "Represents a 3D coordinate.",
@@ -1679,6 +1159,112 @@
 								["z", "number", "the third component"]
 							]
 						},
+						"IsEqual" : {
+							"description" : "Returns if the coordinate is equal with the given one.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"IsEqualWithEps" : {
+							"description" : "Returns if the coordinate is equal with the given one. Uses the given epsilon for comparison.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"],
+								["eps", "number", "the epsilon"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"DistanceTo" : {
+							"description" : "Calculates the coordinate distance to the given one.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"AngleTo" : {
+							"description" : "Calculates the coordinate vector angle to the given one.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"IsCollinearWith" : {
+							"description" : "Calculates the coordinate vector is collinear with the given one.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"Length" : {
+							"description" : "Calculates the length of the coordinate vector.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"MultiplyScalar" : {
+							"description" : "Multiplies the vector with a scalar.",
+							"parameters" : [
+								["scalar", "number", "the scalar"]
+							],
+							"returns" : [
+								["Coord", "this pointer"]
+							]
+						},
+						"Normalize" : {
+							"description" : "Normalizes the coordinate vector.",
+							"returns" : [
+								["Coord", "this pointer"]
+							]
+						},
+						"SetLength" : {
+							"description" : "Sets the length of the coordinate vector.",
+							"parameters" : [
+								["length", "number", "the length"]
+							],
+							"returns" : [
+								["Coord", "this pointer"]
+							]
+						},
+						"Offset" : {
+							"description" : "Offsets the coordinate.",
+							"parameters" : [
+								["direction", "Vector", "the direction of the offset"],
+								["distance", "number", "the distance of the offset"]
+							],
+							"returns" : [
+								["Coord", "this pointer"]
+							]
+						},
+						"Rotate" : {
+							"description" : "Rotates the coordinate.",
+							"parameters" : [
+								["axis", "Vector", "the axis of the rotation"],
+								["angle", "number", "the angle of the rotation"],
+								["origo", "Coord", "the origo of the rotation"]
+							],
+							"returns" : [
+								["Coord", "this pointer"]
+							]
+						},
+						"ToCoord2D" : {
+							"description" : "Converts the coordinate to a 2D coordinate.",
+							"parameters" : [
+								["normal", "Vector", "the normal vector for conversion"]
+							],
+							"returns" : [
+								["Coord2D", "the result"]
+							]
+						},
 						"ToString" : {
 							"description" : "Converts the coordinate values to string.",
 							"returns" : [
@@ -1692,39 +1278,6 @@
 							]
 						}
 					}
-				},
-				"SphericalCoord" : {
-					"description" : "Represents a 3D spherical coordinate.",
-					"parameters" : [
-						["radius", "number", "the first component"],
-						["theta", "number", "the second component"],
-						["phi", "number", "the third component"]
-					],
-					"functions" : {
-						"Set" : {
-							"description" : "Sets the coordinate.",
-							"parameters" : [
-								["radius", "number", "the first component"],
-								["theta", "number", "the second component"],
-								["phi", "number", "the third component"]
-							]
-						},
-						"ToString" : {
-							"description" : "Converts the coordinate values to string.",
-							"returns" : [
-								["string", "the string representation of the coordinate"]
-							]
-						},
-						"Clone" : {
-							"description" : "Clones the coordinate.",
-							"returns" : [
-								["SphericalCoord", "a cloned instance"]
-							]
-						}
-					}
-				},
-				"Vector2D" : {
-					"description" : "Same as Coord2D."
 				},
 				"Vector" : {
 					"description" : "Same as Coord."
@@ -1747,6 +1300,18 @@
 								["e3", "Vector", "third direction vector"]
 							]
 						},
+						"CoordSystemToDirectionVectors" : {
+							"description" : "Converts coordinate system vectors to origo relative direction vectors.",
+							"returns" : [
+								["CoordSystem", "this pointer"]
+							]
+						},
+						"CoordSystemToAbsoluteCoords" : {
+							"description" : "Converts the coordinate system vectors to absolute coordinates.",
+							"returns" : [
+								["CoordSystem", "this pointer"]
+							]
+						},
 						"Clone" : {
 							"description" : "Clones the coordinate system.",
 							"returns" : [
@@ -1767,6 +1332,34 @@
 							"parameters" : [
 								["beg", "Coord2D", "the beginning coordinate"],
 								["end", "Coord2D", "the ending coordinate"]
+							]
+						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of the sector and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["CoordSectorPosition2D", "the result"]
+							]
+						},
+						"SectorPosition" : {
+							"description" : "Calculates the position of the sector and the given sector.",
+							"parameters" : [
+								["sector", "Sector2D", "the sector"],
+								["intersection", "Coord2D", "(out) the intersection point if it exists"]
+							],
+							"returns" : [
+								["SectorSectorPosition2D", "the result"]
+							]
+						},
+						"ProjectCoord" : {
+							"description" : "Calculates the projected coordinate of the given coordinate.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["Coord2D", "the projected coordinate"]
 							]
 						},
 						"Clone" : {
@@ -1797,6 +1390,15 @@
 								["number", "the result"]
 							]
 						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of the sector and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["CoordSectorPosition", "the result"]
+							]
+						},
 						"Clone" : {
 							"description" : "Clones the sector.",
 							"returns" : [
@@ -1819,6 +1421,15 @@
 								["direction", "Vector2D", "the direction of the line"]
 							]
 						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of the line and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["CoordLinePosition2D", "the result"]
+							]
+						},
 						"Clone" : {
 							"description" : "Clones the line.",
 							"returns" : [
@@ -1839,6 +1450,46 @@
 							"parameters" : [
 								["start", "Coord", "the start point of the line"],
 								["direction", "Vector", "the direction of the line"]
+							]
+						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of the line and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"],
+								["projected", "Coord", "(out) the projected coordinate"]
+							],
+							"returns" : [
+								["CoordLinePosition", "the result"]
+							]
+						},
+						"ProjectCoord" : {
+							"description" : "Calculates the projected coordinate of the given coordinate.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"ClosestPoint" : {
+							"description" : "Calculates the closest points between the line and a given line.",
+							"parameters" : [
+								["line", "Line", "the line"],
+								["thisClosestPoint", "Coord", "(out) the closest point on the current line"],
+								["lineClosestPoint", "Coord", "(out) the closest point on the given line"]
+							],
+							"returns" : [
+								["boolean", "success"]
+							]
+						},
+						"LinePosition" : {
+							"description" : "Calculates the position of the line and the given line.",
+							"parameters" : [
+								["line", "Line", "the line"],
+								["intersection", "Coord", "(out) the intersection point if it exists"]
+							],
+							"returns" : [
+								["LineLinePosition", "the result"]
 							]
 						},
 						"Clone" : {
@@ -1901,6 +1552,15 @@
 							"description" : "Returns the size of the box.",
 							"returns" : [
 								["Coord", "the result"]
+							]
+						},
+						"IsCoordInside" : {
+							"description" : "Determines if the given coordinate is inside the box.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["boolean", "the result"]
 							]
 						},
 						"Clone" : {
@@ -2007,6 +1667,61 @@
 								["Vector", "the result"]
 							]
 						},
+						"CoordSignedDistance" : {
+							"description" : "Calculates the signed distance of a coordinate and the plane.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"CoordDistance" : {
+							"description" : "Calculates the distance of a coordinate and the plane.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"ProjectCoord" : {
+							"description" : "Projects a coordinate to the plane.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["Coord", "the projected coordinate"]
+							]
+						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of the plane and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["CoordPlanePosition", "thre result"]
+							]
+						},
+						"LinePosition" : {
+							"description" : "Calculates the position of the plane and the given line.",
+							"parameters" : [
+								["line", "Line", "the line"],
+								["intersection", "Coord", "(out) the intersection point if it exists"]
+							],
+							"returns" : [
+								["CoordLinePosition", "the result"]
+							]
+						},
+						"LineIntersection" : {
+							"description" : "Calculates the intersection point of a line and a plane. The line should not be parallel to the plane.",
+							"parameters" : [
+								["line", "Line", "the line"]
+							],
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
 						"Clone" : {
 							"description" : "Clones the plane.",
 							"returns" : [
@@ -2025,6 +1740,12 @@
 								["y", "number", "the y coordinate of the vertex"]
 							]
 						},
+						"AddVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the polygon.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							]
+						},
 						"GetVertex" : {
 							"description" : "Returns the vertex with the given index.",
 							"parameters" : [
@@ -2034,22 +1755,142 @@
 								["Coord2D", "the vertex"]
 							]
 						},
-						"SetVertex" : {
-							"description" : "Modifies the coordinates of an existing vertex.",
-							"parameters" : [
-								["index", "integer", "the index of the vertex"],
-								["x", "number", "the x coordinate of the vertex"],
-								["y", "number", "the y coordinate of the vertex"]
-							]
-						},
 						"VertexCount" : {
 							"description" : "Returns the vertex count of the polygon.",
 							"returns" : [
 								["integer", "vertex count"]
 							]
 						},
+						"EnumerateVertices" : {
+							"description" : "Enumerates the vertices of the polygon, and calls a function for each vertex.",
+							"parameters" : [
+								["from", "integer", "the start vertex index"],
+								["to", "integer", "the end vertex index"],
+								["callback", "function", "the callback function"]
+							]
+						},
+						"GetNextVertex" : {
+							"description" : "Returns the vertex index after the given one.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetPrevVertex" : {
+							"description" : "Returns the vertex index before the given one.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"ShiftVertices" : {
+							"description" : "Shifts polygon vertices.",
+							"parameters" : [
+								["count", "integer", "the number of shifts"]
+							]
+						},
+						"GetSignedArea" : {
+							"description" : "Calculates the signed area of the polygon.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"GetArea" : {
+							"description" : "Calculates the area of the polygon.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"GetOrientation" : {
+							"description" : "Calculates the orientation of the polygon.",
+							"returns" : [
+								["Orientation", "the result"]
+							]
+						},
+						"GetComplexity" : {
+							"description" : "Calculates the complexity of the polygon.",
+							"returns" : [
+								["Complexity", "the result"]
+							]
+						},
+						"GetVertexOrientation" : {
+							"description" : "Calculates the orientation of the given vertex of the polygon.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["Orientation", "the result"]
+							]
+						},
+						"IsConvexVertex" : {
+							"description" : "Returns if the given vertex is convex.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"IsConcaveVertex" : {
+							"description" : "Returns if the given vertex is concave.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"CoordPosition" : {
+							"description" : "Calculates the position of a coordinate and the polygon.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["CoordPolygonPosition2D", "the result"]
+							]
+						},
+						"SectorPosition" : {
+							"description" : "Calculates the position of a sector and the polygon. The given begin and end vertex indices are omitted form intersection checking.",
+							"parameters" : [
+								["sector", "Sector3D", "the sector"],
+								["begIndex", "integer", "begin vertex index"],
+								["endIndex", "integer", "end vertex index"]
+							],
+							"returns" : [
+								["CoordSectorPosition2D", "the result"]
+							]
+						},
+						"IsDiagonal" : {
+							"description" : "Returns if the sector between two vertices is diagonal.",
+							"parameters" : [
+								["from", "integer", "begin vertex index"],
+								["to", "integer", "end vertex index"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"ToArray" : {
+							"description" : "Creates an array of vertices from polygon.",
+							"returns" : [
+								["Coord2D[*]", "the result"]
+							]
+						},
+						"FromArray" : {
+							"description" : "Creates the polygon from an array of vertices.",
+							"parameters" : [
+								["vertices", "Coord2D[*]", "the array of vertices"]
+							]
+						},
 						"Clear" : {
 							"description" : "Makes the polygon empty."
+						},
+						"ClearCache" : {
+							"description" : "Clears stored values from the polygon."
 						},
 						"Clone" : {
 							"description" : "Clones the polygon.",
@@ -2063,43 +1904,78 @@
 					"description" : "Represents a 2D polygon with more contours.",
 					"functions" : {
 						"AddVertex" : {
-							"description" : "Adds a vertex to a contour of the polygon.",
+							"description" : "Adds a vertex to the last contour of the polygon.",
 							"parameters" : [
-								["contour", "integer", "the index of the contour"],
 								["x", "number", "the x coordinate of the vertex"],
 								["y", "number", "the y coordinate of the vertex"]
 							]
 						},
-						"VertexCount" : {
-							"description" : "Returns the vertex count of a contour of the polygon.",
+						"AddVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the last contour of the polygon.",
 							"parameters" : [
-								["contour", "integer", "the index of the contour"]
+								["coord", "Coord2D", "the coordinate"]
+							]
+						},
+						"AddContourVertex" : {
+							"description" : "Adds a vertex to the given contour of the polygon.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["x", "number", "the x coordinate of the vertex"],
+								["y", "number", "the y coordinate of the vertex"]
+							]
+						},
+						"AddContourVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the given contour of the polygon.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["coord", "Coord2D", "the coordinate"]
+							]
+						},
+						"VertexCount" : {
+							"description" : "Returns the vertex count of the polygon.",
+							"returns" : [
+								["integer", "vertex count"]
+							]
+						},
+						"ContourVertexCount" : {
+							"description" : "Returns the vertex count of the given contour of the polygon.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"]
 							],
 							"returns" : [
 								["integer", "vertex count"]
 							]
 						},
-						"GetVertex" : {
-							"description" : "Returns the vertex of a contour with the given index.",
+						"AddContour" : {
+							"description" : "Adds a contour to the polygon. If the given contour is null, an empty contour is added to the polygon.",
 							"parameters" : [
-								["contour", "integer", "the index of the contour"],
-								["index", "integer", "the index of the vertex"]
+								["contour", "Polygon2D", "the new contour"]
+							]
+						},
+						"GetLastContour" : {
+							"description" : "Returns the last contour of the polygon.",
+							"returns" : [
+								["Polygon2D", "the result"]
+							]
+						},
+						"GetContourVertex" : {
+							"description" : "Returns the vertex of the given contour with the given index.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["vertexIndex", "integer", "the index of the vertex"]
 							],
 							"returns" : [
 								["Coord2D", "the vertex"]
 							]
 						},
-						"SetVertex" : {
-							"description" : "Modifies the coordinates of an existing vertex of a contour.",
+						"GetContour" : {
+							"description" : "Returns the contour with the given index.",
 							"parameters" : [
-								["contour", "integer", "the index of the contour"],
-								["index", "integer", "the index of the vertex"],
-								["x", "number", "the x coordinate of the vertex"],
-								["y", "number", "the y coordinate of the vertex"]
+								["contourIndex", "integer", "the index of the contour"]
+							],
+							"returns" : [
+								["Polygon2D", "the contour"]
 							]
-						},
-						"AddContour" : {
-							"description" : "Adds new contour to the polygon."
 						},
 						"ContourCount" : {
 							"description" : "Returns the contour count of the polygon.",
@@ -2107,13 +1983,40 @@
 								["integer", "contour count"]
 							]
 						},
-						"GetContour" : {
-							"description" : "Returns the contour with the given index.",
-							"parameters" : [
-								["contour", "integer", "the index of the contour"]
-							],
+						"GetSignedArea" : {
+							"description" : "Calculates the signed area of the polygon.",
 							"returns" : [
-								["Polygon2D", "the contour"]
+								["number", "the result"]
+							]
+						},
+						"GetArea" : {
+							"description" : "Calculates the area of the polygon.",
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"GetOrientation" : {
+							"description" : "Calculates the orientation of the polygon.",
+							"returns" : [
+								["Orientation", "the result"]
+							]
+						},
+						"GetComplexity" : {
+							"description" : "Calculates the complexity of the polygon.",
+							"returns" : [
+								["Complexity", "the result"]
+							]
+						},
+						"ToArray" : {
+							"description" : "Creates an array of vertices from polygon. The result contains null values between contours.",
+							"returns" : [
+								["Coord2D[*]", "the result"]
+							]
+						},
+						"FromArray" : {
+							"description" : "Creates the polygon from an array of vertices. The input should contain null values between contours.",
+							"parameters" : [
+								["vertices", "Coord2D[*]", "the array of vertices"]
 							]
 						},
 						"Clear" : {
@@ -2138,6 +2041,12 @@
 								["z", "number", "the z coordinate of the vertex"]
 							]
 						},
+						"AddVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the polygon.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							]
+						},
 						"GetVertex" : {
 							"description" : "Returns the vertex with the given index.",
 							"parameters" : [
@@ -2147,13 +2056,108 @@
 								["Coord", "the vertex"]
 							]
 						},
-						"SetVertex" : {
-							"description" : "Modifies the coordinates of an existing vertex.",
+						"VertexCount" : {
+							"description" : "Returns the vertex count of the polygon.",
+							"returns" : [
+								["integer", "vertex count"]
+							]
+						},
+						"GetNextVertex" : {
+							"description" : "Returns the vertex index after the given one.",
 							"parameters" : [
-								["index", "integer", "the index of the vertex"],
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetVertexAngle" : {
+							"description" : "Returns the angle of the given vertex.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"GetPrevVertex" : {
+							"description" : "Returns the vertex index before the given one.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetNormal" : {
+							"description" : "Calculates the normal vector of the polygon.",
+							"returns" : [
+								["Vector", "the result"]
+							]
+						},
+						"ToPolygon2D" : {
+							"description" : "Converts the polygon to a 2D polygon.",
+							"returns" : [
+								["Polygon2D", "the result"]
+							]
+						},
+						"ToArray" : {
+							"description" : "Creates an array of vertices from polygon.",
+							"returns" : [
+								["Coord[*]", "the result"]
+							]
+						},
+						"FromArray" : {
+							"description" : "Creates the polygon from an array of vertices.",
+							"parameters" : [
+								["vertices", "Coord[*]", "the array of vertices"]
+							]
+						},
+						"Clear" : {
+							"description" : "Makes the polygon empty."
+						},
+						"ClearCache" : {
+							"description" : "Clears stored values from the polygon."
+						},
+						"Clone" : {
+							"description" : "Clones the polygon.",
+							"returns" : [
+								["Polygon", "a cloned instance"]
+							]
+						}
+					}
+				},
+				"ContourPolygon" : {
+					"description" : "Represents a 3D polygon with more contours.",
+					"functions" : {
+						"AddVertex" : {
+							"description" : "Adds a vertex to the last contour of the polygon.",
+							"parameters" : [
 								["x", "number", "the x coordinate of the vertex"],
 								["y", "number", "the y coordinate of the vertex"],
 								["z", "number", "the z coordinate of the vertex"]
+							]
+						},
+						"AddVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the last contour of the polygon.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							]
+						},
+						"AddContourVertex" : {
+							"description" : "Adds a vertex to the given contour of the polygon.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["x", "number", "the x coordinate of the vertex"],
+								["y", "number", "the y coordinate of the vertex"],
+								["z", "number", "the z coordinate of the vertex"]
+							]
+						},
+						"AddContourVertexCoord" : {
+							"description" : "Adds a vertex coordinate to the given contour of the polygon.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["coord", "Coord", "the coordinate"]
 							]
 						},
 						"VertexCount" : {
@@ -2162,13 +2166,77 @@
 								["integer", "vertex count"]
 							]
 						},
+						"ContourVertexCount" : {
+							"description" : "Returns the vertex count of the given contour of the polygon.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"]
+							],
+							"returns" : [
+								["integer", "vertex count"]
+							]
+						},
+						"AddContour" : {
+							"description" : "Adds a contour to the polygon. If the given contour is null, an empty contour is added to the polygon.",
+							"parameters" : [
+								["contour", "Polygon", "the new contour"]
+							]
+						},
+						"GetLastContour" : {
+							"description" : "Returns the last contour of the polygon.",
+							"returns" : [
+								["Polygon", "the result"]
+							]
+						},
+						"GetContourVertex" : {
+							"description" : "Returns the vertex of the given contour with the given index.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"],
+								["vertexIndex", "integer", "the index of the vertex"]
+							],
+							"returns" : [
+								["Coord", "the vertex"]
+							]
+						},
+						"GetContour" : {
+							"description" : "Returns the contour with the given index.",
+							"parameters" : [
+								["contourIndex", "integer", "the index of the contour"]
+							],
+							"returns" : [
+								["Polygon", "the contour"]
+							]
+						},
+						"ContourCount" : {
+							"description" : "Returns the contour count of the polygon.",
+							"returns" : [
+								["integer", "contour count"]
+							]
+						},
+						"ToContourPolygon2D" : {
+							"description" : "Converts the polygon to a 2D polygon.",
+							"returns" : [
+								["ContourPolygon2D", "the result"]
+							]
+						},
+						"ToArray" : {
+							"description" : "Creates an array of vertices from polygon. The result contains null values between contours.",
+							"returns" : [
+								["Coord[*]", "the result"]
+							]
+						},
+						"FromArray" : {
+							"description" : "Creates the polygon from an array of vertices. The input should contain null values between contours.",
+							"parameters" : [
+								["vertices", "Coord[*]", "the array of vertices"]
+							]
+						},
 						"Clear" : {
 							"description" : "Makes the polygon empty."
 						},
 						"Clone" : {
 							"description" : "Clones the polygon.",
 							"returns" : [
-								["Polygon", "a cloned instance"]
+								["ContourPolygon", "a cloned instance"]
 							]
 						}
 					}
@@ -2399,6 +2467,106 @@
 						}
 					}
 				}
+			},
+			"enums" : {
+				"Orientation" : {
+					"description" : "Orientation of coordinates.",
+					"values" : [
+						["Invalid", "invalid orientation or collinear"],
+						["CounterClockwise", "counter clockwise orientation"],
+						["Clockwise", "clockwise orientation"]
+					]
+				},
+				"CoordSectorPosition2D" : {
+					"description" : "Position of a coordinate and a sector.",
+					"values" : [
+						["CoordInsideOfSector", "coordinate lies inside of sector"],
+						["CoordOnSectorEndCoord", "coordinate lies at the end of the sector"],
+						["CoordOutsideOfSector", "coordinate lies outside of the sector"]
+					]
+				},
+				"SectorSectorPosition2D" : {
+					"description" : "Position of two sectors.",
+					"values" : [
+						["SectorsDontIntersect", "sectors do not intersect"],
+						["SectorsIntersectCoincident", "sectors intersect coincident"],
+						["SectorsIntersectEndPoint", "sectors intersect at end point"],
+						["SectorsIntersectOnePoint", "sectors intersect one point"]
+					]
+				},
+				"CoordSectorPosition" : {
+					"description" : "Position of a coordinate and a sector.",
+					"values" : [
+						["CoordInsideOfSector", "coordinate lies inside of sector"],
+						["CoordOnSectorEndCoord", "coordinate lies at the end of the sector"],
+						["CoordOutsideOfSector", "coordinate lies outside of the sector"]
+					]
+				},
+				"CoordLinePosition2D" : {
+					"description" : "Position of a coordinate and a line.",
+					"values" : [
+						["CoordOnLine", "coordinate lies on the line"],
+						["CoordAtLineLeft", "coordinate lies on the left side of the line"],
+						["CoordAtLineRight", "coordinate lies on the left side right the line"]
+					]
+				},
+				"CoordLinePosition" : {
+					"description" : "Position of a coordinate and a line.",
+					"values" : [
+						["CoordOnLine", "coordinate lies on the line"],
+						["CoordOutsideOfLine", "coordinate lies outside of the line"]
+					]
+				},
+				"LineLinePosition" : {
+					"description" : "Position of two lines.",
+					"values" : [
+						["LinesDontIntersect", "lines do not intersect"],
+						["LinesIntersectsCoincident", "lines intersect coincident"],
+						["LinesIntersectsOnePoint", "lines intersect one point"]
+					]
+				},
+				"CoordPlanePosition" : {
+					"description" : "Position of a coordinate and a plane.",
+					"values" : [
+						["CoordOnPlane", "coordinate lies on the plane"],
+						["CoordInFrontOfPlane", "coordinate lies in front of of the plane"],
+						["CoordAtBackOfPlane", "coordinate lies at the back of the plane"]
+					]
+				},
+				"LinePlanePosition" : {
+					"description" : "Position of a line and a plane.",
+					"values" : [
+						["LineParallelToPlane", "line is parallel to the plane"],
+						["LineIntersectsPlane", "line intersects the plane"]
+					]
+				},
+				"Complexity" : {
+					"description" : "Complexity of a polygon.",
+					"values" : [
+						["Invalid", "invalid polygon"],
+						["Convex", "convex polygon"],
+						["Concave", "concave polygon"],
+						["Complex", "complex polygon (contains holes)"]
+					]
+				},
+				"CoordPolygonPosition2D" : {
+					"description" : "Position of a coordinate and a polygon.",
+					"values" : [
+						["OnVertex", "coordinate lies on a vertex of the polygon"],
+						["OnEdge", "coordinate lies on an edge of the polygon"],
+						["Inside", "coordinate lies inside the polygon"],
+						["Outside", "coordinate lies outside of the polygon"]
+					]
+				},
+				"SectorPolygonPosition2D" : {
+					"description" : "Position of a sector and a polygon.",
+					"values" : [
+						["IntersectionOnePoint", "sector intersects polygon"],
+						["IntersectionCoincident", "sector lies on an edge of the polygon"],
+						["IntersectionOnVertex", "sector intersects polygon on a vertex"],
+						["NoIntersection", "sector does not intersect polygon"]
+					]
+				}
 			}
 		},
 		"Modeler" : {
@@ -2560,6 +2728,16 @@
 					],
 					"returns" : [
 						["Vector[*][*]", "the result"]
+					]
+				},
+				"CalculatePolygonCurveGroups" : {
+					"description" : "Calculates the curve groups for a given polygon.",
+					"parameters" : [
+						["polygon", "Polygon", "the polygon"],
+						["curveAngle", "number", "the curve angle"]
+					],
+					"returns" : [
+						["integer[*]", "the curve groups"]
 					]
 				},
 				"MakeBodyInsideOut" : {
@@ -2877,20 +3055,8 @@
 						["basePolygon", "Coord[*]", "the base polygon"],
 						["direction", "Vector", "the vector of the offset"],
 						["height", "number", "the height of the prism"],
-						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
-					],
-					"returns" : [
-						["Body", "the result"]
-					]
-				},
-				"GenerateCurvedPrism" : {
-					"description" : "Same as GeneratePrism, but curve groups can be defined for all sides.",
-					"parameters" : [
-						["basePolygon", "Coord[*]", "the base polygon"],
-						["curveGroups", "integer[*]", "the curve groups"],
-						["direction", "Vector", "the vector of the offset"],
-						["height", "number", "the height of the prism"],
-						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
+						["curveAngle", "number", "if not null, defines the curve angle of the prism"]
 					],
 					"returns" : [
 						["Body", "the result"]
@@ -2902,19 +3068,8 @@
 						["basePolygon", "Coord[*]", "the base polygon which can contain null values"],
 						["direction", "Vector", "the vector of the offset"],
 						["height", "number", "the height of the prism"],
-						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
-					],
-					"returns" : [
-						["Body", "the result"]
-					]
-				},
-				"GenerateCurvedPrismWithHole" : {
-					"description" : "Same as GeneratePrismWithHole, but curve groups can be defined for all sides.",
-					"parameters" : [
-						["basePolygon", "Coord[*]", "the base polygon which can contain null values"],
-						["direction", "Vector", "the vector of the offset"],
-						["height", "number", "the height of the prism"],
-						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
+						["curveAngle", "number", "if not null, defines the curve angle of the prism"]
 					],
 					"returns" : [
 						["Body", "the result"]
@@ -3883,6 +4038,18 @@
 								["Box", "the result"]
 							]
 						},
+						"GetCenter" : {
+							"description" : "Returns the center of the bounding box of the body.",
+							"returns" : [
+								["Coord", "the result"]
+							]
+						},
+						"GetBoundingSphere" : {
+							"description" : "Returns the bounding sphere of the body.",
+							"returns" : [
+								["Sphere", "the result"]
+							]
+						},
 						"Finalize" : {
 							"description" : "Finalizes the body. This operation calculates normal vectors and fixes the body if some data is missing from it.",
 							"parameters" : [
@@ -4311,7 +4478,8 @@
 					"parameters" : [
 						["svgObject", "html svg element", "the svg element"],
 						["height", "number", "the height of the result body"],
-						["segmentLength", "number", "the maximum length of curved segments"]
+						["segmentLength", "number", "the maximum length of curved segments"],
+						["curveAngle", "number", "if not null, defines the curve angle of the model"]
 					],
 					"returns" : [
 						["Body", "the result"]

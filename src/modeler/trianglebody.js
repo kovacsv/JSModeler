@@ -286,6 +286,41 @@ JSM.TriangleBody.prototype.GetBoundingBox = function ()
 };
 
 /**
+* Function: TriangleBody.GetCenter
+* Description: Returns the center of the bounding box of the body.
+* Returns:
+*	{Coord} the result
+*/
+JSM.TriangleBody.prototype.GetCenter = function ()
+{
+	var boundingBox = this.GetBoundingBox ();
+	return boundingBox.GetCenter ();
+};
+
+/**
+* Function: TriangleBody.GetBoundingSphere
+* Description: Returns the bounding sphere of the body.
+* Returns:
+*	{Sphere} the result
+*/
+JSM.TriangleBody.prototype.GetBoundingSphere = function ()
+{
+	var center = this.GetCenter ();
+	var radius = 0.0;
+	
+	var i, current;
+	for (i = 0; i < this.vertices.length; i++) {
+		current = center.DistanceTo (this.vertices[i]);
+		if (JSM.IsGreater (current, radius)) {
+			radius = current;
+		}
+	}
+	
+	var result = new JSM.Sphere (center, radius);
+	return result;
+};
+
+/**
 * Function: TriangleBody.Finalize
 * Description:
 *	Finalizes the body. This operation calculates normal vectors
@@ -314,8 +349,8 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 				}
 			}
 			
-			averageNormal = JSM.VectorMultiply (averageNormal, 1.0 / averageCount);
-			averageNormal = JSM.VectorNormalize (averageNormal);
+			averageNormal.MultiplyScalar (1.0 / averageCount);
+			averageNormal.Normalize ();
 			return body.AddNormal (averageNormal.x, averageNormal.y, averageNormal.z);
 		}
 	

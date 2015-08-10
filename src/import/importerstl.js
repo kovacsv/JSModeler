@@ -150,7 +150,7 @@ JSM.ConvertStlToJsonData = function (arrayBuffer, stringBuffer)
 				var v0Index = currentBody.AddVertex (v0[0], v0[1], v0[2]);
 				var v1Index = currentBody.AddVertex (v1[0], v1[1], v1[2]);
 				var v2Index = currentBody.AddVertex (v2[0], v2[1], v2[2]);
-				var triangleNormal = JSM.VectorNormalize (new JSM.Vector (normal[0], normal[1], normal[2]));
+				var triangleNormal = new JSM.Vector (normal[0], normal[1], normal[2]).Normalize ();
 				var normalIndex = currentBody.AddNormal (triangleNormal.x, triangleNormal.y, triangleNormal.z);
 				currentBody.AddTriangle (v0Index, v1Index, v2Index, normalIndex, normalIndex, normalIndex);
 			}
@@ -161,7 +161,7 @@ JSM.ConvertStlToJsonData = function (arrayBuffer, stringBuffer)
 				var v0Index = currentBody.AddVertex (v0[0], v0[1], v0[2]);
 				var v1Index = currentBody.AddVertex (v1[0], v1[1], v1[2]);
 				var v2Index = currentBody.AddVertex (v2[0], v2[1], v2[2]);
-				var triangleNormal = JSM.VectorNormalize (new JSM.Vector (normal[0], normal[1], normal[2]));
+				var triangleNormal = new JSM.Vector (normal[0], normal[1], normal[2]).Normalize ();
 				var normalIndex = currentBody.AddNormal (triangleNormal.x, triangleNormal.y, triangleNormal.z);
 				currentBody.AddTriangle (v0Index, v1Index, v2Index, normalIndex, normalIndex, normalIndex);
 			}

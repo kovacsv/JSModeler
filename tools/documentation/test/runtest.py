@@ -13,15 +13,15 @@ def Main (argv):
 	
 	referenceFilePath = os.path.join ('reference', 'testdocumentation.json')	
 	resultFilePath = os.path.join ('result', 'testdocumentation.json')
-	os.system (os.path.join ('..', 'generatejson.py') + ' TestProject testfiles.txt' + ' ' + resultFilePath)
+	os.system ('python ' + os.path.join ('..', 'generatejson.py') + ' TestProject testfiles.txt' + ' ' + resultFilePath)
 	
 	equal = filecmp.cmp (referenceFilePath, resultFilePath)	
 	if equal:
 		print 'Succeeded.'
+		shutil.rmtree (resultFolder)
 	else:
 		print 'Failed.'
 		
-	shutil.rmtree (resultFolder)
 	return
 	
 Main (sys.argv)

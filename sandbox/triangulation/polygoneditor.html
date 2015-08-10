@@ -1,0 +1,228 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+    <title>ContourPolygon2D Editor</title>
+
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../../src/core/timer.js"></script>
+	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../../src/core/async.js"></script>
+	<script type="text/javascript" src="../../src/core/check.js"></script>
+	<script type="text/javascript" src="../../src/geometry/definitions.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord2d.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../../src/geometry/box.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sphere.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon2d.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../../src/geometry/triangulation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/octree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../../src/geometry/ray.js"></script>
+	<script type="text/javascript" src="../../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../../src/modeler/light.js"></script>
+	<script type="text/javascript" src="../../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../../src/modeler/explode.js"></script>
+	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglebody.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglemodel.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglebodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/converter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/rayutils.js"></script>
+	<script type="text/javascript" src="../../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../../src/import/importer.js"></script>
+	<script type="text/javascript" src="../../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../../src/import/importercommon.js"></script>
+	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../../src/renderer/webglutils.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/rendererconverter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/jsonfileloader.js"></script>
+	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
+<!-- JSModeler includes end -->
+
+ 	<link rel="stylesheet" type="text/css" href="polygoneditor.css">
+	<script type="text/javascript" src="polygoneditor.js"></script>
+    <script type="text/javascript">
+		function ComplexityToString (complexity)
+		{
+			if (complexity == JSM.Complexity.Invalid) {
+				return 'Invalid';
+			} else if (complexity == JSM.Complexity.Convex) {
+				return 'Convex';
+			} else if (complexity == JSM.Complexity.Concave) {
+				return 'Concave';
+			}
+			return '';
+		};		
+	
+		function OrientationToString (orientation)
+		{
+			if (orientation == JSM.Orientation.Invalid) {
+				return 'Invalid';
+			} else if (orientation == JSM.Orientation.CounterClockwise) {
+				return 'CounterClockwise';
+			} else if (orientation == JSM.Orientation.Clockwise) {
+				return 'Clockwise';
+			}
+			return '';
+		};
+
+		function ComplexityToString (complexity)
+		{
+			if (complexity == JSM.Complexity.Invalid) {
+				return 'Invalid';
+			} else if (complexity == JSM.Complexity.Convex) {
+				return 'Convex';
+			} else if (complexity == JSM.Complexity.Concave) {
+				return 'Concave';
+			} else if (complexity == JSM.Complexity.Complex) {
+				return 'Complex';
+			}
+			return '';
+		};	
+	
+		function WriteAsTestCase (div, polygon)
+		{
+			var testString = ''
+			testString += 'suite.AddTest (\'Test\', function (test) {\n';
+			testString += '\tvar polygon = new JSM.ContourPolygon2D ();\n';
+			testString += '\tpolygon.AddContour ();\n';
+			var i, j, contour, vertex;
+			for (i = 0; i < polygon.ContourCount (); i++) {
+				contour = polygon.GetContour (i);
+				for (j = 0; j < contour.VertexCount (); j++) {
+					vertex = contour.GetVertex (j);
+					testString += '\tpolygon.AddVertex (' + vertex.x + ', ' + vertex.y + ');\n';
+				}
+				if (i < polygon.ContourCount () - 1) {
+					testString += '\tpolygon.AddContour ();\n';
+				}
+			}
+			testString += '\ttest.AssertEqualNum (polygon.GetArea (), ' + polygon.GetArea () + ', JSM.Eps);\n';
+			testString += '\ttest.AssertEqual (polygon.GetOrientation (), JSM.Orientation.' + OrientationToString (polygon.GetOrientation ()) + ', JSM.Eps);\n';
+			testString += '\ttest.AssertEqual (polygon.GetComplexity (), JSM.Complexity.' + ComplexityToString (polygon.GetComplexity ()) + ', JSM.Eps);\n';
+			testString += '\tvar simple = JSM.ConvertContourPolygonToPolygon2D (polygon);\n';
+			testString += '\ttest.Assert (CheckSimpleTriangulation (simple));\n';
+			testString += '});\n';
+			div.innerHTML = testString;
+		}
+	
+		function InitUI (editor)
+		{
+			function AddButton (parent, text, click)
+			{
+				var button = document.createElement ('div');
+				button.className = 'button';
+				button.innerHTML = text;
+				button.onclick = click;
+				parent.appendChild (button);
+			}
+		
+			var buttons = document.getElementById ('buttons');
+			
+			AddButton (buttons, 'show information', function () {
+				var polygon = editor.GetPolygon ();
+				var info = document.getElementById ('info');
+				var infoString = '';
+				infoString += 'VertexCount: ' + polygon.VertexCount () + ' | ';
+				infoString += 'Area: ' + polygon.GetArea () + ' | ';
+
+				var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+				var triangles = JSM.TriangulatePolygon2D (simple);
+				var orientation = polygon.GetOrientation ();
+				infoString += 'Orientation: ' + OrientationToString (polygon.GetOrientation ()) + ' | ';
+				infoString += 'Complexity: ' + ComplexityToString (polygon.GetComplexity ());
+				info.innerHTML = infoString;
+			});
+			
+			AddButton (buttons, 'convert to simple polygon', function () {
+				editor.ConvertToSimplePolygon ();
+			});			
+			
+			AddButton (buttons, 'show triangulation', function () {
+				var polygon = editor.GetPolygon ();
+				var simple = JSM.ConvertContourPolygonToPolygon2D (polygon);
+				var triangles = JSM.TriangulatePolygon2D (simple);
+				if (triangles !== null) {
+					var i, v0, v1, v2;
+					for (i = 0; i < triangles.length; i++) {
+						v0 = simple.GetVertex (triangles[i][0]);
+						v1 = simple.GetVertex (triangles[i][1]);
+						v2 = simple.GetVertex (triangles[i][2]);
+						editor.DrawAdditionalTriangle (v0, v1, v2);
+					}
+				}			
+			});
+
+			AddButton (buttons, 'write test case', function () {
+				var polygon = editor.GetPolygon ();
+				var test = document.getElementById ('test');
+				WriteAsTestCase (test, polygon);
+			});
+			
+			AddButton (buttons, 'clear', function () {
+				editor.Clear ();
+			});			
+		}
+	
+		window.onload = function () {
+			var canvas = document.getElementById ('editor');
+			var editor = new PolygonEditor ();
+			editor.Init (canvas);
+			InitUI (editor);
+		}
+    </script>
+</head>
+
+<body>
+	<div class="frame">
+		<canvas id="editor" width="800" height="600"></canvas>
+		<div id="buttons" class="buttons"></div>
+		<div id="info" class="info"></div>
+		<pre id="test" class="test"></pre>
+	</div>
+</body>
+
+</html>

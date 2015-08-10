@@ -13,14 +13,14 @@ generalSuite.AddTest ('BodyTest', function (test)
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
 	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2]));
 	test.Assert (body.VertexCount () == 3 && body.PolygonCount () == 1);
-	test.Assert (JSM.CoordIsEqual (body.GetVertex (0).position, new JSM.Coord (0, 0, 0)));
-	test.Assert (JSM.CoordIsEqual (body.GetVertex (1).position, new JSM.Coord (1, 0, 0)));
-	test.Assert (JSM.CoordIsEqual (body.GetVertex (2).position, new JSM.Coord (0, 1, 0)));
+	test.Assert (body.GetVertex (0).position.IsEqual (new JSM.Coord (0, 0, 0)));
+	test.Assert (body.GetVertex (1).position.IsEqual (new JSM.Coord (1, 0, 0)));
+	test.Assert (body.GetVertex (2).position.IsEqual (new JSM.Coord (0, 1, 0)));
 	test.Assert (body.GetPolygon (0).vertices.toString () == [0, 1, 2].toString ());
 	
 	polygonNormals = JSM.CalculateBodyPolygonNormals (body);
 	test.Assert (polygonNormals.length == 1);
-	test.Assert (JSM.CoordIsEqual (polygonNormals[0], new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[0].IsEqual (new JSM.Vector (0, 0, 1)));
 
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 1)));
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 1)));
@@ -33,15 +33,15 @@ generalSuite.AddTest ('BodyTest', function (test)
 	test.Assert (body.GetPolygon (0).VertexIndexCount () == 3);
 	test.Assert (body.GetPolygon (1).VertexIndexCount () == 4);
 	test.Assert (polygonNormals.length == 2);
-	test.Assert (JSM.CoordIsEqual (polygonNormals[0], new JSM.Vector (0, 0, 1)));
-	test.Assert (JSM.CoordIsEqual (polygonNormals[1], new JSM.Vector (0, 0, -1)));
+	test.Assert (polygonNormals[0].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[1].IsEqual (new JSM.Vector (0, 0, -1)));
 
 	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 6]));
 	polygonNormals = JSM.CalculateBodyPolygonNormals (body);
 	test.Assert (polygonNormals.length == 3);
-	test.Assert (JSM.CoordIsEqual (polygonNormals[2], new JSM.Vector (0, -1, 0)));
+	test.Assert (polygonNormals[2].IsEqual (new JSM.Vector (0, -1, 0)));
 	
-	test.Assert (JSM.CoordIsEqual (body.GetCenter (), new JSM.Coord (0.5, 0.5, 0.5)));
+	test.Assert (body.GetCenter ().IsEqual (new JSM.Coord (0.5, 0.5, 0.5)));
 	
 	body.Clear ();
 	test.Assert (body.VertexCount () == 0 && body.PolygonCount () == 0);
@@ -106,8 +106,8 @@ generalSuite.AddTest ('BodyVertexNormalTest', function (test)
 	
 	polygonNormals = JSM.CalculateBodyPolygonNormals (body);
 	test.Assert (polygonNormals.length == 2);
-	test.Assert (JSM.CoordIsEqual (polygonNormals[0], new JSM.Vector (0, 0, 1)));
-	test.Assert (JSM.CoordIsEqual (polygonNormals[1], new JSM.Vector (1, 0, 0)));
+	test.Assert (polygonNormals[0].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[1].IsEqual (new JSM.Vector (1, 0, 0)));
 	
 	body.GetPolygon (0).SetCurveGroup (0);
 	body.GetPolygon (1).SetCurveGroup (0);
@@ -115,15 +115,15 @@ generalSuite.AddTest ('BodyVertexNormalTest', function (test)
 	var vertexNormals = JSM.CalculateBodyVertexNormals (body);
 	test.Assert (vertexNormals.length == 2);
 
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][0], new JSM.Vector (0, 0, 1)));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][1], JSM.VectorNormalize (new JSM.Vector (1, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][2], JSM.VectorNormalize (new JSM.Vector (1, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][3], new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[0][0].IsEqual (new JSM.Vector (0, 0, 1).Normalize ()));
+	test.Assert (vertexNormals[0][1].IsEqual (new JSM.Vector (1, 0, 1).Normalize ()));
+	test.Assert (vertexNormals[0][2].IsEqual (new JSM.Vector (1, 0, 1).Normalize ()));
+	test.Assert (vertexNormals[0][3].IsEqual (new JSM.Vector (0, 0, 1).Normalize ()));
 
-	test.Assert (JSM.CoordIsEqual (vertexNormals[1][0], JSM.VectorNormalize (new JSM.Vector (1, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[1][1], JSM.VectorNormalize (new JSM.Vector (1, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[1][2], new JSM.Vector (1, 0, 0)));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[1][3], new JSM.Vector (1, 0, 0)));
+	test.Assert (vertexNormals[1][0].IsEqual (new JSM.Vector (1, 0, 1).Normalize ()));
+	test.Assert (vertexNormals[1][1].IsEqual (new JSM.Vector (1, 0, 1).Normalize ()));
+	test.Assert (vertexNormals[1][2].IsEqual (new JSM.Vector (1, 0, 0).Normalize ()));
+	test.Assert (vertexNormals[1][3].IsEqual (new JSM.Vector (1, 0, 0).Normalize ()));
 });
 
 generalSuite.AddTest ('AdjacencyListTest', function (test)
@@ -643,10 +643,10 @@ generatorSuite.AddTest ('GenerateRectangleTest', function (test)
 	test.Assert (rectangle.VertexCount () == 4 && rectangle.PolygonCount () == 1);
 	
 	var vertexNormals = JSM.CalculateBodyVertexNormals (rectangle);
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][0], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][1], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][2], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][3], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
+	test.Assert (vertexNormals[0][0].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[0][1].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[0][2].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[0][3].IsEqual (new JSM.Vector (0, 0, 1)));
 });
 
 generatorSuite.AddTest ('GenerateCuboidTest', function (test)
@@ -656,15 +656,15 @@ generatorSuite.AddTest ('GenerateCuboidTest', function (test)
 	test.Assert (JSM.CheckSolidBody (cuboid));
 	
 	var vertexNormals = JSM.CalculateBodyVertexNormals (cuboid);
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][0], JSM.VectorNormalize (new JSM.Vector (0, -1, 0))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][1], JSM.VectorNormalize (new JSM.Vector (0, -1, 0))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][2], JSM.VectorNormalize (new JSM.Vector (0, -1, 0))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][3], JSM.VectorNormalize (new JSM.Vector (0, -1, 0))));
+	test.Assert (vertexNormals[0][0].IsEqual (new JSM.Vector (0, -1, 0)));
+	test.Assert (vertexNormals[0][1].IsEqual (new JSM.Vector (0, -1, 0)));
+	test.Assert (vertexNormals[0][2].IsEqual (new JSM.Vector (0, -1, 0)));
+	test.Assert (vertexNormals[0][3].IsEqual (new JSM.Vector (0, -1, 0)));
 
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][0], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][1], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][2], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][3], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
+	test.Assert (vertexNormals[5][0].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[5][1].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[5][2].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[5][3].IsEqual (new JSM.Vector (0, 0, 1)));
 });
 
 generatorSuite.AddTest ('GenerateSegmentedCuboidTest', function (test)
@@ -691,10 +691,10 @@ generatorSuite.AddTest ('GenerateSegmentedRectangleTest', function (test)
 	test.Assert (plane.VertexCount () == 9 && plane.PolygonCount () == 4);
 	var polygonNormals = JSM.CalculateBodyPolygonNormals (plane);
 	test.Assert (polygonNormals.length == 4);
-	test.Assert (JSM.CoordIsEqual (polygonNormals[0], new JSM.Vector (0, 0, 1)));
-	test.Assert (JSM.CoordIsEqual (polygonNormals[1], new JSM.Vector (0, 0, 1)));
-	test.Assert (JSM.CoordIsEqual (polygonNormals[2], new JSM.Vector (0, 0, 1)));
-	test.Assert (JSM.CoordIsEqual (polygonNormals[3], new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[0].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[1].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[2].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[3].IsEqual (new JSM.Vector (0, 0, 1)));
 
 	var plane = JSM.GenerateSegmentedRectangle (1, 2, 3, 3);
 	test.Assert (plane.VertexCount () == 16 && plane.PolygonCount () == 9);
@@ -733,7 +733,7 @@ generatorSuite.AddTest ('GenerateCircleTest', function (test)
 
 	var polygonNormals = JSM.CalculateBodyPolygonNormals (circle);
 	test.Assert (polygonNormals.length == 1);
-	test.Assert (JSM.CoordIsEqual (polygonNormals[0], new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[0].IsEqual (new JSM.Vector (0, 0, 1)));
 });
 
 generatorSuite.AddTest ('GenerateCylinderTest', function (test)
@@ -753,25 +753,25 @@ generatorSuite.AddTest ('GenerateCylinderTest', function (test)
 	test.Assert (cylinder2.GetPolygon (5).VertexIndexCount () == 4);
 	
 	var vertexNormals = JSM.CalculateBodyVertexNormals (cylinder2);
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][0], JSM.VectorNormalize (new JSM.Vector (1, 0, 0))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][1], JSM.VectorNormalize (new JSM.Vector (0, -1, 0))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][2], JSM.VectorNormalize (new JSM.Vector (0, -1, 0))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][3], JSM.VectorNormalize (new JSM.Vector (1, 0, 0))));
+	test.Assert (vertexNormals[0][0].IsEqual (new JSM.Vector (1, 0, 0)));
+	test.Assert (vertexNormals[0][1].IsEqual (new JSM.Vector (0, -1, 0)));
+	test.Assert (vertexNormals[0][2].IsEqual (new JSM.Vector (0, -1, 0)));
+	test.Assert (vertexNormals[0][3].IsEqual (new JSM.Vector (1, 0, 0)));
 
-	test.Assert (JSM.CoordIsEqual (vertexNormals[1][0], JSM.VectorNormalize (new JSM.Vector (0, -1, 0))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[1][1], JSM.VectorNormalize (new JSM.Vector (-1, 0, 0))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[1][2], JSM.VectorNormalize (new JSM.Vector (-1, 0, 0))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[1][3], JSM.VectorNormalize (new JSM.Vector (0, -1, 0))));
-	
-	test.Assert (JSM.CoordIsEqual (vertexNormals[4][0], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[4][1], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[4][2], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[4][3], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][0], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][1], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][2], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][3], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
+	test.Assert (vertexNormals[1][0].IsEqual (new JSM.Vector (0, -1, 0)));
+	test.Assert (vertexNormals[1][1].IsEqual (new JSM.Vector (-1, 0, 0)));
+	test.Assert (vertexNormals[1][2].IsEqual (new JSM.Vector (-1, 0, 0)));
+	test.Assert (vertexNormals[1][3].IsEqual (new JSM.Vector (0, -1, 0)));
+
+	test.Assert (vertexNormals[4][0].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[4][1].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[4][2].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[4][3].IsEqual (new JSM.Vector (0, 0, 1)));
+
+	test.Assert (vertexNormals[5][0].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[5][1].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[5][2].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[5][3].IsEqual (new JSM.Vector (0, 0, -1)));
 	
 	var cylinder3 = JSM.GenerateCylinder (1.0, 2.0, 25, false, true);
 	test.Assert (cylinder3.VertexCount () == 50 && cylinder3.PolygonCount () == 25);
@@ -810,20 +810,20 @@ generatorSuite.AddTest ('GenerateConeTest', function (test)
 	test.Assert (cone2.GetPolygon (5).VertexIndexCount () == 4);
 	
 	var vertexNormals = JSM.CalculateBodyVertexNormals (cone2);
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][0], JSM.VectorNormalize (new JSM.Vector (0.8944271909999159, 0, 0.4472135954999579))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][1], JSM.VectorNormalize (new JSM.Vector (0, -0.8944271909999159, 0.4472135954999579))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][2], JSM.VectorNormalize (new JSM.Vector (0, -0.8944271909999159, 0.4472135954999579))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[0][3], JSM.VectorNormalize (new JSM.Vector (0.8944271909999159, 0, 0.4472135954999579))));
-	
-	test.Assert (JSM.CoordIsEqual (vertexNormals[4][0], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[4][1], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[4][2], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[4][3], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][0], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][1], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][2], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][3], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
+	test.Assert (vertexNormals[0][0].IsEqual (new JSM.Vector (0.8944271909999159, 0, 0.4472135954999579)));
+	test.Assert (vertexNormals[0][1].IsEqual (new JSM.Vector (0, -0.8944271909999159, 0.4472135954999579)));
+	test.Assert (vertexNormals[0][2].IsEqual (new JSM.Vector (0, -0.8944271909999159, 0.4472135954999579)));
+	test.Assert (vertexNormals[0][3].IsEqual (new JSM.Vector (0.8944271909999159, 0, 0.4472135954999579)));
+
+	test.Assert (vertexNormals[4][0].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[4][1].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[4][2].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[4][3].IsEqual (new JSM.Vector (0, 0, 1)));
+
+	test.Assert (vertexNormals[5][0].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[5][1].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[5][2].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[5][3].IsEqual (new JSM.Vector (0, 0, -1)));
 
 	var cone3 = JSM.GenerateCone (0.0, 1.0, 1.0, 4, true, true);
 	test.Assert (cone3.VertexCount () == 5 && cone3.PolygonCount () == 5);
@@ -845,24 +845,24 @@ generatorSuite.AddTest ('GeneratePrismTest', function (test)
 	];
 	
 	var direction = new JSM.Vector (0.0, 0.0, 1.0);
-	var prism = JSM.GeneratePrism (basePoints, direction, 1.0, true);
+	var prism = JSM.GeneratePrism (basePoints, direction, 1.0, true, null);
 	test.Assert (prism.VertexCount () == 10 && prism.PolygonCount () == 7);
 	test.Assert (JSM.CheckSolidBody (prism));
-	test.Assert (JSM.CoordIsEqual (prism.GetVertex (0).position, new JSM.Vector (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (prism.GetVertex (1).position, new JSM.Vector (0.0, 0.0, 1.0)));
+	test.Assert (prism.GetVertex (0).position.IsEqual (new JSM.Vector (0.0, 0.0, 0.0)));
+	test.Assert (prism.GetVertex (1).position.IsEqual (new JSM.Vector (0.0, 0.0, 1.0)));
 
 	var vertexNormals = JSM.CalculateBodyVertexNormals (prism);
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][0], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][1], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][2], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][3], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][4], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	
-	test.Assert (JSM.CoordIsEqual (vertexNormals[6][0], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[6][1], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[6][2], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[6][3], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[6][4], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
+	test.Assert (vertexNormals[5][0].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[5][1].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[5][2].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[5][3].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[5][4].IsEqual (new JSM.Vector (0, 0, 1)));
+
+	test.Assert (vertexNormals[6][0].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[6][1].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[6][2].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[6][3].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[6][4].IsEqual (new JSM.Vector (0, 0, -1)));
 
 	var basePoints2 = [
 		new JSM.Coord (0.0, 0.0, 0.0),
@@ -873,21 +873,21 @@ generatorSuite.AddTest ('GeneratePrismTest', function (test)
 	];
 	
 	var direction2 = new JSM.Vector (0.0, 0.0, 1.0);
-	var prism2 = JSM.GeneratePrism (basePoints2, direction2, 1.0, true);
+	var prism2 = JSM.GeneratePrism (basePoints2, direction2, 1.0, true, null);
 	test.Assert (JSM.CheckSolidBody (prism2));
 
 	var vertexNormals = JSM.CalculateBodyVertexNormals (prism2);
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][0], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][1], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][2], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][3], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[5][4], JSM.VectorNormalize (new JSM.Vector (0, 0, 1))));
-	
-	test.Assert (JSM.CoordIsEqual (vertexNormals[6][0], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[6][1], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[6][2], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[6][3], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[6][4], JSM.VectorNormalize (new JSM.Vector (0, 0, -1))));
+	test.Assert (vertexNormals[5][0].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[5][1].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[5][2].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[5][3].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (vertexNormals[5][4].IsEqual (new JSM.Vector (0, 0, 1)));
+
+	test.Assert (vertexNormals[6][0].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[6][1].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[6][2].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[6][3].IsEqual (new JSM.Vector (0, 0, -1)));
+	test.Assert (vertexNormals[6][4].IsEqual (new JSM.Vector (0, 0, -1)));
 });
 
 generatorSuite.AddTest ('GeneratePrismWithHoleTest', function (test)
@@ -1013,8 +1013,8 @@ generatorSuite.AddTest ('GeneratePrismShellTest', function (test)
 	var prism = JSM.GeneratePrismShell (basePoints, direction, 1.0, 0.1, true);
 	test.Assert (prism.VertexCount () == 20 && prism.PolygonCount () == 20);
 	test.Assert (JSM.CheckSolidBody (prism));
-	test.Assert (JSM.CoordIsEqual (prism.GetVertex (0).position, new JSM.Vector (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (prism.GetVertex (10).position, new JSM.Vector (0.0, 0.0, 1.0)));
+	test.Assert (prism.GetVertex (0).position.IsEqual (new JSM.Vector (0.0, 0.0, 0.0)));
+	test.Assert (prism.GetVertex (10).position.IsEqual (new JSM.Vector (0.0, 0.0, 1.0)));
 });
 
 generatorSuite.AddTest ('GenerateCylinderShellTest', function (test)
@@ -1038,8 +1038,8 @@ generatorSuite.AddTest ('GenerateLineShellTest', function (test)
 	var shell = JSM.GenerateLineShell (basePoints, direction, 1.0, 0.1, true, true);
 	test.Assert (JSM.CheckSolidBody (shell));
 	test.Assert (shell.VertexCount () == 20 && shell.PolygonCount () == 18);
-	test.Assert (JSM.CoordIsEqual (shell.GetVertex (0).position, new JSM.Vector (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (shell.GetVertex (10).position, new JSM.Vector (0.0, 0.0, 1.0)));
+	test.Assert (shell.GetVertex (0).position.IsEqual (new JSM.Vector (0.0, 0.0, 0.0)));
+	test.Assert (shell.GetVertex (10).position.IsEqual (new JSM.Vector (0.0, 0.0, 1.0)));
 	
 	var basePoints = [
 		new JSM.Coord (0.0, 0.0, 0.0),
@@ -1052,8 +1052,8 @@ generatorSuite.AddTest ('GenerateLineShellTest', function (test)
 	var shell = JSM.GenerateLineShell (basePoints, direction, 1.0, 0.1, true, true);
 	test.Assert (JSM.CheckSolidBody (shell));
 	test.Assert (shell.VertexCount () == 20 && shell.PolygonCount () == 18);
-	test.Assert (JSM.CoordIsEqual (shell.GetVertex (0).position, new JSM.Vector (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (shell.GetVertex (10).position, new JSM.Vector (0.0, 0.0, 1.0)));
+	test.Assert (shell.GetVertex (0).position.IsEqual (new JSM.Vector (0.0, 0.0, 0.0)));
+	test.Assert (shell.GetVertex (10).position.IsEqual (new JSM.Vector (0.0, 0.0, 1.0)));
 });
 
 generatorSuite.AddTest ('GenerateTorusTest', function (test)
@@ -1073,38 +1073,38 @@ generatorSuite.AddTest ('GenerateRuledTest', function (test)
 	JSM.GetRuledMesh (aCoords, bCoords, 2, vertices, polygons);
 	test.Assert (vertices.length == 9);
 	test.Assert (polygons.length == 4);
-	test.Assert (JSM.CoordIsEqual (vertices[4], new JSM.Vector (1.0, 1.0, 0.0)));
+	test.Assert (vertices[4].IsEqual (new JSM.Vector (1.0, 1.0, 0.0)));
 
 	var ruledFromCoords = JSM.GenerateRuledFromCoords (aCoords, bCoords, 2);
 	test.Assert (ruledFromCoords.VertexCount () == 9);
 	test.Assert (ruledFromCoords.PolygonCount () == 4);
-	test.Assert (JSM.CoordIsEqual (ruledFromCoords.GetVertex (4).position, new JSM.Vector (1.0, 1.0, 0.0)));
+	test.Assert (ruledFromCoords.GetVertex (4).position.IsEqual (new JSM.Vector (1.0, 1.0, 0.0)));
 	
 	var sector1 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (2.0, 0.0, 0.0));
 	var sector2 = new JSM.Sector (new JSM.Coord (0.0, 2.0, 0.0), new JSM.Coord (2.0, 2.0, 0.0));
 	var sector1Coords = [];
 	JSM.GetSectorSegmentation (sector1, 2, sector1Coords);
 	test.Assert (sector1Coords.length == 3);
-	test.Assert (JSM.CoordIsEqual (sector1Coords[0], new JSM.Vector (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (sector1Coords[1], new JSM.Vector (1.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (sector1Coords[2], new JSM.Vector (2.0, 0.0, 0.0)));
+	test.Assert (sector1Coords[0].IsEqual (new JSM.Vector (0.0, 0.0, 0.0)));
+	test.Assert (sector1Coords[1].IsEqual (new JSM.Vector (1.0, 0.0, 0.0)));
+	test.Assert (sector1Coords[2].IsEqual (new JSM.Vector (2.0, 0.0, 0.0)));
 	
 	var ruledFromSectors = JSM.GenerateRuledFromSectors (sector1, sector2, 2, 2, false);
 	test.Assert (ruledFromSectors.VertexCount () == 9);
 	test.Assert (ruledFromSectors.PolygonCount () == 4);
-	test.Assert (JSM.CoordIsEqual (ruledFromSectors.GetVertex (4).position, new JSM.Vector (1.0, 1.0, 0.0)));
+	test.Assert (ruledFromSectors.GetVertex (4).position.IsEqual (new JSM.Vector (1.0, 1.0, 0.0)));
 
 	var polygonNormals = JSM.CalculateBodyPolygonNormals (ruledFromSectors);
 	test.Assert (polygonNormals.length == 4);
-	test.Assert (JSM.CoordIsEqual (polygonNormals[0], new JSM.Vector (0, 0, 1)));
-	test.Assert (JSM.CoordIsEqual (polygonNormals[1], new JSM.Vector (0, 0, 1)));
-	test.Assert (JSM.CoordIsEqual (polygonNormals[2], new JSM.Vector (0, 0, 1)));
-	test.Assert (JSM.CoordIsEqual (polygonNormals[3], new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[0].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[1].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[2].IsEqual (new JSM.Vector (0, 0, 1)));
+	test.Assert (polygonNormals[3].IsEqual (new JSM.Vector (0, 0, 1)));
 	
 	var ruledFromSectors2 = JSM.GenerateRuledFromSectors (sector1, sector2, 10, 10, false);
 	test.Assert (ruledFromSectors2.VertexCount () == 121);
 	test.Assert (ruledFromSectors2.PolygonCount () == 100);
-	test.Assert (JSM.CoordIsEqual (ruledFromSectors2.GetVertex (60).position, new JSM.Vector (1.0, 1.0, 0.0)));
+	test.Assert (ruledFromSectors2.GetVertex (60).position.IsEqual (new JSM.Vector (1.0, 1.0, 0.0)));
 });
 
 generatorSuite.AddTest ('GenerateRevolvedTest', function (test)
@@ -1120,8 +1120,8 @@ generatorSuite.AddTest ('GenerateRevolvedTest', function (test)
 	test.Assert (JSM.CheckSolidBody (revolved));
 
 	var vertexNormals = JSM.CalculateBodyVertexNormals (revolved);
-	test.Assert (JSM.CoordIsEqual (vertexNormals[10][0], new JSM.Vector (0.0, 0.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual (vertexNormals[11][0], new JSM.Vector (0.0, 0.0, -1.0)));
+	test.Assert (vertexNormals[10][0].IsEqual (new JSM.Vector (0.0, 0.0, 1.0)));
+	test.Assert (vertexNormals[11][0].IsEqual (new JSM.Vector (0.0, 0.0, -1.0)));
 	
 	var openRevolved = JSM.GenerateRevolved (polyLine, axis, 180.0 * JSM.DegRad, 10, true, 'None');
 	test.Assert (openRevolved.VertexCount () == 22);
@@ -1230,11 +1230,11 @@ generatorSuite.AddTest ('SolidGeneratorTest', function (test)
 			polygon = body.GetPolygon (i);
 			first = body.GetVertex (polygon.GetVertexIndex (0));
 			last = body.GetVertex (polygon.GetVertexIndex (polygon.VertexIndexCount () - 1));
-			length = JSM.CoordDistance (first.position, last.position);
+			length = first.position.DistanceTo (last.position);
 			for (j = 1; j < polygon.VertexIndexCount (); j++) {
 				a = body.GetVertex (polygon.GetVertexIndex (j - 1));
 				b = body.GetVertex (polygon.GetVertexIndex (j));
-				currentLength = JSM.CoordDistance (a.position, b.position);
+				currentLength = a.position.DistanceTo (b.position);
 				if (!JSM.IsEqual (length, currentLength)) {
 					return false;
 				}
@@ -1451,20 +1451,20 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	var textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
 	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.0, 0.2), new JSM.Coord (0.0, 0.0, 1.0), new JSM.Coord (0.0, -1.0, 0.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (-0.2, -0.2)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (-0.2, 0.8)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (0.8, 0.8)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0.8, -0.2)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (-0.2, -0.2)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (-0.2, 0.8)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (0.8, 0.8)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0.8, -0.2)));
 
 	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
 
@@ -1478,15 +1478,15 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0].length == 4);
 	test.Assert (textureCoords[1].length == 4);
 
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][1], new JSM.Coord2D (0, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][2], new JSM.Coord2D (0, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][3], new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[1][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[1][1].IsEqual (new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[1][2].IsEqual (new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[1][3].IsEqual (new JSM.Coord2D (0, 0)));
 
 	var body = new JSM.Body ();
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 0.0, 0.0)));
@@ -1502,10 +1502,10 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
 	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (10.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -20.0));
 
@@ -1513,10 +1513,10 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
 	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));
 
@@ -1524,10 +1524,10 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (-0.2, -0.2)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (0.8, -0.2)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (0.8, 0.8)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (-0.2, 0.8)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (-0.2, -0.2)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (0.8, -0.2)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (0.8, 0.8)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (-0.2, 0.8)));
 
 	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.3, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));	
 
@@ -1535,10 +1535,10 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords.length == 1);
 	test.Assert (textureCoords[0].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (-0.2, -0.3)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (0.8, -0.3)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (0.8, 0.7)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (-0.2, 0.7)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (-0.2, -0.3)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (0.8, -0.3)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (0.8, 0.7)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (-0.2, 0.7)));
 });
 
 textureSuite.AddTest ('BodyCubicTextureCoordTest', function (test)
@@ -1566,20 +1566,20 @@ textureSuite.AddTest ('BodyCubicTextureCoordTest', function (test)
 	test.Assert (textureCoords[1].length == 4);
 	test.Assert (textureCoords[2].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][1], new JSM.Coord2D (0, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][3], new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[1][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[1][1].IsEqual (new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[1][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[1][3].IsEqual (new JSM.Coord2D (1, 0)));
 
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[2][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[2][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[2][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[2][3].IsEqual (new JSM.Coord2D (0, 1)));
 
 	body.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (10.0, 0.0, 0.0), new JSM.Coord (0.0, 12.0, 0.0), new JSM.Coord (0.0, 0.0, 30.0));	
 	
@@ -1589,20 +1589,20 @@ textureSuite.AddTest ('BodyCubicTextureCoordTest', function (test)
 	test.Assert (textureCoords[1].length == 4);
 	test.Assert (textureCoords[2].length == 4);
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 	
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][1], new JSM.Coord2D (0, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][3], new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[1][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[1][1].IsEqual (new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[1][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[1][3].IsEqual (new JSM.Coord2D (1, 0)));
 
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][0], new JSM.Coord2D (0, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][1], new JSM.Coord2D (1, 0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][2], new JSM.Coord2D (1, 1)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][3], new JSM.Coord2D (0, 1)));
+	test.Assert (textureCoords[2][0].IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (textureCoords[2][1].IsEqual (new JSM.Coord2D (1, 0)));
+	test.Assert (textureCoords[2][2].IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (textureCoords[2][3].IsEqual (new JSM.Coord2D (0, 1)));
 });
 
 textureSuite.AddTest ('BodyCylindricalTextureCoordTest', function (test)
@@ -1621,17 +1621,17 @@ textureSuite.AddTest ('BodyCylindricalTextureCoordTest', function (test)
 	test.Assert (textureCoords[5].length == 4);
 	
 	var radius = 2.0 * Math.PI;
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (radius, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][1], new JSM.Coord2D (radius * 5.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][2], new JSM.Coord2D (radius * 5.0 / 6.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][3], new JSM.Coord2D (radius, 0.0)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (radius, 1.0)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (radius * 5.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (radius * 5.0 / 6.0, 0.0)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (radius, 0.0)));
 
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[0][0], new JSM.Coord2D (radius * 6.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[1][0], new JSM.Coord2D (radius * 5.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[2][0], new JSM.Coord2D (radius * 4.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[3][0], new JSM.Coord2D (radius * 3.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[4][0], new JSM.Coord2D (radius * 2.0 / 6.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual2D (textureCoords[5][0], new JSM.Coord2D (radius * 1.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (radius * 6.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[1][0].IsEqual (new JSM.Coord2D (radius * 5.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[2][0].IsEqual (new JSM.Coord2D (radius * 4.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[3][0].IsEqual (new JSM.Coord2D (radius * 3.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[4][0].IsEqual (new JSM.Coord2D (radius * 2.0 / 6.0, 1.0)));
+	test.Assert (textureCoords[5][0].IsEqual (new JSM.Coord2D (radius * 1.0 / 6.0, 1.0)));
 });
 
 var utilsSuite = unitTest.AddTestSuite ('ModelerUtils');
@@ -1705,17 +1705,16 @@ raySuite.AddTest ('RayTest', function (test)
 	var ray2 = ray.Clone ();
 	ray.Set (new JSM.Coord (0.0, 1.0, 0.0), new JSM.Vector (12.0, 0.0, 0.0), 10.1);
 	
-	test.Assert (JSM.CoordIsEqual (ray.origin, new JSM.Coord (0.0, 1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (ray.direction, new JSM.Coord (1.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (ray.GetOrigin (), new JSM.Coord (0.0, 1.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (ray.GetDirection (), new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (ray.origin.IsEqual (new JSM.Coord (0.0, 1.0, 0.0)));
+	test.Assert (ray.direction.IsEqual (new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (ray.GetOrigin ().IsEqual (new JSM.Coord (0.0, 1.0, 0.0)));
+	test.Assert (ray.GetDirection ().IsEqual (new JSM.Coord (1.0, 0.0, 0.0)));
 	test.Assert (ray.length == 10.1);
 	
-	test.Assert (JSM.CoordIsEqual (ray2.origin, new JSM.Coord (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (ray2.direction, new JSM.Coord (0.0, 0.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual (ray2.GetOrigin (), new JSM.Coord (0.0, 0.0, 0.0)));
-	test.Assert (JSM.CoordIsEqual (ray2.GetDirection (), new JSM.Coord (0.0, 0.0, 1.0)));
-	test.Assert (JSM.CoordIsEqual (ray2.GetDirection (), new JSM.Coord (0.0, 0.0, 1.0)));
+	test.Assert (ray2.origin.IsEqual (new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (ray2.direction.IsEqual (new JSM.Coord (0.0, 0.0, 1.0)));
+	test.Assert (ray2.GetOrigin ().IsEqual (new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (ray2.GetDirection ().IsEqual (new JSM.Coord (0.0, 0.0, 1.0)));
 	test.Assert (ray2.length == 10.0);
 
 	test.Assert (ray2.IsLengthReached (11));
@@ -1749,13 +1748,13 @@ raySuite.AddTest ('RayTriangleIntersectionTest', function (test)
 	var ray = new JSM.Ray (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
 	var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
 	test.Assert (intersection !== null);
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.2, 0.2, 0.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.2, 0.2, 0.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
 
 	var ray = new JSM.Ray (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Vector (0.0, 0.0, -1.0), null);
 	var intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
 	test.Assert (intersection !== null);
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.2, 0.2, 0.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.2, 0.2, 0.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
 	
 	test.Assert (CheckIntersection (new JSM.Coord (0, 0, 1), new JSM.Coord (0, 0, 0)) == true);
@@ -1804,22 +1803,22 @@ raySuite.AddTest ('RayBoxIntersectionTest', function (test)
 
 	var intersection = GetIntersection (box, new JSM.Coord (1, 0, 0), new JSM.Coord (2, 1, 1), null);
 	test.Assert (intersection !== null);
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (1.0, 0.0, 0.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 0.0));
 	
 	var intersection = GetIntersection (box, new JSM.Coord (1.5, 0.5, 0.5), new JSM.Coord (1.6, 0.5, 0.5), null);
 	test.Assert (intersection !== null);
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (1.5, 0.5, 0.5)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (1.5, 0.5, 0.5)));
 	test.Assert (JSM.IsEqual (intersection.distance, 0.0));
 
 	var intersection = GetIntersection (box, new JSM.Coord (0, 0, 0), new JSM.Coord (1, 0, 0), null);
 	test.Assert (intersection !== null);
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (1.0, 0.0, 0.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
 
 	var intersection = GetIntersection (box, new JSM.Coord (1.5, -1, 0.5), new JSM.Coord (1.5, 1, 0.5), null);
 	test.Assert (intersection !== null);
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (1.5, 0.0, 0.5)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (1.5, 0.0, 0.5)));
 	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
 
 	for (var i = -3; i <= 3; i += 0.1) {
@@ -1871,21 +1870,21 @@ raySuite.AddTest ('RayTriangleModelIntersectionTest', function (test)
 	var ray = new JSM.Ray (new JSM.Coord (0.6, 0.4, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
 	var intersection = {};
 	test.Assert (JSM.RayTriangleBodyIntersection (ray, body, intersection));
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.6, 0.4, 0.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.6, 0.4, 0.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 2.0));	
 	var intersection = {};
 	test.Assert (JSM.RayTriangleModelIntersection (ray, model, intersection));
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.6, 0.4, 0.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.6, 0.4, 0.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 2.0));	
 
 	var ray = new JSM.Ray (new JSM.Coord (0.4, 0.6, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
 	var intersection = {};
 	test.Assert (JSM.RayTriangleBodyIntersection (ray, body, intersection));
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.4, 0.6, 0.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.4, 0.6, 0.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 2.0));	
 	var intersection = {};
 	test.Assert (JSM.RayTriangleModelIntersection (ray, model, intersection));
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.4, 0.6, 0.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.4, 0.6, 0.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 2.0));
 
 	var body = new JSM.TriangleBody ();
@@ -1918,21 +1917,21 @@ raySuite.AddTest ('RayTriangleModelIntersectionTest', function (test)
 	var ray = new JSM.Ray (new JSM.Coord (0.6, 0.4, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
 	var intersection = {};
 	test.Assert (JSM.RayTriangleBodyIntersection (ray, body, intersection));
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.6, 0.4, 1.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.6, 0.4, 1.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 1.0));	
 	var intersection = {};
 	test.Assert (JSM.RayTriangleModelIntersection (ray, model, intersection));
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.6, 0.4, 1.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.6, 0.4, 1.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 1.0));	
 
 	var ray = new JSM.Ray (new JSM.Coord (0.4, 0.6, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
 	var intersection = {};
 	test.Assert (JSM.RayTriangleBodyIntersection (ray, body, intersection));
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.4, 0.6, 1.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.4, 0.6, 1.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 1.0));	
 	var intersection = {};
 	test.Assert (JSM.RayTriangleModelIntersection (ray, model, intersection));
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.4, 0.6, 1.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.4, 0.6, 1.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
 
 	var body = new JSM.TriangleBody ();
@@ -1952,8 +1951,8 @@ raySuite.AddTest ('RayTriangleModelIntersectionTest', function (test)
 	body2.AddTriangle (0, 2, 3);
 	
 	var box = body2.GetBoundingBox ();
-	test.Assert (JSM.CoordIsEqual (box.min, new JSM.Coord (0, 0, 1)));
-	test.Assert (JSM.CoordIsEqual (box.max, new JSM.Coord (1, 1, 1)));
+	test.Assert (box.min.IsEqual (new JSM.Coord (0, 0, 1)));
+	test.Assert (box.max.IsEqual (new JSM.Coord (1, 1, 1)));
 	
 	var model = new JSM.TriangleModel ();
 	model.AddBody (body);
@@ -1972,13 +1971,13 @@ raySuite.AddTest ('RayTriangleModelIntersectionTest', function (test)
 	var ray = new JSM.Ray (new JSM.Coord (0.6, 0.4, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
 	var intersection = {};
 	test.Assert (JSM.RayTriangleModelIntersection (ray, model, intersection));
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.6, 0.4, 1.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.6, 0.4, 1.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 1.0));	
 
 	var ray = new JSM.Ray (new JSM.Coord (0.4, 0.6, 2.0), new JSM.Vector (0.0, 0.0, -1.0), 10.0);
 	var intersection = {};
 	test.Assert (JSM.RayTriangleModelIntersection (ray, model, intersection));
-	test.Assert (JSM.CoordIsEqual (intersection.position, new JSM.Coord (0.4, 0.6, 1.0)));
+	test.Assert (intersection.position.IsEqual (new JSM.Coord (0.4, 0.6, 1.0)));
 	test.Assert (JSM.IsEqual (intersection.distance, 1.0));
 });
 
@@ -1989,10 +1988,25 @@ raySuite.AddTest ('RayTriangleModelIntersectionTest2', function (test)
 	model.AddBody (body);
 
 	var box = body.GetBoundingBox ();
-	test.Assert (JSM.CoordIsEqual (box.min, new JSM.Coord (-0.5, -0.5, -0.5)));
-	test.Assert (JSM.CoordIsEqual (box.max, new JSM.Coord (0.5, 0.5, 0.5)));
+	test.Assert (box.min.IsEqual (new JSM.Coord (-0.5, -0.5, -0.5)));
+	test.Assert (box.max.IsEqual (new JSM.Coord (0.5, 0.5, 0.5)));
+	var center = body.GetCenter ();
+	test.Assert (center.IsEqual (new JSM.Coord (0.0, 0.0, 0.0)));
+	var sphere = body.GetBoundingSphere ();
+	test.Assert (sphere.center.IsEqual (new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (JSM.IsEqual (sphere.radius, sphere.center.DistanceTo (box.max)));
 
 	var triangleModel = JSM.ConvertModelToTriangleModel (model);
+	var triangleBody = triangleModel.GetBody (0);
+	var box = triangleBody.GetBoundingBox ();
+	test.Assert (box.min.IsEqual (new JSM.Coord (-0.5, -0.5, -0.5)));
+	test.Assert (box.max.IsEqual (new JSM.Coord (0.5, 0.5, 0.5)));
+	var center = triangleBody.GetCenter ();
+	test.Assert (center.IsEqual (new JSM.Coord (0.0, 0.0, 0.0)));
+	var sphere = triangleBody.GetBoundingSphere ();
+	test.Assert (sphere.center.IsEqual (new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (JSM.IsEqual (sphere.radius, sphere.center.DistanceTo (box.max)));	
+	
 	var ray = new JSM.Ray (new JSM.Coord (2, 0, 0), JSM.CoordSub (new JSM.Coord (0, 0, 0), new JSM.Coord (2, 0, 0.1)), 10.0);
 	var intersection = {};
 	test.Assert (JSM.RayTriangleModelIntersection (ray, triangleModel, intersection));
@@ -2037,7 +2051,7 @@ raySuite.AddTest ('TriangleBodyOctreeTest', function (test)
 			return false;
 		}
 		if (hasBodyIntersection && hasOctreeIntersection) {
-			test.Assert (JSM.CoordIsEqual (bodyIntersection.position, octreeIntersection.position));
+			test.Assert (bodyIntersection.position.IsEqual (octreeIntersection.position));
 			test.Assert (JSM.IsEqual (bodyIntersection.distance, octreeIntersection.distance));
 			if (checkIndex) {
 				test.Assert (bodyIntersection.triangleIndex == octreeIntersection.userData.triangleIndex);

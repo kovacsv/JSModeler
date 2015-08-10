@@ -447,7 +447,7 @@ JSM.Renderer.prototype.Render = function ()
 	var lightAmbient = JSM.HexColorToNormalizedRGBComponents (this.light.ambient);
 	var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (this.light.diffuse);
 	var lightSpecular = JSM.HexColorToNormalizedRGBComponents (this.light.specular);
-	this.light.direction = JSM.VectorNormalize (JSM.CoordSub (this.camera.center, this.camera.eye));
+	this.light.direction = JSM.CoordSub (this.camera.center, this.camera.eye).Normalize ();
 
 	var i, ambientColor, diffuseColor, specularColor, shininess;
 	var currentGeometry, currentVertexBuffer, currentNormalBuffer, currentUVBuffer;

@@ -240,7 +240,7 @@ JSM.GenerateBezierSurface = function (surfaceControlPoints, xSegmentation, ySegm
 			tmp1 = new JSM.Coord (0.0, 0.0, 0.0);
 			for (j = 0; j <= m; j++) {
 				scalar = JSM.BernsteinPolynomial (i, n, u) * JSM.BernsteinPolynomial (j, m, v);
-				tmp2 = JSM.VectorMultiply (surfaceControlPoints.GetControlPoint (i, j), scalar);
+				tmp2 = surfaceControlPoints.GetControlPoint (i, j).Clone ().MultiplyScalar (scalar);
 				tmp1 = JSM.CoordAdd (tmp1, tmp2);
 			}
 			result = JSM.CoordAdd (result, tmp1);

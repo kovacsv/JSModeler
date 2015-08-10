@@ -105,14 +105,14 @@ JSM.Navigation.prototype.FitInWindow = function (center, radius)
 	this.camera.center = center;
 	this.camera.eye = JSM.CoordSub (this.camera.eye, offsetToOrigo);
 	
-	var centerEyeDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.eye, this.camera.center));
+	var centerEyeDirection = JSM.CoordSub (this.camera.eye, this.camera.center).Normalize ();
 	var fieldOfView = this.camera.fieldOfView / 2.0;
 	if (this.canvas.width < this.canvas.height) {
 		fieldOfView = fieldOfView * this.canvas.width / this.canvas.height;
 	}
 	var distance = radius / Math.sin (fieldOfView * JSM.DegRad);
 	
-	this.camera.eye = JSM.CoordOffset (this.camera.center, centerEyeDirection, distance);
+	this.camera.eye = this.camera.center.Clone ().Offset (centerEyeDirection, distance);
 	this.orbitCenter = this.camera.center.Clone ();
 };
 
@@ -121,30 +121,30 @@ JSM.Navigation.prototype.Orbit = function (angleX, angleY)
 	var radAngleX = angleX * JSM.DegRad;
 	var radAngleY = angleY * JSM.DegRad;
 	
-	var viewDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.center, this.camera.eye));
-	var horizontalDirection = JSM.VectorNormalize (JSM.VectorCross (viewDirection, this.camera.up));
-	var differentCenter = !JSM.CoordIsEqual (this.orbitCenter, this.camera.center);
+	var viewDirection = JSM.CoordSub (this.camera.center, this.camera.eye).Normalize ();
+	var horizontalDirection = JSM.VectorCross (viewDirection, this.camera.up).Normalize ();
+	var differentCenter = !this.orbitCenter.IsEqual (this.camera.center);
 	
 	if (this.cameraFixUp) {
-		var originalAngle = JSM.GetVectorsAngle (viewDirection, this.camera.up);
+		var originalAngle = viewDirection.AngleTo (this.camera.up);
 		var newAngle = originalAngle + radAngleY;
 		if (JSM.IsGreater (newAngle, 0.0) && JSM.IsLower (newAngle, Math.PI)) {
-			this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, -radAngleY, this.orbitCenter);
+			this.camera.eye.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
 			if (differentCenter) {
-				this.camera.center = JSM.CoordRotate (this.camera.center, horizontalDirection, -radAngleY, this.orbitCenter);
+				this.camera.center.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
 			}
 		}
-		this.camera.eye = JSM.CoordRotate (this.camera.eye, this.camera.up, -radAngleX, this.orbitCenter);
+		this.camera.eye.Rotate (this.camera.up, -radAngleX, this.orbitCenter);
 		if (differentCenter) {
-			this.camera.center = JSM.CoordRotate (this.camera.center, this.camera.up, -radAngleX, this.orbitCenter);
+			this.camera.center.Rotate (this.camera.up, -radAngleX, this.orbitCenter);
 		}
 	} else {
-		var verticalDirection = JSM.VectorNormalize (JSM.VectorCross (horizontalDirection, viewDirection));
-		this.camera.eye = JSM.CoordRotate (this.camera.eye, horizontalDirection, -radAngleY, this.orbitCenter);
-		this.camera.eye = JSM.CoordRotate (this.camera.eye, verticalDirection, -radAngleX, this.orbitCenter);
+		var verticalDirection = JSM.VectorCross (horizontalDirection, viewDirection).Normalize ();
+		this.camera.eye.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
+		this.camera.eye.Rotate (verticalDirection, -radAngleX, this.orbitCenter);
 		if (differentCenter) {
-			this.camera.center = JSM.CoordRotate (this.camera.center, horizontalDirection, -radAngleY, this.orbitCenter);
-			this.camera.center = JSM.CoordRotate (this.camera.center, verticalDirection, -radAngleX, this.orbitCenter);
+			this.camera.center.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
+			this.camera.center.Rotate (verticalDirection, -radAngleX, this.orbitCenter);
 		}
 		this.camera.up = verticalDirection;
 	}
@@ -152,21 +152,21 @@ JSM.Navigation.prototype.Orbit = function (angleX, angleY)
 
 JSM.Navigation.prototype.Pan = function (moveX, moveY)
 {
-	var viewDirection = JSM.VectorNormalize (JSM.CoordSub (this.camera.center, this.camera.eye));
-	var horizontalDirection = JSM.VectorNormalize (JSM.VectorCross (viewDirection, this.camera.up));
-	var verticalDirection = JSM.VectorNormalize (JSM.VectorCross (horizontalDirection, viewDirection));
+	var viewDirection = JSM.CoordSub (this.camera.center, this.camera.eye).Normalize ();
+	var horizontalDirection = JSM.VectorCross (viewDirection, this.camera.up).Normalize ();
+	var verticalDirection = JSM.VectorCross (horizontalDirection, viewDirection).Normalize ();
 	
-	this.camera.eye = JSM.CoordOffset (this.camera.eye, horizontalDirection, -moveX);
-	this.camera.center = JSM.CoordOffset (this.camera.center, horizontalDirection, -moveX);
+	this.camera.eye.Offset (horizontalDirection, -moveX);
+	this.camera.center.Offset (horizontalDirection, -moveX);
 
-	this.camera.eye = JSM.CoordOffset (this.camera.eye, verticalDirection, moveY);
-	this.camera.center = JSM.CoordOffset (this.camera.center, verticalDirection, moveY);
+	this.camera.eye.Offset (verticalDirection, moveY);
+	this.camera.center.Offset (verticalDirection, moveY);
 };
 
 JSM.Navigation.prototype.Zoom = function (zoomIn)
 {
 	var direction = JSM.CoordSub (this.camera.center, this.camera.eye);
-	var distance = JSM.VectorLength (direction);
+	var distance = direction.Length ();
 	if (zoomIn && distance < this.cameraNearDistanceLimit) {
 		return 0;
 	} else if (!zoomIn && distance > this.cameraFarDistanceLimit) {
@@ -178,7 +178,7 @@ JSM.Navigation.prototype.Zoom = function (zoomIn)
 		move = move * -1.0;
 	}
 
-	this.camera.eye = JSM.CoordOffset (this.camera.eye, direction, move);
+	this.camera.eye.Offset (direction, move);
 };
 
 JSM.Navigation.prototype.DrawCallback = function ()
@@ -223,7 +223,7 @@ JSM.Navigation.prototype.OnMouseMove = function (event)
 			return;
 		}
 		
-		var eyeCenterDistance = JSM.CoordDistance (this.camera.eye, this.camera.center);
+		var eyeCenterDistance = this.camera.eye.DistanceTo (this.camera.center);
 		ratio = 0.001 * eyeCenterDistance;
 		this.Pan (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
 		this.DrawCallback ();

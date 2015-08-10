@@ -28,7 +28,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 				pgonCoord = JSM.CoordAdd (pgonCoord, vertCoord);
 			}
 
-			pgonCoord = JSM.VectorMultiply (pgonCoord, 1.0 / pgon.verts.length);
+			pgonCoord.MultiplyScalar (1.0 / pgon.verts.length);
 			pgonVertices.push (result.AddVertex (new JSM.BodyVertex (pgonCoord)));
 		}
 	}
@@ -36,20 +36,20 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 	function AddEdgeVertices ()
 	{
 		var edgeVertexWeight = 1.0 / 4.0;
-		var i, j, edge, edgeCoord, pgonIndex, pgonCoord;
+		var i, j, edge, edgeCoord1, edgeCoord2, edgeCoord, pgonIndex, pgonCoord;
 		for (i = 0; i < al.edges.length; i++) {
 			edge = al.edges[i];
-			edgeCoord = new JSM.Coord (0.0, 0.0, 0.0);
-			edgeCoord = JSM.CoordAdd (edgeCoord, JSM.VectorMultiply (body.GetVertex (edge.vert1).position, edgeVertexWeight));
-			edgeCoord = JSM.CoordAdd (edgeCoord, JSM.VectorMultiply (body.GetVertex (edge.vert2).position, edgeVertexWeight));
+			edgeCoord1 = body.GetVertex (edge.vert1).position.Clone ().MultiplyScalar (edgeVertexWeight);
+			edgeCoord2 = body.GetVertex (edge.vert2).position.Clone ().MultiplyScalar (edgeVertexWeight);
+			edgeCoord = JSM.CoordAdd (edgeCoord1, edgeCoord2);
 
 			for (j = 0; j < 2; j++) {
 				pgonIndex = (j === 0 ? edge.pgon1 : edge.pgon2);
 				if (pgonIndex === -1) {
 					pgonIndex = (j === 0 ? edge.pgon2 : edge.pgon1);
 				}
-				pgonCoord = result.GetVertex (pgonVertices[pgonIndex]).position;
-				edgeCoord = JSM.CoordAdd (edgeCoord, JSM.VectorMultiply (pgonCoord, edgeVertexWeight));
+				pgonCoord = result.GetVertex (pgonVertices[pgonIndex]).position.Clone ();
+				edgeCoord = JSM.CoordAdd (edgeCoord, pgonCoord.MultiplyScalar (edgeVertexWeight));
 			}
 
 			edgeVertices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));
@@ -85,14 +85,14 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 			
 			pgonVertexWeight = 1.0 / vert.pgons.length;
 			for (j = 0; j < vert.pgons.length; j++) {
-				currentVertCoord = result.GetVertex (pgonVertices[vert.pgons[j]]).position;
-				f = JSM.CoordAdd (f, JSM.VectorMultiply (currentVertCoord, pgonVertexWeight));
+				currentVertCoord = result.GetVertex (pgonVertices[vert.pgons[j]]).position.Clone ();
+				f = JSM.CoordAdd (f, currentVertCoord.MultiplyScalar (pgonVertexWeight));
 			}
 
 			edgeMidCoordWeight = 1.0 / vert.edges.length;
 			for (j = 0; j < vert.edges.length; j++) {
-				edgeCoord = edgeMidCoords [vert.edges[j]];
-				r = JSM.CoordAdd (r, JSM.VectorMultiply (edgeCoord, edgeMidCoordWeight));
+				edgeCoord = edgeMidCoords [vert.edges[j]].Clone ();
+				r = JSM.CoordAdd (r, edgeCoord.MultiplyScalar (edgeMidCoordWeight));
 			}
 
 			n = vert.edges.length;

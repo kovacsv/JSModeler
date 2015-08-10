@@ -100,7 +100,7 @@ JSM.BSPTree.prototype.AddPolygonToNode = function (node, polygon, userData)
 	
 	var normal;
 	if (node.polygon === null) {
-		normal = JSM.CalculateNormal (polygon.vertices);
+		normal = polygon.GetNormal ();
 		var plane = JSM.GetPlaneFromCoordAndDirection (polygon.GetVertex (0), normal);
 		node.polygon = polygon;
 		if (userData !== undefined) {
@@ -120,7 +120,7 @@ JSM.BSPTree.prototype.AddPolygonToNode = function (node, polygon, userData)
 				this.AddOutsidePolygonsToNode (node, frontPolygons, userData);
 			}
 			if (planePolygons.length > 0) {
-				normal = JSM.CalculateNormal (polygon.vertices);
+				normal = polygon.GetNormal ();
 				if (JSM.VectorDot (normal, node.plane.GetNormal ()) > 0) {
 					this.AddInsidePolygonsToNode (node, planePolygons, userData);
 				} else {
@@ -228,7 +228,7 @@ JSM.ClipPolygonWithBSPTree = function (polygon, bspTree, frontPolygons, backPoly
 			AddOutsidePolygons (node, cutFrontPolygons, isPlanar);
 		}
 		if (cutPlanarPolygons.length > 0) {
-			var normal = JSM.CalculateNormal (polygon.vertices);
+			var normal = polygon.GetNormal ();
 			if (JSM.VectorDot (normal, node.plane.GetNormal ()) > 0) {
 				AddInsidePolygons (node, cutPlanarPolygons, true);
 			} else {
@@ -288,12 +288,12 @@ JSM.TraverseBSPTreeForEyePosition = function (bspTree, eyePosition, nodeFound)
 	function TraverseNode (node)
 	{
 		if (node !== null) {
-			var coordPlanePosition = JSM.CoordPlanePosition (eyePosition, node.plane);
-			if (coordPlanePosition == 'CoordInFrontOfPlane') {
+			var coordPlanePosition = node.plane.CoordPosition (eyePosition);
+			if (coordPlanePosition == JSM.CoordPlanePosition.CoordInFrontOfPlane) {
 				TraverseNode (node.inside);
 				nodeFound (node);
 				TraverseNode (node.outside);
-			} else if (coordPlanePosition == 'CoordAtBackOfPlane') {
+			} else if (coordPlanePosition == JSM.CoordPlanePosition.CoordAtBackOfPlane) {
 				TraverseNode (node.outside);
 				nodeFound (node);
 				TraverseNode (node.inside);

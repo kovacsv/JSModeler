@@ -20,28 +20,26 @@
 			</Folder>
 			<Folder name="geometry">
 				<File name="..\src\geometry\box.js" />
-				<File name="..\src\geometry\boxutils.js" />
 				<File name="..\src\geometry\bsptree.js" />
 				<File name="..\src\geometry\convexhull.js" />
 				<File name="..\src\geometry\coord.js" />
+				<File name="..\src\geometry\coord2d.js" />
 				<File name="..\src\geometry\coordsystem.js" />
-				<File name="..\src\geometry\coordsystemutils.js" />
 				<File name="..\src\geometry\coordutils.js" />
+				<File name="..\src\geometry\definitions.js" />
 				<File name="..\src\geometry\determinant.js" />
 				<File name="..\src\geometry\line.js" />
-				<File name="..\src\geometry\lineutils.js" />
 				<File name="..\src\geometry\matrix.js" />
 				<File name="..\src\geometry\octree.js" />
 				<File name="..\src\geometry\plane.js" />
-				<File name="..\src\geometry\planeutils.js" />
 				<File name="..\src\geometry\polygon.js" />
-				<File name="..\src\geometry\polygonutils.js" />
+				<File name="..\src\geometry\polygon2d.js" />
 				<File name="..\src\geometry\projection.js" />
 				<File name="..\src\geometry\ray.js" />
 				<File name="..\src\geometry\sector.js" />
-				<File name="..\src\geometry\sectorutils.js" />
+				<File name="..\src\geometry\sphere.js" />
 				<File name="..\src\geometry\transformation.js" />
-				<File name="..\src\geometry\transformationutils.js" />
+				<File name="..\src\geometry\triangulation.js" />
 				<File name="..\src\geometry\utilities.js" />
 			</Folder>
 			<Folder name="import">
@@ -69,12 +67,14 @@
 				<File name="..\src\modeler\rayutils.js" />
 				<File name="..\src\modeler\textureutils.js" />
 				<File name="..\src\modeler\trianglebody.js" />
+				<File name="..\src\modeler\trianglebodyutils.js" />
 				<File name="..\src\modeler\trianglemodel.js" />
 			</Folder>
 			<Folder name="renderer">
 				<File name="..\src\renderer\pointcloudrenderer.js" />
 				<File name="..\src\renderer\renderer.js" />
 				<File name="..\src\renderer\rendererconverter.js" />
+				<File name="..\src\renderer\webglutils.js" />
 			</Folder>
 			<Folder name="three">
 				<File name="..\src\three\threeconverter.js" />

@@ -233,6 +233,9 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 			if (result !== undefined) {
 				return result;
 			}
+			if (globalIndex < 0 || globalIndex >= globalArray.length) {
+				return undefined;
+			}
 			
 			var coordinate = globalArray[globalIndex];
 			if (mode === 0) {

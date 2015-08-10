@@ -101,7 +101,7 @@ JSM.PointCloudViewer.prototype.GetBoundingSphere = function ()
 		points = this.renderer.points[i].pointArray;
 		for (j = 0; j < points.length; j = j + 3) {
 			point = new JSM.Coord (points[j], points[j + 1], points[j + 2]);
-			distance = JSM.CoordDistance (center, point);
+			distance = center.DistanceTo (point);
 			if (JSM.IsGreater (distance, radius)) {
 				radius = distance;
 			}

@@ -65,27 +65,28 @@ JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
 					}
 					
 					var normal = JSM.CalculateBodyPolygonNormal (body, index);
-					var triangles = JSM.PolygonTriangulate (polygon3D, normal);
-					
-					var triangle;
-					for (i = 0; i < triangles.length; i++) {
-						triangle = triangles[i];
-						vertex1 = body.GetVertex (polygon.GetVertexIndex (triangle[0])).position;
-						vertex2 = body.GetVertex (polygon.GetVertexIndex (triangle[1])).position;
-						vertex3 = body.GetVertex (polygon.GetVertexIndex (triangle[2])).position;
-						normal1 = vertexNormals[index][triangle[0]];
-						normal2 = vertexNormals[index][triangle[1]];
-						normal3 = vertexNormals[index][triangle[2]];
-						uv1 = null;
-						uv2 = null;
-						uv3 = null;
-						if (hasTextureCoords) {
-							uv1 = textureCoords[index][triangle[0]];
-							uv2 = textureCoords[index][triangle[1]];
-							uv3 = textureCoords[index][triangle[2]];
+					var triangles = JSM.TriangulatePolygon (polygon3D, normal);
+					if (triangles !== null) {
+						var triangle;
+						for (i = 0; i < triangles.length; i++) {
+							triangle = triangles[i];
+							vertex1 = body.GetVertex (polygon.GetVertexIndex (triangle[0])).position;
+							vertex2 = body.GetVertex (polygon.GetVertexIndex (triangle[1])).position;
+							vertex3 = body.GetVertex (polygon.GetVertexIndex (triangle[2])).position;
+							normal1 = vertexNormals[index][triangle[0]];
+							normal2 = vertexNormals[index][triangle[1]];
+							normal3 = vertexNormals[index][triangle[2]];
+							uv1 = null;
+							uv2 = null;
+							uv3 = null;
+							if (hasTextureCoords) {
+								uv1 = textureCoords[index][triangle[0]];
+								uv2 = textureCoords[index][triangle[1]];
+								uv3 = textureCoords[index][triangle[2]];
+							}
+							
+							CreateTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3);
 						}
-						
-						CreateTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3);
 					}
 				}
 			}

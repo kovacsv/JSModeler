@@ -43,7 +43,8 @@ JSM.CreateOctreeChildNodes = function (originalBox, createNodeCallback)
 {
 	function CreateNode (originalBox, createNodeCallback, dirX, dirY, dirZ)
 	{
-		var size = JSM.VectorMultiply (originalBox.GetSize (), 0.5);
+		var size = originalBox.GetSize ().Clone ();
+		size.MultiplyScalar (0.5);
 		var min = new JSM.Coord (
 			originalBox.min.x + dirX * size.x,
 			originalBox.min.y + dirY * size.y,
@@ -137,7 +138,7 @@ JSM.Octree.prototype.FindCoordInNode = function (coord, node)
 	var i, current;
 	for (i = 0; i < node.coords.length; i++) {
 		current = node.coords[i];
-		if (JSM.CoordIsEqual (coord, this.coords[current])) {
+		if (coord.IsEqual (this.coords[current])) {
 			return current;
 		}
 	}
@@ -308,7 +309,7 @@ JSM.TriangleOctree.prototype.AddTriangleToNode = function (v0, v1, v2, root, use
 {
 	function IsTriangleInNode (v0, v1, v2, node)
 	{
-		return JSM.IsCoordInBox (v0, node.box) && JSM.IsCoordInBox (v1, node.box) && JSM.IsCoordInBox (v2, node.box);
+		return node.box.IsCoordInside (v0) && node.box.IsCoordInside (v1) && node.box.IsCoordInside (v2);
 	}
 	
 	if (!IsTriangleInNode (v0, v1, v2, root)) {

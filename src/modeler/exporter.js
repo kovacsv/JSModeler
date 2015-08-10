@@ -59,15 +59,16 @@ JSM.ExportBodyContentToStl = function (body, name, hasConvexPolygons)
 					polygon3D.AddVertex (vertex.position.x, vertex.position.y, vertex.position.z);
 				}
 				
-				var triangles = JSM.PolygonTriangulate (polygon3D, normal);
-				
-				var triangle;
-				for (i = 0; i < triangles.length; i++) {
-					triangle = triangles[i];
-					vertex1 = body.GetVertex (polygon.GetVertexIndex (triangle[0])).position;
-					vertex2 = body.GetVertex (polygon.GetVertexIndex (triangle[1])).position;
-					vertex3 = body.GetVertex (polygon.GetVertexIndex (triangle[2])).position;
-					AddTriangleToContent (normal, vertex1, vertex2, vertex3);
+				var triangles = JSM.TriangulatePolygon (polygon3D, normal);
+				if (triangles !== null) {
+					var triangle;
+					for (i = 0; i < triangles.length; i++) {
+						triangle = triangles[i];
+						vertex1 = body.GetVertex (polygon.GetVertexIndex (triangle[0])).position;
+						vertex2 = body.GetVertex (polygon.GetVertexIndex (triangle[1])).position;
+						vertex3 = body.GetVertex (polygon.GetVertexIndex (triangle[2])).position;
+						AddTriangleToContent (normal, vertex1, vertex2, vertex3);
+					}
 				}
 			} else {
 				for (i = 0; i < count - 2; i++) {

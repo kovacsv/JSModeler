@@ -145,6 +145,30 @@
 						["exampleTypeC", "example return value description c"]
 					]
 				}
+			},
+			"enums" : {
+				"ExampleEnum" : {
+				},
+				"ExampleEnum2" : {
+					"description" : "Example enum 2 description."
+				},
+				"ExampleEnum3" : {
+					"description" : "Example enum 3 description.",
+					"values" : [
+						["EnumValue1", "example enum value 1"],
+						["EnumValue1", "example enum value 2"],
+						["EnumValue1", "example enum value 3"]
+					]
+				},
+				"ExampleEnum4" : {
+					"description" : "Example enum 4 description.",
+					"values" : [
+						["EnumValue1", "example enum value 1"],
+						["EnumValue1", "example enum value 2"],
+						["EnumValue1", "example enum value 3"]
+					],
+					"example" : "Example line 1\nExample line 2"
+				}
 			}
 		}
 	}
