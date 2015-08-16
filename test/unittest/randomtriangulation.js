@@ -79,13 +79,31 @@ unitTest.AddSourceFile ('../../src/three/threeviewer.js');
 
 unitTest.AddSourceFile ('utils/triangulationcheck.js');
 
-unitTest.AddTestFile ('tests/core.js');
-unitTest.AddTestFile ('tests/geometry.js');
-unitTest.AddTestFile ('tests/polygon.js');
-unitTest.AddTestFile ('tests/triangulation.js');
-unitTest.AddTestFile ('tests/modeler.js');
-unitTest.AddTestFile ('tests/import.js');
-unitTest.AddTestFile ('tests/extras.js');
-unitTest.AddTestFile ('tests/visual.js');
+var fs = require('fs');
+
+var suite = unitTest.AddTestSuite ('RandomTest');
+
+suite.AddTest ('SimplePolygonTest', function (test)
+{
+	var counter = 1;
+	var polygon, result;
+	while (counter <= 1000) {
+		polygon = GenerateRandomSimplePolygon ();
+		if (polygon === null) {
+			continue;
+		}
+		
+		console.log ('polygon ' + counter);
+		var triangles = JSM.TriangulatePolygon2D (polygon);
+		result = CheckCalculatedTriangulation (polygon, triangles);		
+		if (!result) {
+			console.log (polygon.ToArray ());
+			test.Assert (false);
+			break;
+		}
+
+		counter++;
+	}
+});
 
 };

@@ -409,7 +409,7 @@ JSM.Polygon2D.prototype.CoordPosition = function (coord)
 *	Calculates the position of a sector and the polygon. The given begin and end
 *	vertex indices are omitted form intersection checking.
 * Parameters:
-*	sector {Sector3D} the sector
+*	sector {Sector2D} the sector
 *	begIndex {integer} begin vertex index
 *	endIndex {integer} end vertex index
 * Returns:

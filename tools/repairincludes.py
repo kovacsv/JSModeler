@@ -20,7 +20,7 @@ def GetLinesFromFile (fileName):
 
 	return lines
 
-def GetHTMLFiles (folderPath):
+def GetFilesByExtension (folderPath, extension):
 	htmlFiles = []
 	if (not os.path.exists (folderPath)):
 		return htmlFiles
@@ -29,7 +29,7 @@ def GetHTMLFiles (folderPath):
 		for file in files:
 			filePath = os.path.join (root, file)
 			fileName, fileExtension = os.path.splitext (filePath)
-			if fileExtension == '.html':
+			if fileExtension == extension:
 				htmlFiles.append (filePath)
 
 	return htmlFiles	
@@ -77,9 +77,9 @@ def Main ():
 	
 	rootFolderDirPath = os.path.abspath ('..')
 	PrintInfo ('Collect HTML files from <' + rootFolderDirPath + '>.')
-	htmlFiles = GetHTMLFiles (rootFolderDirPath)
 
-	PrintInfo ('Replace includes in <' + rootFolderDirPath + '>.')
+	htmlFiles = GetFilesByExtension (rootFolderDirPath, '.html')
+	PrintInfo ('Replace includes in html files in <' + rootFolderDirPath + '>.')
 	for htmlFilePath in htmlFiles:
 		ReplaceIncludesInFile (
 			htmlFilePath,
@@ -88,19 +88,19 @@ def Main ():
 			'<!-- JSModeler includes end -->',
 			'\t<script type="text/javascript" src="',
 			'"></script>'
-			
 		)
 
-	testFilePath = os.path.abspath ('../test/unittest/jsmodelertest.js');
-	PrintInfo ('Replace includes in <' + testFilePath + '>.')
-	ReplaceIncludesInFile (
-		testFilePath,
-		inputFileNames,
-		'// JSModeler includes start',
-		'// JSModeler includes end',
-		'unitTest.AddSourceFile (\'',
-		'\');'
-	)
+	jsFiles = GetFilesByExtension (rootFolderDirPath, '.js')
+	PrintInfo ('Replace includes in js files in <' + rootFolderDirPath + '>.')
+	for jsFilePath in jsFiles:
+		ReplaceIncludesInFile (
+			jsFilePath,
+			inputFileNames,
+			'// JSModeler includes start',
+			'// JSModeler includes end',
+			'unitTest.AddSourceFile (\'',
+			'\');'
+		)
 	return 0
 	
 sys.exit (Main ())
