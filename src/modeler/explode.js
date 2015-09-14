@@ -91,11 +91,6 @@ JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
 				}
 			}
 			
-			var hasConvexPolygons = false;
-			if (explodeData.hasConvexPolygons !== undefined && explodeData.hasConvexPolygons !== null) {
-				hasConvexPolygons = explodeData.hasConvexPolygons;
-			}
-
 			var material = materials.GetMaterial (materialIndex);
 			if (explodeData.onGeometryStart !== undefined && explodeData.onGeometryStart !== null) {
 				explodeData.onGeometryStart (material);
@@ -182,6 +177,11 @@ JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
 		}
 	}
 	
+	var hasConvexPolygons = false;
+	if (explodeData.hasConvexPolygons !== undefined && explodeData.hasConvexPolygons !== null) {
+		hasConvexPolygons = explodeData.hasConvexPolygons;
+	}
+
 	ExplodeBodyDataToTriangles (body, materials, vertexNormals, textureCoords, explodeData);
 	return true;
 };
