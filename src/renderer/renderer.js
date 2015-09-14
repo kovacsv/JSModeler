@@ -1,156 +1,3 @@
-JSM.RenderMaterial = function (ambient, diffuse, specular, shininess, texture, textureWidth, textureHeight)
-{
-	this.ambient = ambient;
-	this.diffuse = diffuse;
-	this.specular = specular;
-	this.shininess = shininess;
-	this.texture = texture;
-	this.textureWidth = textureWidth;
-	this.textureHeight = textureHeight;
-	
-	this.textureBuffer = null;
-	this.textureImage = null;
-	this.textureLoaded = false;
-};
-
-JSM.RenderMaterial.prototype.HasTexture = function ()
-{
-	return this.texture !== null && this.textureLoaded;
-};
-
-JSM.RenderMaterial.prototype.Compile = function (context, textureLoaded)
-{
-	if (this.texture !== null) {
-		var myThis = this;
-		this.textureBuffer = context.createTexture ();
-		this.textureImage = new Image ();
-		this.textureImage.src = this.texture;
-		this.textureImage.onload = function () {
-			context.bindTexture (context.TEXTURE_2D, myThis.textureBuffer);
-			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.LINEAR);
-			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR_MIPMAP_LINEAR);
-			context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, myThis.textureImage);
-			context.generateMipmap (context.TEXTURE_2D);
-			context.bindTexture (context.TEXTURE_2D, null);
-			myThis.textureLoaded = true;
-			if (textureLoaded !== undefined && textureLoaded !== null) {
-				textureLoaded ();
-			}
-		};
-	}
-};
-
-JSM.RenderGeometry = function ()
-{
-	this.transformation = new JSM.Transformation ();
-
-	this.material = null;
-	
-	this.vertexArray = null;
-	this.normalArray = null;
-	this.uvArray = null;
-	
-	this.vertexBuffer = null;
-	this.normalBuffer = null;
-	this.uvBuffer = null;
-};
-
-JSM.RenderGeometry.prototype.SetMaterial = function (material)
-{
-	this.material = material;
-};
-
-JSM.RenderGeometry.prototype.GetMaterial = function ()
-{
-	return this.material;
-};
-
-JSM.RenderGeometry.prototype.SetVertexArray = function (vertices)
-{
-	this.vertexArray = new Float32Array (vertices);
-};
-
-JSM.RenderGeometry.prototype.SetNormalArray = function (normals)
-{
-	this.normalArray = new Float32Array (normals);
-};
-
-JSM.RenderGeometry.prototype.SetUVArray = function (uvs)
-{
-	this.uvArray = new Float32Array (uvs);
-};
-
-JSM.RenderGeometry.prototype.GetTransformation = function ()
-{
-	return this.transformation;
-};
-
-JSM.RenderGeometry.prototype.GetTransformationMatrix = function ()
-{
-	return this.transformation.matrix;
-};
-
-JSM.RenderGeometry.prototype.SetTransformation = function (transformation)
-{
-	this.transformation = transformation;
-};
-
-JSM.RenderGeometry.prototype.GetVertexBuffer = function ()
-{
-	return this.vertexBuffer;
-};
-
-JSM.RenderGeometry.prototype.GetNormalBuffer = function ()
-{
-	return this.normalBuffer;
-};
-
-JSM.RenderGeometry.prototype.GetUVBuffer = function ()
-{
-	return this.uvBuffer;
-};
-
-JSM.RenderGeometry.prototype.VertexCount = function ()
-{
-	return parseInt (this.vertexArray.length / 3, 10);
-};
-
-JSM.RenderGeometry.prototype.GetVertex = function (index)
-{
-	return new JSM.Coord (this.vertexArray[3 * index], this.vertexArray[3 * index + 1], this.vertexArray[3 * index + 2]);
-};
-
-JSM.RenderGeometry.prototype.GetTransformedVertex = function (index)
-{
-	var vertex = this.GetVertex (index);
-	return this.transformation.Apply (vertex);
-};
-
-JSM.RenderGeometry.prototype.Compile = function (context, textureLoaded)
-{
-	this.material.Compile (context, textureLoaded);
-
-	this.vertexBuffer = context.createBuffer ();
-	context.bindBuffer (context.ARRAY_BUFFER, this.vertexBuffer);
-	context.bufferData (context.ARRAY_BUFFER, this.vertexArray, context.STATIC_DRAW);
-	this.vertexBuffer.itemSize = 3;
-	this.vertexBuffer.numItems = parseInt (this.vertexArray.length / 3, 10);
-
-	this.normalBuffer = context.createBuffer ();
-	context.bindBuffer (context.ARRAY_BUFFER, this.normalBuffer);
-	context.bufferData (context.ARRAY_BUFFER, this.normalArray, context.STATIC_DRAW);
-	this.normalBuffer.itemSize = 3;
-	this.normalBuffer.numItems = parseInt (this.normalArray.length / 3, 10);
-
-	if (this.uvArray !== null) {
-		this.uvBuffer = context.createBuffer ();
-		context.bindBuffer (context.ARRAY_BUFFER, this.uvBuffer);
-		context.bufferData (context.ARRAY_BUFFER, this.uvArray, context.STATIC_DRAW);
-		this.uvBuffer.itemSize = 2;
-		this.uvBuffer.numItems = parseInt (this.uvArray.length / 2, 10);
-	}
-};
-
 JSM.Renderer = function ()
 {
 	this.canvas = null;
@@ -408,10 +255,55 @@ JSM.Renderer.prototype.SetClearColor = function (red, green, blue)
 
 JSM.Renderer.prototype.AddGeometries = function (geometries)
 {
+	function CompileMaterial (material, context, textureLoaded)
+	{
+		if (material.texture !== null) {
+			material.textureBuffer = context.createTexture ();
+			material.textureImage = new Image ();
+			material.textureImage.src = material.texture;
+			material.textureImage.onload = function () {
+				context.bindTexture (context.TEXTURE_2D, material.textureBuffer);
+				context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.LINEAR);
+				context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR_MIPMAP_LINEAR);
+				context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, material.textureImage);
+				context.generateMipmap (context.TEXTURE_2D);
+				context.bindTexture (context.TEXTURE_2D, null);
+				material.textureLoaded = true;
+				if (textureLoaded !== undefined && textureLoaded !== null) {
+					textureLoaded ();
+				}
+			};
+		}
+	}
+	
+	function CompileGeometry (geometry, context)
+	{
+		geometry.vertexBuffer = context.createBuffer ();
+		context.bindBuffer (context.ARRAY_BUFFER, geometry.vertexBuffer);
+		context.bufferData (context.ARRAY_BUFFER, geometry.vertexArray, context.STATIC_DRAW);
+		geometry.vertexBuffer.itemSize = 3;
+		geometry.vertexBuffer.numItems = parseInt (geometry.vertexArray.length / 3, 10);
+
+		geometry.normalBuffer = context.createBuffer ();
+		context.bindBuffer (context.ARRAY_BUFFER, geometry.normalBuffer);
+		context.bufferData (context.ARRAY_BUFFER, geometry.normalArray, context.STATIC_DRAW);
+		geometry.normalBuffer.itemSize = 3;
+		geometry.normalBuffer.numItems = parseInt (geometry.normalArray.length / 3, 10);
+
+		if (geometry.uvArray !== null) {
+			geometry.uvBuffer = context.createBuffer ();
+			context.bindBuffer (context.ARRAY_BUFFER, geometry.uvBuffer);
+			context.bufferData (context.ARRAY_BUFFER, geometry.uvArray, context.STATIC_DRAW);
+			geometry.uvBuffer.itemSize = 2;
+			geometry.uvBuffer.numItems = parseInt (geometry.uvArray.length / 2, 10);
+		}
+	}
+
 	var i, currentGeometry;
 	for (i = 0; i < geometries.length; i++) {
 		currentGeometry = geometries[i];
-		currentGeometry.Compile (this.context, this.Render.bind (this));
+		CompileMaterial (currentGeometry.material, this.context, this.Render.bind (this));
+		CompileGeometry (currentGeometry, this.context);
 		this.geometries.push (currentGeometry);
 	}
 };
