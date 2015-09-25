@@ -102,12 +102,12 @@ JSM.SpriteViewer.prototype.NearestPointUnderPosition = function (maxDistance, x,
 
 JSM.SpriteViewer.prototype.NearestPointUnderMouse = function (maxDistance)
 {
-	return this.NearestPointUnderPosition (maxDistance, this.navigation.mouse.currX, this.navigation.mouse.currY);
+	return this.NearestPointUnderPosition (maxDistance, this.navigation.mouse.curr.x, this.navigation.mouse.curr.y);
 };
 
 JSM.SpriteViewer.prototype.NearestPointUnderTouch = function (maxDistance)
 {
-	return this.NearestPointUnderPosition (maxDistance, this.navigation.touch.currX, this.navigation.touch.currY);
+	return this.NearestPointUnderPosition (maxDistance, this.navigation.touch.curr.x, this.navigation.touch.curr.y);
 };
 
 JSM.SpriteViewer.prototype.FitInWindow = function ()

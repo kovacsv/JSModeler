@@ -177,8 +177,8 @@
 				for (j = 0; j <= m; j++) {
 					point = bezierData.controlPoints.GetControlPoint (i, j);
 					projected = viewer.ProjectVector (point.x, point.y, point.z);
-					if (Math.abs (projected.x - viewer.navigation.mouse.currX) < 10 &&
-						Math.abs (projected.y - viewer.navigation.mouse.currY) < 10)
+					if (Math.abs (projected.x - viewer.navigation.mouse.curr.x) < 10 &&
+						Math.abs (projected.y - viewer.navigation.mouse.curr.y) < 10)
 					{
 						foundIndices = [i, j];
 						break;
@@ -196,7 +196,7 @@
 				foundIndices : foundIndices,
 				foundVertexIndex : foundVertexIndex,
 				originalVertexPos : foundVertex.clone (),
-				originalMousePos : [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY]
+				originalMousePos : [viewer.navigation.mouse.curr.x, viewer.navigation.mouse.curr.y]
 			};
 			viewer.navigation.EnableOrbit (false);
 		}
@@ -226,7 +226,7 @@
 				return;
 			}
 			
-			var currentPos = [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY];
+			var currentPos = [viewer.navigation.mouse.curr.x, viewer.navigation.mouse.curr.y];
 			var ratio = 0.005;
 			var diff = (currentPos[1] - mouseData.originalMousePos[1]) * ratio;
 			var foundVertex = bezierData.controlPointGeometry.vertices[mouseData.foundVertexIndex];

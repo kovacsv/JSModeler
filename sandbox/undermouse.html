@@ -98,7 +98,7 @@
 		function OnMouseMove (event)
 		{
 			var logDiv = document.getElementById ('log');
-			logDiv.innerHTML = viewer.navigation.mouse.currX + ', ' + viewer.navigation.mouse.currY;
+			logDiv.innerHTML = viewer.navigation.mouse.curr.x + ', ' + viewer.navigation.mouse.curr.y;
 			mouseMoved = true;
 		}
 
@@ -110,7 +110,7 @@
 
 				var objects;
 				objects = viewer.GetObjectsUnderMouse ();
-				logDiv.innerHTML = viewer.navigation.mouse.currX + ', ' + viewer.navigation.mouse.currY + '<br>';
+				logDiv.innerHTML = viewer.navigation.mouse.curr.x + ', ' + viewer.navigation.mouse.curr.y + '<br>';
 				logDiv.innerHTML += 'GetObjectsUnderMouse: ' + objects + '<br>';
 			}
 			
@@ -125,7 +125,7 @@
 		function OnTouchMove (event)
 		{
 			var logDiv = document.getElementById ('log');
-			logDiv.innerHTML = viewer.touch.currX + ', ' + viewer.touch.currY;
+			logDiv.innerHTML = viewer.touch.curr.x + ', ' + viewer.touch.curr.y;
 			touchMoved = true;
 		}
 
@@ -137,7 +137,7 @@
 
 				var objects;
 				objects = viewer.GetObjectsUnderTouch ();
-				logDiv.innerHTML = viewer.touch.currX + ', ' + viewer.touch.currY + '<br>';
+				logDiv.innerHTML = viewer.touch.curr.x + ', ' + viewer.touch.curr.y + '<br>';
 				logDiv.innerHTML += 'GetObjectsUnderTouch: ' + objects + '<br>';
 			}
 			
