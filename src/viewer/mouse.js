@@ -61,5 +61,5 @@ JSM.Mouse.prototype.SetCurrent = function (eventParameters, div)
 		currX = currX - div.offsetLeft;
 		currY = currY - div.offsetTop;
 	}
-	this.curr.Set (currX, currY);
+	this.curr = new JSM.Coord2D (currX, currY);
 };
