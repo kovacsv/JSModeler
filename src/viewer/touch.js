@@ -1,12 +1,10 @@
 JSM.Touch = function ()
 {
 	this.down = false;
-	this.prevX = 0;
-	this.prevY = 0;
-	this.currX = 0;
-	this.currY = 0;
-	this.diffX = 0;
-	this.diffY = 0;
+	this.fingers = 0;
+	this.prev = new JSM.Coord2D ();
+	this.curr = new JSM.Coord2D ();
+	this.diff = new JSM.Coord2D ();
 };
 
 JSM.Touch.prototype.Start = function (event, div)
@@ -14,12 +12,12 @@ JSM.Touch.prototype.Start = function (event, div)
 	if (event.touches.length === 0) {
 		return;
 	}
-	var touch = event.touches[0];
 
 	this.down = true;
-	this.SetCurrent (touch, div);
-	this.prevX = this.currX;
-	this.prevY = this.currY;
+	this.fingers = event.touches.length;
+
+	this.SetCurrent (event, div);
+	this.prev = this.curr.Clone ();
 };
 
 JSM.Touch.prototype.Move = function (event, div)
@@ -27,13 +25,12 @@ JSM.Touch.prototype.Move = function (event, div)
 	if (event.touches.length === 0) {
 		return;
 	}
-	var touch = event.touches[0];
 
-	this.SetCurrent (touch, div);
-	this.diffX = this.currX - this.prevX;
-	this.diffY = this.currY - this.prevY;
-	this.prevX = this.currX;
-	this.prevY = this.currY;
+	this.fingers = event.touches.length;
+
+	this.SetCurrent (event, div);
+	this.diff = JSM.CoordSub2D (this.curr, this.prev);
+	this.prev = this.curr.Clone ();
 };
 
 JSM.Touch.prototype.End = function (event, div)
@@ -41,18 +38,28 @@ JSM.Touch.prototype.End = function (event, div)
 	if (event.touches.length === 0) {
 		return;
 	}
-	var touch = event.touches[0];
 
 	this.down = false;
-	this.SetCurrent (touch, div);
+	this.SetCurrent (event, div);
 };
 
-JSM.Touch.prototype.SetCurrent = function (touch, div)
+JSM.Touch.prototype.SetCurrent = function (event, div)
 {
-	this.currX = touch.pageX;
-	this.currY = touch.pageY;
-	if (div !== undefined && div.offsetLeft !== undefined && div.offsetTop !== undefined) {
-		this.currX = touch.pageX - div.offsetLeft;
-		this.currY = touch.pageY - div.offsetTop;
+	function GetEventCoord (touch)
+	{
+		var currX = touch.pageX;
+		var currY = touch.pageY;
+		if (div !== undefined && div.offsetLeft !== undefined && div.offsetTop !== undefined) {
+			currX = currX - div.offsetLeft;
+			currY = currY - div.offsetTop;
+		}
+		return new JSM.Coord2D (currX, currY);
+	}
+	
+	if (event.touches.length == 1 || event.touches.length == 3) {
+		this.curr = GetEventCoord (event.touches[0]);
+	} else if (event.touches.length == 2) {
+		var distance = GetEventCoord (event.touches[0]).DistanceTo (GetEventCoord (event.touches[1]));
+		this.curr = new JSM.Coord2D (distance, distance);
 	}
 };

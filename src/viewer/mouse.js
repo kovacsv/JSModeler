@@ -5,21 +5,15 @@ JSM.Mouse = function ()
 	this.shift = false;
 	this.ctrl = false;
 	this.alt = false;
-	this.prevX = 0;
-	this.prevY = 0;
-	this.currX = 0;
-	this.currY = 0;
-	this.diffX = 0;
-	this.diffY = 0;
+	this.prev = new JSM.Coord2D (0, 0);
+	this.curr = new JSM.Coord2D (0, 0);
+	this.diff = new JSM.Coord2D (0, 0);
 };
 
 JSM.Mouse.prototype.Down = function (event, div)
 {
-	var eventParameters = event;
-	if (eventParameters === undefined) {
-		eventParameters = window.event;
-	}
-	
+	var eventParameters = event || window.event;
+
 	this.down = true;
 	this.button = event.which;
 	this.shift = event.shiftKey;
@@ -27,34 +21,25 @@ JSM.Mouse.prototype.Down = function (event, div)
 	this.alt = event.altKey;
 	
 	this.SetCurrent (eventParameters, div);
-	this.prevX = this.currX;
-	this.prevY = this.currY;
+	this.prev = this.curr.Clone ();
 };
 
 JSM.Mouse.prototype.Move = function (event, div)
 {
-	var eventParameters = event;
-	if (eventParameters === undefined) {
-		eventParameters = window.event;
-	}
+	var eventParameters = event || window.event;
 	
 	this.shift = event.shiftKey;
 	this.ctrl = event.ctrlKey;
 	this.alt = event.altKey;
 	
 	this.SetCurrent (eventParameters, div);
-	this.diffX = this.currX - this.prevX;
-	this.diffY = this.currY - this.prevY;
-	this.prevX = this.currX;
-	this.prevY = this.currY;
+	this.diff = JSM.CoordSub2D (this.curr, this.prev);
+	this.prev = this.curr.Clone ();
 };
 
 JSM.Mouse.prototype.Up = function (event, div)
 {
-	var eventParameters = event;
-	if (eventParameters === undefined) {
-		eventParameters = window.event;
-	}
+	var eventParameters = event || window.event;
 	
 	this.down = false;
 	this.SetCurrent (eventParameters, div);
@@ -62,10 +47,7 @@ JSM.Mouse.prototype.Up = function (event, div)
 
 JSM.Mouse.prototype.Out = function (event, div)
 {
-	var eventParameters = event;
-	if (eventParameters === undefined) {
-		eventParameters = window.event;
-	}
+	var eventParameters = event || window.event;
 	
 	this.down = false;
 	this.SetCurrent (eventParameters, div);
@@ -73,10 +55,11 @@ JSM.Mouse.prototype.Out = function (event, div)
 
 JSM.Mouse.prototype.SetCurrent = function (eventParameters, div)
 {
-	this.currX = eventParameters.clientX;
-	this.currY = eventParameters.clientY;
+	var currX = eventParameters.clientX;
+	var currY = eventParameters.clientY;
 	if (div !== undefined && div.offsetLeft !== undefined && div.offsetTop !== undefined) {
-		this.currX = this.currX - div.offsetLeft;
-		this.currY = this.currY - div.offsetTop;
+		currX = currX - div.offsetLeft;
+		currY = currY - div.offsetTop;
 	}
+	this.curr.Set (currX, currY);
 };
