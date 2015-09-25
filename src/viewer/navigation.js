@@ -163,21 +163,18 @@ JSM.Navigation.prototype.Pan = function (moveX, moveY)
 	this.camera.center.Offset (verticalDirection, moveY);
 };
 
-JSM.Navigation.prototype.Zoom = function (zoomIn)
+JSM.Navigation.prototype.Zoom = function (ratio)
 {
 	var direction = JSM.CoordSub (this.camera.center, this.camera.eye);
 	var distance = direction.Length ();
+	var zoomIn = ratio > 0;
 	if (zoomIn && distance < this.cameraNearDistanceLimit) {
 		return 0;
 	} else if (!zoomIn && distance > this.cameraFarDistanceLimit) {
 		return 0;
 	}
 
-	var move = distance * 0.1;
-	if (!zoomIn) {
-		move = move * -1.0;
-	}
-
+	var move = distance * ratio;
 	this.camera.eye.Offset (direction, move);
 };
 
@@ -213,21 +210,18 @@ JSM.Navigation.prototype.OnMouseMove = function (event)
 	if (this.mouse.button == 1) {
 		if (!this.cameraEnableOrbit) {
 			return;
-		}
-		
+		}		
 		ratio = 0.5;
-		this.Orbit (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
-		this.DrawCallback ();
+		this.Orbit (this.mouse.diff.x * ratio, this.mouse.diff.y * ratio);
 	} else if (this.mouse.button == 3) {
 		if (!this.cameraEnablePan) {
 			return;
 		}
-		
 		var eyeCenterDistance = this.camera.eye.DistanceTo (this.camera.center);
 		ratio = 0.001 * eyeCenterDistance;
-		this.Pan (this.mouse.diffX * ratio, this.mouse.diffY * ratio);
-		this.DrawCallback ();
+		this.Pan (this.mouse.diff.x * ratio, this.mouse.diff.y * ratio);
 	}
+	this.DrawCallback ();
 };
 
 JSM.Navigation.prototype.OnMouseUp = function (event)
@@ -261,8 +255,12 @@ JSM.Navigation.prototype.OnMouseWheel = function (event)
 		delta = eventParameters.wheelDelta / 40;
 	}
 
-	var zoomIn = delta > 0;
-	this.Zoom (zoomIn);
+	var ratio = 0.1;
+	if (delta < 0) {
+		ratio = ratio * -1.0;
+	}
+
+	this.Zoom (ratio);
 	this.DrawCallback ();
 };
 
@@ -280,12 +278,27 @@ JSM.Navigation.prototype.OnTouchMove = function (event)
 		return;
 	}
 
-	if (!this.cameraEnableOrbit) {
-		return;
+	var ratio = 0.0;
+	if (this.touch.fingers == 1) {
+		if (!this.cameraEnableOrbit) {
+			return;
+		}
+		ratio = 0.5;
+		this.Orbit (this.touch.diff.x * ratio, this.touch.diff.y * ratio);
+	} else if (this.touch.fingers == 2) {
+		if (!this.cameraEnableZoom) {
+			return;
+		}
+		ratio = 0.005;
+		this.Zoom (this.touch.diff.x * ratio);
+	} else if (this.touch.fingers == 3) {
+		if (!this.cameraEnablePan) {
+			return;
+		}
+		var eyeCenterDistance = this.camera.eye.DistanceTo (this.camera.center);
+		ratio = 0.001 * eyeCenterDistance;
+		this.Pan (this.touch.diff.x * ratio, this.touch.diff.y * ratio);
 	}
-	
-	var ratio = 0.5;
-	this.Orbit (this.touch.diffX * ratio, this.touch.diffY * ratio);
 	this.DrawCallback ();
 };
 

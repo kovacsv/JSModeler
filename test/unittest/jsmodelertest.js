@@ -44,7 +44,6 @@ unitTest.AddSourceFile ('../../src/modeler/explode.js');
 unitTest.AddSourceFile ('../../src/modeler/exporter.js');
 unitTest.AddSourceFile ('../../src/modeler/trianglebody.js');
 unitTest.AddSourceFile ('../../src/modeler/trianglemodel.js');
-unitTest.AddSourceFile ('../../src/modeler/trianglebodyutils.js');
 unitTest.AddSourceFile ('../../src/modeler/converter.js');
 unitTest.AddSourceFile ('../../src/modeler/rayutils.js');
 unitTest.AddSourceFile ('../../src/import/binaryreader.js');

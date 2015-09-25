@@ -3367,13 +3367,13 @@
 						["string", "the result"]
 					]
 				},
-				"AddVertexToBody" : {
-					"description" : "Adds a vertex to an existing body.",
+				"ConvertTriangleBodyToOctree" : {
+					"description" : "Converts a triangle body to triangle octree.",
 					"parameters" : [
 						["body", "TriangleBody", "the body"]
 					],
 					"returns" : [
-						["Octree", "the result"]
+						["TriangleOctree", "the result"]
 					]
 				},
 				"ConvertBodyToTriangleBody" : {

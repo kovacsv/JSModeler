@@ -40,7 +40,6 @@
 ../src/modeler/exporter.js
 ../src/modeler/trianglebody.js
 ../src/modeler/trianglemodel.js
-../src/modeler/trianglebodyutils.js
 ../src/modeler/converter.js
 ../src/modeler/rayutils.js
 ../src/import/binaryreader.js
