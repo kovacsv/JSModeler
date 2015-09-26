@@ -28,7 +28,7 @@ JSM.BodySmartBuilder.prototype.AddPolygon = function (coords)
 				for (i = 0; i < vertices.length; i++) {
 					index = vertices[i];
 					coord = body.GetVertexPosition (index);
-					if (sector.CoordPosition () == JSM.CoordSectorPosition.CoordInsideOfSector) {
+					if (sector.CoordPosition (coord) == JSM.CoordSectorPosition.CoordInsideOfSector) {
 						result.push (index);
 					}
 				}
