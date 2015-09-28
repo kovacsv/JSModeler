@@ -1,0 +1,56 @@
+﻿html, body
+{
+	color : #000000;
+	background : #f8f8f8;
+	font-size : 12px;
+	font-family : Arial, cursive;
+	margin : 0px;
+	padding : 0px;
+	width : 100%;
+	height : 100%;
+}
+
+div.frame
+{
+	width : 802px;
+	padding : 20px;
+	margin : 0px auto;
+}
+
+div.buttons
+{
+	color : #333333;
+	background : transparent;
+	margin : 5px 0px;
+	overflow : auto;
+}
+
+div.info
+{
+	color : #333333;
+	background : transparent;
+}
+
+div.button
+{
+	cursor : pointer;
+	padding : 5px 10px;
+	margin-right : 5px;
+	border : 1px solid #cccccc;
+	border-radius : 5px;
+	float : left;
+}
+
+pre.test
+{
+	color : #666666;
+	background : transparent;
+	margin : 5px 0px;
+}
+
+canvas
+{
+	color : #000000;
+	background : #ffffff;
+	border : 1px solid #cccccc;
+}

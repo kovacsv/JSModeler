@@ -1,0 +1,52 @@
+<!-- fiddle: http://jsfiddle.net/g3cKa/ -->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Example</title>
+
+	<script type="text/javascript">
+		function DrawPointsOnPath (svgObject, path, segmentation)
+		{
+			var svgNameSpace = 'http://www.w3.org/2000/svg';
+			
+			var pathLength = path.getTotalLength ();
+			var step = pathLength / segmentation;
+			
+			var i, point, circle;
+			for (i = 0; i <= segmentation; i++) {
+				point = path.getPointAtLength (i * step);
+				circle = document.createElementNS (svgNameSpace, 'circle');
+				circle.setAttributeNS(null, 'cx', point.x);
+				circle.setAttributeNS(null, 'cy', point.y);
+				circle.setAttributeNS(null, 'r',  3);
+				circle.setAttributeNS(null, 'fill', 'red');
+				svgObject.appendChild (circle);
+			}
+		}
+	
+	    window.onload = function ()
+		{
+			var svgObject = document.getElementById ('exampleSvg');
+			var path = document.getElementById ('examplePath');
+
+			var log = document.getElementById ('log');
+			log.innerHTML += 'getTotalLength: ' + path.getTotalLength ();
+
+			DrawPointsOnPath (svgObject, path, 10);
+		}
+	</script>
+
+</head>
+
+<body>
+	<svg id="exampleSvg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="200">
+		<path id="examplePath" d="M 88.849925,113.80428 C 47.819071,126.15153 50.098511,75.623731 50.098511,75.623731 78.418648,70.527686 87.026905,91.589058 88.849925,113.80428 z">
+	</svg>
+	<div id="log"></div>
+</body>
+
+</html>

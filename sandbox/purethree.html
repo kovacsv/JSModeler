@@ -1,0 +1,87 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+    <title>Example</title>
+
+    <script type="text/javascript" src="../build/three.min.js"></script>
+    <script type="text/javascript">
+		var renderer = null;
+		var scene = null;
+		var camera = null;
+		var mesh = null;
+	
+		var isMouseDown = false;
+		var mouseLastPos = [0, 0];
+		
+		function MouseDown (event)
+		{
+			isMouseDown = true;
+			mouseLastPos = [event.clientX, event.clientY];
+		}
+	
+		function MouseMove (event)
+		{
+			if (isMouseDown) {
+				var currentPos = [event.clientX, event.clientY];
+				var ratio = 0.005;
+				var diff = currentPos[0] - mouseLastPos[0];
+				mesh.rotation.z += diff * ratio;
+				mouseLastPos = currentPos;
+				renderer.render (scene, camera);
+			}
+		}
+
+		function MouseUp (event)
+		{
+			isMouseDown = false;
+		}
+
+		window.onload = function() {
+			renderer = new THREE.WebGLRenderer ();
+			renderer.setClearColor (new THREE.Color (0xffffff));
+			renderer.setSize (800, 600);
+			renderer.domElement.addEventListener ('mousedown', MouseDown);
+			document.addEventListener ('mouseup', MouseUp);
+			document.addEventListener ('mousemove', MouseMove);
+			
+			document.body.appendChild (renderer.domElement);
+
+			scene = new THREE.Scene ();
+			camera = new THREE.PerspectiveCamera (45, 800 / 600, 0.1, 10000);
+			camera.position.set (3, 1, 2);
+			camera.up.set (0, 0, 1);
+			camera.lookAt (new THREE.Vector3 (0, 0, 0));
+
+			scene.add (camera);
+
+			var texture = THREE.ImageUtils.loadTexture ('texture.jpg', new THREE.UVMapping (), function (image) {
+				renderer.render (scene, camera);
+			});
+				
+			var material = new THREE.MeshLambertMaterial ({
+				color: 0xffffff,
+				map : texture
+			});
+
+			// not works with internet explorer 11
+			// material.side = THREE.DoubleSide;
+			
+			var geometry = new THREE.CubeGeometry (1, 1, 1);
+			mesh = new THREE.Mesh (geometry, material);
+			scene.add (mesh);
+
+			var directionalLight = new THREE.DirectionalLight (0xffffff);
+			directionalLight.position.set (3, 1, 2).normalize ();
+			scene.add (directionalLight);
+
+			renderer.render (scene, camera);
+        };
+    </script>
+</head>
+
+<body></body>
+
+</html>

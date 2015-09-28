@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Example</title>
+
+	<script type="text/javascript" src="fragmentrenderer.js"></script>
+	<script type="text/javascript">
+		WebGLInitContext = function (canvas)
+		{
+			if (canvas === null) {
+				return null;
+			}
+			
+			if (canvas.getContext === undefined) {
+				return null;
+			}
+			
+			var context = canvas.getContext ('webgl') || canvas.getContext ('experimental-webgl');
+			if (context === null) {
+				return null;
+			}
+			
+			context.viewportWidth = canvas.width;
+			context.viewportHeight = canvas.height;
+			context.viewport (0, 0, context.viewportWidth, context.viewportHeight);
+			context.clearColor (1.0, 1.0, 1.0, 1.0);
+			return context;
+		};
+	
+		WebGLInitShaderProgram = function (context, vertexShader, fragmentShader, onError)
+		{
+			function CompileShader (context, script, type, onError)
+			{
+				var shader = context.createShader (type);
+				context.shaderSource (shader, script);
+				context.compileShader (shader);
+				if (!context.getShaderParameter (shader, context.COMPILE_STATUS)) {
+					if (onError !== undefined && onError !== null) {
+						onError (context.getShaderInfoLog (shader));
+					}
+					return null;
+				}
+				return shader;
+			}
+			
+			function CreateShader (context, fragmentShaderScript, vertexShaderScript, onError)
+			{
+				var fragmentShader = CompileShader (context, fragmentShaderScript, context.FRAGMENT_SHADER, onError);
+				var vertexShader = CompileShader (context, vertexShaderScript, context.VERTEX_SHADER, onError);
+				if (fragmentShader === null || vertexShader === null) {
+					return null;
+				}
+
+				var shaderProgram = context.createProgram ();
+				context.attachShader (shaderProgram, vertexShader);
+				context.attachShader (shaderProgram, fragmentShader);
+				context.linkProgram (shaderProgram);
+				if (!context.getProgramParameter (shaderProgram, context.LINK_STATUS)) {
+					return null;
+				}
+				
+				return shaderProgram;
+			}
+			
+			var shader = CreateShader (context, fragmentShader, vertexShader, onError);
+			if (shader == null) {
+				return null;
+			}
+			
+			context.useProgram (shader);
+			return shader;
+		};
+		
+		WebGLCreateBuffer = function (context, bufferData, attribLocation)
+		{
+			var buffer = context.createBuffer ();
+			context.bindBuffer (context.ARRAY_BUFFER, buffer);
+			context.bufferData (context.ARRAY_BUFFER, bufferData, context.STATIC_DRAW);
+			context.vertexAttribPointer (attribLocation, 2, context.FLOAT, false, 0, 0);
+			context.enableVertexAttribArray (attribLocation);
+			context.bindBuffer (context.ARRAY_BUFFER, null);		
+		};
+		
+		WebGLCreateTextureBufferFromImageData = function (context, imageData)
+		{
+			var textureBuffer = context.createTexture ();
+			context.bindTexture (context.TEXTURE_2D, textureBuffer);
+			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST);
+			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.NEAREST);
+			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_S, context.CLAMP_TO_EDGE);
+			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_T, context.CLAMP_TO_EDGE);
+			context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, imageData);
+			context.bindTexture (context.TEXTURE_2D, null);
+			return textureBuffer;
+		};
+		
+		WebGLCreateFloatTextureBufferFromArray = function (context, array, width, height)
+		{
+			var floatArray = new Float32Array (array);
+			var textureBuffer = context.createTexture ();
+			context.bindTexture (context.TEXTURE_2D, textureBuffer);
+			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST);
+			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.NEAREST);
+			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_S, context.CLAMP_TO_EDGE);
+			context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_T, context.CLAMP_TO_EDGE);
+			context.texImage2D (context.TEXTURE_2D, 0, context.RGB, width, height, 0, context.RGB, context.FLOAT, floatArray);
+			context.bindTexture (context.TEXTURE_2D, null);
+			return textureBuffer;
+		};
+
+		WebGLCreateTextureBuffersFromFiles = function (context, fileNames, onLoaded)
+		{
+			function CreateTexture (fileNames, index)
+			{
+				var fileName = fileNames[index];
+				var imageData = new Image ();
+				imageData.src = fileName;
+				imageData.onload = function () {
+					textureBuffers[index] = WebGLCreateTextureBufferFromImageData (context, imageData);
+					remainingFiles = remainingFiles - 1;
+					if (remainingFiles === 0) {
+						onLoaded (textureBuffers);
+					}
+				}
+			}
+		
+			var remainingFiles = fileNames.length;
+			var textureBuffers = [];
+			for (i = 0; i < fileNames.length; i++) {
+				textureBuffers.push (null);
+			}
+		
+			var i;
+			for (i = 0; i < fileNames.length; i++) {
+				CreateTexture (fileNames, i);
+			}
+		};
+
+		function Load ()
+		{
+			var vertexShader = [
+				'precision highp float;',
+				'attribute vec2 aVertexPosition;',
+				'varying vec2 vVertexPosition;',
+				'void main (void) {',
+				'	vVertexPosition = (aVertexPosition + vec2 (1.0, 1.0)) / 2.0;',
+				'	gl_Position = vec4 (aVertexPosition.x, -aVertexPosition.y, 0.0, 1.0);',
+				'}'
+			].join('\n');
+
+			var fragmentShader = [
+				'precision highp float;',
+				'varying vec2 vVertexPosition;',
+				
+				'uniform sampler2D uSampler0;',
+				'uniform float uTextureWidth0;',
+				'uniform float uTextureHeight0;',
+				
+				'vec3 GetFloatVector (in sampler2D sampler, in float textureWidth, in float textureHeight, in float index) {',
+				'	float pixelSizeX = 1.0 / textureWidth;',
+				'	float pixelSizeY = 1.0 / textureHeight;',
+				'	float xCoordinate = mod (index, textureWidth) * pixelSizeX + pixelSizeX * 0.5;',
+				'	float yCoordinate = floor (index / textureWidth) * pixelSizeY + pixelSizeY * 0.5;',
+				'	vec4 textureColor = texture2D (sampler, vec2 (xCoordinate, yCoordinate));',
+				'	return textureColor.xyz;',
+				'}',
+				
+				'void main (void) {',
+				'	vec3 a = GetFloatVector (uSampler0, uTextureWidth0, uTextureHeight0, 1.0);',
+				'	vec4 color0 = vec4 (a.x, a.y, a.z, 1.0);',
+				'	gl_FragColor = color0;',
+				'}'
+			].join('\n');
+
+			var canvas = document.getElementById ('example');
+			var context = WebGLInitContext (canvas);
+			var floatExtension = context.getExtension ('OES_texture_float');
+			var shader = WebGLInitShaderProgram (context, vertexShader, fragmentShader, function (error) {
+				alert (error);
+			});
+			
+			var vertices = new Float32Array ([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0]);
+			var vertexAttribLocation = context.getAttribLocation (shader, 'aVertexPosition');
+			var vertexBuffer = WebGLCreateBuffer (context, vertices, vertexAttribLocation);
+
+			var colors = [];
+			var width = 3;
+			var height = 3;
+			colors.push (1.0, 0.0, 0.0);
+			colors.push (0.0, 1.0, 0.0);
+			colors.push (0.0, 0.0, 1.0);
+			colors.push (1.0, 1.0, 0.0);
+			colors.push (0.0, 1.0, 1.0);
+			colors.push (1.0, 0.0, 1.0);
+			colors.push (1.0, 0.0, 0.0);
+			colors.push (1.0, 0.0, 0.0);
+			colors.push (1.0, 0.0, 0.0);
+
+			var samplerUniform0 = context.getUniformLocation (shader, 'uSampler0');
+			var textureWidthUniform0 = context.getUniformLocation (shader, 'uTextureWidth0');
+			var textureHeightUniform0 = context.getUniformLocation (shader, 'uTextureHeight0');
+			context.uniform1i (samplerUniform0, 0);
+			context.uniform1f (textureWidthUniform0, width);
+			context.uniform1f (textureHeightUniform0, height);
+
+			var textureBuffer = WebGLCreateFloatTextureBufferFromArray (context, colors, width, height);
+			context.activeTexture (context.TEXTURE0);
+			context.bindTexture (context.TEXTURE_2D, textureBuffer);				
+			context.clear (context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
+			context.drawArrays (context.TRIANGLE_FAN, 0, 4);
+
+			//var imageData = new Image ();
+			//imageData.src = 'texture1.png';
+			//imageData.onload = function () {
+			//	var textureBuffer = WebGLCreateTextureBuffer (context, imageData);
+			//	context.activeTexture (context.TEXTURE0);
+			//	context.bindTexture (context.TEXTURE_2D, textureBuffer);				
+			//	context.clear (context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
+			//	context.drawArrays (context.TRIANGLE_FAN, 0, 4);
+			//};
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<canvas id="example" width="256" height="256"></canvas>
+</body>
+
+</html>

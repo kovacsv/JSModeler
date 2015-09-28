@@ -1,0 +1,64 @@
+html, body
+{
+	color : #000000;
+	background : #ffffff;
+	font-size : 12px;
+	font-family : Arial, cursive;
+	margin : 0px;
+	padding : 0px;
+	width : 100%;
+	height : 100%;
+}
+
+#header
+{
+	color : #333333;
+	background : #f5f5f5;
+	padding : 10px;
+	height : 25px;
+	border-bottom : 1px solid #d5d5d5;
+}
+
+#buttons
+{
+
+}
+
+a.button
+{
+	color : #ffffff;
+	background : #008ab8;
+	text-decoration : none;
+	padding : 5px 10px;
+	margin-right : 5px;
+	border-radius : 5px;
+	display : block;
+	float : left;
+}
+
+a.button.green
+{
+	color : #ffffff;
+	background : #279b61;
+}
+
+#info
+{
+	padding : 5px;
+	float : left;
+}
+
+div.content
+{
+	padding : 10px;
+}
+
+canvas
+{
+	display : block;
+}
+
+svg
+{
+	display : block;
+}

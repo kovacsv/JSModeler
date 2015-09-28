@@ -1,0 +1,405 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/viewertest.css">
+
+	<script type="text/javascript" src="../../build/three.min.js"></script>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../../src/core/timer.js"></script>
+	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../../src/core/async.js"></script>
+	<script type="text/javascript" src="../../src/core/check.js"></script>
+	<script type="text/javascript" src="../../src/geometry/definitions.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord2d.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../../src/geometry/box.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sphere.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon2d.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../../src/geometry/triangulation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/octree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../../src/geometry/ray.js"></script>
+	<script type="text/javascript" src="../../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../../src/modeler/light.js"></script>
+	<script type="text/javascript" src="../../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../../src/modeler/explode.js"></script>
+	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglebody.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglemodel.js"></script>
+	<script type="text/javascript" src="../../src/modeler/converter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/rayutils.js"></script>
+	<script type="text/javascript" src="../../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../../src/import/importer.js"></script>
+	<script type="text/javascript" src="../../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../../src/import/importercommon.js"></script>
+	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../../src/renderer/webglutils.js"></script>
+	<script type="text/javascript" src="../../src/renderer/rendergeometry.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderconverter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/jsonfileloader.js"></script>
+	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
+<!-- JSModeler includes end -->
+
+	<script type="text/javascript" src="include/stephandler.js"></script>
+	<script type="text/javascript" src="include/teststeps.js"></script>
+	<title>JSModeler Viewer Test</title>
+
+	<script type="text/javascript">
+		var canvas = null;
+		var viewer = null;
+
+		function Resize ()
+		{
+			var header = document.getElementById ('header');
+			var canvas = document.getElementById ('test');
+			if (canvas !== null) {
+				if (canvas instanceof (HTMLCanvasElement)) {
+					canvas.width = document.body.clientWidth;
+					canvas.height = document.body.clientHeight - header.clientHeight - 1;
+				} else if (canvas instanceof (SVGSVGElement)) {
+					canvas.setAttribute ('width', document.body.clientWidth);
+					canvas.setAttribute ('height', document.body.clientHeight - header.clientHeight - 1);
+				}
+			}
+		}
+
+		function SwitchViewer (type)
+		{
+			function CreateCanvas ()
+			{
+				if (canvas !== null) {
+					document.body.removeChild (canvas);
+				}
+				
+				canvas = document.createElement ('canvas');
+				canvas.id = 'test';
+				document.body.appendChild (canvas);			
+				Resize ();
+			}
+
+			function CreateSVGCanvas ()
+			{
+				if (canvas !== null) {
+					document.body.removeChild (canvas);
+				}
+				
+				canvas = document.createElementNS ('http://www.w3.org/2000/svg', 'svg');
+				canvas.id = 'test';
+				document.body.appendChild (canvas);
+				Resize ();
+			}
+
+			if (type == 'three' || type == 'three2' || type == 'three3') {
+				function TextureLoaded ()
+				{
+					viewer.Draw ();
+				}
+			
+				CreateCanvas ();
+				
+				var viewerSettings = {
+					cameraEyePosition : [3.0, 4.0, 2.0],
+					cameraCenterPosition : [0.0, 0.0, 0.0],
+					cameraUpVector : [0.0, 0.0, 1.0]
+				};
+
+				viewer = new JSM.ThreeViewer ();
+				if (!viewer.Start (document.getElementById ('test'), viewerSettings)) {
+					alert ('error');
+				}
+
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				if (type == 'three3') {
+					materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+				} else {
+					materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+				}
+				
+				body.GetPolygon (1).SetMaterialIndex (0);
+				body.GetPolygon (2).SetMaterialIndex (1);
+				
+				var conversionData = {
+					textureLoadedCallback : TextureLoaded
+				}
+				viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body, materials, conversionData));
+				
+				if (type == 'three2') {
+					var body2 = JSM.GenerateCuboid (1, 1, 1);
+					var renderGeometries2 = JSM.ConvertBodyToThreeMeshes (body2);
+					renderGeometries2[0].position.x += -1.2;
+					renderGeometries2[0].position.y += 1.2;
+					renderGeometries2[0].position.z += 1.2;
+					renderGeometries2[0].rotation.z += 20.0 * JSM.DegRad;
+					viewer.AddMeshes (renderGeometries2);
+				}				
+				viewer.Draw ();
+			} else if (type == 'internal' || type == 'internal2' || type == 'internal3') {
+				CreateCanvas ();
+				
+				var camera = new JSM.Camera (
+					new JSM.Coord (3.0, 4.0, 2.0),
+					new JSM.Coord (0.0, 0.0, 0.0),
+					new JSM.Vector (0.0, 0.0, 1.0)
+				);
+
+				viewer = new JSM.Viewer ();
+				if (!viewer.Init (document.getElementById ('test'), camera)) {
+					alert ('error');
+				}
+
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				if (type == 'internal3') {
+					materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+				} else {
+					materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+				}
+				
+				body.GetPolygon (1).SetMaterialIndex (0);
+				body.GetPolygon (2).SetMaterialIndex (1);
+			
+				var renderGeometries = JSM.ConvertBodyToRenderGeometries (body, materials);
+				viewer.AddGeometries (renderGeometries);
+				
+				if (type == 'internal2') {
+					var body2 = JSM.GenerateCuboid (1, 1, 1);
+					var renderGeometries2 = JSM.ConvertBodyToRenderGeometries (body2);
+					var transformation = new JSM.Transformation ();
+					transformation.Append (JSM.RotationZTransformation (20.0 * JSM.DegRad));
+					transformation.Append (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
+					renderGeometries2[0].SetTransformation (transformation);
+					viewer.AddGeometries (renderGeometries2);
+				}
+				
+				viewer.Draw ();
+			} else if (type == 'pointcloud') {
+				CreateCanvas ();
+				
+				var camera = new JSM.Camera (
+					new JSM.Coord (3.0, 4.0, 2.0),
+					new JSM.Coord (0.0, 0.0, 0.0),
+					new JSM.Vector (0.0, 0.0, 1.0)
+				);
+
+				viewer = new JSM.PointCloudViewer ();
+				if (!viewer.Init (document.getElementById ('test'), camera)) {
+					alert ('error');
+				}
+				
+				viewer.SetPointSize (2.0);
+
+				var points = [];
+				var colors = [];
+				var i, x, y, z;
+				for (i = 0;  i < 10000; i++) {
+					x = Math.random ();
+					y = Math.random ();
+					z = Math.random ();
+					points.push (x - 0.5, y - 0.5, z - 0.5);
+					colors.push (x, y, z);
+				}
+				viewer.AddPoints (points, colors);
+
+				viewer.Draw ();
+			} else if (type == 'canvas') {
+				CreateCanvas ();
+				
+				var camera = new JSM.Camera (
+					new JSM.Coord (3.0, 4.0, 2.0),
+					new JSM.Coord (0.0, 0.0, 0.0),
+					new JSM.Vector (0.0, 0.0, 1.0)
+				);
+
+				viewer = new JSM.SoftwareViewer ();
+				if (!viewer.Start (document.getElementById ('test'), camera)) {
+					alert ('error');
+				}
+				viewer.drawMode = 'HiddenLineFrontFacing';
+
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+				
+				body.GetPolygon (1).SetMaterialIndex (0);
+				body.GetPolygon (2).SetMaterialIndex (1);
+			
+				viewer.AddBody (body, materials);
+				viewer.Draw ();
+			} else if (type == 'svg') {
+				CreateSVGCanvas ();
+			
+				var camera = new JSM.Camera (
+					new JSM.Coord (3.0, 4.0, 2.0),
+					new JSM.Coord (0.0, 0.0, 0.0),
+					new JSM.Vector (0.0, 0.0, 1.0)
+				);
+
+				viewer = new JSM.SoftwareViewer ();
+				if (!viewer.Start (document.getElementById ('test'), camera)) {
+					alert ('error');
+				}
+				viewer.drawMode = 'HiddenLineFrontFacing';
+
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+				
+				body.GetPolygon (1).SetMaterialIndex (0);
+				body.GetPolygon (2).SetMaterialIndex (1);
+			
+				viewer.AddBody (body, materials);
+				viewer.Draw ();
+			} else if (type == 'sprite') {
+				function OnDrawStart (canvas)
+				{
+					var context = canvas.getContext ('2d');
+					context.clearRect (0, 0, canvas.width, canvas.height);
+				}
+				
+				function OnPointDraw (canvas, index, projected)
+				{
+					var context = canvas.getContext ('2d');
+					var x = projected.x;
+					var y = projected.y;
+					var radius = 20;
+
+					var xBeg = x - radius / 2.0;
+					var yBeg = y - radius / 2.0;
+				
+					context.beginPath ();
+					radialGradient = context.createRadialGradient (x, y, 0, x, y, radius);
+					radialGradient.addColorStop (0, '#ff0000');
+					radialGradient.addColorStop (1, '#aa0000');
+					context.fillStyle = radialGradient;
+					context.arc (x, y, radius, 0.0, 2.0 * Math.PI, false);
+					context.fill ();
+				}
+			
+				function OnDrawEnd (canvas)
+				{
+				}
+
+				CreateCanvas ();
+			
+				var viewerCallbacks = {
+					onDrawStart : OnDrawStart,
+					onPointDraw : OnPointDraw,
+					onDrawEnd : OnDrawEnd
+				};
+
+				var camera = new JSM.Camera (
+					new JSM.Coord (3.0, 3.0, 3.0),
+					new JSM.Coord (0.0, 0.0, 0.0),
+					new JSM.Vector (0.0, 0.0, 1.0)
+				);
+
+				viewer = new JSM.SpriteViewer ();
+				var success = viewer.Start (document.getElementById ('test'), camera, viewerCallbacks);
+
+				viewer.AddPoint (new JSM.Coord (-0.5, -0.5, -0.5));
+				viewer.AddPoint (new JSM.Coord (0.5, -0.5, -0.5));
+				viewer.AddPoint (new JSM.Coord (0.5, 0.5, -0.5));
+				viewer.AddPoint (new JSM.Coord (-0.5, 0.5, -0.5));
+				viewer.AddPoint (new JSM.Coord (-0.5, -0.5, 0.5));
+				viewer.AddPoint (new JSM.Coord (0.5, -0.5, 0.5));
+				viewer.AddPoint (new JSM.Coord (0.5, 0.5, 0.5));
+				viewer.AddPoint (new JSM.Coord (-0.5, 0.5, 0.5));
+				
+				viewer.Draw ();
+			}
+		}
+
+		function FitInWindow ()
+		{
+			viewer.FitInWindow ();
+		}
+		
+		function Load ()
+		{
+			window.onresize = Resize;
+			Resize ();
+
+			SwitchViewer ('three');
+		}
+
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="header">
+		<div id="buttons">
+			<a class="button" href="javascript:SwitchViewer ('three')">three</a>
+			<a class="button" href="javascript:SwitchViewer ('three2')">three 2</a>
+			<a class="button" href="javascript:SwitchViewer ('three3')">three 3</a>
+			<a class="button" href="javascript:SwitchViewer ('internal')">internal</a>
+			<a class="button" href="javascript:SwitchViewer ('internal2')">internal 2</a>
+			<a class="button" href="javascript:SwitchViewer ('internal3')">internal 3</a>
+			<a class="button" href="javascript:SwitchViewer ('pointcloud')">pointcloud</a>
+			<a class="button" href="javascript:SwitchViewer ('canvas')">canvas</a>
+			<a class="button" href="javascript:SwitchViewer ('svg')">svg</a>
+			<a class="button" href="javascript:SwitchViewer ('sprite')">sprite</a>
+			<a class="button green" href="javascript:FitInWindow ()">fit in window</a>
+		</div>
+	</div>
+</body>
+
+</html>

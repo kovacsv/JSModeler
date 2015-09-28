@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+    <title>Example</title>
+    <style>
+    	#main
+    	{
+    		width : 500px;
+			margin : 30px auto;
+		}
+    
+    	div.controls
+    	{
+			width : 500px;
+			height : 0px;
+		}
+    
+    	div.left
+    	{
+			float : left;
+		}
+    
+    	div.right
+    	{
+			float : right;
+		}
+    
+    	input.text
+    	{
+			width : 30px;
+		}
+    </style>
+
+    <script type="text/javascript" src="../build/three.min.js"></script>
+    <script type="text/javascript">
+		function Render ()
+		{
+			var canvas = document.getElementById ('example');
+			var parameters = {
+				canvas : canvas,
+				antialias : true
+			};
+		
+            var renderer = new THREE.WebGLRenderer (parameters);
+			renderer.setClearColor (new THREE.Color (0xffffff));
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera (45, 1.0, 0.1, 10000);
+            camera.position.set (0.5, 0.5, 1.45);
+            camera.lookAt (new THREE.Vector3 (0.5, 0.5, 0));
+
+            scene.add (camera);
+
+			var material = new THREE.MeshLambertMaterial ({
+				color: 0xffffff
+			});
+			
+			texture = THREE.ImageUtils.loadTexture ('texture.jpg', new THREE.UVMapping (), function (loadedTexture) {
+				loadedTexture.format = THREE.RGBFormat;
+				loadedTexture.wrapS = THREE.RepeatWrapping;
+				loadedTexture.wrapT = THREE.RepeatWrapping;
+				renderer.render (scene, camera);
+			});
+			material.map = texture;
+			
+			var geometry = new THREE.Geometry ();
+			
+			geometry.vertices.push (new THREE.Vector3 (0, 0, 0));
+			geometry.vertices.push (new THREE.Vector3 (1, 0, 0));
+			geometry.vertices.push (new THREE.Vector3 (1, 1, 0));
+			geometry.vertices.push (new THREE.Vector3 (0, 1, 0));
+
+			geometry.faces.push (new THREE.Face3 (0, 1, 2));
+			geometry.faces.push (new THREE.Face3 (0, 2, 3));
+			geometry.faces[0].normal = new THREE.Vector3 (0, 0, 1);
+			geometry.faces[1].normal = new THREE.Vector3 (0, 0, 1);
+			
+			var u1 = document.getElementById ('u1').value;
+			var v1 = document.getElementById ('v1').value;
+			var u2 = document.getElementById ('u2').value;
+			var v2 = document.getElementById ('v2').value;
+			var u3 = document.getElementById ('u3').value;
+			var v3 = document.getElementById ('v3').value;
+			var u4 = document.getElementById ('u4').value;
+			var v4 = document.getElementById ('v4').value;
+			
+			var textureUVs1 = [];
+			textureUVs1.push (new THREE.Vector2 (u1, v1));
+			textureUVs1.push (new THREE.Vector2 (u2, v2));
+			textureUVs1.push (new THREE.Vector2 (u3, v3));
+			geometry.faceVertexUvs[0].push (textureUVs1);
+
+			var textureUVs2 = [];
+			textureUVs2.push (new THREE.Vector2 (u1, v1));
+			textureUVs2.push (new THREE.Vector2 (u3, v3));
+			textureUVs2.push (new THREE.Vector2 (u4, v4));
+			geometry.faceVertexUvs[0].push (textureUVs2);
+
+			var mesh = new THREE.Mesh (geometry, material);
+			scene.add (mesh);
+
+            var light = new THREE.PointLight (0xffffff);
+            light.position.set (0, 0, 3);
+            scene.add (light);
+
+            renderer.render (scene, camera);
+		}
+
+		window.onload = function()
+		{
+			Render ();
+        };
+    </script>
+</head>
+
+<body>
+	<div id="main" onkeyup="Render ();">
+		<div class="controls">
+			<div class="left">
+				<input type="text" class="text" value="0" id="u4"></input>
+				<input type="text" class="text" value="1" id="v4"></input>
+			</div>
+			<div class="right">
+				<input type="text" class="text" value="1" id="u3"></input>
+				<input type="text" class="text" value="1" id="v3"></input>
+			</div>
+		</div>
+		<canvas id="example" width="500" height="500"></canvas>
+		<div class="controls">
+			<div class="left">
+				<input type="text" class="text" value="0" id="u1"></input>
+				<input type="text" class="text" value="0" id="v1"></input>
+			</div>
+			<div class="right">
+				<input type="text" class="text" value="1" id="u2"></input>
+				<input type="text" class="text" value="0" id="v2"></input>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

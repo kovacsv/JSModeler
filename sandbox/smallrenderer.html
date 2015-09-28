@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Example</title>
+
+	<script type="text/javascript">
+		function Render (context, width, height, vertices, polygons)
+		{
+			function Dot (a, b)
+			{
+				return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+			};
+
+			function Cross (a, b)
+			{
+				return [
+					a[1] * b[2] - a[2] * b[1],
+					a[2] * b[0] - a[0] * b[2],
+					a[0] * b[1] - a[1] * b[0]
+				];
+			};
+
+			function Sub (a, b)
+			{
+				return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+			};
+		
+			function MatrixVectorMultiply (m, v)
+			{
+				return [
+					v[0] * m[0] + v[1] * m[4] + v[2] * m[8] + m[12],
+					v[0] * m[1] + v[1] * m[5] + v[2] * m[9] + m[13],
+					v[0] * m[2] + v[1] * m[6] + v[2] * m[10] + m[14],
+					v[0] * m[3] + v[1] * m[7] + v[2] * m[11] + m[15]
+				];
+			};
+		
+			function Project (coord, eye, center, up, width, height, fov, near, far)
+			{
+				function Normalize (c)
+				{
+					var l = Math.sqrt (c[0] * c[0] + c[1] * c[1] + c[2] * c[2]);
+					return [c[0] / l, c[1] / l, c[2] / l];
+				}
+
+				var d = Normalize (Sub (eye, center));
+				var v = Normalize (Cross (up, d));
+				var u = Normalize (Cross (d, v));
+
+				var modelView = [
+					v[0], u[0], d[0], 0.0,
+					v[1], u[1], d[1], 0.0,
+					v[2], u[2], d[2], 0.0,
+					-Dot (v, eye), -Dot (u, eye), -Dot (d, eye), 1.0
+				];
+
+				var f = 1.0 / Math.tan (fov / 2.0);
+				var nf = 1.0 / (near - far);
+				var projection = [
+					f / (width / height), 0.0, 0.0, 0.0,
+					0.0, f,	0.0, 0.0,
+					0.0, 0.0, (near + far) * nf, -1.0,
+					0.0, 0.0, (2.0 * far * near) * nf, 0.0
+				];
+				
+				var projected = MatrixVectorMultiply (projection, MatrixVectorMultiply (modelView, coord));
+				return [
+					(projected[0] / projected[3] * 0.5 + 0.5) * width,
+					(projected[1] / projected[3] * 0.5 + 0.5) * height,
+					projected[2] / projected[3] * 0.5 + 0.5
+				];
+			};
+			
+			function FrontFacing (vertices, polygon, eye)
+			{
+				var a = vertices[polygon[0]];
+				var b = vertices[polygon[1]];
+				var c = vertices[polygon[2]];
+				return Dot (Cross (Sub (a, b), Sub (c, b)), Sub (eye, a)) < 0;
+			}
+
+			var eye = [-4.0, 2.0, 2.0];
+			var center = [0.0, 0.0, 0.0];
+			var up = [0.0, 0.0, 1.0];
+			var fieldOfView = 45.0;
+
+			context.clearRect (0, 0, width, height);
+			context.fillStyle = '#cc0000';
+			var i, j, polygon, count, projected, x, y;
+			for (i = 0; i < polygons.length; i++) {
+				polygon = polygons[i];
+				if (!FrontFacing (vertices, polygon, eye)) {
+					continue;
+				}
+				count = polygon.length;
+				context.beginPath ();
+				for (j = 0; j <= count; j++) {
+					projected = Project (vertices[polygon[j % count]], eye, center, up, width, height, fieldOfView, 0.1, 100.0);
+					x = projected[0];
+					y = height - projected[1];
+					if (j == 0) {
+						context.moveTo (x, y);
+					} else {
+						context.lineTo (x, y);
+					}
+				}
+				context.fill ();
+				context.stroke ();
+			}
+		}
+		
+		function RotZ (c, a)
+		{
+			var si = Math.sin (angle);
+			var co = Math.cos (angle);
+			return [
+				c[0] * co - c[1] * si,
+				c[0] * si + c[1] * co,
+				c[2]
+			];
+		};
+
+		function Load ()
+		{
+			var canvas = document.getElementById ('example');
+			var context = canvas.getContext ('2d');
+			Render (
+				context, canvas.width, canvas.height,
+				[
+					[+1, +1, +1],
+					[+1, +1, -1],
+					[+1, -1, +1],
+					[-1, +1, +1],
+					[+1, -1, -1],
+					[-1, +1, -1],
+					[-1, -1, +1],
+					[-1, -1, -1]
+				],
+				[
+					[0, 1, 5, 3],
+					[0, 2, 4, 1],
+					[0, 3, 6, 2],
+					[1, 4, 7, 5],
+					[2, 6, 7, 4],
+					[3, 5, 7, 6]
+				]
+			);
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();			
+		}
+	</script>
+
+</head>
+
+<body>
+	<canvas id="example" width="800" height="400"></canvas>
+</body>
+
+</html>

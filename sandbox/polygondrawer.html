@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<script type="text/javascript" src="utils/polygondrawer.js"></script>
+	<title>Example</title>
+
+	<script type="text/javascript">
+		var polygonDrawer = null;
+		
+		var polygon1 = [
+			[1, 0],
+			[3, 0],
+			[3, 1],
+			[1, 1]
+		];
+
+		var polygon2 = [
+			[1, 2],
+			[3, 2],
+			[3, 3],
+			[1, 3]
+		];
+
+		var polyline1 = [
+			[-3, 0],
+			[-1, 0],
+			[-1, 1],
+			[-3, 1]
+		];
+
+		var polyline2 = [
+			[-3, 2],
+			[-1, 2],
+			[-1, 3],
+			[-3, 3]
+		];
+		
+		function Load ()
+		{
+			polygonDrawer = new PolygonDrawer ();
+			polygonDrawer.Init (document.body, 600, 600, 50);
+			polygonDrawer.DrawCoordSystem ();
+			polygonDrawer.DrawPolygon (polygon1, '#ffeeee', '#cc0000');
+			polygonDrawer.DrawPolygon (polygon2, '#eeffee', '#00cc00');
+			polygonDrawer.DrawPolyline (polyline1, '#ffffff', '#0000cc');
+			polygonDrawer.DrawPolyline (polyline2, '#ffffff', '#cc00cc');
+			polygonDrawer.DrawIndices (polyline2);
+		}
+		
+		window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+
+</head>
+
+<body>
+</body>
+
+</html>

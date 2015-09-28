@@ -1,0 +1,46 @@
+<!-- fiddle: http://jsfiddle.net/g3cKa/ -->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<script type="text/javascript" src="../build/three.min.js"></script>
+	<title>Example</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+
+	    window.onload = function ()
+		{
+			var svgNameSpace = 'http://www.w3.org/2000/svg';
+			var path = document.createElementNS (svgNameSpace, 'path');
+			path.setAttributeNS (null, 'd', 'M 180 30 S 190 80 200 40 S 190 40 190 0');
+			
+			log = document.getElementById ('log');
+
+			var pathLength = path.getTotalLength ();
+			log.value += 'path length: ' + pathLength + '\n';
+			
+			var step = pathLength / 10;
+			var i, point;
+			for (i = 0; i <= 10; i++) {
+				point = path.getPointAtLength (i * step);
+				log.value += 'point at index ' + i + ': ' + point.x + ', ' + point.y + '\n';
+			}
+			
+			var svgObject = document.getElementById ('exampleSvg');
+			svgObject.appendChild (path);
+		}
+	</script>
+
+</head>
+
+<body>
+	<svg id="exampleSvg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="200"></svg>
+	<br>
+	<textarea id="log" rows="12" cols="100"></textarea>
+</body>
+
+</html>

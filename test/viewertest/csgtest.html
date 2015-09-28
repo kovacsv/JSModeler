@@ -1,0 +1,451 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/viewertest.css">
+
+	<script type="text/javascript" src="../../build/three.min.js"></script>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../../src/core/timer.js"></script>
+	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../../src/core/async.js"></script>
+	<script type="text/javascript" src="../../src/core/check.js"></script>
+	<script type="text/javascript" src="../../src/geometry/definitions.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord2d.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../../src/geometry/box.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sphere.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon2d.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../../src/geometry/triangulation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/octree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../../src/geometry/ray.js"></script>
+	<script type="text/javascript" src="../../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../../src/modeler/light.js"></script>
+	<script type="text/javascript" src="../../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../../src/modeler/explode.js"></script>
+	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglebody.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglemodel.js"></script>
+	<script type="text/javascript" src="../../src/modeler/converter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/rayutils.js"></script>
+	<script type="text/javascript" src="../../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../../src/import/importer.js"></script>
+	<script type="text/javascript" src="../../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../../src/import/importercommon.js"></script>
+	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../../src/renderer/webglutils.js"></script>
+	<script type="text/javascript" src="../../src/renderer/rendergeometry.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderconverter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/jsonfileloader.js"></script>
+	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
+<!-- JSModeler includes end -->
+
+	<script type="text/javascript" src="include/stephandler.js"></script>
+	<title>JSModeler Viewer Test</title>
+	
+	<script type="text/javascript">
+		var viewer = null;
+		var stepHandler = null;
+
+		function Previous ()
+		{
+			stepHandler.Previous ()
+		}
+		
+		function Next ()
+		{
+			stepHandler.Next ()
+		}
+
+		function AddBodyToViewer (body)
+		{
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0x279B61, diffuse : 0x279B61}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x008AB8, diffuse : 0x008AB8}));
+			/*
+			var maxColor = 16777215;
+			var minColor = parseInt (maxColor / 2);
+			var i, color;
+			for (i = 0; i < body.PolygonCount (); i++) {
+				color = JSM.SeededRandomInt (minColor, maxColor, i + 1);
+				materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
+				body.GetPolygon (i).SetMaterialIndex (i);
+			}
+			*/
+			var conversionData = {
+				textureLoadedCallback : null,
+				hasConvexPolygons : false
+			};
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
+			viewer.AddMeshes (meshes);
+			viewer.Draw ();	
+		}
+		
+		function BooleanOperation (operation, aBody, bBody)
+		{
+			aBody.SetPolygonsMaterialIndex (0);
+			bBody.SetPolygonsMaterialIndex (1);
+			return JSM.BooleanOperation (operation, aBody, bBody);;
+		}
+		
+		function TestStep (viewer, step)
+		{
+			var current = 0;
+			viewer.RemoveMeshes ();
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}			
+			
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.0)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 1.0)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, -1.0)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.4, 0.0)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.1, 0.0)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 1.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, -1.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.4, 0.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.1, 0.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.0, 0.0)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.0, 0.0)));
+				var result = BooleanOperation ('Union', bBody, aBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (1, 1, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.0)));
+				var result = BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.4, 0.0)));
+				var result = BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCuboid (0.5, 0.5, 1);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.1, 0.1, 0.0)));
+				var result = BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.4, 2, 30, true);
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.4, 2, 30, true);
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateCylinder (0.4, 2, 30, true);
+				var result = BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				var bBody = new JSM.GenerateCylinder (0.5, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+			
+			if (step == current++) {
+				var aBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				var bBody = new JSM.GenerateCylinder (0.5, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+			
+			if (step == current++) {
+				var aBody = new JSM.GenerateCylinder (0.8, 1, 30, true);
+				var bBody = new JSM.GenerateCylinder (0.5, 1, 30, true);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.5, 0.5, 0.5)));
+				var result = BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateSphere (0.5, 12);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.3, 0.3, 0.3)));
+				var result = BooleanOperation ('Union', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateSphere (0.5, 12);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.3, 0.3, 0.3)));
+				var result = BooleanOperation ('Difference', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+			if (step == current++) {
+				var aBody = new JSM.GenerateCuboid (1, 1, 1);
+				var bBody = new JSM.GenerateSphere (0.5, 12);
+				bBody.Transform (JSM.TranslationTransformation (new JSM.Coord (0.3, 0.3, 0.3)));
+				var result = BooleanOperation ('Intersection', aBody, bBody);
+				AddBodyToViewer (result);
+			}
+
+		}
+		
+		function Step ()
+		{
+			var step = stepHandler.GetStep ();
+			var info = document.getElementById ('info');
+			TestStep (viewer, step);
+		}
+		
+		function KeyDown (event)
+		{
+			var keyCode = event.which;
+			if (keyCode == 37) {
+				Previous ();
+			} else if (keyCode == 39) {
+				Next ();
+			}
+		}
+		
+		function Resize ()
+		{
+			var header = document.getElementById ('header');
+			var canvas = document.getElementById ('test');
+			
+			canvas.width = document.body.clientWidth;
+			canvas.height = document.body.clientHeight - header.clientHeight - 1;
+		}
+
+		function Load ()
+		{
+			window.onresize = Resize;
+			window.onhashchange = Step;
+			window.onkeydown = KeyDown;
+			Resize ();
+
+			var viewerSettings = {
+				cameraEyePosition : [-2.0, 4.0, 2.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0.0, 0.0, 1.0],
+				nearClippingPlane : 1.0,
+				farClippingPlane : 100000.0
+			};
+
+			viewer = new JSM.ThreeViewer ();
+			if (!viewer.Start (document.getElementById ('test'), viewerSettings)) {
+				return;
+			}
+
+			viewer.Draw ();
+			
+			stepHandler = new StepHandler ();
+			Step ();
+		}
+
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="header">
+		<div id="buttons">
+			<a class="button" href="javascript:Previous ()">previous</a>
+			<a class="button" href="javascript:Next ()">next</a>
+		</div>
+		<div id="info"></div>
+	</div>
+	<canvas id="test" width="800" height="500"></canvas>
+	</body>
+
+</html>
