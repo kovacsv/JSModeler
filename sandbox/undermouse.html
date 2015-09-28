@@ -50,7 +50,6 @@
 	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
 	<script type="text/javascript" src="../src/modeler/trianglebody.js"></script>
 	<script type="text/javascript" src="../src/modeler/trianglemodel.js"></script>
-	<script type="text/javascript" src="../src/modeler/trianglebodyutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/converter.js"></script>
 	<script type="text/javascript" src="../src/modeler/rayutils.js"></script>
 	<script type="text/javascript" src="../src/import/binaryreader.js"></script>
@@ -68,9 +67,10 @@
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../src/renderer/webglutils.js"></script>
+	<script type="text/javascript" src="../src/renderer/rendergeometry.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
-	<script type="text/javascript" src="../src/renderer/rendererconverter.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
 	<script type="text/javascript" src="../src/viewer/jsonfileloader.js"></script>
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
@@ -98,7 +98,7 @@
 		function OnMouseMove (event)
 		{
 			var logDiv = document.getElementById ('log');
-			logDiv.innerHTML = viewer.navigation.mouse.currX + ', ' + viewer.navigation.mouse.currY;
+			logDiv.innerHTML = viewer.navigation.mouse.curr.x + ', ' + viewer.navigation.mouse.curr.y;
 			mouseMoved = true;
 		}
 
@@ -110,7 +110,7 @@
 
 				var objects;
 				objects = viewer.GetObjectsUnderMouse ();
-				logDiv.innerHTML = viewer.navigation.mouse.currX + ', ' + viewer.navigation.mouse.currY + '<br>';
+				logDiv.innerHTML = viewer.navigation.mouse.curr.x + ', ' + viewer.navigation.mouse.curr.y + '<br>';
 				logDiv.innerHTML += 'GetObjectsUnderMouse: ' + objects + '<br>';
 			}
 			
@@ -125,7 +125,7 @@
 		function OnTouchMove (event)
 		{
 			var logDiv = document.getElementById ('log');
-			logDiv.innerHTML = viewer.touch.currX + ', ' + viewer.touch.currY;
+			logDiv.innerHTML = viewer.touch.curr.x + ', ' + viewer.touch.curr.y;
 			touchMoved = true;
 		}
 
@@ -137,7 +137,7 @@
 
 				var objects;
 				objects = viewer.GetObjectsUnderTouch ();
-				logDiv.innerHTML = viewer.touch.currX + ', ' + viewer.touch.currY + '<br>';
+				logDiv.innerHTML = viewer.touch.curr.x + ', ' + viewer.touch.curr.y + '<br>';
 				logDiv.innerHTML += 'GetObjectsUnderTouch: ' + objects + '<br>';
 			}
 			

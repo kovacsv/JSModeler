@@ -6,6 +6,7 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
 	<script type="text/javascript" src="../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
@@ -50,7 +51,6 @@
 	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
 	<script type="text/javascript" src="../src/modeler/trianglebody.js"></script>
 	<script type="text/javascript" src="../src/modeler/trianglemodel.js"></script>
-	<script type="text/javascript" src="../src/modeler/trianglebodyutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/converter.js"></script>
 	<script type="text/javascript" src="../src/modeler/rayutils.js"></script>
 	<script type="text/javascript" src="../src/import/binaryreader.js"></script>
@@ -68,9 +68,10 @@
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../src/renderer/webglutils.js"></script>
+	<script type="text/javascript" src="../src/renderer/rendergeometry.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
-	<script type="text/javascript" src="../src/renderer/rendererconverter.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
 	<script type="text/javascript" src="../src/viewer/jsonfileloader.js"></script>
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
@@ -82,8 +83,7 @@
 	<script type="text/javascript" src="../src/three/threeconverter.js"></script>
 	<script type="text/javascript" src="../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
-	<title>Example</title>
-	
+
 	<style>
 		html, body
 		{
@@ -92,108 +92,51 @@
 			width : 100%;
 			height : 100%;
 		}
-
+		
 		canvas
 		{
+			width : 100%;
+			height : 100%;
 			display : block;
 		}
 	</style>
+	
+	<title>Example</title>
 
 	<script type="text/javascript">
 		var viewer = null;
 
-		GenerateHeightMap = function (rows, columns, data)
-		{
-			function GetSurfacePoint (uIndex, vIndex, u, v, userData)
-			{
-				function GetIndex (i, j)
-				{
-					return j * columns + i
-				}
-			
-				var result = new JSM.Coord (
-					u,
-					v,
-					data[GetIndex (uIndex, vIndex)] / 50
-				);
-				return result;
-			}
-
-			var body = JSM.GenerateSurface ([0, rows], [0, columns], rows - 1, columns - 1, true, false, GetSurfacePoint, null);
-			return body;
-		};
-
-		function Resize ()
-		{
-			var canvas = document.getElementById ('example');
-			canvas.width = document.body.clientWidth;
-			canvas.height = document.body.clientHeight;
-		}
-		
 		function Load ()
 		{
-			window.onresize = Resize;
-			Resize ();
-		
-			function TextureLoaded () {
-				viewer.Draw ();
-			}
-		
 			var viewerSettings = {
-				cameraEyePosition : [3.0, -3.0, 3.0],
+				cameraEyePosition : [-2.0, -1.5, 1.0],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0.0, 0.0, 1.0]
+				cameraUpVector : [0, 0, 1]
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			if (!viewer.Start (document.getElementById ('example'), viewerSettings)) {
-				return;
-			}
+			viewer.Start (document.getElementById ('example'), viewerSettings);
+			
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body);
+			viewer.AddMeshes (meshes);
 
+			Resize ();
 			viewer.Draw ();
 		}
 	
-		function Loaded (jsonData)
+		function Resize ()
 		{
-			function TextureLoaded () {
-				viewer.Draw ();
-			}
-		
-			
-			var conversionData = {
-				textureLoadedCallback : TextureLoaded,
-				hasConvexPolygons : true
-			};
-			//JSM.GenerateRandomMaterials (body, materials, true);
-			var timer = new JSM.Timer ();
-			var body = GenerateHeightMap (jsonData.rows, jsonData.columns, jsonData.data);
-			body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
-
-			var materials = new JSM.Materials ();
-			//materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 1.0, shininess : 0x000000, opacity : 0.0, texture : 'hungary.jpg', textureWidth : jsonData.columns, textureHeight : jsonData.rows}));
-			//body.SetPolygonsMaterialIndex (0);
-			
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
-
-			viewer.RemoveMeshes ();
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}
-			
-			viewer.FitInWindow ();
-			viewer.Draw ();			
-		}
-		
-		function CreateMap (fileName)
-		{
-			var loader = new JSM.JSONFileLoader (Loaded);
-			loader.Load (fileName);
+			var canvas = document.getElementById ('example');
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			viewer.Resize ();
 		}
 	
 	    window.onload = function ()
 		{
-			Load ();
-			CreateMap ('hun_alt.js');
+			window.onresize = Resize;
+			Load ();			
 		}
 	</script>
 

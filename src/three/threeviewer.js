@@ -389,12 +389,12 @@ JSM.ThreeViewer.prototype.GetObjectsUnderPosition = function (x, y)
 
 JSM.ThreeViewer.prototype.GetObjectsUnderMouse = function ()
 {
-	return this.GetObjectsUnderPosition (this.navigation.mouse.currX, this.navigation.mouse.currY);
+	return this.GetObjectsUnderPosition (this.navigation.mouse.curr.x, this.navigation.mouse.curr.y);
 };
 
 JSM.ThreeViewer.prototype.GetObjectsUnderTouch = function ()
 {
-	return this.GetObjectsUnderPosition (this.navigation.touch.currX, this.navigation.touch.currY);
+	return this.GetObjectsUnderPosition (this.navigation.touch.curr.x, this.navigation.touch.curr.y);
 };
 
 JSM.ThreeViewer.prototype.ProjectVector = function (x, y, z)

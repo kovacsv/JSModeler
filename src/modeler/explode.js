@@ -177,7 +177,7 @@ JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
 		}
 	}
 	
-	var hasConvexPolygons = true;
+	var hasConvexPolygons = false;
 	if (explodeData.hasConvexPolygons !== undefined && explodeData.hasConvexPolygons !== null) {
 		hasConvexPolygons = explodeData.hasConvexPolygons;
 	}

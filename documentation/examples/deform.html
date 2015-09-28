@@ -114,7 +114,7 @@
 					vmd.radius = 1.0 / 100.0;
 				}
 				vmd.vertexData = GetSoftMoveVertexData (meshes[0], faceAndVertex[1], vmd.radius);
-				vmd.originalPos = [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY];
+				vmd.originalPos = [viewer.navigation.mouse.curr.x, viewer.navigation.mouse.curr.y];
 				viewer.navigation.EnableOrbit (false);
 			}
 		}
@@ -122,7 +122,7 @@
 		function OnMouseMove ()
 		{
 			if (vmd != null) {
-				var pos = [viewer.navigation.mouse.currX, viewer.navigation.mouse.currY];
+				var pos = [viewer.navigation.mouse.curr.x, viewer.navigation.mouse.curr.y];
 				var offset = vmd.originalPos[1] - pos[1];
 				offset /= 250.0;
 				var normal = new THREE.Vector3 (0, 0, 1);
