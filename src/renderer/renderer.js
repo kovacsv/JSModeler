@@ -335,7 +335,6 @@ JSM.Renderer.prototype.Render = function ()
 	
 	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
 	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
-	var transformationMatrix;
 	
 	var lightAmbient = JSM.HexColorToNormalizedRGBComponents (this.light.ambient);
 	var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (this.light.diffuse);
@@ -343,7 +342,7 @@ JSM.Renderer.prototype.Render = function ()
 	this.light.direction = JSM.CoordSub (this.camera.center, this.camera.eye).Normalize ();
 
 	var i, ambientColor, diffuseColor, specularColor, shininess;
-	var currentGeometry, currentVertexBuffer, currentNormalBuffer, currentUVBuffer;
+	var currentGeometry, currentMatrix, currentVertexBuffer, currentNormalBuffer, currentUVBuffer;
 	var currentShader, newShader;
 	for (i = 0; i < this.geometries.length; i++) {
 		currentGeometry = this.geometries[i];
@@ -370,18 +369,8 @@ JSM.Renderer.prototype.Render = function ()
 		this.context.uniform3f (currentShader.polygonSpecularColorUniform, specularColor[0], specularColor[1], specularColor[2]);
 		this.context.uniform1f (currentShader.polygonShininessUniform, shininess);
 		
-		if (currentShader == this.texShader) {
-			currentUVBuffer = currentGeometry.GetUVBuffer ();
-			this.context.activeTexture (this.context.TEXTURE0);
-			this.context.bindTexture (this.context.TEXTURE_2D, currentGeometry.material.textureBuffer);
-			this.context.bindBuffer (this.context.ARRAY_BUFFER, currentUVBuffer);
-			this.context.vertexAttribPointer (currentShader.vertexUVAttribute, currentUVBuffer.itemSize, this.context.FLOAT, false, 0, 0);
-			this.context.enableVertexAttribArray (currentShader.vertexUVAttribute);
-			this.context.uniform1i (currentShader.samplerUniform, 0);
-		}
-
-		transformationMatrix = currentGeometry.GetTransformationMatrix ();
-		this.context.uniformMatrix4fv (currentShader.tMatrixUniform, false, transformationMatrix);
+		currentMatrix = currentGeometry.GetTransformationMatrix ();
+		this.context.uniformMatrix4fv (currentShader.tMatrixUniform, false, currentMatrix);
 
 		currentVertexBuffer = currentGeometry.GetVertexBuffer ();
 		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentVertexBuffer);
@@ -392,6 +381,16 @@ JSM.Renderer.prototype.Render = function ()
 		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentNormalBuffer);
 		this.context.enableVertexAttribArray (currentShader.vertexNormalAttribute);
 		this.context.vertexAttribPointer (currentShader.vertexNormalAttribute, currentNormalBuffer.itemSize, this.context.FLOAT, false, 0, 0);
+
+		if (currentShader == this.texShader) {
+			currentUVBuffer = currentGeometry.GetUVBuffer ();
+			this.context.activeTexture (this.context.TEXTURE0);
+			this.context.bindTexture (this.context.TEXTURE_2D, currentGeometry.material.textureBuffer);
+			this.context.bindBuffer (this.context.ARRAY_BUFFER, currentUVBuffer);
+			this.context.vertexAttribPointer (currentShader.vertexUVAttribute, currentUVBuffer.itemSize, this.context.FLOAT, false, 0, 0);
+			this.context.enableVertexAttribArray (currentShader.vertexUVAttribute);
+			this.context.uniform1i (currentShader.samplerUniform, 0);
+		}
 
 		this.context.drawArrays (this.context.TRIANGLES, 0, currentVertexBuffer.numItems);
 	}
