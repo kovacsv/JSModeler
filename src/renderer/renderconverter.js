@@ -63,10 +63,10 @@ JSM.ConvertBodyToRenderGeometries = function (body, materials)
 JSM.ConvertModelToRenderGeometries = function (model, materials)
 {
 	var geometries = [];
-	var i, j, body;
+	var i, j, body, currentGeometries;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		var currentGeometries = JSM.ConvertBodyToRenderGeometries (body, materials, geometries);
+		currentGeometries = JSM.ConvertBodyToRenderGeometries (body, materials, geometries);
 		for (j = 0; j < currentGeometries.length; j++) {
 			geometries.push (currentGeometries[j]);
 		}

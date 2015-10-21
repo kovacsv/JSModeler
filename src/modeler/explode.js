@@ -14,9 +14,9 @@ JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
 {
 	function ExplodeBodyDataToTriangles (body, materials, vertexNormals, textureCoords, explodeData)
 	{
-		function ExplodePolygonsByMaterial (polygonIndices, materialIndex)
+		function ExplodePolygonsByMaterial (polygonIndices, materialIndex, explodeData)
 		{
-			function ExplodePolygon (index)
+			function ExplodePolygon (index, explodeData)
 			{
 				function CreateTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
 				{
@@ -35,8 +35,13 @@ JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
 				var normal1, normal2, normal3;
 				var uv1, uv2, uv3;
 
+				var convexPolygon = false;
+				if (explodeData.hasConvexPolygons !== undefined && explodeData.hasConvexPolygons !== null) {
+					convexPolygon = explodeData.hasConvexPolygons;
+				}
+				
 				var i;
-				if (count == 3 || hasConvexPolygons) {
+				if (count == 3 || convexPolygon) {
 					for (i = 0; i < count - 2; i++) {
 						vertex1 = body.GetVertex (polygon.GetVertexIndex (0)).position;
 						vertex2 = body.GetVertex (polygon.GetVertexIndex ((i + 1) % count)).position;
@@ -98,7 +103,7 @@ JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
 
 			var i;
 			for (i = 0; i < polygonIndices.length; i++) {
-				ExplodePolygon (polygonIndices[i]);
+				ExplodePolygon (polygonIndices[i], explodeData);
 			}
 
 			if (explodeData.onGeometryEnd !== undefined && explodeData.onGeometryEnd !== null) {
@@ -137,11 +142,11 @@ JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
 				continue;
 			}
 			
-			ExplodePolygonsByMaterial (polygons, i);
+			ExplodePolygonsByMaterial (polygons, i, explodeData);
 		}
 
 		if (polygonsWithNoMaterial.length !== 0) {
-			ExplodePolygonsByMaterial (polygonsWithNoMaterial, -1);
+			ExplodePolygonsByMaterial (polygonsWithNoMaterial, -1, explodeData);
 		}
 	}
 
@@ -177,11 +182,6 @@ JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
 		}
 	}
 	
-	var hasConvexPolygons = false;
-	if (explodeData.hasConvexPolygons !== undefined && explodeData.hasConvexPolygons !== null) {
-		hasConvexPolygons = explodeData.hasConvexPolygons;
-	}
-
 	ExplodeBodyDataToTriangles (body, materials, vertexNormals, textureCoords, explodeData);
 	return true;
 };
