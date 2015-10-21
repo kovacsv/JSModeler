@@ -333,9 +333,10 @@ JSM.Renderer.prototype.Render = function ()
 
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	
-	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
 	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
-
+	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
+	var transformationMatrix;
+	
 	var lightAmbient = JSM.HexColorToNormalizedRGBComponents (this.light.ambient);
 	var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (this.light.diffuse);
 	var lightSpecular = JSM.HexColorToNormalizedRGBComponents (this.light.specular);
@@ -379,7 +380,8 @@ JSM.Renderer.prototype.Render = function ()
 			this.context.uniform1i (currentShader.samplerUniform, 0);
 		}
 
-		this.context.uniformMatrix4fv (currentShader.tMatrixUniform, false, currentGeometry.GetTransformationMatrix ());
+		transformationMatrix = currentGeometry.GetTransformationMatrix ();
+		this.context.uniformMatrix4fv (currentShader.tMatrixUniform, false, transformationMatrix);
 
 		currentVertexBuffer = currentGeometry.GetVertexBuffer ();
 		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentVertexBuffer);
