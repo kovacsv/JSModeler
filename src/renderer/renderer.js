@@ -135,8 +135,8 @@ JSM.Renderer.prototype.InitShaders = function ()
 			'attribute highp vec3 aVertexNormal;',
 
 			'uniform highp mat4 uViewMatrix;',
-			'uniform highp mat4 uModelViewMatrix;',
 			'uniform highp mat4 uProjectionMatrix;',
+			'uniform highp mat4 uTransformationMatrix;',
 			'uniform highp vec3 uLightDirection;',
 
 			'varying highp vec3 vVertex;',
@@ -149,8 +149,9 @@ JSM.Renderer.prototype.InitShaders = function ()
 			'#endif',
 
 			'void main (void) {',
-			'	vVertex = vec3 (uModelViewMatrix * vec4 (aVertexPosition, 1.0));',
-			'	vNormal = normalize (vec3 (uModelViewMatrix * vec4 (aVertexNormal, 0.0)));',
+			'	mat4 modelViewMatrix = uViewMatrix * uTransformationMatrix;',
+			'	vVertex = vec3 (modelViewMatrix * vec4 (aVertexPosition, 1.0));',
+			'	vNormal = normalize (vec3 (modelViewMatrix * vec4 (aVertexNormal, 0.0)));',
 			'	vLight = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
 			'#ifdef USETEXTURE',
 			'	vUV = aVertexUV;',
@@ -172,8 +173,8 @@ JSM.Renderer.prototype.InitShaders = function ()
 		shader.lightDirectionUniform = context.getUniformLocation (shader, 'uLightDirection');
 		
 		shader.vMatrixUniform = context.getUniformLocation (shader, 'uViewMatrix');
-		shader.mvMatrixUniform = context.getUniformLocation (shader, 'uModelViewMatrix');
 		shader.pMatrixUniform = context.getUniformLocation (shader, 'uProjectionMatrix');
+		shader.tMatrixUniform = context.getUniformLocation (shader, 'uTransformationMatrix');
 
 		shader.polygonAmbientColorUniform = context.getUniformLocation (shader, 'uPolygonAmbientColor');
 		shader.polygonDiffuseColorUniform = context.getUniformLocation (shader, 'uPolygonDiffuseColor');
@@ -334,7 +335,6 @@ JSM.Renderer.prototype.Render = function ()
 	
 	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
 	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
-	var modelViewMatrix = JSM.MatrixIdentity ();
 
 	var lightAmbient = JSM.HexColorToNormalizedRGBComponents (this.light.ambient);
 	var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (this.light.diffuse);
@@ -379,11 +379,9 @@ JSM.Renderer.prototype.Render = function ()
 			this.context.uniform1i (currentShader.samplerUniform, 0);
 		}
 
-		modelViewMatrix = JSM.MatrixMultiply (currentGeometry.GetTransformationMatrix (), viewMatrix);
-		this.context.uniformMatrix4fv (currentShader.mvMatrixUniform, false, modelViewMatrix);
+		this.context.uniformMatrix4fv (currentShader.tMatrixUniform, false, currentGeometry.GetTransformationMatrix ());
 
 		currentVertexBuffer = currentGeometry.GetVertexBuffer ();
-		
 		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentVertexBuffer);
 		this.context.enableVertexAttribArray (currentShader.vertexPositionAttribute);
 		this.context.vertexAttribPointer (currentShader.vertexPositionAttribute, currentVertexBuffer.itemSize, this.context.FLOAT, false, 0, 0);
