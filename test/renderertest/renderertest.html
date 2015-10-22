@@ -98,9 +98,29 @@
 			}
 		}
 		
-		function RenderAndWait (viewer, body, materials, onFinished)
+		function RenderBodyAndWait (viewer, body, materials, onFinished)
 		{
 			RenderBody (viewer, body, materials, null);
+			setTimeout (function () {
+				viewer.Draw ();
+				onFinished ();
+			}, 100);
+		}
+
+		function RenderModel (viewer, model, materials, onFinished)
+		{
+			viewer.RemoveGeometries ();
+			var renderGeometries = JSM.ConvertModelToRenderGeometries (model, materials);
+			viewer.AddGeometries (renderGeometries);
+			viewer.FitInWindow ();
+			if (onFinished !== null) {
+				onFinished ();
+			}
+		}		
+		
+		function RenderModelAndWait (viewer, model, materials, onFinished)
+		{
+			RenderModel (viewer, model, materials, null);
 			setTimeout (function () {
 				viewer.Draw ();
 				onFinished ();
@@ -175,7 +195,7 @@
 				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 				
-				RenderAndWait (viewer, body, materials, renderFinished);
+				RenderBodyAndWait (viewer, body, materials, renderFinished);
 			}, 'references/texture_one_side.png');
 			
 			canvasTester.AddTest (function (renderFinished)	{
@@ -187,7 +207,7 @@
 				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texturenpot.png', textureWidth : 1.0, textureHeight : 1.0}));
 				
-				RenderAndWait (viewer, body, materials, renderFinished);
+				RenderBodyAndWait (viewer, body, materials, renderFinished);
 			}, 'references/texture_one_side_npot.png');
 
 			canvasTester.AddTest (function (renderFinished)	{
@@ -199,7 +219,7 @@
 				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 0.5, textureHeight : 0.2}));
 				
-				RenderAndWait (viewer, body, materials, renderFinished);
+				RenderBodyAndWait (viewer, body, materials, renderFinished);
 			}, 'references/texture_resized.png');
 			
 			canvasTester.AddTest (function (renderFinished)	{
@@ -211,7 +231,7 @@
 				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
 				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 				
-				RenderAndWait (viewer, body, materials, renderFinished);
+				RenderBodyAndWait (viewer, body, materials, renderFinished);
 			}, 'references/texture_two_sides.png');
 			
 			canvasTester.AddTest (function (renderFinished)	{
@@ -221,7 +241,7 @@
 				var materials = new JSM.Materials ();
 				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 				
-				RenderAndWait (viewer, body, materials, renderFinished);
+				RenderBodyAndWait (viewer, body, materials, renderFinished);
 			}, 'references/texture_all_sides.png');
 			
 			canvasTester.AddTest (function (renderFinished)	{
@@ -234,7 +254,58 @@
 				RenderBody (viewer, body, materials, renderFinished);
 			}, 'references/specular_reflection.png');
 			
-            canvasTester.Run ();
+			canvasTester.AddTest (function (renderFinished)	{
+				var model = new JSM.Model ();
+
+				var body1 = JSM.GenerateCuboid (1, 1, 1);
+				var body2 = JSM.GenerateCuboid (1, 1, 1);
+				body2.Transform (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
+
+				model.AddBody (body1);
+				model.AddBody (body2);
+				
+				RenderModel (viewer, model, null, renderFinished);
+			}, 'references/model_default_material.png');			
+			
+			canvasTester.AddTest (function (renderFinished)	{
+				var model = new JSM.Model ();
+
+				var body1 = JSM.GenerateCuboid (1, 1, 1);
+				body1.GetPolygon (2).SetMaterialIndex (0);
+				var body2 = JSM.GenerateCuboid (1, 1, 1);
+				body2.Transform (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
+				body2.GetPolygon (2).SetMaterialIndex (1);
+
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+				
+				model.AddBody (body1);
+				model.AddBody (body2);
+				
+				RenderModel (viewer, model, materials, renderFinished);
+			}, 'references/model_materials.png');	
+
+ 			canvasTester.AddTest (function (renderFinished)	{
+				var model = new JSM.Model ();
+
+				var body1 = JSM.GenerateCuboid (1, 1, 1);
+				body1.GetPolygon (2).SetMaterialIndex (0);
+				var body2 = JSM.GenerateCuboid (1, 1, 1);
+				body2.Transform (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
+				body2.GetPolygon (2).SetMaterialIndex (1);
+
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+				
+				model.AddBody (body1);
+				model.AddBody (body2);
+				
+				RenderModelAndWait (viewer, model, materials, renderFinished);
+			}, 'references/model_textures.png');
+
+			canvasTester.Run ();
 		}
 
 	    window.onload = function ()
