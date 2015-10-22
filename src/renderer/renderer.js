@@ -3,7 +3,7 @@ JSM.Renderer = function ()
 	this.canvas = null;
 	this.context = null;
 	this.shader = null;
-	this.texShader = null;
+	this.shaders = null;
 	
 	this.camera = null;
 	this.light = null;
@@ -215,13 +215,18 @@ JSM.Renderer.prototype.InitShaders = function ()
 		return shader;
 	}
 
-	this.shader = InitMainShader (this.context);
-	if (this.shader === null) {
+	this.shaders = {
+		normal : null,
+		texture : null
+	};
+	
+	this.shaders.normal = InitMainShader (this.context);
+	if (this.shaders.normal === null) {
 		return false;
 	}
 	
-	this.texShader = InitTextureShader (this.context);
-	if (this.texShader === null) {
+	this.shaders.texture = InitTextureShader (this.context);
+	if (this.shaders.texture === null) {
 		return false;
 	}
 	
@@ -326,9 +331,9 @@ JSM.Renderer.prototype.Render = function ()
 	function GetShader (renderer, geometry)
 	{
 		if (geometry.GetMaterial ().HasTexture ()) {
-			return renderer.texShader;
+			return renderer.shaders.texture;
 		}
-		return renderer.shader;
+		return renderer.shaders.normal;
 	}
 
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
@@ -382,7 +387,7 @@ JSM.Renderer.prototype.Render = function ()
 		this.context.enableVertexAttribArray (currentShader.vertexNormalAttribute);
 		this.context.vertexAttribPointer (currentShader.vertexNormalAttribute, currentNormalBuffer.itemSize, this.context.FLOAT, false, 0, 0);
 
-		if (currentShader == this.texShader) {
+		if (currentShader == this.shaders.texture) {
 			currentUVBuffer = currentGeometry.GetUVBuffer ();
 			this.context.activeTexture (this.context.TEXTURE0);
 			this.context.bindTexture (this.context.TEXTURE_2D, currentGeometry.material.textureBuffer);
