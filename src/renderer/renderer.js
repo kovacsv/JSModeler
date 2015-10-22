@@ -29,7 +29,7 @@ JSM.Renderer.prototype.Init = function (canvas, camera, light)
 		return false;
 	}
 
-	if (!this.InitBuffers ()) {
+	if (!this.InitGeometries ()) {
 		return false;
 	}
 
@@ -233,7 +233,7 @@ JSM.Renderer.prototype.InitShaders = function ()
 	return true;
 };
 
-JSM.Renderer.prototype.InitBuffers = function ()
+JSM.Renderer.prototype.InitGeometries = function ()
 {
 	this.geometries = [];
 	return true;
@@ -314,9 +314,17 @@ JSM.Renderer.prototype.AddGeometries = function (geometries)
 	}
 };
 
+JSM.Renderer.prototype.EnumerateGeometries = function (onGeometryFound)
+{
+	var i;
+	for	(i = 0; i < this.geometries.length; i++) {
+		onGeometryFound (this.geometries[i]);
+	}
+};
+
 JSM.Renderer.prototype.RemoveGeometries = function ()
 {
-	this.geometries = [];
+	this.InitGeometries ();
 };
 
 JSM.Renderer.prototype.Resize = function ()
