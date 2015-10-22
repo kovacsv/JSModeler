@@ -268,10 +268,11 @@ JSM.Renderer.prototype.AddGeometries = function (geometries)
 			material.textureImage = new Image ();
 			material.textureImage.src = material.texture;
 			material.textureImage.onload = function () {
+				var textureImage = JSM.ResizeImageToPowerOfTwoSides (material.textureImage);
 				context.bindTexture (context.TEXTURE_2D, material.textureBuffer);
 				context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.LINEAR);
 				context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR_MIPMAP_LINEAR);
-				context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, material.textureImage);
+				context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, textureImage);
 				context.generateMipmap (context.TEXTURE_2D);
 				context.bindTexture (context.TEXTURE_2D, null);
 				material.textureLoaded = true;

@@ -1,21 +1,3 @@
-JSM.ResizeImageToPowerOfTwoSides = function (image)
-{
-	if (JSM.IsPowerOfTwo (image.width) && !JSM.IsPowerOfTwo (image.height)) {
-		return image;
-	}
-	
-	var width = JSM.NextPowerOfTwo (image.width);
-	var height = JSM.NextPowerOfTwo (image.height);
-
-	var canvas = document.createElement ('canvas');
-	canvas.width = width;
-	canvas.height = height;
-	
-	var context = canvas.getContext ('2d');
-	context.drawImage (image, 0, 0, width, height);
-	return context.getImageData (0, 0, width, height);
-};
-
 JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 {
 	function OnGeometryStart ()
