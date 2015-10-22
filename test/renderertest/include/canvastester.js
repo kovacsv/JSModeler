@@ -86,6 +86,17 @@ CanvasTester.prototype.EvaluateResult = function (referenceImageName, resultImag
 		return context.createImageData (width, height);			
 	}
 	
+	function EqualPixels (imageData1, imageData2, index)
+	{
+		var i;
+		for (i = 0; i < 4; i++) {
+			if (Math.abs (imageData1.data[index + i] - imageData2.data[index + i]) > 10) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	var result = 0
 	var differenceImageData = null;
 	if (referenceImageData == null) {
@@ -97,11 +108,7 @@ CanvasTester.prototype.EvaluateResult = function (referenceImageName, resultImag
 			differenceImageData = CreateImageData (referenceImageData.width, referenceImageData.height);
 			var i;
 			for (i = 0; i < resultImageData.data.length; i += 4) {
-				if (resultImageData.data[i + 0] == referenceImageData.data[i + 0] &&
-					resultImageData.data[i + 1] == referenceImageData.data[i + 1] &&
-					resultImageData.data[i + 2] == referenceImageData.data[i + 2] &&
-					resultImageData.data[i + 3] == referenceImageData.data[i + 3])
-				{
+				if (EqualPixels (referenceImageData, resultImageData, i)) {
 					differenceImageData.data[i + 0] = referenceImageData.data[i + 0];
 					differenceImageData.data[i + 1] = referenceImageData.data[i + 1];
 					differenceImageData.data[i + 2] = referenceImageData.data[i + 2];
