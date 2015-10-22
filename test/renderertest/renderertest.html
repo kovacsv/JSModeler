@@ -259,7 +259,7 @@
 
 				var body1 = JSM.GenerateCuboid (1, 1, 1);
 				var body2 = JSM.GenerateCuboid (1, 1, 1);
-				body2.Transform (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
+				body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.5, 0, 0)));
 
 				model.AddBody (body1);
 				model.AddBody (body2);
@@ -273,7 +273,7 @@
 				var body1 = JSM.GenerateCuboid (1, 1, 1);
 				body1.GetPolygon (2).SetMaterialIndex (0);
 				var body2 = JSM.GenerateCuboid (1, 1, 1);
-				body2.Transform (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
+				body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.5, 0, 0)));
 				body2.GetPolygon (2).SetMaterialIndex (1);
 
 				var materials = new JSM.Materials ();
@@ -292,7 +292,7 @@
 				var body1 = JSM.GenerateCuboid (1, 1, 1);
 				body1.GetPolygon (2).SetMaterialIndex (0);
 				var body2 = JSM.GenerateCuboid (1, 1, 1);
-				body2.Transform (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
+				body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.5, 0, 0)));
 				body2.GetPolygon (2).SetMaterialIndex (1);
 
 				var materials = new JSM.Materials ();
