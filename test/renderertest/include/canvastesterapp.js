@@ -23,7 +23,7 @@ CanvasTesterApp.prototype.AllTestsFinished = function (success)
 	this.resultsDiv.insertBefore (allResultDiv, this.resultsDiv.firstChild);
 };
 
-CanvasTesterApp.prototype.TestFinished = function (result, referenceImageName, resultImageData, referenceImageData, differenceImageData)
+CanvasTesterApp.prototype.TestFinished = function (result, testObject, resultImageData, referenceImageData, differenceImageData)
 {
 	function DrawImageData (imageData, parentDiv)
 	{
@@ -35,7 +35,7 @@ CanvasTesterApp.prototype.TestFinished = function (result, referenceImageName, r
 		parentDiv.appendChild (canvas);		
 	}
 	
-	function AddResultLine (result, referenceImageName, resultImageData, referenceImageData, differenceImageData, parentDiv)
+	function AddResultLine (result, testObject, resultImageData, referenceImageData, differenceImageData, parentDiv)
 	{
 		var resultDiv = document.createElement ('div');
 		
@@ -52,7 +52,7 @@ CanvasTesterApp.prototype.TestFinished = function (result, referenceImageName, r
 			errorText = 'difference';
 		}
 		resultTitle.className = 'resulttitle ' + (success ? 'success' : 'failure');
-		resultTitle.innerHTML = referenceImageName + ' - ' + errorText;
+		resultTitle.innerHTML = testObject.referenceImage + ' - ' + errorText;
 		resultDiv.appendChild (resultTitle);
 		
 		var resultImages = document.createElement ('div');
@@ -73,6 +73,7 @@ CanvasTesterApp.prototype.TestFinished = function (result, referenceImageName, r
 			}
 			if (resultImages.style.display != 'block') {
 				resultImages.style.display = 'block';
+				testObject.renderCallback (function () {});
 			} else {
 				resultImages.style.display = 'none';
 			}
@@ -81,5 +82,5 @@ CanvasTesterApp.prototype.TestFinished = function (result, referenceImageName, r
 		parentDiv.appendChild (resultDiv);
 	}
 
-	AddResultLine (result, referenceImageName, resultImageData, referenceImageData, differenceImageData, this.resultsDiv);
+	AddResultLine (result, testObject, resultImageData, referenceImageData, differenceImageData, this.resultsDiv);
 };

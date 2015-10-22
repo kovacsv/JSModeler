@@ -65,17 +65,17 @@ CanvasTester.prototype.RenderFinished = function ()
 	referenceImage.src = test.referenceImage;
 	referenceImage.onload = function () {
 		var referenceImageData = GetImageData (referenceImage, referenceImage.width, referenceImage.height);
-		myThis.EvaluateResult (test.referenceImage, resultImageData, referenceImageData);
+		myThis.EvaluateResult (test, resultImageData, referenceImageData);
 		myThis.RunNextTest ();
 	};
 	referenceImage.onerror = function () {
 		var referenceImageData = null;
-		myThis.EvaluateResult (test.referenceImage, resultImageData, referenceImageData);
+		myThis.EvaluateResult (test, resultImageData, referenceImageData);
 		myThis.RunNextTest ();
 	};
 }
 
-CanvasTester.prototype.EvaluateResult = function (referenceImageName, resultImageData, referenceImageData)
+CanvasTester.prototype.EvaluateResult = function (testObject, resultImageData, referenceImageData)
 {
 	function CreateImageData (width, height)
 	{
@@ -113,7 +113,6 @@ CanvasTester.prototype.EvaluateResult = function (referenceImageName, resultImag
 					differenceImageData.data[i + 1] = referenceImageData.data[i + 1];
 					differenceImageData.data[i + 2] = referenceImageData.data[i + 2];
 					differenceImageData.data[i + 3] = 64;
-					//break;
 				} else {
 					differenceImageData.data[i + 0] = 255;
 					differenceImageData.data[i + 1] = 0;
@@ -127,5 +126,5 @@ CanvasTester.prototype.EvaluateResult = function (referenceImageName, resultImag
 	if (result !== 0) {
 		this.allSuccess = false;
 	}
-	this.testFinishedCallback (result, referenceImageName, resultImageData, referenceImageData, differenceImageData);
+	this.testFinishedCallback (result, testObject, resultImageData, referenceImageData, differenceImageData);
 };
