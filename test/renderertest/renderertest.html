@@ -1,0 +1,286 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/renderertest.css">
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../../src/core/timer.js"></script>
+	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../../src/core/async.js"></script>
+	<script type="text/javascript" src="../../src/core/check.js"></script>
+	<script type="text/javascript" src="../../src/geometry/definitions.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord2d.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../../src/geometry/box.js"></script>
+	<script type="text/javascript" src="../../src/geometry/sphere.js"></script>
+	<script type="text/javascript" src="../../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon2d.js"></script>
+	<script type="text/javascript" src="../../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../../src/geometry/triangulation.js"></script>
+	<script type="text/javascript" src="../../src/geometry/octree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../../src/geometry/ray.js"></script>
+	<script type="text/javascript" src="../../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../../src/modeler/light.js"></script>
+	<script type="text/javascript" src="../../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../../src/modeler/explode.js"></script>
+	<script type="text/javascript" src="../../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglebody.js"></script>
+	<script type="text/javascript" src="../../src/modeler/trianglemodel.js"></script>
+	<script type="text/javascript" src="../../src/modeler/converter.js"></script>
+	<script type="text/javascript" src="../../src/modeler/rayutils.js"></script>
+	<script type="text/javascript" src="../../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../../src/import/importer.js"></script>
+	<script type="text/javascript" src="../../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../../src/import/importercommon.js"></script>
+	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/painter.js"></script>
+	<script type="text/javascript" src="../../src/extras/drawing.js"></script>
+	<script type="text/javascript" src="../../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../../src/renderer/webglutils.js"></script>
+	<script type="text/javascript" src="../../src/renderer/rendergeometry.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderconverter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/jsonfileloader.js"></script>
+	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
+	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
+<!-- JSModeler includes end -->
+	<script type="text/javascript" src="include/canvastester.js"></script>
+	<script type="text/javascript" src="include/canvastesterapp.js"></script>
+	<title>JSModeler Renderer Test</title>
+
+	<script type="text/javascript">
+		var viewer = null;
+	
+		function RenderBody (body, materials, onFinished)
+		{
+			viewer.RemoveGeometries ();
+			var renderGeometries = JSM.ConvertBodyToRenderGeometries (body, materials);
+			viewer.AddGeometries (renderGeometries);
+			viewer.FitInWindow ();
+			if (onFinished !== null) {
+				onFinished ();
+			}
+		}
+		
+		function RenderAndWait (body, materials, onFinished)
+		{
+			RenderBody (body, materials, null);
+			setTimeout (function () {
+				viewer.Draw ();
+				onFinished ();
+			}, 100);
+		}
+
+		function CubeDefaultMaterial (renderFinished)
+		{
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			RenderBody (body, null, renderFinished);
+		}
+
+		function CubeSameMaterial (renderFinished)
+		{
+			viewer.RemoveGeometries ();
+			
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			body.SetPolygonsMaterialIndex (0);
+			
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+			
+			RenderBody (body, materials, renderFinished);
+		}		
+		
+		function CubeMaterials (renderFinished)
+		{
+			viewer.RemoveGeometries ();
+			
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			body.GetPolygon (1).SetMaterialIndex (0);
+			body.GetPolygon (2).SetMaterialIndex (1);
+			
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+			
+			RenderBody (body, materials, renderFinished);
+		}
+
+		function CylinderSegmented (renderFinished)
+		{
+			var body = JSM.GenerateCylinder (0.5, 1.0, 25, true, false);
+			RenderBody (body, null, renderFinished);
+		}
+
+		function CylinderCurved (renderFinished)
+		{
+			var body = JSM.GenerateCylinder (0.5, 1.0, 25, true, true);
+			RenderBody (body, null, renderFinished);
+		}
+
+		function TextureOneSide (renderFinished)
+		{
+			viewer.RemoveGeometries ();
+			
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			body.GetPolygon (1).SetMaterialIndex (0);
+			body.GetPolygon (2).SetMaterialIndex (1);
+			
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+			
+			RenderAndWait (body, materials, renderFinished);
+		}
+
+		function TextureResized (renderFinished)
+		{
+			viewer.RemoveGeometries ();
+			
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			body.GetPolygon (1).SetMaterialIndex (0);
+			body.GetPolygon (2).SetMaterialIndex (1);
+			
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 0.5, textureHeight : 0.2}));
+			
+			RenderAndWait (body, materials, renderFinished);
+		}
+
+		function TextureTwoSides (renderFinished)
+		{
+			viewer.RemoveGeometries ();
+			
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			body.GetPolygon (1).SetMaterialIndex (0);
+			body.GetPolygon (2).SetMaterialIndex (1);
+			
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+			
+			RenderAndWait (body, materials, renderFinished);
+		}
+
+		function TextureAllSides (renderFinished)
+		{
+			viewer.RemoveGeometries ();
+			
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			body.SetPolygonsMaterialIndex (0);
+			
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+			
+			RenderAndWait (body, materials, renderFinished);
+		}
+
+		function SpecularReflection (renderFinished)
+		{
+			viewer.RemoveGeometries ();
+			
+			var body = JSM.GenerateTorus (0.8, 0.3, 50, 50, true);
+			body.SetPolygonsMaterialIndex (0);
+			
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, specular : 0x333333, shininess : 5.0}));
+			
+			RenderBody (body, materials, renderFinished);
+		}
+
+		function Load ()
+		{
+			var camera = new JSM.Camera (
+				new JSM.Coord (3.0, 4.0, 2.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0.0, 0.0, 1.0)
+			);
+
+			viewer = new JSM.Viewer ();
+			var light = new JSM.Light ({ambient : 0x7f7f7f, diffuse : 0x7f7f7f, specular : 0xffffff});
+			var canvas = document.getElementById ('renderertest');
+			if (!viewer.Init (canvas, camera, light)) {
+				alert ('error');
+			}
+
+			var body = JSM.GenerateCuboid (1, 1, 1);
+			
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+			
+			body.GetPolygon (1).SetMaterialIndex (0);
+			body.GetPolygon (2).SetMaterialIndex (1);
+		
+			var renderGeometries = JSM.ConvertBodyToRenderGeometries (body, materials);
+			viewer.AddGeometries (renderGeometries);
+
+			var canvasTester = new CanvasTesterApp (canvas, 'results');
+			canvasTester.AddTest (CubeDefaultMaterial, 'references/cube_default_material.png');
+			canvasTester.AddTest (CubeSameMaterial, 'references/cube_same_material.png');
+			canvasTester.AddTest (CubeMaterials, 'references/cube_materials.png');
+			canvasTester.AddTest (CylinderSegmented, 'references/cylinder_segmented.png');
+			canvasTester.AddTest (CylinderCurved, 'references/cylinder_curved.png');
+			canvasTester.AddTest (TextureOneSide, 'references/texture_one_side.png');
+			canvasTester.AddTest (TextureResized, 'references/texture_resized.png');
+			canvasTester.AddTest (TextureTwoSides, 'references/texture_two_sides.png');
+			canvasTester.AddTest (TextureAllSides, 'references/texture_all_sides.png');
+			canvasTester.AddTest (SpecularReflection, 'references/specular_reflection.png');
+            canvasTester.Run ();
+		}
+
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+
+</head>
+
+<body>
+	<div id="frame">
+		<canvas id="renderertest" width="200" height="150"></canvas>
+		<div id="results">
+		</div>
+	</div>
+</body>
+
+</html>
