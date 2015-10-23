@@ -235,7 +235,10 @@ JSM.Renderer.prototype.InitShaders = function ()
 
 JSM.Renderer.prototype.InitGeometries = function ()
 {
-	this.geometries = [];
+	this.geometries = {
+		normal : [],
+		texture : []
+	};
 	return true;
 };
 
@@ -311,15 +314,22 @@ JSM.Renderer.prototype.AddGeometries = function (geometries)
 		currentGeometry = geometries[i];
 		CompileMaterial (currentGeometry.material, this.context, this.Render.bind (this));
 		CompileGeometry (currentGeometry, this.context);
-		this.geometries.push (currentGeometry);
+		if (currentGeometry.material.texture !== null) {
+			this.geometries.texture.push (currentGeometry);
+		} else {
+			this.geometries.normal.push (currentGeometry);
+		}
 	}
 };
 
 JSM.Renderer.prototype.EnumerateGeometries = function (onGeometryFound)
 {
 	var i;
-	for	(i = 0; i < this.geometries.length; i++) {
-		onGeometryFound (this.geometries[i]);
+	for	(i = 0; i < this.geometries.normal.length; i++) {
+		onGeometryFound (this.geometries.normal[i]);
+	}
+	for	(i = 0; i < this.geometries.texture.length; i++) {
+		onGeometryFound (this.geometries.texture[i]);
 	}
 };
 
@@ -337,75 +347,80 @@ JSM.Renderer.prototype.Resize = function ()
 
 JSM.Renderer.prototype.Render = function ()
 {
-	function GetShader (renderer, geometry)
+	function UseShader (context, shader, light, viewMatrix, projectionMatrix)
 	{
-		if (geometry.GetMaterial ().HasTexture ()) {
-			return renderer.shaders.texture;
-		}
-		return renderer.shaders.normal;
-	}
+		// TODO: do this outside of render
+		var lightAmbient = JSM.HexColorToNormalizedRGBComponents (light.ambient);
+		var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (light.diffuse);
+		var lightSpecular = JSM.HexColorToNormalizedRGBComponents (light.specular);
 
+		context.useProgram (shader);
+		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
+		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
+
+		context.uniform3f (shader.lightDirectionUniform, light.direction.x, light.direction.y, light.direction.z);
+		context.uniform3f (shader.lightAmbientColorUniform, lightAmbient[0], lightAmbient[1], lightAmbient[2]);
+		context.uniform3f (shader.lightDiffuseColorUniform, lightDiffuse[0], lightDiffuse[1], lightDiffuse[2]);
+		context.uniform3f (shader.lightSpecularColorUniform, lightSpecular[0], lightSpecular[1], lightSpecular[2]);
+	}
+	
+	function DrawGeometry (context, shader, geometry)
+	{
+		var ambientColor = geometry.material.ambient;
+		var diffuseColor = geometry.material.diffuse;
+		var specularColor = geometry.material.specular;
+		var shininess = geometry.material.shininess;
+		context.uniform3f (shader.polygonAmbientColorUniform, ambientColor[0], ambientColor[1], ambientColor[2]);
+		context.uniform3f (shader.polygonDiffuseColorUniform, diffuseColor[0], diffuseColor[1], diffuseColor[2]);
+		context.uniform3f (shader.polygonSpecularColorUniform, specularColor[0], specularColor[1], specularColor[2]);
+		context.uniform1f (shader.polygonShininessUniform, shininess);
+		
+		var matrix = geometry.GetTransformationMatrix ();
+		context.uniformMatrix4fv (shader.tMatrixUniform, false, matrix);
+
+		var vertexBuffer = geometry.GetVertexBuffer ();
+		context.bindBuffer (context.ARRAY_BUFFER, vertexBuffer);
+		context.enableVertexAttribArray (shader.vertexPositionAttribute);
+		context.vertexAttribPointer (shader.vertexPositionAttribute, vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
+		
+		var normalBuffer = geometry.GetNormalBuffer ();
+		context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
+		context.enableVertexAttribArray (shader.vertexNormalAttribute);
+		context.vertexAttribPointer (shader.vertexNormalAttribute, normalBuffer.itemSize, context.FLOAT, false, 0, 0);
+
+		var uvBuffer = geometry.GetUVBuffer ();
+		if (uvBuffer !== null) {
+			context.activeTexture (context.TEXTURE0);
+			context.bindTexture (context.TEXTURE_2D, geometry.material.textureBuffer);
+			context.bindBuffer (context.ARRAY_BUFFER, uvBuffer);
+			context.vertexAttribPointer (shader.vertexUVAttribute, uvBuffer.itemSize, context.FLOAT, false, 0, 0);
+			context.enableVertexAttribArray (shader.vertexUVAttribute);
+			context.uniform1i (shader.samplerUniform, 0);
+		}
+		
+		context.drawArrays (context.TRIANGLES, 0, vertexBuffer.numItems);
+	}
+	
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	
 	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
 	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
-	
-	var lightAmbient = JSM.HexColorToNormalizedRGBComponents (this.light.ambient);
-	var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (this.light.diffuse);
-	var lightSpecular = JSM.HexColorToNormalizedRGBComponents (this.light.specular);
 	this.light.direction = JSM.CoordSub (this.camera.center, this.camera.eye).Normalize ();
 
-	var i, ambientColor, diffuseColor, specularColor, shininess;
-	var currentGeometry, currentMatrix, currentVertexBuffer, currentNormalBuffer, currentUVBuffer;
-	var currentShader, newShader;
-	for (i = 0; i < this.geometries.length; i++) {
-		currentGeometry = this.geometries[i];
-		newShader = GetShader (this, currentGeometry);
-		
-		if (currentShader != newShader) {
-			currentShader = newShader;
-			this.context.useProgram (currentShader);
-			this.context.uniformMatrix4fv (currentShader.pMatrixUniform, false, projectionMatrix);
-			this.context.uniformMatrix4fv (currentShader.vMatrixUniform, false, viewMatrix);
-
-			this.context.uniform3f (currentShader.lightDirectionUniform, this.light.direction.x, this.light.direction.y, this.light.direction.z);
-			this.context.uniform3f (currentShader.lightAmbientColorUniform, lightAmbient[0], lightAmbient[1], lightAmbient[2]);
-			this.context.uniform3f (currentShader.lightDiffuseColorUniform, lightDiffuse[0], lightDiffuse[1], lightDiffuse[2]);
-			this.context.uniform3f (currentShader.lightSpecularColorUniform, lightSpecular[0], lightSpecular[1], lightSpecular[2]);
+	var i, geometry;
+	if (this.geometries.normal.length > 0) {
+		UseShader (this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
+		for (i = 0; i < this.geometries.normal.length; i++) {
+			geometry = this.geometries.normal[i];
+			DrawGeometry (this.context, this.shaders.normal, geometry);
 		}
-		
-		ambientColor = currentGeometry.material.ambient;
-		diffuseColor = currentGeometry.material.diffuse;
-		specularColor = currentGeometry.material.specular;
-		shininess = currentGeometry.material.shininess;
-		this.context.uniform3f (currentShader.polygonAmbientColorUniform, ambientColor[0], ambientColor[1], ambientColor[2]);
-		this.context.uniform3f (currentShader.polygonDiffuseColorUniform, diffuseColor[0], diffuseColor[1], diffuseColor[2]);
-		this.context.uniform3f (currentShader.polygonSpecularColorUniform, specularColor[0], specularColor[1], specularColor[2]);
-		this.context.uniform1f (currentShader.polygonShininessUniform, shininess);
-		
-		currentMatrix = currentGeometry.GetTransformationMatrix ();
-		this.context.uniformMatrix4fv (currentShader.tMatrixUniform, false, currentMatrix);
-
-		currentVertexBuffer = currentGeometry.GetVertexBuffer ();
-		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentVertexBuffer);
-		this.context.enableVertexAttribArray (currentShader.vertexPositionAttribute);
-		this.context.vertexAttribPointer (currentShader.vertexPositionAttribute, currentVertexBuffer.itemSize, this.context.FLOAT, false, 0, 0);
-		
-		currentNormalBuffer = currentGeometry.GetNormalBuffer ();
-		this.context.bindBuffer (this.context.ARRAY_BUFFER, currentNormalBuffer);
-		this.context.enableVertexAttribArray (currentShader.vertexNormalAttribute);
-		this.context.vertexAttribPointer (currentShader.vertexNormalAttribute, currentNormalBuffer.itemSize, this.context.FLOAT, false, 0, 0);
-
-		if (currentShader == this.shaders.texture) {
-			currentUVBuffer = currentGeometry.GetUVBuffer ();
-			this.context.activeTexture (this.context.TEXTURE0);
-			this.context.bindTexture (this.context.TEXTURE_2D, currentGeometry.material.textureBuffer);
-			this.context.bindBuffer (this.context.ARRAY_BUFFER, currentUVBuffer);
-			this.context.vertexAttribPointer (currentShader.vertexUVAttribute, currentUVBuffer.itemSize, this.context.FLOAT, false, 0, 0);
-			this.context.enableVertexAttribArray (currentShader.vertexUVAttribute);
-			this.context.uniform1i (currentShader.samplerUniform, 0);
+	}
+	
+	if (this.geometries.texture.length > 0) {
+		UseShader (this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
+		for (i = 0; i < this.geometries.texture.length; i++) {
+			geometry = this.geometries.texture[i];
+			DrawGeometry (this.context, this.shaders.texture, geometry);
 		}
-
-		this.context.drawArrays (this.context.TRIANGLES, 0, currentVertexBuffer.numItems);
 	}
 };
