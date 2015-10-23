@@ -86,14 +86,15 @@
 
 	<script type="text/javascript">
 		var viewer = null;
+		var geometries = null;
 		var a = 0.0;
 		
 		var fps = new JSM.FPSCounter ();
 		function Render ()
 		{
-			viewer.renderer.geometries[0].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
-			viewer.renderer.geometries[1].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
-			viewer.renderer.geometries[2].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
+			geometries[0].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
+			geometries[1].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
+			geometries[2].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
 		
 			viewer.Draw ();
 			a += 0.5;
@@ -145,7 +146,7 @@
 			model.AddBody (body4);
 			model.AddBody (body5);
 
-			var geometries = JSM.ConvertModelToRenderGeometries (model, materials);
+			geometries = JSM.ConvertModelToRenderGeometries (model, materials);
 			viewer.AddGeometries (geometries);
 
 			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
