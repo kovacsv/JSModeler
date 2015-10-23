@@ -22,11 +22,6 @@ JSM.RenderMaterial = function (ambient, diffuse, specular, shininess, opacity, t
 	this.textureLoaded = false;
 };
 
-JSM.RenderMaterial.prototype.HasTexture = function ()
-{
-	return this.texture !== null && this.textureLoaded;
-};
-
 JSM.RenderGeometry = function ()
 {
 	this.transformation = new JSM.Transformation ();
