@@ -249,7 +249,8 @@ JSM.Renderer.prototype.InitView = function (camera, light)
 		return false;
 	}
 
-	this.light = JSM.ValueOrDefault (light, new JSM.Light ());
+	var theLight = JSM.ValueOrDefault (light, new JSM.Light ());
+	this.light = new JSM.RenderLight (theLight.ambient, theLight.diffuse, theLight.specular, theLight.direction);
 	if (!this.light) {
 		return false;
 	}
@@ -349,31 +350,23 @@ JSM.Renderer.prototype.Render = function ()
 {
 	function UseShader (context, shader, light, viewMatrix, projectionMatrix)
 	{
-		// TODO: do this outside of render
-		var lightAmbient = JSM.HexColorToNormalizedRGBComponents (light.ambient);
-		var lightDiffuse = JSM.HexColorToNormalizedRGBComponents (light.diffuse);
-		var lightSpecular = JSM.HexColorToNormalizedRGBComponents (light.specular);
-
 		context.useProgram (shader);
 		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
 		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
 
 		context.uniform3f (shader.lightDirectionUniform, light.direction.x, light.direction.y, light.direction.z);
-		context.uniform3f (shader.lightAmbientColorUniform, lightAmbient[0], lightAmbient[1], lightAmbient[2]);
-		context.uniform3f (shader.lightDiffuseColorUniform, lightDiffuse[0], lightDiffuse[1], lightDiffuse[2]);
-		context.uniform3f (shader.lightSpecularColorUniform, lightSpecular[0], lightSpecular[1], lightSpecular[2]);
+		context.uniform3f (shader.lightAmbientColorUniform, light.ambient[0], light.ambient[1], light.ambient[2]);
+		context.uniform3f (shader.lightDiffuseColorUniform, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
+		context.uniform3f (shader.lightSpecularColorUniform, light.specular[0], light.specular[1], light.specular[2]);
 	}
 	
 	function DrawGeometry (context, shader, geometry)
 	{
-		var ambientColor = geometry.material.ambient;
-		var diffuseColor = geometry.material.diffuse;
-		var specularColor = geometry.material.specular;
-		var shininess = geometry.material.shininess;
-		context.uniform3f (shader.polygonAmbientColorUniform, ambientColor[0], ambientColor[1], ambientColor[2]);
-		context.uniform3f (shader.polygonDiffuseColorUniform, diffuseColor[0], diffuseColor[1], diffuseColor[2]);
-		context.uniform3f (shader.polygonSpecularColorUniform, specularColor[0], specularColor[1], specularColor[2]);
-		context.uniform1f (shader.polygonShininessUniform, shininess);
+		var material = geometry.material;
+		context.uniform3f (shader.polygonAmbientColorUniform, material.ambient[0], material.ambient[1], material.ambient[2]);
+		context.uniform3f (shader.polygonDiffuseColorUniform, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+		context.uniform3f (shader.polygonSpecularColorUniform, material.specular[0], material.specular[1], material.specular[2]);
+		context.uniform1f (shader.polygonShininessUniform, material.shininess);
 		
 		var matrix = geometry.GetTransformationMatrix ();
 		context.uniformMatrix4fv (shader.tMatrixUniform, false, matrix);
