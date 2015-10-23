@@ -199,7 +199,7 @@
 				
 				var materials = new JSM.Materials ();
 				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
-				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 				
 				RenderBodyAndWait (viewer, body, materials, renderFinished);
 			}, 'references/texture_one_side.png');
@@ -211,7 +211,7 @@
 				
 				var materials = new JSM.Materials ();
 				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
-				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texturenpot.png', textureWidth : 1.0, textureHeight : 1.0}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texturenpot.png', textureWidth : 1.0, textureHeight : 1.0}));
 				
 				RenderBodyAndWait (viewer, body, materials, renderFinished);
 			}, 'references/texture_one_side_npot.png');
@@ -223,7 +223,7 @@
 				
 				var materials = new JSM.Materials ();
 				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
-				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 0.5, textureHeight : 0.2}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 0.5, textureHeight : 0.2}));
 				
 				RenderBodyAndWait (viewer, body, materials, renderFinished);
 			}, 'references/texture_resized.png');
@@ -234,8 +234,8 @@
 				body.GetPolygon (2).SetMaterialIndex (1);
 				
 				var materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
-				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 				
 				RenderBodyAndWait (viewer, body, materials, renderFinished);
 			}, 'references/texture_two_sides.png');
@@ -245,7 +245,7 @@
 				body.SetPolygonsMaterialIndex (0);
 				
 				var materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 				
 				RenderBodyAndWait (viewer, body, materials, renderFinished);
 			}, 'references/texture_all_sides.png');
@@ -260,6 +260,70 @@
 				RenderBody (viewer, body, materials, renderFinished);
 			}, 'references/specular_reflection.png');
 			
+			canvasTester.AddTest (function (renderFinished)	{
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				body.GetPolygon (1).SetMaterialIndex (0);
+				body.GetPolygon (2).SetMaterialIndex (1);
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, opacity : 0.5}));
+				
+				RenderBody (viewer, body, materials, renderFinished);
+			}, 'references/opacity.png');
+
+			canvasTester.AddTest (function (renderFinished)	{
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				body.GetPolygon (1).SetMaterialIndex (0);
+				body.GetPolygon (2).SetMaterialIndex (1);
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000, opacity : 0.75}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, opacity : 0.75}));
+				
+				RenderBody (viewer, body, materials, renderFinished);
+			}, 'references/opacity_two_sides.png');
+
+			canvasTester.AddTest (function (renderFinished)	{
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				body.GetPolygon (1).SetMaterialIndex (0);
+				body.GetPolygon (2).SetMaterialIndex (1);
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000, opacity : 0.75}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, opacity : 0.75, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+				
+				RenderBodyAndWait (viewer, body, materials, renderFinished);
+			}, 'references/opacity_normal_and_texture.png');
+
+			canvasTester.AddTest (function (renderFinished)	{
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				body.SetPolygonsMaterialIndex (0)
+				body.GetPolygon (1).SetMaterialIndex (1);
+				body.GetPolygon (2).SetMaterialIndex (2);
+				body.GetPolygon (5).SetMaterialIndex (3);
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000, opacity : 0.75}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, opacity : 0.75, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+				
+				RenderBodyAndWait (viewer, body, materials, renderFinished);
+			}, 'references/opacity_all_states.png');
+
+			canvasTester.AddTest (function (renderFinished)	{
+				var body = JSM.GenerateCuboid (1, 1, 1);
+				body.GetPolygon (1).SetMaterialIndex (0);
+				body.GetPolygon (2).SetMaterialIndex (1);
+				
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, opacity : 0.75, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+				
+				RenderBodyAndWait (viewer, body, materials, renderFinished);
+			}, 'references/opacity_texture.png');
+
 			canvasTester.AddTest (function (renderFinished)	{
 				var body1 = JSM.GenerateCuboid (1, 1, 1);
 				body1.SetPolygonsMaterialIndex (0);
@@ -323,8 +387,8 @@
 				body2.GetPolygon (2).SetMaterialIndex (1);
 
 				var materials = new JSM.Materials ();
-				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
-				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 				
 				model.AddBody (body1);
 				model.AddBody (body2);

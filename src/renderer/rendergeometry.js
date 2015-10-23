@@ -6,12 +6,13 @@ JSM.RenderLight = function (ambient, diffuse, specular, direction)
 	this.direction = direction.Clone ();
 };
 
-JSM.RenderMaterial = function (ambient, diffuse, specular, shininess, texture, textureWidth, textureHeight)
+JSM.RenderMaterial = function (ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight)
 {
 	this.ambient = ambient;
 	this.diffuse = diffuse;
 	this.specular = specular;
 	this.shininess = shininess;
+	this.opacity = opacity;
 	this.texture = texture;
 	this.textureWidth = textureWidth;
 	this.textureHeight = textureHeight;
