@@ -41,9 +41,9 @@ JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 	this.Draw ();
 };
 
-JSM.Viewer.prototype.AddMeshes = function (geometries)
+JSM.Viewer.prototype.AddMeshes = function (meshes)
 {
-	this.renderer.AddMeshes (geometries);
+	this.renderer.AddMeshes (meshes);
 	this.Draw ();
 };
 
@@ -71,10 +71,10 @@ JSM.Viewer.prototype.GetBoundingBox = function ()
 	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
 	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
 	
-	this.renderer.EnumerateMeshes (function (geometry) {
+	this.renderer.EnumerateMeshes (function (mesh) {
 		var i, vertex;
-		for (i = 0; i < geometry.VertexCount (); i++) {
-			vertex = geometry.GetTransformedVertex (i);
+		for (i = 0; i < mesh.VertexCount (); i++) {
+			vertex = mesh.GetTransformedVertex (i);
 			min.x = JSM.Minimum (min.x, vertex.x);
 			min.y = JSM.Minimum (min.y, vertex.y);
 			min.z = JSM.Minimum (min.z, vertex.z);
@@ -92,10 +92,10 @@ JSM.Viewer.prototype.GetBoundingSphere = function ()
 	var center = this.GetCenter ();
 	var radius = 0.0;
 
-	this.renderer.EnumerateMeshes (function (geometry) {
+	this.renderer.EnumerateMeshes (function (mesh) {
 		var i, vertex, distance;
-		for (i = 0; i < geometry.VertexCount (); i++) {
-			vertex = geometry.GetTransformedVertex (i);
+		for (i = 0; i < mesh.VertexCount (); i++) {
+			vertex = mesh.GetTransformedVertex (i);
 			distance = center.DistanceTo (vertex);
 			if (JSM.IsGreater (distance, radius)) {
 				radius = distance;
