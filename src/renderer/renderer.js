@@ -69,15 +69,10 @@ JSM.Renderer.prototype.InitContext = function (canvas)
 
 JSM.Renderer.prototype.InitShaders = function ()
 {
-	function GetFragmentShaderScript (isTextureShader)
+	function GetFragmentShaderScript (defineString)
 	{
-		var defineString = '';
-		if (isTextureShader) {
-			defineString = '#define USETEXTURE';
-		}
-		
 		var script = [
-			defineString,
+			'#define ' + defineString,
 			'uniform highp vec3 uPolygonAmbientColor;',
 			'uniform highp vec3 uPolygonDiffuseColor;',
 			'uniform highp vec3 uPolygonSpecularColor;',
@@ -123,15 +118,10 @@ JSM.Renderer.prototype.InitShaders = function ()
 		return script;
 	}
 	
-	function GetVertexShaderScript (isTextureShader)
+	function GetVertexShaderScript (defineString)
 	{
-		var defineString = '';
-		if (isTextureShader) {
-			defineString = '#define USETEXTURE';
-		}
-		
 		var script = [
-			defineString,
+			'#define ' + defineString,
 			'attribute highp vec3 aVertexPosition;',
 			'attribute highp vec3 aVertexNormal;',
 
@@ -186,8 +176,8 @@ JSM.Renderer.prototype.InitShaders = function ()
 	
 	function InitMainShader (context)
 	{
-		var fragmentShaderScript = GetFragmentShaderScript (false);
-		var vertexShaderScript = GetVertexShaderScript (false);
+		var vertexShaderScript = GetVertexShaderScript ('NOTEXTURE');
+		var fragmentShaderScript = GetFragmentShaderScript ('NOTEXTURE');
 		var shader = JSM.WebGLInitShaderProgram (context, vertexShaderScript, fragmentShaderScript, null);
 		if (shader === null) {
 			return null;
@@ -201,8 +191,8 @@ JSM.Renderer.prototype.InitShaders = function ()
 
 	function InitTextureShader (context)
 	{
-		var fragmentShaderScript = GetFragmentShaderScript (true);
-		var vertexShaderScript = GetVertexShaderScript (true);
+		var vertexShaderScript = GetVertexShaderScript ('USETEXTURE');
+		var fragmentShaderScript = GetFragmentShaderScript ('USETEXTURE');
 		var shader = JSM.WebGLInitShaderProgram (context, vertexShaderScript, fragmentShaderScript, null);
 		if (shader === null) {
 			return null;
