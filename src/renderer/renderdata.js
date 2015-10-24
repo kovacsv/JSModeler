@@ -6,6 +6,13 @@ JSM.RenderLight = function (ambient, diffuse, specular, direction)
 	this.direction = direction.Clone ();
 };
 
+JSM.RenderMaterialType = {
+	Normal : 0,
+	Textured : 1,
+	NormalTransparent : 2,
+	TexturedTransparent : 3
+};
+
 JSM.RenderMaterial = function (ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight)
 {
 	this.ambient = ambient;
@@ -20,6 +27,21 @@ JSM.RenderMaterial = function (ambient, diffuse, specular, shininess, opacity, t
 	this.textureBuffer = null;
 	this.textureImage = null;
 	this.textureLoaded = false;
+	
+	this.type = JSM.RenderMaterialType.Normal;
+	if (this.texture !== null) {
+		if (this.opacity < 1.0) {
+			this.type = JSM.RenderMaterialType.TexturedTransparent;
+		} else {
+			this.type = JSM.RenderMaterialType.Textured;
+		}
+	} else {
+		if (this.opacity < 1.0) {
+			this.type = JSM.RenderMaterialType.NormalTransparent;
+		} else {
+			this.type = JSM.RenderMaterialType.Normal;
+		}
+	}
 };
 
 JSM.RenderMesh = function ()

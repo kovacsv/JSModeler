@@ -227,16 +227,7 @@ JSM.Renderer.prototype.InitShaders = function ()
 
 JSM.Renderer.prototype.InitMeshes = function ()
 {
-	this.meshes = {
-		normal : {
-			opaque : [],
-			transparent : []
-		},
-		texture : {
-			opaque : [],
-			transparent : []
-		}
-	};
+	this.meshes = {};
 	return true;
 };
 
@@ -313,36 +304,23 @@ JSM.Renderer.prototype.AddMeshes = function (meshes)
 		mesh = meshes[i];
 		CompileMaterial (mesh.material, this.context, this.Render.bind (this));
 		CompileMesh (mesh, this.context);
-		if (mesh.material.texture !== null) {
-			if (mesh.material.opacity < 1.0) {
-				this.meshes.texture.transparent.push (mesh);
-			} else {
-				this.meshes.texture.opaque.push (mesh);
-			}
-		} else {
-			if (mesh.material.opacity < 1.0) {
-				this.meshes.normal.transparent.push (mesh);
-			} else {
-				this.meshes.normal.opaque.push (mesh);
-			}
+		if (this.meshes[mesh.material.type] === undefined) {
+			this.meshes[mesh.material.type] = [];
 		}
+		this.meshes[mesh.material.type].push (mesh);
 	}
 };
 
 JSM.Renderer.prototype.EnumerateMeshes = function (onMeshFound)
 {
-	var i;
-	for	(i = 0; i < this.meshes.normal.opaque.length; i++) {
-		onMeshFound (this.meshes.normal.opaque[i]);
-	}
-	for	(i = 0; i < this.meshes.normal.transparent.length; i++) {
-		onMeshFound (this.meshes.normal.transparent[i]);
-	}
-	for	(i = 0; i < this.meshes.texture.opaque.length; i++) {
-		onMeshFound (this.meshes.texture.opaque[i]);
-	}
-	for	(i = 0; i < this.meshes.texture.transparent.length; i++) {
-		onMeshFound (this.meshes.texture.transparent[i]);
+	var i, type, meshes;
+	for (type in this.meshes) {
+		if (this.meshes.hasOwnProperty (type)) {
+			meshes = this.meshes[type];
+			for	(i = 0; i < meshes.length; i++) {
+				onMeshFound (meshes[i]);
+			}
+		}
 	}
 };
 
@@ -407,13 +385,14 @@ JSM.Renderer.prototype.Render = function ()
 		context.drawArrays (context.TRIANGLES, 0, vertexBuffer.numItems);
 	}
 	
-	function DrawMeshes (meshes, context, shader, light, viewMatrix, projectionMatrix)
+	function DrawMeshes (type, meshes, context, shader, light, viewMatrix, projectionMatrix)
 	{
-		var i, mesh;
-		if (meshes.length > 0) {
+		var typedMeshes = meshes[type];
+		if (typedMeshes !== undefined && typedMeshes.length > 0) {
 			UseShader (context, shader, light, viewMatrix, projectionMatrix);
-			for (i = 0; i < meshes.length; i++) {
-				mesh = meshes[i];
+			var i, mesh;
+			for (i = 0; i < typedMeshes.length; i++) {
+				mesh = typedMeshes[i];
 				DrawMesh (context, shader, mesh);
 			}
 		}
@@ -425,8 +404,8 @@ JSM.Renderer.prototype.Render = function ()
 	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
 	this.light.direction = JSM.CoordSub (this.camera.center, this.camera.eye).Normalize ();
 
-	DrawMeshes (this.meshes.normal.opaque, this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
-	DrawMeshes (this.meshes.texture.opaque, this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
-	DrawMeshes (this.meshes.normal.transparent, this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
-	DrawMeshes (this.meshes.texture.transparent, this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
+	DrawMeshes (JSM.RenderMaterialType.Normal, this.meshes, this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
+	DrawMeshes (JSM.RenderMaterialType.Textured, this.meshes, this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
+	DrawMeshes (JSM.RenderMaterialType.NormalTransparent, this.meshes, this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
+	DrawMeshes (JSM.RenderMaterialType.TexturedTransparent, this.meshes, this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
 };
