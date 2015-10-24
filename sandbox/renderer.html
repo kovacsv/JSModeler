@@ -67,7 +67,7 @@
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../src/renderer/webglutils.js"></script>
-	<script type="text/javascript" src="../src/renderer/rendergeometry.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderdata.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
@@ -143,13 +143,13 @@
 			model.AddBody (body4);
 			model.AddBody (body5);
 
-			var geometries = JSM.ConvertModelToRenderGeometries (model, materials);
-			renderer.AddGeometries (geometries);
+			var geometries = JSM.ConvertModelToRenderMeshes (model, materials);
+			renderer.AddMeshes (geometries);
 
 			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));
-			var newGeometries = JSM.ConvertBodyToRenderGeometries (body6, materials);
-			renderer.AddGeometries (newGeometries);
+			var newGeometries = JSM.ConvertBodyToRenderMeshes (body6, materials);
+			renderer.AddMeshes (newGeometries);
 
 			Render ();
 		}

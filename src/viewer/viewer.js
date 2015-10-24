@@ -41,15 +41,15 @@ JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 	this.Draw ();
 };
 
-JSM.Viewer.prototype.AddGeometries = function (geometries)
+JSM.Viewer.prototype.AddMeshes = function (geometries)
 {
-	this.renderer.AddGeometries (geometries);
+	this.renderer.AddMeshes (geometries);
 	this.Draw ();
 };
 
-JSM.Viewer.prototype.RemoveGeometries = function ()
+JSM.Viewer.prototype.RemoveMeshes = function ()
 {
-	this.renderer.RemoveGeometries ();
+	this.renderer.RemoveMeshes ();
 	this.Draw ();
 };
 
@@ -71,7 +71,7 @@ JSM.Viewer.prototype.GetBoundingBox = function ()
 	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
 	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
 	
-	this.renderer.EnumerateGeometries (function (geometry) {
+	this.renderer.EnumerateMeshes (function (geometry) {
 		var i, vertex;
 		for (i = 0; i < geometry.VertexCount (); i++) {
 			vertex = geometry.GetTransformedVertex (i);
@@ -92,7 +92,7 @@ JSM.Viewer.prototype.GetBoundingSphere = function ()
 	var center = this.GetCenter ();
 	var radius = 0.0;
 
-	this.renderer.EnumerateGeometries (function (geometry) {
+	this.renderer.EnumerateMeshes (function (geometry) {
 		var i, vertex, distance;
 		for (i = 0; i < geometry.VertexCount (); i++) {
 			vertex = geometry.GetTransformedVertex (i);

@@ -22,7 +22,7 @@ JSM.RenderMaterial = function (ambient, diffuse, specular, shininess, opacity, t
 	this.textureLoaded = false;
 };
 
-JSM.RenderGeometry = function ()
+JSM.RenderMesh = function ()
 {
 	this.transformation = new JSM.Transformation ();
 
@@ -37,72 +37,72 @@ JSM.RenderGeometry = function ()
 	this.uvBuffer = null;
 };
 
-JSM.RenderGeometry.prototype.SetMaterial = function (material)
+JSM.RenderMesh.prototype.SetMaterial = function (material)
 {
 	this.material = material;
 };
 
-JSM.RenderGeometry.prototype.GetMaterial = function ()
+JSM.RenderMesh.prototype.GetMaterial = function ()
 {
 	return this.material;
 };
 
-JSM.RenderGeometry.prototype.SetVertexArray = function (vertices)
+JSM.RenderMesh.prototype.SetVertexArray = function (vertices)
 {
 	this.vertexArray = new Float32Array (vertices);
 };
 
-JSM.RenderGeometry.prototype.SetNormalArray = function (normals)
+JSM.RenderMesh.prototype.SetNormalArray = function (normals)
 {
 	this.normalArray = new Float32Array (normals);
 };
 
-JSM.RenderGeometry.prototype.SetUVArray = function (uvs)
+JSM.RenderMesh.prototype.SetUVArray = function (uvs)
 {
 	this.uvArray = new Float32Array (uvs);
 };
 
-JSM.RenderGeometry.prototype.GetTransformation = function ()
+JSM.RenderMesh.prototype.GetTransformation = function ()
 {
 	return this.transformation;
 };
 
-JSM.RenderGeometry.prototype.GetTransformationMatrix = function ()
+JSM.RenderMesh.prototype.GetTransformationMatrix = function ()
 {
 	return this.transformation.matrix;
 };
 
-JSM.RenderGeometry.prototype.SetTransformation = function (transformation)
+JSM.RenderMesh.prototype.SetTransformation = function (transformation)
 {
 	this.transformation = transformation;
 };
 
-JSM.RenderGeometry.prototype.GetVertexBuffer = function ()
+JSM.RenderMesh.prototype.GetVertexBuffer = function ()
 {
 	return this.vertexBuffer;
 };
 
-JSM.RenderGeometry.prototype.GetNormalBuffer = function ()
+JSM.RenderMesh.prototype.GetNormalBuffer = function ()
 {
 	return this.normalBuffer;
 };
 
-JSM.RenderGeometry.prototype.GetUVBuffer = function ()
+JSM.RenderMesh.prototype.GetUVBuffer = function ()
 {
 	return this.uvBuffer;
 };
 
-JSM.RenderGeometry.prototype.VertexCount = function ()
+JSM.RenderMesh.prototype.VertexCount = function ()
 {
 	return parseInt (this.vertexArray.length / 3, 10);
 };
 
-JSM.RenderGeometry.prototype.GetVertex = function (index)
+JSM.RenderMesh.prototype.GetVertex = function (index)
 {
 	return new JSM.Coord (this.vertexArray[3 * index], this.vertexArray[3 * index + 1], this.vertexArray[3 * index + 2]);
 };
 
-JSM.RenderGeometry.prototype.GetTransformedVertex = function (index)
+JSM.RenderMesh.prototype.GetTransformedVertex = function (index)
 {
 	var vertex = this.GetVertex (index);
 	return this.transformation.Apply (vertex);

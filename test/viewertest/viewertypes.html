@@ -69,7 +69,7 @@
 	<script type="text/javascript" src="../../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../../src/renderer/webglutils.js"></script>
-	<script type="text/javascript" src="../../src/renderer/rendergeometry.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderdata.js"></script>
 	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../../src/renderer/renderconverter.js"></script>
@@ -173,12 +173,12 @@
 				
 				if (type == 'three2') {
 					var body2 = JSM.GenerateCuboid (1, 1, 1);
-					var renderGeometries2 = JSM.ConvertBodyToThreeMeshes (body2);
-					renderGeometries2[0].position.x += -1.2;
-					renderGeometries2[0].position.y += 1.2;
-					renderGeometries2[0].position.z += 1.2;
-					renderGeometries2[0].rotation.z += 20.0 * JSM.DegRad;
-					viewer.AddMeshes (renderGeometries2);
+					var renderMeshes2 = JSM.ConvertBodyToThreeMeshes (body2);
+					renderMeshes2[0].position.x += -1.2;
+					renderMeshes2[0].position.y += 1.2;
+					renderMeshes2[0].position.z += 1.2;
+					renderMeshes2[0].rotation.z += 20.0 * JSM.DegRad;
+					viewer.AddMeshes (renderMeshes2);
 				}				
 				viewer.Draw ();
 			} else if (type == 'internal' || type == 'internal2' || type == 'internal3') {
@@ -208,17 +208,17 @@
 				body.GetPolygon (1).SetMaterialIndex (0);
 				body.GetPolygon (2).SetMaterialIndex (1);
 			
-				var renderGeometries = JSM.ConvertBodyToRenderGeometries (body, materials);
-				viewer.AddGeometries (renderGeometries);
+				var renderMeshes = JSM.ConvertBodyToRenderMeshes (body, materials);
+				viewer.AddMeshes (renderMeshes);
 				
 				if (type == 'internal2') {
 					var body2 = JSM.GenerateCuboid (1, 1, 1);
-					var renderGeometries2 = JSM.ConvertBodyToRenderGeometries (body2);
+					var renderMeshes2 = JSM.ConvertBodyToRenderMeshes (body2);
 					var transformation = new JSM.Transformation ();
 					transformation.Append (JSM.RotationZTransformation (20.0 * JSM.DegRad));
 					transformation.Append (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
-					renderGeometries2[0].SetTransformation (transformation);
-					viewer.AddGeometries (renderGeometries2);
+					renderMeshes2[0].SetTransformation (transformation);
+					viewer.AddMeshes (renderMeshes2);
 				}
 				
 				viewer.Draw ();

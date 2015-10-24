@@ -1,4 +1,4 @@
-JSM.ConvertBodyToRenderGeometries = function (body, materials)
+JSM.ConvertBodyToRenderMeshes = function (body, materials)
 {
 	function OnGeometryStart (material)
 	{
@@ -11,17 +11,17 @@ JSM.ConvertBodyToRenderGeometries = function (body, materials)
 		var renderSpecular = JSM.HexColorToNormalizedRGBComponents (material.specular);
 		var renderMaterial = new JSM.RenderMaterial (renderAmbient, renderDiffuse, renderSpecular, material.shininess, material.opacity, material.texture, material.textureWidth, material.textureHeight);
 
-		geometry = new JSM.RenderGeometry ();
-		geometry.SetMaterial (renderMaterial);
-		geometries.push (geometry);
+		mesh = new JSM.RenderMesh ();
+		mesh.SetMaterial (renderMaterial);
+		meshes.push (mesh);
 	}
 
 	function OnGeometryEnd (material)
 	{
-		geometry.SetVertexArray (vertices);
-		geometry.SetNormalArray (normals);
+		mesh.SetVertexArray (vertices);
+		mesh.SetNormalArray (normals);
 		if (material.texture !== null) {
-			geometry.SetUVArray (uvs);
+			mesh.SetUVArray (uvs);
 		}
 	}
 
@@ -49,27 +49,27 @@ JSM.ConvertBodyToRenderGeometries = function (body, materials)
 		onTriangle : OnTriangle
 	};
 	
-	var geometries = [];
-	var geometry = null;
+	var meshes = [];
+	var mesh = null;
 	
 	var vertices = null;
 	var normals = null;
 	var uvs = null;
 	
 	JSM.ExplodeBodyToTriangles (body, materials, explodeData);
-	return geometries;
+	return meshes;
 };
 
-JSM.ConvertModelToRenderGeometries = function (model, materials)
+JSM.ConvertModelToRenderMeshes = function (model, materials)
 {
-	var geometries = [];
+	var meshes = [];
 	var i, j, body, currentGeometries;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		currentGeometries = JSM.ConvertBodyToRenderGeometries (body, materials, geometries);
+		currentGeometries = JSM.ConvertBodyToRenderMeshes (body, materials, meshes);
 		for (j = 0; j < currentGeometries.length; j++) {
-			geometries.push (currentGeometries[j]);
+			meshes.push (currentGeometries[j]);
 		}
 	}
-	return geometries;
+	return meshes;
 };

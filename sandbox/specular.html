@@ -67,7 +67,7 @@
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../src/renderer/webglutils.js"></script>
-	<script type="text/javascript" src="../src/renderer/rendergeometry.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderdata.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
@@ -109,8 +109,8 @@
 				viewer = new JSM.Viewer ();
 				viewer.Init (document.getElementById ('example'), camera, light);
 				
-				var meshes = JSM.ConvertBodyToRenderGeometries (body, materials);
-				viewer.AddGeometries (meshes);
+				var meshes = JSM.ConvertBodyToRenderMeshes (body, materials);
+				viewer.AddMeshes (meshes);
 
 				viewer.Draw ();
 			} else {

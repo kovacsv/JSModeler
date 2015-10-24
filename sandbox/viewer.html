@@ -67,7 +67,7 @@
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../src/renderer/webglutils.js"></script>
-	<script type="text/javascript" src="../src/renderer/rendergeometry.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderdata.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
@@ -86,15 +86,15 @@
 
 	<script type="text/javascript">
 		var viewer = null;
-		var geometries = null;
+		var meshes = null;
 		var a = 0.0;
 		
 		var fps = new JSM.FPSCounter ();
 		function Render ()
 		{
-			geometries[0].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
-			geometries[1].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
-			geometries[2].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
+			meshes[0].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
+			meshes[1].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
+			meshes[2].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
 		
 			viewer.Draw ();
 			a += 0.5;
@@ -146,13 +146,13 @@
 			model.AddBody (body4);
 			model.AddBody (body5);
 
-			geometries = JSM.ConvertModelToRenderGeometries (model, materials);
-			viewer.AddGeometries (geometries);
+			meshes = JSM.ConvertModelToRenderMeshes (model, materials);
+			viewer.AddMeshes (meshes);
 
 			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));
-			var newGeometries = JSM.ConvertBodyToRenderGeometries (body6, materials);
-			viewer.AddGeometries (newGeometries);
+			var newMeshes = JSM.ConvertBodyToRenderMeshes (body6, materials);
+			viewer.AddMeshes (newMeshes);
 			
 			Render ();
 		}

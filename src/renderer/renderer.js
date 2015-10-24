@@ -8,7 +8,7 @@ JSM.Renderer = function ()
 	this.camera = null;
 	this.light = null;
 	
-	this.geometries = null;
+	this.meshes = null;
 };
 
 JSM.Renderer.prototype.Init = function (canvas, camera, light)
@@ -29,7 +29,7 @@ JSM.Renderer.prototype.Init = function (canvas, camera, light)
 		return false;
 	}
 
-	if (!this.InitGeometries ()) {
+	if (!this.InitMeshes ()) {
 		return false;
 	}
 
@@ -225,9 +225,9 @@ JSM.Renderer.prototype.InitShaders = function ()
 	return true;
 };
 
-JSM.Renderer.prototype.InitGeometries = function ()
+JSM.Renderer.prototype.InitMeshes = function ()
 {
-	this.geometries = {
+	this.meshes = {
 		normal : {
 			opaque : [],
 			transparent : []
@@ -261,7 +261,7 @@ JSM.Renderer.prototype.SetClearColor = function (red, green, blue)
 	this.context.clearColor (red, green, blue, 1.0);
 };
 
-JSM.Renderer.prototype.AddGeometries = function (geometries)
+JSM.Renderer.prototype.AddMeshes = function (meshes)
 {
 	function CompileMaterial (material, context, textureLoaded)
 	{
@@ -285,70 +285,70 @@ JSM.Renderer.prototype.AddGeometries = function (geometries)
 		}
 	}
 	
-	function CompileGeometry (geometry, context)
+	function CompileMesh (mesh, context)
 	{
-		geometry.vertexBuffer = context.createBuffer ();
-		context.bindBuffer (context.ARRAY_BUFFER, geometry.vertexBuffer);
-		context.bufferData (context.ARRAY_BUFFER, geometry.vertexArray, context.STATIC_DRAW);
-		geometry.vertexBuffer.itemSize = 3;
-		geometry.vertexBuffer.numItems = parseInt (geometry.vertexArray.length / 3, 10);
+		mesh.vertexBuffer = context.createBuffer ();
+		context.bindBuffer (context.ARRAY_BUFFER, mesh.vertexBuffer);
+		context.bufferData (context.ARRAY_BUFFER, mesh.vertexArray, context.STATIC_DRAW);
+		mesh.vertexBuffer.itemSize = 3;
+		mesh.vertexBuffer.numItems = parseInt (mesh.vertexArray.length / 3, 10);
 
-		geometry.normalBuffer = context.createBuffer ();
-		context.bindBuffer (context.ARRAY_BUFFER, geometry.normalBuffer);
-		context.bufferData (context.ARRAY_BUFFER, geometry.normalArray, context.STATIC_DRAW);
-		geometry.normalBuffer.itemSize = 3;
-		geometry.normalBuffer.numItems = parseInt (geometry.normalArray.length / 3, 10);
+		mesh.normalBuffer = context.createBuffer ();
+		context.bindBuffer (context.ARRAY_BUFFER, mesh.normalBuffer);
+		context.bufferData (context.ARRAY_BUFFER, mesh.normalArray, context.STATIC_DRAW);
+		mesh.normalBuffer.itemSize = 3;
+		mesh.normalBuffer.numItems = parseInt (mesh.normalArray.length / 3, 10);
 
-		if (geometry.uvArray !== null) {
-			geometry.uvBuffer = context.createBuffer ();
-			context.bindBuffer (context.ARRAY_BUFFER, geometry.uvBuffer);
-			context.bufferData (context.ARRAY_BUFFER, geometry.uvArray, context.STATIC_DRAW);
-			geometry.uvBuffer.itemSize = 2;
-			geometry.uvBuffer.numItems = parseInt (geometry.uvArray.length / 2, 10);
+		if (mesh.uvArray !== null) {
+			mesh.uvBuffer = context.createBuffer ();
+			context.bindBuffer (context.ARRAY_BUFFER, mesh.uvBuffer);
+			context.bufferData (context.ARRAY_BUFFER, mesh.uvArray, context.STATIC_DRAW);
+			mesh.uvBuffer.itemSize = 2;
+			mesh.uvBuffer.numItems = parseInt (mesh.uvArray.length / 2, 10);
 		}
 	}
 
-	var i, geometry;
-	for (i = 0; i < geometries.length; i++) {
-		geometry = geometries[i];
-		CompileMaterial (geometry.material, this.context, this.Render.bind (this));
-		CompileGeometry (geometry, this.context);
-		if (geometry.material.texture !== null) {
-			if (geometry.material.opacity < 1.0) {
-				this.geometries.texture.transparent.push (geometry);
+	var i, mesh;
+	for (i = 0; i < meshes.length; i++) {
+		mesh = meshes[i];
+		CompileMaterial (mesh.material, this.context, this.Render.bind (this));
+		CompileMesh (mesh, this.context);
+		if (mesh.material.texture !== null) {
+			if (mesh.material.opacity < 1.0) {
+				this.meshes.texture.transparent.push (mesh);
 			} else {
-				this.geometries.texture.opaque.push (geometry);
+				this.meshes.texture.opaque.push (mesh);
 			}
 		} else {
-			if (geometry.material.opacity < 1.0) {
-				this.geometries.normal.transparent.push (geometry);
+			if (mesh.material.opacity < 1.0) {
+				this.meshes.normal.transparent.push (mesh);
 			} else {
-				this.geometries.normal.opaque.push (geometry);
+				this.meshes.normal.opaque.push (mesh);
 			}
 		}
 	}
 };
 
-JSM.Renderer.prototype.EnumerateGeometries = function (onGeometryFound)
+JSM.Renderer.prototype.EnumerateMeshes = function (onMeshFound)
 {
 	var i;
-	for	(i = 0; i < this.geometries.normal.opaque.length; i++) {
-		onGeometryFound (this.geometries.normal.opaque[i]);
+	for	(i = 0; i < this.meshes.normal.opaque.length; i++) {
+		onMeshFound (this.meshes.normal.opaque[i]);
 	}
-	for	(i = 0; i < this.geometries.normal.transparent.length; i++) {
-		onGeometryFound (this.geometries.normal.transparent[i]);
+	for	(i = 0; i < this.meshes.normal.transparent.length; i++) {
+		onMeshFound (this.meshes.normal.transparent[i]);
 	}
-	for	(i = 0; i < this.geometries.texture.opaque.length; i++) {
-		onGeometryFound (this.geometries.texture.opaque[i]);
+	for	(i = 0; i < this.meshes.texture.opaque.length; i++) {
+		onMeshFound (this.meshes.texture.opaque[i]);
 	}
-	for	(i = 0; i < this.geometries.texture.transparent.length; i++) {
-		onGeometryFound (this.geometries.texture.transparent[i]);
+	for	(i = 0; i < this.meshes.texture.transparent.length; i++) {
+		onMeshFound (this.meshes.texture.transparent[i]);
 	}
 };
 
-JSM.Renderer.prototype.RemoveGeometries = function ()
+JSM.Renderer.prototype.RemoveMeshes = function ()
 {
-	this.InitGeometries ();
+	this.InitMeshes ();
 };
 
 JSM.Renderer.prototype.Resize = function ()
@@ -372,32 +372,32 @@ JSM.Renderer.prototype.Render = function ()
 		context.uniform3f (shader.lightSpecularColorUniform, light.specular[0], light.specular[1], light.specular[2]);
 	}
 	
-	function DrawGeometry (context, shader, geometry)
+	function DrawMesh (context, shader, mesh)
 	{
-		var material = geometry.material;
+		var material = mesh.material;
 		context.uniform3f (shader.polygonAmbientColorUniform, material.ambient[0], material.ambient[1], material.ambient[2]);
 		context.uniform3f (shader.polygonDiffuseColorUniform, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
 		context.uniform3f (shader.polygonSpecularColorUniform, material.specular[0], material.specular[1], material.specular[2]);
 		context.uniform1f (shader.polygonShininessUniform, material.shininess);
 		context.uniform1f (shader.polygonOpacityUniform, material.opacity);
 		
-		var matrix = geometry.GetTransformationMatrix ();
+		var matrix = mesh.GetTransformationMatrix ();
 		context.uniformMatrix4fv (shader.tMatrixUniform, false, matrix);
 
-		var vertexBuffer = geometry.GetVertexBuffer ();
+		var vertexBuffer = mesh.GetVertexBuffer ();
 		context.bindBuffer (context.ARRAY_BUFFER, vertexBuffer);
 		context.enableVertexAttribArray (shader.vertexPositionAttribute);
 		context.vertexAttribPointer (shader.vertexPositionAttribute, vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
 		
-		var normalBuffer = geometry.GetNormalBuffer ();
+		var normalBuffer = mesh.GetNormalBuffer ();
 		context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
 		context.enableVertexAttribArray (shader.vertexNormalAttribute);
 		context.vertexAttribPointer (shader.vertexNormalAttribute, normalBuffer.itemSize, context.FLOAT, false, 0, 0);
 
-		var uvBuffer = geometry.GetUVBuffer ();
+		var uvBuffer = mesh.GetUVBuffer ();
 		if (uvBuffer !== null) {
 			context.activeTexture (context.TEXTURE0);
-			context.bindTexture (context.TEXTURE_2D, geometry.material.textureBuffer);
+			context.bindTexture (context.TEXTURE_2D, mesh.material.textureBuffer);
 			context.bindBuffer (context.ARRAY_BUFFER, uvBuffer);
 			context.vertexAttribPointer (shader.vertexUVAttribute, uvBuffer.itemSize, context.FLOAT, false, 0, 0);
 			context.enableVertexAttribArray (shader.vertexUVAttribute);
@@ -407,14 +407,14 @@ JSM.Renderer.prototype.Render = function ()
 		context.drawArrays (context.TRIANGLES, 0, vertexBuffer.numItems);
 	}
 	
-	function DrawGeometries (geometries, context, shader, light, viewMatrix, projectionMatrix)
+	function DrawMeshes (meshes, context, shader, light, viewMatrix, projectionMatrix)
 	{
-		var i, geometry;
-		if (geometries.length > 0) {
+		var i, mesh;
+		if (meshes.length > 0) {
 			UseShader (context, shader, light, viewMatrix, projectionMatrix);
-			for (i = 0; i < geometries.length; i++) {
-				geometry = geometries[i];
-				DrawGeometry (context, shader, geometry);
+			for (i = 0; i < meshes.length; i++) {
+				mesh = meshes[i];
+				DrawMesh (context, shader, mesh);
 			}
 		}
 	}
@@ -425,8 +425,8 @@ JSM.Renderer.prototype.Render = function ()
 	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
 	this.light.direction = JSM.CoordSub (this.camera.center, this.camera.eye).Normalize ();
 
-	DrawGeometries (this.geometries.normal.opaque, this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
-	DrawGeometries (this.geometries.texture.opaque, this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
-	DrawGeometries (this.geometries.normal.transparent, this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
-	DrawGeometries (this.geometries.texture.transparent, this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
+	DrawMeshes (this.meshes.normal.opaque, this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
+	DrawMeshes (this.meshes.texture.opaque, this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
+	DrawMeshes (this.meshes.normal.transparent, this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
+	DrawMeshes (this.meshes.texture.transparent, this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
 };

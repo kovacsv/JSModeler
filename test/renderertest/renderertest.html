@@ -67,7 +67,7 @@
 	<script type="text/javascript" src="../../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../../src/renderer/webglutils.js"></script>
-	<script type="text/javascript" src="../../src/renderer/rendergeometry.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderdata.js"></script>
 	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../../src/renderer/renderconverter.js"></script>
@@ -89,12 +89,12 @@
 	<script type="text/javascript">
 		function RenderBody (viewer, body, materials, onFinished, beforeDraw)
 		{
-			viewer.RemoveGeometries ();
-			var renderGeometries = JSM.ConvertBodyToRenderGeometries (body, materials);
+			viewer.RemoveMeshes ();
+			var renderMeshes = JSM.ConvertBodyToRenderMeshes (body, materials);
 			if (beforeDraw !== undefined && beforeDraw !== null) {
-				beforeDraw (renderGeometries);
+				beforeDraw (renderMeshes);
 			}
-			viewer.AddGeometries (renderGeometries);
+			viewer.AddMeshes (renderMeshes);
 			viewer.FitInWindow ();
 			if (onFinished !== undefined && onFinished !== null) {
 				onFinished ();
@@ -112,12 +112,12 @@
 
 		function RenderModel (viewer, model, materials, onFinished, beforeDraw)
 		{
-			viewer.RemoveGeometries ();
-			var renderGeometries = JSM.ConvertModelToRenderGeometries (model, materials);
+			viewer.RemoveMeshes ();
+			var renderMeshes = JSM.ConvertModelToRenderMeshes (model, materials);
 			if (beforeDraw !== undefined && beforeDraw !== null) {
-				beforeDraw (renderGeometries);
+				beforeDraw (renderMeshes);
 			}
-			viewer.AddGeometries (renderGeometries);
+			viewer.AddMeshes (renderMeshes);
 			viewer.FitInWindow ();
 			if (onFinished !== undefined && onFinished !== null) {
 				onFinished ();
@@ -347,9 +347,9 @@
 				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 				
-				RenderModel (viewer, model, materials, renderFinished, function (geometries) {
-					geometries[0].SetTransformation (JSM.RotationZTransformation (20.0 * JSM.DegRad));
-					geometries[1].SetTransformation (JSM.TranslationTransformation (new JSM.Coord (-1.5, 0, 0)));
+				RenderModel (viewer, model, materials, renderFinished, function (meshes) {
+					meshes[0].SetTransformation (JSM.RotationZTransformation (20.0 * JSM.DegRad));
+					meshes[1].SetTransformation (JSM.TranslationTransformation (new JSM.Coord (-1.5, 0, 0)));
 				});
 			}, 'references/model_transformation.png');
 

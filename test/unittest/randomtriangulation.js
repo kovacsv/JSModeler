@@ -61,7 +61,7 @@ unitTest.AddSourceFile ('../../src/extras/svgtomodel.js');
 unitTest.AddSourceFile ('../../src/extras/csg.js');
 unitTest.AddSourceFile ('../../src/extras/curves.js');
 unitTest.AddSourceFile ('../../src/renderer/webglutils.js');
-unitTest.AddSourceFile ('../../src/renderer/rendergeometry.js');
+unitTest.AddSourceFile ('../../src/renderer/renderdata.js');
 unitTest.AddSourceFile ('../../src/renderer/renderer.js');
 unitTest.AddSourceFile ('../../src/renderer/pointcloudrenderer.js');
 unitTest.AddSourceFile ('../../src/renderer/renderconverter.js');
