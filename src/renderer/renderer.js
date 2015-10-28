@@ -386,10 +386,14 @@ JSM.Renderer.prototype.Render = function ()
 	
 	function DrawMeshes (renderer, type, context, shader, light, viewMatrix, projectionMatrix)
 	{
-		UseShader (context, shader, light, viewMatrix, projectionMatrix);
+		var shaderChanged = false;
 		renderer.EnumerateBodies (function (body) {
 			var matrix = body.GetTransformationMatrix ();
 			body.EnumerateTypedMeshes (type, function (mesh) {
+				if (!shaderChanged) {
+					UseShader (context, shader, light, viewMatrix, projectionMatrix);
+					shaderChanged = true;
+				}
 				DrawMesh (context, shader, mesh, matrix);
 			});
 		});
