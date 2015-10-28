@@ -41,15 +41,21 @@ JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 	this.Draw ();
 };
 
-JSM.Viewer.prototype.AddMeshes = function (meshes)
+JSM.Viewer.prototype.AddRenderBody = function (renderBody)
 {
-	this.renderer.AddMeshes (meshes);
+	this.renderer.AddRenderBody (renderBody);
 	this.Draw ();
 };
 
-JSM.Viewer.prototype.RemoveMeshes = function ()
+JSM.Viewer.prototype.AddRenderBodies = function (renderBodies)
 {
-	this.renderer.RemoveMeshes ();
+	this.renderer.AddRenderBodies (renderBodies);
+	this.Draw ();
+};
+
+JSM.Viewer.prototype.RemoveBodies = function ()
+{
+	this.renderer.RemoveBodies ();
 	this.Draw ();
 };
 
@@ -71,17 +77,20 @@ JSM.Viewer.prototype.GetBoundingBox = function ()
 	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
 	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
 	
-	this.renderer.EnumerateMeshes (function (mesh) {
-		var i, vertex;
-		for (i = 0; i < mesh.VertexCount (); i++) {
-			vertex = mesh.GetTransformedVertex (i);
-			min.x = JSM.Minimum (min.x, vertex.x);
-			min.y = JSM.Minimum (min.y, vertex.y);
-			min.z = JSM.Minimum (min.z, vertex.z);
-			max.x = JSM.Maximum (max.x, vertex.x);
-			max.y = JSM.Maximum (max.y, vertex.y);
-			max.z = JSM.Maximum (max.z, vertex.z);
-		}
+	this.renderer.EnumerateBodies (function (body) {
+		var transformation = body.GetTransformation ();
+		body.EnumerateMeshes (function (mesh) {
+			var i, vertex;
+			for (i = 0; i < mesh.VertexCount (); i++) {
+				vertex = mesh.GetTransformedVertex (i, transformation);
+				min.x = JSM.Minimum (min.x, vertex.x);
+				min.y = JSM.Minimum (min.y, vertex.y);
+				min.z = JSM.Minimum (min.z, vertex.z);
+				max.x = JSM.Maximum (max.x, vertex.x);
+				max.y = JSM.Maximum (max.y, vertex.y);
+				max.z = JSM.Maximum (max.z, vertex.z);
+			}
+		});
 	});
 
 	return new JSM.Box (min, max);
@@ -92,17 +101,20 @@ JSM.Viewer.prototype.GetBoundingSphere = function ()
 	var center = this.GetCenter ();
 	var radius = 0.0;
 
-	this.renderer.EnumerateMeshes (function (mesh) {
-		var i, vertex, distance;
-		for (i = 0; i < mesh.VertexCount (); i++) {
-			vertex = mesh.GetTransformedVertex (i);
-			distance = center.DistanceTo (vertex);
-			if (JSM.IsGreater (distance, radius)) {
-				radius = distance;
+	this.renderer.EnumerateBodies (function (body) {
+		var transformation = body.GetTransformation ();
+		body.EnumerateMeshes (function (mesh) {
+			var i, vertex, distance;
+			for (i = 0; i < mesh.VertexCount (); i++) {
+				vertex = mesh.GetTransformedVertex (i, transformation);
+				distance = center.DistanceTo (vertex);
+				if (JSM.IsGreater (distance, radius)) {
+					radius = distance;
+				}
 			}
-		}
-	});	
-
+		});
+	});
+	
 	var sphere = new JSM.Sphere (center, radius);
 	return sphere;
 };

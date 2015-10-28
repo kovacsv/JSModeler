@@ -89,12 +89,12 @@
 	<script type="text/javascript">
 		function RenderBody (viewer, body, materials, onFinished, beforeDraw)
 		{
-			viewer.RemoveMeshes ();
-			var renderMeshes = JSM.ConvertBodyToRenderMeshes (body, materials);
+			viewer.RemoveBodies ();
+			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 			if (beforeDraw !== undefined && beforeDraw !== null) {
-				beforeDraw (renderMeshes);
+				beforeDraw (renderBody);
 			}
-			viewer.AddMeshes (renderMeshes);
+			viewer.AddRenderBody (renderBody);
 			viewer.FitInWindow ();
 			if (onFinished !== undefined && onFinished !== null) {
 				onFinished ();
@@ -112,12 +112,12 @@
 
 		function RenderModel (viewer, model, materials, onFinished, beforeDraw)
 		{
-			viewer.RemoveMeshes ();
-			var renderMeshes = JSM.ConvertModelToRenderMeshes (model, materials);
+			viewer.RemoveBodies ();
+			var renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
 			if (beforeDraw !== undefined && beforeDraw !== null) {
-				beforeDraw (renderMeshes);
+				beforeDraw (renderBodies);
 			}
-			viewer.AddMeshes (renderMeshes);
+			viewer.AddRenderBodies (renderBodies);
 			viewer.FitInWindow ();
 			if (onFinished !== undefined && onFinished !== null) {
 				onFinished ();
@@ -154,7 +154,7 @@
 				var body = JSM.GenerateCuboid (1, 1, 1);
 				RenderBody (viewer, body, null, renderFinished);
 			}, 'references/cube_default_material.png');
-			
+
 			canvasTester.AddTest (function (renderFinished)	{
 				var body = JSM.GenerateCuboidSides (1, 1, 1, [0, 0, 1, 1, 1, 0]);
 				RenderBody (viewer, body, null, renderFinished);
@@ -347,9 +347,9 @@
 				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 				
-				RenderModel (viewer, model, materials, renderFinished, function (meshes) {
-					meshes[0].SetTransformation (JSM.RotationZTransformation (20.0 * JSM.DegRad));
-					meshes[1].SetTransformation (JSM.TranslationTransformation (new JSM.Coord (-1.5, 0, 0)));
+				RenderModel (viewer, model, materials, renderFinished, function (bodies) {
+					bodies[0].SetTransformation (JSM.RotationZTransformation (20.0 * JSM.DegRad));
+					bodies[1].SetTransformation (JSM.TranslationTransformation (new JSM.Coord (-1.5, 0, 0)));
 				});
 			}, 'references/model_transformation.png');
 

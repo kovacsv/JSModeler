@@ -1,28 +1,29 @@
-JSM.ConvertBodyToRenderMeshes = function (body, materials)
+JSM.ConvertBodyToRenderBody = function (body, materials)
 {
-	function OnGeometryStart (material)
+	function OnGeometryStart ()
 	{
 		vertices = [];
 		normals = [];
 		uvs = [];
+	}
 
+	function OnGeometryEnd (material)
+	{
 		var renderAmbient = JSM.HexColorToNormalizedRGBComponents (material.ambient);
 		var renderDiffuse = JSM.HexColorToNormalizedRGBComponents (material.diffuse);
 		var renderSpecular = JSM.HexColorToNormalizedRGBComponents (material.specular);
 		var renderMaterial = new JSM.RenderMaterial (renderAmbient, renderDiffuse, renderSpecular, material.shininess, material.opacity, material.texture, material.textureWidth, material.textureHeight);
 
-		mesh = new JSM.RenderMesh ();
+		var mesh = new JSM.RenderMesh ();
 		mesh.SetMaterial (renderMaterial);
-		meshes.push (mesh);
-	}
 
-	function OnGeometryEnd (material)
-	{
 		mesh.SetVertexArray (vertices);
 		mesh.SetNormalArray (normals);
 		if (material.texture !== null) {
 			mesh.SetUVArray (uvs);
 		}
+
+		renderBody.AddMesh (mesh);
 	}
 
 	function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
@@ -49,27 +50,23 @@ JSM.ConvertBodyToRenderMeshes = function (body, materials)
 		onTriangle : OnTriangle
 	};
 	
-	var meshes = [];
-	var mesh = null;
+	var renderBody = new JSM.RenderBody ();
 	
 	var vertices = null;
 	var normals = null;
 	var uvs = null;
 	
 	JSM.ExplodeBodyToTriangles (body, materials, explodeData);
-	return meshes;
+	return renderBody;
 };
 
-JSM.ConvertModelToRenderMeshes = function (model, materials)
+JSM.ConvertModelToRenderBodies = function (model, materials)
 {
-	var meshes = [];
-	var i, j, body, currentGeometries;
+	var bodies = [];
+	var i, body;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		currentGeometries = JSM.ConvertBodyToRenderMeshes (body, materials, meshes);
-		for (j = 0; j < currentGeometries.length; j++) {
-			meshes.push (currentGeometries[j]);
-		}
+		bodies.push (JSM.ConvertBodyToRenderBody (body, materials));
 	}
-	return meshes;
+	return bodies;
 };

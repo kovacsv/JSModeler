@@ -92,10 +92,8 @@
 		var fps = new JSM.FPSCounter ();
 		function Render ()
 		{
-			meshes[0].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
-			meshes[1].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
-			meshes[2].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
-		
+			renderBodies[0].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
+
 			viewer.Draw ();
 			a += 0.5;
 			requestAnimationFrame (Render);
@@ -146,13 +144,13 @@
 			model.AddBody (body4);
 			model.AddBody (body5);
 
-			meshes = JSM.ConvertModelToRenderMeshes (model, materials);
-			viewer.AddMeshes (meshes);
+			renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
+			viewer.AddRenderBodies (renderBodies);
 
 			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));
-			var newMeshes = JSM.ConvertBodyToRenderMeshes (body6, materials);
-			viewer.AddMeshes (newMeshes);
+			var newRenderBody = JSM.ConvertBodyToRenderBody (body6, materials);
+			viewer.AddRenderBody (newRenderBody);
 			
 			Render ();
 		}

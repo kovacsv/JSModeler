@@ -46,8 +46,6 @@ JSM.RenderMaterial = function (ambient, diffuse, specular, shininess, opacity, t
 
 JSM.RenderMesh = function ()
 {
-	this.transformation = new JSM.Transformation ();
-
 	this.material = null;
 	
 	this.vertexArray = null;
@@ -84,21 +82,6 @@ JSM.RenderMesh.prototype.SetUVArray = function (uvs)
 	this.uvArray = new Float32Array (uvs);
 };
 
-JSM.RenderMesh.prototype.GetTransformation = function ()
-{
-	return this.transformation;
-};
-
-JSM.RenderMesh.prototype.GetTransformationMatrix = function ()
-{
-	return this.transformation.matrix;
-};
-
-JSM.RenderMesh.prototype.SetTransformation = function (transformation)
-{
-	this.transformation = transformation;
-};
-
 JSM.RenderMesh.prototype.GetVertexBuffer = function ()
 {
 	return this.vertexBuffer;
@@ -124,8 +107,61 @@ JSM.RenderMesh.prototype.GetVertex = function (index)
 	return new JSM.Coord (this.vertexArray[3 * index], this.vertexArray[3 * index + 1], this.vertexArray[3 * index + 2]);
 };
 
-JSM.RenderMesh.prototype.GetTransformedVertex = function (index)
+JSM.RenderMesh.prototype.GetTransformedVertex = function (index, transformation)
 {
 	var vertex = this.GetVertex (index);
-	return this.transformation.Apply (vertex);
+	return transformation.Apply (vertex);
+};
+
+JSM.RenderBody = function ()
+{
+	this.transformation = new JSM.Transformation ();
+	this.meshes = {};
+};
+
+JSM.RenderBody.prototype.AddMesh = function (mesh)
+{
+	if (this.meshes[mesh.material.type] === undefined) {
+		this.meshes[mesh.material.type] = [];
+	}
+	this.meshes[mesh.material.type].push (mesh);
+};
+
+JSM.RenderBody.prototype.EnumerateMeshes = function (onMeshFound)
+{
+	var type;
+	for (type in this.meshes) {
+		if (this.meshes.hasOwnProperty (type)) {
+			this.EnumerateTypedMeshes (type, onMeshFound);
+		}
+	}
+};
+
+JSM.RenderBody.prototype.EnumerateTypedMeshes = function (meshType, onMeshFound)
+{
+	var typedMeshes = this.meshes[meshType];
+	if (typedMeshes === undefined) {
+		return;
+	}
+
+	var	i, typedMesh;
+	for	(i = 0; i < typedMeshes.length; i++) {
+		typedMesh = typedMeshes[i];
+		onMeshFound (typedMesh);
+	}
+};
+
+JSM.RenderBody.prototype.GetTransformation = function ()
+{
+	return this.transformation;
+};
+
+JSM.RenderBody.prototype.GetTransformationMatrix = function ()
+{
+	return this.transformation.matrix;
+};
+
+JSM.RenderBody.prototype.SetTransformation = function (transformation)
+{
+	this.transformation = transformation;
 };

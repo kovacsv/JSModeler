@@ -109,8 +109,7 @@
 				viewer = new JSM.Viewer ();
 				viewer.Init (document.getElementById ('example'), camera, light);
 				
-				var meshes = JSM.ConvertBodyToRenderMeshes (body, materials);
-				viewer.AddMeshes (meshes);
+				viewer.AddRenderBody (JSM.ConvertBodyToRenderBody (body, materials));
 
 				viewer.Draw ();
 			} else {

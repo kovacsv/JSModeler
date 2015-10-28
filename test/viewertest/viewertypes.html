@@ -208,17 +208,17 @@
 				body.GetPolygon (1).SetMaterialIndex (0);
 				body.GetPolygon (2).SetMaterialIndex (1);
 			
-				var renderMeshes = JSM.ConvertBodyToRenderMeshes (body, materials);
-				viewer.AddMeshes (renderMeshes);
-				
+				var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
+				viewer.AddRenderBody (renderBody);	
+		
 				if (type == 'internal2') {
 					var body2 = JSM.GenerateCuboid (1, 1, 1);
-					var renderMeshes2 = JSM.ConvertBodyToRenderMeshes (body2);
+					var renderBody2 = JSM.ConvertBodyToRenderBody (body2);
 					var transformation = new JSM.Transformation ();
 					transformation.Append (JSM.RotationZTransformation (20.0 * JSM.DegRad));
 					transformation.Append (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
-					renderMeshes2[0].SetTransformation (transformation);
-					viewer.AddMeshes (renderMeshes2);
+					renderBody2.SetTransformation (transformation);
+					viewer.AddRenderBody (renderBody2);
 				}
 				
 				viewer.Draw ();

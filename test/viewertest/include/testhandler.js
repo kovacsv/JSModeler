@@ -37,8 +37,8 @@ function AddBodyToViewer (viewer, mode, body, materials, info)
 		var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
 		viewer.AddMeshes (meshes);
 	} else if (mode == 'internal') {
-		var renderGeometries = JSM.ConvertBodyToRenderMeshes (body, materials);
-		viewer.AddMeshes (renderGeometries);	
+		var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
+		viewer.AddRenderBody (renderBody);	
 	}
 	SetInfoString (viewer, info);
 
@@ -60,8 +60,8 @@ function AddModelToViewer (viewer, mode, model, materials, info)
 		var meshes = JSM.ConvertModelToThreeMeshes (model, materials, conversionData);
 		viewer.AddMeshes (meshes);
 	} else if (mode == 'internal') {
-		var renderGeometries = JSM.ConvertModelToRenderMeshes (model, materials);
-		viewer.AddMeshes (renderGeometries);	
+		var renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
+		viewer.AddRenderBodies (renderBodies);	
 	}	
 
 	SetInfoString (viewer, info);
