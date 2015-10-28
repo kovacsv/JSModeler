@@ -14,9 +14,7 @@ JSM.ConvertBodyToRenderBody = function (body, materials)
 		var renderSpecular = JSM.HexColorToNormalizedRGBComponents (material.specular);
 		var renderMaterial = new JSM.RenderMaterial (renderAmbient, renderDiffuse, renderSpecular, material.shininess, material.opacity, material.texture, material.textureWidth, material.textureHeight);
 
-		var mesh = new JSM.RenderMesh ();
-		mesh.SetMaterial (renderMaterial);
-
+		var mesh = new JSM.RenderMesh (renderMaterial);
 		mesh.SetVertexArray (vertices);
 		mesh.SetNormalArray (normals);
 		if (material.texture !== null) {

@@ -44,9 +44,9 @@ JSM.RenderMaterial = function (ambient, diffuse, specular, shininess, opacity, t
 	}
 };
 
-JSM.RenderMesh = function ()
+JSM.RenderMesh = function (material)
 {
-	this.material = null;
+	this.material = material;
 	
 	this.vertexArray = null;
 	this.normalArray = null;
