@@ -127,5 +127,8 @@ JSM.Viewer.prototype.Resize = function ()
 
 JSM.Viewer.prototype.Draw = function ()
 {
+	var light = this.renderer.light;
+	var camera = this.renderer.camera;
+	light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
 	this.renderer.Render ();
 };

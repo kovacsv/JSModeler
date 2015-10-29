@@ -403,7 +403,6 @@ JSM.Renderer.prototype.Render = function ()
 	
 	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
 	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
-	this.light.direction = JSM.CoordSub (this.camera.center, this.camera.eye).Normalize ();
 
 	DrawMeshes (this, JSM.RenderMaterialType.Normal, this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialType.Textured, this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
