@@ -156,6 +156,21 @@
 			}, 'references/cube_default_material.png');
 
 			canvasTester.AddTest (function (renderFinished)	{
+				var basePoints = [
+					new JSM.Coord (0.0, 0.0, -0.5),
+					new JSM.Coord (0.0, 1.0, -0.5),
+					new JSM.Coord (-1.0, 1.0, -0.5),
+					new JSM.Coord (-1.0, -1.0, -0.5),
+					new JSM.Coord (1.0, -1.0, -0.5),
+					new JSM.Coord (1.0, 0.0, -0.5)
+				];
+				
+				var direction = new JSM.Vector (0.0, 0.0, 1.0);
+				var body = JSM.GeneratePrism (basePoints, direction, 1.0, true, null);
+				RenderBody (viewer, body, null, renderFinished);
+			}, 'references/prism_default_material.png');
+
+			canvasTester.AddTest (function (renderFinished)	{
 				var body = JSM.GenerateCuboidSides (1, 1, 1, [0, 0, 1, 1, 1, 0]);
 				RenderBody (viewer, body, null, renderFinished);
 			}, 'references/cube_sides.png');

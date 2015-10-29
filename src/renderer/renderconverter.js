@@ -1,4 +1,4 @@
-JSM.ConvertBodyToRenderBody = function (body, materials)
+JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 {
 	function OnGeometryStart ()
 	{
@@ -41,8 +41,15 @@ JSM.ConvertBodyToRenderBody = function (body, materials)
 		}
 	}
 	
+	var hasConvexPolygons = false;
+	if (parameters !== undefined && parameters !== null) {
+		if (parameters.hasConvexPolygons !== undefined) {
+			hasConvexPolygons = parameters.hasConvexPolygons;
+		}
+	}
+	
 	var explodeData = {
-		hasConvexPolygons : false,
+		hasConvexPolygons : hasConvexPolygons,
 		onGeometryStart : OnGeometryStart,
 		onGeometryEnd : OnGeometryEnd,
 		onTriangle : OnTriangle
@@ -58,13 +65,14 @@ JSM.ConvertBodyToRenderBody = function (body, materials)
 	return renderBody;
 };
 
-JSM.ConvertModelToRenderBodies = function (model, materials)
+JSM.ConvertModelToRenderBodies = function (model, materials, parameters)
 {
 	var bodies = [];
-	var i, body;
+	var i, body, renderBody;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		bodies.push (JSM.ConvertBodyToRenderBody (body, materials));
+		renderBody = JSM.ConvertBodyToRenderBody (body, materials, parameters);
+		bodies.push (renderBody);
 	}
 	return bodies;
 };
