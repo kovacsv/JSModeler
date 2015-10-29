@@ -43,7 +43,7 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 	
 	var hasConvexPolygons = false;
 	if (parameters !== undefined && parameters !== null) {
-		if (parameters.hasConvexPolygons !== undefined) {
+		if (parameters.hasConvexPolygons !== undefined && parameters.hasConvexPolygons !== null) {
 			hasConvexPolygons = parameters.hasConvexPolygons;
 		}
 	}
