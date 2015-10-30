@@ -2,7 +2,7 @@ JSM.Renderer = function ()
 {
 	this.canvas = null;
 	this.context = null;
-	this.shaders = null;
+	this.shader = null;
 	
 	this.light = null;
 	this.bodies = null;
@@ -66,8 +66,8 @@ JSM.Renderer.prototype.InitContext = function (canvas)
 
 JSM.Renderer.prototype.InitShaders = function ()
 {
-	this.shaders = new JSM.ShaderStore (this.context);
-	return this.shaders.Init ();
+	this.shader = new JSM.ShaderProgram (this.context);
+	return this.shader.Init ();
 };
 
 JSM.Renderer.prototype.InitBodies = function ()
@@ -189,64 +189,20 @@ JSM.Renderer.prototype.Render = function (camera)
 			return null;
 		}
 		
-		function SwitchToShader (context, shader, light, viewMatrix, projectionMatrix)
-		{
-			context.useProgram (shader);
-			
-			context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
-			context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
-
-			context.uniform3f (shader.lightDirectionUniform, light.direction.x, light.direction.y, light.direction.z);
-			context.uniform3f (shader.lightAmbientColorUniform, light.ambient[0], light.ambient[1], light.ambient[2]);
-			context.uniform3f (shader.lightDiffuseColorUniform, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
-			context.uniform3f (shader.lightSpecularColorUniform, light.specular[0], light.specular[1], light.specular[2]);
-		}
-		
-		function DrawMesh (context, shader, mesh, matrix)
-		{
-			var material = mesh.material;
-			context.uniform3f (shader.polygonAmbientColorUniform, material.ambient[0], material.ambient[1], material.ambient[2]);
-			context.uniform3f (shader.polygonDiffuseColorUniform, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
-			context.uniform3f (shader.polygonSpecularColorUniform, material.specular[0], material.specular[1], material.specular[2]);
-			context.uniform1f (shader.polygonShininessUniform, material.shininess);
-			context.uniform1f (shader.polygonOpacityUniform, material.opacity);
-
-			context.uniformMatrix4fv (shader.tMatrixUniform, false, matrix);
-
-			var vertexBuffer = mesh.GetVertexBuffer ();
-			context.bindBuffer (context.ARRAY_BUFFER, vertexBuffer);
-			context.enableVertexAttribArray (shader.vertexPositionAttribute);
-			context.vertexAttribPointer (shader.vertexPositionAttribute, vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
-			
-			var normalBuffer = mesh.GetNormalBuffer ();
-			context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
-			context.enableVertexAttribArray (shader.vertexNormalAttribute);
-			context.vertexAttribPointer (shader.vertexNormalAttribute, normalBuffer.itemSize, context.FLOAT, false, 0, 0);
-
-			var uvBuffer = mesh.GetUVBuffer ();
-			if (uvBuffer !== null) {
-				context.activeTexture (context.TEXTURE0);
-				context.bindTexture (context.TEXTURE_2D, mesh.material.textureBuffer);
-				context.bindBuffer (context.ARRAY_BUFFER, uvBuffer);
-				context.vertexAttribPointer (shader.vertexUVAttribute, uvBuffer.itemSize, context.FLOAT, false, 0, 0);
-				context.enableVertexAttribArray (shader.vertexUVAttribute);
-				context.uniform1i (shader.samplerUniform, 0);
-			}
-			
-			context.drawArrays (context.TRIANGLES, 0, vertexBuffer.numItems);
-		}
-
 		var shaderType = MaterialTypeToShaderType (materialType);
-		var shader = renderer.shaders.GetShader (shaderType);
 		var modifyParams = true;
 		renderer.EnumerateBodies (function (body) {
 			var matrix = body.GetTransformationMatrix ();
 			body.EnumerateTypedMeshes (materialType, function (mesh) {
 				if (modifyParams) {
-					SwitchToShader (renderer.context, shader, renderer.light, viewMatrix, projectionMatrix);
+					renderer.shader.UseShader (shaderType);
+					renderer.shader.SetParameters (renderer.light, viewMatrix, projectionMatrix);
 					modifyParams = false;
 				}
-				DrawMesh (renderer.context, shader, mesh, matrix);
+				var vertexBuffer = mesh.GetVertexBuffer ();
+				var normalBuffer = mesh.GetNormalBuffer ();
+				var uvBuffer = mesh.GetUVBuffer ();
+				renderer.shader.DrawArrays (mesh.material, matrix, vertexBuffer, normalBuffer, uvBuffer);
 			});
 		});
 	}

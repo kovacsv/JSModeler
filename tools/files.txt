@@ -58,7 +58,7 @@
 ../src/extras/curves.js
 ../src/renderer/webglutils.js
 ../src/renderer/renderdata.js
-../src/renderer/shaderstore.js
+../src/renderer/shaderprogram.js
 ../src/renderer/renderer.js
 ../src/renderer/pointcloudrenderer.js
 ../src/renderer/renderconverter.js

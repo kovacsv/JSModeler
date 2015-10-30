@@ -3,13 +3,14 @@ JSM.ShaderType = {
 	Textured : 1
 };
 
-JSM.ShaderStore = function (context)
+JSM.ShaderProgram = function (context)
 {
 	this.context = context;
 	this.shaders = null;
+	this.current = null;
 };
 
-JSM.ShaderStore.prototype.Init = function ()
+JSM.ShaderProgram.prototype.Init = function ()
 {
 	function GetFragmentShaderScript (shaderType)
 	{
@@ -149,7 +150,60 @@ JSM.ShaderStore.prototype.Init = function ()
 	return true;
 };
 
-JSM.ShaderStore.prototype.GetShader = function (shaderType)
+JSM.ShaderProgram.prototype.GetShader = function (shaderType)
 {
 	return this.shaders[shaderType];
+};
+
+JSM.ShaderProgram.prototype.UseShader = function (shaderType)
+{
+	this.current = this.GetShader (shaderType);
+	this.context.useProgram (this.current);
+};
+
+JSM.ShaderProgram.prototype.SetParameters = function (light, viewMatrix, projectionMatrix)
+{
+	var context = this.context;
+	var shader = this.current;
+	
+	context.uniform3f (shader.lightDirectionUniform, light.direction.x, light.direction.y, light.direction.z);
+	context.uniform3f (shader.lightAmbientColorUniform, light.ambient[0], light.ambient[1], light.ambient[2]);
+	context.uniform3f (shader.lightDiffuseColorUniform, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
+	context.uniform3f (shader.lightSpecularColorUniform, light.specular[0], light.specular[1], light.specular[2]);
+
+	context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
+	context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
+};
+
+JSM.ShaderProgram.prototype.DrawArrays = function (material, matrix, vertexBuffer, normalBuffer, uvBuffer)
+{
+	var context = this.context;
+	var shader = this.current;
+	
+	context.uniform3f (shader.polygonAmbientColorUniform, material.ambient[0], material.ambient[1], material.ambient[2]);
+	context.uniform3f (shader.polygonDiffuseColorUniform, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+	context.uniform3f (shader.polygonSpecularColorUniform, material.specular[0], material.specular[1], material.specular[2]);
+	context.uniform1f (shader.polygonShininessUniform, material.shininess);
+	context.uniform1f (shader.polygonOpacityUniform, material.opacity);
+
+	context.uniformMatrix4fv (shader.tMatrixUniform, false, matrix);
+
+	context.bindBuffer (context.ARRAY_BUFFER, vertexBuffer);
+	context.enableVertexAttribArray (shader.vertexPositionAttribute);
+	context.vertexAttribPointer (shader.vertexPositionAttribute, vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
+	
+	context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
+	context.enableVertexAttribArray (shader.vertexNormalAttribute);
+	context.vertexAttribPointer (shader.vertexNormalAttribute, normalBuffer.itemSize, context.FLOAT, false, 0, 0);
+
+	if (uvBuffer !== null) {
+		context.activeTexture (context.TEXTURE0);
+		context.bindTexture (context.TEXTURE_2D, material.textureBuffer);
+		context.bindBuffer (context.ARRAY_BUFFER, uvBuffer);
+		context.vertexAttribPointer (shader.vertexUVAttribute, uvBuffer.itemSize, context.FLOAT, false, 0, 0);
+		context.enableVertexAttribArray (shader.vertexUVAttribute);
+		context.uniform1i (shader.samplerUniform, 0);
+	}
+	
+	context.drawArrays (context.TRIANGLES, 0, vertexBuffer.numItems);
 };
