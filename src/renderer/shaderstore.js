@@ -3,13 +3,14 @@ JSM.ShaderType = {
 	Textured : 1
 };
 
-JSM.ShaderStore = function ()
+JSM.ShaderStore = function (context)
 {
+	this.context = context;
 	this.shaders = null;
-	this.lastShaderType = -1;
+	this.lastShaderType = null;
 };
 
-JSM.ShaderStore.prototype.Init = function (context)
+JSM.ShaderStore.prototype.Init = function ()
 {
 	function GetFragmentShaderScript (shaderType)
 	{
@@ -138,11 +139,11 @@ JSM.ShaderStore.prototype.Init = function (context)
 	
 	this.shaders = {};
 	
-	if (!InitShader (context, this.shaders, JSM.ShaderType.Normal)) {
+	if (!InitShader (this.context, this.shaders, JSM.ShaderType.Normal)) {
 		return false;
 	}
 	
-	if (!InitShader (context, this.shaders, JSM.ShaderType.Textured)) {
+	if (!InitShader (this.context, this.shaders, JSM.ShaderType.Textured)) {
 		return false;
 	}
 
@@ -154,11 +155,11 @@ JSM.ShaderStore.prototype.GetShader = function (shaderType)
 	return this.shaders[shaderType];
 };
 
-JSM.ShaderStore.prototype.UseShader = function (context, shaderType)
+JSM.ShaderStore.prototype.UseShader = function (shaderType)
 {
 	if (shaderType !== this.lastShaderType) {
 		var shader = this.GetShader (shaderType);
-		context.useProgram (shader);
+		this.context.useProgram (shader);
 		this.lastShaderType = shaderType;
 		return true;
 	}

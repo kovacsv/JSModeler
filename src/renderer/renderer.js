@@ -66,8 +66,8 @@ JSM.Renderer.prototype.InitContext = function (canvas)
 
 JSM.Renderer.prototype.InitShaders = function ()
 {
-	this.shaders = new JSM.ShaderStore ();
-	return this.shaders.Init (this.context);
+	this.shaders = new JSM.ShaderStore (this.context);
+	return this.shaders.Init ();
 };
 
 JSM.Renderer.prototype.InitBodies = function ()
@@ -241,7 +241,7 @@ JSM.Renderer.prototype.Render = function (camera)
 			var matrix = body.GetTransformationMatrix ();
 			body.EnumerateTypedMeshes (materialType, function (mesh) {
 				if (modifyParams) {
-					renderer.shaders.UseShader (renderer.context, shaderType);
+					renderer.shaders.UseShader (shaderType);
 					SetShaderParameters (renderer.context, shader, renderer.light, viewMatrix, projectionMatrix);
 					modifyParams = false;
 				}
