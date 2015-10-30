@@ -7,7 +7,6 @@ JSM.ShaderStore = function (context)
 {
 	this.context = context;
 	this.shaders = null;
-	this.lastShaderType = null;
 };
 
 JSM.ShaderStore.prototype.Init = function ()
@@ -153,15 +152,4 @@ JSM.ShaderStore.prototype.Init = function ()
 JSM.ShaderStore.prototype.GetShader = function (shaderType)
 {
 	return this.shaders[shaderType];
-};
-
-JSM.ShaderStore.prototype.UseShader = function (shaderType)
-{
-	if (shaderType !== this.lastShaderType) {
-		var shader = this.GetShader (shaderType);
-		this.context.useProgram (shader);
-		this.lastShaderType = shaderType;
-		return true;
-	}
-	return false;
 };

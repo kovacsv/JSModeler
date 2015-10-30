@@ -188,9 +188,11 @@ JSM.Renderer.prototype.Render = function (camera)
 			}
 			return null;
 		}
-
-		function SetShaderParameters (context, shader, light, viewMatrix, projectionMatrix)
+		
+		function SwitchToShader (context, shader, light, viewMatrix, projectionMatrix)
 		{
+			context.useProgram (shader);
+			
 			context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
 			context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
 
@@ -241,8 +243,7 @@ JSM.Renderer.prototype.Render = function (camera)
 			var matrix = body.GetTransformationMatrix ();
 			body.EnumerateTypedMeshes (materialType, function (mesh) {
 				if (modifyParams) {
-					renderer.shaders.UseShader (shaderType);
-					SetShaderParameters (renderer.context, shader, renderer.light, viewMatrix, projectionMatrix);
+					SwitchToShader (renderer.context, shader, renderer.light, viewMatrix, projectionMatrix);
 					modifyParams = false;
 				}
 				DrawMesh (renderer.context, shader, mesh, matrix);
