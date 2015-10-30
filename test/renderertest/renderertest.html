@@ -419,6 +419,35 @@
 				
 				RenderModelAndWait (viewer, model, materials, renderFinished);
 			}, 'references/model_textures.png');
+			
+ 			canvasTester.AddTest (function (renderFinished)	{
+				var model = new JSM.Model ();
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcccc00, diffuse : 0xcccc00}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc00cc, diffuse : 0xcc00cc}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x00cccc, diffuse : 0x00cccc}));
+
+				var i, body;
+				for (i = 0; i < 6; i++) {
+					var body = JSM.GenerateCuboid (1, 1, (i + 1) / 4.0);
+					body.SetPolygonsMaterialIndex (i);
+					model.AddBody (body);
+				}
+				
+				RenderModel (viewer, model, materials, renderFinished, function (bodies) {
+					var i, body, transformation;
+					for (i = 0; i < 6; i++) {
+						body = bodies[i];
+						transformation = new JSM.Transformation ();
+						transformation.Append (JSM.TranslationTransformation (new JSM.Coord (2, 0, (i + 1) / 8.0)));
+						transformation.Append (JSM.RotationZTransformation (i * 60 * JSM.DegRad));
+						body.SetTransformation (transformation);
+					}
+				});
+			}, 'references/model_more_materials.png');			
 
 			canvasTester.Run ();
 		}
