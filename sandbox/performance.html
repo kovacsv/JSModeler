@@ -83,80 +83,80 @@
 	<script type="text/javascript" src="../src/three/threeconverter.js"></script>
 	<script type="text/javascript" src="../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
+
 	<title>Example</title>
 
 	<script type="text/javascript">
-		BSpline = function (dataPoints)
-		{
-			this.dataPoints = dataPoints;
-			this.parameterVector = this.GetParameterVectorChordLength ();
-			this.knotVector = this.GetKnotVectorByAverage (3);
-		};
-
-		BSpline.prototype.GetParameterVectorChordLength = function ()
-		{
-			var result = [];
-			var distances = [];
-			var fullDistance = 0.0;
-			var i, distance;
-			for (i = 0; i < this.dataPoints.length - 1; i++) {
-				distance = this.dataPoints[i].DistanceTo (this.dataPoints[i + 1]);
-				distances.push (distance);
-				fullDistance += distance;
-			}
-			var currentDistance = 0.0;
-			for (i = 0; i < distances.length; i++) {
-				result.push (currentDistance / fullDistance);
-				currentDistance += distances[i];
-			}
-			result.push (1.0);
-			return result;
-		};
-
-		BSpline.prototype.GetKnotVectorByAverage = function (degree)
-		{
-			var result = [];
-			var knotCount = this.parameterVector.length + degree + 1;
-			var i, j, sum;
-			for (i = 0; i < knotCount; i++) {
-				if (i <= degree) {
-					result.push (0.0);
-				} else if (i >= knotCount - degree - 1) {
-					result.push (1.0);
-				} else {
-					sum = 0.0;
-					for (j = i - degree; j <= i - 1; j++) {
-						sum = sum + this.parameterVector[j];
-					}
-					result.push (sum / degree);
-				}
-			}
-			return result;
-		};
+		var mode = null;
+		var viewer = null;
+		var renderBody = null;
+		var meshes = null;
 		
-		BSpline.prototype.GetValue = function (x)
+		var fps = new JSM.FPSCounter ();
+		function Render ()
 		{
-			
-		};
+			var i;
+			var steps = 1000;
+			for (i = 0; i < steps; i++) {
+				viewer.navigation.Orbit (5 / steps, 0);
+			}
 
-		function Load ()
+			viewer.Draw ();
+			requestAnimationFrame (Render);
+			document.getElementById ('fps').innerHTML = 'fps: ' + fps.Get (500);
+		}
+		
+		function LoadInternal ()
 		{
-			var canvas = document.getElementById ('example');
-			var s = new BSpline ([
-					new JSM.Coord2D (0, 0),
-					new JSM.Coord2D (1, 2),
-					new JSM.Coord2D (3, 4),
-					new JSM.Coord2D (4, 0)
-				]
+			mode = 0;
+			var camera = new JSM.Camera (
+				new JSM.Coord (10.0, 30.0, 20.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0.0, 0.0, 1.0)
 			);
+			
+			var light = new JSM.Light ();
+			
+			viewer = new JSM.Viewer ();
+			if (!viewer.Init (document.getElementById ('example'), camera, light)) {
+				alert ('error');
+			}
 
-			alert (s.parameterVector);
-			alert (s.knotVector);
+			var body = JSM.GenerateLegoBrick (20, 30, 1, 1, 1, 50, 1);
+			renderBody = JSM.ConvertBodyToRenderBody (body);
+			viewer.AddRenderBody (renderBody);
+			
+			Render ();
 		}
 	
+		function LoadThree ()
+		{
+			var viewerSettings = {
+				cameraEyePosition : [10.0, 30.0, 20.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
+
+			viewer = new JSM.ThreeViewer ();
+			if (!viewer.Start (document.getElementById ('example'), viewerSettings)) {
+				alert ('error');
+			}
+
+			var body = JSM.GenerateLegoBrick (20, 30, 1, 1, 1, 50, 1);
+			meshes = JSM.ConvertBodyToThreeMeshes (body);
+			viewer.AddMeshes (meshes);
+			
+			Render ();
+		}
+
 	    window.onload = function ()
 		{
-			Load ();			
+			mode = 0;
+			if (mode === 0) {
+				LoadInternal ();
+			} else if (mode === 1)  {
+				LoadThree ();
+			}
 		}
 	</script>
 
@@ -164,6 +164,7 @@
 
 <body>
 	<canvas id="example" width="800" height="500"></canvas>
+	<div id="fps"></div>
 </body>
 
 </html>

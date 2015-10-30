@@ -26,7 +26,6 @@ JSM.RenderMaterial = function (ambient, diffuse, specular, shininess, opacity, t
 	
 	this.textureBuffer = null;
 	this.textureImage = null;
-	this.textureLoaded = false;
 	
 	this.type = JSM.RenderMaterialType.Normal;
 	if (this.texture !== null) {

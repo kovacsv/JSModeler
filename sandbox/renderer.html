@@ -68,6 +68,7 @@
 	<script type="text/javascript" src="../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../src/renderer/webglutils.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderdata.js"></script>
+	<script type="text/javascript" src="../src/renderer/shaderstore.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
@@ -85,6 +86,7 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
+		var camera = null;
 		var renderer = null;
 		var a = 0.0;
 		
@@ -93,7 +95,7 @@
 		{
 			renderer.bodies[0].SetTransformation (JSM.RotationZTransformation (a * JSM.DegRad));
 		
-			renderer.Render ();
+			renderer.Render (camera);
 			a += 0.5;
 			requestAnimationFrame (Render);
 			document.getElementById ('fps').innerHTML = 'fps: ' + fps.Get (500);
@@ -101,14 +103,17 @@
 		
 		function Load ()
 		{
-			var camera = new JSM.Camera (
+			camera = new JSM.Camera (
 				new JSM.Coord (1.0, 3.0, 2.0),
 				new JSM.Coord (0.0, 0.0, 0.0),
 				new JSM.Coord (0.0, 0.0, 1.0)
 			);
-
+			
+			var light = new JSM.Light ();
+			light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
+			
 			renderer = new JSM.Renderer ();
-			if (!renderer.Init (document.getElementById ('example'), camera)) {
+			if (!renderer.Init (document.getElementById ('example'), light)) {
 				alert ('error');
 			}
 

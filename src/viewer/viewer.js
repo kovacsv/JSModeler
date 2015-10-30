@@ -1,35 +1,41 @@
 JSM.Viewer = function ()
 {
+	this.camera = null;
 	this.renderer = null;
 	this.navigation = null;
 };
 
 JSM.Viewer.prototype.Init = function (canvas, camera, light)
 {
-	if (!this.InitRenderer (canvas, camera, light)) {
+	if (!this.InitRenderer (canvas, light)) {
 		return false;
 	}
 
-	if (!this.InitNavigation ()) {
+	if (!this.InitNavigation (camera)) {
 		return false;
 	}
 
 	return true;
 };
 
-JSM.Viewer.prototype.InitRenderer = function (canvas, camera, light)
+JSM.Viewer.prototype.InitRenderer = function (canvas, light)
 {
 	this.renderer = new JSM.Renderer ();
-	if (!this.renderer.Init (canvas, camera, light)) {
+	if (!this.renderer.Init (canvas, light)) {
 		return false;
 	}
 	return true;
 };
 
-JSM.Viewer.prototype.InitNavigation = function ()
+JSM.Viewer.prototype.InitNavigation = function (camera)
 {
+	this.camera = JSM.ValueOrDefault (camera, new JSM.Camera ());
+	if (!this.camera) {
+		return false;
+	}
+
 	this.navigation = new JSM.Navigation ();
-	if (!this.navigation.Init (this.renderer.canvas, this.renderer.camera, this.Draw.bind (this), this.Resize.bind (this))) {
+	if (!this.navigation.Init (this.renderer.canvas, this.camera, this.Draw.bind (this), this.Resize.bind (this))) {
 		return false;
 	}
 	return true;
@@ -43,13 +49,13 @@ JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 
 JSM.Viewer.prototype.AddRenderBody = function (renderBody)
 {
-	this.renderer.AddRenderBody (renderBody);
+	this.renderer.AddRenderBody (renderBody, this.Draw.bind (this));
 	this.Draw ();
 };
 
 JSM.Viewer.prototype.AddRenderBodies = function (renderBodies)
 {
-	this.renderer.AddRenderBodies (renderBodies);
+	this.renderer.AddRenderBodies (renderBodies, this.Draw.bind (this));
 	this.Draw ();
 };
 
@@ -128,7 +134,7 @@ JSM.Viewer.prototype.Resize = function ()
 JSM.Viewer.prototype.Draw = function ()
 {
 	var light = this.renderer.light;
-	var camera = this.renderer.camera;
+	var camera = this.camera;
 	light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
-	this.renderer.Render ();
+	this.renderer.Render (camera);
 };

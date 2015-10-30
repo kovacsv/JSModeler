@@ -2,16 +2,13 @@ JSM.Renderer = function ()
 {
 	this.canvas = null;
 	this.context = null;
-	this.shader = null;
 	this.shaders = null;
 	
-	this.camera = null;
 	this.light = null;
-	
 	this.bodies = null;
 };
 
-JSM.Renderer.prototype.Init = function (canvas, camera, light)
+JSM.Renderer.prototype.Init = function (canvas, light)
 {
 	if (!JSM.IsWebGLEnabled ()) {
 		return false;
@@ -21,7 +18,7 @@ JSM.Renderer.prototype.Init = function (canvas, camera, light)
 		return false;
 	}
 
-	if (!this.InitView (camera, light)) {
+	if (!this.InitView (light)) {
 		return false;
 	}
 
@@ -69,160 +66,8 @@ JSM.Renderer.prototype.InitContext = function (canvas)
 
 JSM.Renderer.prototype.InitShaders = function ()
 {
-	function GetFragmentShaderScript (defineString)
-	{
-		var script = [
-			'#define ' + defineString,
-			'uniform highp vec3 uPolygonAmbientColor;',
-			'uniform highp vec3 uPolygonDiffuseColor;',
-			'uniform highp vec3 uPolygonSpecularColor;',
-			'uniform highp float uPolygonShininess;',
-			'uniform highp float uPolygonOpacity;',
-			
-			'uniform highp vec3 uLightAmbientColor;',
-			'uniform highp vec3 uLightDiffuseColor;',
-			'uniform highp vec3 uLightSpecularColor;',
-
-			'varying highp vec3 vVertex;',
-			'varying highp vec3 vNormal;',
-			'varying highp vec3 vLight;',
-			
-			'#ifdef USETEXTURE',
-			'varying highp vec2 vUV;',
-			'uniform sampler2D uSampler;',
-			'#endif',
-			
-			'void main (void) {',
-			'	highp vec3 N = normalize (vNormal);',
-			'	if (!gl_FrontFacing) {',
-			'		N = -N;',
-			'	}',
-			'	highp vec3 L = normalize (-vLight);',
-			'	highp vec3 E = normalize (-vVertex);',
-			'	highp vec3 R = normalize (-reflect (L, N));',
-			'	highp vec3 ambientComponent = uPolygonAmbientColor * uLightAmbientColor;',
-			'	highp vec3 diffuseComponent = uPolygonDiffuseColor * uLightDiffuseColor * max (dot (N, L), 0.0);',
-			'	highp vec3 specularComponent = uPolygonSpecularColor * uLightSpecularColor * pow (max (dot (R, E), 0.0), uPolygonShininess);',
-			'#ifdef USETEXTURE',
-			'	highp vec3 textureColor = texture2D (uSampler, vec2 (vUV.s, vUV.t)).xyz;',
-			'	ambientComponent = ambientComponent * textureColor;',
-			'	diffuseComponent = diffuseComponent * textureColor;',
-			'	specularComponent = specularComponent * textureColor;',
-			'#endif',
-			'	ambientComponent = clamp (ambientComponent, 0.0, 1.0);',
-			'	diffuseComponent = clamp (diffuseComponent, 0.0, 1.0);',
-			'	specularComponent = clamp (specularComponent, 0.0, 1.0);',
-			'	gl_FragColor = vec4 (ambientComponent + diffuseComponent + specularComponent, uPolygonOpacity);',
-			'}'
-		].join('\n');
-		return script;
-	}
-	
-	function GetVertexShaderScript (defineString)
-	{
-		var script = [
-			'#define ' + defineString,
-			'attribute highp vec3 aVertexPosition;',
-			'attribute highp vec3 aVertexNormal;',
-
-			'uniform highp mat4 uViewMatrix;',
-			'uniform highp mat4 uProjectionMatrix;',
-			'uniform highp mat4 uTransformationMatrix;',
-			'uniform highp vec3 uLightDirection;',
-
-			'varying highp vec3 vVertex;',
-			'varying highp vec3 vNormal;',
-			'varying highp vec3 vLight;',
-
-			'#ifdef USETEXTURE',
-			'attribute highp vec2 aVertexUV;',
-			'varying highp vec2 vUV;',
-			'#endif',
-
-			'void main (void) {',
-			'	mat4 modelViewMatrix = uViewMatrix * uTransformationMatrix;',
-			'	vVertex = vec3 (modelViewMatrix * vec4 (aVertexPosition, 1.0));',
-			'	vNormal = normalize (vec3 (modelViewMatrix * vec4 (aVertexNormal, 0.0)));',
-			'	vLight = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
-			'#ifdef USETEXTURE',
-			'	vUV = aVertexUV;',
-			'#endif',
-			'	gl_Position = uProjectionMatrix * vec4 (vVertex, 1.0);',
-			'}'
-		].join('\n');
-		return script;
-	}
-
-	function InitShaderCommon (context, shader)
-	{
-		shader.vertexPositionAttribute = context.getAttribLocation (shader, 'aVertexPosition');
-		shader.vertexNormalAttribute = context.getAttribLocation (shader, 'aVertexNormal');
-
-		shader.lightAmbientColorUniform = context.getUniformLocation (shader, 'uLightAmbientColor');
-		shader.lightDiffuseColorUniform = context.getUniformLocation (shader, 'uLightDiffuseColor');
-		shader.lightSpecularColorUniform = context.getUniformLocation (shader, 'uLightSpecularColor');
-		shader.lightDirectionUniform = context.getUniformLocation (shader, 'uLightDirection');
-		
-		shader.vMatrixUniform = context.getUniformLocation (shader, 'uViewMatrix');
-		shader.pMatrixUniform = context.getUniformLocation (shader, 'uProjectionMatrix');
-		shader.tMatrixUniform = context.getUniformLocation (shader, 'uTransformationMatrix');
-
-		shader.polygonAmbientColorUniform = context.getUniformLocation (shader, 'uPolygonAmbientColor');
-		shader.polygonDiffuseColorUniform = context.getUniformLocation (shader, 'uPolygonDiffuseColor');
-		shader.polygonSpecularColorUniform = context.getUniformLocation (shader, 'uPolygonSpecularColor');
-		shader.polygonShininessUniform = context.getUniformLocation (shader, 'uPolygonShininess');
-		shader.polygonOpacityUniform = context.getUniformLocation (shader, 'uPolygonOpacity');
-	}
-	
-	function InitMainShader (context)
-	{
-		var vertexShaderScript = GetVertexShaderScript ('NOTEXTURE');
-		var fragmentShaderScript = GetFragmentShaderScript ('NOTEXTURE');
-		var shader = JSM.WebGLInitShaderProgram (context, vertexShaderScript, fragmentShaderScript, null);
-		if (shader === null) {
-			return null;
-		}
-		
-		context.useProgram (shader);
-		InitShaderCommon (context, shader);
-
-		return shader;
-	}
-
-	function InitTextureShader (context)
-	{
-		var vertexShaderScript = GetVertexShaderScript ('USETEXTURE');
-		var fragmentShaderScript = GetFragmentShaderScript ('USETEXTURE');
-		var shader = JSM.WebGLInitShaderProgram (context, vertexShaderScript, fragmentShaderScript, null);
-		if (shader === null) {
-			return null;
-		}
-		
-		context.useProgram (shader);
-		InitShaderCommon (context, shader);
-
-		shader.vertexUVAttribute = context.getAttribLocation (shader, 'aVertexUV');
-		shader.samplerUniform = context.getUniformLocation (shader, 'uSampler');
-
-		return shader;
-	}
-
-	this.shaders = {
-		normal : null,
-		texture : null
-	};
-	
-	this.shaders.normal = InitMainShader (this.context);
-	if (this.shaders.normal === null) {
-		return false;
-	}
-	
-	this.shaders.texture = InitTextureShader (this.context);
-	if (this.shaders.texture === null) {
-		return false;
-	}
-	
-	return true;
+	this.shaders = new JSM.ShaderStore ();
+	return this.shaders.Init (this.context);
 };
 
 JSM.Renderer.prototype.InitBodies = function ()
@@ -231,13 +76,8 @@ JSM.Renderer.prototype.InitBodies = function ()
 	return true;
 };
 
-JSM.Renderer.prototype.InitView = function (camera, light)
+JSM.Renderer.prototype.InitView = function (light)
 {
-	this.camera = JSM.ValueOrDefault (camera, new JSM.Camera ());
-	if (!this.camera) {
-		return false;
-	}
-
 	var theLight = JSM.ValueOrDefault (light, new JSM.Light ());
 	this.light = new JSM.RenderLight (theLight.ambient, theLight.diffuse, theLight.specular, theLight.direction);
 	if (!this.light) {
@@ -252,7 +92,7 @@ JSM.Renderer.prototype.SetClearColor = function (red, green, blue)
 	this.context.clearColor (red, green, blue, 1.0);
 };
 
-JSM.Renderer.prototype.AddRenderBody = function (renderBody)
+JSM.Renderer.prototype.AddRenderBody = function (renderBody, textureLoaded)
 {
 	function CompileMaterial (material, context, textureLoaded)
 	{
@@ -268,7 +108,6 @@ JSM.Renderer.prototype.AddRenderBody = function (renderBody)
 				context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, textureImage);
 				context.generateMipmap (context.TEXTURE_2D);
 				context.bindTexture (context.TEXTURE_2D, null);
-				material.textureLoaded = true;
 				if (textureLoaded !== undefined && textureLoaded !== null) {
 					textureLoaded ();
 				}
@@ -301,18 +140,18 @@ JSM.Renderer.prototype.AddRenderBody = function (renderBody)
 
 	var renderer = this;
 	renderBody.EnumerateMeshes (function (mesh) {
-		CompileMaterial (mesh.material, renderer.context, renderer.Render.bind (renderer));
+		CompileMaterial (mesh.material, renderer.context, textureLoaded);
 		CompileMesh (mesh, renderer.context);
 	});
 	this.bodies.push (renderBody);
 };
 
-JSM.Renderer.prototype.AddRenderBodies = function (renderBodies)
+JSM.Renderer.prototype.AddRenderBodies = function (renderBodies, textureLoaded)
 {
 	var i, body;
 	for (i = 0; i < renderBodies.length; i++) {
 		body = renderBodies[i];
-		this.AddRenderBody (body);
+		this.AddRenderBody (body, textureLoaded);
 	}
 };
 
@@ -336,11 +175,10 @@ JSM.Renderer.prototype.Resize = function ()
 	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 };
 
-JSM.Renderer.prototype.Render = function ()
+JSM.Renderer.prototype.Render = function (camera)
 {
-	function UseShader (context, shader, light, viewMatrix, projectionMatrix)
+	function SetShaderParameters (context, shader, light, viewMatrix, projectionMatrix)
 	{
-		context.useProgram (shader);
 		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
 		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
 
@@ -384,28 +222,41 @@ JSM.Renderer.prototype.Render = function ()
 		context.drawArrays (context.TRIANGLES, 0, vertexBuffer.numItems);
 	}
 	
-	function DrawMeshes (renderer, type, context, shader, light, viewMatrix, projectionMatrix)
+	function DrawMeshes (renderer, materialType, viewMatrix, projectionMatrix)
 	{
-		var shaderChanged = false;
+		function MaterialTypeToShaderType (materialType)
+		{
+			if (materialType == JSM.RenderMaterialType.Normal || materialType == JSM.RenderMaterialType.NormalTransparent) {
+				return JSM.ShaderType.Normal;
+			} else if (materialType == JSM.RenderMaterialType.Textured || materialType == JSM.RenderMaterialType.TexturedTransparent) {
+				return JSM.ShaderType.Textured;
+			}
+			return null;
+		}
+		
+		var shaderType = MaterialTypeToShaderType (materialType);
+		var shader = renderer.shaders.GetShader (shaderType);
+		var modifyParams = true;
 		renderer.EnumerateBodies (function (body) {
 			var matrix = body.GetTransformationMatrix ();
-			body.EnumerateTypedMeshes (type, function (mesh) {
-				if (!shaderChanged) {
-					UseShader (context, shader, light, viewMatrix, projectionMatrix);
-					shaderChanged = true;
+			body.EnumerateTypedMeshes (materialType, function (mesh) {
+				if (modifyParams) {
+					renderer.shaders.UseShader (renderer.context, shaderType);
+					SetShaderParameters (renderer.context, shader, renderer.light, viewMatrix, projectionMatrix);
+					modifyParams = false;
 				}
-				DrawMesh (context, shader, mesh, matrix);
+				DrawMesh (renderer.context, shader, mesh, matrix);
 			});
 		});
 	}
 	
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	
-	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
-	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
+	var viewMatrix = JSM.MatrixView (camera.eye, camera.center, camera.up);
+	var projectionMatrix = JSM.MatrixPerspective (camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, camera.nearClippingPlane, camera.farClippingPlane);
 
-	DrawMeshes (this, JSM.RenderMaterialType.Normal, this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.Textured, this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.NormalTransparent, this.context, this.shaders.normal, this.light, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.TexturedTransparent, this.context, this.shaders.texture, this.light, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.Normal, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.Textured, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.NormalTransparent, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.TexturedTransparent, viewMatrix, projectionMatrix);
 };
