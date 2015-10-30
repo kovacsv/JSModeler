@@ -177,51 +177,6 @@ JSM.Renderer.prototype.Resize = function ()
 
 JSM.Renderer.prototype.Render = function (camera)
 {
-	function SetShaderParameters (context, shader, light, viewMatrix, projectionMatrix)
-	{
-		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
-		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
-
-		context.uniform3f (shader.lightDirectionUniform, light.direction.x, light.direction.y, light.direction.z);
-		context.uniform3f (shader.lightAmbientColorUniform, light.ambient[0], light.ambient[1], light.ambient[2]);
-		context.uniform3f (shader.lightDiffuseColorUniform, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
-		context.uniform3f (shader.lightSpecularColorUniform, light.specular[0], light.specular[1], light.specular[2]);
-	}
-	
-	function DrawMesh (context, shader, mesh, matrix)
-	{
-		var material = mesh.material;
-		context.uniform3f (shader.polygonAmbientColorUniform, material.ambient[0], material.ambient[1], material.ambient[2]);
-		context.uniform3f (shader.polygonDiffuseColorUniform, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
-		context.uniform3f (shader.polygonSpecularColorUniform, material.specular[0], material.specular[1], material.specular[2]);
-		context.uniform1f (shader.polygonShininessUniform, material.shininess);
-		context.uniform1f (shader.polygonOpacityUniform, material.opacity);
-
-		context.uniformMatrix4fv (shader.tMatrixUniform, false, matrix);
-
-		var vertexBuffer = mesh.GetVertexBuffer ();
-		context.bindBuffer (context.ARRAY_BUFFER, vertexBuffer);
-		context.enableVertexAttribArray (shader.vertexPositionAttribute);
-		context.vertexAttribPointer (shader.vertexPositionAttribute, vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
-		
-		var normalBuffer = mesh.GetNormalBuffer ();
-		context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
-		context.enableVertexAttribArray (shader.vertexNormalAttribute);
-		context.vertexAttribPointer (shader.vertexNormalAttribute, normalBuffer.itemSize, context.FLOAT, false, 0, 0);
-
-		var uvBuffer = mesh.GetUVBuffer ();
-		if (uvBuffer !== null) {
-			context.activeTexture (context.TEXTURE0);
-			context.bindTexture (context.TEXTURE_2D, mesh.material.textureBuffer);
-			context.bindBuffer (context.ARRAY_BUFFER, uvBuffer);
-			context.vertexAttribPointer (shader.vertexUVAttribute, uvBuffer.itemSize, context.FLOAT, false, 0, 0);
-			context.enableVertexAttribArray (shader.vertexUVAttribute);
-			context.uniform1i (shader.samplerUniform, 0);
-		}
-		
-		context.drawArrays (context.TRIANGLES, 0, vertexBuffer.numItems);
-	}
-	
 	function DrawMeshes (renderer, materialType, viewMatrix, projectionMatrix)
 	{
 		function MaterialTypeToShaderType (materialType)
@@ -233,7 +188,52 @@ JSM.Renderer.prototype.Render = function (camera)
 			}
 			return null;
 		}
+
+		function SetShaderParameters (context, shader, light, viewMatrix, projectionMatrix)
+		{
+			context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
+			context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
+
+			context.uniform3f (shader.lightDirectionUniform, light.direction.x, light.direction.y, light.direction.z);
+			context.uniform3f (shader.lightAmbientColorUniform, light.ambient[0], light.ambient[1], light.ambient[2]);
+			context.uniform3f (shader.lightDiffuseColorUniform, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
+			context.uniform3f (shader.lightSpecularColorUniform, light.specular[0], light.specular[1], light.specular[2]);
+		}
 		
+		function DrawMesh (context, shader, mesh, matrix)
+		{
+			var material = mesh.material;
+			context.uniform3f (shader.polygonAmbientColorUniform, material.ambient[0], material.ambient[1], material.ambient[2]);
+			context.uniform3f (shader.polygonDiffuseColorUniform, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+			context.uniform3f (shader.polygonSpecularColorUniform, material.specular[0], material.specular[1], material.specular[2]);
+			context.uniform1f (shader.polygonShininessUniform, material.shininess);
+			context.uniform1f (shader.polygonOpacityUniform, material.opacity);
+
+			context.uniformMatrix4fv (shader.tMatrixUniform, false, matrix);
+
+			var vertexBuffer = mesh.GetVertexBuffer ();
+			context.bindBuffer (context.ARRAY_BUFFER, vertexBuffer);
+			context.enableVertexAttribArray (shader.vertexPositionAttribute);
+			context.vertexAttribPointer (shader.vertexPositionAttribute, vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
+			
+			var normalBuffer = mesh.GetNormalBuffer ();
+			context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
+			context.enableVertexAttribArray (shader.vertexNormalAttribute);
+			context.vertexAttribPointer (shader.vertexNormalAttribute, normalBuffer.itemSize, context.FLOAT, false, 0, 0);
+
+			var uvBuffer = mesh.GetUVBuffer ();
+			if (uvBuffer !== null) {
+				context.activeTexture (context.TEXTURE0);
+				context.bindTexture (context.TEXTURE_2D, mesh.material.textureBuffer);
+				context.bindBuffer (context.ARRAY_BUFFER, uvBuffer);
+				context.vertexAttribPointer (shader.vertexUVAttribute, uvBuffer.itemSize, context.FLOAT, false, 0, 0);
+				context.enableVertexAttribArray (shader.vertexUVAttribute);
+				context.uniform1i (shader.samplerUniform, 0);
+			}
+			
+			context.drawArrays (context.TRIANGLES, 0, vertexBuffer.numItems);
+		}
+
 		var shaderType = MaterialTypeToShaderType (materialType);
 		var shader = renderer.shaders.GetShader (shaderType);
 		var modifyParams = true;
