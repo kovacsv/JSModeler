@@ -1,6 +1,7 @@
-CanvasTester = function (canvas, testFinishedCallback, allTestsFinishedCallback)
+CanvasTester = function (canvas, tolerance, testFinishedCallback, allTestsFinishedCallback)
 {
 	this.canvas = canvas;
+	this.tolerance = tolerance;
 	this.testFinishedCallback = testFinishedCallback;
 	this.allTestsFinishedCallback = allTestsFinishedCallback;
 	this.allSuccess = true;
@@ -86,11 +87,11 @@ CanvasTester.prototype.EvaluateResult = function (testObject, resultImageData, r
 		return context.createImageData (width, height);			
 	}
 	
-	function EqualPixels (imageData1, imageData2, index)
+	function EqualPixels (imageData1, imageData2, index, tolerance)
 	{
 		var i;
 		for (i = 0; i < 4; i++) {
-			if (Math.abs (imageData1.data[index + i] - imageData2.data[index + i]) > 10) {
+			if (Math.abs (imageData1.data[index + i] - imageData2.data[index + i]) > tolerance) {
 				return false;
 			}
 		}
@@ -108,7 +109,7 @@ CanvasTester.prototype.EvaluateResult = function (testObject, resultImageData, r
 			differenceImageData = CreateImageData (referenceImageData.width, referenceImageData.height);
 			var i;
 			for (i = 0; i < resultImageData.data.length; i += 4) {
-				if (EqualPixels (referenceImageData, resultImageData, i)) {
+				if (EqualPixels (referenceImageData, resultImageData, i, this.tolerance)) {
 					differenceImageData.data[i + 0] = referenceImageData.data[i + 0];
 					differenceImageData.data[i + 1] = referenceImageData.data[i + 1];
 					differenceImageData.data[i + 2] = referenceImageData.data[i + 2];

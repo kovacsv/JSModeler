@@ -1,8 +1,7 @@
-CanvasTesterApp = function (canvas, resultsDivName)
+CanvasTesterApp = function (canvas, tolerance, resultsDivName)
 {
-	this.canvas = canvas;
 	this.resultsDiv = document.getElementById (resultsDivName);
-	this.canvasTester = new CanvasTester (canvas, this.TestFinished.bind (this), this.AllTestsFinished.bind (this));
+	this.canvasTester = new CanvasTester (canvas, tolerance, this.TestFinished.bind (this), this.AllTestsFinished.bind (this));
 };
 
 CanvasTesterApp.prototype.AddTest = function (renderCallback, referenceImage)
