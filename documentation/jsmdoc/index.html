@@ -98,7 +98,7 @@
 			if (content.example !== undefined) {
 				indented.appendChild (CreateElement ('div', isMember ? 'doctitle4' : 'doctitle2', 'example'));
 				var example = CreateElement ('div', 'moreindented');
-				example.appendChild (CreateElement ('pre', 'example; brush: js; toolbar: false;', content.example));
+				example.appendChild (CreateElement ('pre', 'brush: js; toolbar: false;', content.example));
 				indented.appendChild (example);
 			}
 			parentDiv.appendChild (indented);
