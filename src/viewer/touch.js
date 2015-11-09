@@ -50,8 +50,12 @@ JSM.Touch.prototype.SetCurrent = function (event, div)
 		var currX = touch.pageX;
 		var currY = touch.pageY;
 		if (div !== undefined && div.offsetLeft !== undefined && div.offsetTop !== undefined) {
-			currX = currX - div.offsetLeft;
-			currY = currY - div.offsetTop;
+			currX -= div.offsetLeft;
+			currY -= div.offsetTop;
+		}
+		if (window.pageXOffset !== undefined && window.pageYOffset !== undefined) {
+			currX += window.pageXOffset;
+			currY += window.pageYOffset;
 		}
 		return new JSM.Coord2D (currX, currY);
 	}
