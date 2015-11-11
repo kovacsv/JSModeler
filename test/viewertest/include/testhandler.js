@@ -3,7 +3,7 @@ function ClearViewer (viewer, mode, info)
 	if (mode == 'three') {
 		viewer.RemoveMeshes ();
 	} else if (mode == 'internal') {
-		viewer.RemoveMeshes ();
+		viewer.RemoveBodies ();
 	}
 	info.innerHTML = '';
 	viewer.Draw ();
