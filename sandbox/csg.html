@@ -135,9 +135,6 @@
 			var body = JSM.BooleanOperation ('Difference', aBody, bBody);
 			timer.Stop ();
 
-			//body = JSM.MergeCoplanarPolygons (body);
-			//JSM.GenerateRandomMaterials (body, materials);
-			
 			logDiv.innerHTML += 'Vertex count: '  + body.VertexCount () + '<br>';
 			logDiv.innerHTML += 'Polygon count: '  + body.PolygonCount () + '<br>';
 			logDiv.innerHTML += 'Operation time: '  + timer.Result () + '<br>';

@@ -116,8 +116,6 @@
 			var body = JSM.BooleanOperation ('Difference', aBody, bBody);
 			timer.Stop ();
 
-			//body = JSM.MergeCoplanarPolygons (body);
-
 			var materials = new JSM.Materials ();
 			JSM.GenerateRandomMaterials (body, materials);
 			
