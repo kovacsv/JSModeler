@@ -1,0 +1,62 @@
+html, body
+{
+	color : #000000;
+	background : #ffffff;
+	font-size : 12px;
+	font-family : Arial, cursive;
+	margin : 0px;
+	padding : 0px;
+}
+
+#frame
+{
+	width : 600px;
+	margin : 0px auto;
+}
+
+#renderertest
+{
+
+}
+
+div.resulttitle
+{
+	padding : 5px 10px;
+	margin-bottom : 5px;
+	cursor : pointer;
+}
+
+div.resulttitle.success
+{
+	color : #008800;
+	background : #eeffee;
+	border : 1px solid #00aa00;
+}
+
+div.resulttitle.failure
+{
+	color : #880000;
+	background : #ffeeee;
+	border : 1px solid #aa0000;
+}
+
+div.allresult
+{
+	font-size : 17px;
+	padding : 5px 10px;
+}
+
+div.allresult.success
+{
+	color : #008800;
+}
+
+div.allresult.failure
+{
+	color : #880000;
+}
+
+div.resultimages
+{
+	display : none;
+}

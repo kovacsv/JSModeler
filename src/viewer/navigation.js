@@ -101,6 +101,10 @@ JSM.Navigation.prototype.SetOrbitCenter = function (orbitCenter)
 
 JSM.Navigation.prototype.FitInWindow = function (center, radius)
 {
+	if (JSM.IsZero (radius)) {
+		return;
+	}
+	
 	var offsetToOrigo = JSM.CoordSub (this.camera.center, center);
 	this.camera.center = center;
 	this.camera.eye = JSM.CoordSub (this.camera.eye, offsetToOrigo);

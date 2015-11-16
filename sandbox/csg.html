@@ -67,7 +67,8 @@
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../src/renderer/webglutils.js"></script>
-	<script type="text/javascript" src="../src/renderer/rendergeometry.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderdata.js"></script>
+	<script type="text/javascript" src="../src/renderer/shaderprogram.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
@@ -134,9 +135,6 @@
 			var body = JSM.BooleanOperation ('Difference', aBody, bBody);
 			timer.Stop ();
 
-			//body = JSM.MergeCoplanarPolygons (body);
-			//JSM.GenerateRandomMaterials (body, materials);
-			
 			logDiv.innerHTML += 'Vertex count: '  + body.VertexCount () + '<br>';
 			logDiv.innerHTML += 'Polygon count: '  + body.PolygonCount () + '<br>';
 			logDiv.innerHTML += 'Operation time: '  + timer.Result () + '<br>';

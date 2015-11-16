@@ -67,7 +67,8 @@
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
 	<script type="text/javascript" src="../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../src/renderer/webglutils.js"></script>
-	<script type="text/javascript" src="../src/renderer/rendergeometry.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderdata.js"></script>
+	<script type="text/javascript" src="../src/renderer/shaderprogram.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
@@ -82,86 +83,80 @@
 	<script type="text/javascript" src="../src/three/threeconverter.js"></script>
 	<script type="text/javascript" src="../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
-	<script type="text/javascript" src="smartbuilder.js"></script>
+
 	<title>Example</title>
 
 	<script type="text/javascript">
+		var mode = null;
 		var viewer = null;
-
-		function Load ()
+		var renderBody = null;
+		var meshes = null;
+		
+		var fps = new JSM.FPSCounter ();
+		function Render ()
 		{
-			var TextureLoaded = function () {
-				viewer.Draw ();
-			};
+			var i;
+			var steps = 1000;
+			for (i = 0; i < steps; i++) {
+				viewer.navigation.Orbit (5 / steps, 0);
+			}
 
+			viewer.Draw ();
+			requestAnimationFrame (Render);
+			document.getElementById ('fps').innerHTML = 'fps: ' + fps.Get (500);
+		}
+		
+		function LoadInternal ()
+		{
+			mode = 0;
+			var camera = new JSM.Camera (
+				new JSM.Coord (10.0, 30.0, 20.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0.0, 0.0, 1.0)
+			);
+			
+			var light = new JSM.Light ();
+			
+			viewer = new JSM.Viewer ();
+			if (!viewer.Init (document.getElementById ('example'), camera, light)) {
+				alert ('error');
+			}
+
+			var body = JSM.GenerateLegoBrick (20, 30, 1, 1, 1, 50, 1);
+			renderBody = JSM.ConvertBodyToRenderBody (body);
+			viewer.AddRenderBody (renderBody);
+			
+			Render ();
+		}
+	
+		function LoadThree ()
+		{
 			var viewerSettings = {
-				cameraEyePosition : [-2.0, -1.5, 1.0],
+				cameraEyePosition : [10.0, 30.0, 20.0],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
 				cameraUpVector : [0, 0, 1]
 			};
 
 			viewer = new JSM.ThreeViewer ();
-			viewer.Start (document.getElementById ('example'), viewerSettings);
-			
-			var builder = new JSM.BodySmartBuilder (new JSM.Box (new JSM.Coord (-2, -2, -2), new JSM.Coord (2, 2, 2)));
-
-			builder.AddPolygon ([
-				new JSM.Coord (0, 0, 0),
-				new JSM.Coord (0.5, 0, 0),
-				new JSM.Coord (0.5, 1, 0),
-				new JSM.Coord (0, 1, 0)
-			]);
-
-			builder.AddPolygon ([
-				new JSM.Coord (0.5, 0.25, 0),
-				new JSM.Coord (1.0, 0.25, 0),
-				new JSM.Coord (1.0, 0.75, 0),
-				new JSM.Coord (0.5, 0.75, 0)
-			]);
-
-			//builder.AddPolygon ([
-			//	new JSM.Coord (0.5, 0.0, 0),
-			//	new JSM.Coord (1.0, 0.0, 0),
-			//	new JSM.Coord (1.0, 0.25, 0),
-			//	new JSM.Coord (0.5, 0.25, 0)
-			//]);
-			//
-			//builder.AddPolygon ([
-			//	new JSM.Coord (0.5, 0.75, 0),
-			//	new JSM.Coord (1.0, 0.75, 0),
-			//	new JSM.Coord (1.0, 1.0, 0),
-			//	new JSM.Coord (0.5, 1.0, 0)
-			//]);
-            //
-			//builder.AddPolygon ([
-			//	new JSM.Coord (1.0, 0.0, 0),
-			//	new JSM.Coord (1.5, 0.0, 0),
-			//	new JSM.Coord (1.5, 1.0, 0),
-			//	new JSM.Coord (1.0, 1.0, 0)
-			//]);
-
-			var body = builder.GetBody ();
-			body = JSM.MergeCoplanarPolygons (body);
-			
-			var infoDiv = document.getElementById ('info');
-			infoDiv.innerHTML =
-				"Vertex count: " + body.VertexCount () + '<br>' +
-				"Polygon count: " + body.PolygonCount ()
-			;
-			
-			var materials = new JSM.Materials ();
-			JSM.GenerateRandomMaterials (body, materials, true);
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
+			if (!viewer.Start (document.getElementById ('example'), viewerSettings)) {
+				alert ('error');
 			}
 
-			viewer.Draw ();
+			var body = JSM.GenerateLegoBrick (20, 30, 1, 1, 1, 50, 1);
+			meshes = JSM.ConvertBodyToThreeMeshes (body);
+			viewer.AddMeshes (meshes);
+			
+			Render ();
 		}
-	
+
 	    window.onload = function ()
 		{
-			Load ();			
+			mode = 0;
+			if (mode === 0) {
+				LoadInternal ();
+			} else if (mode === 1)  {
+				LoadThree ();
+			}
 		}
 	</script>
 
@@ -169,7 +164,7 @@
 
 <body>
 	<canvas id="example" width="800" height="500"></canvas>
-	<div id="info"></div>
+	<div id="fps"></div>
 </body>
 
 </html>
