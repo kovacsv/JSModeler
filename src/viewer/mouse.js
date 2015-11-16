@@ -58,8 +58,12 @@ JSM.Mouse.prototype.SetCurrent = function (eventParameters, div)
 	var currX = eventParameters.clientX;
 	var currY = eventParameters.clientY;
 	if (div !== undefined && div.offsetLeft !== undefined && div.offsetTop !== undefined) {
-		currX = currX - div.offsetLeft;
-		currY = currY - div.offsetTop;
+		currX -= div.offsetLeft;
+		currY -= div.offsetTop;
+	}
+	if (window.pageXOffset !== undefined && window.pageYOffset !== undefined) {
+		currX += window.pageXOffset;
+		currY += window.pageYOffset;
 	}
 	this.curr = new JSM.Coord2D (currX, currY);
 };

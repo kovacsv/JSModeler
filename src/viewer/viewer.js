@@ -1,35 +1,41 @@
 JSM.Viewer = function ()
 {
+	this.camera = null;
 	this.renderer = null;
 	this.navigation = null;
 };
 
 JSM.Viewer.prototype.Init = function (canvas, camera, light)
 {
-	if (!this.InitRenderer (canvas, camera, light)) {
+	if (!this.InitRenderer (canvas, light)) {
 		return false;
 	}
 
-	if (!this.InitNavigation ()) {
+	if (!this.InitNavigation (camera)) {
 		return false;
 	}
 
 	return true;
 };
 
-JSM.Viewer.prototype.InitRenderer = function (canvas, camera, light)
+JSM.Viewer.prototype.InitRenderer = function (canvas, light)
 {
 	this.renderer = new JSM.Renderer ();
-	if (!this.renderer.Init (canvas, camera, light)) {
+	if (!this.renderer.Init (canvas, light)) {
 		return false;
 	}
 	return true;
 };
 
-JSM.Viewer.prototype.InitNavigation = function ()
+JSM.Viewer.prototype.InitNavigation = function (camera)
 {
+	this.camera = JSM.ValueOrDefault (camera, new JSM.Camera ());
+	if (!this.camera) {
+		return false;
+	}
+
 	this.navigation = new JSM.Navigation ();
-	if (!this.navigation.Init (this.renderer.canvas, this.renderer.camera, this.Draw.bind (this), this.Resize.bind (this))) {
+	if (!this.navigation.Init (this.renderer.canvas, this.camera, this.Draw.bind (this), this.Resize.bind (this))) {
 		return false;
 	}
 	return true;
@@ -41,15 +47,21 @@ JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 	this.Draw ();
 };
 
-JSM.Viewer.prototype.AddGeometries = function (geometries)
+JSM.Viewer.prototype.AddRenderBody = function (renderBody)
 {
-	this.renderer.AddGeometries (geometries);
+	this.renderer.AddRenderBody (renderBody, this.Draw.bind (this));
 	this.Draw ();
 };
 
-JSM.Viewer.prototype.RemoveGeometries = function ()
+JSM.Viewer.prototype.AddRenderBodies = function (renderBodies)
 {
-	this.renderer.RemoveGeometries ();
+	this.renderer.AddRenderBodies (renderBodies, this.Draw.bind (this));
+	this.Draw ();
+};
+
+JSM.Viewer.prototype.RemoveBodies = function ()
+{
+	this.renderer.RemoveBodies ();
 	this.Draw ();
 };
 
@@ -71,19 +83,21 @@ JSM.Viewer.prototype.GetBoundingBox = function ()
 	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
 	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
 	
-	var i, j, geometry, vertex;
-	for (i = 0; i < this.renderer.geometries.length; i++) {
-		geometry = this.renderer.geometries[i];
-		for (j = 0; j < geometry.VertexCount (); j = j + 1) {
-			vertex = geometry.GetTransformedVertex (j);
-			min.x = JSM.Minimum (min.x, vertex.x);
-			min.y = JSM.Minimum (min.y, vertex.y);
-			min.z = JSM.Minimum (min.z, vertex.z);
-			max.x = JSM.Maximum (max.x, vertex.x);
-			max.y = JSM.Maximum (max.y, vertex.y);
-			max.z = JSM.Maximum (max.z, vertex.z);
-		}
-	}
+	this.renderer.EnumerateBodies (function (body) {
+		var transformation = body.GetTransformation ();
+		body.EnumerateMeshes (function (mesh) {
+			var i, vertex;
+			for (i = 0; i < mesh.VertexCount (); i++) {
+				vertex = mesh.GetTransformedVertex (i, transformation);
+				min.x = JSM.Minimum (min.x, vertex.x);
+				min.y = JSM.Minimum (min.y, vertex.y);
+				min.z = JSM.Minimum (min.z, vertex.z);
+				max.x = JSM.Maximum (max.x, vertex.x);
+				max.y = JSM.Maximum (max.y, vertex.y);
+				max.z = JSM.Maximum (max.z, vertex.z);
+			}
+		});
+	});
 
 	return new JSM.Box (min, max);
 };
@@ -93,18 +107,20 @@ JSM.Viewer.prototype.GetBoundingSphere = function ()
 	var center = this.GetCenter ();
 	var radius = 0.0;
 
-	var i, j, geometry, vertex, distance;
-	for (i = 0; i < this.renderer.geometries.length; i++) {
-		geometry = this.renderer.geometries[i];
-		for (j = 0; j < geometry.VertexCount (); j = j + 1) {
-			vertex = geometry.GetTransformedVertex (j);
-			distance = center.DistanceTo (vertex);
-			if (JSM.IsGreater (distance, radius)) {
-				radius = distance;
+	this.renderer.EnumerateBodies (function (body) {
+		var transformation = body.GetTransformation ();
+		body.EnumerateMeshes (function (mesh) {
+			var i, vertex, distance;
+			for (i = 0; i < mesh.VertexCount (); i++) {
+				vertex = mesh.GetTransformedVertex (i, transformation);
+				distance = center.DistanceTo (vertex);
+				if (JSM.IsGreater (distance, radius)) {
+					radius = distance;
+				}
 			}
-		}
-	}
-
+		});
+	});
+	
 	var sphere = new JSM.Sphere (center, radius);
 	return sphere;
 };
@@ -117,5 +133,8 @@ JSM.Viewer.prototype.Resize = function ()
 
 JSM.Viewer.prototype.Draw = function ()
 {
-	this.renderer.Render ();
+	var light = this.renderer.light;
+	var camera = this.camera;
+	light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
+	this.renderer.Render (camera);
 };

@@ -1,28 +1,27 @@
-JSM.ConvertBodyToRenderGeometries = function (body, materials)
+JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 {
-	function OnGeometryStart (material)
+	function OnGeometryStart ()
 	{
 		vertices = [];
 		normals = [];
 		uvs = [];
-
-		var renderAmbient = JSM.HexColorToNormalizedRGBComponents (material.ambient);
-		var renderDiffuse = JSM.HexColorToNormalizedRGBComponents (material.diffuse);
-		var renderSpecular = JSM.HexColorToNormalizedRGBComponents (material.specular);
-		var renderMaterial = new JSM.RenderMaterial (renderAmbient, renderDiffuse, renderSpecular, material.shininess, material.texture, material.textureWidth, material.textureHeight);
-
-		geometry = new JSM.RenderGeometry ();
-		geometry.SetMaterial (renderMaterial);
-		geometries.push (geometry);
 	}
 
 	function OnGeometryEnd (material)
 	{
-		geometry.SetVertexArray (vertices);
-		geometry.SetNormalArray (normals);
+		var renderAmbient = JSM.HexColorToNormalizedRGBComponents (material.ambient);
+		var renderDiffuse = JSM.HexColorToNormalizedRGBComponents (material.diffuse);
+		var renderSpecular = JSM.HexColorToNormalizedRGBComponents (material.specular);
+		var renderMaterial = new JSM.RenderMaterial (renderAmbient, renderDiffuse, renderSpecular, material.shininess, material.opacity, material.texture, material.textureWidth, material.textureHeight);
+
+		var mesh = new JSM.RenderMesh (renderMaterial);
+		mesh.SetVertexArray (vertices);
+		mesh.SetNormalArray (normals);
 		if (material.texture !== null) {
-			geometry.SetUVArray (uvs);
+			mesh.SetUVArray (uvs);
 		}
+
+		renderBody.AddMesh (mesh);
 	}
 
 	function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
@@ -42,34 +41,38 @@ JSM.ConvertBodyToRenderGeometries = function (body, materials)
 		}
 	}
 	
+	var hasConvexPolygons = false;
+	if (parameters !== undefined && parameters !== null) {
+		if (parameters.hasConvexPolygons !== undefined && parameters.hasConvexPolygons !== null) {
+			hasConvexPolygons = parameters.hasConvexPolygons;
+		}
+	}
+	
 	var explodeData = {
-		hasConvexPolygons : false,
+		hasConvexPolygons : hasConvexPolygons,
 		onGeometryStart : OnGeometryStart,
 		onGeometryEnd : OnGeometryEnd,
 		onTriangle : OnTriangle
 	};
 	
-	var geometries = [];
-	var geometry = null;
+	var renderBody = new JSM.RenderBody ();
 	
 	var vertices = null;
 	var normals = null;
 	var uvs = null;
 	
 	JSM.ExplodeBodyToTriangles (body, materials, explodeData);
-	return geometries;
+	return renderBody;
 };
 
-JSM.ConvertModelToRenderGeometries = function (model, materials)
+JSM.ConvertModelToRenderBodies = function (model, materials, parameters)
 {
-	var geometries = [];
-	var i, j, body;
+	var bodies = [];
+	var i, body, renderBody;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
-		var currentGeometries = JSM.ConvertBodyToRenderGeometries (body, materials, geometries);
-		for (j = 0; j < currentGeometries.length; j++) {
-			geometries.push (currentGeometries[j]);
-		}
+		renderBody = JSM.ConvertBodyToRenderBody (body, materials, parameters);
+		bodies.push (renderBody);
 	}
-	return geometries;
+	return bodies;
 };

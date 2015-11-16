@@ -1,21 +1,3 @@
-JSM.ResizeImageToPowerOfTwoSides = function (image)
-{
-	if (JSM.IsPowerOfTwo (image.width) && !JSM.IsPowerOfTwo (image.height)) {
-		return image;
-	}
-	
-	var width = JSM.NextPowerOfTwo (image.width);
-	var height = JSM.NextPowerOfTwo (image.height);
-
-	var canvas = document.createElement ('canvas');
-	canvas.width = width;
-	canvas.height = height;
-	
-	var context = canvas.getContext ('2d');
-	context.drawImage (image, 0, 0, width, height);
-	return context.getImageData (0, 0, width, height);
-};
-
 JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 {
 	function OnGeometryStart ()
@@ -125,8 +107,7 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 JSM.ConvertModelToThreeMeshes = function (model, materials, conversionData)
 {
 	var meshes = [];
-	var currentMeshes = [];
-	var i, j, body;
+	var i, j, body, currentMeshes;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);
 		currentMeshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);

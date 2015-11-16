@@ -1636,49 +1636,6 @@ textureSuite.AddTest ('BodyCylindricalTextureCoordTest', function (test)
 
 var utilsSuite = unitTest.AddTestSuite ('ModelerUtils');
 
-utilsSuite.AddTest ('MergeCoplanarPolygonsTest', function (test)
-{
-	var body = new JSM.Body ();
-	
-	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 0.0, 0.0)));
-	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 0.0, 0.0)));
-	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 0.5, 0.0)));
-	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 1.0, 0.0)));
-	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1.0, 1.5, 0.0)));
-	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, 0.0)));
-	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, -1.0)));
-	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 0.0, -1.0)));
-	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2]));
-	body.AddPolygon (new JSM.BodyPolygon ([0, 2, 3]));
-	body.AddPolygon (new JSM.BodyPolygon ([0, 3, 4]));
-	body.AddPolygon (new JSM.BodyPolygon ([0, 4, 5]));
-	body.AddPolygon (new JSM.BodyPolygon ([0, 5, 6]));
-	body.AddPolygon (new JSM.BodyPolygon ([0, 6, 7]));
-	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 7]));
-	test.Assert (body.VertexCount () == 8);
-	test.Assert (body.PolygonCount () == 7);
-
-	mergedBody = JSM.MergeCoplanarPolygons (body);
-	test.Assert (mergedBody.VertexCount () == 8);
-	test.Assert (mergedBody.PolygonCount () == 3);
-	
-	cylinder = JSM.GenerateCylinder (1.0, 1.0, 50, true);
-	triangulatedCylinder1 = JSM.TriangulatePolygons (cylinder);
-	triangulatedCylinder2 = JSM.TriangulateWithCentroids (cylinder);
-	mergedCylinder1 = JSM.MergeCoplanarPolygons (triangulatedCylinder1);
-	mergedCylinder2 = JSM.MergeCoplanarPolygons (triangulatedCylinder2);
-	test.Assert (cylinder.VertexCount () == 100);
-	test.Assert (cylinder.PolygonCount () == 52);
-	test.Assert (triangulatedCylinder1.VertexCount () == 100);
-	test.Assert (triangulatedCylinder1.PolygonCount () == 196);
-	test.Assert (triangulatedCylinder2.VertexCount () == 152);
-	test.Assert (triangulatedCylinder2.PolygonCount () == 300);
-	test.Assert (mergedCylinder1.VertexCount () == 100);
-	test.Assert (mergedCylinder1.PolygonCount () == 52);
-	test.Assert (mergedCylinder2.VertexCount () == 100);
-	test.Assert (mergedCylinder2.PolygonCount () == 52);
-});
-
 utilsSuite.AddTest ('AddBodyToBSPTreeTest', function (test)
 {
 	var body = new JSM.GenerateCuboid (1, 1, 1);

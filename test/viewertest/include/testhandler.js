@@ -3,7 +3,7 @@ function ClearViewer (viewer, mode, info)
 	if (mode == 'three') {
 		viewer.RemoveMeshes ();
 	} else if (mode == 'internal') {
-		viewer.RemoveGeometries ();
+		viewer.RemoveBodies ();
 	}
 	info.innerHTML = '';
 	viewer.Draw ();
@@ -37,8 +37,8 @@ function AddBodyToViewer (viewer, mode, body, materials, info)
 		var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
 		viewer.AddMeshes (meshes);
 	} else if (mode == 'internal') {
-		var renderGeometries = JSM.ConvertBodyToRenderGeometries (body, materials);
-		viewer.AddGeometries (renderGeometries);	
+		var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
+		viewer.AddRenderBody (renderBody);	
 	}
 	SetInfoString (viewer, info);
 
@@ -60,8 +60,8 @@ function AddModelToViewer (viewer, mode, model, materials, info)
 		var meshes = JSM.ConvertModelToThreeMeshes (model, materials, conversionData);
 		viewer.AddMeshes (meshes);
 	} else if (mode == 'internal') {
-		var renderGeometries = JSM.ConvertModelToRenderGeometries (model, materials);
-		viewer.AddGeometries (renderGeometries);	
+		var renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
+		viewer.AddRenderBodies (renderBodies);	
 	}	
 
 	SetInfoString (viewer, info);

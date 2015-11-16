@@ -2800,15 +2800,6 @@
 						["id", "anything", "the id for added polygons"]
 					]
 				},
-				"MergeCoplanarPolygons" : {
-					"description" : "Merges the coplanar polygons of a body.",
-					"parameters" : [
-						["body", "Body", "the body"]
-					],
-					"returns" : [
-						["Body", "the result"]
-					]
-				},
 				"CalculatePlanarTextureCoord" : {
 					"description" : "Calculates the planar texture coordinate for a coordinate.",
 					"parameters" : [
