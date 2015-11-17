@@ -30,7 +30,7 @@
 ../src/modeler/color.js
 ../src/modeler/light.js
 ../src/modeler/material.js
-../src/modeler/adjacencylist.js
+../src/modeler/adjacencyinfo.js
 ../src/modeler/bodyutils.js
 ../src/modeler/textureutils.js
 ../src/modeler/cututils.js
