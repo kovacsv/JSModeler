@@ -135,7 +135,7 @@ generalSuite.AddTest ('AdjacencyListTest', function (test)
 
 	var cube = JSM.GenerateCuboid (1, 1, 1);
 	test.Assert (JSM.CheckSolidBody (cube));
-	var al = JSM.CalculateAdjacencyInfo (cube);
+	var al = new JSM.AdjacencyInfo (cube);
 /*
 		 7__9__6
 		/|    /|

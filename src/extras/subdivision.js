@@ -116,7 +116,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 
 				centroid = pgonVertices[i];
 				currentEdgeVertex = edgeVertices[currentEdge.index];
-				originalVertex = JSM.GetPolyEdgeStartVertex (nextEdge, al);
+				originalVertex = al.GetPolyEdgeStartVertex (nextEdge);
 				nextEdgeVertex = edgeVertices[nextEdge.index];
 				
 				polygon = new JSM.BodyPolygon ([centroid, currentEdgeVertex, originalVertex, nextEdgeVertex]);
@@ -129,7 +129,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 	}
 
 	var result = new JSM.Body ();
-	var al = JSM.CalculateAdjacencyInfo (body);
+	var al = new JSM.AdjacencyInfo (body);
 
 	AddOriginalVertices ();
 
