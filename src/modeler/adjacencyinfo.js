@@ -74,7 +74,7 @@ JSM.AdjacencyInfo.prototype.Calculate = function (body)
 {
 	function AddVertex (adjacencyInfo)
 	{
-		vert = new JSM.VertInfo ();
+		var vert = new JSM.VertInfo ();
 		adjacencyInfo.verts.push (vert);
 	}
 	

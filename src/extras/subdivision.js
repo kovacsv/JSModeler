@@ -8,20 +8,20 @@
 */
 JSM.CatmullClarkSubdivisionOneIteration = function (body)
 {
-	function AddOriginalVertices ()
+	function AddOriginalVertices (body, result, adjacencyInfo)
 	{
 		var i, vertCoord;
-		for (i = 0; i < al.verts.length; i++) {
+		for (i = 0; i < adjacencyInfo.verts.length; i++) {
 			vertCoord = body.GetVertex (i).position;
 			result.AddVertex (new JSM.BodyVertex (new JSM.Coord (vertCoord.x, vertCoord.y, vertCoord.z)));
 		}
 	}
 
-	function AddPolygonVertices ()
+	function AddPolygonVertices (body, result, adjacencyInfo, pgonVertices)
 	{
 		var i, j, pgon, vertCoord, pgonCoord;
-		for (i = 0; i < al.pgons.length; i++) {
-			pgon = al.pgons[i];
+		for (i = 0; i < adjacencyInfo.pgons.length; i++) {
+			pgon = adjacencyInfo.pgons[i];
 			pgonCoord = new JSM.Coord (0.0, 0.0, 0.0);
 			for (j = 0; j < pgon.verts.length; j++) {
 				vertCoord = body.GetVertex (pgon.verts[j]).position;
@@ -33,12 +33,12 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 		}
 	}
 	
-	function AddEdgeVertices ()
+	function AddEdgeVertices (body, result, adjacencyInfo, pgonVertices, edgeVertices)
 	{
 		var edgeVertexWeight = 1.0 / 4.0;
 		var i, j, edge, edgeCoord1, edgeCoord2, edgeCoord, pgonIndex, pgonCoord;
-		for (i = 0; i < al.edges.length; i++) {
-			edge = al.edges[i];
+		for (i = 0; i < adjacencyInfo.edges.length; i++) {
+			edge = adjacencyInfo.edges[i];
 			edgeCoord1 = body.GetVertex (edge.vert1).position.Clone ().MultiplyScalar (edgeVertexWeight);
 			edgeCoord2 = body.GetVertex (edge.vert2).position.Clone ().MultiplyScalar (edgeVertexWeight);
 			edgeCoord = JSM.CoordAdd (edgeCoord1, edgeCoord2);
@@ -56,7 +56,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 		}
 	}
 
-	function MoveOriginalVertices ()
+	function MoveOriginalVertices (body, result, adjacencyInfo, pgonVertices)
 	{
 		function MoveVertex (f, r, n, vertCoord)
 		{
@@ -69,8 +69,8 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 		
 		var edge, edgeCoord;
 		var i, j;
-		for (i = 0; i < al.edges.length; i++) {
-			edge = al.edges[i];
+		for (i = 0; i < adjacencyInfo.edges.length; i++) {
+			edge = adjacencyInfo.edges[i];
 			edgeCoord = JSM.MidCoord (body.GetVertex (edge.vert1).position, body.GetVertex (edge.vert2).position);
 			edgeMidCoords.push (edgeCoord);
 		}
@@ -78,8 +78,8 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 		var vert, vertCoord, currentVertCoord;
 		var pgonVertexWeight, edgeMidCoordWeight;
 		var f, r, n;
-		for (i = 0; i < al.verts.length; i++) {
-			vert = al.verts[i];
+		for (i = 0; i < adjacencyInfo.verts.length; i++) {
+			vert = adjacencyInfo.verts[i];
 			f = new JSM.Coord (0.0, 0.0, 0.0);
 			r = new JSM.Coord (0.0, 0.0, 0.0);
 			
@@ -101,14 +101,14 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 		}
 	}
 	
-	function AddNewPolygons ()
+	function AddNewPolygons (body, result, adjacencyInfo, pgonVertices, edgeVertices)
 	{
 		var edgeCount, currentEdge, nextEdge;
 		var centroid, currentEdgeVertex, originalVertex, nextEdgeVertex;
 		var polygon, oldPolygon;
 		var i, j, pgon;
-		for (i = 0; i < al.pgons.length; i++) {
-			pgon = al.pgons[i];
+		for (i = 0; i < adjacencyInfo.pgons.length; i++) {
+			pgon = adjacencyInfo.pgons[i];
 			edgeCount = pgon.verts.length;
 			for (j = 0; j < edgeCount; j++) {
 				currentEdge = pgon.pedges[j];
@@ -116,7 +116,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 
 				centroid = pgonVertices[i];
 				currentEdgeVertex = edgeVertices[currentEdge.index];
-				originalVertex = al.GetPolyEdgeStartVertex (nextEdge);
+				originalVertex = adjacencyInfo.GetPolyEdgeStartVertex (nextEdge);
 				nextEdgeVertex = edgeVertices[nextEdge.index];
 				
 				polygon = new JSM.BodyPolygon ([centroid, currentEdgeVertex, originalVertex, nextEdgeVertex]);
@@ -129,18 +129,17 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 	}
 
 	var result = new JSM.Body ();
-	var al = new JSM.AdjacencyInfo (body);
-
-	AddOriginalVertices ();
+	var adjacencyInfo = new JSM.AdjacencyInfo (body);
 
 	var pgonVertices = [];
-	AddPolygonVertices ();
-	
 	var edgeVertices = [];
-	AddEdgeVertices ();
 
-	MoveOriginalVertices ();
-	AddNewPolygons ();
+	AddOriginalVertices (body, result, adjacencyInfo);
+	AddPolygonVertices (body, result, adjacencyInfo, pgonVertices);
+	AddEdgeVertices (body, result, adjacencyInfo, pgonVertices, edgeVertices);
+
+	MoveOriginalVertices (body, result, adjacencyInfo, pgonVertices);
+	AddNewPolygons (body, result, adjacencyInfo, pgonVertices, edgeVertices);
 	
 	return result;
 };

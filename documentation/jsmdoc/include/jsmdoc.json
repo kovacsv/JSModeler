@@ -2609,36 +2609,6 @@
 						["integer", "the hex value"]
 					]
 				},
-				"GetPolyEdgeStartVertex" : {
-					"description" : "Returns the start vertex index of a polygon edge.",
-					"parameters" : [
-						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
-						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
-					],
-					"returns" : [
-						["integer", "the result"]
-					]
-				},
-				"GetPolyEdgeEndVertex" : {
-					"description" : "Returns the end vertex index of a polygon edge.",
-					"parameters" : [
-						["polyEdge", "PolyEdgeInfo", "the polygon edge info"],
-						["adjacencyInfo", "AdjacencyInfo", "the adjacency info"]
-					],
-					"returns" : [
-						["integer", "the result"]
-					]
-				},
-				"GetAnotherPgonOfEdge" : {
-					"description" : "Returns the polygon index which is next to the current polygon along an edge.",
-					"parameters" : [
-						["edge", "EdgeInfo", "the edge info"],
-						["currentPgon", "integer", "the current polygon index"]
-					],
-					"returns" : [
-						["integer", "the result"]
-					]
-				},
 				"CalculateBodyVertexToPolygon" : {
 					"description" : "Calculates an array which contains array of the connected polygon indices for all vertex indices in the body. The result is an array of array of polygon indices.",
 					"parameters" : [
@@ -2646,15 +2616,6 @@
 					],
 					"returns" : [
 						["integer[*][*]", "the result"]
-					]
-				},
-				"CalculateAdjacencyInfo" : {
-					"description" : "Calculates the adjacency info for a body.",
-					"parameters" : [
-						["body", "Body", "the body"]
-					],
-					"returns" : [
-						["AdjacencyInfo", "the result"]
 					]
 				},
 				"IsSolidBody" : {
@@ -3853,7 +3814,46 @@
 					"description" : "Contains adjacency information for a body polygon. Contains arrays with indices of connected vertex and poly edge info."
 				},
 				"AdjacencyInfo" : {
-					"description" : "Contains adjacency information for a body. Contains arrays with vertex, edge and polygon info."
+					"description" : "Contains adjacency information for a body. Contains arrays with vertex, edge and polygon info.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"functions" : {
+						"Reset" : {
+							"description" : "Calculates the adjacency information for a body.",
+							"returns" : [
+								["body", "Body"]
+							]
+						},
+						"GetPolyEdgeStartVertex" : {
+							"description" : "Returns the start vertex index of a polygon edge.",
+							"parameters" : [
+								["polyEdge", "PolyEdgeInfo", "the polygon edge info"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetPolyEdgeEndVertex" : {
+							"description" : "Returns the end vertex index of a polygon edge.",
+							"parameters" : [
+								["polyEdge", "PolyEdgeInfo", "the polygon edge info"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetAnotherPgonOfEdge" : {
+							"description" : "Returns the polygon index which is next to the current polygon along an edge.",
+							"parameters" : [
+								["edge", "EdgeInfo", "the edge info"],
+								["currentPgon", "integer", "the current polygon index"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						}
+					}
 				},
 				"Camera" : {
 					"description" : "Represents a camera.",
