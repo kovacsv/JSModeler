@@ -135,7 +135,7 @@ generalSuite.AddTest ('AdjacencyListTest', function (test)
 
 	var cube = JSM.GenerateCuboid (1, 1, 1);
 	test.Assert (JSM.CheckSolidBody (cube));
-	var al = new JSM.AdjacencyInfo (cube);
+	var adjacencyInfo = new JSM.AdjacencyInfo (cube);
 /*
 		 7__9__6
 		/|    /|
@@ -164,100 +164,100 @@ generalSuite.AddTest ('AdjacencyListTest', function (test)
 	result.AddPolygon (new JSM.BodyPolygon ([0, 4, 5, 1]));
 	result.AddPolygon (new JSM.BodyPolygon ([3, 2, 6, 7]));
 */			
-	test.Assert (al.verts.length == 8);
+	test.Assert (adjacencyInfo.verts.length == 8);
 	
-	test.Assert (al.verts[0].pgons.length == 3);
-	test.Assert (al.verts[1].pgons.length == 3);
-	test.Assert (al.verts[2].pgons.length == 3);
-	test.Assert (al.verts[3].pgons.length == 3);
-	test.Assert (al.verts[4].pgons.length == 3);
-	test.Assert (al.verts[5].pgons.length == 3);
-	test.Assert (al.verts[6].pgons.length == 3);
-	test.Assert (al.verts[7].pgons.length == 3);
+	test.Assert (adjacencyInfo.verts[0].pgons.length == 3);
+	test.Assert (adjacencyInfo.verts[1].pgons.length == 3);
+	test.Assert (adjacencyInfo.verts[2].pgons.length == 3);
+	test.Assert (adjacencyInfo.verts[3].pgons.length == 3);
+	test.Assert (adjacencyInfo.verts[4].pgons.length == 3);
+	test.Assert (adjacencyInfo.verts[5].pgons.length == 3);
+	test.Assert (adjacencyInfo.verts[6].pgons.length == 3);
+	test.Assert (adjacencyInfo.verts[7].pgons.length == 3);
 	
-	test.Assert (al.verts[0].pgons[0] == 0 && al.verts[0].pgons[1] == 3 && al.verts[0].pgons[2] == 4);
-	test.Assert (al.verts[1].pgons[0] == 0 && al.verts[1].pgons[1] == 1 && al.verts[1].pgons[2] == 4);
-	test.Assert (al.verts[2].pgons[0] == 0 && al.verts[2].pgons[1] == 1 && al.verts[2].pgons[2] == 5);
-	test.Assert (al.verts[3].pgons[0] == 0 && al.verts[3].pgons[1] == 3 && al.verts[3].pgons[2] == 5);
-	test.Assert (al.verts[4].pgons[0] == 2 && al.verts[4].pgons[1] == 3 && al.verts[4].pgons[2] == 4);
-	test.Assert (al.verts[5].pgons[0] == 1 && al.verts[5].pgons[1] == 2 && al.verts[5].pgons[2] == 4);
-	test.Assert (al.verts[6].pgons[0] == 1 && al.verts[6].pgons[1] == 2 && al.verts[6].pgons[2] == 5);
-	test.Assert (al.verts[7].pgons[0] == 2 && al.verts[7].pgons[1] == 3 && al.verts[7].pgons[2] == 5);
+	test.Assert (adjacencyInfo.verts[0].pgons[0] == 0 && adjacencyInfo.verts[0].pgons[1] == 3 && adjacencyInfo.verts[0].pgons[2] == 4);
+	test.Assert (adjacencyInfo.verts[1].pgons[0] == 0 && adjacencyInfo.verts[1].pgons[1] == 1 && adjacencyInfo.verts[1].pgons[2] == 4);
+	test.Assert (adjacencyInfo.verts[2].pgons[0] == 0 && adjacencyInfo.verts[2].pgons[1] == 1 && adjacencyInfo.verts[2].pgons[2] == 5);
+	test.Assert (adjacencyInfo.verts[3].pgons[0] == 0 && adjacencyInfo.verts[3].pgons[1] == 3 && adjacencyInfo.verts[3].pgons[2] == 5);
+	test.Assert (adjacencyInfo.verts[4].pgons[0] == 2 && adjacencyInfo.verts[4].pgons[1] == 3 && adjacencyInfo.verts[4].pgons[2] == 4);
+	test.Assert (adjacencyInfo.verts[5].pgons[0] == 1 && adjacencyInfo.verts[5].pgons[1] == 2 && adjacencyInfo.verts[5].pgons[2] == 4);
+	test.Assert (adjacencyInfo.verts[6].pgons[0] == 1 && adjacencyInfo.verts[6].pgons[1] == 2 && adjacencyInfo.verts[6].pgons[2] == 5);
+	test.Assert (adjacencyInfo.verts[7].pgons[0] == 2 && adjacencyInfo.verts[7].pgons[1] == 3 && adjacencyInfo.verts[7].pgons[2] == 5);
 
-	test.Assert (al.verts[0].edges.length == 3);
-	test.Assert (al.verts[1].edges.length == 3);
-	test.Assert (al.verts[2].edges.length == 3);
-	test.Assert (al.verts[3].edges.length == 3);
-	test.Assert (al.verts[4].edges.length == 3);
-	test.Assert (al.verts[5].edges.length == 3);
-	test.Assert (al.verts[6].edges.length == 3);
-	test.Assert (al.verts[7].edges.length == 3);
+	test.Assert (adjacencyInfo.verts[0].edges.length == 3);
+	test.Assert (adjacencyInfo.verts[1].edges.length == 3);
+	test.Assert (adjacencyInfo.verts[2].edges.length == 3);
+	test.Assert (adjacencyInfo.verts[3].edges.length == 3);
+	test.Assert (adjacencyInfo.verts[4].edges.length == 3);
+	test.Assert (adjacencyInfo.verts[5].edges.length == 3);
+	test.Assert (adjacencyInfo.verts[6].edges.length == 3);
+	test.Assert (adjacencyInfo.verts[7].edges.length == 3);
 	
-	test.Assert (al.verts[0].edges[0] == 0 && al.verts[0].edges[1] == 3 && al.verts[0].edges[2] == 10);
-	test.Assert (al.verts[1].edges[0] == 1 && al.verts[1].edges[1] == 4 && al.verts[1].edges[2] == 0);
-	test.Assert (al.verts[2].edges[0] == 2 && al.verts[2].edges[1] == 1 && al.verts[2].edges[2] == 6);
-	test.Assert (al.verts[3].edges[0] == 3 && al.verts[3].edges[1] == 11 && al.verts[3].edges[2] == 2);
-	test.Assert (al.verts[4].edges[0] == 8 && al.verts[4].edges[1] == 10 && al.verts[4].edges[2] == 7);
-	test.Assert (al.verts[5].edges[0] == 5 && al.verts[5].edges[1] == 7 && al.verts[5].edges[2] == 4);
-	test.Assert (al.verts[6].edges[0] == 6 && al.verts[6].edges[1] == 5 && al.verts[6].edges[2] == 9);
-	test.Assert (al.verts[7].edges[0] == 9 && al.verts[7].edges[1] == 8 && al.verts[7].edges[2] == 11);
+	test.Assert (adjacencyInfo.verts[0].edges[0] == 0 && adjacencyInfo.verts[0].edges[1] == 3 && adjacencyInfo.verts[0].edges[2] == 10);
+	test.Assert (adjacencyInfo.verts[1].edges[0] == 1 && adjacencyInfo.verts[1].edges[1] == 4 && adjacencyInfo.verts[1].edges[2] == 0);
+	test.Assert (adjacencyInfo.verts[2].edges[0] == 2 && adjacencyInfo.verts[2].edges[1] == 1 && adjacencyInfo.verts[2].edges[2] == 6);
+	test.Assert (adjacencyInfo.verts[3].edges[0] == 3 && adjacencyInfo.verts[3].edges[1] == 11 && adjacencyInfo.verts[3].edges[2] == 2);
+	test.Assert (adjacencyInfo.verts[4].edges[0] == 8 && adjacencyInfo.verts[4].edges[1] == 10 && adjacencyInfo.verts[4].edges[2] == 7);
+	test.Assert (adjacencyInfo.verts[5].edges[0] == 5 && adjacencyInfo.verts[5].edges[1] == 7 && adjacencyInfo.verts[5].edges[2] == 4);
+	test.Assert (adjacencyInfo.verts[6].edges[0] == 6 && adjacencyInfo.verts[6].edges[1] == 5 && adjacencyInfo.verts[6].edges[2] == 9);
+	test.Assert (adjacencyInfo.verts[7].edges[0] == 9 && adjacencyInfo.verts[7].edges[1] == 8 && adjacencyInfo.verts[7].edges[2] == 11);
 
-	test.Assert (al.edges.length == 12);
+	test.Assert (adjacencyInfo.edges.length == 12);
 	
-	test.Assert (al.edges[0].vert1 == 0 && al.edges[0].vert2 == 1);
-	test.Assert (al.edges[1].vert1 == 1 && al.edges[1].vert2 == 2);
-	test.Assert (al.edges[2].vert1 == 2 && al.edges[2].vert2 == 3);
-	test.Assert (al.edges[3].vert1 == 3 && al.edges[3].vert2 == 0);
-	test.Assert (al.edges[4].vert1 == 1 && al.edges[4].vert2 == 5);
-	test.Assert (al.edges[5].vert1 == 5 && al.edges[5].vert2 == 6);
-	test.Assert (al.edges[6].vert1 == 6 && al.edges[6].vert2 == 2);
-	test.Assert (al.edges[7].vert1 == 5 && al.edges[7].vert2 == 4);
-	test.Assert (al.edges[8].vert1 == 4 && al.edges[8].vert2 == 7);
-	test.Assert (al.edges[9].vert1 == 7 && al.edges[9].vert2 == 6);
-	test.Assert (al.edges[10].vert1 == 4 && al.edges[10].vert2 == 0);
-	test.Assert (al.edges[11].vert1 == 3 && al.edges[11].vert2 == 7);
+	test.Assert (adjacencyInfo.edges[0].vert1 == 0 && adjacencyInfo.edges[0].vert2 == 1);
+	test.Assert (adjacencyInfo.edges[1].vert1 == 1 && adjacencyInfo.edges[1].vert2 == 2);
+	test.Assert (adjacencyInfo.edges[2].vert1 == 2 && adjacencyInfo.edges[2].vert2 == 3);
+	test.Assert (adjacencyInfo.edges[3].vert1 == 3 && adjacencyInfo.edges[3].vert2 == 0);
+	test.Assert (adjacencyInfo.edges[4].vert1 == 1 && adjacencyInfo.edges[4].vert2 == 5);
+	test.Assert (adjacencyInfo.edges[5].vert1 == 5 && adjacencyInfo.edges[5].vert2 == 6);
+	test.Assert (adjacencyInfo.edges[6].vert1 == 6 && adjacencyInfo.edges[6].vert2 == 2);
+	test.Assert (adjacencyInfo.edges[7].vert1 == 5 && adjacencyInfo.edges[7].vert2 == 4);
+	test.Assert (adjacencyInfo.edges[8].vert1 == 4 && adjacencyInfo.edges[8].vert2 == 7);
+	test.Assert (adjacencyInfo.edges[9].vert1 == 7 && adjacencyInfo.edges[9].vert2 == 6);
+	test.Assert (adjacencyInfo.edges[10].vert1 == 4 && adjacencyInfo.edges[10].vert2 == 0);
+	test.Assert (adjacencyInfo.edges[11].vert1 == 3 && adjacencyInfo.edges[11].vert2 == 7);
 	
-	test.Assert (al.edges[0].pgon1 == 0 && al.edges[0].pgon2 == 4);
-	test.Assert (al.edges[1].pgon1 == 0 && al.edges[1].pgon2 == 1);
-	test.Assert (al.edges[2].pgon1 == 0 && al.edges[2].pgon2 == 5);
-	test.Assert (al.edges[3].pgon1 == 0 && al.edges[3].pgon2 == 3);
-	test.Assert (al.edges[4].pgon1 == 1 && al.edges[4].pgon2 == 4);
-	test.Assert (al.edges[5].pgon1 == 1 && al.edges[5].pgon2 == 2);
-	test.Assert (al.edges[6].pgon1 == 1 && al.edges[6].pgon2 == 5);
-	test.Assert (al.edges[7].pgon1 == 2 && al.edges[7].pgon2 == 4);
-	test.Assert (al.edges[8].pgon1 == 2 && al.edges[8].pgon2 == 3);
-	test.Assert (al.edges[9].pgon1 == 2 && al.edges[9].pgon2 == 5);
-	test.Assert (al.edges[10].pgon1 == 3 && al.edges[10].pgon2 == 4);
-	test.Assert (al.edges[11].pgon1 == 3 && al.edges[11].pgon2 == 5);
+	test.Assert (adjacencyInfo.edges[0].pgon1 == 0 && adjacencyInfo.edges[0].pgon2 == 4);
+	test.Assert (adjacencyInfo.edges[1].pgon1 == 0 && adjacencyInfo.edges[1].pgon2 == 1);
+	test.Assert (adjacencyInfo.edges[2].pgon1 == 0 && adjacencyInfo.edges[2].pgon2 == 5);
+	test.Assert (adjacencyInfo.edges[3].pgon1 == 0 && adjacencyInfo.edges[3].pgon2 == 3);
+	test.Assert (adjacencyInfo.edges[4].pgon1 == 1 && adjacencyInfo.edges[4].pgon2 == 4);
+	test.Assert (adjacencyInfo.edges[5].pgon1 == 1 && adjacencyInfo.edges[5].pgon2 == 2);
+	test.Assert (adjacencyInfo.edges[6].pgon1 == 1 && adjacencyInfo.edges[6].pgon2 == 5);
+	test.Assert (adjacencyInfo.edges[7].pgon1 == 2 && adjacencyInfo.edges[7].pgon2 == 4);
+	test.Assert (adjacencyInfo.edges[8].pgon1 == 2 && adjacencyInfo.edges[8].pgon2 == 3);
+	test.Assert (adjacencyInfo.edges[9].pgon1 == 2 && adjacencyInfo.edges[9].pgon2 == 5);
+	test.Assert (adjacencyInfo.edges[10].pgon1 == 3 && adjacencyInfo.edges[10].pgon2 == 4);
+	test.Assert (adjacencyInfo.edges[11].pgon1 == 3 && adjacencyInfo.edges[11].pgon2 == 5);
 
-	test.Assert (al.pgons.length == 6);
-	test.Assert (al.pgons[0].verts.length == 4);
-	test.Assert (al.pgons[1].verts.length == 4);
-	test.Assert (al.pgons[2].verts.length == 4);
-	test.Assert (al.pgons[3].verts.length == 4);
-	test.Assert (al.pgons[4].verts.length == 4);
-	test.Assert (al.pgons[5].verts.length == 4);
+	test.Assert (adjacencyInfo.pgons.length == 6);
+	test.Assert (adjacencyInfo.pgons[0].verts.length == 4);
+	test.Assert (adjacencyInfo.pgons[1].verts.length == 4);
+	test.Assert (adjacencyInfo.pgons[2].verts.length == 4);
+	test.Assert (adjacencyInfo.pgons[3].verts.length == 4);
+	test.Assert (adjacencyInfo.pgons[4].verts.length == 4);
+	test.Assert (adjacencyInfo.pgons[5].verts.length == 4);
 
-	test.Assert (al.pgons[0].verts[0] == 0 && al.pgons[0].verts[1] == 1 && al.pgons[0].verts[2] == 2 && al.pgons[0].verts[3] == 3);
-	test.Assert (al.pgons[1].verts[0] == 1 && al.pgons[1].verts[1] == 5 && al.pgons[1].verts[2] == 6 && al.pgons[1].verts[3] == 2);
-	test.Assert (al.pgons[2].verts[0] == 5 && al.pgons[2].verts[1] == 4 && al.pgons[2].verts[2] == 7 && al.pgons[2].verts[3] == 6);
-	test.Assert (al.pgons[3].verts[0] == 4 && al.pgons[3].verts[1] == 0 && al.pgons[3].verts[2] == 3 && al.pgons[3].verts[3] == 7);
-	test.Assert (al.pgons[4].verts[0] == 0 && al.pgons[4].verts[1] == 4 && al.pgons[4].verts[2] == 5 && al.pgons[4].verts[3] == 1);
-	test.Assert (al.pgons[5].verts[0] == 3 && al.pgons[5].verts[1] == 2 && al.pgons[5].verts[2] == 6 && al.pgons[5].verts[3] == 7);
+	test.Assert (adjacencyInfo.pgons[0].verts[0] == 0 && adjacencyInfo.pgons[0].verts[1] == 1 && adjacencyInfo.pgons[0].verts[2] == 2 && adjacencyInfo.pgons[0].verts[3] == 3);
+	test.Assert (adjacencyInfo.pgons[1].verts[0] == 1 && adjacencyInfo.pgons[1].verts[1] == 5 && adjacencyInfo.pgons[1].verts[2] == 6 && adjacencyInfo.pgons[1].verts[3] == 2);
+	test.Assert (adjacencyInfo.pgons[2].verts[0] == 5 && adjacencyInfo.pgons[2].verts[1] == 4 && adjacencyInfo.pgons[2].verts[2] == 7 && adjacencyInfo.pgons[2].verts[3] == 6);
+	test.Assert (adjacencyInfo.pgons[3].verts[0] == 4 && adjacencyInfo.pgons[3].verts[1] == 0 && adjacencyInfo.pgons[3].verts[2] == 3 && adjacencyInfo.pgons[3].verts[3] == 7);
+	test.Assert (adjacencyInfo.pgons[4].verts[0] == 0 && adjacencyInfo.pgons[4].verts[1] == 4 && adjacencyInfo.pgons[4].verts[2] == 5 && adjacencyInfo.pgons[4].verts[3] == 1);
+	test.Assert (adjacencyInfo.pgons[5].verts[0] == 3 && adjacencyInfo.pgons[5].verts[1] == 2 && adjacencyInfo.pgons[5].verts[2] == 6 && adjacencyInfo.pgons[5].verts[3] == 7);
 
-	test.Assert (al.pgons[0].pedges.length == 4);
-	test.Assert (al.pgons[1].pedges.length == 4);
-	test.Assert (al.pgons[2].pedges.length == 4);
-	test.Assert (al.pgons[3].pedges.length == 4);
-	test.Assert (al.pgons[4].pedges.length == 4);
-	test.Assert (al.pgons[5].pedges.length == 4);
+	test.Assert (adjacencyInfo.pgons[0].pedges.length == 4);
+	test.Assert (adjacencyInfo.pgons[1].pedges.length == 4);
+	test.Assert (adjacencyInfo.pgons[2].pedges.length == 4);
+	test.Assert (adjacencyInfo.pgons[3].pedges.length == 4);
+	test.Assert (adjacencyInfo.pgons[4].pedges.length == 4);
+	test.Assert (adjacencyInfo.pgons[5].pedges.length == 4);
 
-	test.Assert (EqualEdge (al.pgons[0].pedges[0], [0, false]) && EqualEdge (al.pgons[0].pedges[1], [1, false]) && EqualEdge (al.pgons[0].pedges[2], [2, false]) && EqualEdge (al.pgons[0].pedges[3], [3, false]));
-	test.Assert (EqualEdge (al.pgons[1].pedges[0], [4, false]) && EqualEdge (al.pgons[1].pedges[1], [5, false]) && EqualEdge (al.pgons[1].pedges[2], [6, false]) && EqualEdge (al.pgons[1].pedges[3], [1, true]));
-	test.Assert (EqualEdge (al.pgons[2].pedges[0], [7, false]) && EqualEdge (al.pgons[2].pedges[1], [8, false]) && EqualEdge (al.pgons[2].pedges[2], [9, false]) && EqualEdge (al.pgons[2].pedges[3], [5, true]));
-	test.Assert (EqualEdge (al.pgons[3].pedges[0], [10, false]) && EqualEdge (al.pgons[3].pedges[1], [3, true]) && EqualEdge (al.pgons[3].pedges[2], [11, false]) && EqualEdge (al.pgons[3].pedges[3], [8, true]));
-	test.Assert (EqualEdge (al.pgons[4].pedges[0], [10, true]) && EqualEdge (al.pgons[4].pedges[1], [7, true]) && EqualEdge (al.pgons[4].pedges[2], [4, true]) && EqualEdge (al.pgons[4].pedges[3], [0, true]));
-	test.Assert (EqualEdge (al.pgons[5].pedges[0], [2, true]) && EqualEdge (al.pgons[5].pedges[1], [6, true]) && EqualEdge (al.pgons[5].pedges[2], [9, true]) && EqualEdge (al.pgons[5].pedges[3], [11, true]));
+	test.Assert (EqualEdge (adjacencyInfo.pgons[0].pedges[0], [0, false]) && EqualEdge (adjacencyInfo.pgons[0].pedges[1], [1, false]) && EqualEdge (adjacencyInfo.pgons[0].pedges[2], [2, false]) && EqualEdge (adjacencyInfo.pgons[0].pedges[3], [3, false]));
+	test.Assert (EqualEdge (adjacencyInfo.pgons[1].pedges[0], [4, false]) && EqualEdge (adjacencyInfo.pgons[1].pedges[1], [5, false]) && EqualEdge (adjacencyInfo.pgons[1].pedges[2], [6, false]) && EqualEdge (adjacencyInfo.pgons[1].pedges[3], [1, true]));
+	test.Assert (EqualEdge (adjacencyInfo.pgons[2].pedges[0], [7, false]) && EqualEdge (adjacencyInfo.pgons[2].pedges[1], [8, false]) && EqualEdge (adjacencyInfo.pgons[2].pedges[2], [9, false]) && EqualEdge (adjacencyInfo.pgons[2].pedges[3], [5, true]));
+	test.Assert (EqualEdge (adjacencyInfo.pgons[3].pedges[0], [10, false]) && EqualEdge (adjacencyInfo.pgons[3].pedges[1], [3, true]) && EqualEdge (adjacencyInfo.pgons[3].pedges[2], [11, false]) && EqualEdge (adjacencyInfo.pgons[3].pedges[3], [8, true]));
+	test.Assert (EqualEdge (adjacencyInfo.pgons[4].pedges[0], [10, true]) && EqualEdge (adjacencyInfo.pgons[4].pedges[1], [7, true]) && EqualEdge (adjacencyInfo.pgons[4].pedges[2], [4, true]) && EqualEdge (adjacencyInfo.pgons[4].pedges[3], [0, true]));
+	test.Assert (EqualEdge (adjacencyInfo.pgons[5].pedges[0], [2, true]) && EqualEdge (adjacencyInfo.pgons[5].pedges[1], [6, true]) && EqualEdge (adjacencyInfo.pgons[5].pedges[2], [9, true]) && EqualEdge (adjacencyInfo.pgons[5].pedges[3], [11, true]));
 });
 
 generalSuite.AddTest ('SubdivisionTest', function (test)

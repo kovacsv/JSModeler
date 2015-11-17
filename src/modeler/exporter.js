@@ -339,9 +339,9 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 		AddLineToContent ('vert ' + vertCoord.x + ', ' + vertCoord.y + ', ' + vertCoord.z + ' ! ' + (index + 1));
 	}
 
-	function AddEdge (index)
+	function AddEdge (adjacencyInfo, index)
 	{
-		var edge = al.edges[index];
+		var edge = adjacencyInfo.edges[index];
 		var status = 0;
 		if (edge.pgon1 != -1 && edge.pgon2 != -1) {
 			if (body.GetPolygon (edge.pgon1).HasCurveGroup () && body.GetPolygon (edge.pgon2).HasCurveGroup ()) {
@@ -353,7 +353,7 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 		AddLineToContent ('edge ' + (edge.vert1 + 1) + ', ' + (edge.vert2 + 1) + ', -1, -1, ' + status + ' ! ' + (index + 1));
 	}
 
-	function AddPolygon (index, lastMaterialIndex)
+	function AddPolygon (adjacencyInfo, index, lastMaterialIndex)
 	{
 		var materialIndex = -1;
 		if (writeMaterials) {
@@ -363,7 +363,7 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 			}
 		}
 	
-		var pgon = al.pgons[index];
+		var pgon = adjacencyInfo.pgons[index];
 		var status = 0;
 		if (body.GetPolygon (index).HasCurveGroup ()) {
 			status = 2;
@@ -392,20 +392,20 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 	var gdlContent = '';
 
 	AddLineToContent ('base');
-	var al = new JSM.AdjacencyInfo (body);
+	var adjacencyInfo = new JSM.AdjacencyInfo (body);
 	
 	var i;
-	for (i = 0; i < al.verts.length; i++) {
+	for (i = 0; i < adjacencyInfo.verts.length; i++) {
 		AddVertex (i);
 	}
 
-	for (i = 0; i < al.edges.length; i++) {
-		AddEdge (i);
+	for (i = 0; i < adjacencyInfo.edges.length; i++) {
+		AddEdge (adjacencyInfo, i);
 	}
 	
 	var lastMaterialIndex = -1;
-	for (i = 0; i < al.pgons.length; i++) {
-		lastMaterialIndex = AddPolygon (i, lastMaterialIndex);
+	for (i = 0; i < adjacencyInfo.pgons.length; i++) {
+		lastMaterialIndex = AddPolygon (adjacencyInfo, i, lastMaterialIndex);
 	}
 
 	AddLineToContent ('body -1');
