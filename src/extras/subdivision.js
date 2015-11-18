@@ -12,8 +12,8 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 	{
 		var i, vertCoord;
 		for (i = 0; i < adjacencyInfo.verts.length; i++) {
-			vertCoord = body.GetVertex (i).position;
-			result.AddVertex (new JSM.BodyVertex (new JSM.Coord (vertCoord.x, vertCoord.y, vertCoord.z)));
+			vertCoord = body.GetVertexPosition (i);
+			result.AddVertex (new JSM.BodyVertex (vertCoord.Clone ()));
 		}
 	}
 
@@ -24,7 +24,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 			pgon = adjacencyInfo.pgons[i];
 			pgonCoord = new JSM.Coord (0.0, 0.0, 0.0);
 			for (j = 0; j < pgon.verts.length; j++) {
-				vertCoord = body.GetVertex (pgon.verts[j]).position;
+				vertCoord = body.GetVertexPosition (pgon.verts[j]);
 				pgonCoord = JSM.CoordAdd (pgonCoord, vertCoord);
 			}
 
@@ -39,8 +39,8 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 		var i, j, edge, edgeCoord1, edgeCoord2, edgeCoord, pgonIndex, pgonCoord;
 		for (i = 0; i < adjacencyInfo.edges.length; i++) {
 			edge = adjacencyInfo.edges[i];
-			edgeCoord1 = body.GetVertex (edge.vert1).position.Clone ().MultiplyScalar (edgeVertexWeight);
-			edgeCoord2 = body.GetVertex (edge.vert2).position.Clone ().MultiplyScalar (edgeVertexWeight);
+			edgeCoord1 = body.GetVertexPosition (edge.vert1).Clone ().MultiplyScalar (edgeVertexWeight);
+			edgeCoord2 = body.GetVertexPosition (edge.vert2).Clone ().MultiplyScalar (edgeVertexWeight);
 			edgeCoord = JSM.CoordAdd (edgeCoord1, edgeCoord2);
 
 			for (j = 0; j < 2; j++) {
@@ -48,7 +48,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 				if (pgonIndex === -1) {
 					pgonIndex = (j === 0 ? edge.pgon2 : edge.pgon1);
 				}
-				pgonCoord = result.GetVertex (pgonVertices[pgonIndex]).position.Clone ();
+				pgonCoord = result.GetVertexPosition (pgonVertices[pgonIndex]).Clone ();
 				edgeCoord = JSM.CoordAdd (edgeCoord, pgonCoord.MultiplyScalar (edgeVertexWeight));
 			}
 
@@ -71,7 +71,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 		var i, j;
 		for (i = 0; i < adjacencyInfo.edges.length; i++) {
 			edge = adjacencyInfo.edges[i];
-			edgeCoord = JSM.MidCoord (body.GetVertex (edge.vert1).position, body.GetVertex (edge.vert2).position);
+			edgeCoord = JSM.MidCoord (body.GetVertexPosition (edge.vert1), body.GetVertexPosition (edge.vert2));
 			edgeMidCoords.push (edgeCoord);
 		}
 	
@@ -83,7 +83,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 			r = new JSM.Coord (0.0, 0.0, 0.0);
 			
 			for (j = 0; j < vert.pgons.length; j++) {
-				currentVertCoord = result.GetVertex (pgonVertices[vert.pgons[j]]).position.Clone ();
+				currentVertCoord = result.GetVertexPosition (pgonVertices[vert.pgons[j]]).Clone ();
 				f.Add (currentVertCoord);
 			}
 			f.MultiplyScalar (1.0 / vert.pgons.length)
@@ -96,7 +96,7 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 			r.MultiplyScalar (1.0 / vert.edges.length)
 
 			n = vert.edges.length;
-			vertCoord = result.GetVertex (i).position;
+			vertCoord = result.GetVertexPosition (i);
 			MoveVertex (f, r, n, vertCoord);
 		}
 	}
