@@ -113,6 +113,32 @@ JSM.Coord.prototype.Length = function ()
 };
 
 /**
+* Function: Coord.Add
+* Description: Adds the given coordinate to coordinate.
+* Parameters:
+*	coord {Coord} the coordinate
+*/
+JSM.Coord.prototype.Add = function (coord)
+{
+	this.x += coord.x;
+	this.y += coord.y;
+	this.z += coord.z;
+};
+
+/**
+* Function: Coord.Sub
+* Description: Subs the given coordinate from coordinate.
+* Parameters:
+*	coord {Coord} the coordinate
+*/
+JSM.Coord.prototype.Sub = function (coord)
+{
+	this.x -= coord.x;
+	this.y -= coord.y;
+	this.z -= coord.z;
+};
+
+/**
 * Function: Coord.MultiplyScalar
 * Description: Multiplies the vector with a scalar.
 * Parameters:
@@ -127,7 +153,6 @@ JSM.Coord.prototype.MultiplyScalar = function (scalar)
 	this.z *= scalar;
 	return this;
 };
-
 
 /**
 * Function: Coord.Normalize

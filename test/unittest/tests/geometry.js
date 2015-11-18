@@ -210,6 +210,12 @@ generalSuite.AddTest ('VectorTest', function (test) {
 	test.Assert (coord.IsEqualWithEps (new JSM.Coord (1.0, 2.0, 4.0), 1.1));
 	test.Assert (coord.IsEqualWithEps (new JSM.Coord (1.0, 3.0, 3.0), 1.1));
 	test.Assert (coord.IsEqualWithEps (new JSM.Coord (2.0, 2.0, 3.0), 1.1));
+
+	var coord = new JSM.Coord (1.0, 2.0, 3.0);
+	coord.Add (new JSM.Coord (4.0, 5.0, 6.0));
+	test.Assert (coord.IsEqual (new JSM.Coord (5.0, 7.0, 9.0)));
+	coord.Sub (new JSM.Coord (4.0, 5.0, 6.0));
+	test.Assert (coord.IsEqual (new JSM.Coord (1.0, 2.0, 3.0)));
 });
 
 generalSuite.AddTest ('TriangleNormalTest', function (test) {

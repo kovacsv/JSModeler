@@ -76,24 +76,24 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 		}
 	
 		var vert, vertCoord, currentVertCoord;
-		var pgonVertexWeight, edgeMidCoordWeight;
 		var f, r, n;
 		for (i = 0; i < adjacencyInfo.verts.length; i++) {
 			vert = adjacencyInfo.verts[i];
 			f = new JSM.Coord (0.0, 0.0, 0.0);
 			r = new JSM.Coord (0.0, 0.0, 0.0);
 			
-			pgonVertexWeight = 1.0 / vert.pgons.length;
 			for (j = 0; j < vert.pgons.length; j++) {
 				currentVertCoord = result.GetVertex (pgonVertices[vert.pgons[j]]).position.Clone ();
-				f = JSM.CoordAdd (f, currentVertCoord.MultiplyScalar (pgonVertexWeight));
+				f.Add (currentVertCoord);
 			}
+			f.MultiplyScalar (1.0 / vert.pgons.length)
 
 			edgeMidCoordWeight = 1.0 / vert.edges.length;
 			for (j = 0; j < vert.edges.length; j++) {
 				edgeCoord = edgeMidCoords [vert.edges[j]].Clone ();
-				r = JSM.CoordAdd (r, edgeCoord.MultiplyScalar (edgeMidCoordWeight));
+				r.Add (edgeCoord);
 			}
+			r.MultiplyScalar (1.0 / vert.edges.length)
 
 			n = vert.edges.length;
 			vertCoord = result.GetVertex (i).position;
