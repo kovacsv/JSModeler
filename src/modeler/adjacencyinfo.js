@@ -150,6 +150,79 @@ JSM.AdjacencyInfo.prototype.Calculate = function (body)
 };
 
 /**
+* Function: AdjacencyInfo.IsContourVertex
+* Description: Returns if the vertex has countour edge.
+* Parameters:
+*	vert {VertInfo} the vertex info
+* Returns:
+*	{boolean} the result
+*/
+JSM.AdjacencyInfo.prototype.IsContourVertex = function (vert)
+{
+	var i, edge;
+	for (i = 0; i < vert.edges.length; i++) {
+		edge = vert.edges[i];
+		if (this.IsContourEdge (this.edges[edge])) {
+			return true;
+		}
+	}
+	return false;
+};
+
+/**
+* Function: AdjacencyInfo.IsContourEdge
+* Description: Returns if the edge has only one polygon neighbour.
+* Parameters:
+*	edge {EdgeInfo} the edge info
+* Returns:
+*	{boolean} the result
+*/
+JSM.AdjacencyInfo.prototype.IsContourEdge = function (edge)
+{
+	var pgonCount = this.GetEdgePolygonCount (edge);
+	return pgonCount == 1;
+};
+
+/**
+* Function: AdjacencyInfo.GetEdgePolygonCount
+* Description: Returns the neighbour polygon count of the edge.
+* Parameters:
+*	edge {EdgeInfo} the edge info
+* Returns:
+*	{integer} the result
+*/
+JSM.AdjacencyInfo.prototype.GetEdgePolygonCount = function (edge)
+{
+	var pgonCount = 0;
+	if (edge.pgon1 != -1) {
+		pgonCount += 1;
+	}
+	if (edge.pgon2 != -1) {
+		pgonCount += 2;
+	}
+	return pgonCount;
+};
+
+/**
+* Function: AdjacencyInfo.GetAnotherPgonOfEdge
+* Description: Returns the polygon index which is next to the given polygon along an edge.
+* Parameters:
+*	edge {EdgeInfo} the edge info
+*	currentPgon {integer} the polygon index
+* Returns:
+*	{integer} the result
+*/
+JSM.AdjacencyInfo.prototype.GetAnotherPgonOfEdge = function (edge, pgon)
+{
+	if (edge.pgon1 != -1 && edge.pgon1 != pgon) {
+		return edge.pgon1;
+	} else if (edge.pgon2 != -1 && edge.pgon2 != pgon) {
+		return edge.pgon2;
+	}
+	return -1;
+};
+
+/**
 * Function: AdjacencyInfo.GetPolyEdgeStartVertex
 * Description: Returns the start vertex index of a polygon edge.
 * Parameters:
@@ -181,25 +254,6 @@ JSM.AdjacencyInfo.prototype.GetPolyEdgeEndVertex = function (polyEdge)
 	} else {
 		return this.edges[polyEdge.index].vert1;
 	}
-};
-
-/**
-* Function: AdjacencyInfo.GetAnotherPgonOfEdge
-* Description: Returns the polygon index which is next to the current polygon along an edge.
-* Parameters:
-*	edge {EdgeInfo} the edge info
-*	currentPgon {integer} the current polygon index
-* Returns:
-*	{integer} the result
-*/
-JSM.AdjacencyInfo.prototype.GetAnotherPgonOfEdge = function (edge, currentPgon)
-{
-	if (edge.pgon1 != -1 && edge.pgon1 != currentPgon) {
-		return edge.pgon1;
-	} else if (edge.pgon2 != -1 && edge.pgon2 != currentPgon) {
-		return edge.pgon2;
-	}
-	return -1;
 };
 
 /**

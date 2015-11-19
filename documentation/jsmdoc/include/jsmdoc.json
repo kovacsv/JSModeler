@@ -1211,6 +1211,18 @@
 								["number", "the result"]
 							]
 						},
+						"Add" : {
+							"description" : "Adds the given coordinate to coordinate.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							]
+						},
+						"Sub" : {
+							"description" : "Subs the given coordinate from coordinate.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							]
+						},
 						"MultiplyScalar" : {
 							"description" : "Multiplies the vector with a scalar.",
 							"parameters" : [
@@ -3825,6 +3837,43 @@
 								["body", "Body"]
 							]
 						},
+						"IsContourVertex" : {
+							"description" : "Returns if the vertex has countour edge.",
+							"parameters" : [
+								["vert", "VertInfo", "the vertex info"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"IsContourEdge" : {
+							"description" : "Returns if the edge has only one polygon neighbour.",
+							"parameters" : [
+								["edge", "EdgeInfo", "the edge info"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"GetEdgePolygonCount" : {
+							"description" : "Returns the neighbour polygon count of the edge.",
+							"parameters" : [
+								["edge", "EdgeInfo", "the edge info"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetAnotherPgonOfEdge" : {
+							"description" : "Returns the polygon index which is next to the given polygon along an edge.",
+							"parameters" : [
+								["edge", "EdgeInfo", "the edge info"],
+								["currentPgon", "integer", "the polygon index"]
+							],
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
 						"GetPolyEdgeStartVertex" : {
 							"description" : "Returns the start vertex index of a polygon edge.",
 							"parameters" : [
@@ -3838,16 +3887,6 @@
 							"description" : "Returns the end vertex index of a polygon edge.",
 							"parameters" : [
 								["polyEdge", "PolyEdgeInfo", "the polygon edge info"]
-							],
-							"returns" : [
-								["integer", "the result"]
-							]
-						},
-						"GetAnotherPgonOfEdge" : {
-							"description" : "Returns the polygon index which is next to the current polygon along an edge.",
-							"parameters" : [
-								["edge", "EdgeInfo", "the edge info"],
-								["currentPgon", "integer", "the current polygon index"]
 							],
 							"returns" : [
 								["integer", "the result"]

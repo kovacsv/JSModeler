@@ -134,8 +134,10 @@ generalSuite.AddTest ('AdjacencyListTest', function (test)
 	};
 
 	var cube = JSM.GenerateCuboid (1, 1, 1);
+	test.Assert (JSM.IsSolidBody (cube));
 	test.Assert (JSM.CheckSolidBody (cube));
 	var adjacencyInfo = new JSM.AdjacencyInfo (cube);
+	
 /*
 		 7__9__6
 		/|    /|
@@ -163,7 +165,8 @@ generalSuite.AddTest ('AdjacencyListTest', function (test)
 	result.AddPolygon (new JSM.BodyPolygon ([4, 0, 3, 7]));
 	result.AddPolygon (new JSM.BodyPolygon ([0, 4, 5, 1]));
 	result.AddPolygon (new JSM.BodyPolygon ([3, 2, 6, 7]));
-*/			
+*/
+	
 	test.Assert (adjacencyInfo.verts.length == 8);
 	
 	test.Assert (adjacencyInfo.verts[0].pgons.length == 3);
@@ -258,6 +261,48 @@ generalSuite.AddTest ('AdjacencyListTest', function (test)
 	test.Assert (EqualEdge (adjacencyInfo.pgons[3].pedges[0], [10, false]) && EqualEdge (adjacencyInfo.pgons[3].pedges[1], [3, true]) && EqualEdge (adjacencyInfo.pgons[3].pedges[2], [11, false]) && EqualEdge (adjacencyInfo.pgons[3].pedges[3], [8, true]));
 	test.Assert (EqualEdge (adjacencyInfo.pgons[4].pedges[0], [10, true]) && EqualEdge (adjacencyInfo.pgons[4].pedges[1], [7, true]) && EqualEdge (adjacencyInfo.pgons[4].pedges[2], [4, true]) && EqualEdge (adjacencyInfo.pgons[4].pedges[3], [0, true]));
 	test.Assert (EqualEdge (adjacencyInfo.pgons[5].pedges[0], [2, true]) && EqualEdge (adjacencyInfo.pgons[5].pedges[1], [6, true]) && EqualEdge (adjacencyInfo.pgons[5].pedges[2], [9, true]) && EqualEdge (adjacencyInfo.pgons[5].pedges[3], [11, true]));
+});
+
+generalSuite.AddTest ('AdjacencyListTestWithHole', function (test)
+{
+	var cube = JSM.GenerateCuboidSides (1, 1, 1, [1, 1, 0, 0, 1, 1]);
+	test.Assert (!JSM.IsSolidBody (cube));
+	var adjacencyInfo = new JSM.AdjacencyInfo (cube);	
+
+/*
+		 7__9__6
+		/|    /|
+	  11 8   6 |
+	  /  |  /  5
+	3/_2_|_/2  |
+	 |  4|_|_7_|5
+	 3  /  |  /
+	 | 10  1 4
+	 |/_0__|/
+	 0     1
+*/
+	
+	test.Assert (adjacencyInfo.verts.length == 8);
+	test.Assert (adjacencyInfo.edges.length == 11);
+	test.Assert (adjacencyInfo.pgons.length == 4);
+	
+	var contourEdges = 0;
+	var contourVertices = 0;
+	var i, edge, vert;
+	for (i = 0; i < adjacencyInfo.edges.length; i++) {
+		edge = adjacencyInfo.edges[i];
+		if (adjacencyInfo.IsContourEdge (edge)) {
+			contourEdges++;
+		}
+	}
+	for (i = 0; i < adjacencyInfo.verts.length; i++) {
+		vert = adjacencyInfo.verts[i];
+		if (adjacencyInfo.IsContourVertex (vert)) {
+			contourVertices++;
+		}
+	}
+	test.Assert (contourEdges == 6);
+	test.Assert (contourVertices == 6);
 });
 
 generalSuite.AddTest ('SubdivisionTest', function (test)

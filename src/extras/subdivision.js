@@ -86,14 +86,13 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 				currentVertCoord = result.GetVertexPosition (pgonVertices[vert.pgons[j]]).Clone ();
 				f.Add (currentVertCoord);
 			}
-			f.MultiplyScalar (1.0 / vert.pgons.length)
+			f.MultiplyScalar (1.0 / vert.pgons.length);
 
-			edgeMidCoordWeight = 1.0 / vert.edges.length;
 			for (j = 0; j < vert.edges.length; j++) {
 				edgeCoord = edgeMidCoords [vert.edges[j]].Clone ();
 				r.Add (edgeCoord);
 			}
-			r.MultiplyScalar (1.0 / vert.edges.length)
+			r.MultiplyScalar (1.0 / vert.edges.length);
 
 			n = vert.edges.length;
 			vertCoord = result.GetVertexPosition (i);
