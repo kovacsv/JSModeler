@@ -3838,7 +3838,7 @@
 							]
 						},
 						"IsContourVertex" : {
-							"description" : "Returns if the vertex has countour edge.",
+							"description" : "Returns if the vertex has contour edge.",
 							"parameters" : [
 								["vert", "VertInfo", "the vertex info"]
 							],

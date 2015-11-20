@@ -82,6 +82,24 @@ JSM.AdjacencyInfo.prototype.Calculate = function (body)
 	{
 		function AddEdge (adjacencyInfo, pgonInfo, fromVertexIndex, toVertexIndex, polygonIndex)
 		{
+			function ConnectEdge (adjacencyInfo, polygonIndex, fromVertexIndex, toVertexIndex, pedge, pgon)
+			{
+				function ConnectPgonAndEdgeToVert (vert, pgonIndex, edgeIndex)
+				{
+					if (vert.edges.indexOf (edgeIndex) == -1) {
+						vert.edges.push (edgeIndex);
+					}
+					if (vert.pgons.indexOf (pgonIndex) == -1) {
+						vert.pgons.push (pgonIndex);
+					}
+				}
+				
+				pgon.verts.push (fromVertexIndex);
+				pgon.pedges.push (pedge);
+				ConnectPgonAndEdgeToVert (adjacencyInfo.verts[fromVertexIndex], polygonIndex, pedge.index);
+				ConnectPgonAndEdgeToVert (adjacencyInfo.verts[toVertexIndex], polygonIndex, pedge.index);
+			}
+			
 			var pedge = new JSM.PolyEdgeInfo ();
 		
 			var i, edge;
@@ -115,11 +133,7 @@ JSM.AdjacencyInfo.prototype.Calculate = function (body)
 				}
 			}
 			
-			pgon.verts.push (fromVertexIndex);
-			pgon.pedges.push (pedge);
-
-			adjacencyInfo.verts[fromVertexIndex].edges.push (pedge.index);
-			adjacencyInfo.verts[fromVertexIndex].pgons.push (polygonIndex);
+			ConnectEdge (adjacencyInfo, polygonIndex, fromVertexIndex, toVertexIndex, pedge, pgon);
 		}
 
 		var polygon = body.GetPolygon (polygonIndex);
@@ -151,7 +165,7 @@ JSM.AdjacencyInfo.prototype.Calculate = function (body)
 
 /**
 * Function: AdjacencyInfo.IsContourVertex
-* Description: Returns if the vertex has countour edge.
+* Description: Returns if the vertex has contour edge.
 * Parameters:
 *	vert {VertInfo} the vertex info
 * Returns:

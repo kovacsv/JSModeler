@@ -197,13 +197,13 @@ generalSuite.AddTest ('AdjacencyListTest', function (test)
 	test.Assert (adjacencyInfo.verts[7].edges.length == 3);
 	
 	test.Assert (adjacencyInfo.verts[0].edges[0] == 0 && adjacencyInfo.verts[0].edges[1] == 3 && adjacencyInfo.verts[0].edges[2] == 10);
-	test.Assert (adjacencyInfo.verts[1].edges[0] == 1 && adjacencyInfo.verts[1].edges[1] == 4 && adjacencyInfo.verts[1].edges[2] == 0);
-	test.Assert (adjacencyInfo.verts[2].edges[0] == 2 && adjacencyInfo.verts[2].edges[1] == 1 && adjacencyInfo.verts[2].edges[2] == 6);
-	test.Assert (adjacencyInfo.verts[3].edges[0] == 3 && adjacencyInfo.verts[3].edges[1] == 11 && adjacencyInfo.verts[3].edges[2] == 2);
-	test.Assert (adjacencyInfo.verts[4].edges[0] == 8 && adjacencyInfo.verts[4].edges[1] == 10 && adjacencyInfo.verts[4].edges[2] == 7);
-	test.Assert (adjacencyInfo.verts[5].edges[0] == 5 && adjacencyInfo.verts[5].edges[1] == 7 && adjacencyInfo.verts[5].edges[2] == 4);
-	test.Assert (adjacencyInfo.verts[6].edges[0] == 6 && adjacencyInfo.verts[6].edges[1] == 5 && adjacencyInfo.verts[6].edges[2] == 9);
-	test.Assert (adjacencyInfo.verts[7].edges[0] == 9 && adjacencyInfo.verts[7].edges[1] == 8 && adjacencyInfo.verts[7].edges[2] == 11);
+	test.Assert (adjacencyInfo.verts[1].edges[0] == 0 && adjacencyInfo.verts[1].edges[1] == 1 && adjacencyInfo.verts[1].edges[2] == 4);
+	test.Assert (adjacencyInfo.verts[2].edges[0] == 1 && adjacencyInfo.verts[2].edges[1] == 2 && adjacencyInfo.verts[2].edges[2] == 6);
+	test.Assert (adjacencyInfo.verts[3].edges[0] == 2 && adjacencyInfo.verts[3].edges[1] == 3 && adjacencyInfo.verts[3].edges[2] == 11);
+	test.Assert (adjacencyInfo.verts[4].edges[0] == 7 && adjacencyInfo.verts[4].edges[1] == 8 && adjacencyInfo.verts[4].edges[2] == 10);
+	test.Assert (adjacencyInfo.verts[5].edges[0] == 4 && adjacencyInfo.verts[5].edges[1] == 5 && adjacencyInfo.verts[5].edges[2] == 7);
+	test.Assert (adjacencyInfo.verts[6].edges[0] == 5 && adjacencyInfo.verts[6].edges[1] == 6 && adjacencyInfo.verts[6].edges[2] == 9);
+	test.Assert (adjacencyInfo.verts[7].edges[0] == 8 && adjacencyInfo.verts[7].edges[1] == 9 && adjacencyInfo.verts[7].edges[2] == 11);
 
 	test.Assert (adjacencyInfo.edges.length == 12);
 	
@@ -263,24 +263,42 @@ generalSuite.AddTest ('AdjacencyListTest', function (test)
 	test.Assert (EqualEdge (adjacencyInfo.pgons[5].pedges[0], [2, true]) && EqualEdge (adjacencyInfo.pgons[5].pedges[1], [6, true]) && EqualEdge (adjacencyInfo.pgons[5].pedges[2], [9, true]) && EqualEdge (adjacencyInfo.pgons[5].pedges[3], [11, true]));
 });
 
-generalSuite.AddTest ('AdjacencyListTestWithHole', function (test)
+generalSuite.AddTest ('AdjacencyListTestRect', function (test)
+{
+	var rect = JSM.GenerateRectangle (1, 1);
+	var adjacencyInfo = new JSM.AdjacencyInfo (rect);	
+    
+	test.AssertEqual (adjacencyInfo.verts.length, 4);
+	test.AssertEqual (adjacencyInfo.edges.length, 4);
+	test.AssertEqual (adjacencyInfo.pgons.length, 1);
+	
+	var i, vert;
+	for (i = 0; i < adjacencyInfo.verts.length; i++) {
+		test.AssertEqual (adjacencyInfo.verts[i].edges.length, 2);
+	}	
+});
+
+generalSuite.AddTest ('AdjacencyListTestWithHoledCube', function (test)
+{
+	var cube = JSM.GenerateCuboidSides (1, 1, 1, [1, 1, 0, 1, 1, 1]);
+	test.Assert (!JSM.IsSolidBody (cube));
+	var adjacencyInfo = new JSM.AdjacencyInfo (cube);	
+    
+	test.AssertEqual (adjacencyInfo.verts.length, 8);
+	test.AssertEqual (adjacencyInfo.edges.length, 12);
+	test.AssertEqual (adjacencyInfo.pgons.length, 5);
+	
+	var i, vert;
+	for (i = 0; i < adjacencyInfo.verts.length; i++) {
+		test.AssertEqual (adjacencyInfo.verts[i].edges.length, 3);
+	}
+});
+
+generalSuite.AddTest ('AdjacencyListTestWithHoledCube2', function (test)
 {
 	var cube = JSM.GenerateCuboidSides (1, 1, 1, [1, 1, 0, 0, 1, 1]);
 	test.Assert (!JSM.IsSolidBody (cube));
 	var adjacencyInfo = new JSM.AdjacencyInfo (cube);	
-
-/*
-		 7__9__6
-		/|    /|
-	  11 8   6 |
-	  /  |  /  5
-	3/_2_|_/2  |
-	 |  4|_|_7_|5
-	 3  /  |  /
-	 | 10  1 4
-	 |/_0__|/
-	 0     1
-*/
 	
 	test.Assert (adjacencyInfo.verts.length == 8);
 	test.Assert (adjacencyInfo.edges.length == 11);

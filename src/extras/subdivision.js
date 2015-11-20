@@ -35,34 +35,40 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 	
 	function AddEdgeVertices (body, result, adjacencyInfo, pgonVertices, edgeVertices)
 	{
-		var edgeVertexWeight = 1.0 / 4.0;
 		var i, j, edge, edgeCoord1, edgeCoord2, edgeCoord, pgonIndex, pgonCoord;
 		for (i = 0; i < adjacencyInfo.edges.length; i++) {
 			edge = adjacencyInfo.edges[i];
-			edgeCoord1 = body.GetVertexPosition (edge.vert1).Clone ().MultiplyScalar (edgeVertexWeight);
-			edgeCoord2 = body.GetVertexPosition (edge.vert2).Clone ().MultiplyScalar (edgeVertexWeight);
-			edgeCoord = JSM.CoordAdd (edgeCoord1, edgeCoord2);
-
-			for (j = 0; j < 2; j++) {
-				pgonIndex = (j === 0 ? edge.pgon1 : edge.pgon2);
-				if (pgonIndex === -1) {
-					pgonIndex = (j === 0 ? edge.pgon2 : edge.pgon1);
+			edgeCoord1 = body.GetVertexPosition (edge.vert1);
+			edgeCoord2 = body.GetVertexPosition (edge.vert2);
+			if (adjacencyInfo.IsContourEdge (edge)) {
+				edgeCoord = JSM.MidCoord (edgeCoord1, edgeCoord2);
+			} else {
+				edgeCoord = JSM.CoordAdd (edgeCoord1, edgeCoord2);
+				for (j = 0; j < 2; j++) {
+					pgonIndex = (j === 0 ? edge.pgon1 : edge.pgon2);
+					pgonCoord = result.GetVertexPosition (pgonVertices[pgonIndex]);
+					edgeCoord = JSM.CoordAdd (edgeCoord, pgonCoord);
 				}
-				pgonCoord = result.GetVertexPosition (pgonVertices[pgonIndex]).Clone ();
-				edgeCoord = JSM.CoordAdd (edgeCoord, pgonCoord.MultiplyScalar (edgeVertexWeight));
+				edgeCoord.MultiplyScalar (1.0 / 4.0);
 			}
-
 			edgeVertices.push (result.AddVertex (new JSM.BodyVertex (edgeCoord)));
 		}
 	}
 
 	function MoveOriginalVertices (body, result, adjacencyInfo, pgonVertices)
 	{
-		function MoveVertex (f, r, n, vertCoord)
+		function MoveContourVertex (newVertCoord, vertCoord)
 		{
-			vertCoord.x = (f.x + 2.0 * r.x + (n - 3) * vertCoord.x) / n;
-			vertCoord.y = (f.y + 2.0 * r.y + (n - 3) * vertCoord.y) / n;
-			vertCoord.z = (f.z + 2.0 * r.z + (n - 3) * vertCoord.z) / n;
+			vertCoord.x = newVertCoord.x;
+			vertCoord.y = newVertCoord.y;
+			vertCoord.z = newVertCoord.z;
+		}		
+		
+		function MoveVertex (pgonAverage, edgeAverage, vertEdgeCount, vertCoord)
+		{
+			vertCoord.x = (pgonAverage.x + 2.0 * edgeAverage.x + (vertEdgeCount - 3) * vertCoord.x) / vertEdgeCount;
+			vertCoord.y = (pgonAverage.y + 2.0 * edgeAverage.y + (vertEdgeCount - 3) * vertCoord.y) / vertEdgeCount;
+			vertCoord.z = (pgonAverage.z + 2.0 * edgeAverage.z + (vertEdgeCount - 3) * vertCoord.z) / vertEdgeCount;
 		}
 	
 		var edgeMidCoords = [];
@@ -75,28 +81,45 @@ JSM.CatmullClarkSubdivisionOneIteration = function (body)
 			edgeMidCoords.push (edgeCoord);
 		}
 	
-		var vert, vertCoord, currentVertCoord;
-		var f, r, n;
+		var vert, pgon, vertCoord, currentVertCoord;
+		var pgonAverage, edgeAverage, edgeCountForAverage;
 		for (i = 0; i < adjacencyInfo.verts.length; i++) {
 			vert = adjacencyInfo.verts[i];
-			f = new JSM.Coord (0.0, 0.0, 0.0);
-			r = new JSM.Coord (0.0, 0.0, 0.0);
-			
-			for (j = 0; j < vert.pgons.length; j++) {
-				currentVertCoord = result.GetVertexPosition (pgonVertices[vert.pgons[j]]).Clone ();
-				f.Add (currentVertCoord);
-			}
-			f.MultiplyScalar (1.0 / vert.pgons.length);
-
-			for (j = 0; j < vert.edges.length; j++) {
-				edgeCoord = edgeMidCoords [vert.edges[j]].Clone ();
-				r.Add (edgeCoord);
-			}
-			r.MultiplyScalar (1.0 / vert.edges.length);
-
-			n = vert.edges.length;
 			vertCoord = result.GetVertexPosition (i);
-			MoveVertex (f, r, n, vertCoord);
+			if (adjacencyInfo.IsContourVertex (vert)) {
+				edgeCountForAverage = 0;
+				edgeAverage = new JSM.Coord (0.0, 0.0, 0.0);
+				for (j = 0; j < vert.edges.length; j++) {
+					edge = vert.edges[j];
+					if (adjacencyInfo.IsContourEdge (adjacencyInfo.edges[edge])) {
+						edgeCoord = edgeMidCoords [vert.edges[j]];
+						edgeAverage.Add (edgeCoord);
+						edgeCountForAverage++;
+					}
+				}
+				edgeAverage.Add (vertCoord);
+				edgeCountForAverage++;
+				edgeAverage.MultiplyScalar (1.0 / edgeCountForAverage);
+				MoveContourVertex (edgeAverage, vertCoord);
+			} else {
+				pgonAverage = new JSM.Coord (0.0, 0.0, 0.0);
+				edgeAverage = new JSM.Coord (0.0, 0.0, 0.0);
+				
+				for (j = 0; j < vert.pgons.length; j++) {
+					pgon = vert.pgons[j];
+					currentVertCoord = result.GetVertexPosition (pgonVertices[pgon]);
+					pgonAverage.Add (currentVertCoord);
+				}
+				pgonAverage.MultiplyScalar (1.0 / vert.pgons.length);
+
+				for (j = 0; j < vert.edges.length; j++) {
+					edge = vert.edges[j];
+					edgeCoord = edgeMidCoords [edge];
+					edgeAverage.Add (edgeCoord);
+				}
+				edgeAverage.MultiplyScalar (1.0 / vert.edges.length);
+				MoveVertex (pgonAverage, edgeAverage, vert.edges.length, vertCoord);
+			}
 		}
 	}
 	

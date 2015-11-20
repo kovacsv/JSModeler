@@ -101,16 +101,21 @@
 				alert ('error');
 			}
 
+			var materials = new JSM.Materials ();
 			var body1 = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 			var body2 = JSM.GenerateCuboidSides (1.0, 1.0, 1.0, [1, 1, 0, 1, 1, 1]);
+			
+			//JSM.GenerateRandomMaterials (body1, materials);
+			//JSM.GenerateRandomMaterials (body2, materials);
+			
 			body1 = JSM.CatmullClarkSubdivision (body1, 3);
 			body2 = JSM.CatmullClarkSubdivision (body2, 3);
-			
+
 			var model = new JSM.Model ();
 			model.AddBody (body1);
 			model.AddBody (body2);
 
-			var renderBodies = JSM.ConvertModelToRenderBodies (model);
+			var renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
 			renderBodies[0].SetTransformation (new JSM.TranslationTransformation (new JSM.Coord (-1, 0, 0)));
 			renderBodies[1].SetTransformation (new JSM.TranslationTransformation (new JSM.Coord (1, 0, 0)));
 			viewer.AddRenderBodies (renderBodies);
