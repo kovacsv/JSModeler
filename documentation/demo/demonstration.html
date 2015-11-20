@@ -171,8 +171,6 @@
 				errorMessage = 'You cannot subdivide this body.';
 			} else if (body.PolygonCount () > maxPolygonCount) {
 				errorMessage = 'You cannot subdivide a body with more than ' + maxPolygonCount + ' polygons.';
-			} else if (!JSM.IsSolidBody (body)) {
-				errorMessage = 'You cannot subdivide an opened body.';
 			}
 			
 			if (errorMessage !== null) {
