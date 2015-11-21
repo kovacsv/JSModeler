@@ -18,6 +18,11 @@ def WriteHeaderToFile (fileName, header):
 	content = GetFileContent (fileName)
 	WriteContentToFile (fileName, header + content)
 	
+def ConvertEndOfLine (fileName):
+	content = GetFileContent (fileName)
+	content = re.sub ('\r(?!\n)|(?<!\r)\n', '\r\n', content)
+	WriteContentToFile (fileName, content)
+
 def MergeFiles (inputFileNames, outputFileName):
 	for fileName in inputFileNames:
 		if not os.path.exists (fileName):
@@ -142,8 +147,9 @@ class JSMBuilder:
 				errors.append ('Failed to compile file to ' + resultFilePath)
 				DeleteFile (mergedFilePath)
 				return False
-			WriteVersionHeader (resultFilePath, version)
 			DeleteFile (mergedFilePath)
+			WriteVersionHeader (resultFilePath, version)
+			ConvertEndOfLine (resultFilePath)
 			return True
 			
 		version = GetVersion (self.files['coreFileList'][0])
