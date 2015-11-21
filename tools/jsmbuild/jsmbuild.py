@@ -4,13 +4,13 @@ import json
 from jsmdoc import jsmdoc
 
 def GetFileContent (fileName):
-	file = open (fileName, 'rb')
+	file = open (fileName, 'r')
 	content = file.read ()
 	file.close ()
 	return content
 
 def WriteContentToFile (fileName, content):
-	file = open (fileName, 'wb')
+	file = open (fileName, 'w')
 	file.write (content)
 	file.close ()
 
@@ -18,16 +18,11 @@ def WriteHeaderToFile (fileName, header):
 	content = GetFileContent (fileName)
 	WriteContentToFile (fileName, header + content)
 	
-def ConvertEndOfLine (fileName):
-	content = GetFileContent (fileName)
-	content = re.sub ('\r(?!\n)|(?<!\r)\n', '\r\n', content)
-	WriteContentToFile (fileName, content)
-
 def MergeFiles (inputFileNames, outputFileName):
 	for fileName in inputFileNames:
 		if not os.path.exists (fileName):
 			return False
-	outputFile = open (outputFileName, 'wb')
+	outputFile = open (outputFileName, 'w')
 	for fileName in inputFileNames:
 		outputFile.write (GetFileContent (fileName))
 		outputFile.write ('\r\n')
@@ -149,7 +144,6 @@ class JSMBuilder:
 				return False
 			DeleteFile (mergedFilePath)
 			WriteVersionHeader (resultFilePath, version)
-			ConvertEndOfLine (resultFilePath)
 			return True
 			
 		version = GetVersion (self.files['coreFileList'][0])
