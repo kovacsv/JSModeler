@@ -25,7 +25,7 @@ def MergeFiles (inputFileNames, outputFileName):
 	outputFile = open (outputFileName, 'wb')
 	for fileName in inputFileNames:
 		outputFile.write (GetFileContent (fileName))
-		outputFile.write ('\n')
+		outputFile.write ('\r\n')
 	outputFile.close ()
 	return True	
 
