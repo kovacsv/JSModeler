@@ -4194,6 +4194,112 @@
 		},
 		"Import" : {
 		},
+		"Renderer" : {
+		},
+		"Viewer" : {
+			"functions" : {
+				"OrderPolygons" : {
+					"description" : "Order body polygons from front to back depending on the eye position.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["eye", "Coord", "the camera eye position"],
+						["center", "Coord", "the camera center position"]
+					],
+					"returns" : [
+						["integer[]", "the ordered polygon indices"]
+					]
+				},
+				"DrawProjectedBody" : {
+					"description" : "Draws a projected body.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["materials", "Materials", "the material container"],
+						["camera", "Camera", "the camera for projection"],
+						["drawMode", "string", "draw mode ('HiddenLinePainter', 'HiddenLineFrontFacing' or 'Wireframe')"],
+						["needClear", "boolean", "clear the display before draw"],
+						["drawer", "drawer object", "the drawer object"]
+					]
+				}
+			},
+			"classes" : {
+				"CanvasDrawer" : {
+					"description" : "Represents an object which can draw primitives to a canvas.",
+					"parameters" : [
+						["canvas", "html canvas element", "the destination element"]
+					],
+					"functions" : {
+						"GetWidth" : {
+							"description" : "Returns the width of the target.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetHeight" : {
+							"description" : "Returns the height of the target.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"Clear" : {
+							"description" : "Clears the target."
+						},
+						"DrawLine" : {
+							"description" : "Draws a line to the target.",
+							"parameters" : [
+								["from", "Coord2D", "the start of the line"],
+								["to", "Coord2D", "the end of the line"]
+							]
+						},
+						"DrawPolygon" : {
+							"description" : "Draws a polygon to the target.",
+							"parameters" : [
+								["polygon", "Polygon2D", "the polygon"],
+								["color", "string", "the hex color string"],
+								["contour", "boolean", "need to draw contour"]
+							]
+						}
+					}
+				},
+				"SVGDrawer" : {
+					"description" : "Represents an object which can draw primitives to an svg.",
+					"parameters" : [
+						["svgObject", "html svg element", "the destination element"]
+					],
+					"functions" : {
+						"GetWidth" : {
+							"description" : "Returns the width of the target.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetHeight" : {
+							"description" : "Returns the height of the target.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"Clear" : {
+							"description" : "Clears the target."
+						},
+						"DrawLine" : {
+							"description" : "Draws a line to the target.",
+							"parameters" : [
+								["from", "Coord2D", "the start of the line"],
+								["to", "Coord2D", "the end of the line"]
+							]
+						},
+						"DrawPolygon" : {
+							"description" : "Draws a polygon to the target.",
+							"parameters" : [
+								["polygon", "Polygon2D", "the polygon"],
+								["color", "string", "the hex color string"],
+								["contour", "boolean", "need to draw contour"]
+							]
+						}
+					}
+				}
+			}
+		},
 		"Extras" : {
 			"functions" : {
 				"GenerateSolidWithRadius" : {
@@ -4462,28 +4568,6 @@
 						["Body", "the result"]
 					]
 				},
-				"OrderPolygons" : {
-					"description" : "Order body polygons from front to back depending on the eye position.",
-					"parameters" : [
-						["body", "Body", "the body"],
-						["eye", "Coord", "the camera eye position"],
-						["center", "Coord", "the camera center position"]
-					],
-					"returns" : [
-						["integer[]", "the ordered polygon indices"]
-					]
-				},
-				"DrawProjectedBody" : {
-					"description" : "Draws a projected body.",
-					"parameters" : [
-						["body", "Body", "the body"],
-						["materials", "Materials", "the material container"],
-						["camera", "Camera", "the camera for projection"],
-						["drawMode", "string", "draw mode ('HiddenLinePainter', 'HiddenLineFrontFacing' or 'Wireframe')"],
-						["needClear", "boolean", "clear the display before draw"],
-						["drawer", "drawer object", "the drawer object"]
-					]
-				},
 				"CatmullClarkSubdivisionOneIteration" : {
 					"description" : "Runs one iteration of Catmull-Clark subdivision on a body.",
 					"parameters" : [
@@ -4580,82 +4664,6 @@
 				"LegoDimensions" : {
 					"description" : "Class that contains lego brick dimensions."
 				},
-				"CanvasDrawer" : {
-					"description" : "Represents an object which can draw primitives to a canvas.",
-					"parameters" : [
-						["canvas", "html canvas element", "the destination element"]
-					],
-					"functions" : {
-						"GetWidth" : {
-							"description" : "Returns the width of the target.",
-							"returns" : [
-								["integer", "the result"]
-							]
-						},
-						"GetHeight" : {
-							"description" : "Returns the height of the target.",
-							"returns" : [
-								["integer", "the result"]
-							]
-						},
-						"Clear" : {
-							"description" : "Clears the target."
-						},
-						"DrawLine" : {
-							"description" : "Draws a line to the target.",
-							"parameters" : [
-								["from", "Coord2D", "the start of the line"],
-								["to", "Coord2D", "the end of the line"]
-							]
-						},
-						"DrawPolygon" : {
-							"description" : "Draws a polygon to the target.",
-							"parameters" : [
-								["polygon", "Polygon2D", "the polygon"],
-								["color", "string", "the hex color string"],
-								["contour", "boolean", "need to draw contour"]
-							]
-						}
-					}
-				},
-				"SVGDrawer" : {
-					"description" : "Represents an object which can draw primitives to an svg.",
-					"parameters" : [
-						["svgObject", "html svg element", "the destination element"]
-					],
-					"functions" : {
-						"GetWidth" : {
-							"description" : "Returns the width of the target.",
-							"returns" : [
-								["integer", "the result"]
-							]
-						},
-						"GetHeight" : {
-							"description" : "Returns the height of the target.",
-							"returns" : [
-								["integer", "the result"]
-							]
-						},
-						"Clear" : {
-							"description" : "Clears the target."
-						},
-						"DrawLine" : {
-							"description" : "Draws a line to the target.",
-							"parameters" : [
-								["from", "Coord2D", "the start of the line"],
-								["to", "Coord2D", "the end of the line"]
-							]
-						},
-						"DrawPolygon" : {
-							"description" : "Draws a polygon to the target.",
-							"parameters" : [
-								["polygon", "Polygon2D", "the polygon"],
-								["color", "string", "the hex color string"],
-								["contour", "boolean", "need to draw contour"]
-							]
-						}
-					}
-				},
 				"SurfaceControlPoints" : {
 					"description" : "Represents control points for surface generation.",
 					"parameters" : [
@@ -4695,10 +4703,6 @@
 					}
 				}
 			}
-		},
-		"Renderer" : {
-		},
-		"Viewer" : {
 		},
 		"Three" : {
 		}
