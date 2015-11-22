@@ -13,10 +13,10 @@ def PrintErrors (builder):
 		print error
 
 def Main ():
-	builder = jsmbuild.JSMBuilder ()
+	currentPath = os.path.dirname (os.path.abspath (__file__))
 
 	PrintTitle ('Init build system')
-	currentPath = os.path.dirname (os.path.abspath (__file__))
+	builder = jsmbuild.JSMBuilder ()
 	if not builder.Init (currentPath):
 		PrintErrors (builder)
 		return 1

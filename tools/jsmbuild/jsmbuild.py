@@ -18,6 +18,10 @@ def WriteHeaderToFile (fileName, header):
 	content = GetFileContent (fileName)
 	WriteContentToFile (fileName, header + content)
 	
+def WriteFooterToFile (fileName, footer):
+	content = GetFileContent (fileName)
+	WriteContentToFile (fileName, content + footer)
+
 def MergeFiles (inputFileNames, outputFileName):
 	for fileName in inputFileNames:
 		if not os.path.exists (fileName):
@@ -198,5 +202,12 @@ class JSMBuilder:
 		documentation.WriteJSON (resultFilePath)
 		return True
 
+	def MergeFilesForTest (self, mergedFilePath):
+		wd = WorkingDirGuard (self.rootPath)
+		if not MergeFiles (self.files['coreFileList'], mergedFilePath):
+			return False	
+		WriteFooterToFile (mergedFilePath, '\nmodule.exports = JSM;\n')
+		return True
+		
 	def GetErrors (self):
 		return self.errors
