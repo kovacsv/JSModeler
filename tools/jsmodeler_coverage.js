@@ -9,5 +9,6 @@ var sutest = require ('sutest');
 var unitTest = new sutest.UnitTest (dirName, process.argv);
 
 global.DataView = sutest.Emulators.DataView;
-require (fullPath) (unitTest);
+jsModelerTest = require (fullPath)
+jsModelerTest (unitTest);
 unitTest.Run ();
