@@ -45,6 +45,14 @@ def CompileFile (inputFileName, externFileName, outputFileName):
 		return False
 	return True
 
+class WorkingDirGuard:
+	def __init__ (self, newWorkingDir):
+		self.oldWorkingDir = os.getcwd ()
+		os.chdir (newWorkingDir)
+	
+	def __del__ (self):
+		os.chdir (self.oldWorkingDir)
+	
 class JSMBuilder:
 	def __init__ (self):
 		self.rootPath = None
@@ -52,16 +60,13 @@ class JSMBuilder:
 		self.errors = None
 
 	def Init (self, rootPath):
-		os.chdir (rootPath)
+		wd = WorkingDirGuard (rootPath)
 		self.rootPath = rootPath
-		filesJsonPath = os.path.join (self.rootPath, 'files.json')
+		filesJsonPath = 'files.json'
 		self.files = LoadJsonFile (filesJsonPath)
 		self.errors = []
 		return True
 
-	def GetErrors (self):
-		return self.errors
-	
 	def CheckDependencies (self):
 		def CheckUsedSymbols (inputFileName, definedSymbols, errors):
 			fileContent = GetFileContent (inputFileName)
@@ -89,6 +94,7 @@ class JSMBuilder:
 					errors.append ('Invalid dependency "' + useString + '" in file "' + inputFileName + '".')
 					everySymbolValid = False
 			return everySymbolValid	
+		wd = WorkingDirGuard (self.rootPath)
 		definedSymbols = []
 		success = True
 		for inputFileName in self.files['coreFileList']:
@@ -97,7 +103,8 @@ class JSMBuilder:
 		return success
 	
 	def RunUnitTests (self):
-		unitTestPath = os.path.join (self.rootPath, '..', 'test', 'unittest', 'jsmodelertest.js')
+		wd = WorkingDirGuard (self.rootPath)
+		unitTestPath = os.path.join ('..', 'test', 'unittest', 'jsmodelertest.js')
 		result = os.system ('sutest ' + unitTestPath + ' -silent')
 		if result != 0:
 			self.errors.append ('Unit tests failed.')
@@ -105,8 +112,9 @@ class JSMBuilder:
 		return True
 	
 	def JSHintCheck (self):
-		configFilePath = os.path.join (self.rootPath, 'jshintconfig.json')
-		sourcesFolderName = os.path.join (self.rootPath, '..', 'src')
+		wd = WorkingDirGuard (self.rootPath)
+		configFilePath = 'jshintconfig.json'
+		sourcesFolderName = os.path.join ('..', 'src')
 		result = os.system ('jshint --config ' + configFilePath + ' ' + sourcesFolderName)
 		if result != 0:
 			self.errors.append ('Found JSHint errors.')
@@ -146,30 +154,32 @@ class JSMBuilder:
 			WriteVersionHeader (resultFilePath, version)
 			return True
 			
+		wd = WorkingDirGuard (self.rootPath)
 		version = GetVersion (self.files['coreFileList'][0])
 		if version == None:
 			self.errors.append ('Invalid version.')
 			return False
 			
 		inputFileNames = self.files['coreFileList']
-		mergedFilePath = os.path.join (self.rootPath, 'jsmodeler.merged.js')
-		externsFilePath = os.path.join (self.rootPath, 'jsmodeler.externs.js')
-		resultFilePath = os.path.join (self.rootPath, '..', 'build', 'jsmodeler.js')
+		mergedFilePath = 'jsmodeler.merged.js'
+		externsFilePath = 'jsmodeler.externs.js'
+		resultFilePath = os.path.join ('..', 'build', 'jsmodeler.js')
 		if not MergeAndCompileFiles (inputFileNames, mergedFilePath, externsFilePath, resultFilePath, version, self.errors):
 			return False
 			
 		inputFileNames = self.files['threeExtensionFileList']
-		mergedFilePath = os.path.join (self.rootPath, 'jsmodeler.viewer.merged.js')
-		externsFilePath = os.path.join (self.rootPath, 'jsmodeler.viewer.externs.js')
-		resultFilePath = os.path.join (self.rootPath, '..', 'build', 'jsmodeler.viewer.js')
+		mergedFilePath = 'jsmodeler.viewer.merged.js'
+		externsFilePath = 'jsmodeler.viewer.externs.js'
+		resultFilePath = os.path.join ('..', 'build', 'jsmodeler.viewer.js')
 		if not MergeAndCompileFiles (inputFileNames, mergedFilePath, externsFilePath, resultFilePath, version, self.errors):
 			return False
 
 		return True
 
 	def Document (self):
+		wd = WorkingDirGuard (self.rootPath)
 		projectName = 'JSModeler'
-		resultFilePath = os.path.join (self.rootPath, '..', 'documentation', 'jsmdoc', 'include', 'jsmdoc.json')
+		resultFilePath = os.path.join ('..', 'documentation', 'jsmdoc', 'include', 'jsmdoc.json')
 		moduleNames = []
 		filesByModule = {}
 		for fileName in self.files['coreFileList']:
@@ -187,3 +197,6 @@ class JSMBuilder:
 			documentation.AddModule (newModuleName, filesByModule[moduleName])
 		documentation.WriteJSON (resultFilePath)
 		return True
+
+	def GetErrors (self):
+		return self.errors
