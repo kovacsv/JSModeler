@@ -136,8 +136,7 @@ JSM.Polygon2D.prototype.EnumerateVertices = function (from, to, callback)
 */
 JSM.Polygon2D.prototype.GetNextVertex = function (index)
 {
-	var count = this.vertices.length;
-	return (index < count - 1 ? index + 1 : 0);
+	return JSM.NextIndex (index, this.vertices.length);
 };
 
 /**
@@ -150,8 +149,7 @@ JSM.Polygon2D.prototype.GetNextVertex = function (index)
 */
 JSM.Polygon2D.prototype.GetPrevVertex = function (index)
 {
-	var count = this.vertices.length;
-	return (index > 0 ? index - 1 : count - 1);
+	return JSM.PrevIndex (index, this.vertices.length);
 };
 
 /**

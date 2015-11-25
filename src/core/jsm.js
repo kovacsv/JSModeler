@@ -65,6 +65,30 @@ JSM.ValueOrDefault = function (val, def)
 };
 
 /**
+* Function: PrevIndex
+* Description: Returns the circular previous index for an array with the given length.
+* Parameters:
+*	index {integer} the index
+*	length {integer} the number of indices
+*/
+JSM.PrevIndex = function (index, length)
+{
+	return index > 0 ? index - 1 : length - 1;
+};
+
+/**
+* Function: NextIndex
+* Description: Returns the circular next index for an array with the given length.
+* Parameters:
+*	index {integer} the index
+*	length {integer} the number of indices
+*/
+JSM.NextIndex = function (index, length)
+{
+	return index < length - 1 ? index + 1 : 0;
+};
+
+/**
 * Function: CopyObjectProperties
 * Description: Copies one object properties to another object.
 * Parameters:

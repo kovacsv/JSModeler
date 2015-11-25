@@ -68,8 +68,20 @@ JSM.Polygon.prototype.VertexCount = function ()
 */
 JSM.Polygon.prototype.GetNextVertex = function (index)
 {
-	var count = this.vertices.length;
-	return (index < count - 1 ? index + 1 : 0);
+	return JSM.NextIndex (index, this.vertices.length);
+};
+
+/**
+* Function: Polygon.GetPrevVertex
+* Description: Returns the vertex index before the given one.
+* Parameters:
+*	index {integer} the vertex index
+* Returns:
+*	{integer} the result
+*/
+JSM.Polygon.prototype.GetPrevVertex = function (index)
+{
+	return JSM.PrevIndex (index, this.vertices.length);
 };
 
 /**
@@ -88,20 +100,6 @@ JSM.Polygon.prototype.GetVertexAngle = function (index)
 	var prevDir = JSM.CoordSub (prev, curr);
 	var nextDir = JSM.CoordSub (next, curr);
 	return prevDir.AngleTo (nextDir);
-};
-
-/**
-* Function: Polygon.GetPrevVertex
-* Description: Returns the vertex index before the given one.
-* Parameters:
-*	index {integer} the vertex index
-* Returns:
-*	{integer} the result
-*/
-JSM.Polygon.prototype.GetPrevVertex = function (index)
-{
-	var count = this.vertices.length;
-	return (index > 0 ? index - 1 : count - 1);
 };
 
 /**
@@ -626,29 +624,31 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 	{
 		function GetEntryVertices (cutVertexTypes)
 		{
-			function FindPrevSide (index, cutVertexTypes)
+			function FindPrevSideType (index, cutVertexTypes)
 			{
-				var currIndex = index;
-				while (cutVertexTypes[currIndex] === 0) {
-					currIndex = (currIndex > 0 ? currIndex - 1 : cutVertexTypes.length - 1);
+				var currIndex = JSM.PrevIndex (index, cutVertexTypes.length);
+				while (currIndex != index) {
+					if (cutVertexTypes[currIndex] !== 0) {
+						return cutVertexTypes[currIndex];
+					}
+					currIndex = JSM.PrevIndex (currIndex, cutVertexTypes.length);
 				}
-				return cutVertexTypes[currIndex];
+				return 0;
 			}
 
 			var entryVertices = [];
-			var i, currSide, prevIndex, nextIndex, prevSide, nextSide;
+			var i, currSide, prevIndex, nextIndex, prevSideType, nextSideType;
 			for (i = 0; i < cutVertexTypes.length; i++) {
 				currSide = cutVertexTypes[i];
 				if (currSide === 0) {
-					prevIndex = (i > 0 ? i - 1 : cutVertexTypes.length - 1);
-					nextIndex = (i < cutVertexTypes.length - 1 ? i + 1 : 0);
-					prevSide = cutVertexTypes[prevIndex];
-					nextSide = cutVertexTypes[nextIndex];
-					if (nextSide !== 0 && prevSide === 0) {
-						prevSide = FindPrevSide (prevIndex, cutVertexTypes);
+					prevIndex = JSM.PrevIndex (i, cutVertexTypes.length);
+					nextIndex = JSM.NextIndex (i, cutVertexTypes.length);
+					prevSideType = cutVertexTypes[prevIndex];
+					nextSideType = cutVertexTypes[nextIndex];
+					if (nextSideType !== 0 && prevSideType === 0) {
+						prevSideType = FindPrevSideType (prevIndex, cutVertexTypes);
 					}
-
-					if ((prevSide == -1 && nextSide == 1) || (prevSide == 1 && nextSide == -1)) {
+					if ((prevSideType == -1 && nextSideType == 1) || (prevSideType == 1 && nextSideType == -1)) {
 						entryVertices.push (i);
 					}
 				}
