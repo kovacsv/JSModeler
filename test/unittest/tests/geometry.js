@@ -1784,7 +1784,7 @@ polygonSuite.AddTest ('OldCutPolygonTest', function (test)
 	test.Assert (result == true);
 	test.Assert (backPolygons.length == 1);
 	test.Assert (frontPolygons.length == 1);
-	
+
 	test.Assert (
 		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.5, 0.0, 0.0)) &&
 		frontPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (0.5, 1.0, 0.0)) &&
@@ -1912,6 +1912,7 @@ polygonSuite.AddTest ('OldCutPolygonTest', function (test)
 	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (3.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 	backPolygons = [];
 	frontPolygons = [];
+	planePolygons = [];
 	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
 	test.Assert (result == true);
 	test.Assert (backPolygons.length == 0);
