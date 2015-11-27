@@ -9,10 +9,25 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 
 	function OnGeometryEnd (material)
 	{
+		var materialType = JSM.RenderMaterialType.Normal;
+		if (material.texture !== null) {
+			if (material.opacity < 1.0) {
+				materialType = JSM.RenderMaterialType.TexturedTransparent;
+			} else {
+				materialType = JSM.RenderMaterialType.Textured;
+			}
+		} else {
+			if (material.opacity < 1.0) {
+				materialType = JSM.RenderMaterialType.NormalTransparent;
+			} else {
+				materialType = JSM.RenderMaterialType.Normal;
+			}
+		}
+
 		var renderAmbient = JSM.HexColorToNormalizedRGBComponents (material.ambient);
 		var renderDiffuse = JSM.HexColorToNormalizedRGBComponents (material.diffuse);
 		var renderSpecular = JSM.HexColorToNormalizedRGBComponents (material.specular);
-		var renderMaterial = new JSM.RenderMaterial (renderAmbient, renderDiffuse, renderSpecular, material.shininess, material.opacity, material.texture, material.textureWidth, material.textureHeight);
+		var renderMaterial = new JSM.RenderMaterial (materialType, renderAmbient, renderDiffuse, renderSpecular, material.shininess, material.opacity, material.texture, material.textureWidth, material.textureHeight);
 
 		var mesh = new JSM.RenderMesh (renderMaterial);
 		mesh.SetVertexArray (vertices);
