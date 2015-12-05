@@ -74,6 +74,21 @@ JSM.RenderMesh.prototype.SetUVArray = function (uvs)
 	this.uvArray = new Float32Array (uvs);
 };
 
+JSM.RenderMesh.prototype.HasVertexArray = function ()
+{
+	return this.vertexArray !== null;
+};
+
+JSM.RenderMesh.prototype.HasNormalArray = function ()
+{
+	return this.normalArray !== null;
+};
+
+JSM.RenderMesh.prototype.HasUVArray = function ()
+{
+	return this.uvArray !== null;
+};
+
 JSM.RenderMesh.prototype.GetVertexArray = function ()
 {
 	return this.vertexArray;
@@ -124,11 +139,6 @@ JSM.RenderMesh.prototype.NormalCount = function ()
 JSM.RenderMesh.prototype.UVCount = function ()
 {
 	return parseInt (this.uvArray.length / 2, 10);
-};
-
-JSM.RenderMesh.prototype.HasUV = function ()
-{
-	return this.uvArray !== null;
 };
 
 JSM.RenderMesh.prototype.GetVertex = function (index)

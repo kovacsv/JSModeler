@@ -124,20 +124,24 @@ JSM.Renderer.prototype.AddRenderBody = function (renderBody, textureLoaded)
 		vertexBuffer.itemSize = 3;
 		vertexBuffer.numItems = mesh.VertexCount ();
 
-		var normalBuffer = context.createBuffer ();
-		context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
-		context.bufferData (context.ARRAY_BUFFER, mesh.GetNormalArray (), context.STATIC_DRAW);
-		normalBuffer.itemSize = 3;
-		normalBuffer.numItems = mesh.NormalCount ();
+		var normalBuffer = null;
+		if (mesh.HasNormalArray ()) {
+			normalBuffer = context.createBuffer ();
+			context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
+			context.bufferData (context.ARRAY_BUFFER, mesh.GetNormalArray (), context.STATIC_DRAW);
+			normalBuffer.itemSize = 3;
+			normalBuffer.numItems = mesh.NormalCount ();
+		}
 
 		var uvBuffer = null;
-		if (mesh.HasUV ()) {
+		if (mesh.HasUVArray ()) {
 			uvBuffer = context.createBuffer ();
 			context.bindBuffer (context.ARRAY_BUFFER, uvBuffer);
 			context.bufferData (context.ARRAY_BUFFER, mesh.GetUVArray (), context.STATIC_DRAW);
 			uvBuffer.itemSize = 2;
 			uvBuffer.numItems = mesh.UVCount ();
 		}
+		
 		mesh.SetBuffers (vertexBuffer, normalBuffer, uvBuffer);
 	}
 
