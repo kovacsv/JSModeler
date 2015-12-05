@@ -121,14 +121,14 @@ JSM.RenderMesh.prototype.NormalCount = function ()
 	return parseInt (this.normalArray.length / 3, 10);
 };
 
-JSM.RenderMesh.prototype.HasUV = function ()
-{
-	return this.uvArray !== null;
-};
-
 JSM.RenderMesh.prototype.UVCount = function ()
 {
 	return parseInt (this.uvArray.length / 2, 10);
+};
+
+JSM.RenderMesh.prototype.HasUV = function ()
+{
+	return this.uvArray !== null;
 };
 
 JSM.RenderMesh.prototype.GetVertex = function (index)
