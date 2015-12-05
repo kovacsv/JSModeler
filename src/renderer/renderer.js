@@ -97,45 +97,48 @@ JSM.Renderer.prototype.AddRenderBody = function (renderBody, textureLoaded)
 	function CompileMaterial (material, context, textureLoaded)
 	{
 		if (material.texture !== null) {
-			material.textureBuffer = context.createTexture ();
-			material.textureImage = new Image ();
-			material.textureImage.src = material.texture;
-			material.textureImage.onload = function () {
-				var textureImage = JSM.ResizeImageToPowerOfTwoSides (material.textureImage);
-				context.bindTexture (context.TEXTURE_2D, material.textureBuffer);
+			var textureBuffer = context.createTexture ();
+			var textureImage = new Image ();
+			textureImage.src = material.texture;
+			textureImage.onload = function () {
+				var resizedImage = JSM.ResizeImageToPowerOfTwoSides (textureImage);
+				context.bindTexture (context.TEXTURE_2D, textureBuffer);
 				context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.LINEAR);
 				context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR_MIPMAP_LINEAR);
-				context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, textureImage);
+				context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, resizedImage);
 				context.generateMipmap (context.TEXTURE_2D);
 				context.bindTexture (context.TEXTURE_2D, null);
 				if (textureLoaded !== undefined && textureLoaded !== null) {
 					textureLoaded ();
 				}
 			};
+			material.SetBuffers (textureBuffer, textureImage);
 		}
 	}
 	
 	function CompileMesh (mesh, context)
 	{
-		mesh.vertexBuffer = context.createBuffer ();
-		context.bindBuffer (context.ARRAY_BUFFER, mesh.vertexBuffer);
-		context.bufferData (context.ARRAY_BUFFER, mesh.vertexArray, context.STATIC_DRAW);
-		mesh.vertexBuffer.itemSize = 3;
-		mesh.vertexBuffer.numItems = parseInt (mesh.vertexArray.length / 3, 10);
+		var vertexBuffer = context.createBuffer ();
+		context.bindBuffer (context.ARRAY_BUFFER, vertexBuffer);
+		context.bufferData (context.ARRAY_BUFFER, mesh.GetVertexArray (), context.STATIC_DRAW);
+		vertexBuffer.itemSize = 3;
+		vertexBuffer.numItems = mesh.VertexCount ();
 
-		mesh.normalBuffer = context.createBuffer ();
-		context.bindBuffer (context.ARRAY_BUFFER, mesh.normalBuffer);
-		context.bufferData (context.ARRAY_BUFFER, mesh.normalArray, context.STATIC_DRAW);
-		mesh.normalBuffer.itemSize = 3;
-		mesh.normalBuffer.numItems = parseInt (mesh.normalArray.length / 3, 10);
+		var normalBuffer = context.createBuffer ();
+		context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
+		context.bufferData (context.ARRAY_BUFFER, mesh.GetNormalArray (), context.STATIC_DRAW);
+		normalBuffer.itemSize = 3;
+		normalBuffer.numItems = mesh.NormalCount ();
 
-		if (mesh.uvArray !== null) {
-			mesh.uvBuffer = context.createBuffer ();
-			context.bindBuffer (context.ARRAY_BUFFER, mesh.uvBuffer);
-			context.bufferData (context.ARRAY_BUFFER, mesh.uvArray, context.STATIC_DRAW);
-			mesh.uvBuffer.itemSize = 2;
-			mesh.uvBuffer.numItems = parseInt (mesh.uvArray.length / 2, 10);
+		var uvBuffer = null;
+		if (mesh.HasUV ()) {
+			uvBuffer = context.createBuffer ();
+			context.bindBuffer (context.ARRAY_BUFFER, uvBuffer);
+			context.bufferData (context.ARRAY_BUFFER, mesh.GetUVArray (), context.STATIC_DRAW);
+			uvBuffer.itemSize = 2;
+			uvBuffer.numItems = mesh.UVCount ();
 		}
+		mesh.SetBuffers (vertexBuffer, normalBuffer, uvBuffer);
 	}
 
 	var renderer = this;
@@ -185,10 +188,12 @@ JSM.Renderer.prototype.Render = function (camera)
 				return JSM.ShaderType.Normal;
 			} else if (materialType == JSM.RenderMaterialType.Textured || materialType == JSM.RenderMaterialType.TexturedTransparent) {
 				return JSM.ShaderType.Textured;
+			} else if (materialType == JSM.RenderMaterialType.Line) {
+				return JSM.ShaderType.Line;
 			}
 			return null;
 		}
-		
+
 		var shaderType = MaterialTypeToShaderType (materialType);
 		var modifyParams = true;
 		renderer.EnumerateBodies (function (body) {
@@ -199,14 +204,19 @@ JSM.Renderer.prototype.Render = function (camera)
 					renderer.shader.SetParameters (renderer.light, viewMatrix, projectionMatrix);
 					modifyParams = false;
 				}
-				var vertexBuffer = mesh.GetVertexBuffer ();
-				var normalBuffer = mesh.GetNormalBuffer ();
-				var uvBuffer = mesh.GetUVBuffer ();
-				renderer.shader.DrawArrays (mesh.material, matrix, vertexBuffer, normalBuffer, uvBuffer);
+				if (shaderType == JSM.ShaderType.Normal || shaderType == JSM.ShaderType.Textured) {
+					var vertexBuffer = mesh.GetVertexBuffer ();
+					var normalBuffer = mesh.GetNormalBuffer ();
+					var uvBuffer = mesh.GetUVBuffer ();
+					renderer.shader.DrawArrays (mesh.material, matrix, vertexBuffer, normalBuffer, uvBuffer);
+				} else if (shaderType == JSM.ShaderType.Line) {
+					// TODO: call DrawArrays
+					return;
+				}
 			});
 		});
 	}
-	
+
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	
 	var viewMatrix = JSM.MatrixView (camera.eye, camera.center, camera.up);
@@ -216,4 +226,5 @@ JSM.Renderer.prototype.Render = function (camera)
 	DrawMeshes (this, JSM.RenderMaterialType.Textured, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialType.NormalTransparent, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialType.TexturedTransparent, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.Line, viewMatrix, projectionMatrix);
 };

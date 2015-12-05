@@ -10,7 +10,8 @@ JSM.RenderMaterialType = {
 	Normal : 0,
 	Textured : 1,
 	NormalTransparent : 2,
-	TexturedTransparent : 3
+	TexturedTransparent : 3,
+	Line : 4
 };
 
 JSM.RenderMaterial = function (type, ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight)
@@ -27,6 +28,12 @@ JSM.RenderMaterial = function (type, ambient, diffuse, specular, shininess, opac
 	
 	this.textureBuffer = null;
 	this.textureImage = null;
+};
+
+JSM.RenderMaterial.prototype.SetBuffers = function (textureBuffer, textureImage)
+{
+	this.textureBuffer = textureBuffer;
+	this.textureImage = textureImage;
 };
 
 JSM.RenderMesh = function (material)
@@ -67,6 +74,28 @@ JSM.RenderMesh.prototype.SetUVArray = function (uvs)
 	this.uvArray = new Float32Array (uvs);
 };
 
+JSM.RenderMesh.prototype.GetVertexArray = function ()
+{
+	return this.vertexArray;
+};
+
+JSM.RenderMesh.prototype.GetNormalArray = function ()
+{
+	return this.normalArray;
+};
+
+JSM.RenderMesh.prototype.GetUVArray = function ()
+{
+	return this.uvArray;
+};
+
+JSM.RenderMesh.prototype.SetBuffers = function (vertexBuffer, normalBuffer, uvBuffer)
+{
+	this.vertexBuffer = vertexBuffer;
+	this.normalBuffer = normalBuffer;
+	this.uvBuffer = uvBuffer;
+};
+
 JSM.RenderMesh.prototype.GetVertexBuffer = function ()
 {
 	return this.vertexBuffer;
@@ -85,6 +114,21 @@ JSM.RenderMesh.prototype.GetUVBuffer = function ()
 JSM.RenderMesh.prototype.VertexCount = function ()
 {
 	return parseInt (this.vertexArray.length / 3, 10);
+};
+
+JSM.RenderMesh.prototype.NormalCount = function ()
+{
+	return parseInt (this.normalArray.length / 3, 10);
+};
+
+JSM.RenderMesh.prototype.HasUV = function ()
+{
+	return this.uvArray !== null;
+};
+
+JSM.RenderMesh.prototype.UVCount = function ()
+{
+	return parseInt (this.uvArray.length / 2, 10);
 };
 
 JSM.RenderMesh.prototype.GetVertex = function (index)
