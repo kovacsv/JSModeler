@@ -91,18 +91,24 @@
 			var camera = new JSM.Camera (
 				new JSM.Coord (1.0, 3.0, 2.0),
 				new JSM.Coord (0.0, 0.0, 0.0),
-				new JSM.Coord (0.0, 0.0, 1.0)
+				new JSM.Vector (0.0, 0.0, 1.0)
 			);
 			
 			var light = new JSM.Light ();
-			light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
 			
-			var renderer = new JSM.Renderer ();
-			if (!renderer.Init (document.getElementById ('example'), light)) {
+			viewer = new JSM.Viewer ();
+			if (!viewer.Init (document.getElementById ('example'), camera, light)) {
 				alert ('error');
 			}
 
-			renderer.Render (camera);
+			var renderBody = new JSM.RenderBody ();
+			var lineMaterial = new JSM.RenderMaterial (JSM.RenderMaterialType.Line, [0, 0, 0], [1, 0, 0], [0, 0, 0], 0, 1, null, 1, 1)
+			var lineMesh = new JSM.RenderMesh (lineMaterial);
+			lineMesh.SetVertexArray ([0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0]);
+			renderBody.AddMesh (lineMesh);
+			
+			viewer.AddRenderBody (renderBody, null);
+			viewer.Draw ();
 		}
 	
 	    window.onload = function ()

@@ -124,11 +124,14 @@ JSM.Renderer.prototype.AddRenderBody = function (renderBody, textureLoaded)
 		vertexBuffer.itemSize = 3;
 		vertexBuffer.numItems = mesh.VertexCount ();
 
-		var normalBuffer = context.createBuffer ();
-		context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
-		context.bufferData (context.ARRAY_BUFFER, mesh.GetNormalArray (), context.STATIC_DRAW);
-		normalBuffer.itemSize = 3;
-		normalBuffer.numItems = mesh.NormalCount ();
+		var normalBuffer = null;
+		if (mesh.HasNormalArray ()) {
+			normalBuffer = context.createBuffer ();
+			context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
+			context.bufferData (context.ARRAY_BUFFER, mesh.GetNormalArray (), context.STATIC_DRAW);
+			normalBuffer.itemSize = 3;
+			normalBuffer.numItems = mesh.NormalCount ();
+		}
 
 		var uvBuffer = null;
 		if (mesh.HasUVArray ()) {
@@ -144,7 +147,7 @@ JSM.Renderer.prototype.AddRenderBody = function (renderBody, textureLoaded)
 
 	var renderer = this;
 	renderBody.EnumerateMeshes (function (mesh) {
-		CompileMaterial (mesh.material, renderer.context, textureLoaded);
+		CompileMaterial (mesh.GetMaterial (), renderer.context, textureLoaded);
 		CompileMesh (mesh, renderer.context);
 	});
 	this.bodies.push (renderBody);
@@ -205,15 +208,11 @@ JSM.Renderer.prototype.Render = function (camera)
 					renderer.shader.SetParameters (renderer.light, viewMatrix, projectionMatrix);
 					modifyParams = false;
 				}
-				if (shaderType == JSM.ShaderType.Normal || shaderType == JSM.ShaderType.Textured) {
-					var vertexBuffer = mesh.GetVertexBuffer ();
-					var normalBuffer = mesh.GetNormalBuffer ();
-					var uvBuffer = mesh.GetUVBuffer ();
-					renderer.shader.DrawArrays (mesh.material, matrix, vertexBuffer, normalBuffer, uvBuffer);
-				} else if (shaderType == JSM.ShaderType.Line) {
-					// TODO: call DrawArrays
-					return;
-				}
+				var material = mesh.GetMaterial ();
+				var vertexBuffer = mesh.GetVertexBuffer ();
+				var normalBuffer = mesh.GetNormalBuffer ();
+				var uvBuffer = mesh.GetUVBuffer ();
+				renderer.shader.DrawArrays (material, matrix, vertexBuffer, normalBuffer, uvBuffer);
 			});
 		});
 	}

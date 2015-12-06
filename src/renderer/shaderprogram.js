@@ -259,9 +259,7 @@ JSM.ShaderProgram.prototype.DrawArrays = function (material, matrix, vertexBuffe
 		
 		context.drawArrays (context.TRIANGLES, 0, vertexBuffer.numItems);
 	} else if (this.currentType == JSM.ShaderType.Line) {
-		// TODO: use material
-		
-		context.uniform3f (shader.lineColorUniform, 1, 0, 0);
+		context.uniform3f (shader.lineColorUniform, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
 		
 		context.uniformMatrix4fv (shader.tMatrixUniform, false, matrix);
 		
