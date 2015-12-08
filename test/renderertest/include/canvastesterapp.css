@@ -10,7 +10,7 @@ html, body
 
 #frame
 {
-	width : 600px;
+	width : 622px;
 	margin : 0px auto;
 }
 
@@ -23,7 +23,9 @@ div.resulttitle
 {
 	padding : 5px 10px;
 	margin-bottom : 5px;
+	margin-right : 5px;
 	cursor : pointer;
+	float : left;
 }
 
 div.resulttitle.success
@@ -56,7 +58,22 @@ div.allresult.failure
 	color : #880000;
 }
 
-div.resultimages
+div.testresult
 {
+	margin-bottom : 10px;
+	border : 1px solid #cccccc;
 	display : none;
+}
+
+div.testresulttitle
+{
+	color : #000000;
+	background : #fafafa;
+	border-bottom : 1px solid #cccccc;
+	padding : 10px;
+}
+
+div.testresultmain
+{
+	padding : 10px;
 }
