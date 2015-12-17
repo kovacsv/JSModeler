@@ -102,11 +102,40 @@
 			}
 
 			var renderBody = new JSM.RenderBody ();
+
 			var lineMaterial = new JSM.RenderMaterial (JSM.RenderMaterialType.Line, [0, 0, 0], [1, 0, 0], [0, 0, 0], 0, 1, null, 1, 1)
 			var lineMesh = new JSM.RenderMesh (lineMaterial);
-			lineMesh.SetVertexArray ([0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0]);
+			var lines = [
+				0, 0, 0, 1, 0, 0,
+				1, 0, 0, 1, 1, 0,
+				1, 1, 0, 0, 1, 0,
+				0, 1, 0, 0, 0, 0
+			]
+			lineMesh.SetVertexArray (lines);
 			renderBody.AddMesh (lineMesh);
 			
+			var lineMaterial2 = new JSM.RenderMaterial (JSM.RenderMaterialType.Line, [0, 0, 0], [0, 1, 0], [0, 0, 0], 0, 1, null, 1, 1)
+			var lineMesh2 = new JSM.RenderMesh (lineMaterial2);
+			var lines2 = [
+				0, 0, 1, 1, 0, 1,
+				1, 0, 1, 1, 1, 1,
+				1, 1, 1, 0, 1, 1,
+				0, 1, 1, 0, 0, 1
+			]
+			lineMesh2.SetVertexArray (lines2);
+			renderBody.AddMesh (lineMesh2);
+
+			var lineMaterial3 = new JSM.RenderMaterial (JSM.RenderMaterialType.Line, [0, 0, 0], [0, 0, 1], [0, 0, 0], 0, 1, null, 1, 1)
+			var lineMesh3 = new JSM.RenderMesh (lineMaterial3);
+			var lines3 = [
+				0, 0, 0, 0, 0, 1,
+				1, 0, 0, 1, 0, 1,
+				1, 1, 0, 1, 1, 1,
+				0, 1, 0, 0, 1, 1
+			]
+			lineMesh3.SetVertexArray (lines3);
+			renderBody.AddMesh (lineMesh3);
+
 			viewer.AddRenderBody (renderBody, null);
 			viewer.Draw ();
 		}
