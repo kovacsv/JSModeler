@@ -64,10 +64,16 @@ JSM.ShaderProgram.prototype.Init = function ()
 			].join ('\n');
 		} else if (shaderType == JSM.ShaderType.Line) {
 			script = [
-				'#define ' + (shaderType == JSM.ShaderType.Normal ? 'NOTEXTURE' : 'USETEXTURE'),
-				'uniform mediump vec3 uLineColor;',
+				'uniform mediump vec3 uLineAmbientColor;',
+				'uniform mediump vec3 uLineDiffuseColor;',
+
+				'uniform mediump vec3 uLightAmbientColor;',
+				'uniform mediump vec3 uLightDiffuseColor;',
+				
 				'void main (void) {',
-				'	gl_FragColor = vec4 (uLineColor, 1);',
+				'	mediump vec3 ambientComponent = uLineAmbientColor * uLightAmbientColor;',
+				'	mediump vec3 diffuseComponent = uLineDiffuseColor * uLightDiffuseColor;',
+				'	gl_FragColor = vec4 (ambientComponent + diffuseComponent, 1);',
 				'}'
 			].join ('\n');
 		}
@@ -157,7 +163,10 @@ JSM.ShaderProgram.prototype.Init = function ()
 			shader.vMatrixUniform = context.getUniformLocation (shader, 'uViewMatrix');
 			shader.pMatrixUniform = context.getUniformLocation (shader, 'uProjectionMatrix');
 			shader.tMatrixUniform = context.getUniformLocation (shader, 'uTransformationMatrix');
-			shader.lineColorUniform = context.getUniformLocation (shader, 'uLineColor');
+			shader.lineAmbientColorUniform = context.getUniformLocation (shader, 'uLineAmbientColor');
+			shader.lineDiffuseColorUniform = context.getUniformLocation (shader, 'uLineDiffuseColor');
+			shader.lightAmbientColorUniform = context.getUniformLocation (shader, 'uLightAmbientColor');
+			shader.lightDiffuseColorUniform = context.getUniformLocation (shader, 'uLightDiffuseColor');
 		}
 	}
 	
@@ -221,6 +230,8 @@ JSM.ShaderProgram.prototype.SetParameters = function (light, viewMatrix, project
 		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
 		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
 	} else if (this.currentType == JSM.ShaderType.Line) {
+		context.uniform3f (shader.lightAmbientColorUniform, light.ambient[0], light.ambient[1], light.ambient[2]);
+		context.uniform3f (shader.lightDiffuseColorUniform, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
 		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
 		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
 	}
@@ -259,7 +270,8 @@ JSM.ShaderProgram.prototype.DrawArrays = function (material, matrix, vertexBuffe
 		
 		context.drawArrays (context.TRIANGLES, 0, vertexBuffer.numItems);
 	} else if (this.currentType == JSM.ShaderType.Line) {
-		context.uniform3f (shader.lineColorUniform, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+		context.uniform3f (shader.lineAmbientColorUniform, material.ambient[0], material.ambient[1], material.ambient[2]);
+		context.uniform3f (shader.lineDiffuseColorUniform, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
 		
 		context.uniformMatrix4fv (shader.tMatrixUniform, false, matrix);
 		
