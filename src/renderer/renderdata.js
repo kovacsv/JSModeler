@@ -11,7 +11,8 @@ JSM.RenderMaterialType = {
 	Textured : 1,
 	NormalTransparent : 2,
 	TexturedTransparent : 3,
-	Line : 4
+	Line : 4,
+	LineTransparent : 5
 };
 
 JSM.RenderMaterial = function (type, ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight)

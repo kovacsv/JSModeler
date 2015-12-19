@@ -192,7 +192,7 @@ JSM.Renderer.prototype.Render = function (camera)
 				return JSM.ShaderType.Normal;
 			} else if (materialType == JSM.RenderMaterialType.Textured || materialType == JSM.RenderMaterialType.TexturedTransparent) {
 				return JSM.ShaderType.Textured;
-			} else if (materialType == JSM.RenderMaterialType.Line) {
+			} else if (materialType == JSM.RenderMaterialType.Line || materialType == JSM.RenderMaterialType.LineTransparent) {
 				return JSM.ShaderType.Line;
 			}
 			return null;
@@ -224,7 +224,8 @@ JSM.Renderer.prototype.Render = function (camera)
 
 	DrawMeshes (this, JSM.RenderMaterialType.Normal, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialType.Textured, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.Line, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialType.NormalTransparent, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialType.TexturedTransparent, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.Line, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.LineTransparent, viewMatrix, projectionMatrix);
 };
