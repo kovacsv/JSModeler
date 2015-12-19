@@ -100,7 +100,7 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 
 	var meshes = [];
 	var geometry = null;
-	JSM.ExplodeBodyToTriangles (body, materials, explodeData);
+	JSM.ExplodeBody (body, materials, explodeData);
 	return meshes;
 };
 

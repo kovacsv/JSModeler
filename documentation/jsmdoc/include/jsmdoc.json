@@ -44,6 +44,20 @@
 						["anything", "the result"]
 					]
 				},
+				"PrevIndex" : {
+					"description" : "Returns the circular previous index for an array with the given length.",
+					"parameters" : [
+						["index", "integer", "the index"],
+						["length", "integer", "the number of indices"]
+					]
+				},
+				"NextIndex" : {
+					"description" : "Returns the circular next index for an array with the given length.",
+					"parameters" : [
+						["index", "integer", "the index"],
+						["length", "integer", "the number of indices"]
+					]
+				},
 				"CopyObjectProperties" : {
 					"description" : "Copies one object properties to another object.",
 					"parameters" : [
@@ -2083,15 +2097,6 @@
 								["integer", "the result"]
 							]
 						},
-						"GetVertexAngle" : {
-							"description" : "Returns the angle of the given vertex.",
-							"parameters" : [
-								["index", "integer", "the vertex index"]
-							],
-							"returns" : [
-								["number", "the result"]
-							]
-						},
 						"GetPrevVertex" : {
 							"description" : "Returns the vertex index before the given one.",
 							"parameters" : [
@@ -2099,6 +2104,15 @@
 							],
 							"returns" : [
 								["integer", "the result"]
+							]
+						},
+						"GetVertexAngle" : {
+							"description" : "Returns the angle of the given vertex.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["number", "the result"]
 							]
 						},
 						"GetNormal" : {
@@ -3219,8 +3233,8 @@
 						["Body", "the result"]
 					]
 				},
-				"ExplodeBodyToTriangles" : {
-					"description" : "Explodes a body to triangles. The function calls callback functions on geometry start and end, and when a triangle is created.",
+				"ExplodeBody" : {
+					"description" : "Explodes a body to primitives. The function calls callback functions on geometry start and end, and when a triangle is created.",
 					"parameters" : [
 						["body", "Body", "the body"],
 						["materials", "Materials", "the materials"],

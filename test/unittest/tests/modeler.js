@@ -375,7 +375,7 @@ generalSuite.AddTest ('ExplodeTest', function (test)
 	var onGeometryStartCount = 0;
 	var onGeometryEndCount = 0;
 	var onTriangleCount = 0;
-	JSM.ExplodeBodyToTriangles (body, materials, explodeData);
+	JSM.ExplodeBody (body, materials, explodeData);
 	
 	test.Assert (onGeometryStartCount == 3);
 	test.Assert (onGeometryEndCount == 3);

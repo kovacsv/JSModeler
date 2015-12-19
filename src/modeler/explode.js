@@ -1,7 +1,7 @@
 /**
-* Function: ExplodeBodyToTriangles
+* Function: ExplodeBody
 * Description:
-*	Explodes a body to triangles. The function calls callback functions
+*	Explodes a body to primitives. The function calls callback functions
 *	on geometry start and end, and when a triangle is created.
 * Parameters:
 *	body {Body} the body
@@ -10,9 +10,9 @@
 * Returns:
 *	{boolean} success
 */
-JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
+JSM.ExplodeBody = function (body, materials, explodeData)
 {
-	function ExplodeBodyDataToTriangles (body, materials, vertexNormals, textureCoords, explodeData)
+	function ExplodePolygonsToTriangles (body, materials, vertexNormals, textureCoords, explodeData)
 	{
 		function ExplodePolygonsByMaterial (polygonIndices, materialIndex, explodeData)
 		{
@@ -182,6 +182,6 @@ JSM.ExplodeBodyToTriangles = function (body, materials, explodeData)
 		}
 	}
 	
-	ExplodeBodyDataToTriangles (body, materials, vertexNormals, textureCoords, explodeData);
+	ExplodePolygonsToTriangles (body, materials, vertexNormals, textureCoords, explodeData);
 	return true;
 };

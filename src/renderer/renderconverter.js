@@ -76,7 +76,7 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 	var normals = null;
 	var uvs = null;
 	
-	JSM.ExplodeBodyToTriangles (body, materials, explodeData);
+	JSM.ExplodeBody (body, materials, explodeData);
 	return renderBody;
 };
 
