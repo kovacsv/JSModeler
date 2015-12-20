@@ -177,13 +177,18 @@ JSM.RenderBody.prototype.EnumerateMeshes = function (onMeshFound)
 	}
 };
 
+JSM.RenderBody.prototype.HasTypedMeshes = function (meshType)
+{
+	return this.meshes[meshType] !== undefined;
+};
+
 JSM.RenderBody.prototype.EnumerateTypedMeshes = function (meshType, onMeshFound)
 {
-	var typedMeshes = this.meshes[meshType];
-	if (typedMeshes === undefined) {
+	if (!this.HasTypedMeshes (meshType)) {
 		return;
 	}
-
+	
+	var typedMeshes = this.meshes[meshType];
 	var	i, typedMesh;
 	for	(i = 0; i < typedMeshes.length; i++) {
 		typedMesh = typedMeshes[i];

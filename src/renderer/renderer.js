@@ -201,19 +201,21 @@ JSM.Renderer.prototype.Render = function (camera)
 		var shaderType = MaterialTypeToShaderType (materialType);
 		var modifyParams = true;
 		renderer.EnumerateBodies (function (body) {
-			var matrix = body.GetTransformationMatrix ();
-			body.EnumerateTypedMeshes (materialType, function (mesh) {
-				if (modifyParams) {
-					renderer.shader.UseShader (shaderType);
-					renderer.shader.SetParameters (renderer.light, viewMatrix, projectionMatrix);
-					modifyParams = false;
-				}
-				var material = mesh.GetMaterial ();
-				var vertexBuffer = mesh.GetVertexBuffer ();
-				var normalBuffer = mesh.GetNormalBuffer ();
-				var uvBuffer = mesh.GetUVBuffer ();
-				renderer.shader.DrawArrays (material, matrix, vertexBuffer, normalBuffer, uvBuffer);
-			});
+			if (body.HasTypedMeshes (materialType)) {
+				var matrix = body.GetTransformationMatrix ();
+				body.EnumerateTypedMeshes (materialType, function (mesh) {
+					if (modifyParams) {
+						renderer.shader.UseShader (shaderType);
+						renderer.shader.SetParameters (renderer.light, viewMatrix, projectionMatrix);
+						modifyParams = false;
+					}
+					var material = mesh.GetMaterial ();
+					var vertexBuffer = mesh.GetVertexBuffer ();
+					var normalBuffer = mesh.GetNormalBuffer ();
+					var uvBuffer = mesh.GetUVBuffer ();
+					renderer.shader.DrawArrays (material, matrix, vertexBuffer, normalBuffer, uvBuffer);
+				});
+			}
 		});
 	}
 
