@@ -171,6 +171,31 @@ JSM.CalculatePolygonCurveGroups = function (polygon, curveAngle)
 	return curveGroups;
 };
 
+
+/**
+* Function: CalculatePolygonCentroid
+* Description: Calculates the centroid of a polygon stored in the body.
+* Parameters:
+*	body {Body} the body
+*	index {integer} the polygon index
+* Returns:
+*	{Coord} the result
+*/
+JSM.CalculatePolygonCentroid = function (body, index)
+{
+	var polygon = body.GetPolygon (index);
+	var count = polygon.VertexIndexCount ();
+	
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
+	var i;
+	for (i = 0; i < count; i++) {
+		result = JSM.CoordAdd (result, body.GetVertexPosition (polygon.GetVertexIndex (i)));
+	}
+	
+	result.MultiplyScalar (1.0 / count);
+	return result;
+};
+
 /**
 * Function: MakeBodyInsideOut
 * Description: Reverses all polygons orientation in the body.
@@ -220,30 +245,6 @@ JSM.SoftMoveBodyVertex = function (body, index, radius, direction, distance)
 		newDistance = JSM.GetGaussianValue (currentDistance, distance, b, c);
 		body.GetVertexPosition (i).Offset (direction, newDistance);
 	}
-};
-
-/**
-* Function: CalculatePolygonCentroid
-* Description: Calculates the centroid of a polygon stored in the body.
-* Parameters:
-*	body {Body} the body
-*	index {integer} the polygon index
-* Returns:
-*	{Coord} the result
-*/
-JSM.CalculatePolygonCentroid = function (body, index)
-{
-	var polygon = body.GetPolygon (index);
-	var count = polygon.VertexIndexCount ();
-	
-	var result = new JSM.Coord (0.0, 0.0, 0.0);
-	var i;
-	for (i = 0; i < count; i++) {
-		result = JSM.CoordAdd (result, body.GetVertexPosition (polygon.GetVertexIndex (i)));
-	}
-	
-	result.MultiplyScalar (1.0 / count);
-	return result;
 };
 
 /**
