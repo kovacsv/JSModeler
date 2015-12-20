@@ -359,7 +359,7 @@ JSM.Body.prototype.RemoveVertex = function (index)
 		polygon = this.polygons[i];
 		for (j = 0; j < polygon.VertexIndexCount (); j++) {
 			bodyVertIndex = polygon.GetVertexIndex (j);
-			if (index == polygon.GetVertexIndex (j)) {
+			if (polygon.GetVertexIndex (j) == index) {
 				polygonsToDelete.push (i);
 				break;
 			} else if (bodyVertIndex >= index) {
