@@ -25,6 +25,36 @@ JSM.AddPolygonToBody = function (body, vertices)
 };
 
 /**
+* Function: CheckBody
+* Description:
+*	Checks if the body is correct. It means that every polygon has at
+*	least three vertices, and every vertex index is valid.
+* Parameters:
+*	body {Body} the body
+* Returns:
+*	{boolean} the result
+*/
+JSM.CheckBody = function (body)
+{
+	var vertexCount = body.VertexCount ();
+	var i, j, polygon, polygonVertexCount, polygonVertexIndex;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		polygon = body.GetPolygon (i);
+		polygonVertexCount = polygon.VertexIndexCount ();
+		if (polygonVertexCount < 3) {
+			return false;
+		}
+		for (j = 0; j < polygonVertexCount; j++) {
+			polygonVertexIndex = polygon.GetVertexIndex (j);
+			if (polygonVertexIndex < 0 || polygonVertexIndex >= vertexCount) {
+				return false;
+			}
+		}
+	}
+	return true;
+};
+
+/**
 * Function: CalculateBodyPolygonNormal
 * Description: Calculates a normal vector for a polygon stored in the body.
 * Parameters:

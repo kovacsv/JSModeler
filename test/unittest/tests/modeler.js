@@ -73,44 +73,52 @@ generalSuite.AddTest ('BodyRemoveTest', function (test)
 	body = GenerateTestBody ();
 	test.AssertEqual (body.VertexCount (), 6);
 	test.AssertEqual (body.PolygonCount (), 3);
+	test.Assert (JSM.CheckBody (body));
 
 	body = GenerateTestBody ();
 	body.RemoveVertex (0);
 	test.AssertEqual (body.VertexCount (), 5);
 	test.AssertEqual (body.PolygonCount (), 1);
+	test.Assert (JSM.CheckBody (body));
 	
 	body = GenerateTestBody ();
 	body.RemoveVertex (1);
 	test.AssertEqual (body.VertexCount (), 5);
 	test.AssertEqual (body.PolygonCount (), 1);
+	test.Assert (JSM.CheckBody (body));
 
 	body = GenerateTestBody ();
 	body.RemoveVertex (2);
 	test.AssertEqual (body.VertexCount (), 5);
 	test.AssertEqual (body.PolygonCount (), 2);
+	test.Assert (JSM.CheckBody (body));
 
 	body = GenerateTestBody ();
 	body.RemoveVertex (3);
 	test.AssertEqual (body.VertexCount (), 5);
 	test.AssertEqual (body.PolygonCount (), 1);
+	test.Assert (JSM.CheckBody (body));
 
 	body = GenerateTestBody ();
 	body.RemoveVertex (4);
 	test.AssertEqual (body.VertexCount (), 5);
 	test.AssertEqual (body.PolygonCount (), 2);
+	test.Assert (JSM.CheckBody (body));
 
 	body = GenerateTestBody ();
 	body.RemoveVertex (5);
 	test.AssertEqual (body.VertexCount (), 5);
 	test.AssertEqual (body.PolygonCount (), 2);
+	test.Assert (JSM.CheckBody (body));
 	
 	body = GenerateTestBody ();
 	while (body.VertexCount () > 0) {
 		body.RemoveVertex (0);
-		test.Assert (!JSM.IsSolidBody (body));
+		test.Assert (JSM.CheckBody (body));
 	}
 	test.AssertEqual (body.VertexCount (), 0);
 	test.AssertEqual (body.PolygonCount (), 0);
+	test.Assert (JSM.CheckBody (body));
 	
 	var basePoints = [
 		new JSM.Coord (0.0, 0.0, 0.0),
@@ -122,19 +130,21 @@ generalSuite.AddTest ('BodyRemoveTest', function (test)
 	
 	var direction = new JSM.Vector (0.0, 0.0, 1.0);
 	body = JSM.GeneratePrism (basePoints, direction, 1.0, true, null);
+	test.Assert (JSM.CheckBody (body));
 	while (body.VertexCount () > 0) {
 		body.RemoveVertex (0);
-		test.Assert (!JSM.IsSolidBody (body));
+		test.Assert (JSM.CheckBody (body));
 	}
 	test.AssertEqual (body.VertexCount (), 0);
 	test.AssertEqual (body.PolygonCount (), 0);
+	test.Assert (JSM.CheckBody (body));
 	
 	body = JSM.GenerateCuboid (1, 1, 1);
 	test.Assert (JSM.IsSolidBody (body));
 	body.RemoveVertex (4);
 	test.AssertEqual (body.VertexCount (), 7);
 	test.AssertEqual (body.PolygonCount (), 3);
-	test.Assert (!JSM.IsSolidBody (body));
+	test.Assert (JSM.CheckBody (body));
 });
 
 generalSuite.AddTest ('ModelTest', function (test)
