@@ -128,6 +128,13 @@ generalSuite.AddTest ('BodyRemoveTest', function (test)
 	}
 	test.AssertEqual (body.VertexCount (), 0);
 	test.AssertEqual (body.PolygonCount (), 0);
+	
+	body = JSM.GenerateCuboid (1, 1, 1);
+	test.Assert (JSM.IsSolidBody (body));
+	body.RemoveVertex (4);
+	test.AssertEqual (body.VertexCount (), 7);
+	test.AssertEqual (body.PolygonCount (), 3);
+	test.Assert (!JSM.IsSolidBody (body));
 });
 
 generalSuite.AddTest ('ModelTest', function (test)
