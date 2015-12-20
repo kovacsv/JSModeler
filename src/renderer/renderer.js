@@ -188,11 +188,11 @@ JSM.Renderer.prototype.Render = function (camera)
 	{
 		function MaterialTypeToShaderType (materialType)
 		{
-			if (materialType == JSM.RenderMaterialType.Normal || materialType == JSM.RenderMaterialType.NormalTransparent) {
-				return JSM.ShaderType.Normal;
-			} else if (materialType == JSM.RenderMaterialType.Textured || materialType == JSM.RenderMaterialType.TexturedTransparent) {
-				return JSM.ShaderType.Textured;
-			} else if (materialType == JSM.RenderMaterialType.Line || materialType == JSM.RenderMaterialType.LineTransparent) {
+			if (materialType == JSM.RenderMaterialType.Polygon || materialType == JSM.RenderMaterialType.TransparentPolygon) {
+				return JSM.ShaderType.Triangle;
+			} else if (materialType == JSM.RenderMaterialType.TexturedPolygon || materialType == JSM.RenderMaterialType.TransparentTexturedPolygon) {
+				return JSM.ShaderType.TexturedTriangle;
+			} else if (materialType == JSM.RenderMaterialType.Line || materialType == JSM.RenderMaterialType.TransparentLine) {
 				return JSM.ShaderType.Line;
 			}
 			return null;
@@ -222,10 +222,10 @@ JSM.Renderer.prototype.Render = function (camera)
 	var viewMatrix = JSM.MatrixView (camera.eye, camera.center, camera.up);
 	var projectionMatrix = JSM.MatrixPerspective (camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, camera.nearClippingPlane, camera.farClippingPlane);
 
-	DrawMeshes (this, JSM.RenderMaterialType.Normal, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.Textured, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.Polygon, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.TexturedPolygon, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialType.Line, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.NormalTransparent, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.TexturedTransparent, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.LineTransparent, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.TransparentPolygon, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.TransparentTexturedPolygon, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialType.TransparentLine, viewMatrix, projectionMatrix);
 };

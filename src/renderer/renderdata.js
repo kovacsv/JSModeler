@@ -7,12 +7,12 @@ JSM.RenderLight = function (ambient, diffuse, specular, direction)
 };
 
 JSM.RenderMaterialType = {
-	Normal : 0,
-	Textured : 1,
-	NormalTransparent : 2,
-	TexturedTransparent : 3,
+	Polygon : 0,
+	TexturedPolygon : 1,
+	TransparentPolygon : 2,
+	TransparentTexturedPolygon : 3,
 	Line : 4,
-	LineTransparent : 5
+	TransparentLine : 5
 };
 
 JSM.RenderMaterial = function (type, ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight)

@@ -1,6 +1,6 @@
 JSM.ShaderType = {
-	Normal : 0,
-	Textured : 1,
+	Triangle : 0,
+	TexturedTriangle : 1,
 	Line : 2
 };
 
@@ -8,7 +8,7 @@ JSM.ShaderProgram = function (context)
 {
 	this.context = context;
 	this.shaders = null;
-	this.current = null;
+	this.currentShader = null;
 	this.currentType = null;
 };
 
@@ -17,9 +17,9 @@ JSM.ShaderProgram.prototype.Init = function ()
 	function GetFragmentShaderScript (shaderType)
 	{
 		var script = null;
-		if (shaderType == JSM.ShaderType.Normal || shaderType == JSM.ShaderType.Textured) {
+		if (shaderType == JSM.ShaderType.Triangle || shaderType == JSM.ShaderType.TexturedTriangle) {
 			script = [
-				'#define ' + (shaderType == JSM.ShaderType.Normal ? 'NOTEXTURE' : 'USETEXTURE'),
+				'#define ' + (shaderType == JSM.ShaderType.Triangle ? 'NOTEXTURE' : 'USETEXTURE'),
 				'uniform mediump vec3 uPolygonAmbientColor;',
 				'uniform mediump vec3 uPolygonDiffuseColor;',
 				'uniform mediump vec3 uPolygonSpecularColor;',
@@ -84,9 +84,9 @@ JSM.ShaderProgram.prototype.Init = function ()
 	function GetVertexShaderScript (shaderType)
 	{
 		var script = null;
-		if (shaderType == JSM.ShaderType.Normal || shaderType == JSM.ShaderType.Textured) {
+		if (shaderType == JSM.ShaderType.Triangle || shaderType == JSM.ShaderType.TexturedTriangle) {
 			script = [
-				'#define ' + (shaderType == JSM.ShaderType.Normal ? 'NOTEXTURE' : 'USETEXTURE'),
+				'#define ' + (shaderType == JSM.ShaderType.Triangle ? 'NOTEXTURE' : 'USETEXTURE'),
 				'attribute mediump vec3 aVertexPosition;',
 				'attribute mediump vec3 aVertexNormal;',
 
@@ -136,7 +136,7 @@ JSM.ShaderProgram.prototype.Init = function ()
 
 	function InitShaderParameters (context, shader, shaderType)
 	{
-		if (shaderType == JSM.ShaderType.Normal || shaderType == JSM.ShaderType.Textured) {
+		if (shaderType == JSM.ShaderType.Triangle || shaderType == JSM.ShaderType.TexturedTriangle) {
 			shader.vertexPositionAttribute = context.getAttribLocation (shader, 'aVertexPosition');
 			shader.vertexNormalAttribute = context.getAttribLocation (shader, 'aVertexNormal');
 
@@ -155,7 +155,7 @@ JSM.ShaderProgram.prototype.Init = function ()
 			shader.polygonShininessUniform = context.getUniformLocation (shader, 'uPolygonShininess');
 			shader.polygonOpacityUniform = context.getUniformLocation (shader, 'uPolygonOpacity');
 			
-			if (shaderType == JSM.ShaderType.Textured) {
+			if (shaderType == JSM.ShaderType.TexturedTriangle) {
 				shader.vertexUVAttribute = context.getAttribLocation (shader, 'aVertexUV');
 				shader.samplerUniform = context.getUniformLocation (shader, 'uSampler');
 			}
@@ -192,11 +192,11 @@ JSM.ShaderProgram.prototype.Init = function ()
 	
 	this.shaders = {};
 	
-	if (!InitShader (this.context, this.shaders, JSM.ShaderType.Normal)) {
+	if (!InitShader (this.context, this.shaders, JSM.ShaderType.Triangle)) {
 		return false;
 	}
 	
-	if (!InitShader (this.context, this.shaders, JSM.ShaderType.Textured)) {
+	if (!InitShader (this.context, this.shaders, JSM.ShaderType.TexturedTriangle)) {
 		return false;
 	}
 
@@ -214,17 +214,17 @@ JSM.ShaderProgram.prototype.GetShader = function (shaderType)
 
 JSM.ShaderProgram.prototype.UseShader = function (shaderType)
 {
-	this.current = this.GetShader (shaderType);
+	this.currentShader = this.GetShader (shaderType);
 	this.currentType = shaderType;
-	this.context.useProgram (this.current);
+	this.context.useProgram (this.currentShader);
 };
 
 JSM.ShaderProgram.prototype.SetParameters = function (light, viewMatrix, projectionMatrix)
 {
 	var context = this.context;
-	var shader = this.current;
+	var shader = this.currentShader;
 	
-	if (this.currentType == JSM.ShaderType.Normal || this.currentType == JSM.ShaderType.Textured) {
+	if (this.currentType == JSM.ShaderType.Triangle || this.currentType == JSM.ShaderType.TexturedTriangle) {
 		context.uniform3f (shader.lightDirectionUniform, light.direction.x, light.direction.y, light.direction.z);
 		context.uniform3f (shader.lightAmbientColorUniform, light.ambient[0], light.ambient[1], light.ambient[2]);
 		context.uniform3f (shader.lightDiffuseColorUniform, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
@@ -242,9 +242,9 @@ JSM.ShaderProgram.prototype.SetParameters = function (light, viewMatrix, project
 JSM.ShaderProgram.prototype.DrawArrays = function (material, matrix, vertexBuffer, normalBuffer, uvBuffer)
 {
 	var context = this.context;
-	var shader = this.current;
+	var shader = this.currentShader;
 	
-	if (this.currentType == JSM.ShaderType.Normal || this.currentType == JSM.ShaderType.Textured) {
+	if (this.currentType == JSM.ShaderType.Triangle || this.currentType == JSM.ShaderType.TexturedTriangle) {
 		context.uniform3f (shader.polygonAmbientColorUniform, material.ambient[0], material.ambient[1], material.ambient[2]);
 		context.uniform3f (shader.polygonDiffuseColorUniform, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
 		context.uniform3f (shader.polygonSpecularColorUniform, material.specular[0], material.specular[1], material.specular[2]);
@@ -261,7 +261,7 @@ JSM.ShaderProgram.prototype.DrawArrays = function (material, matrix, vertexBuffe
 		context.enableVertexAttribArray (shader.vertexNormalAttribute);
 		context.vertexAttribPointer (shader.vertexNormalAttribute, normalBuffer.itemSize, context.FLOAT, false, 0, 0);
 
-		if (this.currentType == JSM.ShaderType.Textured) {
+		if (this.currentType == JSM.ShaderType.TexturedTriangle) {
 			context.activeTexture (context.TEXTURE0);
 			context.bindTexture (context.TEXTURE_2D, material.textureBuffer);
 			context.bindBuffer (context.ARRAY_BUFFER, uvBuffer);

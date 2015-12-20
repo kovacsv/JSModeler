@@ -9,18 +9,18 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 
 	function OnGeometryEnd (material)
 	{
-		var materialType = JSM.RenderMaterialType.Normal;
+		var materialType = JSM.RenderMaterialType.Polygon;
 		if (material.texture !== null) {
 			if (material.opacity < 1.0) {
-				materialType = JSM.RenderMaterialType.TexturedTransparent;
+				materialType = JSM.RenderMaterialType.TransparentTexturedPolygon;
 			} else {
-				materialType = JSM.RenderMaterialType.Textured;
+				materialType = JSM.RenderMaterialType.TexturedPolygon;
 			}
 		} else {
 			if (material.opacity < 1.0) {
-				materialType = JSM.RenderMaterialType.NormalTransparent;
+				materialType = JSM.RenderMaterialType.TransparentPolygon;
 			} else {
-				materialType = JSM.RenderMaterialType.Normal;
+				materialType = JSM.RenderMaterialType.Polygon;
 			}
 		}
 
