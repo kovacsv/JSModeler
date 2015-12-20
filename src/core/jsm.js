@@ -1,4 +1,5 @@
-var JSM = function () {
+var JSM = function ()
+{
 	this.mainVersion = 0;
 	this.subVersion = 40;
 };
