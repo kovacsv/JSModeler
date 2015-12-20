@@ -19,27 +19,30 @@ html, body
 
 }
 
-div.resulttitle
+div.resultbox
 {
 	padding : 5px 10px;
 	margin-bottom : 5px;
 	margin-right : 5px;
-	cursor : pointer;
 	float : left;
+	border-radius : 3px;
 }
 
-div.resulttitle.success
+div.resultbox.link
 {
-	color : #008800;
-	background : #eeffee;
-	border : 1px solid #00aa00;
+	cursor : pointer;
 }
 
-div.resulttitle.failure
+div.resultbox.success
 {
-	color : #880000;
-	background : #ffeeee;
-	border : 1px solid #aa0000;
+	color : #ffffff;
+	background : #279b61;
+}
+
+div.resultbox.failure
+{
+	color : #ffffff;
+	background : #cc3333;
 }
 
 div.allresult

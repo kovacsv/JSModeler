@@ -20,9 +20,9 @@ CanvasTesterApp.prototype.Run = function ()
 CanvasTesterApp.prototype.AllTestsFinished = function (success)
 {
 	var allResultDiv = document.createElement ('div');
-	allResultDiv.className = 'allresult ' + (success ? 'success' : 'failure');
+	allResultDiv.className = 'resultbox ' + (success ? 'success' : 'failure');
 	allResultDiv.innerHTML = (success ? 'success' : 'failure');
-	this.resultsDiv.insertBefore (allResultDiv, this.resultsDiv.firstChild);
+	this.resultsDiv.appendChild (allResultDiv);
 };
 
 CanvasTesterApp.prototype.TestFinished = function (result, testObject, resultImageData, referenceImageData, differenceImageData)
@@ -39,7 +39,7 @@ CanvasTesterApp.prototype.TestFinished = function (result, testObject, resultIma
 	
 	function AddResultLine (result, testObject, resultImageData, referenceImageData, differenceImageData, resultDiv, testResultDiv)
 	{
-		var resultTitle = document.createElement ('div');
+		var resultBox = document.createElement ('div');
 		var success = (result == 0);
 		var errorText = '';
 		if (result === 0) {
@@ -51,11 +51,11 @@ CanvasTesterApp.prototype.TestFinished = function (result, testObject, resultIma
 		} else if (result === 3) {
 			errorText = 'difference';
 		}
-		resultTitle.className = 'resulttitle ' + (success ? 'success' : 'failure');
-		resultTitle.innerHTML = errorText;
-		resultDiv.appendChild (resultTitle);
+		resultBox.className = 'resultbox link ' + (success ? 'success' : 'failure');
+		resultBox.innerHTML = errorText;
+		resultDiv.appendChild (resultBox);
 		
-		resultTitle.onclick = function () {
+		resultBox.onclick = function () {
 			while (testResultDiv.lastChild) {
 				testResultDiv.removeChild (testResultDiv.lastChild);
 			}
@@ -80,7 +80,7 @@ CanvasTesterApp.prototype.TestFinished = function (result, testObject, resultIma
 			testObject.renderCallback (function () {});
 		};
 		
-		resultDiv.appendChild (resultTitle);
+		resultDiv.appendChild (resultBox);
 	}
 
 	AddResultLine (result, testObject, resultImageData, referenceImageData, differenceImageData, this.resultsDiv, this.testResultDiv);
