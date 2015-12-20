@@ -382,6 +382,65 @@ generalSuite.AddTest ('ExplodeTest', function (test)
 	test.Assert (onTriangleCount == 12);
 });
 
+generalSuite.AddTest ('ExplodeTest2', function (test)
+{
+	function CollectExplodeInformation (body, materials)
+	{
+		var result = {
+			materialCount : 0,
+			trianglesByMaterial : []
+		};
+		
+		var explodeData = {
+			onGeometryStart : function (material) {
+				result.materialCount++;
+				result.trianglesByMaterial.push (0)
+			},
+			onGeometryEnd : function (material) {
+			},
+			onTriangle : function (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3) {
+				result.trianglesByMaterial[result.materialCount - 1]++;
+			}
+		};
+		
+		JSM.ExplodeBody (body, materials, explodeData);
+		return result;
+	}
+	
+	var body, result;
+	var materials = new JSM.Materials ();
+	materials.AddMaterial (new JSM.Material ({ambient : 0xff0000, diffuse : 0xff0000}));
+	materials.AddMaterial (new JSM.Material ({ambient : 0x00ff00, diffuse : 0x00ff00}));
+	
+	body = JSM.GenerateCuboid (1, 1, 1);
+	result = CollectExplodeInformation (body, null);
+	test.AssertEqual (result.materialCount, 1);
+	test.AssertEqual (result.trianglesByMaterial[0], 12);
+	
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 1);
+	test.AssertEqual (result.trianglesByMaterial[0], 12);
+
+	body.GetPolygon (0).SetMaterialIndex (0);
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 2);
+	test.AssertEqual (result.trianglesByMaterial[0], 2);
+	test.AssertEqual (result.trianglesByMaterial[1], 10);
+
+	body.GetPolygon (1).SetMaterialIndex (0);
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 2);
+	test.AssertEqual (result.trianglesByMaterial[0], 4);
+	test.AssertEqual (result.trianglesByMaterial[1], 8);
+
+	body.GetPolygon (2).SetMaterialIndex (1);
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 3);
+	test.AssertEqual (result.trianglesByMaterial[0], 4);
+	test.AssertEqual (result.trianglesByMaterial[1], 2);
+	test.AssertEqual (result.trianglesByMaterial[2], 6);
+});
+
 generalSuite.AddTest ('ExportTest', function (test)
 {
 	var gdl1Ref = "base\nvert 0, 0, 0 ! 1\nvert 1, 0, 0 ! 2\nvert 0, 1, 0 ! 3\nedge 1, 2, -1, -1, 0 ! 1\nedge 2, 3, -1, -1, 0 ! 2\nedge 3, 1, -1, -1, 0 ! 3\npgon 3, 0, 0, 1, 2, 3 ! 1\nbody -1\n";
