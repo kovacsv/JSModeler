@@ -627,19 +627,32 @@ generalSuite.AddTest ('TriangulateWithCentroidsTest', function (test)
 	test.Assert (!AllPolygonIsTriangle (body));
 	test.Assert (JSM.CheckSolidBody (body));
 	
-	body = JSM.TriangulateWithCentroids (body);
+	JSM.TriangulateWithCentroids (body);
 	test.Assert (body.VertexCount () == 8 + 6);
 	test.Assert (body.PolygonCount () == 6 * 4);
 	test.Assert (AllPolygonIsTriangle (body));
 	test.Assert (JSM.CheckSolidBody (body));
 
+	var body = JSM.GenerateCuboid (1, 1, 1);
+	body.GetPolygon (0).SetMaterialIndex (0);
+	JSM.TriangulateWithCentroids (body);
+	test.Assert (body.VertexCount () == 8 + 6);
+	test.Assert (body.PolygonCount () == 6 * 4);
+	test.Assert (body.GetPolygon (0).GetMaterialIndex () == 0);
+	test.Assert (body.GetPolygon (1).GetMaterialIndex () == 0);
+	test.Assert (body.GetPolygon (2).GetMaterialIndex () == 0);
+	test.Assert (body.GetPolygon (3).GetMaterialIndex () == 0);
+	test.Assert (body.GetPolygon (4).GetMaterialIndex () == -1);
+	test.Assert (AllPolygonIsTriangle (body));
+	test.Assert (JSM.CheckSolidBody (body));
+	
 	body = JSM.GenerateSolidWithRadius ('Dodecahedron', 1.0);
 	test.Assert (body.VertexCount () == 20);
 	test.Assert (body.PolygonCount () == 12);
 	test.Assert (!AllPolygonIsTriangle (body));
 	test.Assert (JSM.CheckSolidBody (body));
 	
-	body = JSM.TriangulateWithCentroids (body);
+	JSM.TriangulateWithCentroids (body);
 	test.Assert (body.VertexCount () == 20 + 12);
 	test.Assert (body.PolygonCount () == 12 * 5);
 	test.Assert (AllPolygonIsTriangle (body));
@@ -757,13 +770,17 @@ generalSuite.AddTest ('PainterTest', function (test)
 generalSuite.AddTest ('TriangulatePolygonsTest', function (test)
 {
 	var body = JSM.GenerateCuboid (1, 1, 1);
+	body.GetPolygon (0).SetMaterialIndex (0);
 	test.Assert (body.VertexCount () == 8);
 	test.Assert (body.PolygonCount () == 6);
 	test.Assert (JSM.CheckSolidBody (body));
 	
-	body = JSM.TriangulatePolygons (body);
+	JSM.TriangulatePolygons (body);
 	test.Assert (body.VertexCount () == 8);
 	test.Assert (body.PolygonCount () == 12);
+	test.Assert (body.GetPolygon (0).GetMaterialIndex () == 0);
+	test.Assert (body.GetPolygon (1).GetMaterialIndex () == 0);
+	test.Assert (body.GetPolygon (2).GetMaterialIndex () == -1);
 	test.Assert (JSM.CheckSolidBody (body));
 
 	var body = JSM.GenerateCylinder (0.5, 1.0, 20, true, true);
@@ -771,7 +788,7 @@ generalSuite.AddTest ('TriangulatePolygonsTest', function (test)
 	test.Assert (body.PolygonCount () == 22);
 	test.Assert (JSM.CheckSolidBody (body));
 	
-	body = JSM.TriangulatePolygons (body);
+	JSM.TriangulatePolygons (body);
 	test.Assert (body.VertexCount () == 40);
 	test.Assert (body.PolygonCount () == 40 + 2 * 18);
 	test.Assert (JSM.CheckSolidBody (body));

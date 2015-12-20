@@ -253,38 +253,27 @@ JSM.CalculatePolygonCentroid = function (body, index)
 *	vertices with the centroid vertex of the polygon.
 * Parameters:
 *	body {Body} the body
-* Returns:
-*	{Body} the result
 */
 JSM.TriangulateWithCentroids = function (body)
 {
-	var result = new JSM.Body ();
-	
-	var i, j, vertCoord;
-	for (i = 0; i < body.VertexCount (); i++) {
-		vertCoord = body.GetVertex (i).position;
-		result.AddVertex (new JSM.BodyVertex (new JSM.Coord (vertCoord.x, vertCoord.y, vertCoord.z)));
-	}
-
-	var polygon, oldPolygon, vertexCount, curr, next, centroid;
-	for (i = 0; i < body.PolygonCount (); i++) {
-		vertCoord = JSM.CalculatePolygonCentroid (body, i);
-		centroid = result.VertexCount ();
-		result.AddVertex (new JSM.BodyVertex (new JSM.Coord (vertCoord.x, vertCoord.y, vertCoord.z)));
-		
+	var oldPolygonCount = body.PolygonCount ();
+	var i, j, centroidCoord, centroidIndex, oldPolygon, oldVertexCount, polygon, curr, next;
+	for (i = 0; i < oldPolygonCount; i++) {
+		centroidCoord = JSM.CalculatePolygonCentroid (body, i);
+		centroidIndex = body.AddVertex (new JSM.BodyVertex (centroidCoord));
 		oldPolygon = body.GetPolygon (i);
-		vertexCount = oldPolygon.VertexIndexCount ();
-		for (j = 0; j < vertexCount; j++) {
+		oldVertexCount = oldPolygon.VertexIndexCount ();
+		for (j = 0; j < oldVertexCount; j++) {
 			curr = oldPolygon.GetVertexIndex (j);
-			next = oldPolygon.GetVertexIndex (j < vertexCount - 1 ? j + 1 : 0);
-			polygon = new JSM.BodyPolygon ([curr, next, centroid]);
-			polygon.material = oldPolygon.material;
-			polygon.curved = oldPolygon.curved;
-			result.AddPolygon (polygon);
+			next = oldPolygon.GetVertexIndex (j < oldVertexCount - 1 ? j + 1 : 0);
+			polygon = new JSM.BodyPolygon ([curr, next, centroidIndex]);
+			polygon.InheritAttributes (oldPolygon);
+			body.AddPolygon (polygon);
 		}
 	}
-	
-	return result;
+	for (i = 0; i < oldPolygonCount; i++) {
+		body.RemovePolygon (0);
+	}
 };
 
 /**
@@ -292,25 +281,16 @@ JSM.TriangulateWithCentroids = function (body)
 * Description: Triangulates all polygons of the body.
 * Parameters:
 *	body {Body} the body
-* Returns:
-*	{Body} the result
 */
 JSM.TriangulatePolygons = function (body)
 {
-	var result = new JSM.Body ();
-	
-	var i, j, coord;
-	for (i = 0; i < body.VertexCount (); i++) {
-		coord = body.GetVertexPosition (i);
-		result.AddVertex (new JSM.BodyVertex (new JSM.Coord (coord.x, coord.y, coord.z)));
-	}
-
-	var polygon, bodyPolygon, triangleIndices, triangle, bodyTriangle;
-	for (i = 0; i < body.PolygonCount (); i++) {
+	var oldPolygonCount = body.PolygonCount ();
+	var i, j, oldPolygon, polygon, coord, triangleIndices, triangle, bodyTriangle;
+	for (i = 0; i < oldPolygonCount; i++) {
+		oldPolygon = body.GetPolygon (i);
 		polygon = new JSM.Polygon ();
-		bodyPolygon = body.GetPolygon (i);
-		for (j = 0; j < bodyPolygon.VertexIndexCount (); j++) {
-			coord = body.GetVertexPosition (bodyPolygon.GetVertexIndex (j));
+		for (j = 0; j < oldPolygon.VertexIndexCount (); j++) {
+			coord = body.GetVertexPosition (oldPolygon.GetVertexIndex (j));
 			polygon.AddVertex (coord.x, coord.y, coord.z);
 		}
 		triangleIndices = JSM.TriangulatePolygon (polygon);
@@ -318,17 +298,18 @@ JSM.TriangulatePolygons = function (body)
 			for (j = 0; j < triangleIndices.length; j++) {
 				triangle = triangleIndices[j];
 				bodyTriangle = new JSM.BodyPolygon ([
-					bodyPolygon.GetVertexIndex (triangle[0]),
-					bodyPolygon.GetVertexIndex (triangle[1]),
-					bodyPolygon.GetVertexIndex (triangle[2])
+					oldPolygon.GetVertexIndex (triangle[0]),
+					oldPolygon.GetVertexIndex (triangle[1]),
+					oldPolygon.GetVertexIndex (triangle[2])
 				]);
-				bodyTriangle.InheritAttributes (bodyPolygon);
-				result.AddPolygon (bodyTriangle);
+				bodyTriangle.InheritAttributes (oldPolygon);
+				body.AddPolygon (bodyTriangle);
 			}
 		}
 	}
-	
-	return result;
+	for (i = 0; i < oldPolygonCount; i++) {
+		body.RemovePolygon (0);
+	}
 };
 
 /**

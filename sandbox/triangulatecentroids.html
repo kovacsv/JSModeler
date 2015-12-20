@@ -104,7 +104,7 @@
 			viewer.Start (document.getElementById ('example'), viewerSettings);
 
 			var body = new JSM.GenerateCylinder (0.5, 1.0, 20, true, true);
-			JSM.TriangulatePolygons (body);
+			JSM.TriangulateWithCentroids (body);
 			
 			var materials = new JSM.Materials ();
 			JSM.GenerateRandomMaterials (body, materials);
