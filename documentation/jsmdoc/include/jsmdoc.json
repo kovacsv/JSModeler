@@ -2762,7 +2762,7 @@
 						["Body", "the result"]
 					]
 				},
-				"TriangulateWithCentroids" : {
+				"TriangulatePolygons" : {
 					"description" : "Triangulates all polygons of the body.",
 					"parameters" : [
 						["body", "Body", "the body"]
@@ -3504,6 +3504,13 @@
 								["integer", "the stored vertex index"]
 							]
 						},
+						"SetVertexIndex" : {
+							"description" : "Sets the body vertex index at the given polygon vertex index.",
+							"parameters" : [
+								["index", "integer", "the polygon vertex index"],
+								["vertIndex", "integer", "the body vertex index"]
+							]
+						},
 						"GetVertexIndices" : {
 							"description" : "Returns an array of the body vertex indices in the polygon.",
 							"returns" : [
@@ -3618,12 +3625,6 @@
 								["position", "Coord", "the new position"]
 							]
 						},
-						"VertexCount" : {
-							"description" : "Returns the vertex count of the body.",
-							"returns" : [
-								["integer", "the result"]
-							]
-						},
 						"GetPolygon" : {
 							"description" : "Returns the polygon at the given index.",
 							"parameters" : [
@@ -3631,12 +3632,6 @@
 							],
 							"returns" : [
 								["BodyPolygon", "the result"]
-							]
-						},
-						"PolygonCount" : {
-							"description" : "Returns the polygon count of the body.",
-							"returns" : [
-								["integer", "the result"]
 							]
 						},
 						"SetPolygonsMaterialIndex" : {
@@ -3649,6 +3644,30 @@
 							"description" : "Sets the curve group index for all polygons in the body.",
 							"parameters" : [
 								["group", "integer", "the curve group index"]
+							]
+						},
+						"RemoveVertex" : {
+							"description" : "Removes a vertex from the body. It also removes connected polygons.",
+							"parameters" : [
+								["index", "integer", "the index of the vertex"]
+							]
+						},
+						"RemovePolygon" : {
+							"description" : "Removes a polygon from the body.",
+							"parameters" : [
+								["index", "integer", "the index of the polygon"]
+							]
+						},
+						"VertexCount" : {
+							"description" : "Returns the vertex count of the body.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"PolygonCount" : {
+							"description" : "Returns the polygon count of the body.",
+							"returns" : [
+								["integer", "the result"]
 							]
 						},
 						"GetTextureProjectionType" : {

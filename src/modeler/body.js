@@ -85,6 +85,18 @@ JSM.BodyPolygon.prototype.GetVertexIndex = function (index)
 };
 
 /**
+* Function: BodyPolygon.SetVertexIndex
+* Description: Sets the body vertex index at the given polygon vertex index.
+* Parameters:
+*	index {integer} the polygon vertex index
+*	vertIndex {integer} the body vertex index
+*/
+JSM.BodyPolygon.prototype.SetVertexIndex = function (index, vertIndex)
+{
+	this.vertices[index] = vertIndex;
+};
+
+/**
 * Function: BodyPolygon.GetVertexIndices
 * Description: Returns an array of the body vertex indices in the polygon.
 * Returns:
@@ -293,17 +305,6 @@ JSM.Body.prototype.SetVertexPosition = function (index, position)
 };
 
 /**
-* Function: Body.VertexCount
-* Description: Returns the vertex count of the body.
-* Returns:
-*	{integer} the result
-*/
-JSM.Body.prototype.VertexCount = function ()
-{
-	return this.vertices.length;
-};
-
-/**
 * Function: Body.GetPolygon
 * Description: Returns the polygon at the given index.
 * Parameters:
@@ -314,17 +315,6 @@ JSM.Body.prototype.VertexCount = function ()
 JSM.Body.prototype.GetPolygon = function (index)
 {
 	return this.polygons[index];
-};
-
-/**
-* Function: Body.PolygonCount
-* Description: Returns the polygon count of the body.
-* Returns:
-*	{integer} the result
-*/
-JSM.Body.prototype.PolygonCount = function ()
-{
-	return this.polygons.length;
 };
 
 /**
@@ -353,6 +343,67 @@ JSM.Body.prototype.SetPolygonsCurveGroup = function (group)
 	for (i = 0; i < this.polygons.length; i++) {
 		this.polygons[i].SetCurveGroup (group);
 	}
+};
+
+/**
+* Function: Body.RemoveVertex
+* Description: Removes a vertex from the body. It also removes connected polygons.
+* Parameters:
+*	index {integer} the index of the vertex
+*/
+JSM.Body.prototype.RemoveVertex = function (index)
+{
+	var polygonsToDelete = [];
+	var i, j, polygon, bodyVertIndex;
+	for (i = 0; i < this.polygons.length; i++) {
+		polygon = this.polygons[i];
+		for (j = 0; j < polygon.VertexIndexCount (); j++) {
+			bodyVertIndex = polygon.GetVertexIndex (j);
+			if (index == polygon.GetVertexIndex (j)) {
+				polygonsToDelete.push (i);
+				break;
+			} else if (bodyVertIndex >= index) {
+				polygon.SetVertexIndex (j, bodyVertIndex - 1);
+			}
+		}
+	}
+	for (i = 0; i < polygonsToDelete.length; i++) {
+		this.RemovePolygon (polygonsToDelete[i] - i);
+	}
+	this.vertices.splice (index, 1);
+};
+
+/**
+* Function: Body.RemovePolygon
+* Description: Removes a polygon from the body.
+* Parameters:
+*	index {integer} the index of the polygon
+*/
+JSM.Body.prototype.RemovePolygon = function (index)
+{
+	this.polygons.splice (index, 1);
+};
+
+/**
+* Function: Body.VertexCount
+* Description: Returns the vertex count of the body.
+* Returns:
+*	{integer} the result
+*/
+JSM.Body.prototype.VertexCount = function ()
+{
+	return this.vertices.length;
+};
+
+/**
+* Function: Body.PolygonCount
+* Description: Returns the polygon count of the body.
+* Returns:
+*	{integer} the result
+*/
+JSM.Body.prototype.PolygonCount = function ()
+{
+	return this.polygons.length;
 };
 
 /**

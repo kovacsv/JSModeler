@@ -314,6 +314,10 @@ JSM.CalculateBodyVertexToPolygon = function (body)
 JSM.IsSolidBody = function (body)
 {
 	var adjacencyInfo = new JSM.AdjacencyInfo (body);
+	if (adjacencyInfo.edges.length === 0) {
+		return false;
+	}
+	
 	var i, edge;
 	for (i = 0; i < adjacencyInfo.edges.length; i++) {
 		edge = adjacencyInfo.edges[i];
