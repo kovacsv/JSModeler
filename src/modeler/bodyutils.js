@@ -288,7 +288,7 @@ JSM.TriangulateWithCentroids = function (body)
 };
 
 /**
-* Function: TriangulateWithCentroids
+* Function: TriangulatePolygons
 * Description: Triangulates all polygons of the body.
 * Parameters:
 *	body {Body} the body
