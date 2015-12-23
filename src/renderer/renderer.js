@@ -177,9 +177,7 @@ JSM.Renderer.prototype.RemoveBodies = function ()
 
 JSM.Renderer.prototype.Resize = function ()
 {
-	this.context.viewportWidth = this.canvas.width;
-	this.context.viewportHeight = this.canvas.height;
-	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
+	this.context.viewport (0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
 };
 
 JSM.Renderer.prototype.Render = function (camera)
@@ -222,7 +220,7 @@ JSM.Renderer.prototype.Render = function (camera)
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	
 	var viewMatrix = JSM.MatrixView (camera.eye, camera.center, camera.up);
-	var projectionMatrix = JSM.MatrixPerspective (camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, camera.nearClippingPlane, camera.farClippingPlane);
+	var projectionMatrix = JSM.MatrixPerspective (camera.fieldOfView * JSM.DegRad, this.canvas.clientWidth / this.canvas.clientHeight, camera.nearClippingPlane, camera.farClippingPlane);
 
 	DrawMeshes (this, JSM.RenderMaterialType.Polygon, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialType.TexturedPolygon, viewMatrix, projectionMatrix);
