@@ -111,8 +111,8 @@ JSM.Navigation.prototype.FitInWindow = function (center, radius)
 	
 	var centerEyeDirection = JSM.CoordSub (this.camera.eye, this.camera.center).Normalize ();
 	var fieldOfView = this.camera.fieldOfView / 2.0;
-	if (this.canvas.width < this.canvas.height) {
-		fieldOfView = fieldOfView * this.canvas.width / this.canvas.height;
+	if (this.canvas.clientWidth < this.canvas.clientHeight) {
+		fieldOfView = fieldOfView * this.canvas.clientWidth / this.canvas.clientHeight;
 	}
 	var distance = radius / Math.sin (fieldOfView * JSM.DegRad);
 	
