@@ -2689,6 +2689,15 @@
 						["vertices", "integer[*]", "array of vertex indices stored in the body"]
 					]
 				},
+				"CheckBody" : {
+					"description" : "Checks if the body is correct. It means that every polygon has at least three vertices, and every vertex index is valid.",
+					"parameters" : [
+						["body", "Body", "the body"]
+					],
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
 				"CalculateBodyPolygonNormal" : {
 					"description" : "Calculates a normal vector for a polygon stored in the body.",
 					"parameters" : [
@@ -2727,6 +2736,16 @@
 						["integer[*]", "the curve groups"]
 					]
 				},
+				"CalculatePolygonCentroid" : {
+					"description" : "Calculates the centroid of a polygon stored in the body.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["index", "integer", "the polygon index"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
 				"MakeBodyInsideOut" : {
 					"description" : "Reverses all polygons orientation in the body.",
 					"parameters" : [
@@ -2741,16 +2760,6 @@
 						["radius", "number", "the radius of the movement"],
 						["direction", "Vector", "the direction of the movement"],
 						["distance", "number", "the distance of the movement"]
-					]
-				},
-				"CalculatePolygonCentroid" : {
-					"description" : "Calculates the centroid of a polygon stored in the body.",
-					"parameters" : [
-						["body", "Body", "the body"],
-						["index", "integer", "the polygon index"]
-					],
-					"returns" : [
-						["Coord", "the result"]
 					]
 				},
 				"TriangulateWithCentroids" : {
