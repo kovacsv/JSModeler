@@ -133,6 +133,10 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 				}
 			}
 			
+			if (polygonIndices.length === 0) {
+				return;
+			}
+			
 			var material = materials.GetMaterial (materialIndex);
 			if (explodeData.onGeometryStart !== undefined && explodeData.onGeometryStart !== null) {
 				explodeData.onGeometryStart (material);
@@ -163,28 +167,19 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 		var polygon, material;
 		for (i = 0; i < body.PolygonCount (); i++) {
 			polygon = body.GetPolygon (i);
-			if (!polygon.HasMaterialIndex ()) {
+			if (polygon.HasMaterialIndex ()) {
+				material = polygon.GetMaterialIndex ();
+				polygonsByMaterial[material].push (i);
+			} else {
 				polygonsWithNoMaterial.push (i);
-				continue;
 			}
-			
-			material = polygon.GetMaterialIndex ();
-			polygonsByMaterial[material].push (i);
 		}
 		
 		var derivedData = CalculatePolygonsDerivedData (body, materials);
-		var polygons;
 		for (i = 0; i < polygonsByMaterial.length; i++) {
-			polygons = polygonsByMaterial[i];
-			if (polygons.length === 0) {
-				continue;
-			}
-			ExplodePolygonsByMaterial (polygons, i, derivedData, explodeData);
+			ExplodePolygonsByMaterial (polygonsByMaterial[i], i, derivedData, explodeData);
 		}
-
-		if (polygonsWithNoMaterial.length !== 0) {
-			ExplodePolygonsByMaterial (polygonsWithNoMaterial, -1, derivedData, explodeData);
-		}
+		ExplodePolygonsByMaterial (polygonsWithNoMaterial, -1, derivedData, explodeData);
 	}
 
 	if (explodeData === undefined || explodeData === null) {
