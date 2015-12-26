@@ -12,11 +12,48 @@
 */
 JSM.ExplodeBody = function (body, materials, explodeData)
 {
-	function ExplodePolygonsToTriangles (body, materials, vertexNormals, textureCoords, explodeData)
+	function ExplodePolygonsToTriangles (body, materials, explodeData)
 	{
-		function ExplodePolygonsByMaterial (polygonIndices, materialIndex, explodeData)
+		function CalculatePolygonsDerivedData (body, materials)
 		{
-			function ExplodePolygon (index, explodeData)
+			var vertexNormals = JSM.CalculateBodyVertexNormals (body);
+
+			var i, j;
+			var hasTextureCoords = false;
+			if (materials !== undefined && materials !== null) {
+				for (i = 0; i < materials.Count (); i++) {
+					if (materials.GetMaterial (i).texture !== null) {
+						hasTextureCoords = true;
+						break;
+					}
+				}
+			}
+
+			var textureCoords = null;
+			var polygon, material;
+			if (hasTextureCoords) {
+				textureCoords = JSM.CalculateBodyTextureCoords (body);
+				for (i = 0; i < textureCoords.length; i++) {
+					polygon = body.GetPolygon (i);
+					if (polygon.HasMaterialIndex ()) {
+						material = materials.GetMaterial (polygon.GetMaterialIndex ());
+						for (j = 0; j < textureCoords[i].length; j++) {
+							textureCoords[i][j].x /= material.textureWidth;
+							textureCoords[i][j].y /= -material.textureHeight;
+						}
+					}
+				}
+			}
+			
+			return {
+				vertexNormals : vertexNormals,
+				textureCoords : textureCoords
+			};
+		}
+		
+		function ExplodePolygonsByMaterial (polygonIndices, materialIndex, derivedData, explodeData)
+		{
+			function ExplodePolygon (index, derivedData, explodeData)
 			{
 				function CreateTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
 				{
@@ -46,16 +83,16 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 						vertex1 = body.GetVertex (polygon.GetVertexIndex (0)).position;
 						vertex2 = body.GetVertex (polygon.GetVertexIndex ((i + 1) % count)).position;
 						vertex3 = body.GetVertex (polygon.GetVertexIndex ((i + 2) % count)).position;
-						normal1 = vertexNormals[index][0];
-						normal2 = vertexNormals[index][(i + 1) % count];
-						normal3 = vertexNormals[index][(i + 2) % count];
+						normal1 = derivedData.vertexNormals[index][0];
+						normal2 = derivedData.vertexNormals[index][(i + 1) % count];
+						normal3 = derivedData.vertexNormals[index][(i + 2) % count];
 						uv1 = null;
 						uv2 = null;
 						uv3 = null;
-						if (hasTextureCoords) {
-							uv1 = textureCoords[index][0];
-							uv2 = textureCoords[index][(i + 1) % count];
-							uv3 = textureCoords[index][(i + 2) % count];
+						if (derivedData.textureCoords !== null) {
+							uv1 = derivedData.textureCoords[index][0];
+							uv2 = derivedData.textureCoords[index][(i + 1) % count];
+							uv3 = derivedData.textureCoords[index][(i + 2) % count];
 						}
 						
 						CreateTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3);
@@ -78,16 +115,16 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 							vertex1 = body.GetVertex (polygon.GetVertexIndex (triangle[0])).position;
 							vertex2 = body.GetVertex (polygon.GetVertexIndex (triangle[1])).position;
 							vertex3 = body.GetVertex (polygon.GetVertexIndex (triangle[2])).position;
-							normal1 = vertexNormals[index][triangle[0]];
-							normal2 = vertexNormals[index][triangle[1]];
-							normal3 = vertexNormals[index][triangle[2]];
+							normal1 = derivedData.vertexNormals[index][triangle[0]];
+							normal2 = derivedData.vertexNormals[index][triangle[1]];
+							normal3 = derivedData.vertexNormals[index][triangle[2]];
 							uv1 = null;
 							uv2 = null;
 							uv3 = null;
-							if (hasTextureCoords) {
-								uv1 = textureCoords[index][triangle[0]];
-								uv2 = textureCoords[index][triangle[1]];
-								uv3 = textureCoords[index][triangle[2]];
+							if (derivedData.textureCoords !== null) {
+								uv1 = derivedData.textureCoords[index][triangle[0]];
+								uv2 = derivedData.textureCoords[index][triangle[1]];
+								uv3 = derivedData.textureCoords[index][triangle[2]];
 							}
 							
 							CreateTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3);
@@ -103,7 +140,7 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 
 			var i;
 			for (i = 0; i < polygonIndices.length; i++) {
-				ExplodePolygon (polygonIndices[i], explodeData);
+				ExplodePolygon (polygonIndices[i], derivedData, explodeData);
 			}
 
 			if (explodeData.onGeometryEnd !== undefined && explodeData.onGeometryEnd !== null) {
@@ -114,7 +151,7 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 		if (materials === undefined || materials === null) {
 			materials = new JSM.Materials ();
 		}
-		
+
 		var polygonsByMaterial = [];
 		var polygonsWithNoMaterial = [];
 		
@@ -134,19 +171,19 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 			material = polygon.GetMaterialIndex ();
 			polygonsByMaterial[material].push (i);
 		}
-
+		
+		var derivedData = CalculatePolygonsDerivedData (body, materials);
 		var polygons;
 		for (i = 0; i < polygonsByMaterial.length; i++) {
 			polygons = polygonsByMaterial[i];
 			if (polygons.length === 0) {
 				continue;
 			}
-			
-			ExplodePolygonsByMaterial (polygons, i, explodeData);
+			ExplodePolygonsByMaterial (polygons, i, derivedData, explodeData);
 		}
 
 		if (polygonsWithNoMaterial.length !== 0) {
-			ExplodePolygonsByMaterial (polygonsWithNoMaterial, -1, explodeData);
+			ExplodePolygonsByMaterial (polygonsWithNoMaterial, -1, derivedData, explodeData);
 		}
 	}
 
@@ -154,34 +191,6 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 		return false;
 	}
 
-	var vertexNormals = JSM.CalculateBodyVertexNormals (body);
-
-	var i, j;
-	var hasTextureCoords = false;
-	if (materials !== undefined && materials !== null) {
-		for (i = 0; i < materials.Count (); i++) {
-			if (materials.GetMaterial (i).texture !== null) {
-				hasTextureCoords = true;
-				break;
-			}
-		}
-	}
-
-	var textureCoords, polygon, material;
-	if (hasTextureCoords) {
-		textureCoords = JSM.CalculateBodyTextureCoords (body);
-		for (i = 0; i < textureCoords.length; i++) {
-			polygon = body.GetPolygon (i);
-			if (polygon.HasMaterialIndex ()) {
-				material = materials.GetMaterial (polygon.GetMaterialIndex ());
-				for (j = 0; j < textureCoords[i].length; j++) {
-					textureCoords[i][j].x /= material.textureWidth;
-					textureCoords[i][j].y /= -material.textureHeight;
-				}
-			}
-		}
-	}
-	
-	ExplodePolygonsToTriangles (body, materials, vertexNormals, textureCoords, explodeData);
+	ExplodePolygonsToTriangles (body, materials, explodeData);
 	return true;
 };
