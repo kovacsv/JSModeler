@@ -2682,6 +2682,14 @@
 						["z", "number", "the z coordinate of the vertex"]
 					]
 				},
+				"AddLineToBody" : {
+					"description" : "Adds a line to an existing body.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["beg", "integer", "begin vertex index stored in the body"],
+						["end", "integer", "end vertex index stored in the body"]
+					]
+				},
 				"AddPolygonToBody" : {
 					"description" : "Adds a polygon to an existing body.",
 					"parameters" : [
@@ -3486,8 +3494,71 @@
 						}
 					}
 				},
+				"BodyLine" : {
+					"description" : "Represents a line in a 3D body. The line contains begin and end indices of vertices stored in its 3D body, and a material index of a material defined outside of the body.",
+					"parameters" : [
+						["beg", "integer", "begin vertex index stored in the body"],
+						["end", "integer", "end vertex index stored in the body"]
+					],
+					"functions" : {
+						"GetBegVertexIndex" : {
+							"description" : "Returns the body vertex index at the beginning of the line.",
+							"returns" : [
+								["integer", "the stored vertex index"]
+							]
+						},
+						"SetBegVertexIndex" : {
+							"description" : "Sets the begin vertex index of the line.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							]
+						},
+						"GetEndVertexIndex" : {
+							"description" : "Returns the body vertex index at the end of the line.",
+							"returns" : [
+								["integer", "the stored vertex index"]
+							]
+						},
+						"SetEndVertexIndex" : {
+							"description" : "Sets the end vertex index of the line.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							]
+						},
+						"HasMaterialIndex" : {
+							"description" : "Returns if the line has a material index.",
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"GetMaterialIndex" : {
+							"description" : "Returns the line material index.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"SetMaterialIndex" : {
+							"description" : "Sets the line material index.",
+							"parameters" : [
+								["material", "integer", "the material index"]
+							]
+						},
+						"InheritAttributes" : {
+							"description" : "Inherits attributes (material) from an another line.",
+							"parameters" : [
+								["source", "BodyLine", "the source line"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the line.",
+							"returns" : [
+								["BodyLine", "a cloned instance"]
+							]
+						}
+					}
+				},
 				"BodyPolygon" : {
-					"description" : "Represents a polygon of a 3D body. The polygon contains vertex indices of vertices stored in its 3D body, material indices of materials defined outside of the body, and a curve group index which defines its normal vector calculation in case of smooth surfaces.",
+					"description" : "Represents a polygon in a 3D body. The polygon contains indices of vertices stored in its body. It also contains a material index of a material defined outside of the body, and a curve group index which defines its normal vector calculation in case of smooth surfaces.",
 					"parameters" : [
 						["vertices", "integer[*]", "array of vertex indices stored in the body"]
 					],
@@ -3594,6 +3665,15 @@
 								["integer", "the index of the newly added vertex"]
 							]
 						},
+						"AddLine" : {
+							"description" : "Adds a line to the body.",
+							"parameters" : [
+								["line", "BodyLine", "the line"]
+							],
+							"returns" : [
+								["integer", "the index of the newly added line"]
+							]
+						},
 						"AddPolygon" : {
 							"description" : "Adds a polygon to the body.",
 							"parameters" : [
@@ -3628,6 +3708,15 @@
 								["position", "Coord", "the new position"]
 							]
 						},
+						"GetLine" : {
+							"description" : "Returns the line at the given index.",
+							"parameters" : [
+								["index", "integer", "the line index"]
+							],
+							"returns" : [
+								["BodyLine", "the result"]
+							]
+						},
 						"GetPolygon" : {
 							"description" : "Returns the polygon at the given index.",
 							"parameters" : [
@@ -3635,6 +3724,12 @@
 							],
 							"returns" : [
 								["BodyPolygon", "the result"]
+							]
+						},
+						"SetLinesMaterialIndex" : {
+							"description" : "Sets the material index for all lines in the body.",
+							"parameters" : [
+								["material", "integer", "the material index"]
 							]
 						},
 						"SetPolygonsMaterialIndex" : {
@@ -3655,6 +3750,12 @@
 								["index", "integer", "the index of the vertex"]
 							]
 						},
+						"RemoveLine" : {
+							"description" : "Removes a line from the body.",
+							"parameters" : [
+								["index", "integer", "the index of the line"]
+							]
+						},
 						"RemovePolygon" : {
 							"description" : "Removes a polygon from the body.",
 							"parameters" : [
@@ -3663,6 +3764,12 @@
 						},
 						"VertexCount" : {
 							"description" : "Returns the vertex count of the body.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"LineCount" : {
+							"description" : "Returns the line count of the body.",
 							"returns" : [
 								["integer", "the result"]
 							]

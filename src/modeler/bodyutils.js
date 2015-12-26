@@ -13,6 +13,19 @@ JSM.AddVertexToBody = function (body, x, y, z)
 };
 
 /**
+* Function: AddLineToBody
+* Description: Adds a line to an existing body.
+* Parameters:
+*	body {Body} the body
+*	beg {integer} begin vertex index stored in the body
+*	end {integer} end vertex index stored in the body
+*/
+JSM.AddLineToBody = function (body, beg, end)
+{
+	body.AddLine (new JSM.BodyLine (beg, end));
+};
+
+/**
 * Function: AddPolygonToBody
 * Description: Adds a polygon to an existing body.
 * Parameters:

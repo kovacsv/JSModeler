@@ -147,6 +147,107 @@ generalSuite.AddTest ('BodyRemoveTest', function (test)
 	test.Assert (JSM.CheckBody (body));
 });
 
+generalSuite.AddTest ('BodyLineTest', function (test)
+{
+	var line = new JSM.BodyLine (1, 2);
+	test.AssertEqual (line.GetBegVertexIndex (), 1);
+	test.AssertEqual (line.GetEndVertexIndex (), 2);
+	line.SetBegVertexIndex (3);
+	line.SetEndVertexIndex (4);
+	test.AssertEqual (line.GetBegVertexIndex (), 3);
+	test.AssertEqual (line.GetEndVertexIndex (), 4);
+	test.AssertEqual (line.HasMaterialIndex (), false);
+	test.AssertEqual (line.GetMaterialIndex (), -1);
+	line.SetMaterialIndex (0);
+	test.AssertEqual (line.HasMaterialIndex (), true);
+	test.AssertEqual (line.GetMaterialIndex (), 0);
+	var line2 = line.Clone ();
+	test.AssertEqual (line2.GetBegVertexIndex (), 3);
+	test.AssertEqual (line2.GetEndVertexIndex (), 4);
+	test.AssertEqual (line2.GetMaterialIndex (), 0);
+	line2.SetMaterialIndex (1);
+	test.AssertEqual (line.GetMaterialIndex (), 0);
+	test.AssertEqual (line2.GetMaterialIndex (), 1);
+	line2.InheritAttributes (line);
+	test.AssertEqual (line.GetMaterialIndex (), 0);
+	test.AssertEqual (line2.GetMaterialIndex (), 0);
+});
+
+generalSuite.AddTest ('BodyLineTest2', function (test)
+{
+	var body = new JSM.Body ();
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+	test.AssertEqual (body.LineCount (), 0);
+	test.AssertEqual (body.AddLine (new JSM.BodyLine (0, 1)), 0);
+	test.AssertEqual (body.LineCount (), 1);
+	test.AssertEqual (body.GetLine (0).GetBegVertexIndex (), 0);
+	test.AssertEqual (body.GetLine (0).GetEndVertexIndex (), 1);
+	test.AssertEqual (body.GetLine (0).GetMaterialIndex (), -1);
+
+	test.AssertEqual (body.AddLine (new JSM.BodyLine (1, 2)), 1);
+	test.AssertEqual (body.AddLine (new JSM.BodyLine (2, 3)), 2);
+	test.AssertEqual (body.AddLine (new JSM.BodyLine (3, 0)), 3);
+	test.AssertEqual (body.LineCount (), 4);
+	
+	body.SetLinesMaterialIndex (0);
+	var i;
+	for (i = 0; i < body.LineCount (); i++) {
+		test.AssertEqual (body.GetLine (i).GetMaterialIndex (), 0);
+	}
+	
+	body.RemoveVertex (1);
+	test.AssertEqual (body.LineCount (), 2);
+	test.AssertEqual (body.GetLine (0).GetBegVertexIndex (), 1);
+	test.AssertEqual (body.GetLine (0).GetEndVertexIndex (), 2);
+	test.AssertEqual (body.GetLine (1).GetBegVertexIndex (), 2);
+	test.AssertEqual (body.GetLine (1).GetEndVertexIndex (), 0);
+	
+	JSM.AddLineToBody (body, 0, 2);
+	test.AssertEqual (body.LineCount (), 3);
+	test.AssertEqual (body.GetLine (2).GetBegVertexIndex (), 0);
+	test.AssertEqual (body.GetLine (2).GetEndVertexIndex (), 2);
+	
+	body.Clear ();
+	test.AssertEqual (body.LineCount (), 0);
+});
+
+generalSuite.AddTest ('BodyMergeTest', function (test)
+{
+	var body = new JSM.Body ();
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+	test.AssertEqual (body.AddLine (new JSM.BodyLine (0, 1)), 0);
+	test.AssertEqual (body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2])), 0);
+
+	var body2 = new JSM.Body ();
+	body2.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+	body2.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+	body2.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+	test.AssertEqual (body2.AddLine (new JSM.BodyLine (0, 1)), 0);
+	test.AssertEqual (body2.AddPolygon (new JSM.BodyPolygon ([0, 1, 2])), 0);
+	
+	body.Merge (body2);
+	test.AssertEqual (body.VertexCount (), 6);
+	test.AssertEqual (body.LineCount (), 2);
+	test.AssertEqual (body.PolygonCount (), 2);
+	
+	test.AssertEqual (body.GetLine (0).GetBegVertexIndex (), 0);
+	test.AssertEqual (body.GetLine (0).GetEndVertexIndex (), 1);
+	test.AssertEqual (body.GetLine (1).GetBegVertexIndex (), 3);
+	test.AssertEqual (body.GetLine (1).GetEndVertexIndex (), 4);
+	
+	test.AssertEqual (body.GetPolygon (0).GetVertexIndex (0), 0);
+	test.AssertEqual (body.GetPolygon (0).GetVertexIndex (1), 1);
+	test.AssertEqual (body.GetPolygon (0).GetVertexIndex (2), 2);
+	test.AssertEqual (body.GetPolygon (1).GetVertexIndex (0), 3);
+	test.AssertEqual (body.GetPolygon (1).GetVertexIndex (1), 4);
+	test.AssertEqual (body.GetPolygon (1).GetVertexIndex (2), 5);
+});
+
 generalSuite.AddTest ('ModelTest', function (test)
 {
 	var model = new JSM.Model ();

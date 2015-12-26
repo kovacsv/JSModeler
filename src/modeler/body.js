@@ -45,10 +45,127 @@ JSM.BodyVertex.prototype.Clone = function ()
 };
 
 /**
+* Class: BodyLine
+* Description:
+*	Represents a line in a 3D body. The line contains begin and end indices of vertices
+*	stored in its 3D body, and a material index of a material defined outside of the body.
+* Parameters:
+*	beg {integer} begin vertex index stored in the body
+*	end {integer} end vertex index stored in the body
+*/
+JSM.BodyLine = function (beg, end)
+{
+	this.beg = beg;
+	this.end = end;
+	this.material = -1;
+};
+
+/**
+* Function: BodyLine.GetBegVertexIndex
+* Description: Returns the body vertex index at the beginning of the line.
+* Returns:
+*	{integer} the stored vertex index
+*/
+JSM.BodyLine.prototype.GetBegVertexIndex = function ()
+{
+	return this.beg;
+};
+
+/**
+* Function: BodyLine.SetBegVertexIndex
+* Description: Sets the begin vertex index of the line.
+* Parameters:
+*	index {integer} the vertex index
+*/
+JSM.BodyLine.prototype.SetBegVertexIndex = function (index)
+{
+	this.beg = index;
+};
+
+/**
+* Function: BodyLine.GetEndVertexIndex
+* Description: Returns the body vertex index at the end of the line.
+* Returns:
+*	{integer} the stored vertex index
+*/
+JSM.BodyLine.prototype.GetEndVertexIndex = function ()
+{
+	return this.end;
+};
+
+/**
+* Function: BodyLine.SetEndVertexIndex
+* Description: Sets the end vertex index of the line.
+* Parameters:
+*	index {integer} the vertex index
+*/
+JSM.BodyLine.prototype.SetEndVertexIndex = function (index)
+{
+	this.end = index;
+};
+
+/**
+* Function: BodyLine.HasMaterialIndex
+* Description: Returns if the line has a material index.
+* Returns:
+*	{boolean} the result
+*/
+JSM.BodyLine.prototype.HasMaterialIndex = function ()
+{
+	return this.material !== -1;
+};
+
+/**
+* Function: BodyLine.GetMaterialIndex
+* Description: Returns the line material index.
+* Returns:
+*	{integer} the result
+*/
+JSM.BodyLine.prototype.GetMaterialIndex = function ()
+{
+	return this.material;
+};
+
+/**
+* Function: BodyLine.SetMaterialIndex
+* Description: Sets the line material index.
+* Parameters:
+*	material {integer} the material index
+*/
+JSM.BodyLine.prototype.SetMaterialIndex = function (material)
+{
+	this.material = material;
+};
+
+/**
+* Function: BodyLine.InheritAttributes
+* Description: Inherits attributes (material) from an another line.
+* Parameters:
+*	source {BodyLine} the source line
+*/
+JSM.BodyLine.prototype.InheritAttributes = function (source)
+{
+	this.material = source.material;
+};
+
+/**
+* Function: BodyLine.Clone
+* Description: Clones the line.
+* Returns:
+*	{BodyLine} a cloned instance
+*/
+JSM.BodyLine.prototype.Clone = function ()
+{
+	var result = new JSM.BodyLine (this.beg, this.end);
+	result.material = this.material;
+	return result;
+};
+
+/**
 * Class: BodyPolygon
 * Description:
-*	Represents a polygon of a 3D body. The polygon contains vertex indices of vertices stored
-*	in its 3D body, material indices of materials defined outside of the body, and a curve
+*	Represents a polygon in a 3D body. The polygon contains indices of vertices stored in its body.
+*	It also contains a material index of a material defined outside of the body, and a curve
 *	group index which defines its normal vector calculation in case of smooth surfaces.
 * Parameters:
 *	vertices {integer[*]} array of vertex indices stored in the body
@@ -233,9 +350,7 @@ JSM.BodyPolygon.prototype.Clone = function ()
 */
 JSM.Body = function ()
 {
-	this.vertices = [];
-	this.polygons = [];
-	this.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
+	this.Clear ();
 };
 
 /**
@@ -250,6 +365,20 @@ JSM.Body.prototype.AddVertex = function (vertex)
 {
 	this.vertices.push (vertex);
 	return this.vertices.length - 1;
+};
+
+/**
+* Function: Body.AddLine
+* Description: Adds a line to the body.
+* Parameters:
+*	line {BodyLine} the line
+* Returns:
+*	{integer} the index of the newly added line
+*/
+JSM.Body.prototype.AddLine = function (line)
+{
+	this.lines.push (line);
+	return this.lines.length - 1;
 };
 
 /**
@@ -305,6 +434,19 @@ JSM.Body.prototype.SetVertexPosition = function (index, position)
 };
 
 /**
+* Function: Body.GetLine
+* Description: Returns the line at the given index.
+* Parameters:
+*	index {integer} the line index
+* Returns:
+*	{BodyLine} the result
+*/
+JSM.Body.prototype.GetLine = function (index)
+{
+	return this.lines[index];
+};
+
+/**
 * Function: Body.GetPolygon
 * Description: Returns the polygon at the given index.
 * Parameters:
@@ -315,6 +457,20 @@ JSM.Body.prototype.SetVertexPosition = function (index, position)
 JSM.Body.prototype.GetPolygon = function (index)
 {
 	return this.polygons[index];
+};
+
+/**
+* Function: Body.SetLinesMaterialIndex
+* Description: Sets the material index for all lines in the body.
+* Parameters:
+*	material {integer} the material index
+*/
+JSM.Body.prototype.SetLinesMaterialIndex = function (material)
+{
+	var i;
+	for (i = 0; i < this.lines.length; i++) {
+		this.lines[i].SetMaterialIndex (material);
+	}
 };
 
 /**
@@ -353,8 +509,22 @@ JSM.Body.prototype.SetPolygonsCurveGroup = function (group)
 */
 JSM.Body.prototype.RemoveVertex = function (index)
 {
+	var linesToDelete = [];
 	var polygonsToDelete = [];
-	var i, j, polygon, bodyVertIndex;
+	var i, j, line, polygon, bodyVertIndex;
+	for (i = 0; i < this.lines.length; i++) {
+		line = this.lines[i];
+		if (line.GetBegVertexIndex () == index || line.GetEndVertexIndex () == index) {
+			linesToDelete.push (i);
+		} else {
+			if (line.GetBegVertexIndex () >= index) {
+				line.SetBegVertexIndex (line.GetBegVertexIndex () - 1);
+			}
+			if (line.GetEndVertexIndex () >= index) {
+				line.SetEndVertexIndex (line.GetEndVertexIndex () - 1);
+			}
+		}
+	}
 	for (i = 0; i < this.polygons.length; i++) {
 		polygon = this.polygons[i];
 		for (j = 0; j < polygon.VertexIndexCount (); j++) {
@@ -367,10 +537,24 @@ JSM.Body.prototype.RemoveVertex = function (index)
 			}
 		}
 	}
+	for (i = 0; i < linesToDelete.length; i++) {
+		this.RemoveLine (linesToDelete[i] - i);
+	}
 	for (i = 0; i < polygonsToDelete.length; i++) {
 		this.RemovePolygon (polygonsToDelete[i] - i);
 	}
 	this.vertices.splice (index, 1);
+};
+
+/**
+* Function: Body.RemoveLine
+* Description: Removes a line from the body.
+* Parameters:
+*	index {integer} the index of the line
+*/
+JSM.Body.prototype.RemoveLine = function (index)
+{
+	this.lines.splice (index, 1);
 };
 
 /**
@@ -393,6 +577,17 @@ JSM.Body.prototype.RemovePolygon = function (index)
 JSM.Body.prototype.VertexCount = function ()
 {
 	return this.vertices.length;
+};
+
+/**
+* Function: Body.LineCount
+* Description: Returns the line count of the body.
+* Returns:
+*	{integer} the result
+*/
+JSM.Body.prototype.LineCount = function ()
+{
+	return this.lines.length;
 };
 
 /**
@@ -622,6 +817,14 @@ JSM.Body.prototype.Merge = function (body)
 		this.vertices.push (body.GetVertex (i).Clone ());
 	}
 	
+	var newLine;
+	for (i = 0; i < body.LineCount (); i++) {
+		newLine = body.GetLine (i).Clone ();
+		newLine.SetBegVertexIndex (newLine.GetBegVertexIndex () + oldVertexCount);
+		newLine.SetEndVertexIndex (newLine.GetEndVertexIndex () + oldVertexCount);
+		this.lines.push (newLine);
+	}
+
 	var newPolygon;
 	for (i = 0; i < body.PolygonCount (); i++) {
 		newPolygon = body.GetPolygon (i).Clone ();
@@ -639,7 +842,9 @@ JSM.Body.prototype.Merge = function (body)
 JSM.Body.prototype.Clear = function ()
 {
 	this.vertices = [];
+	this.lines = [];
 	this.polygons = [];
 	this.projection = null;
 	this.coords = null;
+	this.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 };
