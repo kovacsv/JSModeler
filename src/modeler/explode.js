@@ -111,16 +111,16 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 			}
 		}
 
-		var i;
-		var polygonsByMaterial = [];
-		var polygonsWithNoMaterial = [];
-		
 		if (materials === undefined || materials === null) {
 			materials = new JSM.Materials ();
 		}
 		
+		var polygonsByMaterial = [];
+		var polygonsWithNoMaterial = [];
+		
+		var i;
 		for (i = 0; i < materials.Count (); i++) {
-			polygonsByMaterial[i] = [];
+			polygonsByMaterial.push ([]);
 		}
 
 		var polygon, material;
