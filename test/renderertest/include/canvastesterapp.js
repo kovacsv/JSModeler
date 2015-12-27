@@ -5,6 +5,10 @@ CanvasTesterApp = function (canvas, tolerance, resultsDivName)
 	this.testResultDiv = document.createElement ('div');
 	this.testResultDiv.className = 'testresult';
 	this.resultsDiv.appendChild (this.testResultDiv);
+	this.allResultDiv = document.createElement ('div');
+	this.allResultDiv.className = 'allresult success';
+	this.allResultDiv.innerHTML = 'processing...';
+	this.resultsDiv.appendChild (this.allResultDiv);
 };
 
 CanvasTesterApp.prototype.AddTest = function (renderCallback, referenceImage)
@@ -19,10 +23,8 @@ CanvasTesterApp.prototype.Run = function ()
 
 CanvasTesterApp.prototype.AllTestsFinished = function (success)
 {
-	var allResultDiv = document.createElement ('div');
-	allResultDiv.className = 'resultbox ' + (success ? 'success' : 'failure');
-	allResultDiv.innerHTML = (success ? 'success' : 'failure');
-	this.resultsDiv.appendChild (allResultDiv);
+	this.allResultDiv.className = 'allresult ' + (success ? 'success' : 'failure');
+	this.allResultDiv.innerHTML = (success ? 'success' : 'failure');
 };
 
 CanvasTesterApp.prototype.TestFinished = function (result, testObject, resultImageData, referenceImageData, differenceImageData)
@@ -51,7 +53,7 @@ CanvasTesterApp.prototype.TestFinished = function (result, testObject, resultIma
 		} else if (result === 3) {
 			errorText = 'difference';
 		}
-		resultBox.className = 'resultbox link ' + (success ? 'success' : 'failure');
+		resultBox.className = 'resultbox left link ' + (success ? 'success' : 'failure');
 		resultBox.innerHTML = errorText;
 		resultDiv.appendChild (resultBox);
 		

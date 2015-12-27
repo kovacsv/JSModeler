@@ -24,8 +24,12 @@ div.resultbox
 	padding : 3px 10px;
 	margin-bottom : 5px;
 	margin-right : 5px;
-	float : left;
 	border-radius : 3px;
+}
+
+div.resultbox.left
+{
+	float : left;
 }
 
 div.resultbox.link
@@ -49,18 +53,24 @@ div.resultbox.failure
 
 div.allresult
 {
-	font-size : 17px;
+	font-size : 14px;
 	padding : 5px 10px;
+	border-radius : 5px;
+	margin-bottom : 5px;
 }
 
 div.allresult.success
 {
-	color : #008800;
+	color : #222222;
+	background : #eeeeee;
+	border : 1px solid #dddddd;
 }
 
 div.allresult.failure
 {
-	color : #880000;
+	color : #eeeeee;
+	background : #222222;
+	border : 1px solid #222222;
 }
 
 div.testresult
