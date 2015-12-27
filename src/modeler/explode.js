@@ -2,7 +2,7 @@
 * Function: ExplodeBody
 * Description:
 *	Explodes a body to primitives. The function calls callback functions
-*	on geometry start and end, and when a triangle is created.
+*	on geometry start and end, and when a triangle or a line is created.
 * Parameters:
 *	body {Body} the body
 *	materials {Materials} the materials
@@ -12,7 +12,7 @@
 */
 JSM.ExplodeBody = function (body, materials, explodeData)
 {
-	function ExplodePolygonsToTriangles (body, materials, explodeData)
+	function ExplodePolygons (body, materials, explodeData)
 	{
 		function CalculatePolygonsDerivedData (body, materials)
 		{
@@ -80,9 +80,9 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 				var i;
 				if (count == 3 || convexPolygon) {
 					for (i = 0; i < count - 2; i++) {
-						vertex1 = body.GetVertex (polygon.GetVertexIndex (0)).position;
-						vertex2 = body.GetVertex (polygon.GetVertexIndex ((i + 1) % count)).position;
-						vertex3 = body.GetVertex (polygon.GetVertexIndex ((i + 2) % count)).position;
+						vertex1 = body.GetVertexPosition (polygon.GetVertexIndex (0));
+						vertex2 = body.GetVertexPosition (polygon.GetVertexIndex ((i + 1) % count));
+						vertex3 = body.GetVertexPosition (polygon.GetVertexIndex ((i + 2) % count));
 						normal1 = derivedData.vertexNormals[index][0];
 						normal2 = derivedData.vertexNormals[index][(i + 1) % count];
 						normal3 = derivedData.vertexNormals[index][(i + 2) % count];
@@ -102,8 +102,8 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 					
 					var vertex;
 					for (i = 0; i < count; i++) {
-						vertex = body.GetVertex (polygon.vertices[i]);
-						polygon3D.AddVertex (vertex.position.x, vertex.position.y, vertex.position.z);
+						vertex = body.GetVertexPosition (polygon.vertices[i]);
+						polygon3D.AddVertex (vertex.x, vertex.y, vertex.z);
 					}
 					
 					var normal = JSM.CalculateBodyPolygonNormal (body, index);
@@ -112,9 +112,9 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 						var triangle;
 						for (i = 0; i < triangles.length; i++) {
 							triangle = triangles[i];
-							vertex1 = body.GetVertex (polygon.GetVertexIndex (triangle[0])).position;
-							vertex2 = body.GetVertex (polygon.GetVertexIndex (triangle[1])).position;
-							vertex3 = body.GetVertex (polygon.GetVertexIndex (triangle[2])).position;
+							vertex1 = body.GetVertexPosition (polygon.GetVertexIndex (triangle[0]));
+							vertex2 = body.GetVertexPosition (polygon.GetVertexIndex (triangle[1]));
+							vertex3 = body.GetVertexPosition (polygon.GetVertexIndex (triangle[2]));
 							normal1 = derivedData.vertexNormals[index][triangle[0]];
 							normal2 = derivedData.vertexNormals[index][triangle[1]];
 							normal3 = derivedData.vertexNormals[index][triangle[2]];
@@ -152,10 +152,10 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 			}
 		}
 
-		if (materials === undefined || materials === null) {
-			materials = new JSM.Materials ();
+		if (body.PolygonCount () === 0) {
+			return;
 		}
-
+		
 		var polygonsByMaterial = [];
 		var polygonsWithNoMaterial = [];
 		
@@ -182,10 +182,72 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 		ExplodePolygonsByMaterial (polygonsWithNoMaterial, -1, derivedData, explodeData);
 	}
 
+	function ExplodeLines (body, materials, explodeData)
+	{
+		function ExplodeLinesByMaterial (lineIndices, materialIndex, explodeData)
+		{
+			if (lineIndices.length === 0) {
+				return;
+			}
+			
+			var material = materials.GetMaterial (materialIndex);
+			if (explodeData.onLineGeometryStart !== undefined && explodeData.onLineGeometryStart !== null) {
+				explodeData.onLineGeometryStart (material);
+			}
+
+			if (explodeData.onLine !== undefined && explodeData.onLine !== null) {
+				var i, line, beg, end;
+				for (i = 0; i < lineIndices.length; i++) {
+					line = body.GetLine (lineIndices[i]);
+					beg = body.GetVertexPosition (line.GetBegVertexIndex ());
+					end = body.GetVertexPosition (line.GetEndVertexIndex ());
+					explodeData.onLine (beg, end);
+				}
+			}
+
+			if (explodeData.onLineGeometryEnd !== undefined && explodeData.onLineGeometryEnd !== null) {
+				explodeData.onLineGeometryEnd (material);
+			}
+		}
+
+		if (body.LineCount () === 0) {
+			return;
+		}
+
+		var linesByMaterial = [];
+		var linesWithNoMaterial = [];
+		
+		var i;
+		for (i = 0; i < materials.Count (); i++) {
+			linesByMaterial.push ([]);
+		}
+
+		var line, material;
+		for (i = 0; i < body.LineCount (); i++) {
+			line = body.GetLine (i);
+			if (line.HasMaterialIndex ()) {
+				material = line.GetMaterialIndex ();
+				linesByMaterial[material].push (i);
+			} else {
+				linesWithNoMaterial.push (i);
+			}
+		}
+		
+		for (i = 0; i < linesByMaterial.length; i++) {
+			ExplodeLinesByMaterial (linesByMaterial[i], i, explodeData);
+		}
+		ExplodeLinesByMaterial (linesWithNoMaterial, -1, explodeData);
+	}
+
 	if (explodeData === undefined || explodeData === null) {
 		return false;
 	}
 
-	ExplodePolygonsToTriangles (body, materials, explodeData);
+	if (materials === undefined || materials === null) {
+		materials = new JSM.Materials ();
+	}	
+	
+	ExplodePolygons (body, materials, explodeData);
+	ExplodeLines (body, materials, explodeData);
 	return true;
 };

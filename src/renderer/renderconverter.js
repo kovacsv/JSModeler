@@ -1,5 +1,14 @@
 JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 {
+	function MaterialToRenderMaterial (material, materialType)
+	{
+		var renderAmbient = JSM.HexColorToNormalizedRGBComponents (material.ambient);
+		var renderDiffuse = JSM.HexColorToNormalizedRGBComponents (material.diffuse);
+		var renderSpecular = JSM.HexColorToNormalizedRGBComponents (material.specular);
+		var renderMaterial = new JSM.RenderMaterial (materialType, renderAmbient, renderDiffuse, renderSpecular, material.shininess, material.opacity, material.texture, material.textureWidth, material.textureHeight);
+		return renderMaterial;
+	}
+	
 	function OnGeometryStart ()
 	{
 		vertices = [];
@@ -24,11 +33,7 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 			}
 		}
 
-		var renderAmbient = JSM.HexColorToNormalizedRGBComponents (material.ambient);
-		var renderDiffuse = JSM.HexColorToNormalizedRGBComponents (material.diffuse);
-		var renderSpecular = JSM.HexColorToNormalizedRGBComponents (material.specular);
-		var renderMaterial = new JSM.RenderMaterial (materialType, renderAmbient, renderDiffuse, renderSpecular, material.shininess, material.opacity, material.texture, material.textureWidth, material.textureHeight);
-
+		var renderMaterial = MaterialToRenderMaterial (material, materialType);
 		var mesh = new JSM.RenderMesh (renderMaterial);
 		mesh.SetVertexArray (vertices);
 		mesh.SetNormalArray (normals);
@@ -56,6 +61,32 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 		}
 	}
 	
+	function OnLineGeometryStart ()
+	{
+		vertices = [];
+		normals = null;
+		uvs = null;
+	}
+
+	function OnLineGeometryEnd (material)
+	{
+		var materialType = JSM.RenderMaterialType.Line;
+		if (material.opacity < 1.0) {
+			materialType = JSM.RenderMaterialType.TransparentLine;
+		}
+
+		var renderMaterial = MaterialToRenderMaterial (material, materialType);
+		var mesh = new JSM.RenderMesh (renderMaterial);
+		mesh.SetVertexArray (vertices);
+		renderBody.AddMesh (mesh);
+	}
+
+	function OnLine (begVertex, endVertex)
+	{
+		vertices.push (begVertex.x, begVertex.y, begVertex.z);
+		vertices.push (endVertex.x, endVertex.y, endVertex.z);
+	}	
+	
 	var hasConvexPolygons = false;
 	if (parameters !== undefined && parameters !== null) {
 		if (parameters.hasConvexPolygons !== undefined && parameters.hasConvexPolygons !== null) {
@@ -67,7 +98,10 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 		hasConvexPolygons : hasConvexPolygons,
 		onGeometryStart : OnGeometryStart,
 		onGeometryEnd : OnGeometryEnd,
-		onTriangle : OnTriangle
+		onTriangle : OnTriangle,
+		onLineGeometryStart : OnLineGeometryStart,
+		onLineGeometryEnd : OnLineGeometryEnd,
+		onLine : OnLine
 	};
 	
 	var renderBody = new JSM.RenderBody ();

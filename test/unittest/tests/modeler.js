@@ -596,7 +596,8 @@ generalSuite.AddTest ('ExplodeTest2', function (test)
 	{
 		var result = {
 			materialCount : 0,
-			trianglesByMaterial : []
+			trianglesByMaterial : [],
+			linesByMaterial : []
 		};
 		
 		var explodeData = {
@@ -608,7 +609,16 @@ generalSuite.AddTest ('ExplodeTest2', function (test)
 			},
 			onTriangle : function (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3) {
 				result.trianglesByMaterial[result.materialCount - 1]++;
-			}
+			},
+			onLineGeometryStart : function (material) {
+				result.materialCount++;
+				result.linesByMaterial.push (0)
+			},
+			onLineGeometryEnd : function (material) {
+			},
+			onLine : function (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3) {
+				result.linesByMaterial[result.materialCount - 1]++;
+			},
 		};
 		
 		JSM.ExplodeBody (body, materials, explodeData);
@@ -623,30 +633,88 @@ generalSuite.AddTest ('ExplodeTest2', function (test)
 	body = JSM.GenerateCuboid (1, 1, 1);
 	result = CollectExplodeInformation (body, null);
 	test.AssertEqual (result.materialCount, 1);
+	test.AssertEqual (result.trianglesByMaterial.length, 1);
+	test.AssertEqual (result.linesByMaterial.length, 0);
 	test.AssertEqual (result.trianglesByMaterial[0], 12);
 	
 	result = CollectExplodeInformation (body, materials);
 	test.AssertEqual (result.materialCount, 1);
+	test.AssertEqual (result.trianglesByMaterial.length, 1);
+	test.AssertEqual (result.linesByMaterial.length, 0);
 	test.AssertEqual (result.trianglesByMaterial[0], 12);
 
 	body.GetPolygon (0).SetMaterialIndex (0);
 	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.trianglesByMaterial.length, 2);
+	test.AssertEqual (result.linesByMaterial.length, 0);
 	test.AssertEqual (result.materialCount, 2);
 	test.AssertEqual (result.trianglesByMaterial[0], 2);
 	test.AssertEqual (result.trianglesByMaterial[1], 10);
 
 	body.GetPolygon (1).SetMaterialIndex (0);
 	result = CollectExplodeInformation (body, materials);
-	test.AssertEqual (result.materialCount, 2);
+	test.AssertEqual (result.trianglesByMaterial.length, 2);
+	test.AssertEqual (result.linesByMaterial.length, 0);
 	test.AssertEqual (result.trianglesByMaterial[0], 4);
 	test.AssertEqual (result.trianglesByMaterial[1], 8);
 
 	body.GetPolygon (2).SetMaterialIndex (1);
 	result = CollectExplodeInformation (body, materials);
 	test.AssertEqual (result.materialCount, 3);
+	test.AssertEqual (result.trianglesByMaterial.length, 3);
+	test.AssertEqual (result.linesByMaterial.length, 0);
 	test.AssertEqual (result.trianglesByMaterial[0], 4);
 	test.AssertEqual (result.trianglesByMaterial[1], 2);
 	test.AssertEqual (result.trianglesByMaterial[2], 6);
+	
+	body = new JSM.Body ();
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+	body.AddLine (new JSM.BodyLine (0, 1));
+	body.AddLine (new JSM.BodyLine (1, 2));
+	body.AddLine (new JSM.BodyLine (3, 3));
+	body.AddLine (new JSM.BodyLine (3, 0));
+	
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 1);
+	test.AssertEqual (result.trianglesByMaterial.length, 0);
+	test.AssertEqual (result.linesByMaterial.length, 1);
+	test.AssertEqual (result.linesByMaterial[0], 4);
+	
+	body.GetLine (0).SetMaterialIndex (0);
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 2);
+	test.AssertEqual (result.trianglesByMaterial.length, 0);
+	test.AssertEqual (result.linesByMaterial.length, 2);
+	test.AssertEqual (result.linesByMaterial[0], 1);
+	test.AssertEqual (result.linesByMaterial[1], 3);
+
+	body.GetLine (1).SetMaterialIndex (0);
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 2);
+	test.AssertEqual (result.trianglesByMaterial.length, 0);
+	test.AssertEqual (result.linesByMaterial.length, 2);
+	test.AssertEqual (result.linesByMaterial[0], 2);
+	test.AssertEqual (result.linesByMaterial[1], 2);
+
+	body.GetLine (2).SetMaterialIndex (1);
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 3);
+	test.AssertEqual (result.trianglesByMaterial.length, 0);
+	test.AssertEqual (result.linesByMaterial.length, 3);
+	test.AssertEqual (result.linesByMaterial[0], 2);
+	test.AssertEqual (result.linesByMaterial[1], 1);
+	test.AssertEqual (result.linesByMaterial[2], 1);
+
+	body.GetLine (3).SetMaterialIndex (1);
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 2);
+	test.AssertEqual (result.trianglesByMaterial.length, 0);
+	test.AssertEqual (result.linesByMaterial.length, 2);
+	test.AssertEqual (result.linesByMaterial[0], 2);
+	test.AssertEqual (result.linesByMaterial[1], 2);
 });
 
 generalSuite.AddTest ('ExportTest', function (test)

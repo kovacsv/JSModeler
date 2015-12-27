@@ -449,6 +449,107 @@
 				});
 			}, 'references/model_more_materials.png');			
 
+			canvasTester.AddTest (function (renderFinished)	{
+				var body = new JSM.Body ();
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+				body.AddLine (new JSM.BodyLine (0, 1));
+				body.AddLine (new JSM.BodyLine (1, 2));
+				body.AddLine (new JSM.BodyLine (2, 3));
+				body.AddLine (new JSM.BodyLine (3, 0));
+				RenderBody (viewer, body, null, renderFinished);
+			}, 'references/lines_default_material.png');
+			
+			canvasTester.AddTest (function (renderFinished)	{
+				var body = new JSM.Body ();
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+				body.AddLine (new JSM.BodyLine (0, 1));
+				body.AddLine (new JSM.BodyLine (1, 2));
+				body.AddLine (new JSM.BodyLine (2, 3));
+				body.AddLine (new JSM.BodyLine (3, 0));
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
+				body.SetLinesMaterialIndex (0);
+				RenderBody (viewer, body, materials, renderFinished);
+			}, 'references/lines_same_material.png');
+			
+			canvasTester.AddTest (function (renderFinished)	{
+				var body = new JSM.Body ();
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+				body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+				body.AddLine (new JSM.BodyLine (0, 1));
+				body.AddLine (new JSM.BodyLine (1, 2));
+				body.AddLine (new JSM.BodyLine (2, 3));
+				body.AddLine (new JSM.BodyLine (3, 0));
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+				body.GetLine (0).SetMaterialIndex (0);
+				body.GetLine (2).SetMaterialIndex (1);
+				RenderBody (viewer, body, materials, renderFinished);
+			}, 'references/lines_multiple_materials.png');
+
+			canvasTester.AddTest (function (renderFinished)	{
+				var body = new JSM.Body ();
+				var i, beg, end, line;
+				for (i = 0; i < 6; i++) {
+					beg = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, i * 0.5, 0)));
+					end = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, i * 0.5, 0)));
+					line = new JSM.BodyLine (beg, end);
+					line.SetMaterialIndex (i);
+					body.AddLine (line);
+				}
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcccc00, diffuse : 0xcccc00}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc00cc, diffuse : 0xcc00cc}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x00cccc, diffuse : 0x00cccc}));
+				RenderBody (viewer, body, materials, renderFinished);
+			}, 'references/lines_more_multiple_materials.png');
+
+			canvasTester.AddTest (function (renderFinished)	{
+				var body = new JSM.GenerateCuboid (0.5, 0.5, 0.5);
+				var vert0 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+				var vert1 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+				var vert2 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+				var vert3 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+				body.AddLine (new JSM.BodyLine (vert0, vert1));
+				body.AddLine (new JSM.BodyLine (vert1, vert2));
+				body.AddLine (new JSM.BodyLine (vert2, vert3));
+				body.AddLine (new JSM.BodyLine (vert3, vert0));
+				RenderBody (viewer, body, null, renderFinished);
+			}, 'references/polygons_and_lines.png');		
+
+			canvasTester.AddTest (function (renderFinished)	{
+				var body = new JSM.GenerateCuboid (0.5, 0.5, 0.5);
+				var vert0 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+				var vert1 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+				var vert2 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+				var vert3 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+				body.AddLine (new JSM.BodyLine (vert0, vert1));
+				body.AddLine (new JSM.BodyLine (vert1, vert2));
+				body.AddLine (new JSM.BodyLine (vert2, vert3));
+				body.AddLine (new JSM.BodyLine (vert3, vert0));
+				var materials = new JSM.Materials ();
+				materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+				materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+				body.GetLine (1).SetMaterialIndex (0);
+				body.GetLine (2).SetMaterialIndex (1);
+				body.GetPolygon (1).SetMaterialIndex (0);
+				body.GetPolygon (2).SetMaterialIndex (1);
+				RenderBody (viewer, body, materials, renderFinished);
+			}, 'references/polygons_and_lines_materials.png');			
+			
 			canvasTester.Run ();
 		}
 
