@@ -182,6 +182,7 @@ generalSuite.AddTest ('BodyLineTest2', function (test)
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
 	test.AssertEqual (body.LineCount (), 0);
 	test.AssertEqual (body.AddLine (new JSM.BodyLine (0, 1)), 0);
+	test.Assert (JSM.CheckBody (body));
 	test.AssertEqual (body.LineCount (), 1);
 	test.AssertEqual (body.GetLine (0).GetBegVertexIndex (), 0);
 	test.AssertEqual (body.GetLine (0).GetEndVertexIndex (), 1);
@@ -191,6 +192,7 @@ generalSuite.AddTest ('BodyLineTest2', function (test)
 	test.AssertEqual (body.AddLine (new JSM.BodyLine (2, 3)), 2);
 	test.AssertEqual (body.AddLine (new JSM.BodyLine (3, 0)), 3);
 	test.AssertEqual (body.LineCount (), 4);
+	test.Assert (JSM.CheckBody (body));
 	
 	body.SetLinesMaterialIndex (0);
 	var i;
@@ -204,14 +206,17 @@ generalSuite.AddTest ('BodyLineTest2', function (test)
 	test.AssertEqual (body.GetLine (0).GetEndVertexIndex (), 2);
 	test.AssertEqual (body.GetLine (1).GetBegVertexIndex (), 2);
 	test.AssertEqual (body.GetLine (1).GetEndVertexIndex (), 0);
+	test.Assert (JSM.CheckBody (body));
 	
 	JSM.AddLineToBody (body, 0, 2);
 	test.AssertEqual (body.LineCount (), 3);
 	test.AssertEqual (body.GetLine (2).GetBegVertexIndex (), 0);
 	test.AssertEqual (body.GetLine (2).GetEndVertexIndex (), 2);
+	test.Assert (JSM.CheckBody (body));
 	
 	body.Clear ();
 	test.AssertEqual (body.LineCount (), 0);
+	test.Assert (JSM.CheckBody (body));
 });
 
 generalSuite.AddTest ('BodyMergeTest', function (test)
@@ -246,6 +251,8 @@ generalSuite.AddTest ('BodyMergeTest', function (test)
 	test.AssertEqual (body.GetPolygon (1).GetVertexIndex (0), 3);
 	test.AssertEqual (body.GetPolygon (1).GetVertexIndex (1), 4);
 	test.AssertEqual (body.GetPolygon (1).GetVertexIndex (2), 5);
+	
+	test.Assert (JSM.CheckBody (body));
 });
 
 generalSuite.AddTest ('ModelTest', function (test)

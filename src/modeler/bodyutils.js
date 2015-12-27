@@ -40,8 +40,8 @@ JSM.AddPolygonToBody = function (body, vertices)
 /**
 * Function: CheckBody
 * Description:
-*	Checks if the body is correct. It means that every polygon has at
-*	least three vertices, and every vertex index is valid.
+*	Checks if the body is correct. It means that every polygon has at least
+*	three vertices, and every line and polygon vertex index is valid.
 * Parameters:
 *	body {Body} the body
 * Returns:
@@ -50,16 +50,23 @@ JSM.AddPolygonToBody = function (body, vertices)
 JSM.CheckBody = function (body)
 {
 	var vertexCount = body.VertexCount ();
-	var i, j, polygon, polygonVertexCount, polygonVertexIndex;
-	for (i = 0; i < body.PolygonCount (); i++) {
-		polygon = body.GetPolygon (i);
-		polygonVertexCount = polygon.VertexIndexCount ();
-		if (polygonVertexCount < 3) {
+	var i, j, line, polygon;
+	for (i = 0; i < body.LineCount (); i++) {
+		line = body.GetLine (i);
+		if (line.GetBegVertexIndex () < 0 || line.GetBegVertexIndex () >= vertexCount) {
 			return false;
 		}
-		for (j = 0; j < polygonVertexCount; j++) {
-			polygonVertexIndex = polygon.GetVertexIndex (j);
-			if (polygonVertexIndex < 0 || polygonVertexIndex >= vertexCount) {
+		if (line.GetEndVertexIndex () < 0 || line.GetEndVertexIndex () >= vertexCount) {
+			return false;
+		}
+	}
+	for (i = 0; i < body.PolygonCount (); i++) {
+		polygon = body.GetPolygon (i);
+		if (polygon.VertexIndexCount () < 3) {
+			return false;
+		}
+		for (j = 0; j < polygon.VertexIndexCount (); j++) {
+			if (polygon.GetVertexIndex (j) < 0 || polygon.GetVertexIndex (j) >= vertexCount) {
 				return false;
 			}
 		}
