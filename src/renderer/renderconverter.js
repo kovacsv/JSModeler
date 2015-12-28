@@ -85,7 +85,7 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 	{
 		vertices.push (begVertex.x, begVertex.y, begVertex.z);
 		vertices.push (endVertex.x, endVertex.y, endVertex.z);
-	}	
+	}
 	
 	var hasConvexPolygons = false;
 	if (parameters !== undefined && parameters !== null) {

@@ -88,19 +88,17 @@
 	<script type="text/javascript">
 		function Load ()
 		{
-			var camera = new JSM.Camera (
-				new JSM.Coord (1.0, 3.0, 2.0),
-				new JSM.Coord (0.0, 0.0, 0.0),
-				new JSM.Vector (0.0, 0.0, 1.0)
-			);
-			
-			var light = new JSM.Light ();
-			
-			viewer = new JSM.Viewer ();
-			if (!viewer.Init (document.getElementById ('example'), camera, light)) {
-				alert ('error');
-			}
+			var viewerSettings = {
+				cameraEyePosition : [1.0, 3.0, 2.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
 
+			viewer = new JSM.ThreeViewer ();
+			if (!viewer.Start (document.getElementById ('example'), viewerSettings)) {
+				alert ('error');	
+			}
+			
 			var materials = new JSM.Materials ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 			materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
@@ -119,8 +117,8 @@
 			body.GetLine (1).SetMaterialIndex (0);
 			body.GetLine (2).SetMaterialIndex (1);
 			
-			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
-			viewer.AddRenderBody (renderBody);
+			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			viewer.AddMeshes (meshes);
 			viewer.Draw ();
 		}
 	

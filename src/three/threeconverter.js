@@ -1,11 +1,6 @@
 JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 {
-	function OnGeometryStart ()
-	{
-		geometry = new THREE.Geometry ();
-	}
-
-	function OnGeometryEnd (material)
+	function OnGeometryStart (material)
 	{
 		var hasTexture = (material.texture !== null);
 		var hasOpacity = (material.opacity !== 1.0);
@@ -19,7 +14,7 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 			shininess = 1;
 		}
 
-		var threeMaterial = new THREE.MeshPhongMaterial ({
+		threeMaterial = new THREE.MeshPhongMaterial ({
 			ambient : ambient,
 			color : diffuse,
 			specular : specular,
@@ -46,28 +41,32 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 			texture.wrapT = THREE.RepeatWrapping;
 			threeMaterial.map = texture;
 		}
+		
+		threeGeometry = new THREE.Geometry ();
+	}
 
-		geometry.computeFaceNormals ();
-
-		var mesh = new THREE.Mesh (geometry, threeMaterial);
+	function OnGeometryEnd ()
+	{
+		threeGeometry.computeFaceNormals ();
+		var mesh = new THREE.Mesh (threeGeometry, threeMaterial);
 		meshes.push (mesh);
 	}
 
 	function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
 	{
-		var lastVertexIndex = geometry.vertices.length;
-		geometry.vertices.push (new THREE.Vector3 (vertex1.x, vertex1.y, vertex1.z));
-		geometry.vertices.push (new THREE.Vector3 (vertex2.x, vertex2.y, vertex2.z));
-		geometry.vertices.push (new THREE.Vector3 (vertex3.x, vertex3.y, vertex3.z));
+		var lastVertexIndex = threeGeometry.vertices.length;
+		threeGeometry.vertices.push (new THREE.Vector3 (vertex1.x, vertex1.y, vertex1.z));
+		threeGeometry.vertices.push (new THREE.Vector3 (vertex2.x, vertex2.y, vertex2.z));
+		threeGeometry.vertices.push (new THREE.Vector3 (vertex3.x, vertex3.y, vertex3.z));
 		var face = new THREE.Face3 (lastVertexIndex + 0, lastVertexIndex + 1, lastVertexIndex + 2);
-		geometry.faces.push (face);
+		threeGeometry.faces.push (face);
 		
 		if (normal1 !== null && normal2 !== null && normal3 !== null) {
 			var normalArray = [];
 			normalArray.push (new THREE.Vector3 (normal1.x, normal1.y, normal1.z));
 			normalArray.push (new THREE.Vector3 (normal2.x, normal2.y, normal2.z));
 			normalArray.push (new THREE.Vector3 (normal3.x, normal3.y, normal3.z));
-			geometry.faces[geometry.faces.length - 1].vertexNormals = normalArray;
+			threeGeometry.faces[threeGeometry.faces.length - 1].vertexNormals = normalArray;
 		}
 
 		if (uv1 !== null && uv2 !== null && uv3 !== null) {
@@ -75,10 +74,37 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 			uvArray.push (new THREE.Vector2 (uv1.x, -uv1.y));
 			uvArray.push (new THREE.Vector2 (uv2.x, -uv2.y));
 			uvArray.push (new THREE.Vector2 (uv3.x, -uv3.y));
-			geometry.faceVertexUvs[0].push (uvArray);
+			threeGeometry.faceVertexUvs[0].push (uvArray);
 		}
 	}
 	
+	function OnLineGeometryStart (material)
+	{
+		var hasOpacity = (material.opacity !== 1.0);
+		threeMaterial = new THREE.LineBasicMaterial ({
+			ambient : material.ambient,
+			color : material.diffuse
+		});
+		if (hasOpacity) {
+			threeMaterial.opacity = material.opacity;
+			threeMaterial.transparent = true;
+		}
+	}
+
+	function OnLineGeometryEnd ()
+	{
+
+	}
+
+	function OnLine (begVertex, endVertex)
+	{
+		var lineGeometry = new THREE.Geometry ();
+		lineGeometry.vertices.push (new THREE.Vector3 (begVertex.x, begVertex.y, begVertex.z));
+		lineGeometry.vertices.push (new THREE.Vector3 (endVertex.x, endVertex.y, endVertex.z));
+		var line = new THREE.Line (lineGeometry, threeMaterial);
+		meshes.push (line);
+	}	
+
 	var theConversionData = {
 		textureLoadedCallback : null,
 		hasConvexPolygons : false,
@@ -95,11 +121,15 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		hasConvexPolygons : theConversionData.hasConvexPolygons,
 		onGeometryStart : OnGeometryStart,
 		onGeometryEnd : OnGeometryEnd,
-		onTriangle : OnTriangle
+		onTriangle : OnTriangle,
+		onLineGeometryStart : OnLineGeometryStart,
+		onLineGeometryEnd : OnLineGeometryEnd,
+		onLine : OnLine
 	};
 
 	var meshes = [];
-	var geometry = null;
+	var threeGeometry = null;
+	var threeMaterial = null;
 	JSM.ExplodeBody (body, materials, explodeData);
 	return meshes;
 };
