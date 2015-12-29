@@ -30,6 +30,7 @@ def Main ():
 		jsmbuild.WriteHeaderToFile (fullPath, 'var JSM = require (\'../' + mergedFileName + '\');\n')	
 	
 	os.chdir (coverageTempFolder)
+	os.system ('npm install sutest')
 	os.system ('istanbul cover ' + mainTestFile)
 	
 	os.chdir (currentPath)
