@@ -119,6 +119,7 @@
 			
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
 			viewer.AddMeshes (meshes);
+			viewer.FitInWindow ();
 			viewer.Draw ();
 		}
 	
