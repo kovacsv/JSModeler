@@ -23,12 +23,6 @@ CanvasTester.prototype.Run = function ()
 	this.RunCurrentTest ();
 };
 
-CanvasTester.prototype.ShowCurrentImage = function ()
-{
-	var dataURL = this.canvas.toDataURL ();
-	window.open (dataURL, '_blank');
-};
-
 CanvasTester.prototype.RunCurrentTest = function ()
 {
 	if (this.currentTest >= this.tests.length) {
@@ -87,29 +81,35 @@ CanvasTester.prototype.EvaluateResult = function (testObject, resultImageData, r
 		return context.createImageData (width, height);			
 	}
 	
-	function EqualPixels (imageData1, imageData2, index, tolerance)
+	function GetMaxPixelDifference (imageData1, imageData2, index)
 	{
+		var result = 0;
 		var i;
 		for (i = 0; i < 4; i++) {
-			if (Math.abs (imageData1.data[index + i] - imageData2.data[index + i]) > tolerance) {
-				return false;
-			}
+			result = Math.max (result, Math.abs (imageData1.data[index + i] - imageData2.data[index + i]));
 		}
-		return true;
+		return result;
 	}
+
+	var result = {
+		status : 0,
+		differentPixels : 0,
+		maxPixelDifference : 0
+	};
 	
-	var result = 0
 	var differenceImageData = null;
 	if (referenceImageData == null) {
-		result = 1;
+		result.status = 1;
 	} else {
 		if (resultImageData.data.length != referenceImageData.data.length) {
-			result = 2;
+			result.status = 2;
 		} else {
 			differenceImageData = CreateImageData (referenceImageData.width, referenceImageData.height);
-			var i;
+			var i, difference;
 			for (i = 0; i < resultImageData.data.length; i += 4) {
-				if (EqualPixels (referenceImageData, resultImageData, i, this.tolerance)) {
+				difference = GetMaxPixelDifference (referenceImageData, resultImageData, i);
+				result.maxPixelDifference = Math.max (result.maxPixelDifference, difference);
+				if (difference <= this.tolerance) {
 					differenceImageData.data[i + 0] = referenceImageData.data[i + 0];
 					differenceImageData.data[i + 1] = referenceImageData.data[i + 1];
 					differenceImageData.data[i + 2] = referenceImageData.data[i + 2];
@@ -119,12 +119,13 @@ CanvasTester.prototype.EvaluateResult = function (testObject, resultImageData, r
 					differenceImageData.data[i + 1] = 0;
 					differenceImageData.data[i + 2] = 0;
 					differenceImageData.data[i + 3] = 255;
-					result = 3;
+					result.status = 3;
+					result.differentPixels += 1;
 				}
 			}
 		}
 	}
-	if (result !== 0) {
+	if (result.status !== 0) {
 		this.allSuccess = false;
 	}
 	this.testFinishedCallback (result, testObject, resultImageData, referenceImageData, differenceImageData);

@@ -42,15 +42,15 @@ CanvasTesterApp.prototype.TestFinished = function (result, testObject, resultIma
 	function AddResultLine (result, testObject, resultImageData, referenceImageData, differenceImageData, resultDiv, testResultDiv)
 	{
 		var resultBox = document.createElement ('div');
-		var success = (result == 0);
+		var success = (result.status == 0);
 		var errorText = '';
-		if (result === 0) {
+		if (result.status === 0) {
 			errorText = 'ok';
-		} else if (result === 1) {
+		} else if (result.status === 1) {
 			errorText = 'missing reference';
-		} else if (result === 2) {
+		} else if (result.status === 2) {
 			errorText = 'size mismatch';
-		} else if (result === 3) {
+		} else if (result.status === 3) {
 			errorText = 'difference';
 		}
 		resultBox.className = 'resultbox left link ' + (success ? 'success' : 'failure');
@@ -66,6 +66,14 @@ CanvasTesterApp.prototype.TestFinished = function (result, testObject, resultIma
 			titleDiv.innerHTML = testObject.referenceImage;
 			testResultDiv.appendChild (titleDiv);
 			
+			var infoDiv = document.createElement ('div');
+			infoDiv.className = 'testresultinfo';
+			var infoContent = '';
+			infoContent += 'Different pixels: ' + result.differentPixels + '<br>';
+			infoContent += 'Max pixel difference: ' + result.maxPixelDifference;
+			infoDiv.innerHTML = infoContent;
+			testResultDiv.appendChild (infoDiv);
+
 			var mainDiv = document.createElement ('div');
 			mainDiv.className = 'testresultmain';
 			DrawImageData (resultImageData, mainDiv);
