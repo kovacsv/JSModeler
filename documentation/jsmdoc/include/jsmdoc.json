@@ -2698,7 +2698,7 @@
 					]
 				},
 				"CheckBody" : {
-					"description" : "Checks if the body is correct. It means that every polygon has at least three vertices, and every vertex index is valid.",
+					"description" : "Checks if the body is correct. It means that every polygon has at least three vertices, and every line and polygon vertex index is valid.",
 					"parameters" : [
 						["body", "Body", "the body"]
 					],
@@ -3245,7 +3245,7 @@
 					]
 				},
 				"ExplodeBody" : {
-					"description" : "Explodes a body to primitives. The function calls callback functions on geometry start and end, and when a triangle is created.",
+					"description" : "Explodes a body to primitives. The function calls callback functions on geometry start and end, and when a triangle or a line is created.",
 					"parameters" : [
 						["body", "Body", "the body"],
 						["materials", "Materials", "the materials"],
