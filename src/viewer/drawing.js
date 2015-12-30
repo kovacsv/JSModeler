@@ -18,7 +18,7 @@ JSM.CanvasDrawer = function (canvas)
 */
 JSM.CanvasDrawer.prototype.GetWidth = function ()
 {
-	return this.canvas.clientWidth;
+	return this.canvas.width;
 };
 
 /**
@@ -29,7 +29,7 @@ JSM.CanvasDrawer.prototype.GetWidth = function ()
 */
 JSM.CanvasDrawer.prototype.GetHeight = function ()
 {
-	return this.canvas.clientHeight;
+	return this.canvas.height;
 };
 
 /**
@@ -38,9 +38,9 @@ JSM.CanvasDrawer.prototype.GetHeight = function ()
 */
 JSM.CanvasDrawer.prototype.Clear = function ()
 {
-	this.context.clearRect (0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+	this.context.clearRect (0, 0, this.canvas.width, this.canvas.height);
 	this.context.fillStyle = '#ffffff';
-	this.context.fillRect (0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+	this.context.fillRect (0, 0, this.canvas.width, this.canvas.height);
 };
 
 /**
@@ -53,8 +53,8 @@ JSM.CanvasDrawer.prototype.Clear = function ()
 JSM.CanvasDrawer.prototype.DrawLine = function (from, to)
 {
 	this.context.beginPath ();
-	this.context.moveTo (from.x, this.canvas.clientHeight - from.y);
-	this.context.lineTo (to.x, this.canvas.clientHeight - to.y);
+	this.context.moveTo (from.x, this.canvas.height - from.y);
+	this.context.lineTo (to.x, this.canvas.height - to.y);
 	this.context.stroke ();
 };
 
@@ -82,9 +82,9 @@ JSM.CanvasDrawer.prototype.DrawPolygon = function (polygon, color, contour)
 	for (i = 0; i < polygon.VertexCount (); i++) {
 		vertex = polygon.GetVertex (i);
 		if (i === 0) {
-			this.context.moveTo (vertex.x, this.canvas.clientHeight - vertex.y);
+			this.context.moveTo (vertex.x, this.canvas.height - vertex.y);
 		} else {
-			this.context.lineTo (vertex.x, this.canvas.clientHeight - vertex.y);
+			this.context.lineTo (vertex.x, this.canvas.height - vertex.y);
 		}
 	}
 

@@ -166,15 +166,15 @@ JSM.SpriteViewer.prototype.Draw = function ()
 		this.callbacks.onDrawStart (this.canvas);
 	}
 
-	var aspectRatio = this.canvas.clientWidth / this.canvas.clientHeight;
-	var viewPort = [0, 0, this.canvas.clientWidth, this.canvas.clientHeight];
+	var aspectRatio = this.canvas.width / this.canvas.height;
+	var viewPort = [0, 0, this.canvas.width, this.canvas.height];
 	this.projected = [];
 	
 	var i, coord, projected;
 	for (i = 0; i < this.points.length; i++) {
 		coord = this.points[i];
 		projected = JSM.Project (coord, this.camera.eye, this.camera.center, this.camera.up, this.camera.fieldOfView * JSM.DegRad, aspectRatio, this.camera.nearClippingPlane, this.camera.farClippingPlane, viewPort);
-		projected.y = this.canvas.clientHeight - projected.y;
+		projected.y = this.canvas.height - projected.y;
 		if (projected !== null) {
 			this.projected.push ({position : projected, originalIndex : i});
 		}

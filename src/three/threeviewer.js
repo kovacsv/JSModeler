@@ -88,7 +88,7 @@ JSM.ThreeViewer.prototype.InitThree = function (canvas)
 	}
 	
 	this.renderer.setClearColor (new THREE.Color (0xffffff));
-	this.renderer.setSize (this.canvas.clientWidth, this.canvas.clientHeight);
+	this.renderer.setSize (this.canvas.width, this.canvas.height);
 	return true;
 };
 
@@ -111,7 +111,7 @@ JSM.ThreeViewer.prototype.InitCamera = function (settings)
 		return false;
 	}
 	
-	this.camera = new THREE.PerspectiveCamera (this.cameraMove.fieldOfView, this.canvas.clientWidth / this.canvas.clientHeight, this.cameraMove.nearClippingPlane, this.cameraMove.farClippingPlane);
+	this.camera = new THREE.PerspectiveCamera (this.cameraMove.fieldOfView, this.canvas.width / this.canvas.height, this.cameraMove.nearClippingPlane, this.cameraMove.farClippingPlane);
 	if (!this.camera) {
 		return false;
 	}
@@ -283,9 +283,9 @@ JSM.ThreeViewer.prototype.SetCamera = function (eye, center, up)
 
 JSM.ThreeViewer.prototype.Resize = function ()
 {
-	this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
+	this.camera.aspect = this.canvas.width / this.canvas.height;
 	this.camera.updateProjectionMatrix ();
-	this.renderer.setSize (this.canvas.clientWidth, this.canvas.clientHeight);
+	this.renderer.setSize (this.canvas.width, this.canvas.height);
 	this.DrawIfNeeded ();
 };
 
@@ -373,8 +373,8 @@ JSM.ThreeViewer.prototype.GetBoundingSphere = function ()
 
 JSM.ThreeViewer.prototype.GetObjectsUnderPosition = function (x, y)
 {
-	var mouseX = (x / this.canvas.clientWidth) * 2 - 1;
-	var mouseY = -(y / this.canvas.clientHeight) * 2 + 1;
+	var mouseX = (x / this.canvas.width) * 2 - 1;
+	var mouseY = -(y / this.canvas.height) * 2 + 1;
 
 	var projector = new THREE.Projector ();
 	var cameraPosition = this.camera.position;
@@ -399,8 +399,8 @@ JSM.ThreeViewer.prototype.GetObjectsUnderTouch = function ()
 
 JSM.ThreeViewer.prototype.ProjectVector = function (x, y, z)
 {
-	var width = this.canvas.clientWidth;
-	var height = this.canvas.clientHeight;
+	var width = this.canvas.width;
+	var height = this.canvas.height;
 	var halfWidth = width / 2;
 	var halfHeight = height / 2;
 

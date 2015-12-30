@@ -178,14 +178,14 @@ JSM.PointCloudRenderer.prototype.RemovePoints = function ()
 
 JSM.PointCloudRenderer.prototype.Resize = function ()
 {
-	this.context.viewport (0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+	this.context.viewport (0, 0, this.canvas.width, this.canvas.height);
 };
 
 JSM.PointCloudRenderer.prototype.Render = function ()
 {
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	
-	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.canvas.clientWidth / this.canvas.clientHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
+	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.canvas.width / this.canvas.height, this.camera.nearClippingPlane, this.camera.farClippingPlane);
 	this.context.uniformMatrix4fv (this.shader.pMatrixUniform, false, projectionMatrix);
 
 	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);
