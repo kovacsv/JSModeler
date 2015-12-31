@@ -54,7 +54,7 @@ function DrawAndCheck (body, drawMode, referenceFile)
 	
 	var fs = require ('fs');
 	var path = require ('path');
-	var fullReferencePath = path.join (__dirname, '../references/' + referenceFile);
+	var fullReferencePath = path.join (__dirname, '..', 'references', referenceFile);
 	var succeeded = false;
 	if (fs.existsSync (fullReferencePath)) {
 		refFileContent = fs.readFileSync (fullReferencePath);
@@ -63,7 +63,9 @@ function DrawAndCheck (body, drawMode, referenceFile)
 		}
 	}
 	if (!succeeded) {
-		fs.writeFileSync (referenceFile, drawer.GetSvgContent ());
+		var differenceDir = path.join (__dirname, '../differences/')
+		fs.mkdir (differenceDir);
+		fs.writeFileSync (path.join (differenceDir, referenceFile), drawer.GetSvgContent ());
 	}
 	return succeeded;
 }
