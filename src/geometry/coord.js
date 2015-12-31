@@ -89,7 +89,7 @@ JSM.Coord.prototype.AngleTo = function (coord)
 
 /**
 * Function: Coord.IsCollinearWith
-* Description: Calculates the coordinate vector is collinear with the given one.
+* Description: Returns if the coordinate vector is collinear with the given one.
 * Parameters:
 *	coord {Coord} the coordinate
 * Returns:
@@ -99,6 +99,20 @@ JSM.Coord.prototype.IsCollinearWith = function (coord)
 {
 	var angle = this.AngleTo (coord);
 	return JSM.IsEqual (angle, 0.0) || JSM.IsEqual (angle, Math.PI);
+};
+
+/**
+* Function: Coord.IsPerpendicularWith
+* Description: Returns if the coordinate vector is perpendicular with the given one.
+* Parameters:
+*	coord {Coord} the coordinate
+* Returns:
+*	{boolean} the result
+*/
+JSM.Coord.prototype.IsPerpendicularWith = function (coord)
+{
+	var angle = this.AngleTo (coord);
+	return JSM.IsEqual (angle, Math.PI / 2.0);
 };
 
 /**
