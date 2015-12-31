@@ -118,18 +118,18 @@
 				var hasNeighbour = false;
 				var polygonNormals = {};
 				var i, vertexNeighbourPolygons;
-				var situation = 0;
+				var situation = Situation.MoveVertices;
 				for (i = 0; i < polygon.VertexIndexCount (); i++) {
 					vertexNeighbourPolygons = vertexToPolygon[polygon.GetVertexIndex (i)];
 					if (!hasNeighbour && vertexNeighbourPolygons.length > 1) {
 						hasNeighbour = true;
 					}
 					if (!CanMovePolygonVertex (body, polygonIndex, polygonNormal, vertexNeighbourPolygons, polygonNormals)) {
-						situation = 1;
+						situation = Situation.DuplicateVertices;
 					}
 				}
-				if (situation == 1 && !hasNeighbour) {
-					situation = 2;
+				if (situation == Situation.DuplicateVertices && !hasNeighbour) {
+					situation = Situation.DuplicateVerticesAndPolygon;
 				}
 				return situation;
 			}
@@ -180,14 +180,20 @@
 				}
 			}
 
+			var Situation = {
+				MoveVertices : 0,
+				DuplicateVertices : 1,
+				DuplicateVerticesAndPolygon : 2
+			};
+			
 			var polygon = body.GetPolygon (polygonIndex);
 			var normal = JSM.CalculateBodyPolygonNormal (body, polygonIndex);
 
 			var situation = DetectSituation (body, polygonIndex, normal);
-			if (situation === 0) {
+			if (situation == Situation.MoveVertices) {
 				OffsetPolygonWithVertexMoving (body, polygon, normal);
-			} else if (situation === 1 || situation == 2) {
-				var duplicatePolygon = (situation == 2);
+			} else if (situation == Situation.DuplicateVertices || situation == Situation.DuplicateVerticesAndPolygon) {
+				var duplicatePolygon = (situation == Situation.DuplicateVerticesAndPolygon);
 				OffsetPolygonWithVertexDuplication (body, polygon, normal, duplicatePolygon);
 			}
 		};
