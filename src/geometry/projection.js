@@ -96,9 +96,6 @@ JSM.MatrixPerspective = function (fieldOfView, aspectRatio, nearPlane, farPlane)
 */
 JSM.Project = function (coord, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort)
 {
-	var viewMatrix = JSM.MatrixView (eye, center, up);
-	var perspectiveMatrix = JSM.MatrixPerspective (fieldOfView, aspectRatio, nearPlane, farPlane);
-
 	var input = [
 		coord.x,
 		coord.y,
@@ -106,6 +103,8 @@ JSM.Project = function (coord, eye, center, up, fieldOfView, aspectRatio, nearPl
 		1.0
 	];
 
+	var viewMatrix = JSM.MatrixView (eye, center, up);
+	var perspectiveMatrix = JSM.MatrixPerspective (fieldOfView, aspectRatio, nearPlane, farPlane);
 	var projectionMatrix = JSM.MatrixMultiply (viewMatrix, perspectiveMatrix);
 	var output = JSM.MatrixVectorMultiply (projectionMatrix, input);
 	var denom = output[3];
