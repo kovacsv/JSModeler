@@ -724,29 +724,6 @@
 						["number[16]", "the result matrix"]
 					]
 				},
-				"MatrixView" : {
-					"description" : "Creates a view matrix.",
-					"parameters" : [
-						["eye", "Coord", "eye position"],
-						["center", "Coord", "center position"],
-						["up", "Vector", "up vector"]
-					],
-					"returns" : [
-						["number[16]", "the result matrix"]
-					]
-				},
-				"MatrixPerspective" : {
-					"description" : "Creates a perspective matrix.",
-					"parameters" : [
-						["fieldOfView", "number", "field of view"],
-						["aspectRatio", "number", "aspect ratio"],
-						["nearPlane", "number", "near clipping plane"],
-						["farPlane", "number", "far clipping plane"]
-					],
-					"returns" : [
-						["number[16]", "the result matrix"]
-					]
-				},
 				"ApplyTransformation" : {
 					"description" : "Applies a matrix transformation to a coordinate.",
 					"parameters" : [
@@ -894,6 +871,29 @@
 					],
 					"returns" : [
 						["number", "the result"]
+					]
+				},
+				"MatrixView" : {
+					"description" : "Creates a view matrix.",
+					"parameters" : [
+						["eye", "Coord", "eye position"],
+						["center", "Coord", "center position"],
+						["up", "Vector", "up vector"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
+					]
+				},
+				"MatrixPerspective" : {
+					"description" : "Creates a perspective matrix.",
+					"parameters" : [
+						["fieldOfView", "number", "field of view"],
+						["aspectRatio", "number", "aspect ratio"],
+						["nearPlane", "number", "near clipping plane"],
+						["farPlane", "number", "far clipping plane"]
+					],
+					"returns" : [
+						["number[16]", "the result matrix"]
 					]
 				},
 				"Project" : {
@@ -1211,7 +1211,16 @@
 							]
 						},
 						"IsCollinearWith" : {
-							"description" : "Calculates the coordinate vector is collinear with the given one.",
+							"description" : "Returns if the coordinate vector is collinear with the given one.",
+							"parameters" : [
+								["coord", "Coord", "the coordinate"]
+							],
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"IsPerpendicularWith" : {
+							"description" : "Returns if the coordinate vector is perpendicular with the given one.",
 							"parameters" : [
 								["coord", "Coord", "the coordinate"]
 							],
@@ -3638,6 +3647,9 @@
 							"parameters" : [
 								["group", "integer", "the curve group index"]
 							]
+						},
+						"ReverseVertexIndices" : {
+							"description" : "Reverses the order of vertex indices in the polygon."
 						},
 						"InheritAttributes" : {
 							"description" : "Inherits attributes (material and curve group index) from an another polygon.",
