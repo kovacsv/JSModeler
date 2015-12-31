@@ -254,15 +254,10 @@ JSM.CalculatePolygonCentroid = function (body, index)
 */
 JSM.MakeBodyInsideOut = function (body)
 {
-	var i, j, polygon, count, vertices;
+	var i, polygon;
 	for (i = 0; i < body.PolygonCount (); i++) {
 		polygon = body.GetPolygon (i);
-		vertices = polygon.vertices.slice (0);
-		count = vertices.length;
-		polygon.vertices = [];
-		for (j = 0; j < count; j++) {
-			polygon.vertices.push (vertices[count - j - 1]);
-		}
+		polygon.ReverseVertexIndices ();
 	}
 };
 

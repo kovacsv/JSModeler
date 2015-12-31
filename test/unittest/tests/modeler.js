@@ -255,6 +255,24 @@ generalSuite.AddTest ('BodyMergeTest', function (test)
 	test.Assert (JSM.CheckBody (body));
 });
 
+generalSuite.AddTest ('BodyReverseTest', function (test)
+{
+	var body = new JSM.Body ();
+	JSM.AddVertexToBody (body, 0, 0, 0);
+	JSM.AddVertexToBody (body, 1, 0, 0);
+	JSM.AddVertexToBody (body, 1, 1, 0);
+	JSM.AddVertexToBody (body, 0, 1, 0);
+	JSM.AddPolygonToBody (body, [0, 1, 2, 3]);
+	test.Assert (JSM.CalculateBodyPolygonNormal (body, 0).IsEqual (new JSM.Coord (0, 0, 1)));
+	body.GetPolygon (0).ReverseVertexIndices ();
+	test.Assert (JSM.CalculateBodyPolygonNormal (body, 0).IsEqual (new JSM.Coord (0, 0, -1)));
+	
+	var body2 = JSM.GenerateCuboid (1, 1, 1);
+	test.Assert (JSM.CalculateBodyPolygonNormal (body2, 0).IsEqual (new JSM.Coord (0, -1, 0)));
+	JSM.MakeBodyInsideOut (body2);
+	test.Assert (JSM.CalculateBodyPolygonNormal (body2, 0).IsEqual (new JSM.Coord (0, 1, 0)));
+});
+
 generalSuite.AddTest ('ModelTest', function (test)
 {
 	var model = new JSM.Model ();

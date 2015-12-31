@@ -313,6 +313,15 @@ JSM.BodyPolygon.prototype.SetCurveGroup = function (group)
 };
 
 /**
+* Function: BodyPolygon.ReverseVertexIndices
+* Description: Reverses the order of vertex indices in the polygon.
+*/
+JSM.BodyPolygon.prototype.ReverseVertexIndices = function ()
+{
+	this.vertices.reverse ();
+};
+
+/**
 * Function: BodyPolygon.InheritAttributes
 * Description: Inherits attributes (material and curve group index) from an another polygon.
 * Parameters:
