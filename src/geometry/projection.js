@@ -96,39 +96,33 @@ JSM.MatrixPerspective = function (fieldOfView, aspectRatio, nearPlane, farPlane)
 */
 JSM.Project = function (coord, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort)
 {
-	function ProjectWithMatrices (coord, viewMatrix, perspectiveMatrix, viewPort)
-	{
-		var result = new JSM.Coord (0.0, 0.0, 0.0);
-		
-		var input = [];
-		var output = [];
-
-		input[0] = coord.x;
-		input[1] = coord.y;
-		input[2] = coord.z;
-		input[3] = 1.0;
-
-		var projectionMatrix = JSM.MatrixMultiply (viewMatrix, perspectiveMatrix);
-		output = JSM.MatrixVectorMultiply (projectionMatrix, input);
-		var denom = output[3];
-		if (JSM.IsZero (denom)) {
-			return null;
-		}
-
-		output[0] = output[0] / denom * 0.5 + 0.5;
-		output[1] = output[1] / denom * 0.5 + 0.5;
-		output[2] = output[2] / denom * 0.5 + 0.5;
-
-		output[0] = output[0] * viewPort[2] + viewPort[0];
-		output[1] = output[1] * viewPort[3] + viewPort[1];
-
-		result.x = output[0];
-		result.y = output[1];
-		result.z = output[2];
-		return result;
-	}
-	
 	var viewMatrix = JSM.MatrixView (eye, center, up);
 	var perspectiveMatrix = JSM.MatrixPerspective (fieldOfView, aspectRatio, nearPlane, farPlane);
-	return ProjectWithMatrices (coord, viewMatrix, perspectiveMatrix, viewPort);
+
+	var input = [
+		coord.x,
+		coord.y,
+		coord.z,
+		1.0
+	];
+
+	var projectionMatrix = JSM.MatrixMultiply (viewMatrix, perspectiveMatrix);
+	var output = JSM.MatrixVectorMultiply (projectionMatrix, input);
+	var denom = output[3];
+	if (JSM.IsZero (denom)) {
+		return null;
+	}
+
+	output[0] = output[0] / denom * 0.5 + 0.5;
+	output[1] = output[1] / denom * 0.5 + 0.5;
+	output[2] = output[2] / denom * 0.5 + 0.5;
+
+	output[0] = output[0] * viewPort[2] + viewPort[0];
+	output[1] = output[1] * viewPort[3] + viewPort[1];
+
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
+	result.x = output[0];
+	result.y = output[1];
+	result.z = output[2];
+	return result;	
 };
