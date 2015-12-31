@@ -88,28 +88,7 @@
 	<script type="text/javascript">
 		JSM.PushPullBodyPolygon = function (body, polygonIndex, distance)
 		{
-			function OffsetPolygonVertex (body, polygon, normal, vertexIndex)
-			{
-				var oldBodyVertexIndex = polygon.GetVertexIndex (vertexIndex);
-				var offsetedCoord = body.GetVertexPosition (oldBodyVertexIndex).Clone ().Offset (normal, distance);
-				var newBodyVertexIndex = body.AddVertex (new JSM.BodyVertex (offsetedCoord));
-				polygon.SetVertexIndex (vertexIndex, newBodyVertexIndex);
-			}
-		
-			function CreateSidePolygon (body, oldPolygon, polygon, vertexIndex)
-			{
-				var oldBodyVertexIndex = oldPolygon.GetVertexIndex (vertexIndex);
-				var newBodyVertexIndex = polygon.GetVertexIndex (vertexIndex);
-				var nextIndex = JSM.NextIndex (vertexIndex, oldPolygon.VertexIndexCount ());
-				var oldNextBodyVertexIndex = oldPolygon.GetVertexIndex (nextIndex);
-				var newNextBodyVertexIndex = polygon.GetVertexIndex (nextIndex);
-				var sidePolygonVertices = [oldBodyVertexIndex, oldNextBodyVertexIndex, newNextBodyVertexIndex, newBodyVertexIndex];
-				var sidePolygon = new JSM.BodyPolygon (sidePolygonVertices);
-				sidePolygon.SetMaterialIndex (oldPolygon.GetMaterialIndex ());
-				body.AddPolygon (sidePolygon);
-			}
-
-			function IsVertexMovingSituation (body, polygonIndex, polygonNormal)
+			function DetectSituation (body, polygonIndex, polygonNormal)
 			{
 				function CanMovePolygonVertex (body, polygonIndex, polygonNormal, vertexNeighbourPolygons, polygonNormals)
 				{
@@ -136,15 +115,23 @@
 			
 				var polygon = body.GetPolygon (polygonIndex);
 				var vertexToPolygon = JSM.CalculateBodyVertexToPolygon (body);
+				var hasNeighbour = false;
 				var polygonNormals = {};
-				var i, neighbourPolygons;
+				var i, vertexNeighbourPolygons;
+				var situation = 0;
 				for (i = 0; i < polygon.VertexIndexCount (); i++) {
-					neighbourPolygons = vertexToPolygon[polygon.GetVertexIndex (i)];
-					if (!CanMovePolygonVertex (body, polygonIndex, polygonNormal, neighbourPolygons, polygonNormals)) {
-						return false;
+					vertexNeighbourPolygons = vertexToPolygon[polygon.GetVertexIndex (i)];
+					if (!hasNeighbour && vertexNeighbourPolygons.length > 1) {
+						hasNeighbour = true;
+					}
+					if (!CanMovePolygonVertex (body, polygonIndex, polygonNormal, vertexNeighbourPolygons, polygonNormals)) {
+						situation = 1;
 					}
 				}
-				return true;
+				if (situation == 1 && !hasNeighbour) {
+					situation = 2;
+				}
+				return situation;
 			}
 			
 			function OffsetPolygonWithVertexMoving (body, polygon, normal)
@@ -156,8 +143,29 @@
 				}			
 			}
 			
-			function OffsetPolygonWithVertexDuplication (body, polygon, normal)
+			function OffsetPolygonWithVertexDuplication (body, polygon, normal, duplicatePolygon)
 			{
+				function OffsetPolygonVertex (body, polygon, normal, vertexIndex)
+				{
+					var oldBodyVertexIndex = polygon.GetVertexIndex (vertexIndex);
+					var offsetedCoord = body.GetVertexPosition (oldBodyVertexIndex).Clone ().Offset (normal, distance);
+					var newBodyVertexIndex = body.AddVertex (new JSM.BodyVertex (offsetedCoord));
+					polygon.SetVertexIndex (vertexIndex, newBodyVertexIndex);
+				}
+			
+				function CreateSidePolygon (body, oldPolygon, polygon, vertexIndex)
+				{
+					var oldBodyVertexIndex = oldPolygon.GetVertexIndex (vertexIndex);
+					var newBodyVertexIndex = polygon.GetVertexIndex (vertexIndex);
+					var nextIndex = JSM.NextIndex (vertexIndex, oldPolygon.VertexIndexCount ());
+					var oldNextBodyVertexIndex = oldPolygon.GetVertexIndex (nextIndex);
+					var newNextBodyVertexIndex = polygon.GetVertexIndex (nextIndex);
+					var sidePolygonVertices = [oldBodyVertexIndex, oldNextBodyVertexIndex, newNextBodyVertexIndex, newBodyVertexIndex];
+					var sidePolygon = new JSM.BodyPolygon (sidePolygonVertices);
+					sidePolygon.SetMaterialIndex (oldPolygon.GetMaterialIndex ());
+					body.AddPolygon (sidePolygon);
+				}
+
 				var oldPolygon = polygon.Clone ();
 				var i;
 				for (i = 0; i < polygon.VertexIndexCount (); i++) {
@@ -165,16 +173,22 @@
 				}
 				for (i = 0; i < polygon.VertexIndexCount (); i++) {
 					CreateSidePolygon (body, oldPolygon, polygon, i);
-				}		
+				}
+				if (duplicatePolygon) {
+					oldPolygon.ReverseVertexIndices ();
+					body.AddPolygon (oldPolygon);
+				}
 			}
 
 			var polygon = body.GetPolygon (polygonIndex);
 			var normal = JSM.CalculateBodyPolygonNormal (body, polygonIndex);
 
-			if (IsVertexMovingSituation (body, polygonIndex, normal)) {
+			var situation = DetectSituation (body, polygonIndex, normal);
+			if (situation === 0) {
 				OffsetPolygonWithVertexMoving (body, polygon, normal);
-			} else {
-				OffsetPolygonWithVertexDuplication (body, polygon, normal);
+			} else if (situation === 1 || situation == 2) {
+				var duplicatePolygon = (situation == 2);
+				OffsetPolygonWithVertexDuplication (body, polygon, normal, duplicatePolygon);
 			}
 		};
 	
