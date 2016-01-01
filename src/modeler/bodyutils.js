@@ -368,17 +368,30 @@ JSM.TriangulatePolygons = function (body)
 */
 JSM.GenerateRandomMaterials = function (body, materials, seeded)
 {
-	var minColor = 0;
-	var maxColor = 16777215;
-	var i, color, material;
-	for (i = 0; i < body.PolygonCount (); i++) {
+	function GetRandomInt (seeded, seed)
+	{
+		var minColor = 0;
+		var maxColor = 16777215;
+		var color = 0;
 		if (seeded !== undefined && seeded) {
-			color = JSM.SeededRandomInt (minColor, maxColor, i + 1);
+			color = JSM.SeededRandomInt (minColor, maxColor, seed + 1);
 		} else {
 			color = JSM.RandomInt (minColor, maxColor);
 		}
+		return color;
+	}
+	
+	var i, color, material;
+	var seed = 0;
+	for (i = 0; i < body.PolygonCount (); i++) {
+		color = GetRandomInt (seeded, seed++);
 		material = materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
 		body.GetPolygon (i).SetMaterialIndex (material);
+	}
+	for (i = 0; i < body.LineCount (); i++) {
+		color = GetRandomInt (seeded, seed++);
+		material = materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
+		body.GetLine (i).SetMaterialIndex (material);
 	}
 };
 
