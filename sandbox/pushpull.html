@@ -87,11 +87,12 @@
 
 	<script type="text/javascript">
 		JSM.PushPullBodyPolygon = function (body, polygonIndex, distance)
-		{
-			function DetectSituation (body, polygonIndex, polygonNormal)
+		{			
+			function DetectVertexSituations (body, polygon, polygonNormal, polygonIndex)
 			{
-				function CanMovePolygonVertex (body, polygonIndex, polygonNormal, vertexNeighbourPolygons, polygonNormals)
+				function CanMovePolygonVertex (body, polygonIndex, polygonNormal, vertexNeighbourPolygons)
 				{
+					// it should detect non perpendicular edges, too
 					if (vertexNeighbourPolygons.length === 1) {
 						return false;
 					}
@@ -101,101 +102,95 @@
 						if (neighbourPolygon == polygonIndex) {
 							continue;
 						}
-						neighbourPolygonNormal = polygonNormals[neighbourPolygon];
-						if (neighbourPolygonNormal === undefined) {
-							neighbourPolygonNormal = JSM.CalculateBodyPolygonNormal (body, neighbourPolygon);
-							polygonNormals[neighbourPolygon] = neighbourPolygonNormal;
-						}
+						neighbourPolygonNormal = JSM.CalculateBodyPolygonNormal (body, neighbourPolygon);
 						if (!polygonNormal.IsPerpendicularWith (neighbourPolygonNormal)) {
 							return false;
 						}
 					}
 					return true;
-				}
+				}			
 			
-				var polygon = body.GetPolygon (polygonIndex);
 				var vertexToPolygon = JSM.CalculateBodyVertexToPolygon (body);
-				var hasNeighbour = false;
-				var polygonNormals = {};
+				var situations = [];
 				var i, vertexNeighbourPolygons;
-				var situation = Situation.MoveVertices;
 				for (i = 0; i < polygon.VertexIndexCount (); i++) {
 					vertexNeighbourPolygons = vertexToPolygon[polygon.GetVertexIndex (i)];
-					if (!hasNeighbour && vertexNeighbourPolygons.length > 1) {
-						hasNeighbour = true;
-					}
-					if (!CanMovePolygonVertex (body, polygonIndex, polygonNormal, vertexNeighbourPolygons, polygonNormals)) {
-						situation = Situation.DuplicateVertices;
+					if (CanMovePolygonVertex (body, polygonIndex, polygonNormal, vertexNeighbourPolygons)) {
+						situations.push (VertexSituation.Move);
+					} else {
+						situations.push (VertexSituation.Duplicate);
 					}
 				}
-				if (situation == Situation.DuplicateVertices && !hasNeighbour) {
-					situation = Situation.DuplicateVerticesAndPolygon;
-				}
-				return situation;
+				return situations;
 			}
-			
-			function OffsetPolygonWithVertexMoving (body, polygon, normal)
+
+			function MoveVertices (body, polygon, polygonNormal, distance, situations)
 			{
-				var i, vertex;
-				for (i = 0; i < polygon.VertexIndexCount (); i++) {
-					vertex = body.GetVertexPosition (polygon.GetVertexIndex (i));
-					vertex.Offset (normal, distance);
-				}			
-			}
-			
-			function OffsetPolygonWithVertexDuplication (body, polygon, normal, duplicatePolygon)
-			{
-				function OffsetPolygonVertex (body, polygon, normal, vertexIndex)
+				function DuplicateVertex (body, polygon, polygonVertexIndex, polygonNormal, distance)
 				{
-					var oldBodyVertexIndex = polygon.GetVertexIndex (vertexIndex);
-					var offsetedCoord = body.GetVertexPosition (oldBodyVertexIndex).Clone ().Offset (normal, distance);
+					var oldBodyVertexIndex = polygon.GetVertexIndex (polygonVertexIndex);
+					var offsetedCoord = body.GetVertexPosition (oldBodyVertexIndex).Clone ().Offset (polygonNormal, distance);
 					var newBodyVertexIndex = body.AddVertex (new JSM.BodyVertex (offsetedCoord));
-					polygon.SetVertexIndex (vertexIndex, newBodyVertexIndex);
+					polygon.SetVertexIndex (polygonVertexIndex, newBodyVertexIndex);
+					return {
+						oldIndex : oldBodyVertexIndex,
+						newIndex : newBodyVertexIndex
+					};
 				}
-			
-				function CreateSidePolygon (body, oldPolygon, polygon, vertexIndex)
+				
+				function MoveVertex (body, polygon, polygonVertexIndex, polygonNormal, distance)
 				{
-					var oldBodyVertexIndex = oldPolygon.GetVertexIndex (vertexIndex);
-					var newBodyVertexIndex = polygon.GetVertexIndex (vertexIndex);
-					var nextIndex = JSM.NextIndex (vertexIndex, oldPolygon.VertexIndexCount ());
-					var oldNextBodyVertexIndex = oldPolygon.GetVertexIndex (nextIndex);
-					var newNextBodyVertexIndex = polygon.GetVertexIndex (nextIndex);
-					var sidePolygonVertices = [oldBodyVertexIndex, oldNextBodyVertexIndex, newNextBodyVertexIndex, newBodyVertexIndex];
-					var sidePolygon = new JSM.BodyPolygon (sidePolygonVertices);
-					sidePolygon.SetMaterialIndex (oldPolygon.GetMaterialIndex ());
-					body.AddPolygon (sidePolygon);
+					var oldBodyVertexIndex = polygon.GetVertexIndex (polygonVertexIndex);
+					body.GetVertexPosition (oldBodyVertexIndex).Offset (polygonNormal, distance);
+					return {
+						oldIndex : oldBodyVertexIndex,
+						newIndex : oldBodyVertexIndex
+					};
 				}
 
-				var oldPolygon = polygon.Clone ();
-				var i;
+				var i, situation, oldBodyVertexIndex, oldNewIndices;
+				var vertexOldNewIndices = [];
 				for (i = 0; i < polygon.VertexIndexCount (); i++) {
-					OffsetPolygonVertex (body, polygon, normal, i);
+					situation = situations[i];
+					if (situation == VertexSituation.Move) {
+						oldNewIndices = MoveVertex (body, polygon, i, polygonNormal, distance);
+					} else {
+						oldNewIndices = DuplicateVertex (body, polygon, i, polygonNormal, distance);
+					}
+					vertexOldNewIndices.push (oldNewIndices);
 				}
+				return vertexOldNewIndices;
+			}
+			
+			function CreateSidePolygons (body, polygon, situations, vertexOldNewIndices)
+			{
+				// it should reindex neighbour polygons in case of duplication
+				var i, currIndex, nextIndex;
+				var currSituation, nextSituation, currIndices, nextIndices, sides;
 				for (i = 0; i < polygon.VertexIndexCount (); i++) {
-					CreateSidePolygon (body, oldPolygon, polygon, i);
-				}
-				if (duplicatePolygon) {
-					oldPolygon.ReverseVertexIndices ();
-					body.AddPolygon (oldPolygon);
+					currIndex = i;
+					nextIndex = JSM.NextIndex (i, polygon.VertexIndexCount ());
+					currSituation = situations[currIndex];
+					nextSituation = situations[nextIndex];
+					if (currSituation == VertexSituation.Duplicate && nextSituation == VertexSituation.Duplicate) {
+						currIndices = vertexOldNewIndices[currIndex];
+						nextIndices = vertexOldNewIndices[nextIndex];
+						sides = [currIndices.oldIndex, nextIndices.oldIndex, nextIndices.newIndex, currIndices.newIndex];
+						body.AddPolygon (new JSM.BodyPolygon (sides));
+					}
 				}
 			}
 
-			var Situation = {
-				MoveVertices : 0,
-				DuplicateVertices : 1,
-				DuplicateVerticesAndPolygon : 2
+			var VertexSituation = {
+				Move : 0,
+				Duplicate : 1
 			};
 			
 			var polygon = body.GetPolygon (polygonIndex);
-			var normal = JSM.CalculateBodyPolygonNormal (body, polygonIndex);
-
-			var situation = DetectSituation (body, polygonIndex, normal);
-			if (situation == Situation.MoveVertices) {
-				OffsetPolygonWithVertexMoving (body, polygon, normal);
-			} else if (situation == Situation.DuplicateVertices || situation == Situation.DuplicateVerticesAndPolygon) {
-				var duplicatePolygon = (situation == Situation.DuplicateVerticesAndPolygon);
-				OffsetPolygonWithVertexDuplication (body, polygon, normal, duplicatePolygon);
-			}
+			var polygonNormal = JSM.CalculateBodyPolygonNormal (body, polygonIndex);
+			var situations = DetectVertexSituations (body, polygon, polygonNormal, polygonIndex);
+			var vertexOldNewIndices = MoveVertices (body, polygon, polygonNormal, distance, situations);
+			CreateSidePolygons (body, polygon, situations, vertexOldNewIndices);
 		};
 	
 		function Load ()
@@ -229,19 +224,11 @@
 			
 			body.GetPolygon (0).SetMaterialIndex (0);
 			body.GetPolygon (1).SetMaterialIndex (1);
-			
-			//body = JSM.GenerateSphere (1, 5);
-			//JSM.GenerateRandomMaterials (body, materials);
-			//var polygonCount = body.PolygonCount ();
-			//var i;
-			//for (i = 0; i < polygonCount; i++) {
-			//	JSM.PushPullBodyPolygon (body, i, 0.2);
-			//}
-			//body = JSM.CatmullClarkSubdivision (body, 3);
 
-			JSM.PushPullBodyPolygon (body, 0, -0.2);
-			JSM.PushPullBodyPolygon (body, 1, 0.3);
-			JSM.PushPullBodyPolygon (body, 1, 0.2);
+			JSM.PushPullBodyPolygon (body, 0, 0.5);
+			JSM.PushPullBodyPolygon (body, 0, 0.5);
+			//JSM.PushPullBodyPolygon (body, 1, -0.2);
+			
 			JSM.GenerateRandomMaterials (body, materials);
 			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 			viewer.AddRenderBody (renderBody);
