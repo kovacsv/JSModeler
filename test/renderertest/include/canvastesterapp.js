@@ -6,7 +6,7 @@ CanvasTesterApp = function (canvas, tolerance, resultsDivName)
 	this.testResultDiv.className = 'testresult';
 	this.resultsDiv.appendChild (this.testResultDiv);
 	this.allResultDiv = document.createElement ('div');
-	this.allResultDiv.className = 'allresult success';
+	this.allResultDiv.className = 'resultbox success';
 	this.allResultDiv.innerHTML = 'processing...';
 	this.resultsDiv.appendChild (this.allResultDiv);
 };
@@ -23,7 +23,7 @@ CanvasTesterApp.prototype.Run = function ()
 
 CanvasTesterApp.prototype.AllTestsFinished = function (success)
 {
-	this.allResultDiv.className = 'allresult ' + (success ? 'success' : 'failure');
+	this.allResultDiv.className = 'resultbox ' + (success ? 'success' : 'failure');
 	this.allResultDiv.innerHTML = (success ? 'success' : 'failure');
 };
 

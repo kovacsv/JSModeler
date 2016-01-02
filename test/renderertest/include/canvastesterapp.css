@@ -4,17 +4,9 @@ html, body
 	background : #ffffff;
 	font-size : 12px;
 	font-family : Arial, cursive;
-	margin : 0px;
-	padding : 0px;
 }
 
-#frame
-{
-	width : 622px;
-	margin : 0px auto;
-}
-
-#renderertest
+#testcanvas
 {
 
 }
@@ -24,7 +16,6 @@ div.resultbox
 	padding : 3px 10px;
 	margin-bottom : 5px;
 	margin-right : 5px;
-	border-radius : 3px;
 }
 
 div.resultbox.left
@@ -51,31 +42,9 @@ div.resultbox.failure
 	border : 1px solid #222222;
 }
 
-div.allresult
-{
-	font-size : 14px;
-	padding : 5px 10px;
-	border-radius : 5px;
-	margin-bottom : 5px;
-}
-
-div.allresult.success
-{
-	color : #222222;
-	background : #eeeeee;
-	border : 1px solid #dddddd;
-}
-
-div.allresult.failure
-{
-	color : #eeeeee;
-	background : #222222;
-	border : 1px solid #222222;
-}
-
 div.testresult
 {
-	margin-bottom : 10px;
+	margin-bottom : 5px;
 	border : 1px solid #cccccc;
 	display : none;
 }

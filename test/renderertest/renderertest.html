@@ -144,7 +144,7 @@
 
 			var viewer = new JSM.Viewer ();
 			var light = new JSM.Light ({ambient : 0x7f7f7f, diffuse : 0x7f7f7f, specular : 0xffffff});
-			var canvas = document.getElementById ('renderertest');
+			var canvas = document.getElementById ('testcanvas');
 			if (!viewer.Init (canvas, camera, light)) {
 				return;
 			}
@@ -601,7 +601,7 @@
 
 <body>
 	<div id="frame">
-		<canvas id="renderertest" width="200" height="150"></canvas>
+		<canvas id="testcanvas" width="200" height="150"></canvas>
 		<div id="results">
 		</div>
 	</div>
