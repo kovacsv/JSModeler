@@ -48,6 +48,62 @@ function AddRendererTests (canvasTester, viewer)
 		
 		RenderBody (viewer, body, materials, renderFinished);
 	}, 'references/renderer/cube_materials.png');
+
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var model = new JSM.Model ();
+
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+
+		var body1 = JSM.GenerateCuboid (1, 1, 1);
+		var body2 = JSM.GenerateCuboid (1, 1, 1);
+		body2.SetPolygonsMaterialIndex (0);
+		OffsetTwoBodies (body1, body2, 0.6, 0.0, 0.0);
+
+		model.AddBody (body1);
+		model.AddBody (body2);
+		RenderModel (viewer, model, materials, renderFinished);
+	}, 'references/renderer/two_cubes.png');
+
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var model = new JSM.Model ();
+
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+
+		var body1 = JSM.GenerateCuboid (1, 1, 1);
+		var body2 = JSM.GenerateCuboid (1, 1, 1);
+		body2.SetPolygonsMaterialIndex (0);
+		body2.Transform (new JSM.RotationTransformation (new JSM.Coord (1.0, 0.0, 0.0), 45.0 * JSM.DegRad));
+		OffsetTwoBodies (body1, body2, 0.6, 0.0, 0.0);
+		
+		model.AddBody (body1);
+		model.AddBody (body2);
+		RenderModel (viewer, model, materials, renderFinished);
+	}, 'references/renderer/two_cubes_transformed.png');
+
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var model = new JSM.Model ();
+	
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
+
+		var body1 = JSM.GenerateCuboid (1, 1, 1);
+
+		var body2 = JSM.GenerateCuboid (1, 1, 1);
+		body2.SetPolygonsMaterialIndex (0);
+		
+		var body3 = JSM.GenerateCuboid (1, 1, 1);
+		body3.SetPolygonsMaterialIndex (1);		
+
+		OffsetTwoBodies (body1, body3, 1.2, 0.0, 0.0);
+
+		model.AddBody (body1);
+		model.AddBody (body2);
+		model.AddBody (body3);
+		RenderModelAndWait (viewer, model, materials, renderFinished);
+	}, 'references/renderer/three_cubes.png');
 	
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var body = JSM.GenerateCylinder (0.5, 1.0, 25, true, false);

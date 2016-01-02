@@ -1,3 +1,14 @@
+function OffsetOneBody (body, offsetX, offsetY, offsetZ)
+{
+	body.Transform (new JSM.TranslationTransformation (new JSM.Coord (offsetX, offsetY, offsetZ)));
+}
+
+function OffsetTwoBodies (body1, body2, offsetX, offsetY, offsetZ)
+{
+	OffsetOneBody (body1, -offsetX, -offsetY, -offsetZ);
+	OffsetOneBody (body2, offsetX, offsetY, offsetZ);
+}
+
 function RenderBody (viewer, body, materials, onFinished, beforeDraw)
 {
 	viewer.RemoveBodies ();
