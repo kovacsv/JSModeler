@@ -99,15 +99,27 @@
 					return;
 				},
 				onReady : function (fileNames, jsonData) {
-					var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData, function () {
+					JSM.ConvertJSONDataToThreeMeshes (jsonData,
+					function () {
 						viewer.Draw ();
+					},
+					{
+						onStart : function (runCount, meshes) {
+							//alert ('start ' + runCount);
+						},
+						onProcess : function (currentCount, meshes) {
+							//alert ('process ' + currentCount);
+						},
+						onFinish : function (meshes) {
+							//alert ('finished');
+							for (var i = 0; i < meshes.length; i++) {
+								viewer.AddMesh (meshes[i]);
+							}
+							viewer.AdjustClippingPlanes (50.0);
+							viewer.FitInWindow ();
+							viewer.Draw ();
+						}
 					});
-					for (var i = 0; i < meshes.length; i++) {
-						viewer.AddMesh (meshes[i]);
-					}
-					viewer.AdjustClippingPlanes (50.0);
-					viewer.FitInWindow ();
-					viewer.Draw ();
 				}
 			});
 		}

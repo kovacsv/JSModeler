@@ -41,11 +41,11 @@ JSM.AsyncRunTask = function (taskFunction, callbacks, runCount, timeout, userDat
 			setTimeout (function () {
 				RunTask (counter + 1, userData, callbacks);
 			}, timeout);
-			return;
+		} else {
+			setTimeout (function () {
+				OnFinished (userData, callbacks);
+			}, timeout);
 		}
-		setTimeout (function () {
-			OnFinished (userData, callbacks);
-		}, timeout);
 	}
 	
 	if (callbacks === undefined || callbacks === null) {
