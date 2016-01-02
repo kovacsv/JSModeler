@@ -1,76 +1,46 @@
-CanvasTester = function (canvas, tolerance, testFinishedCallback, allTestsFinishedCallback)
+var CT = function ()
+{
+	this.mainVersion = 0;
+	this.subVersion = 1;
+};
+
+CT.Test = function (canvas, tolerance, renderCallback, referenceImage)
 {
 	this.canvas = canvas;
 	this.tolerance = tolerance;
-	this.testFinishedCallback = testFinishedCallback;
-	this.allTestsFinishedCallback = allTestsFinishedCallback;
-	this.allSuccess = true;
-	this.currentTest = 0;
-	this.tests = [];
+	this.renderCallback = renderCallback;
+	this.referenceImage = referenceImage;
 };
 
-CanvasTester.prototype.AddTest = function (renderCallback, referenceImage)
+CT.Test.prototype.Run = function (onFinished)
 {
-	this.tests.push ({
-		renderCallback,
-		referenceImage
+	var myThis = this;
+	this.renderCallback (function () {
+		function GetImageData (image, width, height)
+		{
+			var canvas = document.createElement ('canvas');
+			canvas.width = width;
+			canvas.height = height;
+			var context = canvas.getContext ('2d');
+			context.drawImage (image, 0, 0, width, height);
+			return context.getImageData (0, 0, width, height);		
+		}
+		
+		var resultImageData = GetImageData (myThis.canvas, myThis.canvas.width, myThis.canvas.height);
+		var referenceImage = new Image ();
+		referenceImage.src = myThis.referenceImage;
+		referenceImage.onload = function () {
+			var referenceImageData = GetImageData (referenceImage, referenceImage.width, referenceImage.height);
+			myThis.EvaluateResult (resultImageData, referenceImageData, onFinished);
+		};
+		referenceImage.onerror = function () {
+			var referenceImageData = null;
+			myThis.EvaluateResult (resultImageData, referenceImageData, onFinished);
+		};
 	});
 };
 
-CanvasTester.prototype.Run = function ()
-{
-	this.currentTest = 0;
-	this.RunCurrentTest ();
-};
-
-CanvasTester.prototype.RunCurrentTest = function ()
-{
-	if (this.currentTest >= this.tests.length) {
-		this.allTestsFinishedCallback (this.allSuccess);
-		return;
-	}
-	
-	var test = this.tests[this.currentTest];
-	test.renderCallback (this.RenderFinished.bind (this));
-};
-
-CanvasTester.prototype.RunNextTest = function ()
-{
-	this.currentTest += 1;
-	setTimeout (this.RunCurrentTest.bind (this), 0);
-};
-
-CanvasTester.prototype.RenderFinished = function ()
-{
-	function GetImageData (image, width, height)
-	{
-		var canvas = document.createElement ('canvas');
-		canvas.width = width;
-		canvas.height = height;
-		var context = canvas.getContext ('2d');
-		context.drawImage (image, 0, 0, width, height);
-		return context.getImageData (0, 0, width, height);		
-	}
-	
-	var resultImageData = GetImageData (this.canvas, this.canvas.width, this.canvas.height)
-
-	var myThis = this;
-	var test = this.tests[this.currentTest];
-	var referenceImage = new Image ();
-	referenceImage.src = test.referenceImage;
-	referenceImage.onload = function () {
-		var referenceImageData = GetImageData (referenceImage, referenceImage.width, referenceImage.height);
-		myThis.EvaluateResult (test, resultImageData, referenceImageData);
-		myThis.RunNextTest ();
-	};
-	referenceImage.onerror = function () {
-		var referenceImageData = null;
-		myThis.EvaluateResult (test, resultImageData, referenceImageData);
-		myThis.RunNextTest ();
-	};
-}
-
-CanvasTester.prototype.EvaluateResult = function (testObject, resultImageData, referenceImageData)
+CT.Test.prototype.EvaluateResult = function (resultImageData, referenceImageData, onFinished)
 {
 	function CreateImageData (width, height)
 	{
@@ -98,7 +68,7 @@ CanvasTester.prototype.EvaluateResult = function (testObject, resultImageData, r
 	};
 	
 	var differenceImageData = null;
-	if (referenceImageData == null) {
+	if (referenceImageData === null) {
 		result.status = 1;
 	} else {
 		if (resultImageData.data.length != referenceImageData.data.length) {
@@ -125,8 +95,55 @@ CanvasTester.prototype.EvaluateResult = function (testObject, resultImageData, r
 			}
 		}
 	}
+	
+	onFinished (result, this, resultImageData, referenceImageData, differenceImageData);
+};
+
+CT.Tester = function (canvas, tolerance, testFinishedCallback, allTestsFinishedCallback)
+{
+	this.canvas = canvas;
+	this.tolerance = tolerance;
+	this.testFinishedCallback = testFinishedCallback;
+	this.allTestsFinishedCallback = allTestsFinishedCallback;
+	this.allSuccess = true;
+	this.currentTest = 0;
+	this.tests = [];
+};
+
+CT.Tester.prototype.AddTest = function (renderCallback, referenceImage)
+{
+	var test = new CT.Test (this.canvas, this.tolerance, renderCallback, referenceImage);
+	this.tests.push (test);
+};
+
+CT.Tester.prototype.Run = function ()
+{
+	this.currentTest = 0;
+	this.RunCurrentTest ();
+};
+
+CT.Tester.prototype.RunCurrentTest = function ()
+{
+	if (this.currentTest >= this.tests.length) {
+		this.allTestsFinishedCallback (this.allSuccess);
+		return;
+	}
+	
+	var test = this.tests[this.currentTest];
+	test.Run (this.TestFinished.bind (this));
+};
+
+CT.Tester.prototype.RunNextTest = function ()
+{
+	this.currentTest += 1;
+	setTimeout (this.RunCurrentTest.bind (this), 0);
+};
+
+CT.Tester.prototype.TestFinished = function (result, testObject, resultImageData, referenceImageData, differenceImageData)
+{
 	if (result.status !== 0) {
 		this.allSuccess = false;
 	}
 	this.testFinishedCallback (result, testObject, resultImageData, referenceImageData, differenceImageData);
+	this.RunNextTest ();
 };

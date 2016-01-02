@@ -1,7 +1,7 @@
 CanvasTesterApp = function (canvas, tolerance, resultsDivName)
 {
 	this.resultsDiv = document.getElementById (resultsDivName);
-	this.canvasTester = new CanvasTester (canvas, tolerance, this.TestFinished.bind (this), this.AllTestsFinished.bind (this));
+	this.canvasTester = new CT.Tester (canvas, tolerance, this.TestFinished.bind (this), this.AllTestsFinished.bind (this));
 	this.testResultDiv = document.createElement ('div');
 	this.testResultDiv.className = 'testresult';
 	this.resultsDiv.appendChild (this.testResultDiv);
