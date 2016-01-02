@@ -151,9 +151,9 @@ JSM.ConvertModelToThreeMeshes = function (model, materials, conversionData)
 
 JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, asyncCallbacks)
 {
-	function AddMesh (mesh, meshIndex)
+	function AddMesh (mesh, meshIndex, resultMeshes)
 	{
-		function AddTriangles (currentTriangles)
+		function AddTriangles (currentTriangles, resultMeshes)
 		{
 			function GetTextureCoordinate (u, v, offset, scale, rotation)
 			{
@@ -276,7 +276,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 
 			var mesh = new THREE.Mesh (geometry, material);
 			mesh.originalJsonIndex = meshIndex;
-			result.push (mesh);
+			resultMeshes.push (mesh);
 		}
 
 		var vertices = mesh.vertices;
@@ -297,31 +297,34 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 		var triangles = mesh.triangles;
 		var i;
 		for (i = 0; i < triangles.length; i++) {
-			AddTriangles (triangles[i]);
+			AddTriangles (triangles[i], resultMeshes);
 		}
 	}
 
-	var result = [];
+	var resultMeshes = [];
 
 	var materials = jsonData.materials;
 	if (materials === undefined) {
-		return result;
+		return resultMeshes;
 	}
 	
 	var meshes = jsonData.meshes;
 	if (meshes === undefined) {
-		return result;
+		return resultMeshes;
 	}
 	
 	var i = 0;
-	JSM.AsyncRunTask (function () {
-			AddMesh (meshes[i], i);
+	JSM.AsyncRunTask (
+		function () {
+			AddMesh (meshes[i], i, resultMeshes);
 			i = i + 1;
 			return true;
-		}, asyncCallbacks, meshes.length, 0, result
+		},
+		asyncCallbacks,
+		meshes.length, 0, resultMeshes
 	);
 
-	return result;
+	return resultMeshes;
 };
 
 JSM.JSONFileConverter = function (onReady, onTextureLoaded)
