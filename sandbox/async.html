@@ -84,39 +84,69 @@
 	<script type="text/javascript" src="../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
 
-	<script type="text/javascript">
-		function AddToLog (text)
+	<style>
+		html, body
 		{
-			var log = document.getElementById ('log');
-			log.innerHTML += text + ' ';
+			font-size : 12px;
+			font-family : arial, cursive;
 		}
+	
+		#container
+		{
+			width : 200px;
+			height : 20px;
+			margin-bottom : 5px;
+			border : 1px solid #000000;
+		}
+		
+		#progress
+		{
+			color : #ffffff;
+			background : #279b61;
+			width : 0px;
+			height : 20px;
+		}
+	</style>
 
+	<script type="text/javascript">
 		function Load ()
 		{
-			var myCounter = 0;
+			function SetProgress (percent)
+			{
+				var container = document.getElementById ('container');
+				var progress = document.getElementById ('progress');
+				progress.style.width = (container.clientWidth / 100 * percent) + 'px';
+			}
+			
+			function AddLog (text)
+			{
+				var log = document.getElementById ('log');
+				log.innerHTML += text + '<br>';
+			}
+			
+			var allRunCount = 10;
+			var myData = {
+				value : 42
+			};
+			
 			JSM.AsyncRunTask (function () {
-					for (var i = 0; i < 100000; i++) {
-						var j = Math.sqrt (i);
-						j = j + 1;
-					}
-					AddToLog (myCounter);
-					myCounter++;
-					return true;
+				AddLog ('Run task with user data ' + myData.value);
+				myData.value++;
+				return true;
+			},
+			{
+				onStart : function (runCount, userData) {
+					AddLog ('Started with run count ' + runCount + ' and user data ' + userData.value);
 				},
-				{
-					onStart : function (runCount) {
-						AddToLog ('start' + runCount);
-					},				
-					onProcess : function (counter) {
-						AddToLog ('task' + counter);
-					},	
-					onFinish : function () {
-						AddToLog ('finish');
-					}
+				onProgress : function (currentCount, userData) {
+					SetProgress ((currentCount + 1) / allRunCount * 100);
+					AddLog ('Progress with counter ' + currentCount + ' and user data ' + userData.value);
 				},
-				100,
-				0
-			);
+				onFinish : function (userData) {
+					AddLog ('Finished' + ' with user data ' + userData.value);
+				}
+			},
+			allRunCount, 500, myData);
 		}
 	
 	    window.onload = function ()
@@ -128,7 +158,12 @@
 </head>
 
 <body>
-	<div id="log"></div>
+	<div id="container">
+		<div id="progress">
+		</div>
+	</div>
+	<div id="log">
+	</div>
 </body>
 
 </html>

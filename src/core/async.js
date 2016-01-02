@@ -19,10 +19,10 @@ JSM.AsyncRunTask = function (taskFunction, callbacks, runCount, timeout, userDat
 		}
 	}
 
-	function OnProcess (counter, userData, callbacks)
+	function OnProgress (currentCount, userData, callbacks)
 	{
-		if (callbacks.onProcess !== undefined && callbacks.onProcess !== null) {
-			callbacks.onProcess (counter, userData);
+		if (callbacks.onProgress !== undefined && callbacks.onProgress !== null) {
+			callbacks.onProgress (currentCount, userData);
 		}
 	}
 	
@@ -33,13 +33,13 @@ JSM.AsyncRunTask = function (taskFunction, callbacks, runCount, timeout, userDat
 		}
 	}
 
-	function RunTask (counter, userData, callbacks)
+	function RunTask (currentCount, userData, callbacks)
 	{
 		var needContinue = taskFunction ();
-		OnProcess (counter, userData, callbacks);
-		if (needContinue && counter < runCount - 1) {
+		OnProgress (currentCount, userData, callbacks);
+		if (needContinue && currentCount < runCount - 1) {
 			setTimeout (function () {
-				RunTask (counter + 1, userData, callbacks);
+				RunTask (currentCount + 1, userData, callbacks);
 			}, timeout);
 		} else {
 			setTimeout (function () {
