@@ -94,17 +94,6 @@
 		function Load ()
 		{
 			var myCounter = 0;
-			var environment = new JSM.AsyncEnvironment ({
-				onStart : function (runCount) {
-					AddToLog ('start' + runCount);
-				},				
-				onProcess : function (counter) {
-					AddToLog ('task' + counter);
-				},	
-				onFinish : function () {
-					AddToLog ('finish');
-				}
-			});
 			JSM.AsyncRunTask (function () {
 					for (var i = 0; i < 100000; i++) {
 						var j = Math.sqrt (i);
@@ -114,7 +103,17 @@
 					myCounter++;
 					return true;
 				},
-				environment,
+				{
+					onStart : function (runCount) {
+						AddToLog ('start' + runCount);
+					},				
+					onProcess : function (counter) {
+						AddToLog ('task' + counter);
+					},	
+					onFinish : function () {
+						AddToLog ('finish');
+					}
+				},
 				100,
 				0
 			);

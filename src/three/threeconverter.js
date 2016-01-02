@@ -149,7 +149,7 @@ JSM.ConvertModelToThreeMeshes = function (model, materials, conversionData)
 	return meshes;
 };
 
-JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, environment)
+JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, asyncCallbacks)
 {
 	function AddMesh (mesh, meshIndex)
 	{
@@ -318,7 +318,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, en
 			AddMesh (meshes[i], i);
 			i = i + 1;
 			return true;
-		}, environment, meshes.length, 0, result
+		}, asyncCallbacks, meshes.length, 0, result
 	);
 
 	return result;

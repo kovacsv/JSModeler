@@ -1,91 +1,54 @@
 /**
-* Class: AsyncEnvironment
-* Description: Environment for asynchronous calls.
-* Parameters:
-*	parameters {object} callback functions for calls (onStart, onProcess, onFinish)
-*/
-JSM.AsyncEnvironment = function (parameters)
-{
-	this.parameters = parameters;
-};
-
-/**
-* Function: AsyncEnvironment.OnStart
-* Description: Calls the onStart callback of the environment.
-* Parameters:
-*	taskCount {integer} count of all tasks
-*	userData {anything} task specific data
-*/
-JSM.AsyncEnvironment.prototype.OnStart = function (taskCount, userData)
-{
-	if (this.parameters !== undefined && this.parameters.onStart !== undefined) {
-		this.parameters.onStart (taskCount, userData);
-	}
-};
-
-/**
-* Function: AsyncEnvironment.OnProcess
-* Description: Calls the onProcess callback of the environment.
-* Parameters:
-*	currentTask {integer} number of the current task
-*	userData {anything} task specific data
-*/
-JSM.AsyncEnvironment.prototype.OnProcess = function (currentTask, userData)
-{
-	if (this.parameters !== undefined && this.parameters.onProcess !== undefined) {
-		this.parameters.onProcess (currentTask, userData);
-	}
-};
-
-/**
-* Function: AsyncEnvironment.OnFinish
-* Description: Calls the onFinish callback of the environment.
-* Parameters:
-*	result {anything} the result of the operation
-*	userData {anything} task specific data
-*/
-JSM.AsyncEnvironment.prototype.OnFinish = function (userData)
-{
-	if (this.parameters !== undefined && this.parameters.onFinish !== undefined) {
-		this.parameters.onFinish (userData);
-	}
-};
-
-/**
 * Function: AsyncRunTask
 * Description:
 *	Calls a function multiple times asynchronously. If the environment
 *	is not specified, it will run synchronously.
 * Parameters:
 *	taskFunction {function} the function to run
-*	environment {AsyncEnvironment} environment with callbackss
+*	callbacks {object} callbacks for start, process, and finish
 *	runCount {integer} the count of runs
 *	timeout {integer} the timeout between runs
 *	userData {anything} task specific data
 */
-JSM.AsyncRunTask = function (taskFunction, environment, runCount, timeout, userData)
+JSM.AsyncRunTask = function (taskFunction, callbacks, runCount, timeout, userData)
 {
-	function Finished ()
+	function OnStart (runCount, userData, callbacks)
 	{
-		environment.OnFinish (userData);
+		if (callbacks.onStart !== undefined && callbacks.onStart !== null) {
+			callbacks.onStart (runCount, userData);
+		}
 	}
 
-	function RunTask (counter)
+	function OnProcess (counter, userData, callbacks)
+	{
+		if (callbacks.onProcess !== undefined && callbacks.onProcess !== null) {
+			callbacks.onProcess (counter, userData);
+		}
+	}
+	
+	function OnFinished (userData, callbacks)
+	{
+		if (callbacks.onFinish !== undefined && callbacks.onFinish !== null) {
+			callbacks.onFinish (userData);
+		}
+	}
+
+	function RunTask (counter, userData, callbacks)
 	{
 		var needContinue = taskFunction ();
-		environment.OnProcess (counter, userData);
+		OnProcess (counter, userData, callbacks);
 		if (needContinue && counter < runCount - 1) {
 			setTimeout (function () {
-				RunTask (counter + 1);
+				RunTask (counter + 1, userData, callbacks);
 			}, timeout);
 			return;
 		}
 		setTimeout (function () {
-			Finished ();
+			OnFinished (userData, callbacks);
 		}, timeout);
 	}
 	
-	if (environment === undefined || environment === null) {
+	if (callbacks === undefined || callbacks === null) {
 		var i, needContinue;
 		for (i = 0; i < runCount; i++) {
 			needContinue = taskFunction ();
@@ -96,6 +59,6 @@ JSM.AsyncRunTask = function (taskFunction, environment, runCount, timeout, userD
 		return;
 	}
 	
-	environment.OnStart (runCount, userData);
-	RunTask (0);
+	OnStart (runCount, userData, callbacks);
+	RunTask (0, userData, callbacks);
 };
