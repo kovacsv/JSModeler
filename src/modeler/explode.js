@@ -12,6 +12,25 @@
 */
 JSM.ExplodeBody = function (body, materials, explodeData)
 {
+	function SeparateByMaterial (materials, itemsByMaterial, itemsWithNoMaterial, callbacks)
+	{
+		var i;
+		for (i = 0; i < materials.Count (); i++) {
+			itemsByMaterial.push ([]);
+		}
+
+		var itemCount = callbacks.itemCount ();
+		var material;
+		for (i = 0; i < itemCount; i++) {
+			material = callbacks.getMaterial (i);
+			if (material !== -1) {
+				itemsByMaterial[material].push (i);
+			} else {
+				itemsWithNoMaterial.push (i);
+			}
+		}		
+	}
+	
 	function ExplodePolygons (body, materials, explodeData)
 	{
 		function CalculatePolygonsDerivedData (body, materials)
@@ -158,24 +177,18 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 		
 		var polygonsByMaterial = [];
 		var polygonsWithNoMaterial = [];
-		
-		var i;
-		for (i = 0; i < materials.Count (); i++) {
-			polygonsByMaterial.push ([]);
-		}
-
-		var polygon, material;
-		for (i = 0; i < body.PolygonCount (); i++) {
-			polygon = body.GetPolygon (i);
-			if (polygon.HasMaterialIndex ()) {
-				material = polygon.GetMaterialIndex ();
-				polygonsByMaterial[material].push (i);
-			} else {
-				polygonsWithNoMaterial.push (i);
+		SeparateByMaterial (materials, polygonsByMaterial, polygonsWithNoMaterial, {
+			itemCount : function () {
+				return body.PolygonCount ();
+			},
+			getMaterial : function (index) {
+				var polygon = body.GetPolygon (index);
+				return polygon.GetMaterialIndex ();
 			}
-		}
+		});
 		
 		var derivedData = CalculatePolygonsDerivedData (body, materials);
+		var i;
 		for (i = 0; i < polygonsByMaterial.length; i++) {
 			ExplodePolygonsByMaterial (polygonsByMaterial[i], i, derivedData, explodeData);
 		}
@@ -216,23 +229,17 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 
 		var linesByMaterial = [];
 		var linesWithNoMaterial = [];
-		
-		var i;
-		for (i = 0; i < materials.Count (); i++) {
-			linesByMaterial.push ([]);
-		}
-
-		var line, material;
-		for (i = 0; i < body.LineCount (); i++) {
-			line = body.GetLine (i);
-			if (line.HasMaterialIndex ()) {
-				material = line.GetMaterialIndex ();
-				linesByMaterial[material].push (i);
-			} else {
-				linesWithNoMaterial.push (i);
+		SeparateByMaterial (materials, linesByMaterial, linesWithNoMaterial, {
+			itemCount : function () {
+				return body.LineCount ();
+			},
+			getMaterial : function (index) {
+				var line = body.GetLine (index);
+				return line.GetMaterialIndex ();
 			}
-		}
+		});
 		
+		var i;		
 		for (i = 0; i < linesByMaterial.length; i++) {
 			ExplodeLinesByMaterial (linesByMaterial[i], i, explodeData);
 		}
