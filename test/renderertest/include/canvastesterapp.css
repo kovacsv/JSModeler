@@ -20,7 +20,6 @@ div.resultbox
 {
 	padding : 3px 10px;
 	margin-bottom : 5px;
-	margin-right : 5px;
 }
 
 div.resultbox.suite
@@ -30,6 +29,7 @@ div.resultbox.suite
 
 div.resultbox.test
 {
+	margin-right : 5px;
 	float : left;
 }
 
