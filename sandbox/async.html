@@ -129,7 +129,8 @@
 				value : 42
 			};
 			
-			JSM.AsyncRunTask (function () {
+			JSM.AsyncRunTask (
+			function () {
 				AddLog ('Run task with user data ' + myData.value);
 				myData.value++;
 				return true;
@@ -146,7 +147,7 @@
 					AddLog ('Finished' + ' with user data ' + userData.value);
 				}
 			},
-			allRunCount, 500, myData);
+			allRunCount, 100, myData);
 		}
 	
 	    window.onload = function ()
