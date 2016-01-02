@@ -11,6 +11,11 @@ html, body
 
 }
 
+div.suiteresultbox
+{
+	overflow : auto;
+}
+
 div.resultbox
 {
 	padding : 3px 10px;
@@ -18,7 +23,12 @@ div.resultbox
 	margin-right : 5px;
 }
 
-div.resultbox.left
+div.resultbox.suite
+{
+	margin-top : 20px;
+}
+
+div.resultbox.test
 {
 	float : left;
 }
