@@ -6,11 +6,7 @@ CanvasTesterApp = function (canvas, tolerance, resultsDivName)
 		testFinished : this.TestFinished.bind (this),
 		suiteFinished : this.SuiteFinished.bind (this)
 	});
-	this.suiteDivs = {
-		title : null,
-		testResults : null,
-		detailedResults : null
-	};
+	this.suiteDivs = [];
 };
 
 CanvasTesterApp.prototype.AddTestSuite = function (name)
@@ -30,25 +26,34 @@ CanvasTesterApp.prototype.Run = function ()
 
 CanvasTesterApp.prototype.SuiteStarted = function (suiteObject)
 {
-	this.suiteDivs.title = document.createElement ('div');
-	this.suiteDivs.title.className = 'resultbox suite success';
-	this.suiteDivs.title.innerHTML = suiteObject.GetName () + ': processing...';
-	this.resultsDiv.appendChild (this.suiteDivs.title);
+	var currentSuiteDivs = {
+		title : null,
+		testResults : null,
+		detailedResults : null
+	};
 	
-	this.suiteDivs.detailedResults = document.createElement ('div');
-	this.suiteDivs.detailedResults.className = 'testresult';
-	this.resultsDiv.appendChild (this.suiteDivs.detailedResults);
+	currentSuiteDivs.title = document.createElement ('div');
+	currentSuiteDivs.title.className = 'resultbox suite success';
+	currentSuiteDivs.title.innerHTML = suiteObject.GetName () + ': processing...';
+	this.resultsDiv.appendChild (currentSuiteDivs.title);
+	
+	currentSuiteDivs.detailedResults = document.createElement ('div');
+	currentSuiteDivs.detailedResults.className = 'testresult';
+	this.resultsDiv.appendChild (currentSuiteDivs.detailedResults);
 
-	this.suiteDivs.testResults = document.createElement ('div');
-	this.suiteDivs.testResults.className = 'suiteresultbox';
-	this.resultsDiv.appendChild (this.suiteDivs.testResults);
+	currentSuiteDivs.testResults = document.createElement ('div');
+	currentSuiteDivs.testResults.className = 'suiteresultbox';
+	this.resultsDiv.appendChild (currentSuiteDivs.testResults);
+	
+	this.suiteDivs.push (currentSuiteDivs);
 };
 
 CanvasTesterApp.prototype.SuiteFinished = function (suiteObject)
 {
+	var currentSuiteDivs = this.suiteDivs[this.suiteDivs.length - 1];
 	var success = suiteObject.IsSucceeded ();
-	this.suiteDivs.title.className = 'resultbox suite ' + (success ? 'success' : 'failure');
-	this.suiteDivs.title.innerHTML = suiteObject.GetName () + ': ' + (success ? 'success' : 'failure');
+	currentSuiteDivs.title.className = 'resultbox suite ' + (success ? 'success' : 'failure');
+	currentSuiteDivs.title.innerHTML = suiteObject.GetName () + ': ' + (success ? 'success' : 'failure');
 };
 
 CanvasTesterApp.prototype.TestFinished = function (testObject, result, resultImageData, referenceImageData, differenceImageData)
@@ -63,10 +68,23 @@ CanvasTesterApp.prototype.TestFinished = function (testObject, result, resultIma
 		parentDiv.appendChild (canvas);		
 	}
 
-	function AddResultLine (testObject, result, resultImageData, referenceImageData, differenceImageData, suiteDivs)
+	function HideAllDetailedResults (canvasTester)
 	{
-		var testResults = suiteDivs.testResults;
-		var detailedResults = suiteDivs.detailedResults;
+		var i, detailedResults;
+		for (i = 0; i < canvasTester.suiteDivs.length; i++) {
+			detailedResults = canvasTester.suiteDivs[i].detailedResults;
+			while (detailedResults.lastChild) {
+				detailedResults.removeChild (detailedResults.lastChild);
+			}
+			detailedResults.style.display = 'none';
+		}
+	}
+	
+	function AddResultLine (testObject, result, resultImageData, referenceImageData, differenceImageData, canvasTester)
+	{
+		var currentSuiteDivs = canvasTester.suiteDivs[canvasTester.suiteDivs.length - 1];
+		var testResults = currentSuiteDivs.testResults;
+		var detailedResults = currentSuiteDivs.detailedResults;
 
 		var resultBox = document.createElement ('div');
 		var success = (result.status === 0);
@@ -80,14 +98,13 @@ CanvasTesterApp.prototype.TestFinished = function (testObject, result, resultIma
 		} else if (result.status === 3) {
 			errorText = 'difference';
 		}
+		
 		resultBox.className = 'resultbox test link ' + (success ? 'success' : 'failure');
 		resultBox.innerHTML = errorText;
 		testResults.appendChild (resultBox);
 		
 		resultBox.onclick = function () {
-			while (detailedResults.lastChild) {
-				detailedResults.removeChild (detailedResults.lastChild);
-			}
+			HideAllDetailedResults (canvasTester);
 			var titleDiv = document.createElement ('div');
 			titleDiv.className = 'testresulttitle';
 			titleDiv.innerHTML = testObject.referenceImage;
@@ -115,8 +132,9 @@ CanvasTesterApp.prototype.TestFinished = function (testObject, result, resultIma
 				detailedResults.style.display = 'block';
 			}
 			testObject.renderCallback (function () {});
+			lastTestObject = testObject;
 		};
 	}
 
-	AddResultLine (testObject, result, resultImageData, referenceImageData, differenceImageData, this.suiteDivs);
+	AddResultLine (testObject, result, resultImageData, referenceImageData, differenceImageData, this);
 };
