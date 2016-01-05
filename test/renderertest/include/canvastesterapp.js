@@ -52,8 +52,9 @@ CanvasTesterApp.prototype.SuiteFinished = function (suiteObject)
 {
 	var currentSuiteDivs = this.suiteDivs[this.suiteDivs.length - 1];
 	var success = suiteObject.IsSucceeded ();
+	var text = suiteObject.GetName () + ': ' + (success ? 'success' : 'failure') + ' (' + suiteObject.GetRunningTime () + ' ms)';
 	currentSuiteDivs.title.className = 'resultbox suite ' + (success ? 'success' : 'failure');
-	currentSuiteDivs.title.innerHTML = suiteObject.GetName () + ': ' + (success ? 'success' : 'failure');
+	currentSuiteDivs.title.innerHTML = text;
 };
 
 CanvasTesterApp.prototype.TestFinished = function (testObject, result, resultImageData, referenceImageData, differenceImageData)

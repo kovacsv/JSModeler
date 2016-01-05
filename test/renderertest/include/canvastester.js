@@ -106,6 +106,7 @@ CT.TestSuite = function (name, canvas, tolerance, callbacks)
 	this.tolerance = tolerance;
 	this.callbacks = callbacks;
 	this.allSucceded = true;
+	this.runningTime = 0;
 	this.currentTest = 0;
 	this.tests = [];
 };
@@ -133,6 +134,11 @@ CT.TestSuite.prototype.IsSucceeded = function ()
 	return this.allSucceded;
 };
 
+CT.TestSuite.prototype.GetRunningTime = function ()
+{
+	return this.runningTime;
+};
+
 CT.TestSuite.prototype.RunCurrentTest = function ()
 {
 	if (this.currentTest >= this.tests.length) {
@@ -152,11 +158,15 @@ CT.TestSuite.prototype.RunNextTest = function ()
 
 CT.TestSuite.prototype.SuiteStarted = function ()
 {
+	var date = new Date ();
+	this.runningTime = date.getTime ();
 	this.callbacks.suiteStarted (this);
 };
 
 CT.TestSuite.prototype.SuiteFinished = function ()
 {
+	var date = new Date ();
+	this.runningTime = date.getTime () - this.runningTime;
 	this.callbacks.suiteFinished (this);
 };
 
