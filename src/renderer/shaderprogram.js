@@ -20,12 +20,14 @@ JSM.ShaderProgram.prototype.Init = function ()
 		if (shaderType == JSM.ShaderType.Triangle || shaderType == JSM.ShaderType.TexturedTriangle) {
 			script = [
 				'#define ' + (shaderType == JSM.ShaderType.Triangle ? 'NOTEXTURE' : 'USETEXTURE'),
+				'#define MAX_LIGHTS 10',
 				
 				'struct Light',
 				'{',
 				'	mediump vec3 ambientColor;',
 				'	mediump vec3 diffuseColor;',
 				'	mediump vec3 specularColor;',
+				'	mediump vec3 direction;',
 				'};',
 
 				'struct Material',
@@ -42,7 +44,6 @@ JSM.ShaderProgram.prototype.Init = function ()
 
 				'varying mediump vec3 vVertex;',
 				'varying mediump vec3 vNormal;',
-				'varying mediump vec3 vLight;',
 				
 				'#ifdef USETEXTURE',
 				'varying mediump vec2 vUV;',
@@ -54,7 +55,7 @@ JSM.ShaderProgram.prototype.Init = function ()
 				'	if (!gl_FrontFacing) {',
 				'		N = -N;',
 				'	}',
-				'	mediump vec3 L = normalize (-vLight);',
+				'	mediump vec3 L = normalize (-uLight.direction);',
 				'	mediump vec3 E = normalize (-vVertex);',
 				'	mediump vec3 R = normalize (-reflect (L, N));',
 				'	mediump vec3 ambientComponent = uMaterial.ambientColor * uLight.ambientColor;',
@@ -113,11 +114,9 @@ JSM.ShaderProgram.prototype.Init = function ()
 				'uniform mediump mat4 uViewMatrix;',
 				'uniform mediump mat4 uProjectionMatrix;',
 				'uniform mediump mat4 uTransformationMatrix;',
-				'uniform mediump vec3 uLightDirection;',
 
 				'varying mediump vec3 vVertex;',
 				'varying mediump vec3 vNormal;',
-				'varying mediump vec3 vLight;',
 
 				'#ifdef USETEXTURE',
 				'attribute mediump vec2 aVertexUV;',
@@ -128,7 +127,6 @@ JSM.ShaderProgram.prototype.Init = function ()
 				'	mat4 modelViewMatrix = uViewMatrix * uTransformationMatrix;',
 				'	vVertex = vec3 (modelViewMatrix * vec4 (aVertexPosition, 1.0));',
 				'	vNormal = normalize (vec3 (modelViewMatrix * vec4 (aVertexNormal, 0.0)));',
-				'	vLight = normalize (vec3 (uViewMatrix * vec4 (uLightDirection, 0.0)));',
 				'#ifdef USETEXTURE',
 				'	vUV = aVertexUV;',
 				'#endif',
@@ -163,9 +161,9 @@ JSM.ShaderProgram.prototype.Init = function ()
 			shader.lightUniforms = {
 				ambientColor : context.getUniformLocation (shader, 'uLight.ambientColor'),
 				diffuseColor : context.getUniformLocation (shader, 'uLight.diffuseColor'),
-				specularColor : context.getUniformLocation (shader, 'uLight.specularColor')
+				specularColor : context.getUniformLocation (shader, 'uLight.specularColor'),
+				direction : context.getUniformLocation (shader, 'uLight.direction')
 			};
-			shader.lightDirectionUniform = context.getUniformLocation (shader, 'uLightDirection');
 			
 			shader.materialUniforms = {
 				ambientColor : context.getUniformLocation (shader, 'uMaterial.ambientColor'),
@@ -256,10 +254,11 @@ JSM.ShaderProgram.prototype.SetParameters = function (light, viewMatrix, project
 	var shader = this.currentShader;
 	
 	if (this.currentType == JSM.ShaderType.Triangle || this.currentType == JSM.ShaderType.TexturedTriangle) {
+		var lightDirection = JSM.ApplyRotation (viewMatrix, light.direction);
 		context.uniform3f (shader.lightUniforms.ambientColor, light.ambient[0], light.ambient[1], light.ambient[2]);
 		context.uniform3f (shader.lightUniforms.diffuseColor, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
 		context.uniform3f (shader.lightUniforms.specularColor, light.specular[0], light.specular[1], light.specular[2]);
-		context.uniform3f (shader.lightDirectionUniform, light.direction.x, light.direction.y, light.direction.z);
+		context.uniform3f (shader.lightUniforms.direction, lightDirection.x, lightDirection.y, lightDirection.z);
 		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
 		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
 	} else if (this.currentType == JSM.ShaderType.Line) {

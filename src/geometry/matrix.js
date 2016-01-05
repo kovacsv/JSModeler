@@ -572,3 +572,25 @@ JSM.ApplyTransformation = function (matrix, coord)
 	var result = new JSM.Coord (resultVector[0], resultVector[1], resultVector[2]);
 	return result;
 };
+
+/**
+* Function: ApplyRotation
+* Description: Applies the rotation part of a matrix transformation to a coordinate.
+* Parameters:
+*	matrix {number[16]} the matrix
+*	coord {Coord} the coordinate
+* Returns:
+*	{Coord} the result
+*/
+JSM.ApplyRotation = function (matrix, coord)
+{
+	var vector = [];
+	vector[0] = coord.x;
+	vector[1] = coord.y;
+	vector[2] = coord.z;
+	vector[3] = 0.0;
+	
+	var resultVector = JSM.MatrixVectorMultiply (matrix, vector);
+	var result = new JSM.Coord (resultVector[0], resultVector[1], resultVector[2]);
+	return result;
+};
