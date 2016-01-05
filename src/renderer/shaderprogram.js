@@ -20,7 +20,6 @@ JSM.ShaderProgram.prototype.Init = function ()
 		if (shaderType == JSM.ShaderType.Triangle || shaderType == JSM.ShaderType.TexturedTriangle) {
 			script = [
 				'#define ' + (shaderType == JSM.ShaderType.Triangle ? 'NOTEXTURE' : 'USETEXTURE'),
-				'#define MAX_LIGHTS 10',
 				
 				'struct Light',
 				'{',
