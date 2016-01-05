@@ -11,7 +11,7 @@ JSM.Light = function (parameters)
 	var defaultParameters = {
 		ambient : 0x7f7f7f,
 		diffuse : 0x7f7f7f,
-		specular : 0x000000,
+		specular : 0xffffff,
 		direction : new JSM.Vector (1.0, 0.0, 0.0)
 	};
 	

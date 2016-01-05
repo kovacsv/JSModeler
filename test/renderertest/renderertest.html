@@ -102,9 +102,8 @@
 			);
 
 			var viewer = new JSM.Viewer ();
-			var light = new JSM.Light ({ambient : 0x7f7f7f, diffuse : 0x7f7f7f, specular : 0xffffff});
 			var canvas = document.getElementById ('testcanvas');
-			if (!viewer.Init (canvas, camera, light)) {
+			if (!viewer.Init (canvas, camera)) {
 				return;
 			}
 

@@ -5,9 +5,9 @@ JSM.Viewer = function ()
 	this.navigation = null;
 };
 
-JSM.Viewer.prototype.Init = function (canvas, camera, light)
+JSM.Viewer.prototype.Init = function (canvas, camera)
 {
-	if (!this.InitRenderer (canvas, light)) {
+	if (!this.InitRenderer (canvas)) {
 		return false;
 	}
 
@@ -18,10 +18,10 @@ JSM.Viewer.prototype.Init = function (canvas, camera, light)
 	return true;
 };
 
-JSM.Viewer.prototype.InitRenderer = function (canvas, light)
+JSM.Viewer.prototype.InitRenderer = function (canvas)
 {
 	this.renderer = new JSM.Renderer ();
-	if (!this.renderer.Init (canvas, light)) {
+	if (!this.renderer.Init (canvas)) {
 		return false;
 	}
 	return true;

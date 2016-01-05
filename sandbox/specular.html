@@ -105,10 +105,8 @@
 					new JSM.Coord (0, 0, 1)
 				);
 				
-				var light = new JSM.Light ({ambient : 0x7f7f7f, diffuse : 0x7f7f7f, specular : 0xffffff});
-
 				viewer = new JSM.Viewer ();
-				viewer.Init (document.getElementById ('example'), camera, light);
+				viewer.Init (document.getElementById ('example'), camera);
 				
 				viewer.AddRenderBody (JSM.ConvertBodyToRenderBody (body, materials));
 

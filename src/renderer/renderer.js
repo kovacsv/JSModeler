@@ -8,7 +8,7 @@ JSM.Renderer = function ()
 	this.bodies = null;
 };
 
-JSM.Renderer.prototype.Init = function (canvas, light)
+JSM.Renderer.prototype.Init = function (canvas)
 {
 	if (!JSM.IsWebGLEnabled ()) {
 		return false;
@@ -18,7 +18,7 @@ JSM.Renderer.prototype.Init = function (canvas, light)
 		return false;
 	}
 
-	if (!this.InitView (light)) {
+	if (!this.InitView ()) {
 		return false;
 	}
 
@@ -76,10 +76,10 @@ JSM.Renderer.prototype.InitBodies = function ()
 	return true;
 };
 
-JSM.Renderer.prototype.InitView = function (light)
+JSM.Renderer.prototype.InitView = function ()
 {
-	var theLight = JSM.ValueOrDefault (light, new JSM.Light ());
-	this.light = new JSM.RenderLight (theLight.ambient, theLight.diffuse, theLight.specular, theLight.direction);
+	var light = new JSM.Light ();
+	this.light = new JSM.RenderLight (light.ambient, light.diffuse, light.specular, light.direction);
 	if (!this.light) {
 		return false;
 	}
