@@ -3,6 +3,7 @@ JSM.Viewer = function ()
 	this.camera = null;
 	this.renderer = null;
 	this.navigation = null;
+	this.cameraLight = null;
 };
 
 JSM.Viewer.prototype.Init = function (canvas, camera)
@@ -24,6 +25,9 @@ JSM.Viewer.prototype.InitRenderer = function (canvas)
 	if (!this.renderer.Init (canvas)) {
 		return false;
 	}
+	
+	var light = new JSM.RenderLight (0x7f7f7f, 0x7f7f7f, 0xffffff, new JSM.Vector (1.0, 0.0, 0.0));
+	this.cameraLight = this.renderer.AddLight (light);
 	return true;
 };
 
@@ -133,8 +137,10 @@ JSM.Viewer.prototype.Resize = function ()
 
 JSM.Viewer.prototype.Draw = function ()
 {
-	var light = this.renderer.light;
-	var camera = this.camera;
-	light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
+	if (this.cameraLight !== null) {
+		var camera = this.camera;
+		var light = this.renderer.GetLight (this.cameraLight);
+		light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
+	}
 	this.renderer.Render (camera);
 };

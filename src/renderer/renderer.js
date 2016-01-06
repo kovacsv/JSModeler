@@ -4,7 +4,7 @@ JSM.Renderer = function ()
 	this.context = null;
 	this.shader = null;
 	
-	this.light = null;
+	this.lights = null;
 	this.bodies = null;
 };
 
@@ -31,6 +31,17 @@ JSM.Renderer.prototype.Init = function (canvas)
 	}
 
 	return true;
+};
+
+JSM.Renderer.prototype.AddLight = function (light)
+{
+	this.lights.push (light);
+	return this.lights.length - 1;
+};
+
+JSM.Renderer.prototype.GetLight = function (index)
+{
+	return this.lights[index];
 };
 
 JSM.Renderer.prototype.InitContext = function (canvas)
@@ -78,12 +89,7 @@ JSM.Renderer.prototype.InitBodies = function ()
 
 JSM.Renderer.prototype.InitView = function ()
 {
-	var light = new JSM.Light ();
-	this.light = new JSM.RenderLight (light.ambient, light.diffuse, light.specular, light.direction);
-	if (!this.light) {
-		return false;
-	}
-	
+	this.lights = [];
 	return true;
 };
 
@@ -204,7 +210,7 @@ JSM.Renderer.prototype.Render = function (camera)
 				body.EnumerateTypedMeshes (materialType, function (mesh) {
 					if (modifyParams) {
 						renderer.shader.UseShader (shaderType);
-						renderer.shader.SetParameters (renderer.light, viewMatrix, projectionMatrix);
+						renderer.shader.SetParameters (renderer.lights, viewMatrix, projectionMatrix);
 						modifyParams = false;
 					}
 					var material = mesh.GetMaterial ();

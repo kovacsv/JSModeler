@@ -7,6 +7,10 @@ JSM.ShaderType = {
 JSM.ShaderProgram = function (context)
 {
 	this.context = context;
+	this.globalParams = {
+		defaultLight : new JSM.RenderLight (0x000000, 0x000000, 0x000000, new JSM.Vector (0.0, 0.0, 0.0)),
+		maxLights : 4
+	};
 	this.shaders = null;
 	this.currentShader = null;
 	this.currentType = null;
@@ -14,12 +18,13 @@ JSM.ShaderProgram = function (context)
 
 JSM.ShaderProgram.prototype.Init = function ()
 {
-	function GetFragmentShaderScript (shaderType)
+	function GetFragmentShaderScript (shaderType, globalParams)
 	{
 		var script = null;
 		if (shaderType == JSM.ShaderType.Triangle || shaderType == JSM.ShaderType.TexturedTriangle) {
 			script = [
 				'#define ' + (shaderType == JSM.ShaderType.Triangle ? 'NOTEXTURE' : 'USETEXTURE'),
+				'#define MAX_LIGHTS ' + globalParams.maxLights,
 				
 				'struct Light',
 				'{',
@@ -38,7 +43,7 @@ JSM.ShaderProgram.prototype.Init = function ()
 				'	mediump float opacity;',
 				'};',
 				
-				'uniform Light uLight;',
+				'uniform Light uLights[MAX_LIGHTS];',
 				'uniform Material uMaterial;',
 
 				'varying mediump vec3 vVertex;',
@@ -54,18 +59,26 @@ JSM.ShaderProgram.prototype.Init = function ()
 				'	if (!gl_FrontFacing) {',
 				'		N = -N;',
 				'	}',
-				'	mediump vec3 L = normalize (-uLight.direction);',
+				'	mediump vec3 ambientComponent;',
+				'	mediump vec3 diffuseComponent;',
+				'	mediump vec3 specularComponent;',
 				'	mediump vec3 E = normalize (-vVertex);',
-				'	mediump vec3 R = normalize (-reflect (L, N));',
-				'	mediump vec3 ambientComponent = uMaterial.ambientColor * uLight.ambientColor;',
-				'	mediump vec3 diffuseComponent = uMaterial.diffuseColor * uLight.diffuseColor * max (dot (N, L), 0.0);',
-				'	mediump vec3 specularComponent = uMaterial.specularColor * uLight.specularColor * pow (max (dot (R, E), 0.0), uMaterial.shininess);',
+
+				'	for (int i = 0; i < MAX_LIGHTS; i++) {',
+				'		mediump vec3 L = normalize (-uLights[i].direction);',
+				'		mediump vec3 R = normalize (-reflect (L, N));',
+				'		ambientComponent += uMaterial.ambientColor * uLights[i].ambientColor;',
+				'		diffuseComponent += uMaterial.diffuseColor * uLights[i].diffuseColor * max (dot (N, L), 0.0);',
+				'		specularComponent += uMaterial.specularColor * uLights[i].specularColor * pow (max (dot (R, E), 0.0), uMaterial.shininess);',
+				'	}',
+				
 				'#ifdef USETEXTURE',
 				'	mediump vec3 textureColor = texture2D (uSampler, vec2 (vUV.s, vUV.t)).xyz;',
 				'	ambientComponent = ambientComponent * textureColor;',
 				'	diffuseComponent = diffuseComponent * textureColor;',
 				'	specularComponent = specularComponent * textureColor;',
 				'#endif',
+				
 				'	ambientComponent = clamp (ambientComponent, 0.0, 1.0);',
 				'	diffuseComponent = clamp (diffuseComponent, 0.0, 1.0);',
 				'	specularComponent = clamp (specularComponent, 0.0, 1.0);',
@@ -74,6 +87,8 @@ JSM.ShaderProgram.prototype.Init = function ()
 			].join ('\n');
 		} else if (shaderType == JSM.ShaderType.Line) {
 			script = [
+				'#define MAX_LIGHTS ' + globalParams.maxLights,
+
 				'struct Light',
 				'{',
 				'	mediump vec3 ambientColor;',
@@ -88,12 +103,16 @@ JSM.ShaderProgram.prototype.Init = function ()
 				'	mediump float opacity;',
 				'};',				
 				
-				'uniform Light uLight;',
+				'uniform Light uLights[MAX_LIGHTS];',
 				'uniform Material uMaterial;',
 				
 				'void main (void) {',
-				'	mediump vec3 ambientComponent = uMaterial.ambientColor * uLight.ambientColor;',
-				'	mediump vec3 diffuseComponent = uMaterial.diffuseColor * uLight.diffuseColor;',
+				'	mediump vec3 ambientComponent;',
+				'	mediump vec3 diffuseComponent;',
+				'	for (int i = 0; i < MAX_LIGHTS; i++) {',
+				'		ambientComponent += uMaterial.ambientColor * uLights[i].ambientColor;',
+				'		diffuseComponent += uMaterial.diffuseColor * uLights[i].diffuseColor;',
+				'	}',
 				'	gl_FragColor = vec4 (ambientComponent + diffuseComponent, uMaterial.opacity);',
 				'}'
 			].join ('\n');
@@ -151,18 +170,22 @@ JSM.ShaderProgram.prototype.Init = function ()
 		return script;
 	}
 
-	function InitShaderParameters (context, shader, shaderType)
+	function InitShaderParameters (context, shader, globalParams, shaderType)
 	{
 		if (shaderType == JSM.ShaderType.Triangle || shaderType == JSM.ShaderType.TexturedTriangle) {
 			shader.vertexPositionAttribute = context.getAttribLocation (shader, 'aVertexPosition');
 			shader.vertexNormalAttribute = context.getAttribLocation (shader, 'aVertexNormal');
 
-			shader.lightUniforms = {
-				ambientColor : context.getUniformLocation (shader, 'uLight.ambientColor'),
-				diffuseColor : context.getUniformLocation (shader, 'uLight.diffuseColor'),
-				specularColor : context.getUniformLocation (shader, 'uLight.specularColor'),
-				direction : context.getUniformLocation (shader, 'uLight.direction')
-			};
+			shader.lightUniforms = [];
+			var i;
+			for (i = 0; i < globalParams.maxLights; i++) {
+				shader.lightUniforms.push ({
+					ambientColor : context.getUniformLocation (shader, 'uLights[' + i + '].ambientColor'),
+					diffuseColor : context.getUniformLocation (shader, 'uLights[' + i + '].diffuseColor'),
+					specularColor : context.getUniformLocation (shader, 'uLights[' + i + '].specularColor'),
+					direction : context.getUniformLocation (shader, 'uLights[' + i + '].direction')
+				});
+			}
 			
 			shader.materialUniforms = {
 				ambientColor : context.getUniformLocation (shader, 'uMaterial.ambientColor'),
@@ -183,10 +206,13 @@ JSM.ShaderProgram.prototype.Init = function ()
 		} else if (shaderType == JSM.ShaderType.Line) {
 			shader.vertexPositionAttribute = context.getAttribLocation (shader, 'aVertexPosition');
 
-			shader.lightUniforms = {
-				ambientColor : context.getUniformLocation (shader, 'uLight.ambientColor'),
-				diffuseColor : context.getUniformLocation (shader, 'uLight.diffuseColor')
-			};
+			shader.lightUniforms = [];
+			for (i = 0; i < globalParams.maxLights; i++) {
+				shader.lightUniforms.push ({
+					ambientColor : context.getUniformLocation (shader, 'uLights[' + i + '].ambientColor'),
+					diffuseColor : context.getUniformLocation (shader, 'uLights[' + i + '].diffuseColor')
+				});
+			}
 
 			shader.materialUniforms = {
 				ambientColor : context.getUniformLocation (shader, 'uMaterial.ambientColor'),
@@ -200,10 +226,10 @@ JSM.ShaderProgram.prototype.Init = function ()
 		}
 	}
 	
-	function InitShader (context, shaders, shaderType)
+	function InitShader (context, shaders, globalParams, shaderType)
 	{
 		var vertexShaderScript = GetVertexShaderScript (shaderType);
-		var fragmentShaderScript = GetFragmentShaderScript (shaderType);
+		var fragmentShaderScript = GetFragmentShaderScript (shaderType, globalParams);
 		if (vertexShaderScript === null || fragmentShaderScript === null) {
 			return false;
 		}
@@ -213,22 +239,22 @@ JSM.ShaderProgram.prototype.Init = function ()
 		}
 		
 		context.useProgram (shader);
-		InitShaderParameters (context, shader, shaderType);
+		InitShaderParameters (context, shader, globalParams, shaderType);
 		shaders[shaderType] = shader;
 		return true;
 	}
 	
 	this.shaders = {};
 	
-	if (!InitShader (this.context, this.shaders, JSM.ShaderType.Triangle)) {
+	if (!InitShader (this.context, this.shaders, this.globalParams, JSM.ShaderType.Triangle)) {
 		return false;
 	}
 	
-	if (!InitShader (this.context, this.shaders, JSM.ShaderType.TexturedTriangle)) {
+	if (!InitShader (this.context, this.shaders, this.globalParams, JSM.ShaderType.TexturedTriangle)) {
 		return false;
 	}
 
-	if (!InitShader (this.context, this.shaders, JSM.ShaderType.Line)) {
+	if (!InitShader (this.context, this.shaders, this.globalParams, JSM.ShaderType.Line)) {
 		return false;
 	}
 
@@ -247,22 +273,38 @@ JSM.ShaderProgram.prototype.UseShader = function (shaderType)
 	this.context.useProgram (this.currentShader);
 };
 
-JSM.ShaderProgram.prototype.SetParameters = function (light, viewMatrix, projectionMatrix)
+JSM.ShaderProgram.prototype.SetParameters = function (lights, viewMatrix, projectionMatrix)
 {
+	function GetLight (lights, index, defaultLight)
+	{
+		if (index < lights.length) {
+			return lights[index];
+		}
+
+		return defaultLight;
+	}
+	
 	var context = this.context;
 	var shader = this.currentShader;
 	
+	var i, light, lightDirection;
 	if (this.currentType == JSM.ShaderType.Triangle || this.currentType == JSM.ShaderType.TexturedTriangle) {
-		var lightDirection = JSM.ApplyRotation (viewMatrix, light.direction);
-		context.uniform3f (shader.lightUniforms.ambientColor, light.ambient[0], light.ambient[1], light.ambient[2]);
-		context.uniform3f (shader.lightUniforms.diffuseColor, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
-		context.uniform3f (shader.lightUniforms.specularColor, light.specular[0], light.specular[1], light.specular[2]);
-		context.uniform3f (shader.lightUniforms.direction, lightDirection.x, lightDirection.y, lightDirection.z);
+		for (i = 0; i < this.globalParams.maxLights; i++) {
+			light = GetLight (lights, i, this.globalParams.defaultLight);
+			lightDirection = JSM.ApplyRotation (viewMatrix, light.direction);
+			context.uniform3f (shader.lightUniforms[i].ambientColor, light.ambient[0], light.ambient[1], light.ambient[2]);
+			context.uniform3f (shader.lightUniforms[i].diffuseColor, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
+			context.uniform3f (shader.lightUniforms[i].specularColor, light.specular[0], light.specular[1], light.specular[2]);
+			context.uniform3f (shader.lightUniforms[i].direction, lightDirection.x, lightDirection.y, lightDirection.z);
+		}
 		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
 		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
 	} else if (this.currentType == JSM.ShaderType.Line) {
-		context.uniform3f (shader.lightUniforms.ambientColor, light.ambient[0], light.ambient[1], light.ambient[2]);
-		context.uniform3f (shader.lightUniforms.diffuseColor, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
+		for (i = 0; i < this.globalParams.maxLights; i++) {
+			light = GetLight (lights, i, this.globalParams.defaultLight);
+			context.uniform3f (shader.lightUniforms[i].ambientColor, light.ambient[0], light.ambient[1], light.ambient[2]);
+			context.uniform3f (shader.lightUniforms[i].diffuseColor, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
+		}
 		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
 		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
 	}
