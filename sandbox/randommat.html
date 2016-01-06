@@ -90,19 +90,17 @@
 
 		function Load ()
 		{
-			var TextureLoaded = function () {
-				viewer.Draw ();
-			};
-
-			var viewerSettings = {
-				cameraEyePosition : [2.0, 1.5, 1.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1]
-			};
-
-			viewer = new JSM.ThreeViewer ();
-			viewer.Start (document.getElementById ('example'), viewerSettings);
+			var camera = new JSM.Camera (
+				new JSM.Coord (1.0, 3.0, 2.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0.0, 0.0, 1.0)
+			);
 			
+			viewer = new JSM.Viewer ();
+			if (!viewer.Init (document.getElementById ('example'), camera)) {
+				alert ('error');
+			}
+
 			var body = new JSM.GenerateCuboid (0.5, 0.5, 0.5);
 			var vert0 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
 			var vert1 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
@@ -115,11 +113,9 @@
 			
 			var materials = new JSM.Materials ();
 			JSM.GenerateRandomMaterials (body, materials, false);
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}
+			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 
+			viewer.AddRenderBody (renderBody);
 			viewer.Draw ();
 		}
 	

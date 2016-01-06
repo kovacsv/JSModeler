@@ -109,18 +109,20 @@
 
 		function Load ()
 		{
-			var viewerSettings = {
-				cameraEyePosition : [-2.0, -1.5, 1.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1]
-			};
-
-			viewer = new JSM.ThreeViewer ();
-			viewer.Start (document.getElementById ('example'), viewerSettings);
+			var camera = new JSM.Camera (
+				new JSM.Coord (-2.0, -1.5, 1.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0.0, 0.0, 1.0)
+			);
+			
+			viewer = new JSM.Viewer ();
+			if (!viewer.Init (document.getElementById ('example'), camera)) {
+				alert ('error');
+			}
 			
 			var body = JSM.GenerateCuboid (1, 1, 1);
-			var meshes = JSM.ConvertBodyToThreeMeshes (body);
-			viewer.AddMeshes (meshes);
+			var renderBody = JSM.ConvertBodyToRenderBody (body);
+			viewer.AddRenderBody (renderBody);
 
 			Resize ();
 			viewer.Draw ();
