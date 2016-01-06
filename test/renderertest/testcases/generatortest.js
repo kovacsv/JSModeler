@@ -110,6 +110,20 @@ function AddGeneratorTests (canvasTester, viewer)
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
 		var model = new JSM.Model ();
+	
+		var circle = JSM.GenerateCirclePoints (1, 20, new JSM.Coord (0, 0, 0));
+		circle[0].Set (0, 0, 0);
+		circle[10].Set (-2, 0, 0);
+		
+		var direction = new JSM.Vector (0.0, 0.0, 1.0);
+		var body = JSM.GeneratePrism (circle, direction, 1.0, true, 160 * JSM.DegRad);
+
+		model.AddBody (body);
+		RenderModel (viewer, model, null, renderFinished);
+	}, 'references/generator/curved_prism.png');	
+
+	canvasTester.AddTest (generatorSuite, function (renderFinished) {
+		var model = new JSM.Model ();
 
 			var basePoints = [
 				new JSM.Coord (0, 0, 0),
