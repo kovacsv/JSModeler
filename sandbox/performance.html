@@ -87,7 +87,6 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		var mode = null;
 		var viewer = null;
 		var renderBody = null;
 		var meshes = null;
@@ -108,7 +107,6 @@
 		
 		function LoadInternal ()
 		{
-			mode = 0;
 			var camera = new JSM.Camera (
 				new JSM.Coord (10.0, 30.0, 20.0),
 				new JSM.Coord (0.0, 0.0, 0.0),
@@ -149,7 +147,7 @@
 
 	    window.onload = function ()
 		{
-			mode = 0;
+			var mode = 0;
 			if (mode === 0) {
 				LoadInternal ();
 			} else if (mode === 1)  {
