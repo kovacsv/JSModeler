@@ -26,6 +26,39 @@ JSM.Viewer.prototype.Reset = function ()
 	this.EnableCameraLight ();
 };
 
+JSM.Viewer.prototype.InitRenderer = function (canvas)
+{
+	this.renderer = new JSM.Renderer ();
+	if (!this.renderer.Init (canvas)) {
+		return false;
+	}
+	
+	this.cameraLight = -1;
+	this.EnableCameraLight ();
+	return true;
+};
+
+JSM.Viewer.prototype.InitNavigation = function (camera)
+{
+	this.camera = JSM.ValueOrDefault (camera, new JSM.Camera ());
+	if (!this.camera) {
+		return false;
+	}
+
+	this.navigation = new JSM.Navigation ();
+	if (!this.navigation.Init (this.renderer.canvas, this.camera, this.Draw.bind (this), this.Resize.bind (this))) {
+		return false;
+	}
+	return true;
+};
+
+JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
+{
+	this.renderer.SetClearColor (red, green, blue);
+	this.Draw ();
+};
+
+
 JSM.Viewer.prototype.EnableCameraLight = function ()
 {
 	if (this.cameraLight !== -1) {
@@ -66,38 +99,6 @@ JSM.Viewer.prototype.RemoveLights = function ()
 {
 	this.renderer.RemoveLights ();
 	this.cameraLight = -1;
-};
-
-JSM.Viewer.prototype.InitRenderer = function (canvas)
-{
-	this.renderer = new JSM.Renderer ();
-	if (!this.renderer.Init (canvas)) {
-		return false;
-	}
-	
-	this.cameraLight = -1;
-	this.EnableCameraLight ();
-	return true;
-};
-
-JSM.Viewer.prototype.InitNavigation = function (camera)
-{
-	this.camera = JSM.ValueOrDefault (camera, new JSM.Camera ());
-	if (!this.camera) {
-		return false;
-	}
-
-	this.navigation = new JSM.Navigation ();
-	if (!this.navigation.Init (this.renderer.canvas, this.camera, this.Draw.bind (this), this.Resize.bind (this))) {
-		return false;
-	}
-	return true;
-};
-
-JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
-{
-	this.renderer.SetClearColor (red, green, blue);
-	this.Draw ();
 };
 
 JSM.Viewer.prototype.AddBody = function (renderBody)

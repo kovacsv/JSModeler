@@ -37,31 +37,6 @@ JSM.Renderer.prototype.Init = function (canvas)
 	return true;
 };
 
-JSM.Renderer.prototype.AddLight = function (light)
-{
-	var maxLightCount = this.shader.GetMaxLightCount ();
-	if (this.lights.length >= maxLightCount) {
-		return -1;
-	}
-	this.lights.push (light);
-	return this.lights.length - 1;
-};
-
-JSM.Renderer.prototype.RemoveLight = function (index)
-{
-	this.lights.splice (index, 1);
-};
-
-JSM.Renderer.prototype.RemoveLights = function ()
-{
-	this.lights = [];
-};
-
-JSM.Renderer.prototype.GetLight = function (index)
-{
-	return this.lights[index];
-};
-
 JSM.Renderer.prototype.InitContext = function (canvas)
 {
 	this.canvas = canvas;
@@ -120,6 +95,31 @@ JSM.Renderer.prototype.InitView = function ()
 JSM.Renderer.prototype.SetClearColor = function (red, green, blue)
 {
 	this.context.clearColor (red, green, blue, 1.0);
+};
+
+JSM.Renderer.prototype.AddLight = function (light)
+{
+	var maxLightCount = this.shader.GetMaxLightCount ();
+	if (this.lights.length >= maxLightCount) {
+		return -1;
+	}
+	this.lights.push (light);
+	return this.lights.length - 1;
+};
+
+JSM.Renderer.prototype.RemoveLight = function (index)
+{
+	this.lights.splice (index, 1);
+};
+
+JSM.Renderer.prototype.RemoveLights = function ()
+{
+	this.lights = [];
+};
+
+JSM.Renderer.prototype.GetLight = function (index)
+{
+	return this.lights[index];
 };
 
 JSM.Renderer.prototype.AddBody = function (renderBody, textureLoaded)
