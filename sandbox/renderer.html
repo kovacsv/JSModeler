@@ -147,12 +147,12 @@
 			model.AddBody (body5);
 
 			var renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
-			renderer.AddRenderBodies (renderBodies);
+			renderer.AddBodies (renderBodies);
 
 			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));
 			var newRenderBody = JSM.ConvertBodyToRenderBody (body6, materials);
-			renderer.AddRenderBody (newRenderBody);
+			renderer.AddBody (newRenderBody);
 
 			Render ();
 		}

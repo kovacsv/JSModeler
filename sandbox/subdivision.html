@@ -116,7 +116,7 @@
 			var renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
 			renderBodies[0].SetTransformation (new JSM.TranslationTransformation (new JSM.Coord (-1, 0, 0)));
 			renderBodies[1].SetTransformation (new JSM.TranslationTransformation (new JSM.Coord (1, 0, 0)));
-			viewer.AddRenderBodies (renderBodies);
+			viewer.AddBodies (renderBodies);
 
 			viewer.Draw ();
 		}

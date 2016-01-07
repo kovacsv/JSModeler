@@ -11,12 +11,12 @@ function OffsetTwoBodies (body1, body2, offsetX, offsetY, offsetZ)
 
 function RenderBody (viewer, body, materials, onFinished, beforeDraw)
 {
-	viewer.RemoveBodies ();
+	viewer.Reset ();
 	var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 	if (beforeDraw !== undefined && beforeDraw !== null) {
 		beforeDraw (renderBody);
 	}
-	viewer.AddRenderBody (renderBody);
+	viewer.AddBody (renderBody);
 	viewer.FitInWindow ();
 	if (onFinished !== undefined && onFinished !== null) {
 		onFinished ();
@@ -34,12 +34,12 @@ function RenderBodyAndWait (viewer, body, materials, onFinished, beforeDraw)
 
 function RenderModel (viewer, model, materials, onFinished, beforeDraw)
 {
-	viewer.RemoveBodies ();
+	viewer.Reset ();
 	var renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
 	if (beforeDraw !== undefined && beforeDraw !== null) {
 		beforeDraw (renderBodies);
 	}
-	viewer.AddRenderBodies (renderBodies);
+	viewer.AddBodies (renderBodies);
 	viewer.FitInWindow ();
 	if (onFinished !== undefined && onFinished !== null) {
 		onFinished ();

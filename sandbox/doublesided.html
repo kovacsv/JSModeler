@@ -116,7 +116,7 @@
 			}
 
 			var body = JSM.GenerateCylinder (1.0, 1.0, 30, false, true);
-			viewer.AddRenderBody (JSM.ConvertBodyToRenderBody (body));
+			viewer.AddBody (JSM.ConvertBodyToRenderBody (body));
 
 			Render ();
 		}

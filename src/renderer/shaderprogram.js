@@ -7,10 +7,7 @@ JSM.ShaderType = {
 JSM.ShaderProgram = function (context)
 {
 	this.context = context;
-	this.globalParams = {
-		defaultLight : new JSM.RenderLight (0x000000, 0x000000, 0x000000, new JSM.Vector (0.0, 0.0, 0.0)),
-		maxLights : 4
-	};
+	this.globalParams = null;
 	this.shaders = null;
 	this.currentShader = null;
 	this.currentType = null;
@@ -18,13 +15,41 @@ JSM.ShaderProgram = function (context)
 
 JSM.ShaderProgram.prototype.Init = function ()
 {
+	if (!this.InitGlobalParams ()) {
+		return false;
+	}
+	
+	if (!this.InitShaders ()) {
+		return false;
+	}
+	
+	return true;	
+};
+
+JSM.ShaderProgram.prototype.GetMaxLightCount = function ()
+{
+	return this.globalParams.maxLightCount;
+};
+
+JSM.ShaderProgram.prototype.InitGlobalParams = function ()
+{
+	var defaultLight = new JSM.RenderLight (0x000000, 0x000000, 0x000000, new JSM.Vector (0.0, 0.0, 0.0));
+	this.globalParams = {
+		defaultLight : defaultLight,
+		maxLightCount : 4
+	};
+	return true;
+};
+
+JSM.ShaderProgram.prototype.InitShaders = function ()
+{
 	function GetFragmentShaderScript (shaderType, globalParams)
 	{
 		var script = null;
 		if (shaderType == JSM.ShaderType.Triangle || shaderType == JSM.ShaderType.TexturedTriangle) {
 			script = [
 				'#define ' + (shaderType == JSM.ShaderType.Triangle ? 'NOTEXTURE' : 'USETEXTURE'),
-				'#define MAX_LIGHTS ' + globalParams.maxLights,
+				'#define MAX_LIGHTS ' + globalParams.maxLightCount,
 				
 				'struct Light',
 				'{',
@@ -87,7 +112,7 @@ JSM.ShaderProgram.prototype.Init = function ()
 			].join ('\n');
 		} else if (shaderType == JSM.ShaderType.Line) {
 			script = [
-				'#define MAX_LIGHTS ' + globalParams.maxLights,
+				'#define MAX_LIGHTS ' + globalParams.maxLightCount,
 
 				'struct Light',
 				'{',
@@ -178,7 +203,7 @@ JSM.ShaderProgram.prototype.Init = function ()
 
 			shader.lightUniforms = [];
 			var i;
-			for (i = 0; i < globalParams.maxLights; i++) {
+			for (i = 0; i < globalParams.maxLightCount; i++) {
 				shader.lightUniforms.push ({
 					ambientColor : context.getUniformLocation (shader, 'uLights[' + i + '].ambientColor'),
 					diffuseColor : context.getUniformLocation (shader, 'uLights[' + i + '].diffuseColor'),
@@ -207,7 +232,7 @@ JSM.ShaderProgram.prototype.Init = function ()
 			shader.vertexPositionAttribute = context.getAttribLocation (shader, 'aVertexPosition');
 
 			shader.lightUniforms = [];
-			for (i = 0; i < globalParams.maxLights; i++) {
+			for (i = 0; i < globalParams.maxLightCount; i++) {
 				shader.lightUniforms.push ({
 					ambientColor : context.getUniformLocation (shader, 'uLights[' + i + '].ambientColor'),
 					diffuseColor : context.getUniformLocation (shader, 'uLights[' + i + '].diffuseColor')
@@ -289,7 +314,7 @@ JSM.ShaderProgram.prototype.SetParameters = function (lights, viewMatrix, projec
 	
 	var i, light, lightDirection;
 	if (this.currentType == JSM.ShaderType.Triangle || this.currentType == JSM.ShaderType.TexturedTriangle) {
-		for (i = 0; i < this.globalParams.maxLights; i++) {
+		for (i = 0; i < this.globalParams.maxLightCount; i++) {
 			light = GetLight (lights, i, this.globalParams.defaultLight);
 			lightDirection = JSM.ApplyRotation (viewMatrix, light.direction);
 			context.uniform3f (shader.lightUniforms[i].ambientColor, light.ambient[0], light.ambient[1], light.ambient[2]);
@@ -300,7 +325,7 @@ JSM.ShaderProgram.prototype.SetParameters = function (lights, viewMatrix, projec
 		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
 		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
 	} else if (this.currentType == JSM.ShaderType.Line) {
-		for (i = 0; i < this.globalParams.maxLights; i++) {
+		for (i = 0; i < this.globalParams.maxLightCount; i++) {
 			light = GetLight (lights, i, this.globalParams.defaultLight);
 			context.uniform3f (shader.lightUniforms[i].ambientColor, light.ambient[0], light.ambient[1], light.ambient[2]);
 			context.uniform3f (shader.lightUniforms[i].diffuseColor, light.diffuse[0], light.diffuse[1], light.diffuse[2]);

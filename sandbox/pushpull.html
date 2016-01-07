@@ -229,7 +229,7 @@
 			
 			JSM.GenerateRandomMaterials (body, materials);
 			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
-			viewer.AddRenderBody (renderBody);
+			viewer.AddBody (renderBody);
 			
 			viewer.FitInWindow ();
 			viewer.Draw ();

@@ -210,7 +210,7 @@
 				body.GetPolygon (2).SetMaterialIndex (1);
 			
 				var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
-				viewer.AddRenderBody (renderBody);	
+				viewer.AddBody (renderBody);	
 		
 				if (type == 'internal2') {
 					var body2 = JSM.GenerateCuboid (1, 1, 1);
@@ -219,7 +219,7 @@
 					transformation.Append (JSM.RotationZTransformation (20.0 * JSM.DegRad));
 					transformation.Append (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
 					renderBody2.SetTransformation (transformation);
-					viewer.AddRenderBody (renderBody2);
+					viewer.AddBody (renderBody2);
 				}
 				
 				viewer.Draw ();

@@ -19,6 +19,55 @@ JSM.Viewer.prototype.Init = function (canvas, camera)
 	return true;
 };
 
+JSM.Viewer.prototype.Reset = function ()
+{
+	this.RemoveBodies ();
+	this.RemoveLights ();
+	this.EnableCameraLight ();
+};
+
+JSM.Viewer.prototype.EnableCameraLight = function ()
+{
+	if (this.cameraLight !== -1) {
+		return;
+	}
+	var light = new JSM.RenderLight (0x7f7f7f, 0x7f7f7f, 0xffffff, new JSM.Vector (1.0, 0.0, 0.0));
+	this.cameraLight = this.renderer.AddLight (light);
+};
+
+JSM.Viewer.prototype.DisableCameraLight = function ()
+{
+	if (this.cameraLight === -1) {
+		return;
+	}
+	this.renderer.RemoveLight (this.cameraLight);
+	this.cameraLight = -1;
+};
+
+JSM.Viewer.prototype.GetCameraLight = function ()
+{
+	if (this.cameraLight === -1) {
+		return null;
+	}
+	return this.renderer.GetLight (this.cameraLight);
+};
+
+JSM.Viewer.prototype.AddLight = function (light)
+{
+	return this.renderer.AddLight (light);
+};
+
+JSM.Viewer.prototype.RemoveLight = function (index)
+{
+	this.renderer.RemoveLight (index);
+};
+
+JSM.Viewer.prototype.RemoveLights = function ()
+{
+	this.renderer.RemoveLights ();
+	this.cameraLight = -1;
+};
+
 JSM.Viewer.prototype.InitRenderer = function (canvas)
 {
 	this.renderer = new JSM.Renderer ();
@@ -26,8 +75,8 @@ JSM.Viewer.prototype.InitRenderer = function (canvas)
 		return false;
 	}
 	
-	var light = new JSM.RenderLight (0x7f7f7f, 0x7f7f7f, 0xffffff, new JSM.Vector (1.0, 0.0, 0.0));
-	this.cameraLight = this.renderer.AddLight (light);
+	this.cameraLight = -1;
+	this.EnableCameraLight ();
 	return true;
 };
 
@@ -51,15 +100,15 @@ JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 	this.Draw ();
 };
 
-JSM.Viewer.prototype.AddRenderBody = function (renderBody)
+JSM.Viewer.prototype.AddBody = function (renderBody)
 {
-	this.renderer.AddRenderBody (renderBody, this.Draw.bind (this));
+	this.renderer.AddBody (renderBody, this.Draw.bind (this));
 	this.Draw ();
 };
 
-JSM.Viewer.prototype.AddRenderBodies = function (renderBodies)
+JSM.Viewer.prototype.AddBodies = function (renderBodies)
 {
-	this.renderer.AddRenderBodies (renderBodies, this.Draw.bind (this));
+	this.renderer.AddBodies (renderBodies, this.Draw.bind (this));
 	this.Draw ();
 };
 
@@ -137,10 +186,10 @@ JSM.Viewer.prototype.Resize = function ()
 
 JSM.Viewer.prototype.Draw = function ()
 {
-	if (this.cameraLight !== null) {
-		var camera = this.camera;
-		var light = this.renderer.GetLight (this.cameraLight);
-		light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
+	var camera = this.camera;
+	var cameraLight = this.GetCameraLight ();
+	if (cameraLight !== null) {
+		cameraLight.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
 	}
 	this.renderer.Render (camera);
 };

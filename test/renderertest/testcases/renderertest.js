@@ -50,6 +50,34 @@ function AddRendererTests (canvasTester, viewer)
 	}, 'references/renderer/cube_materials.png');
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xffffff}));
+		
+		var body = JSM.GenerateCuboid (1, 1, 1);
+		body.SetPolygonsMaterialIndex (0);
+		
+		RenderBody (viewer, body, materials, renderFinished, function () {
+			viewer.AddLight (new JSM.RenderLight (0x000000, 0xcc0000, 0xffffff, new JSM.Vector (-1.0, 0.0, 0.0)));
+		});
+	}, 'references/renderer/cube_lights.png');
+
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xffffff}));
+		
+		var body = JSM.GenerateCuboid (1, 1, 1);
+		body.SetPolygonsMaterialIndex (0);
+		
+		RenderBody (viewer, body, materials, renderFinished, function () {
+			viewer.DisableCameraLight ();
+			viewer.AddLight (new JSM.RenderLight (0x000000, 0xcc0000, 0xffffff, new JSM.Vector (-1.0, 0.0, 0.0)));
+			viewer.AddLight (new JSM.RenderLight (0x000000, 0x00cc00, 0xffffff, new JSM.Vector (-1.0, 0.0, 0.0)));
+			viewer.AddLight (new JSM.RenderLight (0x000000, 0x00cc00, 0xffffff, new JSM.Vector (0.0, -1.0, 0.0)));
+			viewer.AddLight (new JSM.RenderLight (0x000000, 0x0000cc, 0xffffff, new JSM.Vector (0.0, 0.0, -1.0)));
+		});
+	}, 'references/renderer/cube_lights2.png');
+
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
 
 		var materials = new JSM.Materials ();

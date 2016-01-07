@@ -108,7 +108,7 @@
 				viewer = new JSM.Viewer ();
 				viewer.Init (document.getElementById ('example'), camera);
 				
-				viewer.AddRenderBody (JSM.ConvertBodyToRenderBody (body, materials));
+				viewer.AddBody (JSM.ConvertBodyToRenderBody (body, materials));
 
 				viewer.Draw ();
 			} else {

@@ -26,6 +26,10 @@ JSM.Renderer.prototype.Init = function (canvas)
 		return false;
 	}
 
+	if (!this.InitLights ()) {
+		return false;
+	}	
+	
 	if (!this.InitBodies ()) {
 		return false;
 	}
@@ -35,8 +39,22 @@ JSM.Renderer.prototype.Init = function (canvas)
 
 JSM.Renderer.prototype.AddLight = function (light)
 {
+	var maxLightCount = this.shader.GetMaxLightCount ();
+	if (this.lights.length >= maxLightCount) {
+		return -1;
+	}
 	this.lights.push (light);
 	return this.lights.length - 1;
+};
+
+JSM.Renderer.prototype.RemoveLight = function (index)
+{
+	this.lights.splice (index, 1);
+};
+
+JSM.Renderer.prototype.RemoveLights = function ()
+{
+	this.lights = [];
 };
 
 JSM.Renderer.prototype.GetLight = function (index)
@@ -81,6 +99,12 @@ JSM.Renderer.prototype.InitShaders = function ()
 	return this.shader.Init ();
 };
 
+JSM.Renderer.prototype.InitLights = function ()
+{
+	this.lights = [];
+	return true;
+};
+
 JSM.Renderer.prototype.InitBodies = function ()
 {
 	this.bodies = [];
@@ -98,7 +122,7 @@ JSM.Renderer.prototype.SetClearColor = function (red, green, blue)
 	this.context.clearColor (red, green, blue, 1.0);
 };
 
-JSM.Renderer.prototype.AddRenderBody = function (renderBody, textureLoaded)
+JSM.Renderer.prototype.AddBody = function (renderBody, textureLoaded)
 {
 	function CompileMaterial (material, context, textureLoaded)
 	{
@@ -159,12 +183,12 @@ JSM.Renderer.prototype.AddRenderBody = function (renderBody, textureLoaded)
 	this.bodies.push (renderBody);
 };
 
-JSM.Renderer.prototype.AddRenderBodies = function (renderBodies, textureLoaded)
+JSM.Renderer.prototype.AddBodies = function (renderBodies, textureLoaded)
 {
 	var i, body;
 	for (i = 0; i < renderBodies.length; i++) {
 		body = renderBodies[i];
-		this.AddRenderBody (body, textureLoaded);
+		this.AddBody (body, textureLoaded);
 	}
 };
 
@@ -178,7 +202,7 @@ JSM.Renderer.prototype.EnumerateBodies = function (onBodyFound)
 
 JSM.Renderer.prototype.RemoveBodies = function ()
 {
-	this.InitBodies ();
+	this.bodies = [];
 };
 
 JSM.Renderer.prototype.Resize = function ()

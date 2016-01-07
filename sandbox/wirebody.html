@@ -121,7 +121,7 @@
 			var body = new JSM.GenerateSphere (1, 20);
 			body = JSM.GenerateWireBody (body);
 			
-			viewer.AddRenderBody (JSM.ConvertBodyToRenderBody (body));
+			viewer.AddBody (JSM.ConvertBodyToRenderBody (body));
 			viewer.Draw ();
 		}
 	

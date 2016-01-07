@@ -6,7 +6,6 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<meta name="viewport" content="width=device-width, user-scalable=no">
 	<script type="text/javascript" src="../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
@@ -84,24 +83,6 @@
 	<script type="text/javascript" src="../src/three/threeconverter.js"></script>
 	<script type="text/javascript" src="../src/three/threeviewer.js"></script>
 <!-- JSModeler includes end -->
-
-	<style>
-		html, body
-		{
-			margin : 0px;
-			padding : 0px;
-			width : 100%;
-			height : 100%;
-		}
-		
-		canvas
-		{
-			width : 100%;
-			height : 100%;
-			display : block;
-		}
-	</style>
-	
 	<title>Example</title>
 
 	<script type="text/javascript">
@@ -110,35 +91,34 @@
 		function Load ()
 		{
 			var camera = new JSM.Camera (
-				new JSM.Coord (-2.0, -1.5, 1.0),
+				new JSM.Coord (3.0, 4.0, 2.0),
 				new JSM.Coord (0.0, 0.0, 0.0),
 				new JSM.Vector (0.0, 0.0, 1.0)
 			);
 			
 			viewer = new JSM.Viewer ();
-			if (!viewer.Init (document.getElementById ('example'), camera)) {
-				alert ('error');
-			}
+			viewer.Init (document.getElementById ('example'), camera);
+
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xffffff}));
 			
 			var body = JSM.GenerateCuboid (1, 1, 1);
-			var renderBody = JSM.ConvertBodyToRenderBody (body);
+			body.SetPolygonsMaterialIndex (0);
+			
+			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 			viewer.AddBody (renderBody);
+			
+			viewer.DisableCameraLight ();
+			viewer.AddLight (new JSM.RenderLight (0x000000, 0xcc0000, 0xffffff, new JSM.Vector (-1.0, 0.0, 0.0)));
+			viewer.AddLight (new JSM.RenderLight (0x000000, 0x00cc00, 0xffffff, new JSM.Vector (-1.0, 0.0, 0.0)));
+			viewer.AddLight (new JSM.RenderLight (0x000000, 0x00cc00, 0xffffff, new JSM.Vector (0.0, -1.0, 0.0)));
+			viewer.AddLight (new JSM.RenderLight (0x000000, 0x0000cc, 0xffffff, new JSM.Vector (0.0, 0.0, -1.0)));
 
-			Resize ();
 			viewer.Draw ();
-		}
-	
-		function Resize ()
-		{
-			var canvas = document.getElementById ('example');
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
-			viewer.Resize ();
 		}
 	
 	    window.onload = function ()
 		{
-			window.onresize = Resize;
 			Load ();			
 		}
 	</script>
