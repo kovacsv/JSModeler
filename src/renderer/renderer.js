@@ -107,9 +107,12 @@ JSM.Renderer.prototype.AddLight = function (light)
 	return this.lights.length - 1;
 };
 
-JSM.Renderer.prototype.RemoveLight = function (index)
+JSM.Renderer.prototype.RemoveLight = function (light)
 {
-	this.lights.splice (index, 1);
+	var index = this.lights.indexOf (light);
+	if (index != -1) {
+		this.lights.splice (index, 1);
+	}
 };
 
 JSM.Renderer.prototype.RemoveLights = function ()
@@ -200,9 +203,22 @@ JSM.Renderer.prototype.EnumerateBodies = function (onBodyFound)
 	}
 };
 
+JSM.Renderer.prototype.RemoveBody = function (body)
+{
+	var index = this.bodies.indexOf (body);
+	if (index != -1) {
+		this.bodies.splice (index, 1);
+	}
+};
+
 JSM.Renderer.prototype.RemoveBodies = function ()
 {
 	this.bodies = [];
+};
+
+JSM.Renderer.prototype.GetBody = function (index)
+{
+	return this.bodies[index];
 };
 
 JSM.Renderer.prototype.Resize = function ()

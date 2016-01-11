@@ -32,9 +32,6 @@ JSM.Viewer.prototype.InitRenderer = function (canvas)
 	if (!this.renderer.Init (canvas)) {
 		return false;
 	}
-	
-	this.cameraLight = -1;
-	this.EnableCameraLight ();
 	return true;
 };
 
@@ -49,81 +46,80 @@ JSM.Viewer.prototype.InitNavigation = function (camera)
 	if (!this.navigation.Init (this.renderer.canvas, this.camera, this.Draw.bind (this), this.Resize.bind (this))) {
 		return false;
 	}
+
+	this.EnableCameraLight ();
 	return true;
 };
 
 JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 {
 	this.renderer.SetClearColor (red, green, blue);
-	this.Draw ();
 };
 
 
 JSM.Viewer.prototype.EnableCameraLight = function ()
 {
-	if (this.cameraLight !== -1) {
+	if (this.cameraLight !== null) {
 		return;
 	}
-	var light = new JSM.RenderLight (0x7f7f7f, 0x7f7f7f, 0xffffff, new JSM.Vector (1.0, 0.0, 0.0));
-	this.cameraLight = this.renderer.AddLight (light);
+	this.cameraLight = new JSM.RenderLight (0x7f7f7f, 0x7f7f7f, 0xffffff, new JSM.Vector (1.0, 0.0, 0.0));
+	this.AddLight (this.cameraLight);
 };
 
 JSM.Viewer.prototype.DisableCameraLight = function ()
 {
-	if (this.cameraLight === -1) {
+	if (this.cameraLight === null) {
 		return;
 	}
-	this.renderer.RemoveLight (this.cameraLight);
-	this.cameraLight = -1;
+	this.RemoveLight (this.cameraLight);
+	this.cameraLight = null;
 };
 
 JSM.Viewer.prototype.GetCameraLight = function ()
 {
-	if (this.cameraLight === -1) {
-		return null;
-	}
-	return this.renderer.GetLight (this.cameraLight);
+	return this.cameraLight;
 };
 
 JSM.Viewer.prototype.AddLight = function (light)
 {
-	return this.renderer.AddLight (light);
+	this.renderer.AddLight (light);
 };
 
-JSM.Viewer.prototype.RemoveLight = function (index)
+JSM.Viewer.prototype.RemoveLight = function (light)
 {
-	this.renderer.RemoveLight (index);
+	this.renderer.RemoveLight (light);
 };
 
 JSM.Viewer.prototype.RemoveLights = function ()
 {
 	this.renderer.RemoveLights ();
-	this.cameraLight = -1;
+	this.cameraLight = null;
 };
 
 JSM.Viewer.prototype.AddBody = function (renderBody)
 {
 	this.renderer.AddBody (renderBody, this.Draw.bind (this));
-	this.Draw ();
 };
 
 JSM.Viewer.prototype.AddBodies = function (renderBodies)
 {
 	this.renderer.AddBodies (renderBodies, this.Draw.bind (this));
-	this.Draw ();
+};
+
+JSM.Viewer.prototype.RemoveBody = function (body)
+{
+	this.renderer.RemoveBody (body);
 };
 
 JSM.Viewer.prototype.RemoveBodies = function ()
 {
 	this.renderer.RemoveBodies ();
-	this.Draw ();
 };
 
 JSM.Viewer.prototype.FitInWindow = function ()
 {
 	var sphere = this.GetBoundingSphere ();
 	this.navigation.FitInWindow (sphere.GetCenter (), sphere.GetRadius ());
-	this.Draw ();
 };
 
 JSM.Viewer.prototype.GetCenter = function ()
@@ -182,7 +178,6 @@ JSM.Viewer.prototype.GetBoundingSphere = function ()
 JSM.Viewer.prototype.Resize = function ()
 {
 	this.renderer.Resize ();
-	this.Draw ();
 };
 
 JSM.Viewer.prototype.Draw = function ()

@@ -18,6 +18,7 @@ function RenderBody (viewer, body, materials, onFinished, beforeDraw)
 	}
 	viewer.AddBody (renderBody);
 	viewer.FitInWindow ();
+	viewer.Draw ();
 	if (onFinished !== undefined && onFinished !== null) {
 		onFinished ();
 	}
@@ -41,6 +42,7 @@ function RenderModel (viewer, model, materials, onFinished, beforeDraw)
 	}
 	viewer.AddBodies (renderBodies);
 	viewer.FitInWindow ();
+	viewer.Draw ();
 	if (onFinished !== undefined && onFinished !== null) {
 		onFinished ();
 	}
