@@ -80,7 +80,7 @@ JSM.MatrixPerspective = function (fieldOfView, aspectRatio, nearPlane, farPlane)
 
 /**
 * Function: Project
-* Description: Projects a 3D coordinate to a 2D image.
+* Description: Projects a 3D coordinate to 2D.
 * Parameters:
 *	coord {Coord} the coordinate
 *	eye {Coord} the eye of the camera
@@ -112,16 +112,51 @@ JSM.Project = function (coord, eye, center, up, fieldOfView, aspectRatio, nearPl
 		return null;
 	}
 
-	output[0] = output[0] / denom * 0.5 + 0.5;
-	output[1] = output[1] / denom * 0.5 + 0.5;
-	output[2] = output[2] / denom * 0.5 + 0.5;
+	var result = new JSM.Coord (0.0, 0.0, 0.0);
+	result.x = (output[0] / denom * 0.5 + 0.5) * viewPort[2] + viewPort[0];
+	result.y = (output[1] / denom * 0.5 + 0.5) * viewPort[3] + viewPort[1];
+	result.z = (output[2] / denom * 0.5 + 0.5);
+	return result;	
+};
 
-	output[0] = output[0] * viewPort[2] + viewPort[0];
-	output[1] = output[1] * viewPort[3] + viewPort[1];
+/**
+* Function: Unproject
+* Description: Projects a 2D coordinate to 3D.
+* Parameters:
+*	coord {Coord} the coordinate (the z component can be zero)
+*	eye {Coord} the eye of the camera
+*	center {Coord} the center of the camera
+*	up {Vector} the up vector of the camera
+*	fieldOfView {number} camera field of view
+*	aspectRatio {number} aspect ratio of the desired image
+*	nearPlane {number} near cutting plane distance
+*	farPlane {number} far cutting plane distance
+*	viewPort {number[4]} view port coordinates in pixels
+* Returns:
+*	{Coord} the result
+*/
+JSM.Unproject = function (coord, eye, center, up, fieldOfView, aspectRatio, nearPlane, farPlane, viewPort)
+{
+	var input = [
+		(coord.x - viewPort[0]) / viewPort[2] * 2.0 - 1.0,
+		(coord.y - viewPort[1]) / viewPort[3] * 2.0 - 1.0,
+		2.0 * coord.z - 1,
+		1.0
+	];
+	
+	var viewMatrix = JSM.MatrixView (eye, center, up);
+	var perspectiveMatrix = JSM.MatrixPerspective (fieldOfView, aspectRatio, nearPlane, farPlane);
+	var projectionMatrix = JSM.MatrixMultiply (viewMatrix, perspectiveMatrix);
+	var inverseMatrix = JSM.MatrixInvert (projectionMatrix);
+	var output = JSM.MatrixVectorMultiply (inverseMatrix, input);
+	var denom = output[3];
+	if (JSM.IsZero (denom)) {
+		return null;
+	}
 
 	var result = new JSM.Coord (0.0, 0.0, 0.0);
-	result.x = output[0];
-	result.y = output[1];
-	result.z = output[2];
-	return result;	
+	result.x = (output[0] / output[3]);
+	result.y = (output[1] / output[3]);
+	result.z = (output[2] / output[3]);
+	return result;
 };

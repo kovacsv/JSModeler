@@ -1194,6 +1194,73 @@ generalSuite.AddTest ('ProjectionTest', function (test)
 	test.Assert (JSM.IsEqual (projected.x, 160.35533905932851) && JSM.IsEqual (projected.y, 110.3553390593285));
 });
 
+generalSuite.AddTest ('UnprojectionTest', function (test)
+{
+	function TestProjection (coord)
+	{
+		var projected = JSM.Project (coord, eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
+		if (projected === null) {
+			return false;
+		}
+		var unprojected = JSM.Unproject (projected, eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
+		return coord.IsEqual (unprojected);
+	}
+	
+	function TestProjectionWindowCoords (coord)
+	{
+		var projected = JSM.Project (coord, eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
+		if (projected === null) {
+			return false;
+		}
+		projected.z = 0.0;
+		var unprojected = JSM.Unproject (projected, eye, center, up, fieldOfView * JSM.DegRad, aspectRatio, nearPlane, farPlane, viewPort);
+		var oldRay = JSM.CoordSub (coord, eye);
+		var newRay = JSM.CoordSub (unprojected, eye);
+		oldRay.Normalize ();
+		newRay.Normalize ();
+		return newRay.IsEqual (oldRay);
+	}
+	
+	var eye = new JSM.Coord (1, 0, 0);
+	var center = new JSM.Coord (0, 0, 0);
+	var up = new JSM.Coord (0, 0, 1);
+	var width = 200;
+	var height = 100;
+	var fieldOfView = 45.0;
+	var aspectRatio = width / height;
+	var nearPlane = 0.1;
+	var farPlane = 100;
+	var viewPort = [0, 0, width, height];
+
+	test.Assert (TestProjection (new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (TestProjection (new JSM.Coord (0.5, 0.0, 0.0)));
+	test.Assert (TestProjection (new JSM.Coord (0.0, 100.0, 0.0)));
+	test.Assert (TestProjection (new JSM.Coord (0.0, 0.0, 100.0)));
+	test.Assert (TestProjection (new JSM.Coord (-100.0, 0.0, 0.0)));
+	test.Assert (TestProjection (new JSM.Coord (0.0, -100.0, 0.0)));
+	test.Assert (TestProjection (new JSM.Coord (0.0, 0.0, -100.0)));
+	test.Assert (TestProjection (new JSM.Coord (0.5, 0.0, 0.0)));
+	test.Assert (TestProjection (new JSM.Coord (0.0, 0.5, 0.0)));
+	test.Assert (TestProjection (new JSM.Coord (0.0, 0.0, 0.5)));
+	test.Assert (TestProjection (new JSM.Coord (0.5, 0.5, 0.0)));
+	test.Assert (TestProjection (new JSM.Coord (0.5, 0.0, 0.5)));
+	test.Assert (TestProjection (new JSM.Coord (0.0, 0.5, 0.5)));
+	
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.5, 0.0, 0.0)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.0, 100.0, 0.0)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.0, 0.0, 100.0)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (-100.0, 0.0, 0.0)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.0, -100.0, 0.0)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.0, 0.0, -100.0)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.5, 0.0, 0.0)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.0, 0.5, 0.0)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.0, 0.0, 0.5)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.5, 0.5, 0.0)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.5, 0.0, 0.5)));
+	test.Assert (TestProjectionWindowCoords (new JSM.Coord (0.0, 0.5, 0.5)));
+});
+
 generalSuite.AddTest ('ConvexHullTest', function (test)
 {
 	var result = [];
