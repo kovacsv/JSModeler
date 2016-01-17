@@ -228,13 +228,6 @@ JSM.Renderer.prototype.Resize = function ()
 
 JSM.Renderer.prototype.FindObjects = function (camera, screenX, screenY)
 {
-	var polygonalTypes = [
-		JSM.RenderMaterialType.Polygon,
-		JSM.RenderMaterialType.TexturedPolygon,
-		JSM.RenderMaterialType.TransparentPolygon,
-		JSM.RenderMaterialType.TransparentTexturedPolygon
-	];
-	
 	var screenCoord = new JSM.Coord (screenX, this.canvas.height - screenY, 0.5);
 	var aspectRatio = this.canvas.width / this.canvas.height;
 	var viewPort = [0, 0, this.canvas.width, this.canvas.height];
@@ -244,7 +237,7 @@ JSM.Renderer.prototype.FindObjects = function (camera, screenX, screenY)
 	var result = [];
 	this.EnumerateBodies (function (body) {
 		var transformation = body.GetTransformation ();
-		body.EnumerateMultiTypedMeshes (polygonalTypes, function (mesh) {
+		body.EnumerateMeshesWithFlag (JSM.RenderMaterialFlags.Polygon, function (mesh) {
 			var vertexCount = mesh.VertexCount ();
 			var i, v0, v1, v2, intersection;
 			for (i = 0; i < vertexCount; i += 3) {
@@ -275,11 +268,18 @@ JSM.Renderer.prototype.Render = function (camera)
 	{
 		function MaterialTypeToShaderType (materialType)
 		{
-			if (materialType == JSM.RenderMaterialType.Polygon || materialType == JSM.RenderMaterialType.TransparentPolygon) {
-				return JSM.ShaderType.Triangle;
-			} else if (materialType == JSM.RenderMaterialType.TexturedPolygon || materialType == JSM.RenderMaterialType.TransparentTexturedPolygon) {
-				return JSM.ShaderType.TexturedTriangle;
-			} else if (materialType == JSM.RenderMaterialType.Line || materialType == JSM.RenderMaterialType.TransparentLine) {
+			function HasFlag (type, flag)
+			{
+				return type & flag;
+			}
+			
+			if (HasFlag (materialType, JSM.RenderMaterialFlags.Polygon)) {
+				if (HasFlag (materialType, JSM.RenderMaterialFlags.Textured)) {
+					return JSM.ShaderType.TexturedTriangle;
+				} else if (!HasFlag (materialType, JSM.RenderMaterialFlags.Textured)) {
+					return JSM.ShaderType.Triangle;
+				}
+			} else if (HasFlag (materialType, JSM.RenderMaterialFlags.Line)) {
 				return JSM.ShaderType.Line;
 			}
 			return null;
@@ -311,10 +311,10 @@ JSM.Renderer.prototype.Render = function (camera)
 	var viewMatrix = JSM.MatrixView (camera.eye, camera.center, camera.up);
 	var projectionMatrix = JSM.MatrixPerspective (camera.fieldOfView * JSM.DegRad, this.canvas.width / this.canvas.height, camera.nearClippingPlane, camera.farClippingPlane);
 
-	DrawMeshes (this, JSM.RenderMaterialType.Polygon, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.TexturedPolygon, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.Line, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.TransparentPolygon, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.TransparentTexturedPolygon, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialType.TransparentLine, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon + JSM.RenderMaterialFlags.Textured, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialFlags.Line, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon + JSM.RenderMaterialFlags.Transparent, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon + JSM.RenderMaterialFlags.Transparent + JSM.RenderMaterialFlags.Textured, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialFlags.Line + JSM.RenderMaterialFlags.Transparent, viewMatrix, projectionMatrix);
 };

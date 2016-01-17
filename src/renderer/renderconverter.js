@@ -18,19 +18,12 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 
 	function OnGeometryEnd (material)
 	{
-		var materialType = JSM.RenderMaterialType.Polygon;
+		var materialType = JSM.RenderMaterialFlags.Polygon;
 		if (material.texture !== null) {
-			if (material.opacity < 1.0) {
-				materialType = JSM.RenderMaterialType.TransparentTexturedPolygon;
-			} else {
-				materialType = JSM.RenderMaterialType.TexturedPolygon;
-			}
-		} else {
-			if (material.opacity < 1.0) {
-				materialType = JSM.RenderMaterialType.TransparentPolygon;
-			} else {
-				materialType = JSM.RenderMaterialType.Polygon;
-			}
+			materialType += JSM.RenderMaterialFlags.Textured;
+		}
+		if (material.opacity < 1.0) {
+			materialType += JSM.RenderMaterialFlags.Transparent;
 		}
 
 		var renderMaterial = MaterialToRenderMaterial (material, materialType);
@@ -70,9 +63,9 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 
 	function OnLineGeometryEnd (material)
 	{
-		var materialType = JSM.RenderMaterialType.Line;
+		var materialType = JSM.RenderMaterialFlags.Line;
 		if (material.opacity < 1.0) {
-			materialType = JSM.RenderMaterialType.TransparentLine;
+			materialType += JSM.RenderMaterialFlags.Transparent;
 		}
 
 		var renderMaterial = MaterialToRenderMaterial (material, materialType);

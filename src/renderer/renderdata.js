@@ -6,13 +6,11 @@ JSM.RenderLight = function (ambient, diffuse, specular, direction)
 	this.direction = direction.Clone ();
 };
 
-JSM.RenderMaterialType = {
-	Polygon : 0,
-	TexturedPolygon : 1,
-	TransparentPolygon : 2,
-	TransparentTexturedPolygon : 3,
-	Line : 4,
-	TransparentLine : 5
+JSM.RenderMaterialFlags = {
+	Polygon : 1,
+	Line : 2,
+	Textured : 4,
+	Transparent : 8
 };
 
 JSM.RenderMaterial = function (type, ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight)
@@ -196,12 +194,13 @@ JSM.RenderBody.prototype.EnumerateTypedMeshes = function (meshType, onMeshFound)
 	}
 };
 
-JSM.RenderBody.prototype.EnumerateMultiTypedMeshes = function (meshTypes, onMeshFound)
+JSM.RenderBody.prototype.EnumerateMeshesWithFlag = function (flag, onMeshFound)
 {
-	var i, meshType;
-	for (i = 0; i < meshTypes.length; i++) {
-		meshType = meshTypes[i];
-		this.EnumerateTypedMeshes (meshType, onMeshFound);
+	var meshType;
+	for (meshType in this.meshes) {
+		if (this.meshes.hasOwnProperty (meshType) && (meshType & flag)) {
+			this.EnumerateTypedMeshes (meshType, onMeshFound);
+		}
 	}
 };
 

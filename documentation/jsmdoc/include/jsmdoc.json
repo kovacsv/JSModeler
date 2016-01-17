@@ -66,13 +66,6 @@
 						["overwrite", "boolean", "overwrite existing properties"]
 					]
 				},
-				"Assert" : {
-					"description" : "Shows up an alert with the given message if the condition is false.",
-					"parameters" : [
-						["condition", "boolean", "the condition to check"],
-						["message", "string", "error message"]
-					]
-				},
 				"BubbleSort" : {
 					"description" : "Sorts an array with bubble sort.",
 					"parameters" : [
@@ -91,7 +84,7 @@
 					"description" : "Calls a function multiple times asynchronously. If the environment is not specified, it will run synchronously.",
 					"parameters" : [
 						["taskFunction", "function", "the function to run"],
-						["environment", "AsyncEnvironment", "environment with callbackss"],
+						["callbacks", "object", "callbacks for start, process, and finish"],
 						["runCount", "integer", "the count of runs"],
 						["timeout", "integer", "the timeout between runs"],
 						["userData", "anything", "task specific data"]
@@ -138,35 +131,6 @@
 							],
 							"returns" : [
 								["integer", "The result."]
-							]
-						}
-					}
-				},
-				"AsyncEnvironment" : {
-					"description" : "Environment for asynchronous calls.",
-					"parameters" : [
-						["parameters", "object", "callback functions for calls (onStart, onProcess, onFinish)"]
-					],
-					"functions" : {
-						"OnStart" : {
-							"description" : "Calls the onStart callback of the environment.",
-							"parameters" : [
-								["taskCount", "integer", "count of all tasks"],
-								["userData", "anything", "task specific data"]
-							]
-						},
-						"OnProcess" : {
-							"description" : "Calls the onProcess callback of the environment.",
-							"parameters" : [
-								["currentTask", "integer", "number of the current task"],
-								["userData", "anything", "task specific data"]
-							]
-						},
-						"OnFinish" : {
-							"description" : "Calls the onFinish callback of the environment.",
-							"parameters" : [
-								["result", "anything", "the result of the operation"],
-								["userData", "anything", "task specific data"]
 							]
 						}
 					}
@@ -734,6 +698,16 @@
 						["Coord", "the result"]
 					]
 				},
+				"ApplyRotation" : {
+					"description" : "Applies the rotation part of a matrix transformation to a coordinate.",
+					"parameters" : [
+						["matrix", "number[16]", "the matrix"],
+						["coord", "Coord", "the coordinate"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
 				"GetSectorSegmentation" : {
 					"description" : "Returns the segmented coordinates of a sector.",
 					"parameters" : [
@@ -897,9 +871,26 @@
 					]
 				},
 				"Project" : {
-					"description" : "Projects a 3D coordinate to a 2D image.",
+					"description" : "Projects a 3D coordinate to 2D.",
 					"parameters" : [
 						["coord", "Coord", "the coordinate"],
+						["eye", "Coord", "the eye of the camera"],
+						["center", "Coord", "the center of the camera"],
+						["up", "Vector", "the up vector of the camera"],
+						["fieldOfView", "number", "camera field of view"],
+						["aspectRatio", "number", "aspect ratio of the desired image"],
+						["nearPlane", "number", "near cutting plane distance"],
+						["farPlane", "number", "far cutting plane distance"],
+						["viewPort", "number[4]", "view port coordinates in pixels"]
+					],
+					"returns" : [
+						["Coord", "the result"]
+					]
+				},
+				"Unproject" : {
+					"description" : "Projects a 2D coordinate to 3D.",
+					"parameters" : [
+						["coord", "Coord", "the coordinate (the z component can be zero)"],
 						["eye", "Coord", "the eye of the camera"],
 						["center", "Coord", "the center of the camera"],
 						["up", "Vector", "the up vector of the camera"],
