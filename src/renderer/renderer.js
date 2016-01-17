@@ -226,6 +226,49 @@ JSM.Renderer.prototype.Resize = function ()
 	this.context.viewport (0, 0, this.canvas.width, this.canvas.height);
 };
 
+JSM.Renderer.prototype.FindObjects = function (camera, screenX, screenY)
+{
+	var polygonalTypes = [
+		JSM.RenderMaterialType.Polygon,
+		JSM.RenderMaterialType.TexturedPolygon,
+		JSM.RenderMaterialType.TransparentPolygon,
+		JSM.RenderMaterialType.TransparentTexturedPolygon
+	];
+	
+	var screenCoord = new JSM.Coord (screenX, this.canvas.height - screenY, 0.5);
+	var aspectRatio = this.canvas.width / this.canvas.height;
+	var viewPort = [0, 0, this.canvas.width, this.canvas.height];
+	var unprojected = JSM.Unproject (screenCoord, camera.eye, camera.center, camera.up, camera.fieldOfView * JSM.DegRad, aspectRatio, camera.nearClippingPlane, camera.farClippingPlane, viewPort);
+	var ray = new JSM.Ray (camera.eye, JSM.CoordSub (unprojected, camera.eye), null);
+	
+	var result = [];
+	this.EnumerateBodies (function (body) {
+		var transformation = body.GetTransformation ();
+		body.EnumerateMultiTypedMeshes (polygonalTypes, function (mesh) {
+			var vertexCount = mesh.VertexCount ();
+			var i, v0, v1, v2, intersection;
+			for (i = 0; i < vertexCount; i += 3) {
+				v0 = mesh.GetTransformedVertex (i + 0, transformation);
+				v1 = mesh.GetTransformedVertex (i + 1, transformation);
+				v2 = mesh.GetTransformedVertex (i + 2, transformation);
+				intersection = JSM.RayTriangleIntersection (ray, v0, v1, v2);
+				if (intersection !== null) {
+					result.push ({
+						renderBody : body,
+						renderMesh : mesh,
+						triangleIndex : parseInt (i / 3, 10),
+						intersection : intersection
+					});
+				}
+			}
+		});
+	});
+	result.sort (function (a, b) {
+		return a.intersection.distance - b.intersection.distance;
+	});
+	return result;
+};
+
 JSM.Renderer.prototype.Render = function (camera)
 {
 	function DrawMeshes (renderer, materialType, viewMatrix, projectionMatrix)

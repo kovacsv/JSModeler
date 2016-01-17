@@ -175,6 +175,11 @@ JSM.Viewer.prototype.GetBoundingSphere = function ()
 	return sphere;
 };
 
+JSM.Viewer.prototype.FindObjects = function (screenX, screenY)
+{
+	return this.renderer.FindObjects (this.camera, screenX, screenY);
+};
+
 JSM.Viewer.prototype.Resize = function ()
 {
 	this.renderer.Resize ();

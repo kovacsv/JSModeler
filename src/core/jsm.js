@@ -114,21 +114,3 @@ JSM.CopyObjectProperties = function (source, target, overwrite)
 		}
 	}
 };
-
-/**
-* Function: Assert
-* Description: Shows up an alert with the given message if the condition is false.
-* Parameters:
-*	condition {boolean} the condition to check
-*	message {string} error message
-*/
-JSM.Assert = function (condition, message)
-{
-	if (!condition) {
-		var alertText = 'Assertion failed.';
-		if (message !== undefined && message !== null) {
-			alertText += ' ' + message;
-		}
-		alert (alertText);
-	}
-};

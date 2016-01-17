@@ -85,6 +85,30 @@
 <!-- JSModeler includes end -->
 	<title>Example</title>
 
+	<style>
+		html, body
+		{
+			font-family : Arial, cursive;
+			font-size : 12px;
+		}
+		
+		table
+		{
+			border-collapse : collapse;
+		}
+		
+		td
+		{
+			padding : 10px;
+			border : 1px solid #aaaaaa;
+		}
+		
+		canvas
+		{
+			border : 1px solid #aaaaaa;
+		}
+	</style>
+	
 	<script type="text/javascript">
 		function Load ()
 		{
@@ -108,8 +132,8 @@
 			var body1 = JSM.GenerateCuboid (1, 1, 1);
 			var body2 = JSM.GenerateCuboid (1, 1, 1);
 			var body3 = JSM.GenerateCuboid (1, 1, 1);
-			body2.SetPolygonsMaterialIndex (0);
-			body3.SetPolygonsMaterialIndex (1);
+			body1.SetPolygonsMaterialIndex (0);
+			body2.SetPolygonsMaterialIndex (1);
 			body3.SetPolygonsMaterialIndex (2);
 
 			var renderBody1 = JSM.ConvertBodyToRenderBody (body1, materials);
@@ -122,9 +146,43 @@
 			viewer.AddBody (renderBody2);
 			viewer.AddBody (renderBody3);
 			
+			renderBody1.name = 'red';
+			renderBody2.name = 'green';
+			renderBody3.name = 'blue';
+			
 			var info = document.getElementById ('info');
 			canvas.addEventListener ('mousemove', function () {
-				info.innerHTML = viewer.navigation.mouse.curr.ToString ();
+				function AddTableRow (table, text1, text2)
+				{
+					var row = document.createElement ('tr');
+					var column1 = document.createElement ('td');
+					column1.innerHTML = text1;
+					var column2 = document.createElement ('td');
+					column2.innerHTML = text2;
+					row.appendChild (column1);
+					row.appendChild (column2);
+					table.appendChild (row);
+				}
+			
+				while (info.lastChild) {
+					info.removeChild (info.lastChild);
+				}
+
+				var mousePos = viewer.navigation.mouse.curr;
+				var objects = viewer.FindObjects (mousePos.x, mousePos.y);
+				var table = document.createElement ('table');
+				AddTableRow (table, 'mouse position', mousePos.ToString ());
+				info.appendChild (table);
+				
+				var i, current, position, text;
+				for (i = 0; i < objects.length; i++) {
+					current = objects[i];
+					position = current.intersection.position;
+					text = current.renderBody.name + ', ' + current.triangleIndex + ', ' +
+						'(' + position.x.toPrecision (2) + ', ' + position.y.toPrecision (2) + ', ' + position.z.toPrecision (2) + '), ' +
+						current.intersection.distance.toPrecision (2);
+					AddTableRow (table, 'object ' + i, text);
+				}
 			});
 			
 			viewer.Draw ();

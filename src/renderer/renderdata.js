@@ -169,10 +169,10 @@ JSM.RenderBody.prototype.AddMesh = function (mesh)
 
 JSM.RenderBody.prototype.EnumerateMeshes = function (onMeshFound)
 {
-	var type;
-	for (type in this.meshes) {
-		if (this.meshes.hasOwnProperty (type)) {
-			this.EnumerateTypedMeshes (type, onMeshFound);
+	var meshType;
+	for (meshType in this.meshes) {
+		if (this.meshes.hasOwnProperty (meshType)) {
+			this.EnumerateTypedMeshes (meshType, onMeshFound);
 		}
 	}
 };
@@ -193,6 +193,15 @@ JSM.RenderBody.prototype.EnumerateTypedMeshes = function (meshType, onMeshFound)
 	for	(i = 0; i < typedMeshes.length; i++) {
 		typedMesh = typedMeshes[i];
 		onMeshFound (typedMesh);
+	}
+};
+
+JSM.RenderBody.prototype.EnumerateMultiTypedMeshes = function (meshTypes, onMeshFound)
+{
+	var i, meshType;
+	for (i = 0; i < meshTypes.length; i++) {
+		meshType = meshTypes[i];
+		this.EnumerateTypedMeshes (meshType, onMeshFound);
 	}
 };
 
