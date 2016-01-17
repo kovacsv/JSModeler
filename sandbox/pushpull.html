@@ -207,31 +207,42 @@
 			}
 
 			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
-			materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 
 			var body = new JSM.Body ();
 			JSM.AddVertexToBody (body, 0, 0, 0);
-			JSM.AddVertexToBody (body, 1, 0, 0);
 			JSM.AddVertexToBody (body, 2, 0, 0);
 			JSM.AddVertexToBody (body, 2, 1, 0);
-			JSM.AddVertexToBody (body, 1, 1, 0);
 			JSM.AddVertexToBody (body, 0, 1, 0);
-			JSM.AddPolygonToBody (body, [0, 1, 4, 5]);
-			JSM.AddPolygonToBody (body, [1, 2, 3, 4]);
-			
-			body.GetPolygon (0).SetMaterialIndex (0);
-			body.GetPolygon (1).SetMaterialIndex (1);
 
-			JSM.PushPullBodyPolygon (body, 0, 0.5);
-			JSM.PushPullBodyPolygon (body, 0, 0.5);
-			//JSM.PushPullBodyPolygon (body, 1, -0.2);
+			JSM.AddVertexToBody (body, 0, 0, 1);
+			JSM.AddVertexToBody (body, 1, 0, 1);
+			JSM.AddVertexToBody (body, 2, 0, 1);
+			JSM.AddVertexToBody (body, 2, 1, 1);
+			JSM.AddVertexToBody (body, 1, 1, 1);
+			JSM.AddVertexToBody (body, 0, 1, 1);
+
+			JSM.AddPolygonToBody (body, [0, 1, 6, 5, 4]);
+			JSM.AddPolygonToBody (body, [0, 3, 2, 1]);
+			JSM.AddPolygonToBody (body, [1, 2, 7, 6]);
+			JSM.AddPolygonToBody (body, [2, 3, 9, 8, 7]);
+			JSM.AddPolygonToBody (body, [3, 0, 4, 9]);
+			JSM.AddPolygonToBody (body, [4, 5, 8, 9]);
+			JSM.AddPolygonToBody (body, [5, 6, 7, 8]);
+			
+			JSM.PushPullBodyPolygon (body, 6, 1.0);
 			
 			JSM.GenerateRandomMaterials (body, materials);
-			var i, material;
-			for (i = 0; i < materials.Count (); i++) {
-				material = materials.GetMaterial (i);
-				material.singleSided = true;
+			//var i, material;
+			//for (i = 0; i < materials.Count (); i++) {
+			//	material = materials.GetMaterial (i);
+			//	material.singleSided = true;
+			//}
+			
+			if (!JSM.IsSolidBody (body)) {
+				alert ('body is not solid');
+			}
+			if (!JSM.CheckSolidBody (body)) {
+				alert ('invalid solid body');
 			}
 			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 			viewer.AddBody (renderBody);
