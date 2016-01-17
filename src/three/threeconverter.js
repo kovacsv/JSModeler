@@ -107,14 +107,12 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 
 	var theConversionData = {
 		textureLoadedCallback : null,
-		hasConvexPolygons : false,
-		doubleSided : true
+		hasConvexPolygons : false
 	};
 
 	if (conversionData !== undefined && conversionData !== null) {
 		theConversionData.textureLoadedCallback = JSM.ValueOrDefault (conversionData.textureLoadedCallback, theConversionData.textureLoadedCallback);
 		theConversionData.hasConvexPolygons = JSM.ValueOrDefault (conversionData.hasConvexPolygons, theConversionData.hasConvexPolygons);
-		theConversionData.doubleSided = JSM.ValueOrDefault (conversionData.doubleSided, theConversionData.doubleSided);
 	}
 	
 	var explodeData = {
