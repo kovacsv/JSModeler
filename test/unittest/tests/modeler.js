@@ -47,6 +47,28 @@ generalSuite.AddTest ('BodyTest', function (test)
 	test.Assert (body.VertexCount () == 0 && body.PolygonCount () == 0);
 });
 
+generalSuite.AddTest ('BodyPolygonTest', function (test)
+{
+	var body = new JSM.Body ();
+	test.Assert (body.VertexCount () == 0 && body.PolygonCount () == 0);
+	
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2]));
+
+	var polygon = body.GetPolygon (0);
+	test.Assert (body.VertexCount () == 4 && body.PolygonCount () == 1);
+	test.Assert (polygon.VertexIndexCount () == 3);
+	
+	polygon.InsertVertexIndex (3, 2);
+	test.Assert (body.VertexCount () == 4 && body.PolygonCount () == 1);
+	test.Assert (polygon.VertexIndexCount () == 4);
+	test.Assert (polygon.GetVertexIndex (2) == 3);
+	test.Assert (polygon.vertices.toString () == [0, 1, 3, 2].toString ());
+});
+
 generalSuite.AddTest ('BodyRemoveTest', function (test)
 {
 	function GenerateTestBody ()

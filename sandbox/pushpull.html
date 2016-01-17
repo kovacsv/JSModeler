@@ -90,36 +90,41 @@
 		{			
 			function DetectVertexSituations (body, polygon, polygonNormal, polygonIndex)
 			{
-				function CanMovePolygonVertex (body, polygonIndex, polygonNormal, vertexNeighbourPolygons)
+				function DetectVertexSituation (body, polygonIndex, polygonNormal, vertexNeighbourPolygons)
 				{
 					// it should detect non perpendicular edges, too
+					var situation = {
+						operation : VertexOperation.Duplicate,
+						perpendicularPolygons : []
+					};
 					if (vertexNeighbourPolygons.length === 1) {
-						return false;
-					}
-					var i, neighbourPolygon, neighbourPolygonNormal;
-					for (i = 0; i < vertexNeighbourPolygons.length; i++) {
-						neighbourPolygon = vertexNeighbourPolygons[i];
-						if (neighbourPolygon == polygonIndex) {
-							continue;
+						return situation;
+					} else {
+						situation.operation = VertexOperation.Move;
+						var i, neighbourPolygon, neighbourPolygonNormal;
+						for (i = 0; i < vertexNeighbourPolygons.length; i++) {
+							neighbourPolygon = vertexNeighbourPolygons[i];
+							if (neighbourPolygon == polygonIndex) {
+								continue;
+							}
+							neighbourPolygonNormal = JSM.CalculateBodyPolygonNormal (body, neighbourPolygon);
+							if (polygonNormal.IsPerpendicularWith (neighbourPolygonNormal)) {
+								situation.perpendicularPolygons.push (neighbourPolygon);
+							} else {
+								situation.operation = VertexOperation.Duplicate;
+							}
 						}
-						neighbourPolygonNormal = JSM.CalculateBodyPolygonNormal (body, neighbourPolygon);
-						if (!polygonNormal.IsPerpendicularWith (neighbourPolygonNormal)) {
-							return false;
-						}
 					}
-					return true;
+					return situation;
 				}			
 			
 				var vertexToPolygon = JSM.CalculateBodyVertexToPolygon (body);
 				var situations = [];
-				var i, vertexNeighbourPolygons;
+				var i, situation, vertexNeighbourPolygons;
 				for (i = 0; i < polygon.VertexIndexCount (); i++) {
 					vertexNeighbourPolygons = vertexToPolygon[polygon.GetVertexIndex (i)];
-					if (CanMovePolygonVertex (body, polygonIndex, polygonNormal, vertexNeighbourPolygons)) {
-						situations.push (VertexSituation.Move);
-					} else {
-						situations.push (VertexSituation.Duplicate);
-					}
+					situation = DetectVertexSituation (body, polygonIndex, polygonNormal, vertexNeighbourPolygons);
+					situations.push (situation);
 				}
 				return situations;
 			}
@@ -152,7 +157,7 @@
 				var vertexOldNewIndices = [];
 				for (i = 0; i < polygon.VertexIndexCount (); i++) {
 					situation = situations[i];
-					if (situation == VertexSituation.Move) {
+					if (situation.operation == VertexOperation.Move) {
 						oldNewIndices = MoveVertex (body, polygon, i, polygonNormal, distance);
 					} else {
 						oldNewIndices = DuplicateVertex (body, polygon, i, polygonNormal, distance);
@@ -162,26 +167,57 @@
 				return vertexOldNewIndices;
 			}
 			
-			function CreateSidePolygons (body, polygon, situations, vertexOldNewIndices)
+			function FinalizePolygons (body, polygon, situations, vertexOldNewIndices)
 			{
-				// it should reindex neighbour polygons in case of duplication
+				function InsertVertexToPolygons (body, polygonIndices, aVertexIndex, bVertexIndex, newVertexIndex)
+				{
+					function InsertVertexToPolygon (body, polygonIndex, aVertexIndex, bVertexIndex, newVertexIndex)
+					{
+						var polygon = body.GetPolygon (polygonIndex);
+						var vertexCount = polygon.VertexIndexCount ();
+						var i, currIndex, nextIndex, currVertexIndex, nextVertexIndex;
+						for (i = 0; i < vertexCount; i++) {
+							currIndex = i;
+							nextIndex = JSM.NextIndex (i, vertexCount);
+							currVertexIndex = polygon.GetVertexIndex (currIndex);
+							nextVertexIndex = polygon.GetVertexIndex (nextIndex);
+							if ((currVertexIndex == aVertexIndex && nextVertexIndex == bVertexIndex) ||
+								(currVertexIndex == bVertexIndex && nextVertexIndex == aVertexIndex))
+							{
+								polygon.InsertVertexIndex (newVertexIndex, nextIndex);
+							}
+						}
+					}
+
+					var i, polygonIndex;
+					for (i = 0; i < polygonIndices.length; i++) {
+						polygonIndex = polygonIndices[i];
+						InsertVertexToPolygon (body, polygonIndex, aVertexIndex, bVertexIndex, newVertexIndex);
+					}
+				}
+
 				var i, currIndex, nextIndex;
 				var currSituation, nextSituation, currIndices, nextIndices, sides;
-				for (i = 0; i < polygon.VertexIndexCount (); i++) {
+				var vertexCount = polygon.VertexIndexCount ();
+				for (i = 0; i < vertexCount; i++) {
 					currIndex = i;
-					nextIndex = JSM.NextIndex (i, polygon.VertexIndexCount ());
+					nextIndex = JSM.NextIndex (i, vertexCount);
 					currSituation = situations[currIndex];
 					nextSituation = situations[nextIndex];
-					if (currSituation == VertexSituation.Duplicate && nextSituation == VertexSituation.Duplicate) {
-						currIndices = vertexOldNewIndices[currIndex];
-						nextIndices = vertexOldNewIndices[nextIndex];
+					currIndices = vertexOldNewIndices[currIndex];
+					nextIndices = vertexOldNewIndices[nextIndex];
+					if (currSituation.operation == VertexOperation.Duplicate && nextSituation.operation == VertexOperation.Duplicate) {
 						sides = [currIndices.oldIndex, nextIndices.oldIndex, nextIndices.newIndex, currIndices.newIndex];
 						body.AddPolygon (new JSM.BodyPolygon (sides));
+					} else if (currSituation.operation == VertexOperation.Duplicate && nextSituation.operation == VertexOperation.Move) {
+						InsertVertexToPolygons (body, currSituation.perpendicularPolygons, currIndices.oldIndex, nextIndices.oldIndex, currIndices.newIndex);
+					} else if (currSituation.operation == VertexOperation.Move && nextSituation.operation == VertexOperation.Duplicate) {
+						InsertVertexToPolygons (body, nextSituation.perpendicularPolygons, nextIndices.oldIndex, currIndices.oldIndex, nextIndices.newIndex);
 					}
 				}
 			}
 
-			var VertexSituation = {
+			var VertexOperation = {
 				Move : 0,
 				Duplicate : 1
 			};
@@ -190,7 +226,7 @@
 			var polygonNormal = JSM.CalculateBodyPolygonNormal (body, polygonIndex);
 			var situations = DetectVertexSituations (body, polygon, polygonNormal, polygonIndex);
 			var vertexOldNewIndices = MoveVertices (body, polygon, polygonNormal, distance, situations);
-			CreateSidePolygons (body, polygon, situations, vertexOldNewIndices);
+			FinalizePolygons (body, polygon, situations, vertexOldNewIndices);
 		};
 	
 		function Load ()
@@ -229,14 +265,16 @@
 			JSM.AddPolygonToBody (body, [4, 5, 8, 9]);
 			JSM.AddPolygonToBody (body, [5, 6, 7, 8]);
 			
-			JSM.PushPullBodyPolygon (body, 6, 1.0);
+			JSM.PushPullBodyPolygon (body, 6, 0.5);
+			JSM.PushPullBodyPolygon (body, 6, 0.5);
+			JSM.PushPullBodyPolygon (body, 5, -0.5);
 			
 			JSM.GenerateRandomMaterials (body, materials);
-			//var i, material;
-			//for (i = 0; i < materials.Count (); i++) {
-			//	material = materials.GetMaterial (i);
-			//	material.singleSided = true;
-			//}
+			var i, material;
+			for (i = 0; i < materials.Count (); i++) {
+				material = materials.GetMaterial (i);
+				material.singleSided = true;
+			}
 			
 			if (!JSM.IsSolidBody (body)) {
 				alert ('body is not solid');

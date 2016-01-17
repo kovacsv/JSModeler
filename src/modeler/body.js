@@ -189,6 +189,18 @@ JSM.BodyPolygon.prototype.AddVertexIndex = function (index)
 };
 
 /**
+* Function: BodyPolygon.InsertVertexIndex
+* Description: Inserts a vertex index to given index in the polygon.
+* Parameters:
+*	vertexIndex {integer} the vertex index
+*	polygonIndex {integer} the index in the polygon
+*/
+JSM.BodyPolygon.prototype.InsertVertexIndex = function (vertexIndex, polygonIndex)
+{
+	this.vertices.splice (polygonIndex, 0, vertexIndex);
+};
+
+/**
 * Function: BodyPolygon.GetVertexIndex
 * Description: Returns the body vertex index at the given polygon vertex index.
 * Parameters:
