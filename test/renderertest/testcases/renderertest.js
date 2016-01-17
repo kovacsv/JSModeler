@@ -385,6 +385,44 @@ function AddRendererTests (canvasTester, viewer)
 	}, 'references/renderer/model_more_materials.png');			
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var model = new JSM.Model ();
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, singleSided : true}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+
+		var body1 = JSM.GenerateCylinder (0.5, 0.5, 20, false, false);
+		var body2 = JSM.GenerateCylinder (0.5, 0.5, 20, false, false);
+		body1.SetPolygonsMaterialIndex (0);
+		body2.SetPolygonsMaterialIndex (1);
+
+		OffsetTwoBodies (body1, body2, 0.6, 0.0, 0.0);
+
+		model.AddBody (body1);
+		model.AddBody (body2);
+
+		RenderModel (viewer, model, materials, renderFinished);
+	}, 'references/renderer/single_sided_material.png');		
+	
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var model = new JSM.Model ();
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, singleSided : true, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+
+		var body1 = JSM.GenerateCylinder (0.5, 0.5, 20, false, false);
+		var body2 = JSM.GenerateCylinder (0.5, 0.5, 20, false, false);
+		body1.SetPolygonsMaterialIndex (0);
+		body2.SetPolygonsMaterialIndex (1);
+
+		OffsetTwoBodies (body1, body2, 0.6, 0.0, 0.0);
+
+		model.AddBody (body1);
+		model.AddBody (body2);
+
+		RenderModelAndWait (viewer, model, materials, renderFinished);
+	}, 'references/renderer/single_sided_textured_material.png');	
+
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var body = new JSM.Body ();
 		body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
 		body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));

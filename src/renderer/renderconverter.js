@@ -5,7 +5,18 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 		var renderAmbient = JSM.HexColorToNormalizedRGBComponents (material.ambient);
 		var renderDiffuse = JSM.HexColorToNormalizedRGBComponents (material.diffuse);
 		var renderSpecular = JSM.HexColorToNormalizedRGBComponents (material.specular);
-		var renderMaterial = new JSM.RenderMaterial (materialType, renderAmbient, renderDiffuse, renderSpecular, material.shininess, material.opacity, material.texture, material.textureWidth, material.textureHeight);
+		var renderMaterial = new JSM.RenderMaterial (
+			materialType,
+			renderAmbient,
+			renderDiffuse,
+			renderSpecular,
+			material.shininess,
+			material.opacity,
+			material.singleSided,
+			material.texture,
+			material.textureWidth,
+			material.textureHeight
+		);
 		return renderMaterial;
 	}
 	

@@ -20,8 +20,8 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 			specular : specular,
 			shininess : shininess
 		});
-		
-		if (theConversionData.doubleSided) {
+
+		if (!material.singleSided) {
 			threeMaterial.side = THREE.DoubleSide;
 		}
 		

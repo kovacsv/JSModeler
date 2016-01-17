@@ -13,7 +13,7 @@ JSM.RenderMaterialFlags = {
 	Transparent : 8
 };
 
-JSM.RenderMaterial = function (type, ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight)
+JSM.RenderMaterial = function (type, ambient, diffuse, specular, shininess, opacity, singleSided, texture, textureWidth, textureHeight)
 {
 	this.type = type;
 	this.ambient = ambient;
@@ -21,6 +21,7 @@ JSM.RenderMaterial = function (type, ambient, diffuse, specular, shininess, opac
 	this.specular = specular;
 	this.shininess = shininess;
 	this.opacity = opacity;
+	this.singleSided = singleSided;
 	this.texture = texture;
 	this.textureWidth = textureWidth;
 	this.textureHeight = textureHeight;

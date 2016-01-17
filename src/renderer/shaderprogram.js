@@ -11,6 +11,7 @@ JSM.ShaderProgram = function (context)
 	this.shaders = null;
 	this.currentShader = null;
 	this.currentType = null;
+	this.cullEnabled = null;
 };
 
 JSM.ShaderProgram.prototype.Init = function ()
@@ -283,6 +284,7 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 		return false;
 	}
 
+	this.cullEnabled = false;
 	return true;
 };
 
@@ -335,10 +337,22 @@ JSM.ShaderProgram.prototype.SetParameters = function (lights, viewMatrix, projec
 	}
 };
 
+JSM.ShaderProgram.prototype.SetCullEnabled = function (enable)
+{
+	if (enable && !this.cullEnabled) {
+		this.context.enable (this.context.CULL_FACE);
+		this.cullEnabled = true;
+	} else if (!enable && this.cullEnabled) {
+		this.context.disable (this.context.CULL_FACE);
+		this.cullEnabled = false;
+	}
+};
+
 JSM.ShaderProgram.prototype.DrawArrays = function (material, matrix, vertexBuffer, normalBuffer, uvBuffer)
 {
 	var context = this.context;
 	var shader = this.currentShader;
+	this.SetCullEnabled (material.singleSided);
 	
 	if (this.currentType == JSM.ShaderType.Triangle || this.currentType == JSM.ShaderType.TexturedTriangle) {
 		context.uniform3f (shader.materialUniforms.ambientColor, material.ambient[0], material.ambient[1], material.ambient[2]);
