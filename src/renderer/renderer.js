@@ -58,13 +58,6 @@ JSM.Renderer.prototype.InitContext = function (canvas)
 		return false;
 	}
 
-	this.context.enable (this.context.DEPTH_TEST);
-	this.context.depthFunc (this.context.LEQUAL);
-	
-	this.context.enable (this.context.BLEND);
-	this.context.blendEquation (this.context.FUNC_ADD);
-	this.context.blendFunc (this.context.SRC_ALPHA, this.context.ONE_MINUS_SRC_ALPHA);
-	
 	return true;
 };
 
@@ -127,61 +120,10 @@ JSM.Renderer.prototype.GetLight = function (index)
 
 JSM.Renderer.prototype.AddBody = function (renderBody, textureLoaded)
 {
-	function CompileMaterial (material, context, textureLoaded)
-	{
-		if (material.texture !== null) {
-			var textureBuffer = context.createTexture ();
-			var textureImage = new Image ();
-			textureImage.src = material.texture;
-			textureImage.onload = function () {
-				var resizedImage = JSM.ResizeImageToPowerOfTwoSides (textureImage);
-				context.bindTexture (context.TEXTURE_2D, textureBuffer);
-				context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.LINEAR);
-				context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR_MIPMAP_LINEAR);
-				context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, resizedImage);
-				context.generateMipmap (context.TEXTURE_2D);
-				context.bindTexture (context.TEXTURE_2D, null);
-				if (textureLoaded !== undefined && textureLoaded !== null) {
-					textureLoaded ();
-				}
-			};
-			material.SetBuffers (textureBuffer, textureImage);
-		}
-	}
-	
-	function CompileMesh (mesh, context)
-	{
-		var vertexBuffer = context.createBuffer ();
-		context.bindBuffer (context.ARRAY_BUFFER, vertexBuffer);
-		context.bufferData (context.ARRAY_BUFFER, mesh.GetVertexArray (), context.STATIC_DRAW);
-		vertexBuffer.itemSize = 3;
-		vertexBuffer.numItems = mesh.VertexCount ();
-
-		var normalBuffer = null;
-		if (mesh.HasNormalArray ()) {
-			normalBuffer = context.createBuffer ();
-			context.bindBuffer (context.ARRAY_BUFFER, normalBuffer);
-			context.bufferData (context.ARRAY_BUFFER, mesh.GetNormalArray (), context.STATIC_DRAW);
-			normalBuffer.itemSize = 3;
-			normalBuffer.numItems = mesh.NormalCount ();
-		}
-
-		var uvBuffer = null;
-		if (mesh.HasUVArray ()) {
-			uvBuffer = context.createBuffer ();
-			context.bindBuffer (context.ARRAY_BUFFER, uvBuffer);
-			context.bufferData (context.ARRAY_BUFFER, mesh.GetUVArray (), context.STATIC_DRAW);
-			uvBuffer.itemSize = 2;
-			uvBuffer.numItems = mesh.UVCount ();
-		}
-		
-		mesh.SetBuffers (vertexBuffer, normalBuffer, uvBuffer);
-	}
-
-	var renderer = this;
+	var shader = this.shader;
 	renderBody.EnumerateMeshes (function (mesh) {
-		CompileMaterial (mesh.GetMaterial (), renderer.context, textureLoaded);
-		CompileMesh (mesh, renderer.context);
+		shader.CompileMaterial (mesh.GetMaterial (), textureLoaded);
+		shader.CompileMesh (mesh);
 	});
 	this.bodies.push (renderBody);
 };
