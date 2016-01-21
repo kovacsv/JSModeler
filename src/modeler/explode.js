@@ -84,6 +84,7 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 				var polygon = body.GetPolygon (index);
 				var count = polygon.VertexIndexCount ();
 				if (count < 3) {
+					JSM.Message ('Invalid polygon found.');
 					return;
 				}
 				
@@ -148,6 +149,8 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 							
 							CreateTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3);
 						}
+					} else {
+						JSM.Message ('Triangulation failed.');
 					}
 				}
 			}

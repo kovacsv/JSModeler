@@ -114,3 +114,14 @@ JSM.CopyObjectProperties = function (source, target, overwrite)
 		}
 	}
 };
+
+/**
+* Function: Message
+* Description: Writes a message to the console.
+* Parameters:
+*	message {string} the message
+*/
+JSM.Message = function (message)
+{
+	console.log ('JSModeler: ' + message);
+};

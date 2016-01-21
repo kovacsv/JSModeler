@@ -3,3 +3,4 @@ var SVGPathSeg = {};
 var SVGRectElement = {};
 var SVGPolygonElement = {};
 var SVGSVGElement = {};
+var console = {};

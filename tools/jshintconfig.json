@@ -14,6 +14,7 @@
 	"globals" : {
 		"JSM" : true,
 		"THREE" : false,
+		"console" : false,
 		"window" : false,
 		"document" : false,
 		"setTimeout" : false,
