@@ -72,10 +72,11 @@ def CleanUp (actPath, diffPath, htmlPath):
 	if os.path.exists (htmlPath):
 		os.remove (htmlPath)
 
-def RunTests (actPath):
-	rootPath = os.path.abspath (os.path.join ('..', '..'))
+def RunTests (currentDirPath, resultFolderPath):
+	rootPath = os.path.abspath (os.path.join (currentDirPath, '..', '..'))
 	rootUrl = 'file:///' + rootPath.replace ('\\', '/')
-	proc = subprocess.Popen (['slimerjs', 'slimerjstest.js', rootUrl, actPath], shell=True)
+	scriptPath = os.path.join (currentDirPath, 'slimerjstest.js');
+	proc = subprocess.Popen (['slimerjs', scriptPath, rootUrl, resultFolderPath], shell=True)
 	out, err = proc.communicate ()
 
 def Evaluate (refPath, actPath, diffPath, htmlPath):
@@ -184,8 +185,7 @@ def Evaluate (refPath, actPath, diffPath, htmlPath):
 		webbrowser.open (htmlPath)
 
 def Main ():
-	currentPath = os.path.dirname (os.path.abspath (__file__))	
-	os.chdir (currentPath)
+	currentDirPath = os.path.dirname (os.path.abspath (__file__))	
 	slimerJSVersion = 'SlimerJS 0.9.6'
 	if not CheckSlimerJSVersion (slimerJSVersion):
 		print 'Error: ' + slimerJSVersion + ' is required.'
@@ -204,7 +204,7 @@ def Main ():
 	CleanUp (actPath, diffPath, htmlPath)
 	
 	print '-- run tests ---'
-	RunTests (actPath)
+	RunTests (currentDirPath, actPath)
 	
 	print '-- evaluate results ---'
 	Evaluate (refPath, actPath, diffPath, htmlPath)
