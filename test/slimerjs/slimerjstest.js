@@ -546,7 +546,7 @@ suite.AddTest ('CSGExample', function (test, onReady) {
 	});
 });
 
-suite.AddTest ('TocTacToe', function (test, onReady) {
+suite.AddTest ('TicTacToe', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/examples/tictactoe.html#norandom', function () {
 		test.Wait (1000);
 		test.GenerateImage ('OnLoad');
