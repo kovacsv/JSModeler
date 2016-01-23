@@ -241,13 +241,18 @@
 
 				var points = [];
 				var colors = [];
-				var i, x, y, z;
-				for (i = 0;  i < 10000; i++) {
-					x = Math.random ();
-					y = Math.random ();
-					z = Math.random ();
-					points.push (x - 0.5, y - 0.5, z - 0.5);
-					colors.push (x, y, z);
+				var i, j, k, x, y, z;
+				var pointCount = 20;
+				for (i = 0;  i < pointCount; i++) {
+					for (j = 0;  j < pointCount; j++) {
+						for (k = 0;  k < pointCount; k++) {
+							x = i / pointCount;
+							y = j / pointCount;
+							z = k / pointCount;
+							points.push (x - 0.5, y - 0.5, z - 0.5);
+							colors.push (x, y, z);
+						}
+					}
 				}
 				viewer.AddPoints (points, colors);
 
@@ -367,6 +372,7 @@
 		function FitInWindow ()
 		{
 			viewer.FitInWindow ();
+			viewer.Draw ();
 		}
 		
 		function Load ()

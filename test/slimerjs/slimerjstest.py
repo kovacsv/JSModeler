@@ -73,7 +73,9 @@ def CleanUp (actPath, diffPath, htmlPath):
 		os.remove (htmlPath)
 
 def RunTests (actPath):
-	proc = subprocess.Popen (['slimerjs', 'slimerjstest.js', actPath], shell=True)
+	rootPath = os.path.abspath (os.path.join ('..', '..'))
+	rootUrl = 'file:///' + rootPath.replace ('\\', '/')
+	proc = subprocess.Popen (['slimerjs', 'slimerjstest.js', rootUrl, actPath], shell=True)
 	out, err = proc.communicate ()
 
 def Evaluate (refPath, actPath, diffPath, htmlPath):
