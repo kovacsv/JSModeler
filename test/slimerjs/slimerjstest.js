@@ -126,7 +126,7 @@ Suite.prototype.RunNextTest = function ()
 }
 
 if (phantom.args.length < 1) {
-	console.log ('usage: slimerjs jsmodelertest.js <rootUrl> <resultFolderPath>');
+	console.log ('usage: slimerjs slimerjstest.js <rootUrl> <resultFolderPath>');
 	phantom.exit ();
 }
 
