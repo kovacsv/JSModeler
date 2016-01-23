@@ -62,9 +62,9 @@ Test.prototype.WriteToForm = function (x, y, text, wait)
 	this.WriteString (text, wait);
 };
 
-Test.prototype.Wait = function (time)
+Test.prototype.Wait = function (wait)
 {
-	slimer.wait (time || 100);
+	slimer.wait (wait || 100);
 };
 
 Test.prototype.GenerateImage = function (stepName, number)
@@ -216,6 +216,43 @@ suite.AddTest ('Demo', function (test, onReady) {
 		test.Click (782, 574); // ok
 		test.GenerateImage ('ModifiedLineShell');
 		
+		onReady ();
+	});
+});
+
+suite.AddTest ('Viewer', function (test, onReady) {
+	test.Open ('../../test/viewertest/viewertest.html', function () {
+		var i;
+		for (i = 0; i < 42; i++) {
+			test.GenerateImage ('Step', i + 1);
+			test.Click (100, 22);
+			test.Click (100, 100);
+		}
+		onReady ();
+	});
+});
+
+suite.AddTest ('CSG', function (test, onReady) {
+	test.Open ('../../test/viewertest/csgtest.html', function () {
+		var i;
+		for (i = 0; i < 30; i++) {
+			test.GenerateImage ('Step', i + 1);
+			test.Click (100, 22);
+			test.Click (100, 100);
+		}
+		onReady ();
+	});
+});
+
+suite.AddTest ('Texture', function (test, onReady) {
+	test.Open ('../../test/viewertest/texturetest.html', function () {
+		test.Wait (1000);
+		var i;
+		for (i = 0; i < 12; i++) {
+			test.GenerateImage ('Step', i + 1);
+			test.Click (100, 22);
+			test.Click (100, 100);
+		}
 		onReady ();
 	});
 });
