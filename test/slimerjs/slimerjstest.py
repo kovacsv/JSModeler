@@ -64,11 +64,13 @@ def CheckSlimerJSVersion (versionString):
 		return True
 	return False
 
-def CleanUp (actPath, diffPath):
+def CleanUp (actPath, diffPath, htmlPath):
 	if os.path.exists (actPath):
 		shutil.rmtree (actPath)
 	if os.path.exists (diffPath):
 		shutil.rmtree (diffPath)
+	if os.path.exists (htmlPath):
+		os.remove (htmlPath)
 
 def RunTests (actPath):
 	proc = subprocess.Popen (['slimerjs', 'slimerjstest.js', actPath], shell=True)
@@ -103,24 +105,23 @@ def Evaluate (refPath, actPath, diffPath, htmlPath):
 			diffImage = Image.new ('RGBA', (width, height))
 			diffData = diffImage.load ()
 			
-			equalImageData = True
+			diffCount = 0
 			for i in range (0, width):
 				for j in range (0, height):
 					if refData[i, j] != actData[i, j]:
-						equalImageData = False
 						diffData[i, j] = (255, 0, 0)
+						diffCount += 1
 					else:
 						diffData[i, j] = (255, 255, 255)
-			if not equalImageData:
+			if diffCount > 0:
 				diffDir = os.path.dirname (diffImagePath)
 				if not os.path.exists (diffDir):
 					os.mkdir (diffDir)
 				diffImage.save (diffImagePath);			
 				print 'difference found for ' + fileName
 				diffText = GetLink ('image', htmlDir, diffImagePath)
-				resultText = GetSpan ('failed', 'failed')
+				resultText = GetSpan ('failed (' + str (diffCount) + ')', 'failed')
 			else:
-				print 'equal reference for ' + fileName
 				resultText = GetSpan ('succeeded', 'succeeded')
 				equalImages = True
 		return diffText, resultText, equalImages
@@ -197,8 +198,13 @@ def Main ():
 	diffPath = os.path.join (imagesPath, 'diff')
 	htmlPath = os.path.join (imagesPath, 'result.html')
 	
-	CleanUp (actPath, diffPath)
+	print '-- clean up ---'
+	CleanUp (actPath, diffPath, htmlPath)
+	
+	print '-- run tests ---'
 	RunTests (actPath)
+	
+	print '-- evaluate results ---'
 	Evaluate (refPath, actPath, diffPath, htmlPath)
 	
 	return 0

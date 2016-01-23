@@ -134,16 +134,20 @@ var suite = new Suite (phantom.args[0]);
 
 suite.AddTest ('Demo', function (test, onReady) {
 	test.Open ('../../documentation/demo/demonstration.html', function () {
-		var shapeCoords = [114, 132, 152, 174, 192, 212, 232, 254, 272, 318, 338, 358, 376, 398, 416, 462, 482, 528];
 		var buttonsX = 246;
 		var settingsCoord = 16;
 		var subdivisionCoord = 106;
 		var shapesX = 34;
 		var i;
+
+		// click on all shapes
+		var shapeCoords = [114, 132, 152, 174, 192, 212, 232, 254, 272, 318, 338, 358, 376, 398, 416, 462, 482, 528];
 		for (i = 0; i < shapeCoords.length; i++) {
 			test.Click (shapesX, shapeCoords[i]);
 			test.GenerateImage ('Shape', i + 1);
 		}
+		
+		// switch to cube
 		test.Click (shapesX, 152);
 		test.Click (buttonsX, settingsCoord);
 		test.GenerateImage ('CubeSettings');
@@ -157,6 +161,7 @@ suite.AddTest ('Demo', function (test, onReady) {
 			test.GenerateImage ('SubdividedCube', i + 1);
 		}
 		
+		// switch to prism
 		test.Click (shapesX, 318);	
 		test.Click (buttonsX, 66);
 		test.GenerateImage ('PrismInfo');
@@ -176,7 +181,7 @@ suite.AddTest ('Demo', function (test, onReady) {
 		test.Click (buttonsX, settingsCoord);
 		test.GenerateImage ('PrismSettings', 1);
 		
-		var shapeCoords = [
+		var polygonCoords = [
 			[310, 478],
 			[278, 310],
 			[433, 308],
@@ -184,34 +189,36 @@ suite.AddTest ('Demo', function (test, onReady) {
 			[369, 385]
 		];
 		
-		for (i = 0; i < shapeCoords.length; i++) {
-			test.MoveAndClick (shapeCoords[i][0], shapeCoords[i][1]);
+		for (i = 0; i < polygonCoords.length; i++) {
+			test.MoveAndClick (polygonCoords[i][0], polygonCoords[i][1]);
 		}
-		test.MoveAndClick (shapeCoords[0][0], shapeCoords[0][1]);
+		test.MoveAndClick (polygonCoords[0][0], polygonCoords[0][1]);
 		test.GenerateImage ('PrismSettings', 2);
 		test.Click (782, 574); // ok
 		test.GenerateImage ('ModifiedPrism');
 		
+		// switch to prism shell
 		test.Click (shapesX, 338);
 		test.Click (buttonsX, settingsCoord);
 		test.GenerateImage ('PrismShellSettings', 1);
 		
-		for (i = 0; i < shapeCoords.length; i++) {
-			test.MoveAndClick (shapeCoords[i][0], shapeCoords[i][1]);
+		for (i = 0; i < polygonCoords.length; i++) {
+			test.MoveAndClick (polygonCoords[i][0], polygonCoords[i][1]);
 		}
-		test.MoveAndClick (shapeCoords[0][0], shapeCoords[0][1]);
+		test.MoveAndClick (polygonCoords[0][0], polygonCoords[0][1]);
 		test.GenerateImage ('PrismShellSettings', 2);
 		test.Click (782, 574); // ok
 		test.GenerateImage ('ModifiedPrismShell');
 
+		// switch to line sell
 		test.Click (shapesX, 358);
 		test.Click (buttonsX, settingsCoord);
 		test.GenerateImage ('LineShellSettings', 1);
 		
-		for (i = 0; i < shapeCoords.length; i++) {
-			test.MoveAndClick (shapeCoords[i][0], shapeCoords[i][1]);
+		for (i = 0; i < polygonCoords.length; i++) {
+			test.MoveAndClick (polygonCoords[i][0], polygonCoords[i][1]);
 		}
-		test.MoveAndClick (shapeCoords[shapeCoords.length - 1][0], shapeCoords[shapeCoords.length - 1][1]);
+		test.MoveAndClick (polygonCoords[polygonCoords.length - 1][0], polygonCoords[polygonCoords.length - 1][1]);
 		test.GenerateImage ('LineShellSettings', 2);
 		test.Click (782, 574); // ok
 		test.GenerateImage ('ModifiedLineShell');
