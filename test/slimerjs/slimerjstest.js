@@ -13,12 +13,26 @@ Test.prototype.Open = function (url, onReady)
 	function DisableFocusRectangle (page)
 	{
 		var links = page.evaluate (function () {
-			return document.getElementsByTagName ('a');
+			function AppendRelevantElements (tagName, elements)
+			{
+				var currentElements = document.getElementsByTagName (tagName);
+				var i;
+				for (i = 0; i < currentElements.length; i++) {
+					elements.push (currentElements[i]);
+				}
+			}
+
+			var elements = [];
+			AppendRelevantElements ('a', elements);
+			AppendRelevantElements ('input', elements);
+			return elements;
 		});
+		
 		var i, link;
+		console.log (links.length);
 		for (i = 0; i < links.length; i++) {
 			link = links[i];
-			link.style.outline = '0';
+			link.style.outline = 'none';
 		}
 	}	
 	
@@ -437,13 +451,13 @@ suite.AddTest ('Deform', function (test, onReady) {
 		test.GenerateImage ('MoveVertex', 1);
 		
 		test.WriteToForm (80, 146, '50');
+		test.Click (80, 300);
 		test.DragDrop (542, 378, 542, 538);
 		test.GenerateImage ('MoveVertex', 2);
 
 		onReady ();
 	});
 });
-
 
 suite.AddTest ('SVGTo3DExample', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/examples/svgto3d.html', function () {
