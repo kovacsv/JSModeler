@@ -1,149 +1,6 @@
-var fs = require ('fs');
-var path = require ('path');
+var Suite = require ('framework/testsuite');
 
-var Test = function (suite, name, callback)
-{
-	this.suite = suite;
-	this.name = name;
-	this.callback = callback;
-};
-
-Test.prototype.Open = function (url, onReady)
-{
-	function DisableFocusRectangle (page)
-	{
-		var links = page.evaluate (function () {
-			return document.getElementsByTagName ('a');
-		});
-		
-		var i, link;
-		for (i = 0; i < links.length; i++) {
-			link = links[i];
-			link.style.outline = 'none';
-		}
-	}	
-	
-	var myThis = this;
-	this.suite.page.open (url, function () {
-		myThis.Wait (1000);
-		DisableFocusRectangle (myThis.suite.page);
-		onReady ();
-	});
-};
-
-Test.prototype.Run = function (onReady)
-{
-	this.callback (this, onReady);
-};
-
-Test.prototype.Click = function (x, y, wait)
-{
-	this.suite.page.sendEvent ('click', x, y, 'left', 0);
-	this.Wait (wait);
-};
-
-Test.prototype.Move = function (x, y, wait)
-{
-	this.suite.page.sendEvent ('mousemove', x, y, null, 0);
-	this.Wait (wait);
-};
-
-Test.prototype.MoveAndClick = function (x, y, wait)
-{
-	this.Move (x, y, wait);
-	this.Click (x, y, wait);
-};
-
-Test.prototype.DragDrop = function (fromX, fromY, toX, toY, wait)
-{
-	this.suite.page.sendEvent ('mousedown', fromX, fromY, 'left', 0);
-	this.Wait (wait);
-	this.suite.page.sendEvent ('mousemove', toX, toY, 'left', 0);
-	this.Wait (wait);
-	this.suite.page.sendEvent ('mouseup', toX, toY, 'left', 0);
-	this.Wait (wait);
-};
-
-Test.prototype.WriteString = function (text, wait)
-{
-	this.suite.page.sendEvent ('keypress', text);
-	this.Wait (wait);
-};
-
-Test.prototype.WriteToForm = function (x, y, text, wait)
-{
-	this.Click (x, y, wait);
-
-	var mod = this.suite.page.event.modifier.ctrl;
-	this.suite.page.sendEvent ('keypress', this.suite.page.event.key.A, null, null, mod);	
-
-	this.WriteString (text, wait);
-};
-
-Test.prototype.Wait = function (wait)
-{
-	slimer.wait (wait || 100);
-};
-
-Test.prototype.GenerateImage = function (stepName, number)
-{
-	var fileName = this.name + '_' + stepName;
-	if (number !== undefined && number !== null) {
-		var numberStr = number.toString ();
-		while (numberStr.length < 3) {
-			numberStr = '0' + numberStr;
-		}
-		fileName += '_' + numberStr;
-	}
-	var imagePath = fs.absolute (this.suite.resultFolderPath + '/' + fileName + '.png');
-	console.log ('Generating: ' + fileName);
-	this.suite.page.render (imagePath);
-};
-
-var Suite = function (resultFolderPath)
-{
-	this.resultFolderPath = resultFolderPath;
-	
-	this.page = require ('webpage').create ();;
-	this.page.viewportSize = { width:1024, height:768 };
-	this.onFinished = null;
-
-	this.tests = [];
-	this.current = null;
-};
-
-Suite.prototype.AddTest = function (name, callback)
-{
-	var test = new Test (this, name, callback);
-	this.tests.push (test);	
-}
-
-Suite.prototype.Run = function (onFinished)
-{
-	this.onFinished = onFinished;
-
-	this.current = 0;
-	this.RunCurrentTest ();
-}
-
-Suite.prototype.RunCurrentTest = function ()
-{
-	if (this.current < this.tests.length) {
-		var test = this.tests[this.current];
-		console.log ('Running test: ' + test.name);
-		test.Run (this.RunNextTest.bind (this));
-	} else {
-		this.onFinished ();
-	}
-}
-
-Suite.prototype.RunNextTest = function ()
-{
-	this.current++;
-	this.RunCurrentTest ();
-}
-
-if (phantom.args.length < 1) {
+if (phantom.args.length < 2) {
 	console.log ('usage: slimerjs slimerjstest.js <rootUrl> <resultFolderPath>');
 	phantom.exit ();
 }
@@ -151,10 +8,10 @@ if (phantom.args.length < 1) {
 var rootUrl = phantom.args[0];
 var resultFolder = phantom.args[1];
 
-var suite = new Suite (resultFolder);
+var suite = new Suite.Suite (rootUrl, resultFolder);
 
 suite.AddTest ('Viewer', function (test, onReady) {
-	test.Open (rootUrl + '/test/viewertest/viewertest.html', function () {
+	test.Open ('/test/viewertest/viewertest.html', function () {
 		var i;
 		for (i = 0; i < 42; i++) {
 			test.GenerateImage ('Step', i + 1);
@@ -165,7 +22,7 @@ suite.AddTest ('Viewer', function (test, onReady) {
 });
 
 suite.AddTest ('CSG', function (test, onReady) {
-	test.Open (rootUrl + '/test/viewertest/csgtest.html', function () {
+	test.Open ('/test/viewertest/csgtest.html', function () {
 		var i;
 		for (i = 0; i < 30; i++) {
 			test.GenerateImage ('Step', i + 1);
@@ -176,7 +33,7 @@ suite.AddTest ('CSG', function (test, onReady) {
 });
 
 suite.AddTest ('Texture', function (test, onReady) {
-	test.Open (rootUrl + '/test/viewertest/texturetest.html', function () {
+	test.Open ('/test/viewertest/texturetest.html', function () {
 		var i;
 		for (i = 0; i < 12; i++) {
 			test.GenerateImage ('Step', i + 1);
@@ -187,7 +44,7 @@ suite.AddTest ('Texture', function (test, onReady) {
 });
 
 suite.AddTest ('SVGToModel', function (test, onReady) {
-	test.Open (rootUrl + '/test/viewertest/svgtomodeltest.html', function () {
+	test.Open ('/test/viewertest/svgtomodeltest.html', function () {
 		var i;
 		for (i = 0; i < 12; i++) {
 			test.GenerateImage ('Step', i + 1);
@@ -198,7 +55,7 @@ suite.AddTest ('SVGToModel', function (test, onReady) {
 });
 
 suite.AddTest ('ViewerTypes', function (test, onReady) {
-	test.Open (rootUrl + '/test/viewertest/viewertypes.html', function () {
+	test.Open ('/test/viewertest/viewertypes.html', function () {
 		var y = 22;
 		var xs = [30, 94, 154, 218, 288, 368, 444, 522, 574, 622];
 		var i;
@@ -215,7 +72,7 @@ suite.AddTest ('ViewerTypes', function (test, onReady) {
 });
 
 suite.AddTest ('Import', function (test, onReady) {
-	test.Open (rootUrl + '/test/viewertest/importtest.html', function () {
+	test.Open ('/test/viewertest/importtest.html', function () {
 		var y = 22;
 		var xs = [30, 90, 160, 240, 328, 400, 492, 596, 690, 792];
 		var i;
@@ -228,7 +85,7 @@ suite.AddTest ('Import', function (test, onReady) {
 });
 
 suite.AddTest ('Demo', function (test, onReady) {
-	test.Open (rootUrl + '/documentation/demo/demonstration.html', function () {
+	test.Open ('/documentation/demo/demonstration.html', function () {
 		var buttonsX = 246;
 		var settingsCoord = 16;
 		var subdivisionCoord = 106;
@@ -323,14 +180,14 @@ suite.AddTest ('Demo', function (test, onReady) {
 });
 
 suite.AddTest ('Clock', function (test, onReady) {
-	test.Open (rootUrl + '/documentation/examples/clock.html#fixtime', function () {
+	test.Open ('/documentation/examples/clock.html#fixtime', function () {
 		test.GenerateImage ('FixTime');
 		onReady ();
 	});
 });
 
 suite.AddTest ('Lego', function (test, onReady) {
-	test.Open (rootUrl + '/documentation/examples/legobuilder.html', function () {
+	test.Open ('/documentation/examples/legobuilder.html', function () {
 		var colorsY = 26;
 		var colorsX = [28, 52, 76, 100, 124, 150, 170, 196, 220, 242, 268, 292];
 		
@@ -397,14 +254,14 @@ suite.AddTest ('Lego', function (test, onReady) {
 
 
 suite.AddTest ('Robot', function (test, onReady) {
-	test.Open (rootUrl + '/documentation/examples/robot/robot.html', function () {
+	test.Open ('/documentation/examples/robot/robot.html', function () {
 		test.GenerateImage ('OnLoad');
 		onReady ();
 	});
 });
 
 suite.AddTest ('Bezier', function (test, onReady) {
-	test.Open (rootUrl + '/documentation/examples/bezier.html', function () {
+	test.Open ('/documentation/examples/bezier.html', function () {
 		test.GenerateImage ('OnLoad');
 		
 		test.Click (172, 132);
@@ -431,7 +288,7 @@ suite.AddTest ('Bezier', function (test, onReady) {
 });
 
 suite.AddTest ('Deform', function (test, onReady) {
-	test.Open (rootUrl + '/documentation/examples/deform.html', function () {
+	test.Open ('/documentation/examples/deform.html', function () {
 		test.GenerateImage ('OnLoad');
 
 		test.DragDrop (668, 418, 668, 318);
@@ -447,7 +304,7 @@ suite.AddTest ('Deform', function (test, onReady) {
 });
 
 suite.AddTest ('SVGTo3DExample', function (test, onReady) {
-	test.Open (rootUrl + '/documentation/examples/svgto3d.html', function () {
+	test.Open ('/documentation/examples/svgto3d.html', function () {
 		test.GenerateImage ('OnLoad');
 
 		var y1 = 300;
@@ -470,7 +327,7 @@ suite.AddTest ('SVGTo3DExample', function (test, onReady) {
 });
 
 suite.AddTest ('Solids', function (test, onReady) {
-	test.Open (rootUrl + '/documentation/examples/solids.html', function () {
+	test.Open ('/documentation/examples/solids.html', function () {
 		var shapeX = 56;
 
 		// platonic
@@ -512,7 +369,7 @@ suite.AddTest ('Solids', function (test, onReady) {
 });
 
 suite.AddTest ('CSGExample', function (test, onReady) {
-	test.Open (rootUrl + '/documentation/examples/csg.html', function () {
+	test.Open ('/documentation/examples/csg.html', function () {
 		test.GenerateImage ('OnLoad');
 		var shapesY1 = 116;
 		var shapesY2 = 306;
@@ -552,7 +409,7 @@ suite.AddTest ('CSGExample', function (test, onReady) {
 });
 
 suite.AddTest ('TicTacToe', function (test, onReady) {
-	test.Open (rootUrl + '/documentation/examples/tictactoe.html#norandom', function () {
+	test.Open ('/documentation/examples/tictactoe.html#norandom', function () {
 		test.GenerateImage ('OnLoad');
 
 		test.Click (617, 352);
