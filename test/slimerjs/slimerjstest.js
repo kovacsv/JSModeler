@@ -29,7 +29,6 @@ Test.prototype.Open = function (url, onReady)
 		});
 		
 		var i, link;
-		console.log (links.length);
 		for (i = 0; i < links.length; i++) {
 			link = links[i];
 			link.style.outline = 'none';
