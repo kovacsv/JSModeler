@@ -13,19 +13,7 @@ Test.prototype.Open = function (url, onReady)
 	function DisableFocusRectangle (page)
 	{
 		var links = page.evaluate (function () {
-			function AppendRelevantElements (tagName, elements)
-			{
-				var currentElements = document.getElementsByTagName (tagName);
-				var i;
-				for (i = 0; i < currentElements.length; i++) {
-					elements.push (currentElements[i]);
-				}
-			}
-
-			var elements = [];
-			AppendRelevantElements ('a', elements);
-			AppendRelevantElements ('input', elements);
-			return elements;
+			return document.getElementsByTagName ('a');
 		});
 		
 		var i, link;
@@ -450,7 +438,7 @@ suite.AddTest ('Deform', function (test, onReady) {
 		test.GenerateImage ('MoveVertex', 1);
 		
 		test.WriteToForm (80, 146, '50');
-		test.Click (80, 300);
+		test.Click (80, 300); // click outside to lose focus
 		test.DragDrop (542, 378, 542, 538);
 		test.GenerateImage ('MoveVertex', 2);
 
@@ -494,10 +482,12 @@ suite.AddTest ('Solids', function (test, onReady) {
 		}
 		
 		test.Click (42, 310);
+		test.Click (80, 600); // click outside to lose focus
 		test.GenerateImage ('NoFaces');
 		test.Click (42, 310);
 		
 		test.Click (42, 330);
+		test.Click (80, 600); // click outside to lose focus
 		test.GenerateImage ('NoColors');
 		test.Click (42, 330);
 
