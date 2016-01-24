@@ -66,6 +66,12 @@
 						["overwrite", "boolean", "overwrite existing properties"]
 					]
 				},
+				"Message" : {
+					"description" : "Writes a message to the console.",
+					"parameters" : [
+						["message", "string", "the message"]
+					]
+				},
 				"BubbleSort" : {
 					"description" : "Sorts an array with bubble sort.",
 					"parameters" : [
@@ -3567,6 +3573,13 @@
 							"description" : "Adds a vertex index to the polygon.",
 							"parameters" : [
 								["index", "integer", "the vertex index"]
+							]
+						},
+						"InsertVertexIndex" : {
+							"description" : "Inserts a vertex index to given index in the polygon.",
+							"parameters" : [
+								["vertexIndex", "integer", "the vertex index"],
+								["polygonIndex", "integer", "the index in the polygon"]
 							]
 						},
 						"GetVertexIndex" : {
