@@ -121,7 +121,7 @@ def Evaluate (refPath, actPath, diffPath, htmlPath):
 				if not os.path.exists (diffDir):
 					os.mkdir (diffDir)
 				diffImage.save (diffImagePath);			
-				print 'difference found for ' + fileName
+				print 'difference found (' + str (diffCount) + ') for ' + fileName
 				diffText = GetLink ('image', htmlDir, diffImagePath)
 				resultText = GetSpan ('failed (' + str (diffCount) + ')', 'failed')
 			else:

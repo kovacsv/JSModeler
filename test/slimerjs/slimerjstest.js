@@ -10,7 +10,24 @@ var Test = function (suite, name, callback)
 
 Test.prototype.Open = function (url, onReady)
 {
-	this.suite.page.open (url, onReady);
+	function DisableFocusRectangle (page)
+	{
+		var links = page.evaluate (function () {
+			return document.getElementsByTagName ('a');
+		});
+		var i, link;
+		for (i = 0; i < links.length; i++) {
+			link = links[i];
+			link.style.outline = '0';
+		}
+	}	
+	
+	var myThis = this;
+	this.suite.page.open (url, function () {
+		myThis.Wait (1000);
+		DisableFocusRectangle (myThis.suite.page);
+		onReady ();
+	});
 };
 
 Test.prototype.Run = function (onReady)
@@ -137,7 +154,6 @@ var suite = new Suite (resultFolder);
 
 suite.AddTest ('Viewer', function (test, onReady) {
 	test.Open (rootUrl + '/test/viewertest/viewertest.html', function () {
-		test.Wait (1000);
 		var i;
 		for (i = 0; i < 42; i++) {
 			test.GenerateImage ('Step', i + 1);
@@ -149,7 +165,6 @@ suite.AddTest ('Viewer', function (test, onReady) {
 
 suite.AddTest ('CSG', function (test, onReady) {
 	test.Open (rootUrl + '/test/viewertest/csgtest.html', function () {
-		test.Wait (1000);
 		var i;
 		for (i = 0; i < 30; i++) {
 			test.GenerateImage ('Step', i + 1);
@@ -161,7 +176,6 @@ suite.AddTest ('CSG', function (test, onReady) {
 
 suite.AddTest ('Texture', function (test, onReady) {
 	test.Open (rootUrl + '/test/viewertest/texturetest.html', function () {
-		test.Wait (1000);
 		var i;
 		for (i = 0; i < 12; i++) {
 			test.GenerateImage ('Step', i + 1);
@@ -173,7 +187,6 @@ suite.AddTest ('Texture', function (test, onReady) {
 
 suite.AddTest ('SVGToModel', function (test, onReady) {
 	test.Open (rootUrl + '/test/viewertest/svgtomodeltest.html', function () {
-		test.Wait (1000);
 		var i;
 		for (i = 0; i < 12; i++) {
 			test.GenerateImage ('Step', i + 1);
@@ -185,7 +198,6 @@ suite.AddTest ('SVGToModel', function (test, onReady) {
 
 suite.AddTest ('ViewerTypes', function (test, onReady) {
 	test.Open (rootUrl + '/test/viewertest/viewertypes.html', function () {
-		test.Wait (1000);
 		var y = 22;
 		var xs = [30, 94, 154, 218, 288, 368, 444, 522, 574, 622];
 		var i;
@@ -203,7 +215,6 @@ suite.AddTest ('ViewerTypes', function (test, onReady) {
 
 suite.AddTest ('Import', function (test, onReady) {
 	test.Open (rootUrl + '/test/viewertest/importtest.html', function () {
-		test.Wait (1000);
 		var y = 22;
 		var xs = [30, 90, 160, 240, 328, 400, 492, 596, 690, 792];
 		var i;
@@ -217,7 +228,6 @@ suite.AddTest ('Import', function (test, onReady) {
 
 suite.AddTest ('Demo', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/demo/demonstration.html', function () {
-		test.Wait (1000);
 		var buttonsX = 246;
 		var settingsCoord = 16;
 		var subdivisionCoord = 106;
@@ -313,7 +323,6 @@ suite.AddTest ('Demo', function (test, onReady) {
 
 suite.AddTest ('Clock', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/examples/clock.html#fixtime', function () {
-		test.Wait (1000);
 		test.GenerateImage ('FixTime');
 		onReady ();
 	});
@@ -321,7 +330,6 @@ suite.AddTest ('Clock', function (test, onReady) {
 
 suite.AddTest ('Lego', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/examples/legobuilder.html', function () {
-		test.Wait (1000);
 		var colorsY = 26;
 		var colorsX = [28, 52, 76, 100, 124, 150, 170, 196, 220, 242, 268, 292];
 		
@@ -389,7 +397,6 @@ suite.AddTest ('Lego', function (test, onReady) {
 
 suite.AddTest ('Robot', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/examples/robot/robot.html', function () {
-		test.Wait (1000);
 		test.GenerateImage ('OnLoad');
 		onReady ();
 	});
@@ -397,7 +404,6 @@ suite.AddTest ('Robot', function (test, onReady) {
 
 suite.AddTest ('Bezier', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/examples/bezier.html', function () {
-		test.Wait (1000);
 		test.GenerateImage ('OnLoad');
 		
 		test.Click (172, 132);
@@ -425,7 +431,6 @@ suite.AddTest ('Bezier', function (test, onReady) {
 
 suite.AddTest ('Deform', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/examples/deform.html', function () {
-		test.Wait (1000);
 		test.GenerateImage ('OnLoad');
 
 		test.DragDrop (668, 418, 668, 318);
@@ -442,7 +447,6 @@ suite.AddTest ('Deform', function (test, onReady) {
 
 suite.AddTest ('SVGTo3DExample', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/examples/svgto3d.html', function () {
-		test.Wait (1000);
 		test.GenerateImage ('OnLoad');
 
 		var y1 = 300;
@@ -466,7 +470,6 @@ suite.AddTest ('SVGTo3DExample', function (test, onReady) {
 
 suite.AddTest ('Solids', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/examples/solids.html', function () {
-		test.Wait (1000);
 		var shapeX = 56;
 
 		// platonic
@@ -507,7 +510,6 @@ suite.AddTest ('Solids', function (test, onReady) {
 
 suite.AddTest ('CSGExample', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/examples/csg.html', function () {
-		test.Wait (1000);
 		test.GenerateImage ('OnLoad');
 		var shapesY1 = 116;
 		var shapesY2 = 306;
@@ -548,7 +550,6 @@ suite.AddTest ('CSGExample', function (test, onReady) {
 
 suite.AddTest ('TicTacToe', function (test, onReady) {
 	test.Open (rootUrl + '/documentation/examples/tictactoe.html#norandom', function () {
-		test.Wait (1000);
 		test.GenerateImage ('OnLoad');
 
 		test.Click (617, 352);
