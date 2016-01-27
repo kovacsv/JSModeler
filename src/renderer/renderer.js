@@ -258,5 +258,4 @@ JSM.Renderer.prototype.Render = function (camera)
 	DrawMeshes (this, JSM.RenderMaterialFlags.Line, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon + JSM.RenderMaterialFlags.Transparent, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon + JSM.RenderMaterialFlags.Transparent + JSM.RenderMaterialFlags.Textured, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialFlags.Line + JSM.RenderMaterialFlags.Transparent, viewMatrix, projectionMatrix);
 };

@@ -126,7 +126,6 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'{',
 				'	mediump vec3 ambientColor;',
 				'	mediump vec3 diffuseColor;',
-				'	mediump float opacity;',
 				'};',				
 				
 				'uniform Light uLights[MAX_LIGHTS];',
@@ -139,7 +138,7 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'		ambientComponent += uMaterial.ambientColor * uLights[i].ambientColor;',
 				'		diffuseComponent += uMaterial.diffuseColor * uLights[i].diffuseColor;',
 				'	}',
-				'	gl_FragColor = vec4 (ambientComponent + diffuseComponent, uMaterial.opacity);',
+				'	gl_FragColor = vec4 (ambientComponent + diffuseComponent, 1.0);',
 				'}'
 			].join ('\n');
 		}
@@ -243,7 +242,6 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 			shader.materialUniforms = {
 				ambientColor : context.getUniformLocation (shader, 'uMaterial.ambientColor'),
 				diffuseColor : context.getUniformLocation (shader, 'uMaterial.diffuseColor'),
-				opacity : context.getUniformLocation (shader, 'uMaterial.opacity')
 			};
 
 			shader.vMatrixUniform = context.getUniformLocation (shader, 'uViewMatrix');
@@ -446,7 +444,6 @@ JSM.ShaderProgram.prototype.DrawArrays = function (material, matrix, vertexBuffe
 	} else if (this.currentType == JSM.ShaderType.Line) {
 		context.uniform3f (shader.materialUniforms.ambientColor, material.ambient[0], material.ambient[1], material.ambient[2]);
 		context.uniform3f (shader.materialUniforms.diffuseColor, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
-		context.uniform1f (shader.materialUniforms.opacity, material.opacity);
 		
 		context.uniformMatrix4fv (shader.tMatrixUniform, false, matrix);
 		

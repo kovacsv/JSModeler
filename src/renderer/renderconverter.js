@@ -75,10 +75,6 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 	function OnLineGeometryEnd (material)
 	{
 		var materialType = JSM.RenderMaterialFlags.Line;
-		if (material.opacity < 1.0) {
-			materialType += JSM.RenderMaterialFlags.Transparent;
-		}
-
 		var renderMaterial = MaterialToRenderMaterial (material, materialType);
 		var mesh = new JSM.RenderMesh (renderMaterial);
 		mesh.SetVertexArray (vertices);
