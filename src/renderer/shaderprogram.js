@@ -119,7 +119,6 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'{',
 				'	mediump vec3 ambientColor;',
 				'	mediump vec3 diffuseColor;',
-				'	mediump vec3 specularColor;',
 				'};',
 
 				'struct Material',
