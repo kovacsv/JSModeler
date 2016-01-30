@@ -292,29 +292,6 @@ function AddGeneratorTests (canvasTester, viewer)
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
 		var model = new JSM.Model ();
 
-		var basePolygon = [
-			new JSM.Coord (-0.2, -0.2, 0.0),
-			new JSM.Coord (0.2, -0.2, 0.0),
-			new JSM.Coord (0.2, 0.1, 0.0),
-			new JSM.Coord (0.0, 0.1, 0.0),
-			new JSM.Coord (0.0, 0.0, 0.0),
-			new JSM.Coord (-0.2, 0.0, 0.0)
-		];
-		
-		var aSector = new JSM.Sector (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Coord (-0.5, 0.0, 0.0));
-		var bSector = new JSM.Sector (new JSM.Coord (0.0, 1.0, 0.5), new JSM.Coord (0.0, 1.0, -0.5));
-		var body1 = JSM.GenerateRuledFromSectorsWithHeight (aSector, bSector, 25, 25, true, 0.1);
-		var body2 = JSM.GenerateRuledFromSectorsWithHeight (aSector, bSector, 15, 15, false, 0.2);
-		OffsetTwoBodies (body1, body2, 0.7, 0.0, 0.0);
-		
-		model.AddBody (body1);
-		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
-	}, 'references/generator/ruled_with_height.png');	
-
-	canvasTester.AddTest (generatorSuite, function (renderFinished) {
-		var model = new JSM.Model ();
-
 		var polyLine = [
 			new JSM.Coord (-0.5, 0.0, -0.5),
 			new JSM.Coord (-0.1, 0.0, 0.0),
