@@ -6,7 +6,6 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
@@ -113,26 +112,18 @@
 				viewer.Draw ();
 			};
 
-			var viewerSettings = {
-				cameraEyePosition : [1.0, -1.0, 1.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1]
-			};
+			var camera = new JSM.Camera (
+				new JSM.Coord (1.0, -1.0, 1.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (0, 0, 1)
+			);
 
-			viewer = new JSM.ThreeViewer ();
-			viewer.Start (document.getElementById ('example'), viewerSettings);
+			viewer = new JSM.Viewer ();
+			viewer.Init (document.getElementById ('example'), camera);
 			
 			var bodyAndMaterials = GenerateBodyFromHull ();
-			//alert (JSM.ExportBodyToGdl (bodyAndMaterials[0]));
-			var conversionData = {
-				textureLoadedCallback : TextureLoaded,
-				hasConvexPolygons : true
-			};
-			var meshes = JSM.ConvertBodyToThreeMeshes (bodyAndMaterials[0], bodyAndMaterials[1], conversionData);
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}
-
+			var renderBody = JSM.ConvertBodyToRenderBody (bodyAndMaterials[0], bodyAndMaterials[1]);
+			viewer.AddBody (renderBody);
 			viewer.FitInWindow ();
 			viewer.Draw ();
 		}

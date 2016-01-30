@@ -6,7 +6,6 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
@@ -95,17 +94,14 @@
 				viewer.Draw ();
 			}
 		
-			var viewerSettings = {
-				cameraEyePosition : [3.0, -3.0, 3.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0.0, 0.0, 1.0]
-			};
+			var camera = new JSM.Camera (
+				new JSM.Coord (3.0, -3.0, 3.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (0, 0, 1)
+			);
 
-			viewer = new JSM.ThreeViewer ();
-			if (!viewer.Start (document.getElementById ('example'), viewerSettings)) {
-				alert ('Viewer initialization failed.');
-				return;
-			}
+			viewer = new JSM.Viewer ();
+			viewer.Init (document.getElementById ('example'), camera);
 
 			var materials = new JSM.Materials ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.jpg', textureWidth : 1.0, textureHeight : 1.0}));
@@ -118,16 +114,8 @@
 			var prism = JSM.GeneratePrism (circle, direction, 1.0, true, 160 * JSM.DegRad);
 			//prism.SetPolygonsMaterialIndex (0);
 			
-			var conversionData = {
-				textureLoadedCallback : function () {
-					viewer.Draw ();
-				}
-			};			
-			var meshes = JSM.ConvertBodyToThreeMeshes (prism, materials, conversionData);
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}
-
+			var renderBody = JSM.ConvertBodyToRenderBody (prism, materials);
+			viewer.AddBody (renderBody);
 			viewer.FitInWindow ();
 			viewer.Draw ();
 		}

@@ -94,14 +94,14 @@
 				viewer.Draw ();
 			};
 
-			var viewerSettings = {
-				cameraEyePosition : [2.0, -2.0, 2.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1]
-			};
+			var camera = new JSM.Camera (
+				new JSM.Coord (2.0, -2.0, 2.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (0, 0, 1)
+			);
 
-			viewer = new JSM.ThreeViewer ();
-			viewer.Start (document.getElementById ('example'), viewerSettings);
+			viewer = new JSM.Viewer ();
+			viewer.Init (document.getElementById ('example'), camera);
 			
 			var aBody = new JSM.GenerateCuboid (1, 1, 1);
 			var bBody = new JSM.GenerateCuboid (1, 1, 1);
@@ -124,14 +124,11 @@
 			logDiv.innerHTML += 'Operation time: '  + timer.Result () + '<br>';
 
 			timer.Start ();
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 			timer.Stop ();
 			logDiv.innerHTML += 'Conversion time: '  + timer.Result () + '<br>';
 			
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}
-
+			viewer.AddBody (renderBody);
 			viewer.Draw ();
 		}
 	

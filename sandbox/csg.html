@@ -6,7 +6,6 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
@@ -94,14 +93,14 @@
 				viewer.Draw ();
 			};
 
-			var viewerSettings = {
-				cameraEyePosition : [1.0, -1.0, 1.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1]
-			};
+			var camera = new JSM.Camera (
+				new JSM.Coord (1.0, -1.0, 1.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (0, 0, 1)
+			);
 
-			viewer = new JSM.ThreeViewer ();
-			viewer.Start (document.getElementById ('example'), viewerSettings);
+			viewer = new JSM.Viewer ();
+			viewer.Init (document.getElementById ('example'), camera);
 			
 			/*
 			var polygon = [
@@ -115,7 +114,7 @@
 				new JSM.Coord (0, 2, 0)
 			];
 			var aBody = JSM.GeneratePrism (polygon, new JSM.Vector (0, 0, 1), 1, true, null);
-			*/			
+			*/		
 
 			var aBody = new JSM.GenerateCuboid (1, 1, 1);
 			var bBody = new JSM.GenerateSphere (0.8, 20, true);
@@ -140,14 +139,11 @@
 			logDiv.innerHTML += 'Operation time: '  + timer.Result () + '<br>';
 
 			timer.Start ();
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);
+			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 			timer.Stop ();
 			logDiv.innerHTML += 'Conversion time: '  + timer.Result () + '<br>';
 			
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}
-
+			viewer.AddBody (renderBody);
 			viewer.FitInWindow ();
 			viewer.Draw ();
 		}
