@@ -172,9 +172,9 @@ class JSMBuilder:
 			return False
 			
 		inputFileNames = self.files['threeExtensionFileList']
-		mergedFilePath = 'jsmodeler.viewer.merged.js'
-		externsFilePath = 'jsmodeler.viewer.externs.js'
-		resultFilePath = os.path.join ('..', 'build', 'jsmodeler.viewer.js')
+		mergedFilePath = 'jsmodeler.ext.three.merged.js'
+		externsFilePath = 'jsmodeler.ext.three.externs.js'
+		resultFilePath = os.path.join ('..', 'build', 'jsmodeler.ext.three.js')
 		if not MergeAndCompileFiles (inputFileNames, mergedFilePath, externsFilePath, resultFilePath, version, self.errors):
 			return False
 
