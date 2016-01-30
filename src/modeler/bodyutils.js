@@ -401,15 +401,20 @@ JSM.GenerateRandomMaterials = function (body, materials, seeded)
 	
 	var i, color, material;
 	var seed = 0;
-	for (i = 0; i < body.PolygonCount (); i++) {
-		color = GetRandomInt (seeded, seed++);
-		material = materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
-		body.GetPolygon (i).SetMaterialIndex (material);
-	}
 	for (i = 0; i < body.LineCount (); i++) {
 		color = GetRandomInt (seeded, seed++);
 		material = materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
 		body.GetLine (i).SetMaterialIndex (material);
+	}
+	for (i = 0; i < body.PointCount (); i++) {
+		color = GetRandomInt (seeded, seed++);
+		material = materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
+		body.GetPoint (i).SetMaterialIndex (material);
+	}
+	for (i = 0; i < body.PolygonCount (); i++) {
+		color = GetRandomInt (seeded, seed++);
+		material = materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
+		body.GetPolygon (i).SetMaterialIndex (material);
 	}
 };
 

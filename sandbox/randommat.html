@@ -106,6 +106,12 @@
 			var vert1 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
 			var vert2 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
 			var vert3 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+			
+			body.AddPoint (new JSM.BodyPoint (vert0));
+			body.AddPoint (new JSM.BodyPoint (vert1));
+			body.AddPoint (new JSM.BodyPoint (vert2));
+			body.AddPoint (new JSM.BodyPoint (vert3));
+			
 			body.AddLine (new JSM.BodyLine (vert0, vert1));
 			body.AddLine (new JSM.BodyLine (vert1, vert2));
 			body.AddLine (new JSM.BodyLine (vert2, vert3));
