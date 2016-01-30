@@ -86,7 +86,47 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		function Load ()
+		function GetBodyAndMaterials ()
+		{
+			var materials = new JSM.Materials ();
+			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+
+			var body = new JSM.GenerateCuboid (0.5, 0.5, 0.5);
+			
+			var vert0 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+			var vert1 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+			var vert2 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+			var vert3 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+			
+			var vert4 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 1)));
+			var vert5 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 1)));
+			var vert6 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 1)));
+			var vert7 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 1)));
+
+			body.AddPoint (new JSM.BodyPoint (vert4));
+			body.AddPoint (new JSM.BodyPoint (vert5));
+			body.AddPoint (new JSM.BodyPoint (vert6));
+			body.AddPoint (new JSM.BodyPoint (vert7));
+			
+			body.AddLine (new JSM.BodyLine (vert0, vert1));
+			body.AddLine (new JSM.BodyLine (vert1, vert2));
+			body.AddLine (new JSM.BodyLine (vert2, vert3));
+			body.AddLine (new JSM.BodyLine (vert3, vert0));
+
+			body.GetPoint (1).SetMaterialIndex (0);
+			body.GetPoint (2).SetMaterialIndex (1);
+			
+			body.GetLine (1).SetMaterialIndex (0);
+			body.GetLine (2).SetMaterialIndex (1);
+			
+			body.GetPolygon (1).SetMaterialIndex (0);
+			body.GetPolygon (2).SetMaterialIndex (1);
+			
+			return [body, materials];
+		}
+	
+		function LoadInternal ()
 		{
 			var camera = new JSM.Camera (
 				new JSM.Coord (1.0, 3.0, 2.0),
@@ -94,62 +134,54 @@
 				new JSM.Vector (0.0, 0.0, 1.0)
 			);
 			
-			var light = new JSM.Light ();
-			
 			viewer = new JSM.Viewer ();
-			if (!viewer.Init (document.getElementById ('example'), camera, light)) {
+			if (!viewer.Init (document.getElementById ('internal'), camera)) {
 				alert ('error');
 			}
 
-			var renderBody = new JSM.RenderBody ();
-
-			var lineMaterial = new JSM.RenderMaterial (JSM.RenderMaterialFlags.Line, [1, 0, 0], [1, 0, 0], [0, 0, 0], 0, 1, false, null, 1, 1)
-			var lineMesh = new JSM.RenderMesh (lineMaterial);
-			var lines = [
-				0, 0, 0, 1, 0, 0,
-				1, 0, 0, 1, 1, 0,
-				1, 1, 0, 0, 1, 0,
-				0, 1, 0, 0, 0, 0
-			]
-			lineMesh.SetVertexArray (lines);
-			renderBody.AddMesh (lineMesh);
+			var bodyAndMaterials = GetBodyAndMaterials ();
 			
-			var lineMaterial2 = new JSM.RenderMaterial (JSM.RenderMaterialFlags.Line, [0, 1, 0], [0, 1, 0], [0, 0, 0], 0, 1, false, null, 1, 1)
-			var lineMesh2 = new JSM.RenderMesh (lineMaterial2);
-			var lines2 = [
-				0, 0, 1, 1, 0, 1,
-				1, 0, 1, 1, 1, 1,
-				1, 1, 1, 0, 1, 1,
-				0, 1, 1, 0, 0, 1
-			]
-			lineMesh2.SetVertexArray (lines2);
-			renderBody.AddMesh (lineMesh2);
-
-			var lineMaterial3 = new JSM.RenderMaterial (JSM.RenderMaterialFlags.Line, [0, 0, 1], [0, 0, 1], [0, 0, 0], 0, 1, false, null, 1, 1)
-			var lineMesh3 = new JSM.RenderMesh (lineMaterial3);
-			var lines3 = [
-				0, 0, 0, 0, 0, 1,
-				1, 0, 0, 1, 0, 1,
-				1, 1, 0, 1, 1, 1,
-				0, 1, 0, 0, 1, 1
-			]
-			lineMesh3.SetVertexArray (lines3);
-			renderBody.AddMesh (lineMesh3);
-
-			viewer.AddBody (renderBody, null);
+			var renderBody = JSM.ConvertBodyToRenderBody (bodyAndMaterials[0], bodyAndMaterials[1]);
+			viewer.AddBody (renderBody);
+			viewer.FitInWindow ();
 			viewer.Draw ();
 		}
 	
+function LoadThree ()
+		{
+			var viewerSettings = {
+				cameraEyePosition : [1.0, 3.0, 2.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
+
+			viewer = new JSM.ThreeViewer ();
+			if (!viewer.Start (document.getElementById ('three'), viewerSettings)) {
+				alert ('error (three)');
+			}
+
+			var bodyAndMaterials = GetBodyAndMaterials ();
+
+			var meshes = JSM.ConvertBodyToThreeMeshes (bodyAndMaterials[0], bodyAndMaterials[1])
+			viewer.AddMeshes (meshes);
+
+			viewer.FitInWindow ();
+			viewer.Draw ();
+		}	
+	
 	    window.onload = function ()
 		{
-			Load ();
+			LoadInternal ();
+			LoadThree ();
 		}
 	</script>
 
 </head>
 
 <body>
-	<canvas id="example" width="800" height="500"></canvas>
-</body>
-
+	internal:<br>
+	<canvas id="internal" width="800" height="300"></canvas>
+	
+	<br>three:<br>
+	<canvas id="three" width="800" height="300"></canvas></body>
 </html>

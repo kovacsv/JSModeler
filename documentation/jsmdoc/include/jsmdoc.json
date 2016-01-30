@@ -2688,6 +2688,13 @@
 						["z", "number", "the z coordinate of the vertex"]
 					]
 				},
+				"AddPointToBody" : {
+					"description" : "Adds a point to an existing body.",
+					"parameters" : [
+						["body", "Body", "the body"],
+						["vertex", "integer", "the vertex index stored in the body"]
+					]
+				},
 				"AddLineToBody" : {
 					"description" : "Adds a line to an existing body.",
 					"parameters" : [
@@ -2704,7 +2711,7 @@
 					]
 				},
 				"CheckBody" : {
-					"description" : "Checks if the body is correct. It means that every polygon has at least three vertices, and every line and polygon vertex index is valid.",
+					"description" : "Checks if the body is correct. It means that every polygon has at least three vertices, and every point, line and polygon vertex index is valid.",
 					"parameters" : [
 						["body", "Body", "the body"]
 					],
@@ -3500,6 +3507,56 @@
 						}
 					}
 				},
+				"BodyPoint" : {
+					"description" : "Represents a point in a 3D body. The point contains the vertex index stored in its 3D body, and a material index of a material defined outside of the body.",
+					"parameters" : [
+						["index", "integer", "the vertex index stored in the body"]
+					],
+					"functions" : {
+						"GetVertexIndex" : {
+							"description" : "Returns the body vertex index of the point.",
+							"returns" : [
+								["integer", "the stored vertex index"]
+							]
+						},
+						"SetVertexIndex" : {
+							"description" : "Sets the vertex index of the point.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							]
+						},
+						"HasMaterialIndex" : {
+							"description" : "Returns if the point has a material index.",
+							"returns" : [
+								["boolean", "the result"]
+							]
+						},
+						"GetMaterialIndex" : {
+							"description" : "Returns the point material index.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"SetMaterialIndex" : {
+							"description" : "Sets the point material index.",
+							"parameters" : [
+								["material", "integer", "the material index"]
+							]
+						},
+						"InheritAttributes" : {
+							"description" : "Inherits attributes (material) from an another point.",
+							"parameters" : [
+								["source", "BodyPoint", "the source point"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the point.",
+							"returns" : [
+								["BodyPoint", "a cloned instance"]
+							]
+						}
+					}
+				},
 				"BodyLine" : {
 					"description" : "Represents a line in a 3D body. The line contains begin and end indices of vertices stored in its 3D body, and a material index of a material defined outside of the body.",
 					"parameters" : [
@@ -3681,6 +3738,15 @@
 								["integer", "the index of the newly added vertex"]
 							]
 						},
+						"AddPoint" : {
+							"description" : "Adds a point to the body.",
+							"parameters" : [
+								["point", "BodyPoint", "the point"]
+							],
+							"returns" : [
+								["integer", "the index of the newly added point"]
+							]
+						},
 						"AddLine" : {
 							"description" : "Adds a line to the body.",
 							"parameters" : [
@@ -3724,6 +3790,15 @@
 								["position", "Coord", "the new position"]
 							]
 						},
+						"GetPoint" : {
+							"description" : "Returns the point at the given index.",
+							"parameters" : [
+								["index", "integer", "the point index"]
+							],
+							"returns" : [
+								["BodyPoint", "the result"]
+							]
+						},
 						"GetLine" : {
 							"description" : "Returns the line at the given index.",
 							"parameters" : [
@@ -3740,6 +3815,12 @@
 							],
 							"returns" : [
 								["BodyPolygon", "the result"]
+							]
+						},
+						"SetPointsMaterialIndex" : {
+							"description" : "Sets the material index for all points in the body.",
+							"parameters" : [
+								["material", "integer", "the material index"]
 							]
 						},
 						"SetLinesMaterialIndex" : {
@@ -3766,6 +3847,12 @@
 								["index", "integer", "the index of the vertex"]
 							]
 						},
+						"RemovePoint" : {
+							"description" : "Removes a point from the body.",
+							"parameters" : [
+								["index", "integer", "the index of the point"]
+							]
+						},
 						"RemoveLine" : {
 							"description" : "Removes a line from the body.",
 							"parameters" : [
@@ -3780,6 +3867,12 @@
 						},
 						"VertexCount" : {
 							"description" : "Returns the vertex count of the body.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"PointCount" : {
+							"description" : "Returns the point count of the body.",
 							"returns" : [
 								["integer", "the result"]
 							]

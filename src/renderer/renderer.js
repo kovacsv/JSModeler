@@ -223,7 +223,10 @@ JSM.Renderer.prototype.Render = function (camera)
 				}
 			} else if (HasFlag (materialType, JSM.RenderMaterialFlags.Line)) {
 				return JSM.ShaderType.Line;
+			} else if (HasFlag (materialType, JSM.RenderMaterialFlags.Point)) {
+				return JSM.ShaderType.Point;
 			}
+			
 			return null;
 		}
 
@@ -256,6 +259,7 @@ JSM.Renderer.prototype.Render = function (camera)
 	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon + JSM.RenderMaterialFlags.Textured, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialFlags.Line, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialFlags.Point, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon + JSM.RenderMaterialFlags.Transparent, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon + JSM.RenderMaterialFlags.Transparent + JSM.RenderMaterialFlags.Textured, viewMatrix, projectionMatrix);
 };

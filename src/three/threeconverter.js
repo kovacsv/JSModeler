@@ -1,5 +1,48 @@
 JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 {
+	function OnPointGeometryStart (material)
+	{
+		threeMaterial = new THREE.PointCloudMaterial ({
+			ambient : material.ambient,
+			color : material.diffuse,
+			size: material.pointSize / 100.0
+		});
+		threeGeometry = new THREE.Geometry ();
+	}
+
+	function OnPointGeometryEnd ()
+	{
+		var pointCloud = new THREE.PointCloud (threeGeometry, threeMaterial);
+		meshes.push (pointCloud);
+	}
+
+	function OnPoint (vertex)
+	{
+		threeGeometry.vertices.push (new THREE.Vector3 (vertex.x, vertex.y, vertex.z));
+	}	
+	
+	function OnLineGeometryStart (material)
+	{
+		threeMaterial = new THREE.LineBasicMaterial ({
+			ambient : material.ambient,
+			color : material.diffuse
+		});
+	}
+
+	function OnLineGeometryEnd ()
+	{
+
+	}
+
+	function OnLine (begVertex, endVertex)
+	{
+		var lineGeometry = new THREE.Geometry ();
+		lineGeometry.vertices.push (new THREE.Vector3 (begVertex.x, begVertex.y, begVertex.z));
+		lineGeometry.vertices.push (new THREE.Vector3 (endVertex.x, endVertex.y, endVertex.z));
+		var line = new THREE.Line (lineGeometry, threeMaterial);
+		meshes.push (line);
+	}
+
 	function OnGeometryStart (material)
 	{
 		var hasTexture = (material.texture !== null);
@@ -77,33 +120,6 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 			threeGeometry.faceVertexUvs[0].push (uvArray);
 		}
 	}
-	
-	function OnLineGeometryStart (material)
-	{
-		var hasOpacity = (material.opacity !== 1.0);
-		threeMaterial = new THREE.LineBasicMaterial ({
-			ambient : material.ambient,
-			color : material.diffuse
-		});
-		if (hasOpacity) {
-			threeMaterial.opacity = material.opacity;
-			threeMaterial.transparent = true;
-		}
-	}
-
-	function OnLineGeometryEnd ()
-	{
-
-	}
-
-	function OnLine (begVertex, endVertex)
-	{
-		var lineGeometry = new THREE.Geometry ();
-		lineGeometry.vertices.push (new THREE.Vector3 (begVertex.x, begVertex.y, begVertex.z));
-		lineGeometry.vertices.push (new THREE.Vector3 (endVertex.x, endVertex.y, endVertex.z));
-		var line = new THREE.Line (lineGeometry, threeMaterial);
-		meshes.push (line);
-	}	
 
 	var theConversionData = {
 		textureLoadedCallback : null,
@@ -117,12 +133,15 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 	
 	var explodeData = {
 		hasConvexPolygons : theConversionData.hasConvexPolygons,
-		onGeometryStart : OnGeometryStart,
-		onGeometryEnd : OnGeometryEnd,
-		onTriangle : OnTriangle,
+		onPointGeometryStart : OnPointGeometryStart,
+		onPointGeometryEnd : OnPointGeometryEnd,
+		onPoint : OnPoint,
 		onLineGeometryStart : OnLineGeometryStart,
 		onLineGeometryEnd : OnLineGeometryEnd,
-		onLine : OnLine
+		onLine : OnLine,
+		onGeometryStart : OnGeometryStart,
+		onGeometryEnd : OnGeometryEnd,
+		onTriangle : OnTriangle
 	};
 
 	var meshes = [];

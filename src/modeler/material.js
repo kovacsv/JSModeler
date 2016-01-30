@@ -16,6 +16,7 @@ JSM.Material = function (parameters)
 		opacity : 1.0,
 		reflection : 0.0,
 		singleSided : false,
+		pointSize : 5.0,
 		texture : null,
 		textureWidth : 1.0,
 		textureHeight : 1.0

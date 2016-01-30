@@ -13,11 +13,55 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 			material.shininess,
 			material.opacity,
 			material.singleSided,
+			material.pointSize,
 			material.texture,
 			material.textureWidth,
 			material.textureHeight
 		);
 		return renderMaterial;
+	}
+	
+	function OnPointGeometryStart ()
+	{
+		vertices = [];
+		normals = null;
+		uvs = null;
+	}
+
+	function OnPointGeometryEnd (material)
+	{
+		var materialType = JSM.RenderMaterialFlags.Point;
+		var renderMaterial = MaterialToRenderMaterial (material, materialType);
+		var mesh = new JSM.RenderMesh (renderMaterial);
+		mesh.SetVertexArray (vertices);
+		renderBody.AddMesh (mesh);
+	}
+
+	function OnPoint (vertex)
+	{
+		vertices.push (vertex.x, vertex.y, vertex.z);
+	}
+	
+	function OnLineGeometryStart ()
+	{
+		vertices = [];
+		normals = null;
+		uvs = null;
+	}
+
+	function OnLineGeometryEnd (material)
+	{
+		var materialType = JSM.RenderMaterialFlags.Line;
+		var renderMaterial = MaterialToRenderMaterial (material, materialType);
+		var mesh = new JSM.RenderMesh (renderMaterial);
+		mesh.SetVertexArray (vertices);
+		renderBody.AddMesh (mesh);
+	}
+
+	function OnLine (begVertex, endVertex)
+	{
+		vertices.push (begVertex.x, begVertex.y, begVertex.z);
+		vertices.push (endVertex.x, endVertex.y, endVertex.z);
 	}
 	
 	function OnGeometryStart ()
@@ -65,28 +109,6 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 		}
 	}
 	
-	function OnLineGeometryStart ()
-	{
-		vertices = [];
-		normals = null;
-		uvs = null;
-	}
-
-	function OnLineGeometryEnd (material)
-	{
-		var materialType = JSM.RenderMaterialFlags.Line;
-		var renderMaterial = MaterialToRenderMaterial (material, materialType);
-		var mesh = new JSM.RenderMesh (renderMaterial);
-		mesh.SetVertexArray (vertices);
-		renderBody.AddMesh (mesh);
-	}
-
-	function OnLine (begVertex, endVertex)
-	{
-		vertices.push (begVertex.x, begVertex.y, begVertex.z);
-		vertices.push (endVertex.x, endVertex.y, endVertex.z);
-	}
-	
 	var hasConvexPolygons = false;
 	if (parameters !== undefined && parameters !== null) {
 		if (parameters.hasConvexPolygons !== undefined && parameters.hasConvexPolygons !== null) {
@@ -96,12 +118,15 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 	
 	var explodeData = {
 		hasConvexPolygons : hasConvexPolygons,
-		onGeometryStart : OnGeometryStart,
-		onGeometryEnd : OnGeometryEnd,
-		onTriangle : OnTriangle,
+		onPointGeometryStart : OnPointGeometryStart,
+		onPointGeometryEnd : OnPointGeometryEnd,
+		onPoint : OnPoint,
 		onLineGeometryStart : OnLineGeometryStart,
 		onLineGeometryEnd : OnLineGeometryEnd,
-		onLine : OnLine
+		onLine : OnLine,
+		onGeometryStart : OnGeometryStart,
+		onGeometryEnd : OnGeometryEnd,
+		onTriangle : OnTriangle
 	};
 	
 	var renderBody = new JSM.RenderBody ();

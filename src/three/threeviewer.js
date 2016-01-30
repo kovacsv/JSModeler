@@ -182,7 +182,7 @@ JSM.ThreeViewer.prototype.MeshCount = function ()
 	var count = 0;
 	
 	this.scene.traverse (function (current) {
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
 			count = count + 1;
 		}
 	});
@@ -195,7 +195,7 @@ JSM.ThreeViewer.prototype.VertexCount = function ()
 	var count = 0;
 	
 	this.scene.traverse (function (current) {
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
 			count = count + current.geometry.vertices.length;
 		}
 	});
@@ -224,7 +224,7 @@ JSM.ThreeViewer.prototype.GetMesh = function (index)
 	var i;
 	for (i = 0; i < this.scene.children.length; i++) {
 		current = this.scene.children[i];
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
 			if (currIndex == index) {
 				return current;
 			}
@@ -248,7 +248,7 @@ JSM.ThreeViewer.prototype.RemoveMeshes = function ()
 	var i;
 	for (i = 0; i < this.scene.children.length; i++) {
 		current = this.scene.children[i];
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
 			current.geometry.dispose ();
 			this.scene.remove (current);
 			i--;
@@ -262,7 +262,7 @@ JSM.ThreeViewer.prototype.RemoveLastMesh = function ()
 	var found = null;
 	
 	this.scene.traverse (function (current) {
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
 			found = current;
 		}
 	});
@@ -327,7 +327,7 @@ JSM.ThreeViewer.prototype.GetBoundingBox = function ()
 	
 	var geometry, coord;
 	this.scene.traverse (function (current) {
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
 			geometry = current.geometry;
 			var j;
 			for (j = 0; j < geometry.vertices.length; j++) {
@@ -353,7 +353,7 @@ JSM.ThreeViewer.prototype.GetBoundingSphere = function ()
 
 	var geometry, coord, distance;
 	this.scene.traverse (function (current) {
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
 			geometry = current.geometry;
 			var j;
 			for (j = 0; j < geometry.vertices.length; j++) {

@@ -1,7 +1,8 @@
 JSM.ShaderType = {
-	Triangle : 0,
-	TexturedTriangle : 1,
-	Line : 2
+	Point : 0,
+	Line : 1,
+	Triangle : 2,
+	TexturedTriangle : 3
 };
 
 JSM.ShaderProgram = function (context)
@@ -47,7 +48,36 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 	function GetFragmentShaderScript (shaderType, globalParams)
 	{
 		var script = null;
-		if (shaderType == JSM.ShaderType.Triangle || shaderType == JSM.ShaderType.TexturedTriangle) {
+		if (shaderType == JSM.ShaderType.Point || shaderType == JSM.ShaderType.Line) {
+			script = [
+				'#define MAX_LIGHTS ' + globalParams.maxLightCount,
+
+				'struct Light',
+				'{',
+				'	mediump vec3 ambientColor;',
+				'	mediump vec3 diffuseColor;',
+				'};',
+
+				'struct Material',
+				'{',
+				'	mediump vec3 ambientColor;',
+				'	mediump vec3 diffuseColor;',
+				'};',				
+				
+				'uniform Light uLights[MAX_LIGHTS];',
+				'uniform Material uMaterial;',
+				
+				'void main (void) {',
+				'	mediump vec3 ambientComponent;',
+				'	mediump vec3 diffuseComponent;',
+				'	for (int i = 0; i < MAX_LIGHTS; i++) {',
+				'		ambientComponent += uMaterial.ambientColor * uLights[i].ambientColor;',
+				'		diffuseComponent += uMaterial.diffuseColor * uLights[i].diffuseColor;',
+				'	}',
+				'	gl_FragColor = vec4 (ambientComponent + diffuseComponent, 1.0);',
+				'}'
+			].join ('\n');
+		} else if (shaderType == JSM.ShaderType.Triangle || shaderType == JSM.ShaderType.TexturedTriangle) {
 			script = [
 				'#define ' + (shaderType == JSM.ShaderType.Triangle ? 'NOTEXTURE' : 'USETEXTURE'),
 				'#define MAX_LIGHTS ' + globalParams.maxLightCount,
@@ -111,35 +141,6 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'	gl_FragColor = vec4 (ambientComponent + diffuseComponent + specularComponent, uMaterial.opacity);',
 				'}'
 			].join ('\n');
-		} else if (shaderType == JSM.ShaderType.Line) {
-			script = [
-				'#define MAX_LIGHTS ' + globalParams.maxLightCount,
-
-				'struct Light',
-				'{',
-				'	mediump vec3 ambientColor;',
-				'	mediump vec3 diffuseColor;',
-				'};',
-
-				'struct Material',
-				'{',
-				'	mediump vec3 ambientColor;',
-				'	mediump vec3 diffuseColor;',
-				'};',				
-				
-				'uniform Light uLights[MAX_LIGHTS];',
-				'uniform Material uMaterial;',
-				
-				'void main (void) {',
-				'	mediump vec3 ambientComponent;',
-				'	mediump vec3 diffuseComponent;',
-				'	for (int i = 0; i < MAX_LIGHTS; i++) {',
-				'		ambientComponent += uMaterial.ambientColor * uLights[i].ambientColor;',
-				'		diffuseComponent += uMaterial.diffuseColor * uLights[i].diffuseColor;',
-				'	}',
-				'	gl_FragColor = vec4 (ambientComponent + diffuseComponent, 1.0);',
-				'}'
-			].join ('\n');
 		}
 		return script;
 	}
@@ -175,18 +176,26 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'	gl_Position = uProjectionMatrix * vec4 (vVertex, 1.0);',
 				'}'
 			].join ('\n');
-		} else if (shaderType == JSM.ShaderType.Line) {
+		} else if (shaderType == JSM.ShaderType.Point || shaderType == JSM.ShaderType.Line) {
 			script = [
+				'#define ' + (shaderType == JSM.ShaderType.Point ? 'POINT' : 'LINE'),
 				'attribute mediump vec3 aVertexPosition;',
+				
 				'uniform mediump mat4 uViewMatrix;',
 				'uniform mediump mat4 uProjectionMatrix;',
 				'uniform mediump mat4 uTransformationMatrix;',
+				'#ifdef POINT',
+				'uniform mediump float uPointSize;',
+				'#endif',
 
 				'varying mediump vec3 vVertex;',
 
 				'void main (void) {',
 				'	mat4 modelViewMatrix = uViewMatrix * uTransformationMatrix;',
 				'	vVertex = vec3 (modelViewMatrix * vec4 (aVertexPosition, 1.0));',
+				'#ifdef POINT',
+				'	gl_PointSize = uPointSize;',
+				'#endif',
 				'	gl_Position = uProjectionMatrix * vec4 (vVertex, 1.0);',
 				'}'
 			].join ('\n');
@@ -227,7 +236,7 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				shader.vertexUVAttribute = context.getAttribLocation (shader, 'aVertexUV');
 				shader.samplerUniform = context.getUniformLocation (shader, 'uSampler');
 			}
-		} else if (shaderType == JSM.ShaderType.Line) {
+		} else if (shaderType == JSM.ShaderType.Point || shaderType == JSM.ShaderType.Line) {
 			shader.vertexPositionAttribute = context.getAttribLocation (shader, 'aVertexPosition');
 
 			shader.lightUniforms = [];
@@ -242,10 +251,14 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				ambientColor : context.getUniformLocation (shader, 'uMaterial.ambientColor'),
 				diffuseColor : context.getUniformLocation (shader, 'uMaterial.diffuseColor'),
 			};
-
+			
 			shader.vMatrixUniform = context.getUniformLocation (shader, 'uViewMatrix');
 			shader.pMatrixUniform = context.getUniformLocation (shader, 'uProjectionMatrix');
 			shader.tMatrixUniform = context.getUniformLocation (shader, 'uTransformationMatrix');
+
+			if (shaderType == JSM.ShaderType.Point) {
+				shader.pointSizeUniform = context.getUniformLocation (shader, 'uPointSize');
+			}
 		}
 	}
 	
@@ -269,15 +282,19 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 	
 	this.shaders = {};
 	
+	if (!InitShader (this.context, this.shaders, this.globalParams, JSM.ShaderType.Point)) {
+		return false;
+	}
+
+	if (!InitShader (this.context, this.shaders, this.globalParams, JSM.ShaderType.Line)) {
+		return false;
+	}
+
 	if (!InitShader (this.context, this.shaders, this.globalParams, JSM.ShaderType.Triangle)) {
 		return false;
 	}
 	
 	if (!InitShader (this.context, this.shaders, this.globalParams, JSM.ShaderType.TexturedTriangle)) {
-		return false;
-	}
-
-	if (!InitShader (this.context, this.shaders, this.globalParams, JSM.ShaderType.Line)) {
 		return false;
 	}
 
@@ -385,7 +402,7 @@ JSM.ShaderProgram.prototype.SetParameters = function (lights, viewMatrix, projec
 		}
 		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
 		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
-	} else if (this.currentType == JSM.ShaderType.Line) {
+	} else if (this.currentType == JSM.ShaderType.Point || this.currentType == JSM.ShaderType.Line) {
 		for (i = 0; i < this.globalParams.maxLightCount; i++) {
 			light = GetLight (lights, i, this.globalParams.defaultLight);
 			context.uniform3f (shader.lightUniforms[i].ambientColor, light.ambient[0], light.ambient[1], light.ambient[2]);
@@ -440,7 +457,7 @@ JSM.ShaderProgram.prototype.DrawArrays = function (material, matrix, vertexBuffe
 		}
 		
 		context.drawArrays (context.TRIANGLES, 0, vertexBuffer.numItems);
-	} else if (this.currentType == JSM.ShaderType.Line) {
+	} else if (this.currentType == JSM.ShaderType.Point || this.currentType == JSM.ShaderType.Line) {
 		context.uniform3f (shader.materialUniforms.ambientColor, material.ambient[0], material.ambient[1], material.ambient[2]);
 		context.uniform3f (shader.materialUniforms.diffuseColor, material.diffuse[0], material.diffuse[1], material.diffuse[2]);
 		
@@ -450,6 +467,11 @@ JSM.ShaderProgram.prototype.DrawArrays = function (material, matrix, vertexBuffe
 		context.enableVertexAttribArray (shader.vertexPositionAttribute);
 		context.vertexAttribPointer (shader.vertexPositionAttribute, vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
 		
-		context.drawArrays (context.LINES, 0, vertexBuffer.numItems);
+		if (this.currentType == JSM.ShaderType.Point) {
+			context.uniform1f (shader.pointSizeUniform, material.pointSize);
+			context.drawArrays (context.POINTS, 0, vertexBuffer.numItems);
+		} else if (this.currentType == JSM.ShaderType.Line) {
+			context.drawArrays (context.LINES, 0, vertexBuffer.numItems);
+		}
 	}
 };
