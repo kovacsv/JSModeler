@@ -13,6 +13,18 @@ JSM.AddVertexToBody = function (body, x, y, z)
 };
 
 /**
+* Function: AddPointToBody
+* Description: Adds a point to an existing body.
+* Parameters:
+*	body {Body} the body
+*	vertex {integer} the vertex index stored in the body
+*/
+JSM.AddPointToBody = function (body, vertex)
+{
+	body.AddPoint (new JSM.BodyPoint (vertex));
+};
+
+/**
 * Function: AddLineToBody
 * Description: Adds a line to an existing body.
 * Parameters:
@@ -40,8 +52,8 @@ JSM.AddPolygonToBody = function (body, vertices)
 /**
 * Function: CheckBody
 * Description:
-*	Checks if the body is correct. It means that every polygon has at least
-*	three vertices, and every line and polygon vertex index is valid.
+*	Checks if the body is correct. It means that every polygon has at least three
+*	vertices, and every point, line and polygon vertex index is valid.
 * Parameters:
 *	body {Body} the body
 * Returns:
@@ -50,7 +62,13 @@ JSM.AddPolygonToBody = function (body, vertices)
 JSM.CheckBody = function (body)
 {
 	var vertexCount = body.VertexCount ();
-	var i, j, line, polygon;
+	var i, j, point, line, polygon;
+	for (i = 0; i < body.PointCount (); i++) {
+		point = body.GetPoint (i);
+		if (point.GetVertexIndex () < 0 || point.GetVertexIndex () >= vertexCount) {
+			return false;
+		}
+	}
 	for (i = 0; i < body.LineCount (); i++) {
 		line = body.GetLine (i);
 		if (line.GetBegVertexIndex () < 0 || line.GetBegVertexIndex () >= vertexCount) {

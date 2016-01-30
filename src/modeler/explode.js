@@ -31,6 +31,107 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 		}		
 	}
 	
+	function ExplodePoints (body, materials, explodeData)
+	{
+		function ExplodePointsByMaterial (pointIndices, materialIndex, explodeData)
+		{
+			if (pointIndices.length === 0) {
+				return;
+			}
+			
+			var material = materials.GetMaterial (materialIndex);
+			if (explodeData.onPointGeometryStart !== undefined && explodeData.onPointGeometryStart !== null) {
+				explodeData.onPointGeometryStart (material);
+			}
+
+			if (explodeData.onPoint !== undefined && explodeData.onPoint !== null) {
+				var i, point, vertex;
+				for (i = 0; i < pointIndices.length; i++) {
+					point = body.GetPoint (pointIndices[i]);
+					vertex = body.GetVertexPosition (point.GetVertexIndex ());
+					explodeData.onPoint (vertex);
+				}
+			}
+
+			if (explodeData.onPointGeometryEnd !== undefined && explodeData.onPointGeometryEnd !== null) {
+				explodeData.onPointGeometryEnd (material);
+			}
+		}
+
+		if (body.PointCount () === 0) {
+			return;
+		}
+
+		var pointsByMaterial = [];
+		var pointsWithNoMaterial = [];
+		SeparateByMaterial (materials, pointsByMaterial, pointsWithNoMaterial, {
+			itemCount : function () {
+				return body.PointCount ();
+			},
+			getMaterial : function (index) {
+				var point = body.GetPoint (index);
+				return point.GetMaterialIndex ();
+			}
+		});
+		
+		var i;		
+		for (i = 0; i < pointsByMaterial.length; i++) {
+			ExplodePointsByMaterial (pointsByMaterial[i], i, explodeData);
+		}
+		ExplodePointsByMaterial (pointsWithNoMaterial, -1, explodeData);
+	}
+
+	function ExplodeLines (body, materials, explodeData)
+	{
+		function ExplodeLinesByMaterial (lineIndices, materialIndex, explodeData)
+		{
+			if (lineIndices.length === 0) {
+				return;
+			}
+			
+			var material = materials.GetMaterial (materialIndex);
+			if (explodeData.onLineGeometryStart !== undefined && explodeData.onLineGeometryStart !== null) {
+				explodeData.onLineGeometryStart (material);
+			}
+
+			if (explodeData.onLine !== undefined && explodeData.onLine !== null) {
+				var i, line, beg, end;
+				for (i = 0; i < lineIndices.length; i++) {
+					line = body.GetLine (lineIndices[i]);
+					beg = body.GetVertexPosition (line.GetBegVertexIndex ());
+					end = body.GetVertexPosition (line.GetEndVertexIndex ());
+					explodeData.onLine (beg, end);
+				}
+			}
+
+			if (explodeData.onLineGeometryEnd !== undefined && explodeData.onLineGeometryEnd !== null) {
+				explodeData.onLineGeometryEnd (material);
+			}
+		}
+
+		if (body.LineCount () === 0) {
+			return;
+		}
+
+		var linesByMaterial = [];
+		var linesWithNoMaterial = [];
+		SeparateByMaterial (materials, linesByMaterial, linesWithNoMaterial, {
+			itemCount : function () {
+				return body.LineCount ();
+			},
+			getMaterial : function (index) {
+				var line = body.GetLine (index);
+				return line.GetMaterialIndex ();
+			}
+		});
+		
+		var i;		
+		for (i = 0; i < linesByMaterial.length; i++) {
+			ExplodeLinesByMaterial (linesByMaterial[i], i, explodeData);
+		}
+		ExplodeLinesByMaterial (linesWithNoMaterial, -1, explodeData);
+	}
+
 	function ExplodePolygons (body, materials, explodeData)
 	{
 		function CalculatePolygonsDerivedData (body, materials)
@@ -198,57 +299,6 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 		ExplodePolygonsByMaterial (polygonsWithNoMaterial, -1, derivedData, explodeData);
 	}
 
-	function ExplodeLines (body, materials, explodeData)
-	{
-		function ExplodeLinesByMaterial (lineIndices, materialIndex, explodeData)
-		{
-			if (lineIndices.length === 0) {
-				return;
-			}
-			
-			var material = materials.GetMaterial (materialIndex);
-			if (explodeData.onLineGeometryStart !== undefined && explodeData.onLineGeometryStart !== null) {
-				explodeData.onLineGeometryStart (material);
-			}
-
-			if (explodeData.onLine !== undefined && explodeData.onLine !== null) {
-				var i, line, beg, end;
-				for (i = 0; i < lineIndices.length; i++) {
-					line = body.GetLine (lineIndices[i]);
-					beg = body.GetVertexPosition (line.GetBegVertexIndex ());
-					end = body.GetVertexPosition (line.GetEndVertexIndex ());
-					explodeData.onLine (beg, end);
-				}
-			}
-
-			if (explodeData.onLineGeometryEnd !== undefined && explodeData.onLineGeometryEnd !== null) {
-				explodeData.onLineGeometryEnd (material);
-			}
-		}
-
-		if (body.LineCount () === 0) {
-			return;
-		}
-
-		var linesByMaterial = [];
-		var linesWithNoMaterial = [];
-		SeparateByMaterial (materials, linesByMaterial, linesWithNoMaterial, {
-			itemCount : function () {
-				return body.LineCount ();
-			},
-			getMaterial : function (index) {
-				var line = body.GetLine (index);
-				return line.GetMaterialIndex ();
-			}
-		});
-		
-		var i;		
-		for (i = 0; i < linesByMaterial.length; i++) {
-			ExplodeLinesByMaterial (linesByMaterial[i], i, explodeData);
-		}
-		ExplodeLinesByMaterial (linesWithNoMaterial, -1, explodeData);
-	}
-
 	if (explodeData === undefined || explodeData === null) {
 		return false;
 	}
@@ -257,7 +307,8 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 		materials = new JSM.Materials ();
 	}	
 	
-	ExplodePolygons (body, materials, explodeData);
+	ExplodePoints (body, materials, explodeData);
 	ExplodeLines (body, materials, explodeData);
+	ExplodePolygons (body, materials, explodeData);
 	return true;
 };

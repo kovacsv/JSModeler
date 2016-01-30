@@ -169,6 +169,79 @@ generalSuite.AddTest ('BodyRemoveTest', function (test)
 	test.Assert (JSM.CheckBody (body));
 });
 
+generalSuite.AddTest ('BodyPointTest', function (test)
+{
+	var point = new JSM.BodyPoint (1);
+	test.AssertEqual (point.GetVertexIndex (), 1);
+	point.SetVertexIndex (2);
+	test.AssertEqual (point.GetVertexIndex (), 2);
+	test.AssertEqual (point.HasMaterialIndex (), false);
+	test.AssertEqual (point.GetMaterialIndex (), -1);
+	point.SetMaterialIndex (0);
+	test.AssertEqual (point.HasMaterialIndex (), true);
+	test.AssertEqual (point.GetMaterialIndex (), 0);
+	var point2 = point.Clone ();
+	test.AssertEqual (point2.GetVertexIndex (), 2);
+	test.AssertEqual (point2.GetMaterialIndex (), 0);
+	point2.SetMaterialIndex (1);
+	test.AssertEqual (point.GetMaterialIndex (), 0);
+	test.AssertEqual (point2.GetMaterialIndex (), 1);
+	point2.InheritAttributes (point);
+	test.AssertEqual (point.GetMaterialIndex (), 0);
+	test.AssertEqual (point2.GetMaterialIndex (), 0);
+});
+
+generalSuite.AddTest ('BodyPointTest2', function (test)
+{
+	var body = new JSM.Body ();
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+	test.AssertEqual (body.PointCount (), 0);
+	test.AssertEqual (body.AddPoint (new JSM.BodyPoint (0)), 0);
+	test.Assert (JSM.CheckBody (body));
+	test.AssertEqual (body.PointCount (), 1);
+	test.AssertEqual (body.GetPoint (0).GetVertexIndex (), 0);
+	test.AssertEqual (body.GetPoint (0).GetMaterialIndex (), -1);
+
+	test.AssertEqual (body.AddPoint (new JSM.BodyPoint (1)), 1);
+	test.AssertEqual (body.AddPoint (new JSM.BodyPoint (2)), 2);
+	test.AssertEqual (body.AddPoint (new JSM.BodyPoint (3)), 3);
+	test.AssertEqual (body.PointCount (), 4);
+	test.Assert (JSM.CheckBody (body));
+	
+	body.SetPointsMaterialIndex (0);
+	var i;
+	for (i = 0; i < body.PointCount (); i++) {
+		test.AssertEqual (body.GetPoint (i).GetMaterialIndex (), 0);
+	}
+
+	test.AssertEqual (body.GetPoint (0).GetVertexIndex (), 0);
+	test.AssertEqual (body.GetPoint (1).GetVertexIndex (), 1);
+	test.AssertEqual (body.GetPoint (2).GetVertexIndex (), 2);
+	test.AssertEqual (body.GetPoint (3).GetVertexIndex (), 3);
+
+	body.RemoveVertex (1);
+	test.AssertEqual (body.PointCount (), 3);
+	test.AssertEqual (body.GetPoint (0).GetVertexIndex (), 0);
+	test.AssertEqual (body.GetPoint (1).GetVertexIndex (), 1);
+	test.AssertEqual (body.GetPoint (2).GetVertexIndex (), 2);
+	test.Assert (JSM.CheckBody (body));
+	
+	JSM.AddPointToBody (body, 1);
+	test.AssertEqual (body.PointCount (), 4);
+	test.AssertEqual (body.GetPoint (0).GetVertexIndex (), 0);
+	test.AssertEqual (body.GetPoint (1).GetVertexIndex (), 1);
+	test.AssertEqual (body.GetPoint (2).GetVertexIndex (), 2);
+	test.AssertEqual (body.GetPoint (3).GetVertexIndex (), 1);
+	test.Assert (JSM.CheckBody (body));
+	
+	body.Clear ();
+	test.AssertEqual (body.PointCount (), 0);
+	test.Assert (JSM.CheckBody (body));
+});
+
 generalSuite.AddTest ('BodyLineTest', function (test)
 {
 	var line = new JSM.BodyLine (1, 2);
@@ -247,6 +320,7 @@ generalSuite.AddTest ('BodyMergeTest', function (test)
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+	test.AssertEqual (body.AddPoint (new JSM.BodyPoint (0)), 0);
 	test.AssertEqual (body.AddLine (new JSM.BodyLine (0, 1)), 0);
 	test.AssertEqual (body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2])), 0);
 
@@ -254,14 +328,19 @@ generalSuite.AddTest ('BodyMergeTest', function (test)
 	body2.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
 	body2.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
 	body2.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+	test.AssertEqual (body2.AddPoint (new JSM.BodyPoint (0)), 0);
 	test.AssertEqual (body2.AddLine (new JSM.BodyLine (0, 1)), 0);
 	test.AssertEqual (body2.AddPolygon (new JSM.BodyPolygon ([0, 1, 2])), 0);
 	
 	body.Merge (body2);
 	test.AssertEqual (body.VertexCount (), 6);
+	test.AssertEqual (body.PointCount (), 2);
 	test.AssertEqual (body.LineCount (), 2);
 	test.AssertEqual (body.PolygonCount (), 2);
 	
+	test.AssertEqual (body.GetPoint (0).GetVertexIndex (), 0);
+	test.AssertEqual (body.GetPoint (1).GetVertexIndex (), 3);
+
 	test.AssertEqual (body.GetLine (0).GetBegVertexIndex (), 0);
 	test.AssertEqual (body.GetLine (0).GetEndVertexIndex (), 1);
 	test.AssertEqual (body.GetLine (1).GetBegVertexIndex (), 3);
@@ -637,7 +716,8 @@ generalSuite.AddTest ('ExplodeTest2', function (test)
 		var result = {
 			materialCount : 0,
 			trianglesByMaterial : [],
-			linesByMaterial : []
+			linesByMaterial : [],
+			pointsByMaterial : []
 		};
 		
 		var explodeData = {
@@ -656,9 +736,18 @@ generalSuite.AddTest ('ExplodeTest2', function (test)
 			},
 			onLineGeometryEnd : function (material) {
 			},
-			onLine : function (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3) {
+			onLine : function (begVertex, endVertex) {
 				result.linesByMaterial[result.materialCount - 1]++;
 			},
+			onPointGeometryStart : function (material) {
+				result.materialCount++;
+				result.pointsByMaterial.push (0)
+			},
+			onPointGeometryEnd : function (material) {
+			},
+			onPoint : function (vertex) {
+				result.pointsByMaterial[result.materialCount - 1]++;
+			}
 		};
 		
 		JSM.ExplodeBody (body, materials, explodeData);
@@ -755,6 +844,60 @@ generalSuite.AddTest ('ExplodeTest2', function (test)
 	test.AssertEqual (result.linesByMaterial.length, 2);
 	test.AssertEqual (result.linesByMaterial[0], 2);
 	test.AssertEqual (result.linesByMaterial[1], 2);
+	
+	body = new JSM.Body ();
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+	body.AddPoint (new JSM.BodyPoint (0));
+	body.AddPoint (new JSM.BodyPoint (1));
+	body.AddPoint (new JSM.BodyPoint (3));
+	body.AddPoint (new JSM.BodyPoint (3));
+	
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 1);
+	test.AssertEqual (result.trianglesByMaterial.length, 0);
+	test.AssertEqual (result.linesByMaterial.length, 0);
+	test.AssertEqual (result.pointsByMaterial.length, 1);
+	test.AssertEqual (result.pointsByMaterial[0], 4);
+	
+	body.GetPoint (0).SetMaterialIndex (0);
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 2);
+	test.AssertEqual (result.trianglesByMaterial.length, 0);
+	test.AssertEqual (result.linesByMaterial.length, 0);
+	test.AssertEqual (result.pointsByMaterial.length, 2);
+	test.AssertEqual (result.pointsByMaterial[0], 1);
+	test.AssertEqual (result.pointsByMaterial[1], 3);
+
+	body.GetPoint (1).SetMaterialIndex (0);
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 2);
+	test.AssertEqual (result.trianglesByMaterial.length, 0);
+	test.AssertEqual (result.linesByMaterial.length, 0);
+	test.AssertEqual (result.pointsByMaterial.length, 2);
+	test.AssertEqual (result.pointsByMaterial[0], 2);
+	test.AssertEqual (result.pointsByMaterial[1], 2);
+
+	body.GetPoint (2).SetMaterialIndex (1);
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 3);
+	test.AssertEqual (result.trianglesByMaterial.length, 0);
+	test.AssertEqual (result.linesByMaterial.length, 0);
+	test.AssertEqual (result.pointsByMaterial.length, 3);
+	test.AssertEqual (result.pointsByMaterial[0], 2);
+	test.AssertEqual (result.pointsByMaterial[1], 1);
+	test.AssertEqual (result.pointsByMaterial[2], 1);
+
+	body.GetPoint (3).SetMaterialIndex (1);
+	result = CollectExplodeInformation (body, materials);
+	test.AssertEqual (result.materialCount, 2);
+	test.AssertEqual (result.trianglesByMaterial.length, 0);
+	test.AssertEqual (result.linesByMaterial.length, 0);
+	test.AssertEqual (result.pointsByMaterial.length, 2);
+	test.AssertEqual (result.pointsByMaterial[0], 2);
+	test.AssertEqual (result.pointsByMaterial[1], 2);	
 });
 
 generalSuite.AddTest ('ExportTest', function (test)
