@@ -6,7 +6,6 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
@@ -91,21 +90,14 @@
 
 		function Load ()
 		{
-			function TextureLoaded () {
-				viewer.Draw ();
-			}
-		
-			var viewerSettings = {
-				cameraEyePosition : [3.0, -3.0, 3.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0.0, 0.0, 1.0]
-			};
+			var camera = new JSM.Camera (
+				new JSM.Coord (1.0, -1.0, 1.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (0, 0, 1)
+			);
 
-			viewer = new JSM.ThreeViewer ();
-			if (!viewer.Start (document.getElementById ('example'), viewerSettings)) {
-				alert ('Viewer initialization failed.');
-				return;
-			}
+			viewer = new JSM.Viewer ();
+			viewer.Init (document.getElementById ('example'), camera);
 
 			var polygons = [];
 			
@@ -123,16 +115,9 @@
 			var direction = new JSM.Vector (0.0, 0.0, 1.0);
 			var body = JSM.GenerateTube (polygons, true);
 			var materials = new JSM.Materials ();
-			var conversionData = {
-				textureLoadedCallback : TextureLoaded,
-				hasConvexPolygons : false
-			};
 			JSM.GenerateRandomMaterials (body, materials, true);
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, conversionData);
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}
-			//alert (JSM.CheckSolidBody (body));
+			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
+			viewer.AddBody (renderBody);
 
 			viewer.FitInWindow ();
 			viewer.Draw ();
