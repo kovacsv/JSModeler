@@ -556,8 +556,131 @@ function AddRendererTests (canvasTester, viewer)
 		var materials = new JSM.Materials ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
-		body.SetPolygonsMaterialIndex (0);
 		body.SetLinesMaterialIndex (1);
+		body.SetPolygonsMaterialIndex (0);
 		RenderBody (viewer, body, materials, renderFinished);
 	}, 'references/renderer/polygons_and_lines_same_material.png');	
+	
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var body = new JSM.Body ()
+		var vert0 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+		var vert1 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+		var vert2 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+		var vert3 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+		body.AddPoint (new JSM.BodyPoint (vert0, vert1));
+		body.AddPoint (new JSM.BodyPoint (vert1, vert2));
+		body.AddPoint (new JSM.BodyPoint (vert2, vert3));
+		body.AddPoint (new JSM.BodyPoint (vert3, vert0));
+		RenderBody (viewer, body, null, renderFinished);
+	}, 'references/renderer/points_default_material.png');
+
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var body = new JSM.Body ()
+		var vert0 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+		var vert1 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+		var vert2 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+		var vert3 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+		body.AddPoint (new JSM.BodyPoint (vert0, vert1));
+		body.AddPoint (new JSM.BodyPoint (vert1, vert2));
+		body.AddPoint (new JSM.BodyPoint (vert2, vert3));
+		body.AddPoint (new JSM.BodyPoint (vert3, vert0));
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+		body.SetPointsMaterialIndex (0);
+		RenderBody (viewer, body, materials, renderFinished);
+	}, 'references/renderer/points_same_material.png');
+
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var body = new JSM.Body ()
+		var vert0 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+		var vert1 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+		var vert2 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+		var vert3 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+		body.AddPoint (new JSM.BodyPoint (vert0, vert1));
+		body.AddPoint (new JSM.BodyPoint (vert1, vert2));
+		body.AddPoint (new JSM.BodyPoint (vert2, vert3));
+		body.AddPoint (new JSM.BodyPoint (vert3, vert0));
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+		body.GetPoint (1).SetMaterialIndex (0);
+		body.GetPoint (2).SetMaterialIndex (1);
+		RenderBody (viewer, body, materials, renderFinished);
+	}, 'references/renderer/points_different_materials.png');
+	
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var body = new JSM.Body ()
+		var vert0 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+		var vert1 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+		var vert2 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+		var vert3 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+		body.AddPoint (new JSM.BodyPoint (vert0, vert1));
+		body.AddPoint (new JSM.BodyPoint (vert1, vert2));
+		body.AddPoint (new JSM.BodyPoint (vert2, vert3));
+		body.AddPoint (new JSM.BodyPoint (vert3, vert0));
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000, pointSize : 0.2}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, pointSize : 0.3}));
+		body.GetPoint (1).SetMaterialIndex (0);
+		body.GetPoint (2).SetMaterialIndex (1);
+		RenderBody (viewer, body, materials, renderFinished);
+	}, 'references/renderer/points_different_size_materials.png');	
+
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var body = new JSM.GenerateCuboid (0.5, 0.5, 0.5);
+		var vert0 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+		var vert1 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+		var vert2 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+		var vert3 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+		var vert4 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 1)));
+		var vert5 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 1)));
+		var vert6 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 1)));
+		var vert7 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 1)));
+		body.AddLine (new JSM.BodyLine (vert0, vert1));
+		body.AddLine (new JSM.BodyLine (vert1, vert2));
+		body.AddLine (new JSM.BodyLine (vert2, vert3));
+		body.AddLine (new JSM.BodyLine (vert3, vert0));
+		body.AddPoint (new JSM.BodyPoint (vert4));
+		body.AddPoint (new JSM.BodyPoint (vert5));
+		body.AddPoint (new JSM.BodyPoint (vert6));
+		body.AddPoint (new JSM.BodyPoint (vert7));
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+		body.GetPoint (1).SetMaterialIndex (0);
+		body.GetPoint (2).SetMaterialIndex (1);
+		body.GetLine (1).SetMaterialIndex (0);
+		body.GetLine (2).SetMaterialIndex (1);
+		body.GetPolygon (1).SetMaterialIndex (0);
+		body.GetPolygon (2).SetMaterialIndex (1);
+		RenderBody (viewer, body, materials, renderFinished);
+	}, 'references/renderer/polygons_lines_points_materials.png');
+	
+	canvasTester.AddTest (rendererSuite, function (renderFinished) {
+		var body = new JSM.GenerateCuboid (0.5, 0.5, 0.5);
+		var vert0 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 0)));
+		var vert1 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 0)));
+		var vert2 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 0)));
+		var vert3 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 0)));
+		var vert4 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 0, 1)));
+		var vert5 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 0, 1)));
+		var vert6 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (1, 1, 1)));
+		var vert7 = body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0, 1, 1)));
+		body.AddLine (new JSM.BodyLine (vert0, vert1));
+		body.AddLine (new JSM.BodyLine (vert1, vert2));
+		body.AddLine (new JSM.BodyLine (vert2, vert3));
+		body.AddLine (new JSM.BodyLine (vert3, vert0));
+		body.AddPoint (new JSM.BodyPoint (vert4));
+		body.AddPoint (new JSM.BodyPoint (vert5));
+		body.AddPoint (new JSM.BodyPoint (vert6));
+		body.AddPoint (new JSM.BodyPoint (vert7));
+		var materials = new JSM.Materials ();
+		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+		materials.AddMaterial (new JSM.Material ({ambient : 0x00cccc, diffuse : 0x00cccc}));
+		body.SetPointsMaterialIndex (2);
+		body.SetLinesMaterialIndex (1);
+		body.SetPolygonsMaterialIndex (0);
+		RenderBody (viewer, body, materials, renderFinished);
+	}, 'references/renderer/polygons_lines_points_same_material.png');	
 }
