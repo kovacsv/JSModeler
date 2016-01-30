@@ -74,7 +74,7 @@
 		"../src/extras/curves.js"
 	],
 	"threeExtensionFileList" : [
-		"../src/three/threeconverter.js",
-		"../src/three/threeviewer.js"
+		"../src/extensions/three/threeconverter.js",
+		"../src/extensions/three/threeviewer.js"
 	]
 }
