@@ -5,7 +5,7 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		threeMaterial = new THREE.PointCloudMaterial ({
 			ambient : material.ambient,
 			color : material.diffuse,
-			size: material.pointSize / 100.0
+			size: material.pointSize
 		});
 		threeGeometry = new THREE.Geometry ();
 	}

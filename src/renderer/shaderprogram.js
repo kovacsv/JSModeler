@@ -194,7 +194,8 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'	mat4 modelViewMatrix = uViewMatrix * uTransformationMatrix;',
 				'	vVertex = vec3 (modelViewMatrix * vec4 (aVertexPosition, 1.0));',
 				'#ifdef POINT',
-				'	gl_PointSize = uPointSize;',
+				'	const mediump float scale = 200.0;',
+				'	gl_PointSize = uPointSize * (scale / length (vVertex));',
 				'#endif',
 				'	gl_Position = uProjectionMatrix * vec4 (vVertex, 1.0);',
 				'}'
