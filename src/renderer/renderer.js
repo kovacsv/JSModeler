@@ -230,16 +230,15 @@ JSM.Renderer.prototype.Render = function (camera)
 			return null;
 		}
 
-		var shaderType = MaterialTypeToShaderType (materialType);
-		var modifyParams = true;
+		var shaderType = null;
 		renderer.EnumerateBodies (function (body) {
 			if (body.HasTypedMeshes (materialType)) {
 				var matrix = body.GetTransformationMatrix ();
 				body.EnumerateTypedMeshes (materialType, function (mesh) {
-					if (modifyParams) {
+					if (shaderType === null) {
+						shaderType = MaterialTypeToShaderType (materialType);
 						renderer.shader.UseShader (shaderType);
 						renderer.shader.SetParameters (renderer.lights, viewMatrix, projectionMatrix);
-						modifyParams = false;
 					}
 					var material = mesh.GetMaterial ();
 					var vertexBuffer = mesh.GetVertexBuffer ();
