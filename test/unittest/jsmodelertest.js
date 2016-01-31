@@ -76,8 +76,8 @@ unitTest.AddSourceFile ('../../src/extras/subdivision.js');
 unitTest.AddSourceFile ('../../src/extras/svgtomodel.js');
 unitTest.AddSourceFile ('../../src/extras/csg.js');
 unitTest.AddSourceFile ('../../src/extras/curves.js');
-unitTest.AddSourceFile ('../../src/extensions/three/threeconverter.js');
-unitTest.AddSourceFile ('../../src/extensions/three/threeviewer.js');
+unitTest.AddSourceFile ('../../src/extensions/threeviewer/threeconverter.js');
+unitTest.AddSourceFile ('../../src/extensions/threeviewer/threeviewer.js');
 // JSModeler includes end
 
 unitTest.AddSourceFile ('utils/triangulationcheck.js');
