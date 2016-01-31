@@ -122,7 +122,6 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'	for (int i = 0; i < MAX_LIGHTS; i++) {',
 				'		mediump vec3 L = normalize (-uLights[i].direction);',
 				'		mediump vec3 R = normalize (-reflect (L, N));',
-				'	mediump vec3 ambientComponent = uMaterial.ambientColor * uAmbientLightColor;',
 				'		diffuseComponent += uMaterial.diffuseColor * uLights[i].diffuseColor * max (dot (N, L), 0.0);',
 				'		specularComponent += uMaterial.specularColor * uLights[i].specularColor * pow (max (dot (R, E), 0.0), uMaterial.shininess);',
 				'	}',
