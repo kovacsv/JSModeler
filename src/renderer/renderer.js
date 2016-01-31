@@ -95,7 +95,7 @@ JSM.Renderer.prototype.SetClearColor = function (red, green, blue)
 JSM.Renderer.prototype.SetAmbientLight = function (light)
 {
 	this.ambientLight = light;
-}
+};
 
 JSM.Renderer.prototype.AddLight = function (light)
 {

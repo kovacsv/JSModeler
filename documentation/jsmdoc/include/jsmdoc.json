@@ -4018,12 +4018,6 @@
 						}
 					}
 				},
-				"Light" : {
-					"description" : "Defines a directional light. The parameter structure can contain the following values: ambient, diffuse, specular, direction.",
-					"parameters" : [
-						["parameters", "object", "parameters of the light"]
-					]
-				},
 				"Material" : {
 					"description" : "Defines a material. The parameter structure can contain the following values: ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight.",
 					"parameters" : [
