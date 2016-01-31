@@ -30,7 +30,6 @@
 		"../src/modeler/body.js",
 		"../src/modeler/model.js",
 		"../src/modeler/color.js",
-		"../src/modeler/light.js",
 		"../src/modeler/material.js",
 		"../src/modeler/adjacencyinfo.js",
 		"../src/modeler/bodyutils.js",

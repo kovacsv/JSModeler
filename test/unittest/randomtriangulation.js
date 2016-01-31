@@ -32,7 +32,6 @@ unitTest.AddSourceFile ('../../src/geometry/ray.js');
 unitTest.AddSourceFile ('../../src/modeler/body.js');
 unitTest.AddSourceFile ('../../src/modeler/model.js');
 unitTest.AddSourceFile ('../../src/modeler/color.js');
-unitTest.AddSourceFile ('../../src/modeler/light.js');
 unitTest.AddSourceFile ('../../src/modeler/material.js');
 unitTest.AddSourceFile ('../../src/modeler/adjacencyinfo.js');
 unitTest.AddSourceFile ('../../src/modeler/bodyutils.js');
