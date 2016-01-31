@@ -343,25 +343,3 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 
 	return resultMeshes;
 };
-
-JSM.JSONFileConverter = function (onReady, onTextureLoaded)
-{
-	this.onReady = onReady;
-	this.onTextureLoaded = onTextureLoaded;
-};
-
-JSM.JSONFileConverter.prototype.Convert = function (fileName)
-{
-	var loader = new JSM.JSONFileLoader (this.OnReady.bind (this));
-	loader.Load (fileName);
-};
-
-JSM.JSONFileConverter.prototype.OnReady = function (jsonData)
-{
-	if (this.onReady === null) {
-		return;
-	}
-	
-	var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData, this.onTextureLoaded);
-	this.onReady (meshes);
-};
