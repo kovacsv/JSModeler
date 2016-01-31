@@ -115,7 +115,7 @@
 			if (!renderer.Init (document.getElementById ('example'))) {
 				alert ('error');
 			}
-			var light = new JSM.RenderLight (0x7f7f7f, 0x7f7f7f, 0xffffff, new JSM.Vector (1.0, 0.0, 0.0));
+			var light = new JSM.RenderDirectionalLight (0x7f7f7f, 0xffffff, new JSM.Vector (1.0, 0.0, 0.0));
 			renderer.AddLight (light);
 			light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
 

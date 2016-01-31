@@ -4,7 +4,8 @@ JSM.Renderer = function ()
 	this.context = null;
 	this.shader = null;
 	
-	this.lights = null;
+	this.ambientLight = null;
+	this.directionalLights = null;
 	this.bodies = null;
 };
 
@@ -69,7 +70,8 @@ JSM.Renderer.prototype.InitShaders = function ()
 
 JSM.Renderer.prototype.InitLights = function ()
 {
-	this.lights = [];
+	this.ambientLight = new JSM.RenderAmbientLight (0x000000);
+	this.directionalLights = [];
 	return true;
 };
 
@@ -81,7 +83,7 @@ JSM.Renderer.prototype.InitBodies = function ()
 
 JSM.Renderer.prototype.InitView = function ()
 {
-	this.lights = [];
+	this.directionalLights = [];
 	return true;
 };
 
@@ -90,32 +92,37 @@ JSM.Renderer.prototype.SetClearColor = function (red, green, blue)
 	this.context.clearColor (red, green, blue, 1.0);
 };
 
+JSM.Renderer.prototype.SetAmbientLight = function (light)
+{
+	this.ambientLight = light;
+}
+
 JSM.Renderer.prototype.AddLight = function (light)
 {
 	var maxLightCount = this.shader.GetMaxLightCount ();
-	if (this.lights.length >= maxLightCount) {
+	if (this.directionalLights.length >= maxLightCount) {
 		return -1;
 	}
-	this.lights.push (light);
-	return this.lights.length - 1;
+	this.directionalLights.push (light);
+	return this.directionalLights.length - 1;
 };
 
 JSM.Renderer.prototype.RemoveLight = function (light)
 {
-	var index = this.lights.indexOf (light);
+	var index = this.directionalLights.indexOf (light);
 	if (index != -1) {
-		this.lights.splice (index, 1);
+		this.directionalLights.splice (index, 1);
 	}
 };
 
 JSM.Renderer.prototype.RemoveLights = function ()
 {
-	this.lights = [];
+	this.directionalLights = [];
 };
 
 JSM.Renderer.prototype.GetLight = function (index)
 {
-	return this.lights[index];
+	return this.directionalLights[index];
 };
 
 JSM.Renderer.prototype.AddBody = function (renderBody, textureLoaded)
@@ -238,7 +245,7 @@ JSM.Renderer.prototype.Render = function (camera)
 					if (shaderType === null) {
 						shaderType = MaterialTypeToShaderType (materialType);
 						renderer.shader.UseShader (shaderType);
-						renderer.shader.SetParameters (renderer.lights, viewMatrix, projectionMatrix);
+						renderer.shader.SetParameters (renderer.ambientLight, renderer.directionalLights, viewMatrix, projectionMatrix);
 					}
 					var material = mesh.GetMaterial ();
 					var vertexBuffer = mesh.GetVertexBuffer ();

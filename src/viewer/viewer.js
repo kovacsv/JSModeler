@@ -23,6 +23,7 @@ JSM.Viewer.prototype.Reset = function ()
 {
 	this.RemoveBodies ();
 	this.RemoveLights ();
+	this.SetAmbientLight (new JSM.RenderAmbientLight (0x7f7f7f));
 	this.EnableCameraLight ();
 };
 
@@ -47,6 +48,7 @@ JSM.Viewer.prototype.InitNavigation = function (camera)
 		return false;
 	}
 
+	this.SetAmbientLight (new JSM.RenderAmbientLight (0x7f7f7f));
 	this.EnableCameraLight ();
 	return true;
 };
@@ -62,7 +64,7 @@ JSM.Viewer.prototype.EnableCameraLight = function ()
 	if (this.cameraLight !== null) {
 		return;
 	}
-	this.cameraLight = new JSM.RenderLight (0x7f7f7f, 0x7f7f7f, 0xffffff, new JSM.Vector (1.0, 0.0, 0.0));
+	this.cameraLight = new JSM.RenderDirectionalLight (0x7f7f7f, 0xffffff, new JSM.Vector (1.0, 0.0, 0.0));
 	this.AddLight (this.cameraLight);
 };
 
@@ -78,6 +80,11 @@ JSM.Viewer.prototype.DisableCameraLight = function ()
 JSM.Viewer.prototype.GetCameraLight = function ()
 {
 	return this.cameraLight;
+};
+
+JSM.Viewer.prototype.SetAmbientLight = function (light)
+{
+	this.renderer.SetAmbientLight (light);
 };
 
 JSM.Viewer.prototype.AddLight = function (light)

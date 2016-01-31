@@ -1,6 +1,10 @@
-JSM.RenderLight = function (ambient, diffuse, specular, direction)
+JSM.RenderAmbientLight = function (color)
 {
-	this.ambient = JSM.HexColorToNormalizedRGBComponents (ambient);
+	this.color = JSM.HexColorToNormalizedRGBComponents (color);
+};
+
+JSM.RenderDirectionalLight = function (diffuse, specular, direction)
+{
 	this.diffuse = JSM.HexColorToNormalizedRGBComponents (diffuse);
 	this.specular = JSM.HexColorToNormalizedRGBComponents (specular);
 	this.direction = direction.Clone ();

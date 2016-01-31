@@ -35,9 +35,9 @@ JSM.ShaderProgram.prototype.GetMaxLightCount = function ()
 
 JSM.ShaderProgram.prototype.InitGlobalParams = function ()
 {
-	var defaultLight = new JSM.RenderLight (0x000000, 0x000000, 0x000000, new JSM.Vector (0.0, 0.0, 0.0));
+	var noDirectionalLight = new JSM.RenderDirectionalLight (0x000000, 0x000000, new JSM.Vector (0.0, 0.0, 0.0));
 	this.globalParams = {
-		defaultLight : defaultLight,
+		noDirectionalLight : noDirectionalLight,
 		maxLightCount : 4
 	};
 	return true;
@@ -54,7 +54,6 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 
 				'struct Light',
 				'{',
-				'	mediump vec3 ambientColor;',
 				'	mediump vec3 diffuseColor;',
 				'};',
 
@@ -62,16 +61,16 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'{',
 				'	mediump vec3 ambientColor;',
 				'	mediump vec3 diffuseColor;',
-				'};',				
+				'};',
 				
+				'uniform mediump vec3 uAmbientLightColor;',
 				'uniform Light uLights[MAX_LIGHTS];',
 				'uniform Material uMaterial;',
 				
 				'void main (void) {',
-				'	mediump vec3 ambientComponent;',
+				'	mediump vec3 ambientComponent = uMaterial.ambientColor * uAmbientLightColor;',
 				'	mediump vec3 diffuseComponent;',
 				'	for (int i = 0; i < MAX_LIGHTS; i++) {',
-				'		ambientComponent += uMaterial.ambientColor * uLights[i].ambientColor;',
 				'		diffuseComponent += uMaterial.diffuseColor * uLights[i].diffuseColor;',
 				'	}',
 				'	gl_FragColor = vec4 (ambientComponent + diffuseComponent, 1.0);',
@@ -84,7 +83,6 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				
 				'struct Light',
 				'{',
-				'	mediump vec3 ambientColor;',
 				'	mediump vec3 diffuseColor;',
 				'	mediump vec3 specularColor;',
 				'	mediump vec3 direction;',
@@ -99,6 +97,7 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'	mediump float opacity;',
 				'};',
 				
+				'uniform mediump vec3 uAmbientLightColor;',
 				'uniform Light uLights[MAX_LIGHTS];',
 				'uniform Material uMaterial;',
 
@@ -115,7 +114,7 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'	if (!gl_FrontFacing) {',
 				'		N = -N;',
 				'	}',
-				'	mediump vec3 ambientComponent;',
+				'	mediump vec3 ambientComponent = uMaterial.ambientColor * uAmbientLightColor;',
 				'	mediump vec3 diffuseComponent;',
 				'	mediump vec3 specularComponent;',
 				'	mediump vec3 E = normalize (-vVertex);',
@@ -123,7 +122,7 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'	for (int i = 0; i < MAX_LIGHTS; i++) {',
 				'		mediump vec3 L = normalize (-uLights[i].direction);',
 				'		mediump vec3 R = normalize (-reflect (L, N));',
-				'		ambientComponent += uMaterial.ambientColor * uLights[i].ambientColor;',
+				'	mediump vec3 ambientComponent = uMaterial.ambientColor * uAmbientLightColor;',
 				'		diffuseComponent += uMaterial.diffuseColor * uLights[i].diffuseColor * max (dot (N, L), 0.0);',
 				'		specularComponent += uMaterial.specularColor * uLights[i].specularColor * pow (max (dot (R, E), 0.0), uMaterial.shininess);',
 				'	}',
@@ -210,11 +209,11 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 			shader.vertexPositionAttribute = context.getAttribLocation (shader, 'aVertexPosition');
 			shader.vertexNormalAttribute = context.getAttribLocation (shader, 'aVertexNormal');
 
+			shader.ambientLightColorUniform = context.getUniformLocation (shader, 'uAmbientLightColor');
 			shader.lightUniforms = [];
 			var i;
 			for (i = 0; i < globalParams.maxLightCount; i++) {
 				shader.lightUniforms.push ({
-					ambientColor : context.getUniformLocation (shader, 'uLights[' + i + '].ambientColor'),
 					diffuseColor : context.getUniformLocation (shader, 'uLights[' + i + '].diffuseColor'),
 					specularColor : context.getUniformLocation (shader, 'uLights[' + i + '].specularColor'),
 					direction : context.getUniformLocation (shader, 'uLights[' + i + '].direction')
@@ -240,10 +239,10 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 		} else if (shaderType == JSM.ShaderType.Point || shaderType == JSM.ShaderType.Line) {
 			shader.vertexPositionAttribute = context.getAttribLocation (shader, 'aVertexPosition');
 
+			shader.ambientLightColorUniform = context.getUniformLocation (shader, 'uAmbientLightColor');
 			shader.lightUniforms = [];
 			for (i = 0; i < globalParams.maxLightCount; i++) {
 				shader.lightUniforms.push ({
-					ambientColor : context.getUniformLocation (shader, 'uLights[' + i + '].ambientColor'),
 					diffuseColor : context.getUniformLocation (shader, 'uLights[' + i + '].diffuseColor')
 				});
 			}
@@ -270,7 +269,9 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 		if (vertexShaderScript === null || fragmentShaderScript === null) {
 			return false;
 		}
-		var shader = JSM.WebGLInitShaderProgram (context, vertexShaderScript, fragmentShaderScript, null);
+		var shader = JSM.WebGLInitShaderProgram (context, vertexShaderScript, fragmentShaderScript, function (message) {
+			JSM.Message (message);
+		});
 		if (shader === null) {
 			return false;
 		}
@@ -377,15 +378,15 @@ JSM.ShaderProgram.prototype.UseShader = function (shaderType)
 	this.context.useProgram (this.currentShader);
 };
 
-JSM.ShaderProgram.prototype.SetParameters = function (lights, viewMatrix, projectionMatrix)
+JSM.ShaderProgram.prototype.SetParameters = function (ambientLight, directionalLights, viewMatrix, projectionMatrix)
 {
-	function GetLight (lights, index, defaultLight)
+	function GetLight (directionalLights, index, noDirectionalLight)
 	{
-		if (index < lights.length) {
-			return lights[index];
+		if (index < directionalLights.length) {
+			return directionalLights[index];
 		}
 
-		return defaultLight;
+		return noDirectionalLight;
 	}
 	
 	var context = this.context;
@@ -393,10 +394,10 @@ JSM.ShaderProgram.prototype.SetParameters = function (lights, viewMatrix, projec
 	
 	var i, light, lightDirection;
 	if (this.currentType == JSM.ShaderType.Triangle || this.currentType == JSM.ShaderType.TexturedTriangle) {
+		context.uniform3f (shader.ambientLightColorUniform, ambientLight.color[0], ambientLight.color[1], ambientLight.color[2]);
 		for (i = 0; i < this.globalParams.maxLightCount; i++) {
-			light = GetLight (lights, i, this.globalParams.defaultLight);
+			light = GetLight (directionalLights, i, this.globalParams.noDirectionalLight);
 			lightDirection = JSM.ApplyRotation (viewMatrix, light.direction);
-			context.uniform3f (shader.lightUniforms[i].ambientColor, light.ambient[0], light.ambient[1], light.ambient[2]);
 			context.uniform3f (shader.lightUniforms[i].diffuseColor, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
 			context.uniform3f (shader.lightUniforms[i].specularColor, light.specular[0], light.specular[1], light.specular[2]);
 			context.uniform3f (shader.lightUniforms[i].direction, lightDirection.x, lightDirection.y, lightDirection.z);
@@ -404,9 +405,9 @@ JSM.ShaderProgram.prototype.SetParameters = function (lights, viewMatrix, projec
 		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);
 		context.uniformMatrix4fv (shader.vMatrixUniform, false, viewMatrix);
 	} else if (this.currentType == JSM.ShaderType.Point || this.currentType == JSM.ShaderType.Line) {
+		context.uniform3f (shader.ambientLightColorUniform, ambientLight.color[0], ambientLight.color[1], ambientLight.color[2]);
 		for (i = 0; i < this.globalParams.maxLightCount; i++) {
-			light = GetLight (lights, i, this.globalParams.defaultLight);
-			context.uniform3f (shader.lightUniforms[i].ambientColor, light.ambient[0], light.ambient[1], light.ambient[2]);
+			light = GetLight (directionalLights, i, this.globalParams.noDirectionalLight);
 			context.uniform3f (shader.lightUniforms[i].diffuseColor, light.diffuse[0], light.diffuse[1], light.diffuse[2]);
 		}
 		context.uniformMatrix4fv (shader.pMatrixUniform, false, projectionMatrix);

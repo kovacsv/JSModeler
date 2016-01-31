@@ -102,7 +102,7 @@
 			viewer.Init (document.getElementById ('example'), camera);
 
 			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0xffffff}));
+			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 			
 			var body = JSM.GenerateCuboid (1, 1, 1);
 			body.SetPolygonsMaterialIndex (0);
@@ -110,16 +110,10 @@
 			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 			viewer.AddBody (renderBody);
 			
+			viewer.SetAmbientLight (new JSM.RenderAmbientLight (0x7f7f7f));
+			viewer.AddLight (new JSM.RenderDirectionalLight (0xffffff, 0xffffff, new JSM.Vector (-1.0, 0.0, 0.0)));
+			viewer.AddLight (new JSM.RenderDirectionalLight (0xffffff, 0xffffff, new JSM.Vector (0.0, -1.0, 0.0)));
 			viewer.DisableCameraLight ();
-			var light1 = new JSM.RenderLight (0x000000, 0xcc0000, 0xffffff, new JSM.Vector (-1.0, 0.0, 0.0));		
-			var light2 = new JSM.RenderLight (0x000000, 0x00cc00, 0xffffff, new JSM.Vector (-1.0, 0.0, 0.0));		
-			var light3 = new JSM.RenderLight (0x000000, 0x00cc00, 0xffffff, new JSM.Vector (0.0, -1.0, 0.0));		
-			var light4 = new JSM.RenderLight (0x000000, 0x0000cc, 0xffffff, new JSM.Vector (0.0, 0.0, -1.0));		
-			
-			viewer.AddLight (light1);
-			viewer.AddLight (light2);
-			viewer.AddLight (light3);
-			viewer.AddLight (light4);
 
 			viewer.Draw ();
 		}
