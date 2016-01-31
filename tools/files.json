@@ -74,11 +74,11 @@
 		"../src/extras/csg.js",
 		"../src/extras/curves.js"
 	],
+	"svgToModelExtensionFileList" : [
+		"../src/extensions/svgtomodel/svgtomodel.js"
+	],
 	"threeExtensionFileList" : [
 		"../src/extensions/threeviewer/threeconverter.js",
 		"../src/extensions/threeviewer/threeviewer.js"
-	],
-	"svgToModelExtensionFileList" : [
-		"../src/extensions/svgtomodel/svgtomodel.js"
 	]
 }

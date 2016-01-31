@@ -74,9 +74,9 @@ def Main ():
 	fileNames = []
 	for fileName in jsonFileNames['coreFileList']:
 		fileNames.append (fileName)
-	for fileName in jsonFileNames['threeExtensionFileList']:
-		fileNames.append (fileName)
 	for fileName in jsonFileNames['svgToModelExtensionFileList']:
+		fileNames.append (fileName)
+	for fileName in jsonFileNames['threeExtensionFileList']:
 		fileNames.append (fileName)
 	
 	rootFolderDirPath = os.path.abspath ('..')
