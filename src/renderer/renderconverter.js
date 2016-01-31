@@ -5,19 +5,18 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 		var renderAmbient = JSM.HexColorToNormalizedRGBComponents (material.ambient);
 		var renderDiffuse = JSM.HexColorToNormalizedRGBComponents (material.diffuse);
 		var renderSpecular = JSM.HexColorToNormalizedRGBComponents (material.specular);
-		var renderMaterial = new JSM.RenderMaterial (
-			materialType,
-			renderAmbient,
-			renderDiffuse,
-			renderSpecular,
-			material.shininess,
-			material.opacity,
-			material.singleSided,
-			material.pointSize,
-			material.texture,
-			material.textureWidth,
-			material.textureHeight
-		);
+		var renderMaterial = new JSM.RenderMaterial (materialType, {
+			ambient : renderAmbient,
+			diffuse : renderDiffuse,
+			specular : renderSpecular,
+			shininess : material.shininess,
+			opacity : material.opacity,
+			singleSided : material.singleSided,
+			pointSize : material.pointSize,
+			texture : material.texture,
+			textureWidth : material.textureWidth,
+			textureHeight : material.textureHeight
+		});
 		return renderMaterial;
 	}
 	
@@ -73,7 +72,7 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 
 	function OnGeometryEnd (material)
 	{
-		var materialType = JSM.RenderMaterialFlags.Polygon;
+		var materialType = JSM.RenderMaterialFlags.Triangle;
 		if (material.texture !== null) {
 			materialType += JSM.RenderMaterialFlags.Textured;
 		}
@@ -149,4 +148,77 @@ JSM.ConvertModelToRenderBodies = function (model, materials, parameters)
 		bodies.push (renderBody);
 	}
 	return bodies;
+};
+
+JSM.ConvertJSONDataToRenderBodies = function (jsonData)
+{
+	function ConvertMeshToRenderBody (mesh, materials)
+	{
+		function ConvertTrianglesToRenderMesh (mesh, triangles, materials)
+		{
+			function AppendCoord (targetArray, sourceArray, indexArray, startIndex)
+			{
+				var vertexIndex, sourceVertexIndex, componentIndex;
+				for (vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
+					sourceVertexIndex = indexArray[startIndex + vertexIndex];
+					for (componentIndex = 0; componentIndex < 3; componentIndex++) {
+						targetArray.push (sourceArray[sourceVertexIndex * 3 + componentIndex]);
+					}
+				}
+			}
+			
+			var material = materials[triangles.material];
+			var renderMaterial = new JSM.RenderMaterial (JSM.RenderMaterialFlags.Triangle, {
+				ambient : material.diffuse || [1.0, 1.0, 1.0],
+				diffuse : material.diffuse || [1.0, 1.0, 1.0],
+				specular : material.specular || [1.0, 1.0, 1.0],
+				shininess : material.shininess || 0.0,
+				opacity : material.opacity || 1.0
+			});
+			
+			var renderMesh = new JSM.RenderMesh (renderMaterial);
+			var vertexArray = [];
+			var normalArray = [];
+			var uvArray = [];
+			
+			var i;
+			for	(i = 0; i < triangles.parameters.length; i += 9) {
+				AppendCoord (vertexArray, mesh.vertices, triangles.parameters, i);
+				AppendCoord (normalArray, mesh.normals, triangles.parameters, i + 3);
+				AppendCoord (uvArray, mesh.uvs, triangles.parameters, i + 6);
+			}
+
+			renderMesh.SetVertexArray (vertexArray);
+			renderMesh.SetNormalArray (normalArray);
+			renderMesh.SetUVArray (uvArray);
+			return renderMesh;
+		}
+		
+		var renderBody = new JSM.RenderBody ();
+		var i, triangles;
+		for (i = 0; i < mesh.triangles.length; i++) {
+			triangles = mesh.triangles[i];
+			renderBody.AddMesh (ConvertTrianglesToRenderMesh (mesh, triangles, materials));
+		}
+		return renderBody;
+	}
+	
+	var resultBodies = [];
+
+	var materials = jsonData.materials;
+	if (materials === undefined) {
+		return resultBodies;
+	}
+	
+	var meshes = jsonData.meshes;
+	if (meshes === undefined) {
+		return resultBodies;
+	}
+	
+	var i = 0;
+	for (i = 0; i < meshes.length; i++) {
+		resultBodies.push (ConvertMeshToRenderBody (meshes[i], materials));
+	}
+
+	return resultBodies;
 };

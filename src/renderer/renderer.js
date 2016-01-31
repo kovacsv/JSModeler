@@ -186,7 +186,7 @@ JSM.Renderer.prototype.FindObjects = function (camera, screenX, screenY)
 	var result = [];
 	this.EnumerateBodies (function (body) {
 		var transformation = body.GetTransformation ();
-		body.EnumerateMeshesWithFlag (JSM.RenderMaterialFlags.Polygon, function (mesh) {
+		body.EnumerateMeshesWithFlag (JSM.RenderMaterialFlags.Triangle, function (mesh) {
 			var vertexCount = mesh.VertexCount ();
 			var i, v0, v1, v2, intersection;
 			for (i = 0; i < vertexCount; i += 3) {
@@ -222,7 +222,7 @@ JSM.Renderer.prototype.Render = function (camera)
 				return type & flag;
 			}
 			
-			if (HasFlag (materialType, JSM.RenderMaterialFlags.Polygon)) {
+			if (HasFlag (materialType, JSM.RenderMaterialFlags.Triangle)) {
 				if (HasFlag (materialType, JSM.RenderMaterialFlags.Textured)) {
 					return JSM.ShaderType.TexturedTriangle;
 				} else if (!HasFlag (materialType, JSM.RenderMaterialFlags.Textured)) {
@@ -262,10 +262,10 @@ JSM.Renderer.prototype.Render = function (camera)
 	var viewMatrix = JSM.MatrixView (camera.eye, camera.center, camera.up);
 	var projectionMatrix = JSM.MatrixPerspective (camera.fieldOfView * JSM.DegRad, this.canvas.width / this.canvas.height, camera.nearClippingPlane, camera.farClippingPlane);
 
-	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon + JSM.RenderMaterialFlags.Textured, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialFlags.Triangle, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialFlags.Triangle + JSM.RenderMaterialFlags.Textured, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialFlags.Line, viewMatrix, projectionMatrix);
 	DrawMeshes (this, JSM.RenderMaterialFlags.Point, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon + JSM.RenderMaterialFlags.Transparent, viewMatrix, projectionMatrix);
-	DrawMeshes (this, JSM.RenderMaterialFlags.Polygon + JSM.RenderMaterialFlags.Transparent + JSM.RenderMaterialFlags.Textured, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialFlags.Triangle + JSM.RenderMaterialFlags.Transparent, viewMatrix, projectionMatrix);
+	DrawMeshes (this, JSM.RenderMaterialFlags.Triangle + JSM.RenderMaterialFlags.Transparent + JSM.RenderMaterialFlags.Textured, viewMatrix, projectionMatrix);
 };

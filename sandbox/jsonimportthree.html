@@ -67,7 +67,6 @@
 	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
-	<script type="text/javascript" src="../src/viewer/jsonfileloader.js"></script>
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
 	<script type="text/javascript" src="../src/viewer/painter.js"></script>
@@ -148,7 +147,7 @@
 		
 		function ConvertFile (fileName)
 		{
-			var converter = new JSM.LoadJsonFile (fileName, function (jsonData) {
+			JSM.LoadJsonFile (fileName, function (jsonData) {
 				var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData);
 				Converted (meshes);
 			});

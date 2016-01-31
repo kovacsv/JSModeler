@@ -61,7 +61,6 @@ unitTest.AddSourceFile ('../../src/renderer/shaderprogram.js');
 unitTest.AddSourceFile ('../../src/renderer/renderer.js');
 unitTest.AddSourceFile ('../../src/renderer/pointcloudrenderer.js');
 unitTest.AddSourceFile ('../../src/renderer/renderconverter.js');
-unitTest.AddSourceFile ('../../src/viewer/jsonfileloader.js');
 unitTest.AddSourceFile ('../../src/viewer/mouse.js');
 unitTest.AddSourceFile ('../../src/viewer/touch.js');
 unitTest.AddSourceFile ('../../src/viewer/painter.js');

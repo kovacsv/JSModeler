@@ -59,7 +59,6 @@
 		"../src/renderer/renderer.js",
 		"../src/renderer/pointcloudrenderer.js",
 		"../src/renderer/renderconverter.js",
-		"../src/viewer/jsonfileloader.js",
 		"../src/viewer/mouse.js",
 		"../src/viewer/touch.js",
 		"../src/viewer/painter.js",
