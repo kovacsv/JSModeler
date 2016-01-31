@@ -71,12 +71,14 @@
 		"../src/extras/solidgenerator.js",
 		"../src/extras/extgenerator.js",
 		"../src/extras/subdivision.js",
-		"../src/extras/svgtomodel.js",
 		"../src/extras/csg.js",
 		"../src/extras/curves.js"
 	],
 	"threeExtensionFileList" : [
 		"../src/extensions/threeviewer/threeconverter.js",
 		"../src/extensions/threeviewer/threeviewer.js"
+	],
+	"svgToModelExtensionFileList" : [
+		"../src/extensions/svgtomodel/svgtomodel.js"
 	]
 }

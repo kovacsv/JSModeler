@@ -4833,18 +4833,6 @@
 						["Body", "the result"]
 					]
 				},
-				"SvgToModel" : {
-					"description" : "Converts an svg objects rect, path and polygon elements to a body.",
-					"parameters" : [
-						["svgObject", "html svg element", "the svg element"],
-						["height", "number", "the height of the result body"],
-						["segmentLength", "number", "the maximum length of curved segments"],
-						["curveAngle", "number", "if not null, defines the curve angle of the model"]
-					],
-					"returns" : [
-						["Body", "the result"]
-					]
-				},
 				"BooleanOperation" : {
 					"description" : "Makes a boolean operation on the given bodies.",
 					"parameters" : [

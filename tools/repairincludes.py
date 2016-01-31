@@ -76,6 +76,8 @@ def Main ():
 		fileNames.append (fileName)
 	for fileName in jsonFileNames['threeExtensionFileList']:
 		fileNames.append (fileName)
+	for fileName in jsonFileNames['svgToModelExtensionFileList']:
+		fileNames.append (fileName)
 	
 	rootFolderDirPath = os.path.abspath ('..')
 	PrintInfo ('Collect HTML files from <' + rootFolderDirPath + '>.')

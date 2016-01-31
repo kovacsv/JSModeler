@@ -178,6 +178,13 @@ class JSMBuilder:
 		if not MergeAndCompileFiles (inputFileNames, mergedFilePath, externsFilePath, resultFilePath, version, self.errors):
 			return False
 
+		inputFileNames = self.files['svgToModelExtensionFileList']
+		mergedFilePath = 'jsmodeler.ext.svgtomodel.merged.js'
+		externsFilePath = 'jsmodeler.ext.svgtomodel.externs.js'
+		resultFilePath = os.path.join ('..', 'build', 'jsmodeler.ext.svgtomodel.js')
+		if not MergeAndCompileFiles (inputFileNames, mergedFilePath, externsFilePath, resultFilePath, version, self.errors):
+			return False
+
 		return True
 
 	def Document (self):

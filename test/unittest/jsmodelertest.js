@@ -73,11 +73,11 @@ unitTest.AddSourceFile ('../../src/viewer/pointcloudviewer.js');
 unitTest.AddSourceFile ('../../src/extras/solidgenerator.js');
 unitTest.AddSourceFile ('../../src/extras/extgenerator.js');
 unitTest.AddSourceFile ('../../src/extras/subdivision.js');
-unitTest.AddSourceFile ('../../src/extras/svgtomodel.js');
 unitTest.AddSourceFile ('../../src/extras/csg.js');
 unitTest.AddSourceFile ('../../src/extras/curves.js');
 unitTest.AddSourceFile ('../../src/extensions/threeviewer/threeconverter.js');
 unitTest.AddSourceFile ('../../src/extensions/threeviewer/threeviewer.js');
+unitTest.AddSourceFile ('../../src/extensions/svgtomodel/svgtomodel.js');
 // JSModeler includes end
 
 unitTest.AddSourceFile ('utils/triangulationcheck.js');
