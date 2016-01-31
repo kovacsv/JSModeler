@@ -8,23 +8,19 @@ JSM.RenderMaterialFlags = {
 
 JSM.RenderMaterial = function (type, parameters)
 {
-	var defaultParameters = {
-		ambient : [0.0, 0.8, 0.0],
-		diffuse : [0.0, 0.8, 0.0],
-		specular : [0.0, 0.0, 0.0],
-		shininess : 0.0,
-		opacity : 1.0,
-		reflection : 0.0,
-		singleSided : false,
-		pointSize : 0.1,
-		texture : null,
-		textureWidth : 1.0,
-		textureHeight : 1.0
-	};
-
 	this.type = type;
+	this.ambient = [0.0, 0.8, 0.0];
+	this.diffuse = [0.0, 0.8, 0.0];
+	this.specular = [0.0, 0.0, 0.0];
+	this.shininess = 0.0;
+	this.opacity = 1.0;
+	this.reflection = 0.0;
+	this.singleSided = false;
+	this.pointSize = 0.1;
+	this.texture = null;
+	this.textureWidth = 1.0;
+	this.textureHeight = 1.0;
 	JSM.CopyObjectProperties (parameters, this, true);
-	JSM.CopyObjectProperties (defaultParameters, this, false);	
 };
 
 JSM.RenderMaterial.prototype.SetBuffers = function (textureBuffer, textureImage)

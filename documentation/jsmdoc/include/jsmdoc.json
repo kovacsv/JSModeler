@@ -4362,7 +4362,7 @@
 							]
 						},
 						"AddDefaultMaterial" : {
-							"description" : "Adds a default material coordinate to the model. The default material is stored only once.",
+							"description" : "Adds a default material to the model. The default material is stored only once.",
 							"returns" : [
 								["integer", "the index of the default material"]
 							]

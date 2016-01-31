@@ -8,22 +8,18 @@
 */
 JSM.Material = function (parameters)
 {
-	var defaultParameters = {
-		ambient : 0x00cc00,
-		diffuse : 0x00cc00,
-		specular : 0x000000,
-		shininess : 0.0,
-		opacity : 1.0,
-		reflection : 0.0,
-		singleSided : false,
-		pointSize : 0.1,
-		texture : null,
-		textureWidth : 1.0,
-		textureHeight : 1.0
-	};
-
+	this.ambient = 0x00cc00;
+	this.diffuse = 0x00cc00;
+	this.specular = 0x000000;
+	this.shininess = 0.0;
+	this.opacity = 1.0;
+	this.reflection = 0.0;
+	this.singleSided = false;
+	this.pointSize = 0.1;
+	this.texture = null;
+	this.textureWidth = 1.0;
+	this.textureHeight = 1.0;
 	JSM.CopyObjectProperties (parameters, this, true);
-	JSM.CopyObjectProperties (defaultParameters, this, false);
 };
 
 /**
