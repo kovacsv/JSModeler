@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<script type="text/javascript" src="../build/three.min.js"></script>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../src/core/timer.js"></script>
+	<script type="text/javascript" src="../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../src/core/async.js"></script>
+	<script type="text/javascript" src="../src/core/check.js"></script>
+	<script type="text/javascript" src="../src/core/jsonloader.js"></script>
+	<script type="text/javascript" src="../src/geometry/definitions.js"></script>
+	<script type="text/javascript" src="../src/geometry/coord2d.js"></script>
+	<script type="text/javascript" src="../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../src/geometry/box.js"></script>
+	<script type="text/javascript" src="../src/geometry/sphere.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygon2d.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/triangulation.js"></script>
+	<script type="text/javascript" src="../src/geometry/octree.js"></script>
+	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../src/geometry/ray.js"></script>
+	<script type="text/javascript" src="../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../src/modeler/adjacencyinfo.js"></script>
+	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../src/modeler/explode.js"></script>
+	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../src/modeler/trianglebody.js"></script>
+	<script type="text/javascript" src="../src/modeler/trianglemodel.js"></script>
+	<script type="text/javascript" src="../src/modeler/converter.js"></script>
+	<script type="text/javascript" src="../src/modeler/rayutils.js"></script>
+	<script type="text/javascript" src="../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../src/import/importer.js"></script>
+	<script type="text/javascript" src="../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../src/import/importercommon.js"></script>
+	<script type="text/javascript" src="../src/renderer/webglutils.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderlight.js"></script>
+	<script type="text/javascript" src="../src/renderer/rendermaterial.js"></script>
+	<script type="text/javascript" src="../src/renderer/rendermesh.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderbody.js"></script>
+	<script type="text/javascript" src="../src/renderer/shaderprogram.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
+	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../src/viewer/painter.js"></script>
+	<script type="text/javascript" src="../src/viewer/drawing.js"></script>
+	<script type="text/javascript" src="../src/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../src/extensions/svgtomodel/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/extensions/threeviewer/threeconverter.js"></script>
+	<script type="text/javascript" src="../src/extensions/threeviewer/threeviewer.js"></script>
+<!-- JSModeler includes end -->
+	<title>Example</title>
+
+	<script type="text/javascript">
+		JSM.PushPullBodyPolygon = function (body, polygonIndex, distance)
+		{			
+			function DetectVertexSituations (body, polygon, polygonNormal, polygonIndex)
+			{
+				function DetectVertexSituation (body, polygonIndex, polygonNormal, vertexNeighbourPolygons)
+				{
+					// it should detect non perpendicular edges, too
+					var situation = {
+						operation : VertexOperation.Duplicate,
+						perpendicularPolygons : []
+					};
+					if (vertexNeighbourPolygons.length === 1) {
+						return situation;
+					} else {
+						situation.operation = VertexOperation.Move;
+						var i, neighbourPolygon, neighbourPolygonNormal;
+						for (i = 0; i < vertexNeighbourPolygons.length; i++) {
+							neighbourPolygon = vertexNeighbourPolygons[i];
+							if (neighbourPolygon == polygonIndex) {
+								continue;
+							}
+							neighbourPolygonNormal = JSM.CalculateBodyPolygonNormal (body, neighbourPolygon);
+							if (polygonNormal.IsPerpendicularWith (neighbourPolygonNormal)) {
+								situation.perpendicularPolygons.push (neighbourPolygon);
+							} else {
+								situation.operation = VertexOperation.Duplicate;
+							}
+						}
+					}
+					return situation;
+				}			
+			
+				var vertexToPolygon = JSM.CalculateBodyVertexToPolygon (body);
+				var situations = [];
+				var i, situation, vertexNeighbourPolygons;
+				for (i = 0; i < polygon.VertexIndexCount (); i++) {
+					vertexNeighbourPolygons = vertexToPolygon[polygon.GetVertexIndex (i)];
+					situation = DetectVertexSituation (body, polygonIndex, polygonNormal, vertexNeighbourPolygons);
+					situations.push (situation);
+				}
+				return situations;
+			}
+
+			function MoveVertices (body, polygon, polygonNormal, distance, situations)
+			{
+				function DuplicateVertex (body, polygon, polygonVertexIndex, polygonNormal, distance)
+				{
+					var oldBodyVertexIndex = polygon.GetVertexIndex (polygonVertexIndex);
+					var offsetedCoord = body.GetVertexPosition (oldBodyVertexIndex).Clone ().Offset (polygonNormal, distance);
+					var newBodyVertexIndex = body.AddVertex (new JSM.BodyVertex (offsetedCoord));
+					polygon.SetVertexIndex (polygonVertexIndex, newBodyVertexIndex);
+					return {
+						oldIndex : oldBodyVertexIndex,
+						newIndex : newBodyVertexIndex
+					};
+				}
+				
+				function MoveVertex (body, polygon, polygonVertexIndex, polygonNormal, distance)
+				{
+					var oldBodyVertexIndex = polygon.GetVertexIndex (polygonVertexIndex);
+					body.GetVertexPosition (oldBodyVertexIndex).Offset (polygonNormal, distance);
+					return {
+						oldIndex : oldBodyVertexIndex,
+						newIndex : oldBodyVertexIndex
+					};
+				}
+
+				var i, situation, oldBodyVertexIndex, oldNewIndices;
+				var vertexOldNewIndices = [];
+				for (i = 0; i < polygon.VertexIndexCount (); i++) {
+					situation = situations[i];
+					if (situation.operation == VertexOperation.Move) {
+						oldNewIndices = MoveVertex (body, polygon, i, polygonNormal, distance);
+					} else {
+						oldNewIndices = DuplicateVertex (body, polygon, i, polygonNormal, distance);
+					}
+					vertexOldNewIndices.push (oldNewIndices);
+				}
+				return vertexOldNewIndices;
+			}
+			
+			function FinalizePolygons (body, polygon, situations, vertexOldNewIndices)
+			{
+				function InsertVertexToPolygons (body, polygonIndices, aVertexIndex, bVertexIndex, newVertexIndex)
+				{
+					function InsertVertexToPolygon (body, polygonIndex, aVertexIndex, bVertexIndex, newVertexIndex)
+					{
+						var polygon = body.GetPolygon (polygonIndex);
+						var vertexCount = polygon.VertexIndexCount ();
+						var i, currIndex, nextIndex, currVertexIndex, nextVertexIndex;
+						for (i = 0; i < vertexCount; i++) {
+							currIndex = i;
+							nextIndex = JSM.NextIndex (i, vertexCount);
+							currVertexIndex = polygon.GetVertexIndex (currIndex);
+							nextVertexIndex = polygon.GetVertexIndex (nextIndex);
+							if ((currVertexIndex == aVertexIndex && nextVertexIndex == bVertexIndex) ||
+								(currVertexIndex == bVertexIndex && nextVertexIndex == aVertexIndex))
+							{
+								polygon.InsertVertexIndex (newVertexIndex, nextIndex);
+							}
+						}
+					}
+
+					var i, polygonIndex;
+					for (i = 0; i < polygonIndices.length; i++) {
+						polygonIndex = polygonIndices[i];
+						InsertVertexToPolygon (body, polygonIndex, aVertexIndex, bVertexIndex, newVertexIndex);
+					}
+				}
+
+				var i, currIndex, nextIndex;
+				var currSituation, nextSituation, currIndices, nextIndices, sides;
+				var vertexCount = polygon.VertexIndexCount ();
+				for (i = 0; i < vertexCount; i++) {
+					currIndex = i;
+					nextIndex = JSM.NextIndex (i, vertexCount);
+					currSituation = situations[currIndex];
+					nextSituation = situations[nextIndex];
+					currIndices = vertexOldNewIndices[currIndex];
+					nextIndices = vertexOldNewIndices[nextIndex];
+					if (currSituation.operation == VertexOperation.Duplicate && nextSituation.operation == VertexOperation.Duplicate) {
+						sides = [currIndices.oldIndex, nextIndices.oldIndex, nextIndices.newIndex, currIndices.newIndex];
+						body.AddPolygon (new JSM.BodyPolygon (sides));
+					} else if (currSituation.operation == VertexOperation.Duplicate && nextSituation.operation == VertexOperation.Move) {
+						InsertVertexToPolygons (body, currSituation.perpendicularPolygons, currIndices.oldIndex, nextIndices.oldIndex, currIndices.newIndex);
+					} else if (currSituation.operation == VertexOperation.Move && nextSituation.operation == VertexOperation.Duplicate) {
+						InsertVertexToPolygons (body, nextSituation.perpendicularPolygons, nextIndices.oldIndex, currIndices.oldIndex, nextIndices.newIndex);
+					}
+				}
+			}
+
+			var VertexOperation = {
+				Move : 0,
+				Duplicate : 1
+			};
+			
+			var polygon = body.GetPolygon (polygonIndex);
+			var polygonNormal = JSM.CalculateBodyPolygonNormal (body, polygonIndex);
+			var situations = DetectVertexSituations (body, polygon, polygonNormal, polygonIndex);
+			var vertexOldNewIndices = MoveVertices (body, polygon, polygonNormal, distance, situations);
+			FinalizePolygons (body, polygon, situations, vertexOldNewIndices);
+		};
+	
+		function Load ()
+		{
+			var camera = new JSM.Camera (
+				new JSM.Coord (-1.0, -3.0, 2.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0.0, 0.0, 1.0)
+			);
+			
+			var viewer = new JSM.Viewer ();
+			if (!viewer.Init (document.getElementById ('example'), camera)) {
+				alert ('error');
+			}
+
+			var materials = new JSM.Materials ();
+
+			var body = new JSM.Body ();
+			JSM.AddVertexToBody (body, 0, 0, 0);
+			JSM.AddVertexToBody (body, 2, 0, 0);
+			JSM.AddVertexToBody (body, 2, 1, 0);
+			JSM.AddVertexToBody (body, 0, 1, 0);
+
+			JSM.AddVertexToBody (body, 0, 0, 1);
+			JSM.AddVertexToBody (body, 1, 0, 1);
+			JSM.AddVertexToBody (body, 2, 0, 1);
+			JSM.AddVertexToBody (body, 2, 1, 1);
+			JSM.AddVertexToBody (body, 1, 1, 1);
+			JSM.AddVertexToBody (body, 0, 1, 1);
+
+			JSM.AddPolygonToBody (body, [0, 1, 6, 5, 4]);
+			JSM.AddPolygonToBody (body, [0, 3, 2, 1]);
+			JSM.AddPolygonToBody (body, [1, 2, 7, 6]);
+			JSM.AddPolygonToBody (body, [2, 3, 9, 8, 7]);
+			JSM.AddPolygonToBody (body, [3, 0, 4, 9]);
+			JSM.AddPolygonToBody (body, [4, 5, 8, 9]);
+			JSM.AddPolygonToBody (body, [5, 6, 7, 8]);
+			
+			JSM.PushPullBodyPolygon (body, 6, 0.5);
+			JSM.PushPullBodyPolygon (body, 6, 0.5);
+			JSM.PushPullBodyPolygon (body, 5, -0.5);
+			
+			JSM.GenerateRandomMaterials (body, materials);
+			var i, material;
+			for (i = 0; i < materials.Count (); i++) {
+				material = materials.GetMaterial (i);
+				material.singleSided = true;
+			}
+			
+			if (!JSM.IsSolidBody (body)) {
+				alert ('body is not solid');
+			}
+			if (!JSM.CheckSolidBody (body)) {
+				alert ('invalid solid body');
+			}
+			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
+			viewer.AddBody (renderBody);
+			
+			viewer.FitInWindow ();
+			viewer.Draw ();
+		}
+	
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+
+</head>
+
+<body>
+	<canvas id="example" width="800" height="500"></canvas>
+</body>
+
+</html>

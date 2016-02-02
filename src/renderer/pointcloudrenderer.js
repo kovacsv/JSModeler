@@ -50,9 +50,6 @@ JSM.PointCloudRenderer.prototype.InitContext = function (canvas)
 		return false;
 	}
 
-	this.context.viewportWidth = this.canvas.width;
-	this.context.viewportHeight = this.canvas.height;
-
 	this.context.clearColor (1.0, 1.0, 1.0, 1.0);
 	this.context.enable (this.context.DEPTH_TEST);
 
@@ -181,16 +178,14 @@ JSM.PointCloudRenderer.prototype.RemovePoints = function ()
 
 JSM.PointCloudRenderer.prototype.Resize = function ()
 {
-	this.context.viewportWidth = this.canvas.width;
-	this.context.viewportHeight = this.canvas.height;
+	this.context.viewport (0, 0, this.canvas.width, this.canvas.height);
 };
 
 JSM.PointCloudRenderer.prototype.Render = function ()
 {
-	this.context.viewport (0, 0, this.context.viewportWidth, this.context.viewportHeight);
 	this.context.clear (this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 	
-	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.context.viewportWidth / this.context.viewportHeight, this.camera.nearClippingPlane, this.camera.farClippingPlane);
+	var projectionMatrix = JSM.MatrixPerspective (this.camera.fieldOfView * JSM.DegRad, this.canvas.width / this.canvas.height, this.camera.nearClippingPlane, this.camera.farClippingPlane);
 	this.context.uniformMatrix4fv (this.shader.pMatrixUniform, false, projectionMatrix);
 
 	var viewMatrix = JSM.MatrixView (this.camera.eye, this.camera.center, this.camera.up);

@@ -89,7 +89,7 @@ JSM.Coord.prototype.AngleTo = function (coord)
 
 /**
 * Function: Coord.IsCollinearWith
-* Description: Calculates the coordinate vector is collinear with the given one.
+* Description: Returns if the coordinate vector is collinear with the given one.
 * Parameters:
 *	coord {Coord} the coordinate
 * Returns:
@@ -102,6 +102,20 @@ JSM.Coord.prototype.IsCollinearWith = function (coord)
 };
 
 /**
+* Function: Coord.IsPerpendicularWith
+* Description: Returns if the coordinate vector is perpendicular with the given one.
+* Parameters:
+*	coord {Coord} the coordinate
+* Returns:
+*	{boolean} the result
+*/
+JSM.Coord.prototype.IsPerpendicularWith = function (coord)
+{
+	var angle = this.AngleTo (coord);
+	return JSM.IsEqual (angle, Math.PI / 2.0);
+};
+
+/**
 * Function: Coord.Length
 * Description: Calculates the length of the coordinate vector.
 * Returns:
@@ -110,6 +124,32 @@ JSM.Coord.prototype.IsCollinearWith = function (coord)
 JSM.Coord.prototype.Length = function ()
 {
 	return Math.sqrt (this.x * this.x + this.y * this.y + this.z * this.z);
+};
+
+/**
+* Function: Coord.Add
+* Description: Adds the given coordinate to coordinate.
+* Parameters:
+*	coord {Coord} the coordinate
+*/
+JSM.Coord.prototype.Add = function (coord)
+{
+	this.x += coord.x;
+	this.y += coord.y;
+	this.z += coord.z;
+};
+
+/**
+* Function: Coord.Sub
+* Description: Subs the given coordinate from coordinate.
+* Parameters:
+*	coord {Coord} the coordinate
+*/
+JSM.Coord.prototype.Sub = function (coord)
+{
+	this.x -= coord.x;
+	this.y -= coord.y;
+	this.z -= coord.z;
 };
 
 /**
@@ -127,7 +167,6 @@ JSM.Coord.prototype.MultiplyScalar = function (scalar)
 	this.z *= scalar;
 	return this;
 };
-
 
 /**
 * Function: Coord.Normalize

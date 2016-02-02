@@ -509,7 +509,7 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 		oldBody = result;
 		
 		result = new JSM.Body ();
-		adjacencyInfo = JSM.CalculateAdjacencyInfo (oldBody);
+		adjacencyInfo = new JSM.AdjacencyInfo (oldBody);
 		for (i = 0; i < adjacencyInfo.verts.length; i++) {
 			oldVertexCoord = oldBody.GetVertexPosition (i);
 			JSM.AddVertexToBody (result, oldVertexCoord.x, oldVertexCoord.y, oldVertexCoord.z);
@@ -527,7 +527,7 @@ JSM.GenerateTriangulatedSphere = function (radius, iterations, isCurved)
 			polygonVertexIndices = [];
 			for (j = 0; j < currentPgon.pedges.length; j++) {
 				currentPolyEdge = currentPgon.pedges[j];
-				polygonVertexIndices.push (JSM.GetPolyEdgeStartVertex (currentPolyEdge, adjacencyInfo));
+				polygonVertexIndices.push (adjacencyInfo.GetPolyEdgeStartVertex (currentPolyEdge));
 				polygonVertexIndices.push (edgeVertexIndices[currentPolyEdge.index]);
 			}
 

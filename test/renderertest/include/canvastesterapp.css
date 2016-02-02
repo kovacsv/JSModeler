@@ -1,0 +1,78 @@
+html, body
+{
+	color : #000000;
+	background : #ffffff;
+	font-size : 12px;
+	font-family : Arial, cursive;
+}
+
+#testcanvas
+{
+
+}
+
+div.suiteresultbox
+{
+	overflow : auto;
+}
+
+div.resultbox
+{
+	padding : 3px 10px;
+	margin-bottom : 5px;
+}
+
+div.resultbox.suite
+{
+	margin-top : 20px;
+}
+
+div.resultbox.test
+{
+	margin-right : 5px;
+	float : left;
+}
+
+div.resultbox.link
+{
+	cursor : pointer;
+}
+
+div.resultbox.success
+{
+	color : #222222;
+	background : #eeeeee;
+	border : 1px solid #dddddd;
+}
+
+div.resultbox.failure
+{
+	color : #eeeeee;
+	background : #222222;
+	border : 1px solid #222222;
+}
+
+div.testresult
+{
+	margin-bottom : 5px;
+	border : 1px solid #cccccc;
+	display : none;
+}
+
+div.testresulttitle
+{
+	color : #000000;
+	background : #fafafa;
+	border-bottom : 1px solid #cccccc;
+	padding : 10px;
+}
+
+div.testresultinfo
+{
+	padding : 10px;
+}
+
+div.testresultmain
+{
+	padding : 10px;
+}

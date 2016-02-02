@@ -49,9 +49,7 @@ JSM.WebGLInitContext = function (canvas)
 		return null;
 	}
 	
-	context.viewportWidth = canvas.width;
-	context.viewportHeight = canvas.height;
-	context.viewport (0, 0, context.viewportWidth, context.viewportHeight);
+	context.viewport (0, 0, canvas.width, canvas.height);
 	context.clearColor (1.0, 1.0, 1.0, 1.0);
 	return context;
 };

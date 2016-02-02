@@ -1,6 +1,7 @@
-import os
+﻿import os
 import sys
 import re
+from jsmbuild import jsmbuild
 
 def PrintInfo (message):
 	print ('Info: ' + message)
@@ -68,12 +69,15 @@ def Main ():
 	currentPath = os.path.dirname (os.path.abspath (__file__))
 	os.chdir (currentPath)
 
-	filesFilePath = os.path.abspath ('files.txt')
-	PrintInfo ('Collect file names from <' + filesFilePath + '>.')
-	inputFileNames = GetLinesFromFile (filesFilePath);
-	if len (inputFileNames) == 0:
-		PrintError ('Invalid file list.');
-		return 1
+	filesJsonPath = 'files.json'
+	jsonFileNames = jsmbuild.LoadJsonFile (filesJsonPath)
+	fileNames = []
+	for fileName in jsonFileNames['coreFileList']:
+		fileNames.append (fileName)
+	for fileName in jsonFileNames['svgToModelExtensionFileList']:
+		fileNames.append (fileName)
+	for fileName in jsonFileNames['threeExtensionFileList']:
+		fileNames.append (fileName)
 	
 	rootFolderDirPath = os.path.abspath ('..')
 	PrintInfo ('Collect HTML files from <' + rootFolderDirPath + '>.')
@@ -83,7 +87,7 @@ def Main ():
 	for htmlFilePath in htmlFiles:
 		ReplaceIncludesInFile (
 			htmlFilePath,
-			inputFileNames,
+			fileNames,
 			'<!-- JSModeler includes start -->',
 			'<!-- JSModeler includes end -->',
 			'\t<script type="text/javascript" src="',
@@ -95,7 +99,7 @@ def Main ():
 	for jsFilePath in jsFiles:
 		ReplaceIncludesInFile (
 			jsFilePath,
-			inputFileNames,
+			fileNames,
 			'// JSModeler includes start',
 			'// JSModeler includes end',
 			'unitTest.AddSourceFile (\'',

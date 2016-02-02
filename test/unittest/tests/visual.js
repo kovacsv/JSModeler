@@ -54,7 +54,7 @@ function DrawAndCheck (body, drawMode, referenceFile)
 	
 	var fs = require ('fs');
 	var path = require ('path');
-	var fullReferencePath = path.join (__dirname, '../references/' + referenceFile);
+	var fullReferencePath = path.join (__dirname, '..', 'references', referenceFile);
 	var succeeded = false;
 	if (fs.existsSync (fullReferencePath)) {
 		refFileContent = fs.readFileSync (fullReferencePath);
@@ -63,7 +63,9 @@ function DrawAndCheck (body, drawMode, referenceFile)
 		}
 	}
 	if (!succeeded) {
-		fs.writeFileSync (referenceFile, drawer.GetSvgContent ());
+		var differenceDir = path.join (__dirname, '../differences/')
+		fs.mkdir (differenceDir);
+		fs.writeFileSync (path.join (differenceDir, referenceFile), drawer.GetSvgContent ());
 	}
 	return succeeded;
 }
@@ -109,7 +111,27 @@ visualSuite.AddTest ('CutBodyByPlaneTest', function (test)
 	test.Assert (DrawAndCheck (body, 'Wireframe', 'cutbodybyplane_02.svg'));
 });
 
-visualSuite.AddTest ('CatmullClarkSubdivisionTest', function (test)
+visualSuite.AddTest ('CatmullClarkSubdivisionTestCube', function (test)
+{
+	var body = JSM.GenerateCuboid (1, 1, 1);
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_cube_00.svg'));
+	body = JSM.CatmullClarkSubdivisionOneIteration (body);
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_cube_01.svg'));
+	body = JSM.CatmullClarkSubdivisionOneIteration (body);
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_cube_02.svg'));
+});
+
+visualSuite.AddTest ('CatmullClarkSubdivisionTestCubeHole', function (test)
+{
+	var body = JSM.GenerateCuboidSides (1.0, 1.0, 1.0, [1, 1, 0, 1, 1, 1]);
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_cube_hole_00.svg'));
+	body = JSM.CatmullClarkSubdivisionOneIteration (body);
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_cube_hole_01.svg'));
+	body = JSM.CatmullClarkSubdivisionOneIteration (body);
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_cube_hole_02.svg'));
+});
+
+visualSuite.AddTest ('CatmullClarkSubdivisionTestPrism', function (test)
 {
 	var basePoints = [
 		new JSM.Coord (0.0, 0.0, -0.5),
@@ -122,11 +144,11 @@ visualSuite.AddTest ('CatmullClarkSubdivisionTest', function (test)
 	
 	var direction = new JSM.Vector (0.0, 0.0, 1.0);
 	var body = JSM.GeneratePrism (basePoints, direction, 1.0, true, null);
-	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_00.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_prism_00.svg'));
 	body = JSM.CatmullClarkSubdivisionOneIteration (body);
-	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_01.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_prism_01.svg'));
 	body = JSM.CatmullClarkSubdivisionOneIteration (body);
-	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_02.svg'));
+	test.Assert (DrawAndCheck (body, 'Wireframe', 'subdivision_prism_02.svg'));
 });
 
 visualSuite.AddTest ('BooleanOperationTest', function (test)
