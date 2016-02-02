@@ -182,7 +182,7 @@ JSM.ThreeViewer.prototype.MeshCount = function ()
 	var count = 0;
 	
 	this.scene.traverse (function (current) {
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.Points) {
 			count = count + 1;
 		}
 	});
@@ -195,7 +195,7 @@ JSM.ThreeViewer.prototype.VertexCount = function ()
 	var count = 0;
 	
 	this.scene.traverse (function (current) {
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.Points) {
 			count = count + current.geometry.vertices.length;
 		}
 	});
@@ -224,7 +224,7 @@ JSM.ThreeViewer.prototype.GetMesh = function (index)
 	var i;
 	for (i = 0; i < this.scene.children.length; i++) {
 		current = this.scene.children[i];
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.Points) {
 			if (currIndex == index) {
 				return current;
 			}
@@ -248,7 +248,7 @@ JSM.ThreeViewer.prototype.RemoveMeshes = function ()
 	var i;
 	for (i = 0; i < this.scene.children.length; i++) {
 		current = this.scene.children[i];
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.Points) {
 			current.geometry.dispose ();
 			this.scene.remove (current);
 			i--;
@@ -262,7 +262,7 @@ JSM.ThreeViewer.prototype.RemoveLastMesh = function ()
 	var found = null;
 	
 	this.scene.traverse (function (current) {
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.Points) {
 			found = current;
 		}
 	});
@@ -327,7 +327,7 @@ JSM.ThreeViewer.prototype.GetBoundingBox = function ()
 	
 	var geometry, coord;
 	this.scene.traverse (function (current) {
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.Points) {
 			geometry = current.geometry;
 			var j;
 			for (j = 0; j < geometry.vertices.length; j++) {
@@ -353,7 +353,7 @@ JSM.ThreeViewer.prototype.GetBoundingSphere = function ()
 
 	var geometry, coord, distance;
 	this.scene.traverse (function (current) {
-		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.PointCloud) {
+		if (current instanceof THREE.Mesh || current instanceof THREE.Line || current instanceof THREE.Points) {
 			geometry = current.geometry;
 			var j;
 			for (j = 0; j < geometry.vertices.length; j++) {
@@ -376,10 +376,9 @@ JSM.ThreeViewer.prototype.GetObjectsUnderPosition = function (x, y)
 	var mouseX = (x / this.canvas.width) * 2 - 1;
 	var mouseY = -(y / this.canvas.height) * 2 + 1;
 
-	var projector = new THREE.Projector ();
 	var cameraPosition = this.camera.position;
 	var vector = new THREE.Vector3 (mouseX, mouseY, 0.5);
-	projector.unprojectVector (vector, this.camera);
+	vector.unproject (this.camera);
 	vector.sub (cameraPosition);
 	vector.normalize ();
 
@@ -404,9 +403,8 @@ JSM.ThreeViewer.prototype.ProjectVector = function (x, y, z)
 	var halfWidth = width / 2;
 	var halfHeight = height / 2;
 
-	var projector = new THREE.Projector ();
 	var vector = new THREE.Vector3 (x, y, z);
-	projector.projectVector (vector, this.camera);
+	vector.project (this.camera);
 	vector.x = (vector.x * halfWidth) + halfWidth;
 	vector.y = -(vector.y * halfHeight) + halfHeight;
 	return vector;

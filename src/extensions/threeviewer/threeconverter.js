@@ -2,8 +2,7 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 {
 	function OnPointGeometryStart (material)
 	{
-		threeMaterial = new THREE.PointCloudMaterial ({
-			ambient : material.ambient,
+		threeMaterial = new THREE.PointsMaterial ({
 			color : material.diffuse,
 			size: material.pointSize
 		});
@@ -12,8 +11,8 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 
 	function OnPointGeometryEnd ()
 	{
-		var pointCloud = new THREE.PointCloud (threeGeometry, threeMaterial);
-		meshes.push (pointCloud);
+		var points = new THREE.Points (threeGeometry, threeMaterial);
+		meshes.push (points);
 	}
 
 	function OnPoint (vertex)
@@ -24,7 +23,6 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 	function OnLineGeometryStart (material)
 	{
 		threeMaterial = new THREE.LineBasicMaterial ({
-			ambient : material.ambient,
 			color : material.diffuse
 		});
 	}
@@ -48,7 +46,6 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		var hasTexture = (material.texture !== null);
 		var hasOpacity = (material.opacity !== 1.0);
 
-		var ambient = material.ambient;
 		var diffuse = material.diffuse;
 		var specular = material.specular;
 		var shininess = material.shininess;
@@ -58,7 +55,6 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		}
 
 		threeMaterial = new THREE.MeshPhongMaterial ({
-			ambient : ambient,
 			color : diffuse,
 			specular : specular,
 			shininess : shininess
@@ -72,17 +68,20 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 			threeMaterial.opacity = material.opacity;
 			threeMaterial.transparent = true;
 		}
+		
 		if (hasTexture) {
 			var textureName = material.texture;
-			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
+			var loader = new THREE.TextureLoader ();
+			loader.load (textureName, function (texture) {
 				texture.image = JSM.ResizeImageToPowerOfTwoSides (texture.image);
+				texture.wrapS = THREE.RepeatWrapping;
+				texture.wrapT = THREE.RepeatWrapping;
+				threeMaterial.map = texture;
+				threeMaterial.needsUpdate = true;
 				if (theConversionData.textureLoadedCallback !== null) {
 					theConversionData.textureLoadedCallback ();
 				}
 			});
-			texture.wrapS = THREE.RepeatWrapping;
-			texture.wrapT = THREE.RepeatWrapping;
-			threeMaterial.map = texture;
 		}
 		
 		threeGeometry = new THREE.Geometry ();
@@ -197,7 +196,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 			
 			var diffuseColor = new THREE.Color ();
 			var specularColor = new THREE.Color ();
-			var shininess = materialData.shininess;
+			var shininess = materialData.shininess || 0.0;
 
 			diffuseColor.setRGB (materialData.diffuse[0], materialData.diffuse[1], materialData.diffuse[2]);
 			specularColor.setRGB (materialData.specular[0], materialData.specular[1], materialData.specular[2]);
@@ -223,7 +222,6 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 			}
 			
 			var material = new THREE.MeshPhongMaterial ({
-					ambient : diffuseColor.getHex (),
 					color : diffuseColor.getHex (),
 					specular : specularColor.getHex (),
 					shininess : shininess,
@@ -237,16 +235,17 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 			}
 			
 			if (textureName !== undefined && textureName !== null) {
-				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (texture) {
+				var loader = new THREE.TextureLoader ();
+				loader.load (textureName, function (texture) {
 					texture.image = JSM.ResizeImageToPowerOfTwoSides (texture.image);
+					texture.wrapS = THREE.RepeatWrapping;
+					texture.wrapT = THREE.RepeatWrapping;
+					material.map = texture;
+					material.needsUpdate = true;
 					if (textureLoadedCallback !== undefined && textureLoadedCallback !== null) {
 						textureLoadedCallback ();
 					}
 				});
-				
-				texture.wrapS = THREE.RepeatWrapping;
-				texture.wrapT = THREE.RepeatWrapping;
-				material.map = texture;
 			}
 			
 			var geometry = new THREE.Geometry ();

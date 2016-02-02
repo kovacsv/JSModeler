@@ -46,7 +46,7 @@
 				current = scene.children[i];
 				if (current instanceof THREE.Mesh ||
 					current instanceof THREE.Line ||
-					current instanceof THREE.PointCloud)
+					current instanceof THREE.Points)
 				{
 					scene.remove (current);
 					i--;
@@ -124,13 +124,13 @@
 				}
 			}
 
-			var material = new THREE.PointCloudMaterial ({
+			var material = new THREE.PointsMaterial ({
 				size: 0.05,
 				color : 0x000000,
 				depthTest: false
 			});
 			
-			var particle = new THREE.PointCloud (bezierData.controlPointGeometry, material);
+			var particle = new THREE.Points (bezierData.controlPointGeometry, material);
 			bezierData.controlPointScene.add (particle);
 		}
 		
