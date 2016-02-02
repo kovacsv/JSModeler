@@ -69,14 +69,15 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		}
 		
 		if (hasTexture) {
+			var theMaterial = threeMaterial;
 			var textureName = material.texture;
 			var loader = new THREE.TextureLoader ();
 			loader.load (textureName, function (texture) {
 				texture.image = JSM.ResizeImageToPowerOfTwoSides (texture.image);
 				texture.wrapS = THREE.RepeatWrapping;
 				texture.wrapT = THREE.RepeatWrapping;
-				threeMaterial.map = texture;
-				threeMaterial.needsUpdate = true;
+				theMaterial.map = texture;
+				theMaterial.needsUpdate = true;
 				if (theConversionData.textureLoadedCallback !== null) {
 					theConversionData.textureLoadedCallback ();
 				}
@@ -235,12 +236,13 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 			
 			if (textureName !== undefined && textureName !== null) {
 				var loader = new THREE.TextureLoader ();
+				var theMaterial = material;
 				loader.load (textureName, function (texture) {
 					texture.image = JSM.ResizeImageToPowerOfTwoSides (texture.image);
 					texture.wrapS = THREE.RepeatWrapping;
 					texture.wrapT = THREE.RepeatWrapping;
-					material.map = texture;
-					material.needsUpdate = true;
+					theMaterial.map = texture;
+					theMaterial.needsUpdate = true;
 					if (textureLoadedCallback !== undefined && textureLoadedCallback !== null) {
 						textureLoadedCallback ();
 					}
