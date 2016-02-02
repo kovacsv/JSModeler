@@ -22,6 +22,7 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 	
 	function OnLineGeometryStart (material)
 	{
+		threeGeometry = new THREE.Geometry ();
 		threeMaterial = new THREE.LineBasicMaterial ({
 			color : material.diffuse
 		});
@@ -29,16 +30,14 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 
 	function OnLineGeometryEnd ()
 	{
-
+		var lines = new THREE.LineSegments (threeGeometry, threeMaterial);
+		meshes.push (lines);
 	}
 
 	function OnLine (begVertex, endVertex)
 	{
-		var lineGeometry = new THREE.Geometry ();
-		lineGeometry.vertices.push (new THREE.Vector3 (begVertex.x, begVertex.y, begVertex.z));
-		lineGeometry.vertices.push (new THREE.Vector3 (endVertex.x, endVertex.y, endVertex.z));
-		var line = new THREE.Line (lineGeometry, threeMaterial);
-		meshes.push (line);
+		threeGeometry.vertices.push (new THREE.Vector3 (begVertex.x, begVertex.y, begVertex.z));
+		threeGeometry.vertices.push (new THREE.Vector3 (endVertex.x, endVertex.y, endVertex.z));
 	}
 
 	function OnGeometryStart (material)
