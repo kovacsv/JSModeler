@@ -69,6 +69,14 @@ suite.AddTest ('CoreTest', function (test) {
 		rnd = JSM.SeededRandomInt (5, 10, i);
 		test.Assert (rnd >= 5 && rnd <= 10);
 	}
+	
+	test.AssertEqual (JSM.PrevIndex (0, 3), 2);
+	test.AssertEqual (JSM.PrevIndex (1, 3), 0);
+	test.AssertEqual (JSM.PrevIndex (2, 3), 1);
+
+	test.AssertEqual (JSM.NextIndex (0, 3), 1);
+	test.AssertEqual (JSM.NextIndex (1, 3), 2);
+	test.AssertEqual (JSM.NextIndex (2, 3), 0);
 });
 
 suite.AddTest ('SortTest', function (test) {

@@ -4,58 +4,45 @@ html, body
 	background : #ffffff;
 	font-size : 12px;
 	font-family : Arial, cursive;
+	margin : 0px;
+	padding : 0px;
 }
 
-#frame
+div.header
 {
-	width : 620px;
-	margin : 20px auto;
+	color : #404040;
+	background : #f0f0f0;
+	padding : 10px;
+	margin-bottom : 10px;
+	border-bottom : 1px solid #d0d0d0;
 }
 
-div.title1
+div.title
 {
-	font-size : 25px;
-	margin-top : 60px;
-	margin-bottom : 40px;
-	padding-bottom : 10px;
-	border-bottom : 1px solid #000000;
+	font-size : 21px;
+	text-align : center;
+	margin-bottom : 5px;
 }
 
-div.title2
-{
-	font-size : 20px;
-	margin-top : 40px;
-	margin-bottom : 20px;
-}
-
-div.demo
+div.subtitle
 {
 	text-align : center;
-	margin : 10px 0px;
-	padding : 10px;
-	border : 1px dotted #cccccc;
 }
 
-ul li
+div.frame
 {
-	margin : 10px 0px;
+	width : 800px;
+	margin : 0px auto;
 }
 
-pre
-{
-	margin : 10px 0px;
-	padding : 10px;
-	border : 1px dotted #cccccc;
-}
-
-a
+a.link
 {
 	color : #225588;
 	background : transparent;
 	text-decoration : none;
 }
 
-a:hover
+a.link:hover
 {
 	text-decoration : underline;
 }

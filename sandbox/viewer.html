@@ -13,6 +13,7 @@
 	<script type="text/javascript" src="../src/core/algorithm.js"></script>
 	<script type="text/javascript" src="../src/core/async.js"></script>
 	<script type="text/javascript" src="../src/core/check.js"></script>
+	<script type="text/javascript" src="../src/core/jsonloader.js"></script>
 	<script type="text/javascript" src="../src/geometry/definitions.js"></script>
 	<script type="text/javascript" src="../src/geometry/coord2d.js"></script>
 	<script type="text/javascript" src="../src/geometry/coord.js"></script>
@@ -38,9 +39,8 @@
 	<script type="text/javascript" src="../src/modeler/body.js"></script>
 	<script type="text/javascript" src="../src/modeler/model.js"></script>
 	<script type="text/javascript" src="../src/modeler/color.js"></script>
-	<script type="text/javascript" src="../src/modeler/light.js"></script>
 	<script type="text/javascript" src="../src/modeler/material.js"></script>
-	<script type="text/javascript" src="../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../src/modeler/adjacencyinfo.js"></script>
 	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/cututils.js"></script>
@@ -58,30 +58,32 @@
 	<script type="text/javascript" src="../src/import/importerobj.js"></script>
 	<script type="text/javascript" src="../src/import/importerstl.js"></script>
 	<script type="text/javascript" src="../src/import/importercommon.js"></script>
-	<script type="text/javascript" src="../src/extras/solidgenerator.js"></script>
-	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
-	<script type="text/javascript" src="../src/extras/painter.js"></script>
-	<script type="text/javascript" src="../src/extras/drawing.js"></script>
-	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
-	<script type="text/javascript" src="../src/extras/svgtomodel.js"></script>
-	<script type="text/javascript" src="../src/extras/csg.js"></script>
-	<script type="text/javascript" src="../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../src/renderer/webglutils.js"></script>
-	<script type="text/javascript" src="../src/renderer/renderdata.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderlight.js"></script>
+	<script type="text/javascript" src="../src/renderer/rendermaterial.js"></script>
+	<script type="text/javascript" src="../src/renderer/rendermesh.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderbody.js"></script>
 	<script type="text/javascript" src="../src/renderer/shaderprogram.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
-	<script type="text/javascript" src="../src/viewer/jsonfileloader.js"></script>
 	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../src/viewer/painter.js"></script>
+	<script type="text/javascript" src="../src/viewer/drawing.js"></script>
 	<script type="text/javascript" src="../src/viewer/navigation.js"></script>
 	<script type="text/javascript" src="../src/viewer/softwareviewer.js"></script>
 	<script type="text/javascript" src="../src/viewer/spriteviewer.js"></script>
 	<script type="text/javascript" src="../src/viewer/viewer.js"></script>
 	<script type="text/javascript" src="../src/viewer/pointcloudviewer.js"></script>
-	<script type="text/javascript" src="../src/three/threeconverter.js"></script>
-	<script type="text/javascript" src="../src/three/threeviewer.js"></script>
+	<script type="text/javascript" src="../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../src/extensions/svgtomodel/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/extensions/threeviewer/threeconverter.js"></script>
+	<script type="text/javascript" src="../src/extensions/threeviewer/threeviewer.js"></script>
 <!-- JSModeler includes end -->
 	<title>Example</title>
 
@@ -109,10 +111,8 @@
 				new JSM.Vector (0.0, 0.0, 1.0)
 			);
 			
-			var light = new JSM.Light ();
-			
 			viewer = new JSM.Viewer ();
-			if (!viewer.Init (document.getElementById ('example'), camera, light)) {
+			if (!viewer.Init (document.getElementById ('example'), camera)) {
 				alert ('error');
 			}
 
@@ -146,12 +146,12 @@
 			model.AddBody (body5);
 
 			renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
-			viewer.AddRenderBodies (renderBodies);
+			viewer.AddBodies (renderBodies);
 
 			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));
 			var newRenderBody = JSM.ConvertBodyToRenderBody (body6, materials);
-			viewer.AddRenderBody (newRenderBody);
+			viewer.AddBody (newRenderBody);
 			
 			Render ();
 		}

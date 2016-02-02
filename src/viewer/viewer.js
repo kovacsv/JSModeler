@@ -3,11 +3,12 @@ JSM.Viewer = function ()
 	this.camera = null;
 	this.renderer = null;
 	this.navigation = null;
+	this.cameraLight = null;
 };
 
-JSM.Viewer.prototype.Init = function (canvas, camera, light)
+JSM.Viewer.prototype.Init = function (canvas, camera)
 {
-	if (!this.InitRenderer (canvas, light)) {
+	if (!this.InitRenderer (canvas)) {
 		return false;
 	}
 
@@ -18,10 +19,18 @@ JSM.Viewer.prototype.Init = function (canvas, camera, light)
 	return true;
 };
 
-JSM.Viewer.prototype.InitRenderer = function (canvas, light)
+JSM.Viewer.prototype.Reset = function ()
+{
+	this.RemoveBodies ();
+	this.RemoveLights ();
+	this.SetAmbientLight (new JSM.RenderAmbientLight (0x7f7f7f));
+	this.EnableCameraLight ();
+};
+
+JSM.Viewer.prototype.InitRenderer = function (canvas)
 {
 	this.renderer = new JSM.Renderer ();
-	if (!this.renderer.Init (canvas, light)) {
+	if (!this.renderer.Init (canvas)) {
 		return false;
 	}
 	return true;
@@ -38,38 +47,86 @@ JSM.Viewer.prototype.InitNavigation = function (camera)
 	if (!this.navigation.Init (this.renderer.canvas, this.camera, this.Draw.bind (this), this.Resize.bind (this))) {
 		return false;
 	}
+
+	this.SetAmbientLight (new JSM.RenderAmbientLight (0x7f7f7f));
+	this.EnableCameraLight ();
 	return true;
 };
 
 JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 {
 	this.renderer.SetClearColor (red, green, blue);
-	this.Draw ();
 };
 
-JSM.Viewer.prototype.AddRenderBody = function (renderBody)
+
+JSM.Viewer.prototype.EnableCameraLight = function ()
 {
-	this.renderer.AddRenderBody (renderBody, this.Draw.bind (this));
-	this.Draw ();
+	if (this.cameraLight !== null) {
+		return;
+	}
+	this.cameraLight = new JSM.RenderDirectionalLight (0x7f7f7f, 0xffffff, new JSM.Vector (1.0, 0.0, 0.0));
+	this.AddLight (this.cameraLight);
 };
 
-JSM.Viewer.prototype.AddRenderBodies = function (renderBodies)
+JSM.Viewer.prototype.DisableCameraLight = function ()
 {
-	this.renderer.AddRenderBodies (renderBodies, this.Draw.bind (this));
-	this.Draw ();
+	if (this.cameraLight === null) {
+		return;
+	}
+	this.RemoveLight (this.cameraLight);
+	this.cameraLight = null;
+};
+
+JSM.Viewer.prototype.GetCameraLight = function ()
+{
+	return this.cameraLight;
+};
+
+JSM.Viewer.prototype.SetAmbientLight = function (light)
+{
+	this.renderer.SetAmbientLight (light);
+};
+
+JSM.Viewer.prototype.AddLight = function (light)
+{
+	this.renderer.AddLight (light);
+};
+
+JSM.Viewer.prototype.RemoveLight = function (light)
+{
+	this.renderer.RemoveLight (light);
+};
+
+JSM.Viewer.prototype.RemoveLights = function ()
+{
+	this.renderer.RemoveLights ();
+	this.cameraLight = null;
+};
+
+JSM.Viewer.prototype.AddBody = function (renderBody)
+{
+	this.renderer.AddBody (renderBody, this.Draw.bind (this));
+};
+
+JSM.Viewer.prototype.AddBodies = function (renderBodies)
+{
+	this.renderer.AddBodies (renderBodies, this.Draw.bind (this));
+};
+
+JSM.Viewer.prototype.RemoveBody = function (body)
+{
+	this.renderer.RemoveBody (body);
 };
 
 JSM.Viewer.prototype.RemoveBodies = function ()
 {
 	this.renderer.RemoveBodies ();
-	this.Draw ();
 };
 
 JSM.Viewer.prototype.FitInWindow = function ()
 {
 	var sphere = this.GetBoundingSphere ();
 	this.navigation.FitInWindow (sphere.GetCenter (), sphere.GetRadius ());
-	this.Draw ();
 };
 
 JSM.Viewer.prototype.GetCenter = function ()
@@ -125,16 +182,22 @@ JSM.Viewer.prototype.GetBoundingSphere = function ()
 	return sphere;
 };
 
+JSM.Viewer.prototype.FindObjects = function (screenX, screenY)
+{
+	return this.renderer.FindObjects (this.camera, screenX, screenY);
+};
+
 JSM.Viewer.prototype.Resize = function ()
 {
 	this.renderer.Resize ();
-	this.Draw ();
 };
 
 JSM.Viewer.prototype.Draw = function ()
 {
-	var light = this.renderer.light;
 	var camera = this.camera;
-	light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
+	var cameraLight = this.GetCameraLight ();
+	if (cameraLight !== null) {
+		cameraLight.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
+	}
 	this.renderer.Render (camera);
 };

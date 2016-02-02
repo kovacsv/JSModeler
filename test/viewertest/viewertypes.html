@@ -15,6 +15,7 @@
 	<script type="text/javascript" src="../../src/core/algorithm.js"></script>
 	<script type="text/javascript" src="../../src/core/async.js"></script>
 	<script type="text/javascript" src="../../src/core/check.js"></script>
+	<script type="text/javascript" src="../../src/core/jsonloader.js"></script>
 	<script type="text/javascript" src="../../src/geometry/definitions.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coord2d.js"></script>
 	<script type="text/javascript" src="../../src/geometry/coord.js"></script>
@@ -40,9 +41,8 @@
 	<script type="text/javascript" src="../../src/modeler/body.js"></script>
 	<script type="text/javascript" src="../../src/modeler/model.js"></script>
 	<script type="text/javascript" src="../../src/modeler/color.js"></script>
-	<script type="text/javascript" src="../../src/modeler/light.js"></script>
 	<script type="text/javascript" src="../../src/modeler/material.js"></script>
-	<script type="text/javascript" src="../../src/modeler/adjacencylist.js"></script>
+	<script type="text/javascript" src="../../src/modeler/adjacencyinfo.js"></script>
 	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/cututils.js"></script>
@@ -60,30 +60,32 @@
 	<script type="text/javascript" src="../../src/import/importerobj.js"></script>
 	<script type="text/javascript" src="../../src/import/importerstl.js"></script>
 	<script type="text/javascript" src="../../src/import/importercommon.js"></script>
-	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
-	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
-	<script type="text/javascript" src="../../src/extras/painter.js"></script>
-	<script type="text/javascript" src="../../src/extras/drawing.js"></script>
-	<script type="text/javascript" src="../../src/extras/subdivision.js"></script>
-	<script type="text/javascript" src="../../src/extras/svgtomodel.js"></script>
-	<script type="text/javascript" src="../../src/extras/csg.js"></script>
-	<script type="text/javascript" src="../../src/extras/curves.js"></script>
 	<script type="text/javascript" src="../../src/renderer/webglutils.js"></script>
-	<script type="text/javascript" src="../../src/renderer/renderdata.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderlight.js"></script>
+	<script type="text/javascript" src="../../src/renderer/rendermaterial.js"></script>
+	<script type="text/javascript" src="../../src/renderer/rendermesh.js"></script>
+	<script type="text/javascript" src="../../src/renderer/renderbody.js"></script>
 	<script type="text/javascript" src="../../src/renderer/shaderprogram.js"></script>
 	<script type="text/javascript" src="../../src/renderer/renderer.js"></script>
 	<script type="text/javascript" src="../../src/renderer/pointcloudrenderer.js"></script>
 	<script type="text/javascript" src="../../src/renderer/renderconverter.js"></script>
-	<script type="text/javascript" src="../../src/viewer/jsonfileloader.js"></script>
 	<script type="text/javascript" src="../../src/viewer/mouse.js"></script>
 	<script type="text/javascript" src="../../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../../src/viewer/painter.js"></script>
+	<script type="text/javascript" src="../../src/viewer/drawing.js"></script>
 	<script type="text/javascript" src="../../src/viewer/navigation.js"></script>
 	<script type="text/javascript" src="../../src/viewer/softwareviewer.js"></script>
 	<script type="text/javascript" src="../../src/viewer/spriteviewer.js"></script>
 	<script type="text/javascript" src="../../src/viewer/viewer.js"></script>
 	<script type="text/javascript" src="../../src/viewer/pointcloudviewer.js"></script>
-	<script type="text/javascript" src="../../src/three/threeconverter.js"></script>
-	<script type="text/javascript" src="../../src/three/threeviewer.js"></script>
+	<script type="text/javascript" src="../../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../../src/extensions/svgtomodel/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/extensions/threeviewer/threeconverter.js"></script>
+	<script type="text/javascript" src="../../src/extensions/threeviewer/threeviewer.js"></script>
 <!-- JSModeler includes end -->
 
 	<script type="text/javascript" src="include/stephandler.js"></script>
@@ -210,7 +212,7 @@
 				body.GetPolygon (2).SetMaterialIndex (1);
 			
 				var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
-				viewer.AddRenderBody (renderBody);	
+				viewer.AddBody (renderBody);	
 		
 				if (type == 'internal2') {
 					var body2 = JSM.GenerateCuboid (1, 1, 1);
@@ -219,7 +221,7 @@
 					transformation.Append (JSM.RotationZTransformation (20.0 * JSM.DegRad));
 					transformation.Append (JSM.TranslationTransformation (new JSM.Coord (-1.2, 1.2, 1.2)));
 					renderBody2.SetTransformation (transformation);
-					viewer.AddRenderBody (renderBody2);
+					viewer.AddBody (renderBody2);
 				}
 				
 				viewer.Draw ();
@@ -241,13 +243,18 @@
 
 				var points = [];
 				var colors = [];
-				var i, x, y, z;
-				for (i = 0;  i < 10000; i++) {
-					x = Math.random ();
-					y = Math.random ();
-					z = Math.random ();
-					points.push (x - 0.5, y - 0.5, z - 0.5);
-					colors.push (x, y, z);
+				var i, j, k, x, y, z;
+				var pointCount = 20;
+				for (i = 0;  i < pointCount; i++) {
+					for (j = 0;  j < pointCount; j++) {
+						for (k = 0;  k < pointCount; k++) {
+							x = i / pointCount;
+							y = j / pointCount;
+							z = k / pointCount;
+							points.push (x - 0.5, y - 0.5, z - 0.5);
+							colors.push (x, y, z);
+						}
+					}
 				}
 				viewer.AddPoints (points, colors);
 
@@ -367,6 +374,7 @@
 		function FitInWindow ()
 		{
 			viewer.FitInWindow ();
+			viewer.Draw ();
 		}
 		
 		function Load ()

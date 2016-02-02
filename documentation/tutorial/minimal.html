@@ -6,12 +6,12 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/tutorial.css">
 	<script type="text/javascript" src="../../build/three.min.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
-	<script type="text/javascript" src="../../build/jsmodeler.viewer.js"></script>
+	<script type="text/javascript" src="../../build/jsmodeler.ext.three.js"></script>
 	<title>JSModeler Minimal</title>
 	<script type="text/javascript">
-		
 		function Load ()
 		{
 			var viewerSettings = {
@@ -24,11 +24,8 @@
 			viewer.Start (document.getElementById ('example'), viewerSettings);
 
 			var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
-
 			var meshes = JSM.ConvertBodyToThreeMeshes (body);
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}		
+			viewer.AddMeshes (meshes);
 
 			viewer.Draw ();
 		}
@@ -37,13 +34,18 @@
 		{
 			Load ();			
 		}
-
 	</script>
 
 </head>
 
 <body>
-	<canvas id="example" width="1000" height="500"></canvas>
+	<div class="header">
+		<div class="title">JSModeler Minimal Example</div>
+		<div class="subtitle"><a class="link" href="https://github.com/kovacsv/JSModeler">https://github.com/kovacsv/JSModeler</a></div>
+	</div>
+	<div class="frame">
+		<canvas class="demo" id="example" width="800" height="400"></canvas>
+	</div>
 </body>
 
 </html>

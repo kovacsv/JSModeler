@@ -1,6 +1,7 @@
-var JSM = function () {
+var JSM = function ()
+{
 	this.mainVersion = 0;
-	this.subVersion = 39;
+	this.subVersion = 40;
 };
 
 /**
@@ -65,6 +66,30 @@ JSM.ValueOrDefault = function (val, def)
 };
 
 /**
+* Function: PrevIndex
+* Description: Returns the circular previous index for an array with the given length.
+* Parameters:
+*	index {integer} the index
+*	length {integer} the number of indices
+*/
+JSM.PrevIndex = function (index, length)
+{
+	return index > 0 ? index - 1 : length - 1;
+};
+
+/**
+* Function: NextIndex
+* Description: Returns the circular next index for an array with the given length.
+* Parameters:
+*	index {integer} the index
+*	length {integer} the number of indices
+*/
+JSM.NextIndex = function (index, length)
+{
+	return index < length - 1 ? index + 1 : 0;
+};
+
+/**
 * Function: CopyObjectProperties
 * Description: Copies one object properties to another object.
 * Parameters:
@@ -91,19 +116,12 @@ JSM.CopyObjectProperties = function (source, target, overwrite)
 };
 
 /**
-* Function: Assert
-* Description: Shows up an alert with the given message if the condition is false.
+* Function: Message
+* Description: Writes a message to the console.
 * Parameters:
-*	condition {boolean} the condition to check
-*	message {string} error message
+*	message {string} the message
 */
-JSM.Assert = function (condition, message)
+JSM.Message = function (message)
 {
-	if (!condition) {
-		var alertText = 'Assertion failed.';
-		if (message !== undefined && message !== null) {
-			alertText += ' ' + message;
-		}
-		alert (alertText);
-	}
+	console.log ('JSModeler: ' + message);
 };

@@ -19,14 +19,7 @@ JSM.TriangleModel = function ()
 */
 JSM.TriangleModel.prototype.AddMaterial = function (material)
 {
-	if (material === undefined || material === null) {
-		material = {};
-	}
-	
-	var newMaterial = {};
-	JSM.CopyObjectProperties (material, newMaterial, true);
-	
-	this.materials.push (newMaterial);
+	this.materials.push (material);
 	return this.materials.length - 1;
 };
 
@@ -45,16 +38,14 @@ JSM.TriangleModel.prototype.GetMaterial = function (index)
 
 /**
 * Function: TriangleModel.AddDefaultMaterial
-* Description:
-*	Adds a default material coordinate to the model.
-*	The default material is stored only once.
+* Description: Adds a default material to the model. The default material is stored only once.
 * Returns:
 *	{integer} the index of the default material
 */
 JSM.TriangleModel.prototype.AddDefaultMaterial = function ()
 {
 	if (this.defaultMaterial == -1) {
-		this.defaultMaterial = this.AddMaterial ();
+		this.defaultMaterial = this.AddMaterial ({});
 	}
 	return this.defaultMaterial;
 };

@@ -10,9 +10,25 @@
 	"lastsemic" : true,
 	"loopfunc" : true,
 	"shadow" : true,
+	"undef" : true,
 	"globals" : {
 		"JSM" : true,
 		"THREE" : false,
-		"requestAnimationFrame" : false
+		"console" : false,
+		"window" : false,
+		"document" : false,
+		"setTimeout" : false,
+		"requestAnimationFrame" : false,
+		"XMLHttpRequest" : false,
+		"HTMLCanvasElement" : false,
+		"SVGSVGElement" : false,
+		"SVGPathSeg" : false,
+		"SVGPathElement" : false,
+		"SVGRectElement" : false,
+		"SVGPolygonElement" : false,
+		"DataView" : false,
+		"FileReader" : false,
+		"Float32Array" : false,
+		"Image" : false
 	}
 }
