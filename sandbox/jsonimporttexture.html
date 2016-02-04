@@ -87,48 +87,17 @@
 <!-- JSModeler includes end -->
 	<title>Example</title>
 	
-	<style>
-		html, body
-		{
-			margin : 0px;
-			padding : 0px;
-			width : 100%;
-			height : 100%;
-		}
-
-		canvas
-		{
-			display : block;
-		}
-	</style>
-
 	<script type="text/javascript">
-		var viewer = null;
-
-		function Resize ()
-		{
-			var canvas = document.getElementById ('example');
-			canvas.width = document.body.clientWidth;
-			canvas.height = document.body.clientHeight;
-		}
-		
 		function Load ()
 		{
-			window.onresize = Resize;
-			Resize ();
-		
-			function TextureLoaded () {
-				viewer.Draw ();
-			}
-		
-			var viewerSettings = {
-				cameraEyePosition : [3.0, -3.0, 3.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0.0, 0.0, 1.0]
-			};
+			var camera = new JSM.Camera (
+				new JSM.Coord (3.0, -3.0, 3.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (0.0, 0.0, 1.0)
+			);
 
-			viewer = new JSM.ThreeViewer ();
-			if (!viewer.Start (document.getElementById ('example'), viewerSettings)) {
+			viewer = new JSM.Viewer ();
+			if (!viewer.Init (document.getElementById ('example'), camera)) {
 				return;
 			}
 
@@ -140,7 +109,7 @@
 						"diffuse" : [1, 0, 0],
 						"specular" : [0.329412, 0.329412, 0.329412],
 						"opacity" : 1,
-						"texture" : 'texturenpot.jpg',
+						"texture" : 'texture.jpg',
 						"offset" : [0.2, 0.3],
 						"scale" : [2.0, 3.0],
 						"rotation" : 30.0
@@ -174,18 +143,14 @@
 						]
 					}
 				]
-			};
-
-			var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData, function () {
-				viewer.Draw ();
-			});
-			for (var i = 0; i < meshes.length; i++) {
-				viewer.AddMesh (meshes[i]);
-			}
+			};			
+			
+			var renderBodies = JSM.ConvertJSONDataToRenderBodies (jsonData);
+			viewer.AddBodies (renderBodies);
 			viewer.FitInWindow ();
 			viewer.Draw ();
 		}
-
+		
 	    window.onload = function ()
 		{
 			Load ();

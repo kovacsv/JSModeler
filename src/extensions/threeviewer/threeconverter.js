@@ -180,8 +180,8 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 					result.x = co * u - si * v;
 					result.y = si * u + co * v;
 				}
-				result.x = textureOffset[0] + result.x * textureScale[0];
-				result.y = textureOffset[1] + result.y * textureScale[1];
+				result.x = offset[0] + result.x * scale[0];
+				result.y = offset[1] + result.y * scale[1];
 				return result;
 			}
 		

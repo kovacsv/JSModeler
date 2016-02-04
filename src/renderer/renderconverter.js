@@ -13,9 +13,7 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 			opacity : material.opacity,
 			singleSided : material.singleSided,
 			pointSize : material.pointSize,
-			texture : material.texture,
-			textureWidth : material.textureWidth,
-			textureHeight : material.textureHeight
+			texture : material.texture
 		});
 		return renderMaterial;
 	}
@@ -156,13 +154,27 @@ JSM.ConvertJSONDataToRenderBodies = function (jsonData)
 	{
 		function ConvertTrianglesToRenderMesh (mesh, triangles, materials)
 		{
-			function AppendCoord (targetArray, sourceArray, indexArray, startIndex)
+			function GetTextureCoordinate (u, v, offset, scale, rotation)
+			{
+				var result = new JSM.Vector2D (u, v);
+				if (!JSM.IsZero (rotation)) {
+					var si = Math.sin (rotation * JSM.DegRad);
+					var co = Math.cos (rotation * JSM.DegRad);
+					result.x = co * u - si * v;
+					result.y = si * u + co * v;
+				}
+				result.x = offset[0] + result.x * scale[0];
+				result.y = offset[1] + result.y * scale[1];
+				return result;
+			}
+
+			function AppendTriangleCoords (targetArray, sourceArray, indexArray, startIndex, componentCount)
 			{
 				var vertexIndex, sourceVertexIndex, componentIndex;
 				for (vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
 					sourceVertexIndex = indexArray[startIndex + vertexIndex];
-					for (componentIndex = 0; componentIndex < 3; componentIndex++) {
-						targetArray.push (sourceArray[sourceVertexIndex * 3 + componentIndex]);
+					for (componentIndex = 0; componentIndex < componentCount; componentIndex++) {
+						targetArray.push (sourceArray[sourceVertexIndex * componentCount + componentIndex]);
 					}
 				}
 			}
@@ -173,8 +185,16 @@ JSM.ConvertJSONDataToRenderBodies = function (jsonData)
 				diffuse : material.diffuse || [1.0, 1.0, 1.0],
 				specular : material.specular || [1.0, 1.0, 1.0],
 				shininess : material.shininess || 0.0,
-				opacity : material.opacity || 1.0
+				opacity : material.opacity || 1.0,
 			});
+			
+			var hasTexture = (material.texture !== undefined && material.texture !== null);
+			if (hasTexture) {
+				renderMaterial.SetType (JSM.RenderMaterialFlags.Triangle + JSM.RenderMaterialFlags.Textured);
+				renderMaterial.texture = material.texture;
+				renderMaterial.ambient = [1.0, 1.0, 1.0];
+				renderMaterial.diffuse = [1.0, 1.0, 1.0];
+			}
 			
 			var renderMesh = new JSM.RenderMesh (renderMaterial);
 			var vertexArray = [];
@@ -183,11 +203,23 @@ JSM.ConvertJSONDataToRenderBodies = function (jsonData)
 			
 			var i;
 			for	(i = 0; i < triangles.parameters.length; i += 9) {
-				AppendCoord (vertexArray, mesh.vertices, triangles.parameters, i);
-				AppendCoord (normalArray, mesh.normals, triangles.parameters, i + 3);
-				AppendCoord (uvArray, mesh.uvs, triangles.parameters, i + 6);
+				AppendTriangleCoords (vertexArray, mesh.vertices, triangles.parameters, i, 3);
+				AppendTriangleCoords (normalArray, mesh.normals, triangles.parameters, i + 3, 3);
+				AppendTriangleCoords (uvArray, mesh.uvs, triangles.parameters, i + 6, 2);
 			}
 
+			if (hasTexture) {
+				var offset = material.offset || [0.0, 0.0];
+				var scale = material.scale || [1.0, 1.0];
+				var rotation = material.rotation || 0.0;
+				var transformedUV;
+				for	(i = 0; i < uvArray.length; i += 2) {
+					transformedUV = GetTextureCoordinate (uvArray[i + 0], uvArray[i + 1], offset, scale, rotation);
+					uvArray[i + 0] = transformedUV.x;
+					uvArray[i + 1] = -transformedUV.y;
+				}
+			}
+			
 			renderMesh.SetVertexArray (vertexArray);
 			renderMesh.SetNormalArray (normalArray);
 			renderMesh.SetUVArray (uvArray);
@@ -195,10 +227,11 @@ JSM.ConvertJSONDataToRenderBodies = function (jsonData)
 		}
 		
 		var renderBody = new JSM.RenderBody ();
-		var i, triangles;
+		var i, triangles, renderMesh;
 		for (i = 0; i < mesh.triangles.length; i++) {
 			triangles = mesh.triangles[i];
-			renderBody.AddMesh (ConvertTrianglesToRenderMesh (mesh, triangles, materials));
+			renderMesh = ConvertTrianglesToRenderMesh (mesh, triangles, materials);
+			renderBody.AddMesh (renderMesh);
 		}
 		return renderBody;
 	}
