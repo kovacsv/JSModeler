@@ -148,7 +148,7 @@ JSM.ConvertModelToRenderBodies = function (model, materials, parameters)
 	return bodies;
 };
 
-JSM.ConvertJSONDataToRenderBodies = function (jsonData)
+JSM.ConvertJSONDataToRenderBodies = function (jsonData, asyncCallbacks)
 {
 	function ConvertMeshToRenderBody (mesh, materials)
 	{
@@ -236,6 +236,12 @@ JSM.ConvertJSONDataToRenderBodies = function (jsonData)
 		return renderBody;
 	}
 	
+	function AddMesh (meshes, materials, meshIndex, resultBodies)
+	{
+		var renderBody = ConvertMeshToRenderBody (meshes[meshIndex], materials);
+		resultBodies.push (renderBody);
+	}
+	
 	var resultBodies = [];
 
 	var materials = jsonData.materials;
@@ -248,10 +254,16 @@ JSM.ConvertJSONDataToRenderBodies = function (jsonData)
 		return resultBodies;
 	}
 	
-	var i = 0;
-	for (i = 0; i < meshes.length; i++) {
-		resultBodies.push (ConvertMeshToRenderBody (meshes[i], materials));
-	}
+	var meshIndex = 0;
+	JSM.AsyncRunTask (
+		function () {
+			AddMesh (meshes, materials, meshIndex, resultBodies);
+			meshIndex = meshIndex + 1;
+			return true;
+		},
+		asyncCallbacks,
+		meshes.length, 0, resultBodies
+	);
 
 	return resultBodies;
 };
