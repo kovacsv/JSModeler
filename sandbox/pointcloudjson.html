@@ -156,8 +156,9 @@
 			
 			viewer.SetPointSize (2.0);
 
-			var jsonLoader = new JSM.JSONFileLoader (JSONLoaded);
-			jsonLoader.Load ('pointcloudjson.js');
+			JSM.LoadJsonFile ('pointcloudjson.js', function (jsonData) {
+				JSONLoaded (jsonData);
+			});
 
 			Render ();
 		}
