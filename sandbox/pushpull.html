@@ -6,7 +6,6 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
@@ -85,6 +84,7 @@
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeconverter.js"></script>
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeviewer.js"></script>
 <!-- JSModeler includes end -->
+	<script type="text/javascript" src="utils/hashchanger.js"></script>
 	<title>Example</title>
 
 	<script type="text/javascript">
@@ -231,22 +231,13 @@
 			FinalizePolygons (body, polygon, situations, vertexOldNewIndices);
 		};
 	
-		function Load ()
+		var hashChanger = null;
+		var viewer = null;
+
+		function GetBody (index)
 		{
-			var camera = new JSM.Camera (
-				new JSM.Coord (-1.0, -3.0, 2.0),
-				new JSM.Coord (0.0, 0.0, 0.0),
-				new JSM.Vector (0.0, 0.0, 1.0)
-			);
-			
-			var viewer = new JSM.Viewer ();
-			if (!viewer.Init (document.getElementById ('example'), camera)) {
-				alert ('error');
-			}
-
-			var materials = new JSM.Materials ();
-
 			var body = new JSM.Body ();
+			
 			JSM.AddVertexToBody (body, 0, 0, 0);
 			JSM.AddVertexToBody (body, 2, 0, 0);
 			JSM.AddVertexToBody (body, 2, 1, 0);
@@ -271,24 +262,49 @@
 			JSM.PushPullBodyPolygon (body, 6, 0.5);
 			JSM.PushPullBodyPolygon (body, 5, -0.5);
 			
-			JSM.GenerateRandomMaterials (body, materials);
-			var i, material;
-			for (i = 0; i < materials.Count (); i++) {
-				material = materials.GetMaterial (i);
-				material.singleSided = true;
-			}
+			return body;
+		}
+		
+		function RenderModel ()
+		{
+			var hash = hashChanger.GetHashIndex ();
+			viewer.RemoveBodies ();
+
+			var body = GetBody (hash);
 			
 			if (!JSM.IsSolidBody (body)) {
 				alert ('body is not solid');
 			}
+			
 			if (!JSM.CheckSolidBody (body)) {
 				alert ('invalid solid body');
 			}
+
+			var materials = new JSM.Materials ();
+			JSM.GenerateRandomMaterials (body, materials);
+
 			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 			viewer.AddBody (renderBody);
 			
 			viewer.FitInWindow ();
-			viewer.Draw ();
+			viewer.Draw ();		
+		}
+	
+		function Load ()
+		{
+			var camera = new JSM.Camera (
+				new JSM.Coord (-1.0, -3.0, 2.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0.0, 0.0, 1.0)
+			);
+			
+			viewer = new JSM.Viewer ();
+			if (!viewer.Init (document.getElementById ('example'), camera)) {
+				alert ('error');
+			}
+
+			hashChanger = new HashChanger (RenderModel);
+			RenderModel ();
 		}
 	
 	    window.onload = function ()
