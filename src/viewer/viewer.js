@@ -58,7 +58,6 @@ JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 	this.renderer.SetClearColor (red, green, blue);
 };
 
-
 JSM.Viewer.prototype.EnableCameraLight = function ()
 {
 	if (this.cameraLight !== null) {
