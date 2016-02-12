@@ -115,9 +115,12 @@
 			if (!renderer.Init (document.getElementById ('example'))) {
 				alert ('error');
 			}
+			
+			renderer.SetAmbientLight (new JSM.RenderAmbientLight (0x7f7f7f));
+			
 			var light = new JSM.RenderDirectionalLight (0x7f7f7f, 0xffffff, new JSM.Vector (1.0, 0.0, 0.0));
-			renderer.AddLight (light);
 			light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
+			renderer.AddLight (light);
 
 			var materials = new JSM.Materials ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
