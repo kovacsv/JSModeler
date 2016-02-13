@@ -3502,7 +3502,7 @@
 						"Clone" : {
 							"description" : "Clones the vertex.",
 							"returns" : [
-								["BodyVertex", "a cloned instance"]
+								["BodyVertex", "the cloned instance"]
 							]
 						}
 					}
@@ -3552,7 +3552,7 @@
 						"Clone" : {
 							"description" : "Clones the point.",
 							"returns" : [
-								["BodyPoint", "a cloned instance"]
+								["BodyPoint", "the cloned instance"]
 							]
 						}
 					}
@@ -3615,7 +3615,7 @@
 						"Clone" : {
 							"description" : "Clones the line.",
 							"returns" : [
-								["BodyLine", "a cloned instance"]
+								["BodyLine", "the cloned instance"]
 							]
 						}
 					}
@@ -3721,7 +3721,74 @@
 						"Clone" : {
 							"description" : "Clones the polygon.",
 							"returns" : [
-								["BodyPolygon", "a cloned instance"]
+								["BodyPolygon", "the cloned instance"]
+							]
+						}
+					}
+				},
+				"BodyTextureProjection" : {
+					"description" : "Represents the texture projection of the body. It contains a projection type, and a coordinate system for projection.",
+					"functions" : {
+						"GetType" : {
+							"description" : "Returns the texture projection type.",
+							"returns" : [
+								["TextureProjectionType", "the result"]
+							]
+						},
+						"GetCoords" : {
+							"description" : "Returns the texture projection coordinate system.",
+							"returns" : [
+								["CoordSystem", "the result"]
+							]
+						},
+						"SetType" : {
+							"description" : "Sets the texture projection type.",
+							"parameters" : [
+								["type", "TextureProjectionType", "the type"]
+							]
+						},
+						"SetCoords" : {
+							"description" : "Sets the texture projection coordinates.",
+							"parameters" : [
+								["coords", "CoordSystem", "the coordinates"]
+							]
+						},
+						"SetPlanar" : {
+							"description" : "Sets the texture projection to planar with the given parameters.",
+							"parameters" : [
+								["origo", "Coord", "origo of the projection"],
+								["xDirection", "Vector", "x direction (start point along other axis) of the projection"],
+								["zDirection", "Vector", "z direction (normal vector) of the projection"]
+							]
+						},
+						"SetCubic" : {
+							"description" : "Sets the texture projection to cubic with the given parameters.",
+							"parameters" : [
+								["origo", "Coord", "origo of the projection"],
+								["xDirection", "Vector", "x direction (edge of the cube) of the projection"],
+								["yDirection", "Vector", "y direction (edge of the cube) of the projection"],
+								["zDirection", "Vector", "z direction (edge of the cube) of the projection"]
+							]
+						},
+						"SetCylindrical" : {
+							"description" : "Sets the texture projection to cylindrical with the given parameters.",
+							"parameters" : [
+								["origo", "Coord", "origo of the projection"],
+								["radius", "number", "radius of the cylinder"],
+								["xDirection", "Vector", "x direction (start point along perimeter) of the projection"],
+								["zDirection", "Vector", "z direction (normal vector) of the projection"]
+							]
+						},
+						"Transform" : {
+							"description" : "Transforms the texture projection coordinate system.",
+							"parameters" : [
+								["transformation", "Transformation", "the transformation"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the texture projection.",
+							"returns" : [
+								["BodyTextureProjection", "the cloned instance"]
 							]
 						}
 					}
@@ -3889,28 +3956,16 @@
 								["integer", "the result"]
 							]
 						},
-						"GetTextureProjectionType" : {
-							"description" : "Returns the texture projection type of the body.",
+						"GetTextureProjection" : {
+							"description" : "Returns the texture projection of the body.",
 							"returns" : [
-								["string", "the result"]
+								["BodyTextureProjection", "the result"]
 							]
 						},
-						"SetTextureProjectionType" : {
-							"description" : "Sets the texture projection type of the body.",
+						"SetTextureProjection" : {
+							"description" : "Sets the texture projection of the body.",
 							"parameters" : [
-								["projection", "string", "the new texture projection type"]
-							]
-						},
-						"GetTextureProjectionCoords" : {
-							"description" : "Returns the texture projection coordinate system of the body.",
-							"returns" : [
-								["CoordSystem", "the result"]
-							]
-						},
-						"SetTextureProjectionCoords" : {
-							"description" : "Sets the texture projection coordinate system of the body.",
-							"parameters" : [
-								["coords", "CoordSystem", "the new texture projection coordinate system"]
+								["projection", "BodyTextureProjection", "the new texture projection"]
 							]
 						},
 						"SetPlanarTextureProjection" : {
@@ -3974,6 +4029,12 @@
 						},
 						"Clear" : {
 							"description" : "Makes the body empty."
+						},
+						"Clone" : {
+							"description" : "Clones the body.",
+							"returns" : [
+								["Body", "the cloned instance"]
+							]
 						}
 					}
 				},
@@ -4435,6 +4496,16 @@
 							"description" : "Finalizes the model. It finalizes materials and bodies."
 						}
 					}
+				}
+			},
+			"enums" : {
+				"TextureProjectionType" : {
+					"description" : "Texture projection type.",
+					"values" : [
+						["Planar", "planar projection"],
+						["Cubic", "cubic projection"],
+						["Cylindrical", "cylindrical projection"]
+					]
 				}
 			}
 		},

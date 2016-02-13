@@ -146,7 +146,7 @@ JSM.CalculatePolygonPlanarTextureCoords = function (body, index)
 {
 	var result = [];
 	var polygon = body.GetPolygon (index);
-	var system = body.GetTextureProjectionCoords ();
+	var system = body.GetTextureProjection ().GetCoords ();
 
 	var i, coord;
 	for (i = 0; i < polygon.VertexIndexCount (); i++) {
@@ -171,7 +171,7 @@ JSM.CalculatePolygonCubicTextureCoords = function (body, index, normal)
 {
 	var result = [];
 	var polygon = body.GetPolygon (index);
-	var system = body.GetTextureProjectionCoords ();
+	var system = body.GetTextureProjection ().GetCoords ();
 
 	var i, coord;
 	for (i = 0; i < polygon.VertexIndexCount (); i++) {
@@ -198,7 +198,7 @@ JSM.CalculatePolygonCylindricalTextureCoords = function (body, index, normal)
 	var angles = [];
 
 	var polygon = body.GetPolygon (index);
-	var system = body.GetTextureProjectionCoords ();
+	var system = body.GetTextureProjection ().GetCoords ();
 
 	var i, j, coord, textureValues;
 	for (i = 0; i < polygon.VertexIndexCount (); i++) {
@@ -309,12 +309,12 @@ JSM.CalculateBodyCylindricalTextureCoords = function (body)
 JSM.CalculateBodyTextureCoords = function (body)
 {
 	var result = [];
-	var projection = body.GetTextureProjectionType ();
-	if (projection === 'Planar') {
+	var projection = body.GetTextureProjection ().GetType ();
+	if (projection === JSM.TextureProjectionType.Planar) {
 		result = JSM.CalculateBodyPlanarTextureCoords (body);
-	} else if (projection === 'Cubic') {
+	} else if (projection === JSM.TextureProjectionType.Cubic) {
 		result = JSM.CalculateBodyCubicTextureCoords (body);
-	} else if (projection === 'Cylindrical') {
+	} else if (projection === JSM.TextureProjectionType.Cylindrical) {
 		result = JSM.CalculateBodyCylindricalTextureCoords (body);
 	}
 

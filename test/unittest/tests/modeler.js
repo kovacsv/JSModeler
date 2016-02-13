@@ -356,6 +356,62 @@ generalSuite.AddTest ('BodyMergeTest', function (test)
 	test.Assert (JSM.CheckBody (body));
 });
 
+generalSuite.AddTest ('BodyCloneTest', function (test)
+{
+	var body = new JSM.Body ();
+	JSM.AddVertexToBody (body, 0, 0, 0);
+	JSM.AddVertexToBody (body, 1, 0, 0);
+	JSM.AddVertexToBody (body, 1, 1, 0);
+	JSM.AddVertexToBody (body, 0, 1, 0);
+	JSM.AddVertexToBody (body, 0, 0, 1);
+	JSM.AddVertexToBody (body, 1, 0, 1);
+	JSM.AddVertexToBody (body, 0, 0, 2);
+	JSM.AddPolygonToBody (body, [0, 1, 2, 3]);
+	JSM.AddLineToBody (body, 4, 5);
+	JSM.AddPointToBody (body, 6)
+	
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
+	
+	var cloned = body.Clone ();
+	
+	test.AssertEqual (body.VertexCount (), cloned.VertexCount ());
+	test.AssertEqual (body.PolygonCount (), cloned.PolygonCount ());
+	test.AssertEqual (body.LineCount (), cloned.LineCount ());
+	test.AssertEqual (body.PointCount (), cloned.PointCount ());
+	test.AssertEqual (body.GetTextureProjection ().GetType (), cloned.GetTextureProjection ().GetType ());
+	
+	test.Assert (body.GetVertexPosition (0).IsEqual (new JSM.Coord (0, 0, 0)));
+	test.Assert (body.GetPolygon (0).GetVertexIndex (0) == 0);
+	test.Assert (body.GetLine (0).GetBegVertexIndex (0) == 4);
+	test.Assert (body.GetPoint (0).GetVertexIndex (0) == 6);
+
+	test.Assert (cloned.GetVertexPosition (0).IsEqual (new JSM.Coord (0, 0, 0)));
+	test.Assert (cloned.GetPolygon (0).GetVertexIndex (0) == 0);
+	test.Assert (cloned.GetLine (0).GetBegVertexIndex (0) == 4);
+	test.Assert (cloned.GetPoint (0).GetVertexIndex (0) == 6);
+
+	body.SetVertexPosition (0, new JSM.Coord (-1, -1, 0));
+	body.GetPolygon (0).SetVertexIndex (0, 1);
+	body.GetLine (0).SetBegVertexIndex (2);
+	body.GetPoint (0).SetVertexIndex (3);
+	body.GetTextureProjection ().SetType (JSM.TextureProjectionType.Cylindrical);
+	body.GetTextureProjection ().GetCoords ().origo.x = 42.0;
+	
+	test.Assert (cloned.GetVertexPosition (0).IsEqual (new JSM.Coord (0, 0, 0)));
+	test.Assert (cloned.GetPolygon (0).GetVertexIndex (0) == 0);
+	test.Assert (cloned.GetLine (0).GetBegVertexIndex (0) == 4);
+	test.Assert (cloned.GetPoint (0).GetVertexIndex (0) == 6);
+	test.Assert (cloned.GetPoint (0).GetVertexIndex (0) == 6);
+	test.Assert (cloned.GetTextureProjection ().GetType (0) == JSM.TextureProjectionType.Planar);
+	test.Assert (cloned.GetTextureProjection ().GetCoords (0).origo.IsEqual (new JSM.Coord (0.0, 0.0, 0.0)));
+
+	body.Clear ();
+	test.AssertEqual (cloned.VertexCount (), 7);
+	test.AssertEqual (cloned.PolygonCount (), 1);
+	test.AssertEqual (cloned.LineCount (), 1);
+	test.AssertEqual (cloned.PointCount (), 1);
+});
+
 generalSuite.AddTest ('BodyReverseTest', function (test)
 {
 	var body = new JSM.Body ();

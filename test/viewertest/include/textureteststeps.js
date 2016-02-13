@@ -19,13 +19,11 @@ function TestStep (viewer, mode, step, info)
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
 		
-		body.SetTextureProjectionType ('Planar');
-		body.SetTextureProjectionCoords (new JSM.CoordSystem (
+		body.SetPlanarTextureProjection (
 			new JSM.Coord (-0.5, -0.5, -0.5),
 			new JSM.Coord (1.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 1.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0)
-		));		
+			new JSM.Coord (0.0, 1.0, 0.0)
+		);		
 		AddBodyToViewer (viewer, mode, body, materials, info);
 	}
 
@@ -36,13 +34,11 @@ function TestStep (viewer, mode, step, info)
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
 		
-		body.SetTextureProjectionType ('Planar');
-		body.SetTextureProjectionCoords (new JSM.CoordSystem (
+		body.SetPlanarTextureProjection (
 			new JSM.Coord (-0.3, -0.3, -0.3),
 			new JSM.Coord (1.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 1.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0)
-		));		
+			new JSM.Coord (0.0, 1.0, 0.0)
+		);		
 		AddBodyToViewer (viewer, mode, body, materials, info);
 	}	
 
@@ -53,13 +49,11 @@ function TestStep (viewer, mode, step, info)
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
 		
-		body.SetTextureProjectionType ('Planar');
-		body.SetTextureProjectionCoords (new JSM.CoordSystem (
+		body.SetPlanarTextureProjection (
 			new JSM.Coord (-0.4, -0.4, 0.4),
 			new JSM.Coord (1.0, 0.0, 1.0),
-			new JSM.Coord (0.0, 1.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0)
-		));		
+			new JSM.Coord (0.0, 1.0, 0.0)
+		);		
 		AddBodyToViewer (viewer, mode, body, materials, info);
 	}	
 	
