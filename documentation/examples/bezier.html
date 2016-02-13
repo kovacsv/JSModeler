@@ -143,7 +143,7 @@
 
 			bezierData.surfaceBody = JSM.GenerateBezierSurface (scp, 32, 32, true);
 			bezierData.surfaceBody.SetPolygonsMaterialIndex (0);
-			bezierData.surfaceBody.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));
+			bezierData.surfaceBody.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
 			
 			//JSM.GenerateRandomMaterials (bezierData.surfaceBody, materials, true);
 			var meshes = JSM.ConvertBodyToThreeMeshes (bezierData.surfaceBody, materials);

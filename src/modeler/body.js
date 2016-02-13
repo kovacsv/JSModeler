@@ -532,16 +532,16 @@ JSM.BodyTextureProjection.prototype.SetCoords = function (coords)
 * Description: Sets the texture projection to planar with the given parameters.
 * Parameters:
 *	origo {Coord} origo of the projection
-*	xDirection {Vector} x direction (start point along other axis) of the projection
-*	zDirection {Vector} z direction (normal vector) of the projection
+*	xDirection {Vector} x direction of the projection plane
+*	yDirection {Vector} y direction of the projection plane
 */
-JSM.BodyTextureProjection.prototype.SetPlanar = function (origo, xDirection, zDirection)
+JSM.BodyTextureProjection.prototype.SetPlanar = function (origo, xDirection, yDirection)
 {
 	this.type = JSM.TextureProjectionType.Planar;
 	this.coords = new JSM.CoordSystem (
 		origo,
 		xDirection,
-		JSM.VectorCross (xDirection, zDirection),
+		yDirection,
 		new JSM.Coord (0.0, 0.0, 0.0)
 	);
 };
@@ -977,12 +977,12 @@ JSM.Body.prototype.SetTextureProjection = function (projection)
 * Description: Sets the texture projection to planar with the given parameters.
 * Parameters:
 *	origo {Coord} origo of the projection
-*	xDirection {Vector} x direction (start point along other axis) of the projection
-*	zDirection {Vector} z direction (normal vector) of the projection
+*	xDirection {Vector} x direction of the projection plane
+*	yDirection {Vector} y direction of the projection plane
 */
-JSM.Body.prototype.SetPlanarTextureProjection = function (origo, xDirection, zDirection)
+JSM.Body.prototype.SetPlanarTextureProjection = function (origo, xDirection, yDirection)
 {
-	this.projection.SetPlanar (origo, xDirection, zDirection);
+	this.projection.SetPlanar (origo, xDirection, yDirection);
 };
 
 /**

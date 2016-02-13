@@ -2099,8 +2099,8 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 0.0, 1.0)));
 	
 	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2, 3]));
-
-	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
+	
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	
 	var textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -2110,7 +2110,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
 	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
-	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.0, 0.2), new JSM.Coord (0.0, 0.0, 1.0), new JSM.Coord (0.0, -1.0, 0.0));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.0, 0.2), new JSM.Coord (0.0, 0.0, 1.0), new JSM.Coord (1.0, 0.0, 0.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -2120,7 +2120,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (0.8, 0.8)));
 	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0.8, -0.2)));
 
-	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, 0.0)));
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, 1.0)));
@@ -2150,7 +2150,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	
 	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2, 3]));
 	
-	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -2161,7 +2161,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
 	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
-	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (10.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -20.0));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (10.0, 0.0, 0.0), new JSM.Coord (0.0, 20.0, 0.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -2172,7 +2172,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
 	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
-	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -2183,7 +2183,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (0.8, 0.8)));
 	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (-0.2, 0.8)));
 
-	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.3, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));	
+	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.3, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));	
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
