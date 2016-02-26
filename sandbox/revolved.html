@@ -92,14 +92,14 @@
 
 		function Load ()
 		{
-			var viewerSettings = {
-				cameraEyePosition : [-2.0, -1.5, 1.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1]
-			};
+			var camera = new JSM.Camera (
+				new JSM.Coord (-2.0, -1.5, 1.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0, 0, 1)
+			);
 
-			viewer = new JSM.ThreeViewer ();
-			viewer.Start (document.getElementById ('example'), viewerSettings);
+			viewer = new JSM.Viewer ();
+			viewer.Init (document.getElementById ('example'), camera);
 				
 			var polyLine = [];
 			var i;
@@ -119,12 +119,8 @@
 				textureWidth : 1,
 				textureHeight : 1
 			}));
-			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials, {
-				textureLoadedCallback : function () {
-					viewer.Draw ();
-				}
-			});
-			viewer.AddMeshes (meshes);
+			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
+			viewer.AddBody (renderBody);
 
 			viewer.FitInWindow ();
 			viewer.Draw ();
