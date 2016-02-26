@@ -16,6 +16,10 @@ JSM.Viewer.prototype.Init = function (canvas, camera)
 		return false;
 	}
 
+	if (!this.InitLights ()) {
+		return false;
+	}
+
 	return true;
 };
 
@@ -48,6 +52,11 @@ JSM.Viewer.prototype.InitNavigation = function (camera)
 		return false;
 	}
 
+	return true;
+};
+
+JSM.Viewer.prototype.InitLights = function ()
+{
 	this.SetAmbientLight (new JSM.RenderAmbientLight (0x7f7f7f));
 	this.EnableCameraLight ();
 	return true;
