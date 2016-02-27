@@ -2286,6 +2286,23 @@ textureSuite.AddTest ('BodyCylindricalTextureCoordTest', function (test)
 	test.Assert (textureCoords[3][0].IsEqual (new JSM.Coord2D (radius * 3.0 / 6.0, 1.0)));
 	test.Assert (textureCoords[4][0].IsEqual (new JSM.Coord2D (radius * 2.0 / 6.0, 1.0)));
 	test.Assert (textureCoords[5][0].IsEqual (new JSM.Coord2D (radius * 1.0 / 6.0, 1.0)));
+	
+	var body = new JSM.GenerateCylinder (1.0, 1.0, 6, true, false);
+	body.GetTextureProjection ().coords.origo.z = 0.0;
+
+	var textureCoords = JSM.CalculateBodyTextureCoords (body);
+	test.Assert (textureCoords.length == 8);
+	test.Assert (textureCoords[0].length == 4);
+	test.Assert (textureCoords[1].length == 4);
+	test.Assert (textureCoords[2].length == 4);
+	test.Assert (textureCoords[3].length == 4);
+	test.Assert (textureCoords[4].length == 4);
+	test.Assert (textureCoords[5].length == 4);
+	
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (radius, 0.5)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (radius * 5.0 / 6.0, 0.5)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (radius * 5.0 / 6.0, -0.5)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (radius, -0.5)));
 });
 
 var utilsSuite = unitTest.AddTestSuite ('ModelerUtils');
