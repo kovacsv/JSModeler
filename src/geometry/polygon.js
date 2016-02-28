@@ -527,26 +527,26 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 {
 	function DetectOriginalVertexTypes (polygon, plane)
 	{
-		var result = {
+		var cutInformation = {
 			originalVertexTypes : [],
 			backFound : false,
 			frontFound : false
 		};
-		var i, position, currVertex, currType;
+		var i, position, vertex, type;
 		for (i = 0; i < polygon.VertexCount (); i++) {
-			currVertex = polygon.GetVertex (i);
-			position = plane.CoordPosition (currVertex);
-			currType = 0;
+			vertex = polygon.GetVertex (i);
+			position = plane.CoordPosition (vertex);
+			type = 0;
 			if (position == JSM.CoordPlanePosition.CoordInFrontOfPlane) {
-				currType = 1;
-				result.frontFound = true;
+				type = 1;
+				cutInformation.frontFound = true;
 			} else if (position == JSM.CoordPlanePosition.CoordAtBackOfPlane) {
-				currType = -1;
-				result.backFound = true;
+				type = -1;
+				cutInformation.backFound = true;
 			}
-			result.originalVertexTypes.push (currType);
+			cutInformation.originalVertexTypes.push (type);
 		}
-		return result;
+		return cutInformation;
 	}	
 	
 	function AddCutVerticesToPolygon (polygon, plane, cutPolygon, originalVertexTypes)
