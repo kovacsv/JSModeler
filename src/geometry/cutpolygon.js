@@ -1,3 +1,17 @@
+/**
+* Function: CutPolygonInternal
+* Description:
+*	This is the geometry independent part of the polygon cutting algorithm.
+*	It uses an interface for geometry dependent methods.
+* Parameters:
+*	polygon {Polygon/Polygon2D} the polygon
+*	geometryInterface {object} interface which defines geometry dependent methods
+*	frontPolygons {Polygon/Polygon2D[*]} (out) polygons in front of the plane
+*	backPolygons {Polygon/Polygon2D[*]} (out) polygons at the back of the plane
+*	cutPolygons {Polygon/Polygon2D[*]} (out) polygons on the on the cut shape
+* Returns:
+*	{boolean} success
+*/
 JSM.CutPolygonInternal = function (polygon, geometryInterface, frontPolygons, backPolygons, cutPolygons)
 {
 	function DetectOriginalVertexTypes (polygon)

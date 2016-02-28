@@ -88,6 +88,10 @@ generalSuite.AddTest ('VectorTest', function (test) {
 	var angle = 90.0 * JSM.DegRad;
 	test.Assert (coord.Clone ().Rotate (axis, angle, origo).IsEqual (new JSM.Coord (-1.0, 1.0, 1.0)));
 
+	var vector1 = new JSM.Vector2D (1.0, 0.0);
+	var vector2 = new JSM.Vector2D (0.0, 1.0);
+	test.Assert (JSM.IsEqual (vector1.AngleTo (vector2), 90.0 * JSM.DegRad));
+
 	var vector1 = new JSM.Vector (1.0, 0.0, 0.0);
 	var vector2 = new JSM.Vector (0.0, 1.0, 0.0);
 	test.Assert (JSM.IsEqual (vector1.AngleTo (vector2), 90.0 * JSM.DegRad));
@@ -153,6 +157,11 @@ generalSuite.AddTest ('VectorTest', function (test) {
 	var centroid3 = JSM.CalculateCentroid (coords3);
 	test.Assert (centroid3.IsEqual (new JSM.Coord (0.3, 0.5, 0.0)));
 
+	var vector1 = new JSM.Vector2D (1.0, 0.0);
+	var vector2 = new JSM.Vector2D (0.0, 1.0);
+	test.Assert (JSM.IsEqual (vector1.AngleTo (vector2), Math.PI / 2.0));
+	test.Assert (JSM.IsEqual (vector2.AngleTo (vector1), Math.PI / 2.0));
+
 	var vector1 = new JSM.Vector (1.0, 0.0, 0.0);
 	var vector2 = new JSM.Vector (0.0, 1.0, 0.0);
 	test.Assert (JSM.IsEqual (vector1.AngleTo (vector2), Math.PI / 2.0));
@@ -191,6 +200,12 @@ generalSuite.AddTest ('VectorTest', function (test) {
 	test.Assert (JSM.CoordOrientation (coord1, coord3, coord2, normal1) == JSM.Orientation.CounterClockwise);
 	test.Assert (JSM.CoordOrientation (coord1, coord3, coord3, normal1) == JSM.Orientation.Invalid);
 	
+	var coord1 = new JSM.Vector2D (0.0, 0.0);
+	var coord2 = new JSM.Vector2D (1.0, 0.0);
+	var coord3 = new JSM.Vector2D (-1.0, 0.0);
+	test.Assert (JSM.IsEqual (JSM.CoordSignedDistance2D (coord1, coord2, JSM.CoordSub2D (coord2, coord1)), 1.0));
+	test.Assert (JSM.IsEqual (JSM.CoordSignedDistance2D (coord1, coord3, JSM.CoordSub2D (coord1, coord3)), -1.0));
+
 	var coord1 = new JSM.Vector (0.0, 0.0, 0.0);
 	var coord2 = new JSM.Vector (1.0, 0.0, 0.0);
 	var coord3 = new JSM.Vector (-1.0, 0.0, 0.0);
