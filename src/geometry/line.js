@@ -13,6 +13,20 @@ JSM.CoordLinePosition2D = {
 };
 
 /**
+* Enum: LineLinePosition2D
+* Description: Position of two lines.
+* Values:
+*	{LinesDontIntersect} lines do not intersect
+*	{LinesIntersectsCoincident} lines intersect coincident
+*	{LinesIntersectsOnePoint} lines intersect one point
+*/
+JSM.LineLinePosition2D = {
+	LinesDontIntersect : 0,
+	LinesIntersectsOnePoint : 1,
+	LinesIntersectsCoincident : 2
+};
+
+/**
 * Enum: CoordLinePosition
 * Description: Position of a coordinate and a line.
 * Values:
@@ -87,6 +101,44 @@ JSM.Line2D.prototype.CoordPosition = function (coord)
 	}
 
 	return JSM.CoordLinePosition2D.CoordOnLine;
+};
+
+/**
+* Function: Line2D.LinePosition
+* Description: Calculates the position of the line and the given line.
+* Parameters:
+*	line {Line2D} the line
+*	intersection {Coord2D} (out) the intersection point if it exists
+* Returns:
+*	{LineLinePosition2D} the result
+*/
+JSM.Line2D.prototype.LinePosition = function (line, intersection)
+{
+	var x1 = this.start.x;
+	var y1 = this.start.y;
+	var x2 = this.start.x + this.direction.x;
+	var y2 = this.start.y + this.direction.y;
+	var x3 = line.start.x;
+	var y3 = line.start.y;
+	var x4 = line.start.x + line.direction.x;
+	var y4 = line.start.y + line.direction.y;
+	
+	var numeratorA = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3);
+	var numeratorB = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3);
+	var denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+	if (JSM.IsZero (denominator)) {
+		if (JSM.IsZero (numeratorA) && JSM.IsZero (numeratorB)) {
+			return JSM.LineLinePosition2D.LinesIntersectsCoincident;
+		}
+		return JSM.LineLinePosition2D.LinesDontIntersect;
+	}
+
+	var distance = numeratorA / denominator;
+	if (intersection !== null) {
+		intersection.x = x1 + distance * (x2 - x1);
+		intersection.y = y1 + distance * (y2 - y1);
+	}
+	return JSM.LineLinePosition2D.LinesIntersectsOnePoint;
 };
 
 /**

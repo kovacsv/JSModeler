@@ -646,7 +646,6 @@ generalSuite.AddTest ('SectorSegmentationTest', function (test) {
 	test.Assert (segmentedCoords[2].IsEqual (new JSM.Coord (2.0, 0.0, 0.0)));
 });
 
-
 generalSuite.AddTest ('CoordLinePositionTest', function (test)
 {
 	var start2D = new JSM.Coord2D (1.0, 1.0);
@@ -671,7 +670,78 @@ generalSuite.AddTest ('CoordLinePositionTest', function (test)
 	test.Assert (line.ProjectCoord (new JSM.Coord (0.0, 0.0, 0.0)).IsEqual (new JSM.Coord (0.0, 1.0, 1.0)));
 	test.Assert (line.ProjectCoord (new JSM.Coord (1.0, 1.0, 1.0)).IsEqual (new JSM.Coord (1.0, 1.0, 1.0)));
 	test.Assert (line.ProjectCoord (new JSM.Coord (2.0, 1.0, 1.0)).IsEqual (new JSM.Coord (2.0, 1.0, 1.0)));
+});
+
+generalSuite.AddTest ('LineLinePosition2DTest', function (test)
+{	
+	var line1 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (1.0, 0.0));
+	var line1b = new JSM.Line2D (new JSM.Coord2D (2.0, 0.0), new JSM.Vector2D (10.0, 0.0));
+	var line1c = new JSM.Line2D (new JSM.Coord2D (2.0, 0.0), new JSM.Vector2D (-10.0, 0.0));
+	var line1d = new JSM.Line2D (new JSM.Coord2D (-2.0, 0.0), new JSM.Vector2D (10.0, 0.0));
+	var line1e = new JSM.Line2D (new JSM.Coord2D (-2.0, 0.0), new JSM.Vector2D (-10.0, 0.0));
+	var line1f = new JSM.Line2D (new JSM.Coord2D (0.5, 0.0), new JSM.Vector2D (1.0, 0.0));
+	var line1g = new JSM.Line2D (new JSM.Coord2D (0.5, 0.0), new JSM.Vector2D (-1.0, 0.0));
+	var line2 = new JSM.Line2D (new JSM.Coord2D (0.0, 1.0), new JSM.Vector2D (1.0, 0.0));
+	var line3 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line4 = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line5 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (1.0, 1.0));
+	var line6 = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (-1.0, 1.0));
 	
+	var intersection = new JSM.Coord2D (0.0, 0.0);
+	
+	test.Assert (line1.LinePosition (line1, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1b, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1c, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1d, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1e, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1f, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1g, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+
+	test.Assert (line2.LinePosition (line1, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1b, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1c, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1d, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1e, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1f, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1g, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+
+	test.Assert (line1.LinePosition (line2, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line1b.LinePosition (line2, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line1c.LinePosition (line2, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	
+	test.Assert (line1.LinePosition (line3, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (line1.LinePosition (line4, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (1.0, 0.0)));
+	
+	test.Assert (line3.LinePosition (line1, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (line4.LinePosition (line1, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (1.0, 0.0)));
+
+	test.Assert (line1.LinePosition (line5, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (line1.LinePosition (line6, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (1.0, 0.0)));
+
+	test.Assert (line2.LinePosition (line5, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (1.0, 1.0)));
+	test.Assert (line2.LinePosition (line6, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 1.0)));
+
+	test.Assert (line3.LinePosition (line5, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (line3.LinePosition (line6, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 1.0)));
+
+	test.Assert (line5.LinePosition (line6, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+	test.Assert (line6.LinePosition (line5, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+});
+
+generalSuite.AddTest ('LineLinePositionTest', function (test)
+{	
 	var line1 = new JSM.Line (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
 	var line2 = new JSM.Line (new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
 	var line3 = new JSM.Line (new JSM.Coord (0.0, 0.5, 0.0), new JSM.Coord (0.0, 1.0, 0.0));

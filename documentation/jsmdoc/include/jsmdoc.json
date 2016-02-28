@@ -1517,6 +1517,16 @@
 								["CoordLinePosition2D", "the result"]
 							]
 						},
+						"LinePosition" : {
+							"description" : "Calculates the position of the line and the given line.",
+							"parameters" : [
+								["line", "Line2D", "the line"],
+								["intersection", "Coord2D", "(out) the intersection point if it exists"]
+							],
+							"returns" : [
+								["LineLinePosition2D", "the result"]
+							]
+						},
 						"Clone" : {
 							"description" : "Clones the line.",
 							"returns" : [
@@ -2595,6 +2605,14 @@
 						["CoordOnLine", "coordinate lies on the line"],
 						["CoordAtLineLeft", "coordinate lies on the left side of the line"],
 						["CoordAtLineRight", "coordinate lies on the left side right the line"]
+					]
+				},
+				"LineLinePosition2D" : {
+					"description" : "Position of two lines.",
+					"values" : [
+						["LinesDontIntersect", "lines do not intersect"],
+						["LinesIntersectsCoincident", "lines intersect coincident"],
+						["LinesIntersectsOnePoint", "lines intersect one point"]
 					]
 				},
 				"CoordLinePosition" : {
