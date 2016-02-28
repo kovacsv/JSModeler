@@ -714,12 +714,24 @@
 						["Coord", "the result"]
 					]
 				},
+				"GetSectorSegmentation2D" : {
+					"description" : "Returns the segmented coordinates of a sector.",
+					"parameters" : [
+						["sector", "Sector2D", "the sector"],
+						["segmentation", "integer", "the segmentation"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result coordinates"]
+					]
+				},
 				"GetSectorSegmentation" : {
 					"description" : "Returns the segmented coordinates of a sector.",
 					"parameters" : [
 						["sector", "Sector", "the sector"],
-						["segmentation", "integer", "the segmentation"],
-						["coords", "Coord[*]", "(out) the result coordinates"]
+						["segmentation", "integer", "the segmentation"]
+					],
+					"returns" : [
+						["Coord[*]", "the result coordinates"]
 					]
 				},
 				"BoxUnion" : {
