@@ -685,7 +685,11 @@ generalSuite.AddTest ('LineLinePosition2DTest', function (test)
 	var line3 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (0.0, 1.0));
 	var line4 = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (0.0, 1.0));
 	var line5 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (1.0, 1.0));
+	var line5b = new JSM.Line2D (new JSM.Coord2D (1.0, 1.0), new JSM.Vector2D (1.0, 1.0));
+	var line5c = new JSM.Line2D (new JSM.Coord2D (10.0, 10.0), new JSM.Vector2D (100.0, 100.0));
 	var line6 = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (-1.0, 1.0));
+	var line6b = new JSM.Line2D (new JSM.Coord2D (0.0, 1.0), new JSM.Vector2D (-1.0, 1.0));
+	var line6c = new JSM.Line2D (new JSM.Coord2D (0.0, 1.0), new JSM.Vector2D (-10.0, 10.0));
 	
 	var intersection = new JSM.Coord2D (0.0, 0.0);
 	
@@ -696,6 +700,14 @@ generalSuite.AddTest ('LineLinePosition2DTest', function (test)
 	test.Assert (line1.LinePosition (line1e, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
 	test.Assert (line1.LinePosition (line1f, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
 	test.Assert (line1.LinePosition (line1g, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+
+	test.Assert (line5.LinePosition (line5, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line5.LinePosition (line5b, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line5.LinePosition (line5c, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+
+	test.Assert (line6.LinePosition (line6, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line6.LinePosition (line6b, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line6.LinePosition (line6c, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
 
 	test.Assert (line2.LinePosition (line1, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
 	test.Assert (line2.LinePosition (line1b, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
@@ -736,7 +748,16 @@ generalSuite.AddTest ('LineLinePosition2DTest', function (test)
 
 	test.Assert (line5.LinePosition (line6, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
 	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+	test.Assert (line5.LinePosition (line6b, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+	test.Assert (line5.LinePosition (line6c, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+	
 	test.Assert (line6.LinePosition (line5, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+	test.Assert (line6.LinePosition (line5b, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+	test.Assert (line6.LinePosition (line5c, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
 	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
 });
 
