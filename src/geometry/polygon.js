@@ -571,15 +571,14 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 				var intersection = new JSM.Coord (0.0, 0.0, 0.0);
 				var linePlanePosition = plane.LinePosition (line, intersection);
 				if (linePlanePosition == JSM.LinePlanePosition.LineIntersectsPlane) {
-					cutPolygon.AddVertex (intersection.x, intersection.y, intersection.z);
+					cutPolygon.AddVertexCoord (intersection);
 					cutVertexTypes.push (0);
 				}
 			}
 			
 			function AddOriginalVertex (polygon, cutPolygon, cutVertexTypes, currIndex, originalType)
 			{
-				var currVertex = polygon.GetVertex (currIndex);
-				cutPolygon.AddVertex (currVertex.x, currVertex.y, currVertex.z);
+				cutPolygon.AddVertexCoord (polygon.GetVertex (currIndex).Clone ());
 				cutVertexTypes.push (originalType);
 			}
 		
