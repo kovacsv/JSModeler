@@ -328,8 +328,8 @@
 				alert ('error');
 			}
 
-			hashChanger = new HashChanger (RenderModel);
-			RenderModel ();
+			hashChanger = new HashChanger ();
+			hashChanger.Init (RenderModel);
 		}
 	
 	    window.onload = function ()

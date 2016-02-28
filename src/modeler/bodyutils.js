@@ -9,7 +9,7 @@
 */
 JSM.AddVertexToBody = function (body, x, y, z)
 {
-	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (x, y, z)));
+	return body.AddVertex (new JSM.BodyVertex (new JSM.Coord (x, y, z)));
 };
 
 /**
@@ -21,7 +21,7 @@ JSM.AddVertexToBody = function (body, x, y, z)
 */
 JSM.AddPointToBody = function (body, vertex)
 {
-	body.AddPoint (new JSM.BodyPoint (vertex));
+	return body.AddPoint (new JSM.BodyPoint (vertex));
 };
 
 /**
@@ -34,7 +34,7 @@ JSM.AddPointToBody = function (body, vertex)
 */
 JSM.AddLineToBody = function (body, beg, end)
 {
-	body.AddLine (new JSM.BodyLine (beg, end));
+	return body.AddLine (new JSM.BodyLine (beg, end));
 };
 
 /**
@@ -46,7 +46,7 @@ JSM.AddLineToBody = function (body, beg, end)
 */
 JSM.AddPolygonToBody = function (body, vertices)
 {
-	body.AddPolygon (new JSM.BodyPolygon (vertices));
+	return body.AddPolygon (new JSM.BodyPolygon (vertices));
 };
 
 /**

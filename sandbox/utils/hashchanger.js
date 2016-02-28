@@ -1,8 +1,14 @@
-HashChanger = function (hashChangedCallback)
+HashChanger = function ()
 {
-	this.hashChangedCallback = hashChangedCallback;
+	this.hashChangedCallback = null;
+};
+
+HashChanger.prototype.Init = function (hashChangedCallback)
+{
 	window.onhashchange = this.OnHashChange.bind (this);
 	window.onkeydown = this.OnKeyDown.bind (this);
+	this.hashChangedCallback = hashChangedCallback;
+	this.hashChangedCallback ();
 };
 
 HashChanger.prototype.GetHashIndex = function ()

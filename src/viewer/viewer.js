@@ -137,6 +137,11 @@ JSM.Viewer.prototype.FitInWindow = function ()
 	this.navigation.FitInWindow (sphere.GetCenter (), sphere.GetRadius ());
 };
 
+JSM.Viewer.prototype.SetFullscreen = function (fullscreen)
+{
+	this.navigation.SetFullscreen (fullscreen);
+};
+
 JSM.Viewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
@@ -198,6 +203,7 @@ JSM.Viewer.prototype.FindObjects = function (screenX, screenY)
 JSM.Viewer.prototype.Resize = function ()
 {
 	this.renderer.Resize ();
+	this.Draw ();
 };
 
 JSM.Viewer.prototype.Draw = function ()

@@ -607,6 +607,31 @@ generalSuite.AddTest ('SectorTest', function (test) {
 	test.Assert (sector.end.IsEqual (new JSM.Coord (1.0, 2.0, 3.0)));
 });
 
+generalSuite.AddTest ('SectorSegmentationTest', function (test) {
+	var sector = new JSM.Sector2D (new JSM.Coord2D (0.0, 0.0), new JSM.Coord2D (2.0, 0.0));
+	var segmentedCoords = JSM.GetSectorSegmentation2D (sector, 2, segmentedCoords);
+	test.Assert (segmentedCoords.length == 3);
+	test.Assert (segmentedCoords[0].IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (segmentedCoords[1].IsEqual (new JSM.Coord2D (1.0, 0.0)));
+	test.Assert (segmentedCoords[2].IsEqual (new JSM.Coord2D (2.0, 0.0)));
+
+	var segmentedCoords = JSM.GetSectorSegmentation2D (sector, 4, segmentedCoords);
+	test.Assert (segmentedCoords.length == 5);
+	test.Assert (segmentedCoords[0].IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (segmentedCoords[1].IsEqual (new JSM.Coord2D (0.5, 0.0)));
+	test.Assert (segmentedCoords[2].IsEqual (new JSM.Coord2D (1.0, 0.0)));
+	test.Assert (segmentedCoords[3].IsEqual (new JSM.Coord2D (1.5, 0.0)));
+	test.Assert (segmentedCoords[4].IsEqual (new JSM.Coord2D (2.0, 0.0)));
+
+	var sector = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (2.0, 0.0, 0.0));
+	var segmentedCoords = JSM.GetSectorSegmentation (sector, 2, segmentedCoords);
+	test.Assert (segmentedCoords.length == 3);
+	test.Assert (segmentedCoords[0].IsEqual (new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (segmentedCoords[1].IsEqual (new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (segmentedCoords[2].IsEqual (new JSM.Coord (2.0, 0.0, 0.0)));
+});
+
+
 generalSuite.AddTest ('CoordLinePositionTest', function (test)
 {
 	var start2D = new JSM.Coord2D (1.0, 1.0);

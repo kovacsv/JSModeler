@@ -1736,12 +1736,6 @@ generatorSuite.AddTest ('GenerateRuledTest', function (test)
 	
 	var sector1 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (2.0, 0.0, 0.0));
 	var sector2 = new JSM.Sector (new JSM.Coord (0.0, 2.0, 0.0), new JSM.Coord (2.0, 2.0, 0.0));
-	var sector1Coords = [];
-	JSM.GetSectorSegmentation (sector1, 2, sector1Coords);
-	test.Assert (sector1Coords.length == 3);
-	test.Assert (sector1Coords[0].IsEqual (new JSM.Vector (0.0, 0.0, 0.0)));
-	test.Assert (sector1Coords[1].IsEqual (new JSM.Vector (1.0, 0.0, 0.0)));
-	test.Assert (sector1Coords[2].IsEqual (new JSM.Vector (2.0, 0.0, 0.0)));
 	
 	var ruledFromSectors = JSM.GenerateRuledFromSectors (sector1, sector2, 2, 2, false);
 	test.Assert (ruledFromSectors.VertexCount () == 9);

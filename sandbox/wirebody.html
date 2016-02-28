@@ -115,7 +115,7 @@
 				new JSM.Vector (0.0, 0.0, 1.0)
 			);
 			
-			viewer = new JSM.Viewer ();
+			var viewer = new JSM.Viewer ();
 			if (!viewer.Init (document.getElementById ('example'), camera)) {
 				alert ('error');
 			}
