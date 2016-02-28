@@ -136,22 +136,31 @@
 				return JSM.SphericalToCartesian (sphereRadius, lat, lon);
 			}
 			
-			function AddPointToBody (body, sphereRadius, coordinate)
+			function GetSegmentCount (begCoordinate, endCoordinate)
 			{
-				var sphereCoord = JSM.CoordFromArray2D (coordinate);
+				var distance = begCoordinate.DistanceTo (endCoordinate);
+				var segmentCount = parseInt (distance / 10.0, 10);
+				if (segmentCount === 0) {
+					segmentCount = 1;
+				}
+				return segmentCount;
+			}
+			
+			function AddPointToBody (body, sphereRadius, sphereCoord)
+			{
 				var cartesianCoord = ConvertCoordinate (sphereRadius, sphereCoord);
 				var vertexIndex = JSM.AddVertexToBody (body, cartesianCoord.x, cartesianCoord.y, cartesianCoord.z);
 				JSM.AddPointToBody (body, vertexIndex);			
 			}
 		
-			function AddLineToBody (body, sphereRadius, begCoordinate, endCoordinate)
+			function AddLineToBody (body, sphereRadius, begSphereCoord, endSphereCoord)
 			{
-				var sector = new JSM.Sector2D (begCoordinate, endCoordinate);
-				var segmentedCoords = JSM.GetSectorSegmentation2D (sector, 10);
-				var i, sphereCoord, cartesianCoord, vertexIndex;
+				var sector = new JSM.Sector2D (begSphereCoord, endSphereCoord);
+				var segmentCount = GetSegmentCount (begSphereCoord, endSphereCoord);
+				var segmentedCoords = JSM.GetSectorSegmentation2D (sector, segmentCount);
+				var i, cartesianCoord, vertexIndex;
 				for (i = 0; i < segmentedCoords.length; i++) {
-					sphereCoord = segmentedCoords[i];
-					cartesianCoord = ConvertCoordinate (sphereRadius, sphereCoord);
+					cartesianCoord = ConvertCoordinate (sphereRadius, segmentedCoords[i]);
 					vertexIndex = JSM.AddVertexToBody (body, cartesianCoord.x, cartesianCoord.y, cartesianCoord.z);
 					if (i > 0) {
 						JSM.AddLineToBody (body, vertexIndex - 1, vertexIndex);
@@ -165,7 +174,8 @@
 					pointsBody = new JSM.Body ();
 					result.model.AddBody (pointsBody);
 				}
-				AddPointToBody (pointsBody, sphereRadius, coordinate);
+				var sphereCoord = JSM.CoordFromArray2D (coordinate);
+				AddPointToBody (pointsBody, sphereRadius, sphereCoord);
 			}
 			
 			function AddLine (sphereRadius, coordinates)
@@ -175,9 +185,9 @@
 					result.model.AddBody (linesBody);
 				}
 
-				var begCoordinate = JSM.CoordFromArray2D (coordinates[0]);
-				var endCoordinate = JSM.CoordFromArray2D (coordinates[1]);
-				AddLineToBody (linesBody, sphereRadius, begCoordinate, endCoordinate);
+				var begSphereCoord = JSM.CoordFromArray2D (coordinates[0]);
+				var endSphereCoord = JSM.CoordFromArray2D (coordinates[1]);
+				AddLineToBody (linesBody, sphereRadius, begSphereCoord, endSphereCoord);
 			}
 
 			function AddFeature (sphereRadius, feature)
