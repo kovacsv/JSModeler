@@ -309,6 +309,16 @@
 						["Coord2D", "the result"]
 					]
 				},
+				"VectorDot2D" : {
+					"description" : "Calculates the dot product of two vectors.",
+					"parameters" : [
+						["a", "Vector2D", "the first vector"],
+						["b", "Vector2D", "the second vector"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
 				"CoordFromArray" : {
 					"description" : "Returns a coordinate from an array of components.",
 					"parameters" : [
@@ -413,6 +423,17 @@
 					],
 					"returns" : [
 						["Orientation", "the result"]
+					]
+				},
+				"CoordSignedDistance2D" : {
+					"description" : "Calculates the distance of two coordinates along a direction vector.",
+					"parameters" : [
+						["a", "Coord2D", "first coordinate"],
+						["b", "Coord2D", "second coordinate"],
+						["direction", "Vector2D", "direction vector"]
+					],
+					"returns" : [
+						["number", "the result"]
 					]
 				},
 				"PolarToCartesian" : {
@@ -950,6 +971,19 @@
 						["Polygon", "the result"]
 					]
 				},
+				"CutPolygonInternal" : {
+					"description" : "This is the geometry independent part of the polygon cutting algorithm. It uses an interface for geometry dependent methods.",
+					"parameters" : [
+						["polygon", "Polygon/Polygon2D", "the polygon"],
+						["geometryInterface", "object", "interface which defines geometry dependent methods"],
+						["frontPolygons", "Polygon/Polygon2D[*]", "(out) polygons in front of the plane"],
+						["backPolygons", "Polygon/Polygon2D[*]", "(out) polygons at the back of the plane"],
+						["cutPolygons", "Polygon/Polygon2D[*]", "(out) polygons on the on the cut shape"]
+					],
+					"returns" : [
+						["boolean", "success"]
+					]
+				},
 				"CutPolygonWithPlane" : {
 					"description" : "Cuts a polygon with a plane. The result array contains cutted polygons grouped by their position to the plane.",
 					"parameters" : [
@@ -957,7 +991,7 @@
 						["plane", "Plane", "the plane"],
 						["frontPolygons", "Polygon[*]", "(out) polygons in front of the plane"],
 						["backPolygons", "Polygon[*]", "(out) polygons at the back of the plane"],
-						["planePolygons", "Polygon[*]", "(out) polygons on the plane"]
+						["cutPolygons", "Polygon[*]", "(out) polygons on the plane"]
 					],
 					"returns" : [
 						["boolean", "success"]
@@ -1092,6 +1126,15 @@
 						},
 						"DistanceTo" : {
 							"description" : "Calculates the coordinate distance to the given one.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"AngleTo" : {
+							"description" : "Calculates the coordinate vector angle to the given one.",
 							"parameters" : [
 								["coord", "Coord2D", "the coordinate"]
 							],
