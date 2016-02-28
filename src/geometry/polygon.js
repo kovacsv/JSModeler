@@ -754,7 +754,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 	}
 
 	var cutPolygon = new JSM.Polygon ();
-	var cutInformation = DetectOriginalVertexTypes (polygon, plane, cutInformation);
+	var cutInformation = DetectOriginalVertexTypes (polygon, plane);
 
 	if (cutInformation.backFound && cutInformation.frontFound) {
 		var cutVertexTypes = AddCutVerticesToPolygon (polygon, plane, cutPolygon, cutInformation.originalVertexTypes);
