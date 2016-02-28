@@ -525,9 +525,33 @@ JSM.OffsetPolygonContour = function (polygon, width)
 */
 JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons, planePolygons)
 {
-	function AddCutVerticesToPolygon (polygon, plane, cutPolygon, cutVertexTypes)
+	function DetectOriginalVertexTypes (polygon, plane)
 	{
-		function AddVertex (polygon, index, cutPolygon, originalTypes, cutVertexTypes)
+		var result = {
+			originalVertexTypes : [],
+			backFound : false,
+			frontFound : false
+		};
+		var i, position, currVertex, currType;
+		for (i = 0; i < polygon.VertexCount (); i++) {
+			currVertex = polygon.GetVertex (i);
+			position = plane.CoordPosition (currVertex);
+			currType = 0;
+			if (position == JSM.CoordPlanePosition.CoordInFrontOfPlane) {
+				currType = 1;
+				result.frontFound = true;
+			} else if (position == JSM.CoordPlanePosition.CoordAtBackOfPlane) {
+				currType = -1;
+				result.backFound = true;
+			}
+			result.originalVertexTypes.push (currType);
+		}
+		return result;
+	}	
+	
+	function AddCutVerticesToPolygon (polygon, plane, cutPolygon, originalVertexTypes)
+	{
+		function AddVertex (polygon, index, cutPolygon, originalVertexTypes, cutVertexTypes)
 		{
 			function IsIntersectionVertex (cutVertexTypes, originalType)
 			{
@@ -564,60 +588,22 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 			if (lastVertex) {
 				currIndex = 0;
 			}
-			var originalType = originalTypes[currIndex];
+			
+			var originalType = originalVertexTypes[currIndex];
 			if (IsIntersectionVertex (cutVertexTypes, originalType)) {
 				AddIntersectionVertex (polygon, cutPolygon, cutVertexTypes, currIndex);
 			}
 			if (!lastVertex) {
 				AddOriginalVertex (polygon, cutPolygon, cutVertexTypes, currIndex, originalType);
 			}
-
-			return originalType;
-		}
-
-		var originalTypes = [];
-		var backFound = false;
-		var frontFound = false;
-		
-		var i, position, currVertex, currType;
-		for (i = 0; i < polygon.VertexCount (); i++) {
-			currVertex = polygon.GetVertex (i);
-			position = plane.CoordPosition (currVertex);
-			currType = 0;
-			if (position == JSM.CoordPlanePosition.CoordInFrontOfPlane) {
-				currType = 1;
-				frontFound = true;
-			} else if (position == JSM.CoordPlanePosition.CoordAtBackOfPlane) {
-				currType = -1;
-				backFound = true;
-			}
-			originalTypes.push (currType);
 		}
 		
-		if (backFound && frontFound) {
-			for (i = 0; i <= polygon.VertexCount (); i++) {
-				AddVertex (polygon, i, cutPolygon, originalTypes, cutVertexTypes);
-			}
-			return 0;
-		} else {
-			if (backFound) {
-				return -1;
-			} else if (frontFound) {
-				return 1;
-			}
-			return 0;
+		var cutVertexTypes = [];
+		var i;
+		for (i = 0; i <= polygon.VertexCount (); i++) {
+			AddVertex (polygon, i, cutPolygon, originalVertexTypes, cutVertexTypes);
 		}
-	}
-
-	function AddSimplePolygon (polygon, foundSide, frontPolygons, backPolygons, planePolygons)
-	{
-		if (foundSide == 1) {
-			frontPolygons.push (polygon);
-		} else if (foundSide == -1) {
-			backPolygons.push (polygon);
-		} else {
-			planePolygons.push (polygon);
-		}
+		return cutVertexTypes;
 	}
 
 	function AddCuttedPolygons (cutPolygon, cutVertexTypes, frontPolygons, backPolygons)
@@ -769,15 +755,22 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 	}
 
 	var cutPolygon = new JSM.Polygon ();
+	var cutInformation = DetectOriginalVertexTypes (polygon, plane, cutInformation);
 
-	var cutVertexTypes = [];
-	var foundSide = AddCutVerticesToPolygon (polygon, plane, cutPolygon, cutVertexTypes);
-	if (cutPolygon.VertexCount () === 0 && cutVertexTypes.length === 0) {
-		AddSimplePolygon (polygon, foundSide, frontPolygons, backPolygons, planePolygons);
-	} else {
+	if (cutInformation.backFound && cutInformation.frontFound) {
+		var cutVertexTypes = AddCutVerticesToPolygon (polygon, plane, cutPolygon, cutInformation.originalVertexTypes);
 		AddCuttedPolygons (cutPolygon, cutVertexTypes, frontPolygons, backPolygons);
-	}
-
+	} else {
+		var cloned = polygon.Clone ();
+		if (cutInformation.frontFound) {
+			frontPolygons.push (cloned);
+		} else if (cutInformation.backFound) {
+			backPolygons.push (cloned);
+		} else {
+			planePolygons.push (cloned);
+		}		
+	}	
+	
 	if (frontPolygons.length + backPolygons.length + planePolygons.length === 0) {
 		return false;
 	}
