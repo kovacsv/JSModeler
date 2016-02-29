@@ -190,6 +190,19 @@
 				var endSphereCoord = JSM.CoordFromArray2D (coordinates[1]);
 				AddLineToBody (linesBody, sphereRadius, begSphereCoord, endSphereCoord);
 			}
+			
+			function AddPolygon (sphereRadius, coordinates)
+			{
+				if (linesBody === null) {
+					linesBody = new JSM.Body ();
+					result.model.AddBody (linesBody);
+				}
+				
+				var i;
+				for (i = 0; i < coordinates.length - 1; i++) {
+					AddLine (sphereRadius, [coordinates[i], coordinates[i + 1]]);
+				}
+			}			
 
 			function AddFeature (sphereRadius, feature)
 			{
@@ -203,6 +216,8 @@
 					AddPoint (sphereRadius, feature.geometry.coordinates);
 				} else if (feature.geometry.type == 'LineString') {
 					AddLine (sphereRadius, feature.geometry.coordinates);
+				} else if (feature.geometry.type == 'Polygon') {
+					AddPolygon (sphereRadius, feature.geometry.coordinates[0]);
 				}
 			}
 		
@@ -245,7 +260,8 @@
 			
 			var jsonFiles = [
 				'points.json',
-				'lines.json'
+				'lines.json',
+				'rectangles.json'
 			];
 			if (index < 0 || index >= jsonFiles.length) {
 				return;
