@@ -2097,6 +2097,18 @@ polygonSuite.AddTest ('CutPolygon2DTest', function (test)
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
 	polygon.AddVertex (2.0, 0.0);
+	polygon.AddVertex (2.0, 2.0);
+	polygon.AddVertex (1.0, 2.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (0.0, 1.0);
+	
+	test.Assert (CutAndCheck (polygon, line12, 0, 1, 0));
+	test.Assert (CutAndCheck (polygon, line13, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line14, 1, 1, 0));
+	
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (2.0, 0.0);
 	polygon.AddVertex (1.0, 0.0);
 	test.Assert (CutAndCheck (polygon, line2, 0, 0, 1));
 });
