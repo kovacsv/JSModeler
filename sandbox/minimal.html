@@ -89,8 +89,6 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		var viewer = null;
-
 		function Load ()
 		{
 			var viewerSettings = {
@@ -99,7 +97,7 @@
 				cameraUpVector : [0, 0, 1]
 			};
 
-			viewer = new JSM.ThreeViewer ();
+			var viewer = new JSM.ThreeViewer ();
 			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
 			var body = JSM.GenerateCuboid (1, 1, 1);
