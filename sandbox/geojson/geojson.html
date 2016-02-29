@@ -198,11 +198,25 @@
 					result.model.AddBody (linesBody);
 				}
 				
+				var mainContour = coordinates[0];
 				var i;
-				for (i = 0; i < coordinates.length - 1; i++) {
-					AddLine (sphereRadius, [coordinates[i], coordinates[i + 1]]);
+				for (i = 0; i < mainContour.length - 1; i++) {
+					AddLine (sphereRadius, [mainContour[i], mainContour[i + 1]]);
 				}
 			}			
+
+			function AddMultiPolygon (sphereRadius, coordinates)
+			{
+				if (linesBody === null) {
+					linesBody = new JSM.Body ();
+					result.model.AddBody (linesBody);
+				}
+				
+				var i;
+				for (i = 0; i < coordinates.length; i++) {
+					AddPolygon (sphereRadius, coordinates[i]);
+				}
+			}	
 
 			function AddFeature (sphereRadius, feature)
 			{
@@ -217,7 +231,9 @@
 				} else if (feature.geometry.type == 'LineString') {
 					AddLine (sphereRadius, feature.geometry.coordinates);
 				} else if (feature.geometry.type == 'Polygon') {
-					AddPolygon (sphereRadius, feature.geometry.coordinates[0]);
+					AddPolygon (sphereRadius, feature.geometry.coordinates);
+				} else if (feature.geometry.type == 'MultiPolygon') {
+					AddMultiPolygon (sphereRadius, feature.geometry.coordinates);
 				}
 			}
 		
