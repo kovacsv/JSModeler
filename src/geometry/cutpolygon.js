@@ -1,18 +1,4 @@
-/**
-* Function: CutPolygonInternal
-* Description:
-*	This is the geometry independent part of the polygon cutting algorithm.
-*	It uses an interface for geometry dependent methods.
-* Parameters:
-*	polygon {Polygon/Polygon2D} the polygon
-*	geometryInterface {object} interface which defines geometry dependent methods
-*	frontPolygons {Polygon/Polygon2D[*]} (out) polygons in front of the plane
-*	backPolygons {Polygon/Polygon2D[*]} (out) polygons at the back of the plane
-*	cutPolygons {Polygon/Polygon2D[*]} (out) polygons on the on the cut shape
-* Returns:
-*	{boolean} success
-*/
-JSM.CutPolygonInternal = function (polygon, geometryInterface, frontPolygons, backPolygons, cutPolygons)
+JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bSidePolygons, cutPolygons)
 {
 	function DetectOriginalVertexTypes (polygon)
 	{
@@ -89,7 +75,7 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, frontPolygons, ba
 		return cutVertexTypes;
 	}
 
-	function AddCuttedPolygons (cutPolygon, cutVertexTypes, frontPolygons, backPolygons)
+	function AddCuttedPolygons (cutPolygon, cutVertexTypes, aSidePolygons, bSidePolygons)
 	{
 		function GetEntryVertices (cutVertexTypes)
 		{
@@ -152,7 +138,7 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, frontPolygons, ba
 			}
 		}
 			
-		function GetOneSideCuttedPolygons (cutPolygon, entryVertices, cutVertexTypes, frontPolygons, backPolygons, reversed)
+		function GetOneSideCuttedPolygons (cutPolygon, entryVertices, cutVertexTypes, aSidePolygons, bSidePolygons, reversed)
 		{
 			function AddEntryPairToArray (entryPairs, entryVertices, index)
 			{
@@ -210,9 +196,9 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, frontPolygons, ba
 						currVertexIndex = GetNextVertex (currVertexIndex, cutPolygon, entryPairs);
 					}
 					if (polygonSide == 1) {
-						frontPolygons.push (currPolygon);
+						aSidePolygons.push (currPolygon);
 					} else if (polygonSide == -1) {
-						backPolygons.push (currPolygon);
+						bSidePolygons.push (currPolygon);
 					}
 				}
 				currEntryVertex = reversed ? currEntryVertex - 2 : currEntryVertex + 2;
@@ -225,8 +211,8 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, frontPolygons, ba
 		}
 
 		SortEntryVertices (cutPolygon, entryVertices);
-		GetOneSideCuttedPolygons (cutPolygon, entryVertices, cutVertexTypes, frontPolygons, backPolygons, false);
-		GetOneSideCuttedPolygons (cutPolygon, entryVertices, cutVertexTypes, frontPolygons, backPolygons, true);
+		GetOneSideCuttedPolygons (cutPolygon, entryVertices, cutVertexTypes, aSidePolygons, bSidePolygons, false);
+		GetOneSideCuttedPolygons (cutPolygon, entryVertices, cutVertexTypes, aSidePolygons, bSidePolygons, true);
 	}
 	
 	var cutPolygon = geometryInterface.createPolygon ();
@@ -234,22 +220,76 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, frontPolygons, ba
 
 	if (cutInformation.backFound && cutInformation.frontFound) {
 		var cutVertexTypes = AddCutVerticesToPolygon (polygon, cutPolygon, cutInformation.originalVertexTypes);
-		AddCuttedPolygons (cutPolygon, cutVertexTypes, frontPolygons, backPolygons);
+		AddCuttedPolygons (cutPolygon, cutVertexTypes, aSidePolygons, bSidePolygons);
 	} else {
 		var cloned = polygon.Clone ();
 		if (cutInformation.frontFound) {
-			frontPolygons.push (cloned);
+			aSidePolygons.push (cloned);
 		} else if (cutInformation.backFound) {
-			backPolygons.push (cloned);
+			bSidePolygons.push (cloned);
 		} else {
 			cutPolygons.push (cloned);
 		}		
 	}	
 	
-	if (frontPolygons.length + backPolygons.length + cutPolygons.length === 0) {
+	if (aSidePolygons.length + bSidePolygons.length + cutPolygons.length === 0) {
 		return false;
 	}
 	return true;
+};
+
+/**
+* Function: CutPolygon2DWithLine
+* Description:
+*	Cuts a polygon with a line. The result array contains cutted
+*	polygons grouped by their position to the line.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+*	line {Line2D} the line
+*	leftPolygons {Polygon2D[*]} (out) polygons on the left of the line
+*	rightPolygons {Polygon2D[*]} (out) polygons on the right of the line
+*	cutPolygons {Polygon2D[*]} (out) polygons on the line
+* Returns:
+*	{boolean} success
+*/
+JSM.CutPolygon2DWithLine = function (polygon, line, leftPolygons, rightPolygons, cutPolygons)
+{
+	var geometryInterface = {
+		createPolygon : function () {
+			return new JSM.Polygon2D ();
+		},
+		getVertexSide : function (vertex) {
+			var position = line.CoordPosition (vertex);
+			var type = 0;
+			if (position == JSM.CoordLinePosition2D.CoordAtLineLeft) {
+				type = 1;
+			} else if (position == JSM.CoordLinePosition2D.CoordAtLineRight) {
+				type = -1;
+			}
+			return type;
+		},
+		getIntersectionVertex : function (prevVertex, currVertex) {
+			var edgeLine = new JSM.Line2D (currVertex, JSM.CoordSub2D (currVertex, prevVertex));
+			var intersection = new JSM.Coord2D (0.0, 0.0);
+			var lineLinePosition = line.LinePosition (edgeLine, intersection);
+			if (lineLinePosition != JSM.LineLinePosition2D.LinesIntersectsOnePoint) {
+				return null;
+			}
+			return intersection;
+		},
+		getVertexDistances : function (polygon, vertexIndices, referenceCoord1, referenceCoord2) {
+			var direction = JSM.CoordSub2D (referenceCoord2, referenceCoord1);
+			var i, vertex;
+			var distances = [];
+			for (i = 0; i < vertexIndices.length; i++) {
+				vertex = polygon.GetVertex (vertexIndices[i]);
+				distances.push (JSM.CoordSignedDistance2D (referenceCoord1, vertex, direction));
+			}
+			return distances;
+		}
+	};
+	
+	return JSM.CutPolygonInternal (polygon, geometryInterface, leftPolygons, rightPolygons, cutPolygons);
 };
 
 /**

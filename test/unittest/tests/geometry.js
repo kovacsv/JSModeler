@@ -691,6 +691,9 @@ generalSuite.AddTest ('LineLinePosition2DTest', function (test)
 	var line6b = new JSM.Line2D (new JSM.Coord2D (0.0, 1.0), new JSM.Vector2D (-1.0, 1.0));
 	var line6c = new JSM.Line2D (new JSM.Coord2D (0.0, 1.0), new JSM.Vector2D (-10.0, 10.0));
 	
+	var line7 = new JSM.Line2D (new JSM.Coord2D (1.0, 1.0), new JSM.Vector2D (1.0, 0.0));
+	var line8 = new JSM.Line2D (new JSM.Coord2D (6.0, 6.0), new JSM.Vector2D (0.0, 1.0));
+	
 	var intersection = new JSM.Coord2D (0.0, 0.0);
 	
 	test.Assert (line1.LinePosition (line1, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
@@ -759,6 +762,11 @@ generalSuite.AddTest ('LineLinePosition2DTest', function (test)
 	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
 	test.Assert (line6.LinePosition (line5c, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
 	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+
+	test.Assert (line7.LinePosition (line8, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (6.0, 1.0)));
+	test.Assert (line8.LinePosition (line7, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (6.0, 1.0)));
 });
 
 generalSuite.AddTest ('LineLinePositionTest', function (test)
@@ -1968,6 +1976,129 @@ polygonSuite.AddTest ('PolygonOffsetTest', function (test)
 	test.Assert (offseted.vertices[2].IsEqual (new JSM.Coord (1.8, 0.8, 0.0)));
 	test.Assert (offseted.vertices[3].IsEqual (new JSM.Coord (0.8, 0.8, 0.0)));
 	test.Assert (offseted.vertices[4].IsEqual (new JSM.Coord (0.8, 1.1527864045000422, 0.0)));
+});
+
+polygonSuite.AddTest ('CutPolygon2DTest', function (test)
+{
+	function CutAndCheck (polygon, line, leftCount, rightCount, cutCount)
+	{
+		var leftPolygons = [];
+		var rightPolygons = [];
+		var cutPolygons = [];	
+		
+		var result = JSM.CutPolygon2DWithLine (polygon, line, leftPolygons, rightPolygons, cutPolygons);
+		if (!result) {
+			return false;
+		}
+
+		if (leftPolygons.length != leftCount) {
+			return false;
+		}
+		
+		if (rightPolygons.length != rightCount) {
+			return false;
+		}
+		
+		if (cutPolygons.length != cutCount) {
+			return false;
+		}
+		
+		var area = polygon.GetArea ();
+		var cutArea = 0.0;
+		
+		var i, current;
+		for (i = 0; i < leftPolygons.length; i++) {
+			current = leftPolygons[i].GetArea ();
+			cutArea += current;
+		}
+		for (i = 0; i < rightPolygons.length; i++) {
+			current = rightPolygons[i].GetArea ();
+			cutArea += current;
+		}
+		for (i = 0; i < cutPolygons.length; i++) {
+			current = cutPolygons[i].GetArea ();
+			cutArea += current;
+		}
+		
+		if (!JSM.IsEqual (area, cutArea)) {
+			return false;
+		}
+		
+		return true;		
+	}
+	
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (1.0, 0.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (0.0, 1.0);
+	
+	var line1 = new JSM.Line2D (new JSM.Coord2D (-1.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line1Rev = new JSM.Line2D (new JSM.Coord2D (-1.0, 0.0), new JSM.Vector2D (0.0, -1.0));
+	var line2 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (1.0, 0.0));
+	var line3 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line4 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (1.0, 1.0));
+	var line5 = new JSM.Line2D (new JSM.Coord2D (-0.1, 0.0), new JSM.Vector2D (1.0, 1.0));
+	var line6 = new JSM.Line2D (new JSM.Coord2D (-0.5, 0.0), new JSM.Vector2D (1.0, 1.0));
+	var line7 = new JSM.Line2D (new JSM.Coord2D (-1.0, 0.0), new JSM.Vector2D (1.0, 1.0));
+	var line8 = new JSM.Line2D (new JSM.Coord2D (2.0, 0.0), new JSM.Vector2D (-1.0, 1.0));
+	var line9 = new JSM.Line2D (new JSM.Coord2D (2.0, 0.0), new JSM.Vector2D (-1.0, -1.0));
+
+	test.Assert (CutAndCheck (polygon, line1, 0, 1, 0));
+	test.Assert (CutAndCheck (polygon, line1Rev, 1, 0, 0));
+	test.Assert (CutAndCheck (polygon, line2, 1, 0, 0));
+	test.Assert (CutAndCheck (polygon, line3, 0, 1, 0));
+	test.Assert (CutAndCheck (polygon, line4, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line5, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line6, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line7, 0, 1, 0));
+	test.Assert (CutAndCheck (polygon, line8, 1, 0, 0));
+	test.Assert (CutAndCheck (polygon, line9, 0, 1, 0));
+	
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (2.0, 0.0);
+	polygon.AddVertex (2.0, 3.0);
+	polygon.AddVertex (0.0, 3.0);
+	polygon.AddVertex (0.0, 2.0);
+	polygon.AddVertex (1.0, 2.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (0.0, 1.0);
+	
+	test.Assert (CutAndCheck (polygon, line1, 0, 1, 0));
+	test.Assert (CutAndCheck (polygon, line1Rev, 1, 0, 0));
+	test.Assert (CutAndCheck (polygon, line2, 1, 0, 0));
+	test.Assert (CutAndCheck (polygon, line3, 0, 1, 0));
+	test.Assert (CutAndCheck (polygon, line4, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line5, 2, 1, 0));
+	test.Assert (CutAndCheck (polygon, line6, 2, 1, 0));
+	test.Assert (CutAndCheck (polygon, line7, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line8, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line9, 0, 1, 0));
+	
+	var line10 = new JSM.Line2D (new JSM.Coord2D (0.0, 1.0), new JSM.Vector2D (1.0, 0.0));
+	var line11 = new JSM.Line2D (new JSM.Coord2D (0.0, 2.0), new JSM.Vector2D (1.0, 0.0));
+	var line12 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line13 = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line14 = new JSM.Line2D (new JSM.Coord2D (0.5, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line15 = new JSM.Line2D (new JSM.Coord2D (1.5, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line16 = new JSM.Line2D (new JSM.Coord2D (1.0, -0.1), new JSM.Vector2D (1.0, 1.0));
+	var line17 = new JSM.Line2D (new JSM.Coord2D (1.0, -0.1), new JSM.Vector2D (-1.0, -1.0));
+
+	test.Assert (CutAndCheck (polygon, line10, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line11, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line12, 0, 1, 0));
+	test.Assert (CutAndCheck (polygon, line13, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line14, 2, 1, 0));
+	test.Assert (CutAndCheck (polygon, line15, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line16, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line17, 1, 1, 0));
+	
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (2.0, 0.0);
+	polygon.AddVertex (1.0, 0.0);
+	test.Assert (CutAndCheck (polygon, line2, 0, 0, 1));
 });
 
 polygonSuite.AddTest ('OldCutPolygonTest', function (test)
