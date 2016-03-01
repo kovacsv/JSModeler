@@ -82,7 +82,7 @@ JSM.AdjacencyInfo.prototype.Calculate = function (body)
 	{
 		function AddEdge (adjacencyInfo, pgonInfo, fromVertexIndex, toVertexIndex, polygonIndex)
 		{
-			function ConnectEdge (adjacencyInfo, polygonIndex, fromVertexIndex, toVertexIndex, pedge, pgon)
+			function ConnectEdge (adjacencyInfo, polygonIndex, fromVertexIndex, toVertexIndex, pedge, pgonInfo)
 			{
 				function ConnectPgonAndEdgeToVert (vert, pgonIndex, edgeIndex)
 				{
@@ -94,8 +94,8 @@ JSM.AdjacencyInfo.prototype.Calculate = function (body)
 					}
 				}
 				
-				pgon.verts.push (fromVertexIndex);
-				pgon.pedges.push (pedge);
+				pgonInfo.verts.push (fromVertexIndex);
+				pgonInfo.pedges.push (pedge);
 				ConnectPgonAndEdgeToVert (adjacencyInfo.verts[fromVertexIndex], polygonIndex, pedge.index);
 				ConnectPgonAndEdgeToVert (adjacencyInfo.verts[toVertexIndex], polygonIndex, pedge.index);
 			}
@@ -133,7 +133,7 @@ JSM.AdjacencyInfo.prototype.Calculate = function (body)
 				}
 			}
 			
-			ConnectEdge (adjacencyInfo, polygonIndex, fromVertexIndex, toVertexIndex, pedge, pgon);
+			ConnectEdge (adjacencyInfo, polygonIndex, fromVertexIndex, toVertexIndex, pedge, pgonInfo);
 		}
 
 		var polygon = body.GetPolygon (polygonIndex);

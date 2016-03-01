@@ -11,17 +11,17 @@ JSM.CutBodyByPlane = function (body, plane)
 {
 	function CutBodyPolygonByPlane (polygon, plane, indexTable)
 	{
-		function AddOriginalVertex (index)
+		function AddOriginalVertex (index, vertex, rawResult, rawIndexTable)
 		{
 			rawResult.push (new JSM.Coord (vertex.x, vertex.y, vertex.z));
 			rawIndexTable.push (index);
 		}
 
-		function AddIntersectionVertex (from, to)
+		function AddIntersectionVertex (from, to, rawResult, rawIndexTable)
 		{
-			direction = JSM.CoordSub (polygon[to], polygon[from]).Normalize ();
-			line = new JSM.Line (polygon[from], direction);
-			intersection = plane.LineIntersection (line);
+			var direction = JSM.CoordSub (polygon[to], polygon[from]).Normalize ();
+			var line = new JSM.Line (polygon[from], direction);
+			var intersection = plane.LineIntersection (line);
 			rawResult.push (new JSM.Coord (intersection.x, intersection.y, intersection.z));
 			rawIndexTable.push (-1);
 		}
@@ -61,7 +61,6 @@ JSM.CutBodyByPlane = function (body, plane)
 		var rawIndexTable = [];
 
 		var from, to;
-		var direction, line, intersection;
 		for (i = 0; i < count; i++) {
 			from = i - 1;
 			to = i;
@@ -72,12 +71,12 @@ JSM.CutBodyByPlane = function (body, plane)
 			vertex = polygon[to];
 			if (front[to]) {
 				if (!front[from]) {
-					AddIntersectionVertex (from, to);
+					AddIntersectionVertex (from, to, rawResult, rawIndexTable);
 				}
-				AddOriginalVertex (to);
+				AddOriginalVertex (to, vertex, rawResult, rawIndexTable);
 			} else {
 				if (front[from]) {
-					AddIntersectionVertex (from, to);
+					AddIntersectionVertex (from, to, rawResult, rawIndexTable);
 				}
 			}
 		}
@@ -111,7 +110,7 @@ JSM.CutBodyByPlane = function (body, plane)
 		return result;
 	}
 
-	function GetInsertedVertexIndex (vertex)
+	function GetInsertedVertexIndex (result, vertex, originalVertexCount)
 	{
 		var index = -1;
 	
@@ -186,7 +185,7 @@ JSM.CutBodyByPlane = function (body, plane)
 				newPolygonVertices.push (originalOldToNewIndex[polygon.GetVertexIndex (indexTable[j])]);
 			} else {
 				vertex = cuttedPolygon[j];
-				newPolygonVertices.push (GetInsertedVertexIndex (vertex));
+				newPolygonVertices.push (GetInsertedVertexIndex (result, vertex, originalVertexCount));
 			}
 		}
 		

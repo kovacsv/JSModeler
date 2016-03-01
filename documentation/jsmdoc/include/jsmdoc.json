@@ -971,14 +971,14 @@
 						["Polygon", "the result"]
 					]
 				},
-				"CutPolygonInternal" : {
-					"description" : "This is the geometry independent part of the polygon cutting algorithm. It uses an interface for geometry dependent methods.",
+				"CutPolygon2DWithLine" : {
+					"description" : "Cuts a polygon with a line. The result array contains cutted polygons grouped by their position to the line.",
 					"parameters" : [
-						["polygon", "Polygon/Polygon2D", "the polygon"],
-						["geometryInterface", "object", "interface which defines geometry dependent methods"],
-						["frontPolygons", "Polygon/Polygon2D[*]", "(out) polygons in front of the plane"],
-						["backPolygons", "Polygon/Polygon2D[*]", "(out) polygons at the back of the plane"],
-						["cutPolygons", "Polygon/Polygon2D[*]", "(out) polygons on the on the cut shape"]
+						["polygon", "Polygon2D", "the polygon"],
+						["line", "Line2D", "the line"],
+						["leftPolygons", "Polygon2D[*]", "(out) polygons on the left of the line"],
+						["rightPolygons", "Polygon2D[*]", "(out) polygons on the right of the line"],
+						["cutPolygons", "Polygon2D[*]", "(out) polygons on the line"]
 					],
 					"returns" : [
 						["boolean", "success"]

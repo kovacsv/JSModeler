@@ -221,7 +221,7 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 		return null;
 	}
 
-	function FinalizeBodyVertices (triangleModel, globalVertices, globalNormals)
+	function FinalizeBodyVertices (triangleModel, globalVertices, globalNormals, globalUVs)
 	{
 		function GetLocalIndex (body, globalArray, globalIndex, globalToLocal, mode)
 		{

@@ -174,7 +174,7 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bS
 				}				
 			}
 
-			function AddCutPolygon (cutPolygon, cutVertexTypes, entryVertices, currEntryVertex, aSidePolygons, bSidePolygons)
+			function AddCutPolygon (cutPolygon, cutVertexTypes, entryVertices, entryPairs, currEntryVertex, aSidePolygons, bSidePolygons)
 			{
 				var startVertexIndex = entryVertices[currEntryVertex];
 				if (entryPairs[startVertexIndex] !== -1) {
@@ -204,7 +204,7 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bS
 			CreateEntryPairsArray (cutPolygon, entryVertices, entryPairs);
 			var currEntryVertex = reversed ? entryVertices.length - 1 : 0;
 			while (currEntryVertex >= 0 && currEntryVertex < entryVertices.length) {
-				AddCutPolygon (cutPolygon, cutVertexTypes, entryVertices, currEntryVertex, aSidePolygons, bSidePolygons);
+				AddCutPolygon (cutPolygon, cutVertexTypes, entryVertices, entryPairs, currEntryVertex, aSidePolygons, bSidePolygons);
 				currEntryVertex = reversed ? currEntryVertex - 2 : currEntryVertex + 2;
 			}
 		}
