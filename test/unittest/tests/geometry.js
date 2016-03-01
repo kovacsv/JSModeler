@@ -1980,7 +1980,7 @@ polygonSuite.AddTest ('PolygonOffsetTest', function (test)
 
 polygonSuite.AddTest ('CutPolygon2DTest', function (test)
 {
-	function CutAndCheck (polygon, line, leftCount, rightCount, cutCount)
+	function CutAndCheck (polygon, line, leftCount, rightCount, cutCount, additionalCheck)
 	{
 		var leftPolygons = [];
 		var rightPolygons = [];
@@ -2022,6 +2022,12 @@ polygonSuite.AddTest ('CutPolygon2DTest', function (test)
 		
 		if (!JSM.IsEqual (area, cutArea)) {
 			return false;
+		}
+		
+		if (additionalCheck) {
+			if (!additionalCheck (leftPolygons, rightPolygons, cutPolygons)) {
+				return false;
+			}
 		}
 		
 		return true;		
@@ -2101,16 +2107,47 @@ polygonSuite.AddTest ('CutPolygon2DTest', function (test)
 	polygon.AddVertex (1.0, 2.0);
 	polygon.AddVertex (1.0, 1.0);
 	polygon.AddVertex (0.0, 1.0);
-	
-	test.Assert (CutAndCheck (polygon, line12, 0, 1, 0));
 	test.Assert (CutAndCheck (polygon, line13, 1, 1, 0));
-	test.Assert (CutAndCheck (polygon, line14, 1, 1, 0));
 	
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
 	polygon.AddVertex (2.0, 0.0);
 	polygon.AddVertex (1.0, 0.0);
 	test.Assert (CutAndCheck (polygon, line2, 0, 0, 1));
+	
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (2.0, 0.0);
+	polygon.AddVertex (2.0, 2.0);
+	polygon.AddVertex (1.0, 2.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (0.0, 1.0);
+	test.Assert (CutAndCheck (polygon, line13, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+		if (leftPolygons[0].VertexCount () != 4) {
+			return false;
+		}
+		if (rightPolygons[0].VertexCount () != 5) {
+			return false;
+		}
+		return true;
+	}));
+
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (2.0, 0.0);
+	polygon.AddVertex (2.0, 1.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (1.0, 2.0);
+	polygon.AddVertex (0.0, 2.0);
+	test.Assert (CutAndCheck (polygon, line13, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+		if (leftPolygons[0].VertexCount () != 4) {
+			return false;
+		}
+		if (rightPolygons[0].VertexCount () != 5) {
+			return false;
+		}
+		return true;
+	}));
 });
 
 polygonSuite.AddTest ('OldCutPolygonTest', function (test)
