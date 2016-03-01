@@ -174,18 +174,14 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bS
 				}				
 			}
 
-			var entryPairs = [];
-			CreateEntryPairsArray (cutPolygon, entryVertices, entryPairs);
-
-			var polygonSide = null;
-			var currEntryVertex = reversed ? entryVertices.length - 1 : 0;
-			var startVertexIndex, currVertexIndex, currPolygon;
-			while (currEntryVertex >= 0 && currEntryVertex < entryVertices.length) {
-				startVertexIndex = entryVertices[currEntryVertex];
+			function AddCutPolygon (cutPolygon, cutVertexTypes, entryVertices, currEntryVertex, aSidePolygons, bSidePolygons)
+			{
+				var startVertexIndex = entryVertices[currEntryVertex];
 				if (entryPairs[startVertexIndex] !== -1) {
-					currPolygon = geometryInterface.createPolygon ();
+					var currPolygon = geometryInterface.createPolygon ();
 					currPolygon.AddVertexCoord (cutPolygon.GetVertex (startVertexIndex).Clone ());
-					currVertexIndex = GetNextVertex (startVertexIndex, cutPolygon, entryPairs);
+					var currVertexIndex = GetNextVertex (startVertexIndex, cutPolygon, entryPairs);
+					var polygonSide = null;
 					while (currVertexIndex != startVertexIndex) {
 						if (polygonSide === null) {
 							if (cutVertexTypes[currVertexIndex] !== 0) {
@@ -200,7 +196,15 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bS
 					} else if (polygonSide == -1) {
 						bSidePolygons.push (currPolygon);
 					}
-				}
+				}				
+				
+			}
+			
+			var entryPairs = [];
+			CreateEntryPairsArray (cutPolygon, entryVertices, entryPairs);
+			var currEntryVertex = reversed ? entryVertices.length - 1 : 0;
+			while (currEntryVertex >= 0 && currEntryVertex < entryVertices.length) {
+				AddCutPolygon (cutPolygon, cutVertexTypes, entryVertices, currEntryVertex, aSidePolygons, bSidePolygons);
 				currEntryVertex = reversed ? currEntryVertex - 2 : currEntryVertex + 2;
 			}
 		}
