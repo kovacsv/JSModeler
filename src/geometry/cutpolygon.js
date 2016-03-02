@@ -1,9 +1,10 @@
 JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bSidePolygons, cutPolygons)
 {
-	function DetectOriginalVertexTypes (polygon)
+	function GetOriginalPolygonData (polygon)
 	{
-		var cutInformation = {
-			originalVertexTypes : [],
+		var originalPolygonData = {
+			polygon : polygon,
+			vertexTypes : [],
 			backFound : false,
 			frontFound : false
 		};
@@ -12,18 +13,18 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bS
 			vertex = polygon.GetVertex (i);
 			type = geometryInterface.getVertexSide (vertex);
 			if (type == 1) {
-				cutInformation.frontFound = true;
+				originalPolygonData.frontFound = true;
 			} else if (type == -1) {
-				cutInformation.backFound = true;
+				originalPolygonData.backFound = true;
 			}
-			cutInformation.originalVertexTypes.push (type);
+			originalPolygonData.vertexTypes.push (type);
 		}
-		return cutInformation;
+		return originalPolygonData;
 	}	
 	
-	function AddCutVerticesToPolygon (polygon, cutPolygon, originalVertexTypes)
+	function GetCutPolygonData (originalPolygonData)
 	{
-		function AddVertex (polygon, index, cutPolygon, originalVertexTypes, cutVertexTypes)
+		function AddVertex (originalPolygonData, cutPolygonData, index)
 		{
 			function IsIntersectionVertex (cutVertexTypes, originalType)
 			{
@@ -34,48 +35,54 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bS
 				return prevType !== 0 && originalType !== 0 && prevType != originalType;
 			}
 			
-			function AddIntersectionVertex (polygon, cutPolygon, cutVertexTypes, currIndex)
+			function AddIntersectionVertex (polygon, cutPolygonData, currIndex)
 			{
 				var prevIndex = polygon.GetPrevVertex (currIndex);
 				var prevVertex = polygon.GetVertex (prevIndex);
 				var currVertex = polygon.GetVertex (currIndex);
 				var intersection = geometryInterface.getIntersectionVertex (prevVertex, currVertex);
 				if (intersection !== null) {
-					cutPolygon.AddVertexCoord (intersection);
-					cutVertexTypes.push (0);
+					cutPolygonData.polygon.AddVertexCoord (intersection);
+					cutPolygonData.vertexTypes.push (0);
 				}
 			}
 			
-			function AddOriginalVertex (polygon, cutPolygon, cutVertexTypes, currIndex, originalType)
+			function AddOriginalVertex (polygon, cutPolygonData, currIndex, originalType)
 			{
-				cutPolygon.AddVertexCoord (polygon.GetVertex (currIndex).Clone ());
-				cutVertexTypes.push (originalType);
+				cutPolygonData.polygon.AddVertexCoord (polygon.GetVertex (currIndex).Clone ());
+				cutPolygonData.vertexTypes.push (originalType);
 			}
 		
-			var lastVertex = (index === polygon.VertexCount ());
+			var lastVertex = (index === originalPolygonData.polygon.VertexCount ());
 			var currIndex = index;
 			if (lastVertex) {
 				currIndex = 0;
 			}
 			
-			var originalType = originalVertexTypes[currIndex];
-			if (IsIntersectionVertex (cutVertexTypes, originalType)) {
-				AddIntersectionVertex (polygon, cutPolygon, cutVertexTypes, currIndex);
+			var originalType = originalPolygonData.vertexTypes[currIndex];
+			if (IsIntersectionVertex (cutPolygonData.vertexTypes, originalType)) {
+				AddIntersectionVertex (originalPolygonData.polygon, cutPolygonData, currIndex);
 			}
+			
 			if (!lastVertex) {
-				AddOriginalVertex (polygon, cutPolygon, cutVertexTypes, currIndex, originalType);
+				AddOriginalVertex (originalPolygonData.polygon, cutPolygonData, currIndex, originalType);
 			}
 		}
 		
-		var cutVertexTypes = [];
+		var cutPolygonData = {
+			polygon : geometryInterface.createPolygon (),
+			vertexTypes : []
+		};
+		
 		var i;
 		for (i = 0; i <= polygon.VertexCount (); i++) {
-			AddVertex (polygon, i, cutPolygon, originalVertexTypes, cutVertexTypes);
+			AddVertex (originalPolygonData, cutPolygonData, i);
 		}
-		return cutVertexTypes;
+		
+		return cutPolygonData;
 	}
 
-	function AddCuttedPolygons (cutPolygon, cutVertexTypes, aSidePolygons, bSidePolygons)
+	function AddCuttedPolygons (cutPolygonData, aSidePolygons, bSidePolygons)
 	{
 		function GetEntryVertices (cutVertexTypes)
 		{
@@ -108,6 +115,7 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bS
 					}
 				}
 			}
+			
 			return entryVertices;
 		}
 
@@ -138,7 +146,7 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bS
 			}
 		}
 			
-		function GetOneSideCuttedPolygons (cutPolygon, entryVertices, cutVertexTypes, aSidePolygons, bSidePolygons, reversed)
+		function AddOneSideCuttedPolygons (cutPolygonData, entryVertices, aSidePolygons, bSidePolygons, reversed)
 		{
 			function AddEntryPairToArray (entryPairs, entryVertices, index)
 			{
@@ -174,22 +182,22 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bS
 				}				
 			}
 
-			function AddCutPolygon (cutPolygon, cutVertexTypes, entryVertices, entryPairs, currEntryVertex, aSidePolygons, bSidePolygons)
+			function AddCutPolygon (cutPolygonData, entryVertices, entryPairs, currEntryVertex, aSidePolygons, bSidePolygons)
 			{
 				var startVertexIndex = entryVertices[currEntryVertex];
 				if (entryPairs[startVertexIndex] !== -1) {
 					var currPolygon = geometryInterface.createPolygon ();
-					currPolygon.AddVertexCoord (cutPolygon.GetVertex (startVertexIndex).Clone ());
-					var currVertexIndex = GetNextVertex (startVertexIndex, cutPolygon, entryPairs);
+					currPolygon.AddVertexCoord (cutPolygonData.polygon.GetVertex (startVertexIndex).Clone ());
+					var currVertexIndex = GetNextVertex (startVertexIndex, cutPolygonData.polygon, entryPairs);
 					var polygonSide = null;
 					while (currVertexIndex != startVertexIndex) {
 						if (polygonSide === null) {
-							if (cutVertexTypes[currVertexIndex] !== 0) {
-								polygonSide = cutVertexTypes[currVertexIndex];
+							if (cutPolygonData.vertexTypes[currVertexIndex] !== 0) {
+								polygonSide = cutPolygonData.vertexTypes[currVertexIndex];
 							}
 						}
-						currPolygon.AddVertexCoord (cutPolygon.GetVertex (currVertexIndex).Clone ());
-						currVertexIndex = GetNextVertex (currVertexIndex, cutPolygon, entryPairs);
+						currPolygon.AddVertexCoord (cutPolygonData.polygon.GetVertex (currVertexIndex).Clone ());
+						currVertexIndex = GetNextVertex (currVertexIndex, cutPolygonData.polygon, entryPairs);
 					}
 					if (polygonSide == 1) {
 						aSidePolygons.push (currPolygon);
@@ -201,35 +209,34 @@ JSM.CutPolygonInternal = function (polygon, geometryInterface, aSidePolygons, bS
 			}
 			
 			var entryPairs = [];
-			CreateEntryPairsArray (cutPolygon, entryVertices, entryPairs);
+			CreateEntryPairsArray (cutPolygonData.polygon, entryVertices, entryPairs);
+			
 			var currEntryVertex = reversed ? entryVertices.length - 1 : 0;
 			while (currEntryVertex >= 0 && currEntryVertex < entryVertices.length) {
-				AddCutPolygon (cutPolygon, cutVertexTypes, entryVertices, entryPairs, currEntryVertex, aSidePolygons, bSidePolygons);
+				AddCutPolygon (cutPolygonData, entryVertices, entryPairs, currEntryVertex, aSidePolygons, bSidePolygons);
 				currEntryVertex = reversed ? currEntryVertex - 2 : currEntryVertex + 2;
 			}
 		}
 
-		var entryVertices = GetEntryVertices (cutVertexTypes);
+		var entryVertices = GetEntryVertices (cutPolygonData.vertexTypes);
 		if (entryVertices.length === 0 || entryVertices.length % 2 !== 0) {
 			return;
 		}
 
-		SortEntryVertices (cutPolygon, entryVertices);
-		GetOneSideCuttedPolygons (cutPolygon, entryVertices, cutVertexTypes, aSidePolygons, bSidePolygons, false);
-		GetOneSideCuttedPolygons (cutPolygon, entryVertices, cutVertexTypes, aSidePolygons, bSidePolygons, true);
+		SortEntryVertices (cutPolygonData.polygon, entryVertices);
+		AddOneSideCuttedPolygons (cutPolygonData, entryVertices, aSidePolygons, bSidePolygons, false);
+		AddOneSideCuttedPolygons (cutPolygonData, entryVertices, aSidePolygons, bSidePolygons, true);
 	}
 	
-	var cutPolygon = geometryInterface.createPolygon ();
-	var cutInformation = DetectOriginalVertexTypes (polygon);
-
-	if (cutInformation.backFound && cutInformation.frontFound) {
-		var cutVertexTypes = AddCutVerticesToPolygon (polygon, cutPolygon, cutInformation.originalVertexTypes);
-		AddCuttedPolygons (cutPolygon, cutVertexTypes, aSidePolygons, bSidePolygons);
+	var originalPolygonData = GetOriginalPolygonData (polygon);
+	if (originalPolygonData.backFound && originalPolygonData.frontFound) {
+		var cutPolygonData = GetCutPolygonData (originalPolygonData);
+		AddCuttedPolygons (cutPolygonData, aSidePolygons, bSidePolygons);
 	} else {
 		var cloned = polygon.Clone ();
-		if (cutInformation.frontFound) {
+		if (originalPolygonData.frontFound) {
 			aSidePolygons.push (cloned);
-		} else if (cutInformation.backFound) {
+		} else if (originalPolygonData.backFound) {
 			bSidePolygons.push (cloned);
 		} else {
 			cutPolygons.push (cloned);
