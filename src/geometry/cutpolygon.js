@@ -154,10 +154,7 @@ JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 			return false;
 		}
 
-		var referenceCoord1 = cutPolygon.GetVertex (entryVertices[0]);
-		var referenceCoord2 = cutPolygon.GetVertex (entryVertices[1]);
-		var distances = geometryInterface.getVertexDistances (cutPolygon, entryVertices, referenceCoord1, referenceCoord2);
-
+		var distances = geometryInterface.getVertexDistances (cutPolygon, entryVertices);
 		JSM.BubbleSort (distances,
 			function (a, b) {
 				return JSM.IsGreater (a, b);
@@ -170,34 +167,48 @@ JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 		
 		return true;
 	}	
-	
-	function FindPrevSideType (index, cutVertexTypes)
+
+	function IsEntryVertex (cutVertexTypes, index)
 	{
-		var currIndex = JSM.PrevIndex (index, cutVertexTypes.length);
-		while (currIndex != index) {
-			if (cutVertexTypes[currIndex] !== 0) {
-				return cutVertexTypes[currIndex];
+		function FindPrevSideType (index, cutVertexTypes)
+		{
+			var currIndex = JSM.PrevIndex (index, cutVertexTypes.length);
+			while (currIndex != index) {
+				if (cutVertexTypes[currIndex] !== 0) {
+					return cutVertexTypes[currIndex];
+				}
+				currIndex = JSM.PrevIndex (currIndex, cutVertexTypes.length);
 			}
-			currIndex = JSM.PrevIndex (currIndex, cutVertexTypes.length);
+			return 0;
 		}
-		return 0;
+		
+		var currSideType = cutVertexTypes[index];
+		if (currSideType !== 0) {
+			return false;
+		}
+		
+		var prevIndex = JSM.PrevIndex (index, cutVertexTypes.length);
+		var nextIndex = JSM.NextIndex (index, cutVertexTypes.length);
+		var prevSideType = cutVertexTypes[prevIndex];
+		var nextSideType = cutVertexTypes[nextIndex];
+		if (nextSideType !== 0 && prevSideType === 0) {
+			prevSideType = FindPrevSideType (prevIndex, cutVertexTypes);
+		}
+		
+		if (prevSideType === -1 && nextSideType === 1) {
+			return true;
+		} else if (prevSideType === 1 && nextSideType === -1) {
+			return true;
+		}
+		
+		return false;
 	}
 
 	this.entryVertices = [];
-	var i, currSide, prevIndex, nextIndex, prevSideType, nextSideType;
+	var i;
 	for (i = 0; i < this.cutVertexTypes.length; i++) {
-		currSide = this.cutVertexTypes[i];
-		if (currSide === 0) {
-			prevIndex = JSM.PrevIndex (i, this.cutVertexTypes.length);
-			nextIndex = JSM.NextIndex (i, this.cutVertexTypes.length);
-			prevSideType = this.cutVertexTypes[prevIndex];
-			nextSideType = this.cutVertexTypes[nextIndex];
-			if (nextSideType !== 0 && prevSideType === 0) {
-				prevSideType = FindPrevSideType (prevIndex, this.cutVertexTypes);
-			}
-			if ((prevSideType == -1 && nextSideType == 1) || (prevSideType == 1 && nextSideType == -1)) {
-				this.entryVertices.push (i);
-			}
+		if (IsEntryVertex (this.cutVertexTypes, i)) {
+			this.entryVertices.push (i);
 		}
 	}
 
@@ -330,7 +341,9 @@ JSM.CutPolygon2DWithLine = function (polygon, line, leftPolygons, rightPolygons,
 			}
 			return intersection;
 		},
-		getVertexDistances : function (polygon, vertexIndices, referenceCoord1, referenceCoord2) {
+		getVertexDistances : function (polygon, vertexIndices) {
+			var referenceCoord1 = polygon.GetVertex (vertexIndices[0]);
+			var referenceCoord2 = polygon.GetVertex (vertexIndices[1]);
 			var direction = JSM.CoordSub2D (referenceCoord2, referenceCoord1);
 			var i, vertex;
 			var distances = [];
@@ -385,14 +398,15 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 			}
 			return intersection;
 		},
-		getVertexDistances : function (polygon, vertexIndices, referenceCoord1, referenceCoord2) {
+		getVertexDistances : function (polygon, vertexIndices) {
+			var referenceCoord1 = polygon.GetVertex (vertexIndices[0]);
+			var referenceCoord2 = polygon.GetVertex (vertexIndices[1]);
 			var direction = JSM.CoordSub (referenceCoord2, referenceCoord1);
-			var referencePlane = JSM.GetPlaneFromCoordAndDirection (referenceCoord1, direction);
 			var i, vertex;
 			var distances = [];
 			for (i = 0; i < vertexIndices.length; i++) {
 				vertex = polygon.GetVertex (vertexIndices[i]);
-				distances.push (referencePlane.CoordSignedDistance (vertex));
+				distances.push (JSM.CoordSignedDistance (referenceCoord1, vertex, direction));
 			}
 			return distances;
 		}
