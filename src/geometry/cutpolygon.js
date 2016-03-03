@@ -208,6 +208,7 @@ JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 	if (!SortEntryVertices (this.cutPolygon, this.entryVertices, this.geometryInterface)) {
 		return false;
 	}
+	
 	return true;
 };
 
