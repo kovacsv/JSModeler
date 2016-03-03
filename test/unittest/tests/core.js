@@ -123,6 +123,17 @@ suite.AddTest ('SortTest', function (test) {
 		return a < b;
 	});
 	test.Assert (array.toString () == [1, 3, 3, 3, 5].toString ());
+	
+	array = [5, 3, 3, 3, 1];
+	JSM.BubbleSort (array,
+		function (a, b) {
+			return a < b;
+		},
+		function (i, j) {
+			JSM.SwapArrayValues (array, i, j);
+		}
+	);
+	test.Assert (array.toString () == [1, 3, 3, 3, 5].toString ());	
 });
 
 }

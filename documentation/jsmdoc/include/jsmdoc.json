@@ -72,11 +72,20 @@
 						["message", "string", "the message"]
 					]
 				},
+				"SwapArrayValues" : {
+					"description" : "Swaps to array values.",
+					"parameters" : [
+						["array", "anything[]", "the array"],
+						["from", "integer", "from index"],
+						["to", "integer", "to index"]
+					]
+				},
 				"BubbleSort" : {
 					"description" : "Sorts an array with bubble sort.",
 					"parameters" : [
 						["array", "anything[]", "the array to sort"],
-						["compare", "function", "the compare function"]
+						["onCompare", "function", "the compare function"],
+						["onSwap", "function", "the swap function"]
 					]
 				},
 				"ShiftArray" : {
