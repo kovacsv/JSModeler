@@ -85,67 +85,58 @@ JSM.PolygonCutter.prototype.CalculateOriginalPolygonData = function (polygon)
 
 JSM.PolygonCutter.prototype.CalculateCutPolygonData = function ()
 {
-	function AddVertex (polygonCutter, index)
+	function IsIntersectionVertex (cutVertexTypes, originalType)
 	{
-		function IsIntersectionVertex (cutVertexTypes, originalType)
-		{
-			if (cutVertexTypes.length === 0) {
-				return false;
-			}
-			var prevType = cutVertexTypes[cutVertexTypes.length - 1];
-			return prevType !== JSM.CutVertexType.OnCut && originalType !== JSM.CutVertexType.OnCut && prevType != originalType;
+		if (cutVertexTypes.length === 0) {
+			return false;
 		}
-		
-		function AddIntersectionVertex (polygonCutter, originalIndex)
-		{
-			var prevIndex = polygonCutter.originalPolygon.GetPrevVertex (originalIndex);
-			var prevVertex = polygonCutter.originalPolygon.GetVertex (prevIndex);
-			var currVertex = polygonCutter.originalPolygon.GetVertex (originalIndex);
-			var intersection = polygonCutter.geometryInterface.getIntersectionVertex (prevVertex, currVertex);
-			if (intersection === null) {
-				return false;
-			}
-			polygonCutter.cutPolygon.AddVertexCoord (intersection);
-			polygonCutter.cutVertexTypes.push (JSM.CutVertexType.OnCut);
-			return true;
+		var prevType = cutVertexTypes[cutVertexTypes.length - 1];
+		if (prevType == JSM.CutVertexType.OnCut || originalType == JSM.CutVertexType.OnCut) {
+			return false;
 		}
-		
-		function AddOriginalVertex (polygonCutter, originalIndex, originalType)
-		{
-			polygonCutter.cutPolygon.AddVertexCoord (polygonCutter.originalPolygon.GetVertex (originalIndex).Clone ());
-			polygonCutter.cutVertexTypes.push (originalType);
-			return true;
-		}
+		return prevType != originalType;
+	}
 	
-		var lastVertex = (index === polygonCutter.originalPolygon.VertexCount ());
-		var originalIndex = index;
-		if (lastVertex) {
-			originalIndex = 0;
+	function AddIntersectionVertex (polygonCutter, originalIndex)
+	{
+		var prevIndex = polygonCutter.originalPolygon.GetPrevVertex (originalIndex);
+		var prevVertex = polygonCutter.originalPolygon.GetVertex (prevIndex);
+		var currVertex = polygonCutter.originalPolygon.GetVertex (originalIndex);
+		var intersection = polygonCutter.geometryInterface.getIntersectionVertex (prevVertex, currVertex);
+		if (intersection === null) {
+			return false;
 		}
-		
-		var originalType = polygonCutter.originalVertexTypes[originalIndex];
-		if (IsIntersectionVertex (polygonCutter.cutVertexTypes, originalType)) {
-			if (!AddIntersectionVertex (polygonCutter, originalIndex)) {
-				return false;
-			}
-		}
-		
-		if (!lastVertex) {
-			if (!AddOriginalVertex (polygonCutter, originalIndex, originalType)) {
-				return false;
-			}
-		}
-		
+		polygonCutter.cutPolygon.AddVertexCoord (intersection);
+		polygonCutter.cutVertexTypes.push (JSM.CutVertexType.OnCut);
+		return true;
+	}
+	
+	function AddOriginalVertex (polygonCutter, originalIndex, originalType)
+	{
+		polygonCutter.cutPolygon.AddVertexCoord (polygonCutter.originalPolygon.GetVertex (originalIndex).Clone ());
+		polygonCutter.cutVertexTypes.push (originalType);
 		return true;
 	}
 	
 	this.cutPolygon = this.geometryInterface.createPolygon ();
 	this.cutVertexTypes = [];
 	
-	var i;
-	for (i = 0; i <= this.originalPolygon.VertexCount (); i++) {
-		if (!AddVertex (this, i)) {
-			return false;
+	var vertexCount = this.originalPolygon.VertexCount ();
+	var i, lastVertex, originalIndex, originalType;
+	for (i = 0; i <= vertexCount; i++) {
+		lastVertex = (i === vertexCount);
+		originalIndex = i;
+		if (lastVertex) {
+			originalIndex = 0;
+		}
+		
+		originalType = this.originalVertexTypes[originalIndex];
+		if (IsIntersectionVertex (this.cutVertexTypes, originalType)) {
+			AddIntersectionVertex (this, originalIndex);
+		}
+		
+		if (!lastVertex) {
+			AddOriginalVertex (this, originalIndex, originalType);
 		}
 	}
 	
