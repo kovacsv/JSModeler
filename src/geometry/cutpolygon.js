@@ -1,7 +1,7 @@
 JSM.CutVertexType = {
 	Left : 1,
 	Right : 2,
-	OnCut : 3
+	Cut : 3
 };
 
 JSM.PolygonCutter = function (geometryInterface)
@@ -80,7 +80,7 @@ JSM.PolygonCutter.prototype.CalculateOriginalPolygonData = function (polygon)
 		return JSM.CutVertexType.Right;
 	}
 	
-	return JSM.CutVertexType.OnCut;
+	return JSM.CutVertexType.Cut;
 };
 
 JSM.PolygonCutter.prototype.CalculateCutPolygonData = function ()
@@ -91,7 +91,7 @@ JSM.PolygonCutter.prototype.CalculateCutPolygonData = function ()
 			return false;
 		}
 		var prevType = cutVertexTypes[cutVertexTypes.length - 1];
-		if (prevType == JSM.CutVertexType.OnCut || originalType == JSM.CutVertexType.OnCut) {
+		if (prevType == JSM.CutVertexType.Cut || originalType == JSM.CutVertexType.Cut) {
 			return false;
 		}
 		return prevType != originalType;
@@ -107,7 +107,7 @@ JSM.PolygonCutter.prototype.CalculateCutPolygonData = function ()
 			return false;
 		}
 		polygonCutter.cutPolygon.AddVertexCoord (intersection);
-		polygonCutter.cutVertexTypes.push (JSM.CutVertexType.OnCut);
+		polygonCutter.cutVertexTypes.push (JSM.CutVertexType.Cut);
 		return true;
 	}
 	
@@ -176,11 +176,11 @@ JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 				}
 				currIndex = JSM.PrevIndex (currIndex, cutVertexTypes.length);
 			}
-			return JSM.CutVertexType.OnCut;
+			return JSM.CutVertexType.Cut;
 		}
 		
 		var currSideType = cutVertexTypes[index];
-		if (currSideType !== JSM.CutVertexType.OnCut) {
+		if (currSideType !== JSM.CutVertexType.Cut) {
 			return false;
 		}
 		
@@ -189,7 +189,7 @@ JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 		var prevSideType = cutVertexTypes[prevIndex];
 		var nextSideType = cutVertexTypes[nextIndex];
 
-		if (nextSideType != JSM.CutVertexType.OnCut && prevSideType == JSM.CutVertexType.OnCut) {
+		if (nextSideType != JSM.CutVertexType.Cut && prevSideType == JSM.CutVertexType.Cut) {
 			prevSideType = FindPrevSideType (prevIndex, cutVertexTypes);
 		}
 
@@ -269,7 +269,7 @@ JSM.PolygonCutter.prototype.CalculateCuttedPolygons = function (aSidePolygons, b
 				var polygonSide = null;
 				while (currVertexIndex != startVertexIndex) {
 					if (polygonSide === null) {
-						if (polygonCutter.cutVertexTypes[currVertexIndex] !== JSM.CutVertexType.OnCut) {
+						if (polygonCutter.cutVertexTypes[currVertexIndex] !== JSM.CutVertexType.Cut) {
 							polygonSide = polygonCutter.cutVertexTypes[currVertexIndex];
 						}
 					}
@@ -322,7 +322,7 @@ JSM.CutPolygon2DWithLine = function (polygon, line, leftPolygons, rightPolygons,
 		},
 		getVertexSide : function (vertex) {
 			var position = line.CoordPosition (vertex);
-			var type = JSM.CutVertexType.OnCut;
+			var type = JSM.CutVertexType.Cut;
 			if (position == JSM.CoordLinePosition2D.CoordAtLineLeft) {
 				type = JSM.CutVertexType.Left;
 			} else if (position == JSM.CoordLinePosition2D.CoordAtLineRight) {
@@ -379,7 +379,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 		},
 		getVertexSide : function (vertex) {
 			var position = plane.CoordPosition (vertex);
-			var type = JSM.CutVertexType.OnCut;
+			var type = JSM.CutVertexType.Cut;
 			if (position == JSM.CoordPlanePosition.CoordInFrontOfPlane) {
 				type = JSM.CutVertexType.Left;
 			} else if (position == JSM.CoordPlanePosition.CoordAtBackOfPlane) {
