@@ -89,6 +89,12 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
+		function Log (text)
+		{
+			var logDiv = document.getElementById ('log');
+			logDiv.innerHTML += text + '<br>';
+		}
+	
 		function Load ()
 		{
 			var polygon = new JSM.Polygon2D ();
@@ -104,7 +110,8 @@
 			var leftPolygons = [];
 			var rightPolygons = [];
 			var cutPolygons = [];
-			JSM.CutPolygon2DWithLine (polygon, line, leftPolygons, rightPolygons, cutPolygons);
+			var result = JSM.CutPolygon2DWithLine (polygon, line, leftPolygons, rightPolygons, cutPolygons);
+			Log (result);
 			
 			var polygon = new JSM.Polygon2D ();
 			polygon.AddVertex (0.0, 0.0);
@@ -119,7 +126,58 @@
 			var leftPolygons = [];
 			var rightPolygons = [];
 			var cutPolygons = [];
-			JSM.CutPolygon2DWithLine (polygon, line, leftPolygons, rightPolygons, cutPolygons);
+			var result = JSM.CutPolygon2DWithLine (polygon, line, leftPolygons, rightPolygons, cutPolygons);
+			Log (result);
+			
+			var polygon = new JSM.Polygon2D ();
+			polygon.AddVertex (0.0, 0.0);
+			polygon.AddVertex (1.0, 0.0);
+			polygon.AddVertex (1.0, 1.0);
+			polygon.AddVertex (2.0, 1.0);
+			polygon.AddVertex (2.0, 2.0);
+			polygon.AddVertex (0.0, 2.0);			
+
+			var line = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+			
+			var leftPolygons = [];
+			var rightPolygons = [];
+			var cutPolygons = [];
+			var result = JSM.CutPolygon2DWithLine (polygon, line, leftPolygons, rightPolygons, cutPolygons);
+			Log (result);			
+
+			var polygon = new JSM.Polygon2D ();
+			polygon.AddVertex (0.0, 1.0);
+			polygon.AddVertex (1.0, 1.0);
+			polygon.AddVertex (1.0, 0.0);
+			polygon.AddVertex (2.0, 0.0);
+			polygon.AddVertex (2.0, 2.0);
+			polygon.AddVertex (0.0, 2.0);			
+
+			var line = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+			
+			var leftPolygons = [];
+			var rightPolygons = [];
+			var cutPolygons = [];
+			var result = JSM.CutPolygon2DWithLine (polygon, line, leftPolygons, rightPolygons, cutPolygons);
+			Log (result);			
+			
+			var polygon = new JSM.Polygon2D ();
+			polygon.AddVertex (0.0, 0.0);
+			polygon.AddVertex (2.0, 0.0);
+			polygon.AddVertex (2.0, 3.0);
+			polygon.AddVertex (0.0, 3.0);
+			polygon.AddVertex (0.0, 2.0);
+			polygon.AddVertex (1.0, 2.0);
+			polygon.AddVertex (1.0, 1.0);
+			polygon.AddVertex (0.0, 1.0);		
+
+			var line = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+			
+			var leftPolygons = [];
+			var rightPolygons = [];
+			var cutPolygons = [];
+			var result = JSM.CutPolygon2DWithLine (polygon, line, leftPolygons, rightPolygons, cutPolygons);
+			Log (result);						
 		}
 	
 	    window.onload = function ()
@@ -131,7 +189,7 @@
 </head>
 
 <body>
-	<canvas id="example" width="800" height="500"></canvas>
+	<div id="log"></div>
 </body>
 
 </html>

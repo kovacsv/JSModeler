@@ -2086,6 +2086,7 @@ polygonSuite.AddTest ('CutPolygon2DTest', function (test)
 	var line11 = new JSM.Line2D (new JSM.Coord2D (0.0, 2.0), new JSM.Vector2D (1.0, 0.0));
 	var line12 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (0.0, 1.0));
 	var line13 = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line13Rev = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (0.0, -1.0));
 	var line14 = new JSM.Line2D (new JSM.Coord2D (0.5, 0.0), new JSM.Vector2D (0.0, 1.0));
 	var line15 = new JSM.Line2D (new JSM.Coord2D (1.5, 0.0), new JSM.Vector2D (0.0, 1.0));
 	var line16 = new JSM.Line2D (new JSM.Coord2D (1.0, -0.1), new JSM.Vector2D (1.0, 1.0));
@@ -2094,7 +2095,8 @@ polygonSuite.AddTest ('CutPolygon2DTest', function (test)
 	test.Assert (CutAndCheck (polygon, line10, 1, 1, 0));
 	test.Assert (CutAndCheck (polygon, line11, 1, 1, 0));
 	test.Assert (CutAndCheck (polygon, line12, 0, 1, 0));
-	test.Assert (CutAndCheck (polygon, line13, 1, 1, 0));
+	test.Assert (CutAndCheck (polygon, line13, 2, 1, 0));
+	test.Assert (CutAndCheck (polygon, line13Rev, 1, 2, 0));
 	test.Assert (CutAndCheck (polygon, line14, 2, 1, 0));
 	test.Assert (CutAndCheck (polygon, line15, 1, 1, 0));
 	test.Assert (CutAndCheck (polygon, line16, 1, 1, 0));
@@ -2118,6 +2120,32 @@ polygonSuite.AddTest ('CutPolygon2DTest', function (test)
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
 	polygon.AddVertex (2.0, 0.0);
+	polygon.AddVertex (2.0, 1.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (1.0, 2.0);
+	polygon.AddVertex (0.0, 2.0);
+	test.Assert (CutAndCheck (polygon, line13, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+		if (leftPolygons[0].VertexCount () != 5) {
+			return false;
+		}
+		if (rightPolygons[0].VertexCount () != 4) {
+			return false;
+		}
+		return true;
+	}));
+	test.Assert (CutAndCheck (polygon, line13Rev, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+		if (leftPolygons[0].VertexCount () != 4) {
+			return false;
+		}
+		if (rightPolygons[0].VertexCount () != 5) {
+			return false;
+		}
+		return true;
+	}));
+
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (2.0, 0.0);
 	polygon.AddVertex (2.0, 2.0);
 	polygon.AddVertex (1.0, 2.0);
 	polygon.AddVertex (1.0, 1.0);
@@ -2131,15 +2159,88 @@ polygonSuite.AddTest ('CutPolygon2DTest', function (test)
 		}
 		return true;
 	}));
+	test.Assert (CutAndCheck (polygon, line13Rev, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+		if (leftPolygons[0].VertexCount () != 5) {
+			return false;
+		}
+		if (rightPolygons[0].VertexCount () != 4) {
+			return false;
+		}
+		return true;
+	}));
+	
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (1.0, 0.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (2.0, 1.0);
+	polygon.AddVertex (2.0, 2.0);
+	polygon.AddVertex (0.0, 2.0);
+	test.Assert (CutAndCheck (polygon, line13, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+		if (leftPolygons[0].VertexCount () != 5) {
+			return false;
+		}
+		if (rightPolygons[0].VertexCount () != 4) {
+			return false;
+		}
+		return true;
+	}));
+	test.Assert (CutAndCheck (polygon, line13Rev, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+		if (leftPolygons[0].VertexCount () != 4) {
+			return false;
+		}
+		if (rightPolygons[0].VertexCount () != 5) {
+			return false;
+		}
+		return true;
+	}));
 
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 1.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (1.0, 0.0);
+	polygon.AddVertex (2.0, 0.0);
+	polygon.AddVertex (2.0, 2.0);
+	polygon.AddVertex (0.0, 2.0);
+	test.Assert (CutAndCheck (polygon, line13, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+		if (leftPolygons[0].VertexCount () != 4) {
+			return false;
+		}
+		if (rightPolygons[0].VertexCount () != 5) {
+			return false;
+		}
+		return true;
+	}));
+	test.Assert (CutAndCheck (polygon, line13Rev, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+		if (leftPolygons[0].VertexCount () != 5) {
+			return false;
+		}
+		if (rightPolygons[0].VertexCount () != 4) {
+			return false;
+		}
+		return true;
+	}));
+	
+	var line18 = new JSM.Line2D (new JSM.Coord2D (2.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line18Rev = new JSM.Line2D (new JSM.Coord2D (2.0, 0.0), new JSM.Vector2D (0.0, -1.0));
+	
 	var polygon = new JSM.Polygon2D ();
 	polygon.AddVertex (0.0, 0.0);
 	polygon.AddVertex (2.0, 0.0);
 	polygon.AddVertex (2.0, 1.0);
-	polygon.AddVertex (1.0, 1.0);
-	polygon.AddVertex (1.0, 2.0);
+	polygon.AddVertex (3.0, 1.0);
+	polygon.AddVertex (3.0, 2.0);
 	polygon.AddVertex (0.0, 2.0);
-	test.Assert (CutAndCheck (polygon, line13, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+	test.Assert (CutAndCheck (polygon, line18, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+		if (leftPolygons[0].VertexCount () != 5) {
+			return false;
+		}
+		if (rightPolygons[0].VertexCount () != 4) {
+			return false;
+		}
+		return true;
+	}));
+	test.Assert (CutAndCheck (polygon, line18Rev, 1, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
 		if (leftPolygons[0].VertexCount () != 4) {
 			return false;
 		}
@@ -2393,7 +2494,7 @@ polygonSuite.AddTest ('OldCutPolygonTest', function (test)
 	frontPolygons = [];
 	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
 	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
+	test.Assert (backPolygons.length == 2);
 	test.Assert (frontPolygons.length == 1);
 
 	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.5, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
@@ -2660,7 +2761,7 @@ polygonSuite.AddTest ('CutPolygonTest', function (test)
 	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
 	test.Assert (result == true);
 	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);	
+	test.Assert (frontPolygons.length == 1);
 
 	test.Assert (backPolygons[0].VertexCount () == 5);
 	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 1, 0)));
