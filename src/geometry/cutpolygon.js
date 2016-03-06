@@ -154,7 +154,7 @@ JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 		var distances = geometryInterface.getVertexDistances (cutPolygon, entryVertices);
 		JSM.BubbleSort (distances,
 			function (a, b) {
-				return JSM.IsGreater (a, b);
+				return JSM.IsLower (a, b);
 			},
 			function (i, j) {
 				JSM.SwapArrayValues (distances, i, j);
