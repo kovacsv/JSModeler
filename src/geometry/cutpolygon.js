@@ -409,7 +409,8 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 			var polygonNormal = polygon.GetNormal ();
 			var planeNormal = new JSM.Vector (plane.a, plane.b, plane.c);
 			var refPlaneNormal = JSM.VectorCross (planeNormal, polygonNormal);
-			var refPlane = JSM.GetPlaneFromCoordAndDirection (polygon.GetVertex (0), refPlaneNormal);
+			var refPlaneOrigin = polygon.GetVertex (0);
+			var refPlane = JSM.GetPlaneFromCoordAndDirection (refPlaneOrigin, refPlaneNormal);
 			var i, vertex;
 			var distances = [];
 			for (i = 0; i < vertexIndices.length; i++) {
