@@ -2428,11 +2428,13 @@ polygonSuite.AddTest ('OldCutPolygonTest', function (test)
 	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
 	backPolygons = [];
 	frontPolygons = [];
+	planePolygons = [];
 	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
 	test.Assert (result == true);
 	test.Assert (backPolygons.length == 2);
 	test.Assert (frontPolygons.length == 1);
-
+	test.Assert (planePolygons.length == 0);
+	
 	test.Assert (frontPolygons[0].VertexCount () == 8);
 	test.Assert (
 		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (1.5, 0.0, 0.0)) &&
