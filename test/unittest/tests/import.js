@@ -297,6 +297,63 @@ importSuite.AddTest ('ConvertObjToJsonDataTest', function (test)
 	};
 	test.Assert (JSON.stringify (jsonData) == JSON.stringify (refJsonData));	
 	
+	var jsonData = JSM.ConvertObjToJsonData (GetStringBufferFromFile ('../testfiles/negativeindices2.obj'), {
+		onFileRequested : function (fileName) {
+			return null;
+		}
+	});
+	var refJsonData = {
+		"version":1,
+		"materials":[
+			{"name":"Default","ambient":[0.5,0.5,0.5],"diffuse":[0.5,0.5,0.5],"specular":[0.1,0.1,0.1],"shininess":0,"opacity":1}
+		],
+		"meshes":[
+			{
+				"name":"Default",
+				"vertices":[0,0,0,1,0,0,1,1,0,0,1,0,0,0,1,1,0,1,1,1,1,0,1,1],
+				"normals":[0,0,1,0,0,1,0,0,1,0,0,1],
+				"uvs":[0,0],
+				"triangles":[
+					{"material":0,"parameters":[0,1,2,0,0,0,0,0,0,0,2,3,1,1,1,0,0,0,4,5,6,2,2,2,0,0,0,4,6,7,3,3,3,0,0,0]}
+				]
+			}
+		]
+	};
+	test.Assert (JSON.stringify (jsonData) == JSON.stringify (refJsonData));		
+	
+	var jsonData = JSM.ConvertObjToJsonData (GetStringBufferFromFile ('../testfiles/negativeindices3.obj'), {
+		onFileRequested : function (fileName) {
+			return null;
+		}
+	});
+	var refJsonData = {
+		"version":1,
+		"materials":[
+			{"name":"Default","ambient":[0.5,0.5,0.5],"diffuse":[0.5,0.5,0.5],"specular":[0.1,0.1,0.1],"shininess":0,"opacity":1}
+		],
+		"meshes":[
+			{
+				"name":"first",
+				"vertices":[0,0,0,1,0,0,1,1,0,0,1,0],
+				"normals":[0,0,1,0,0,1],
+				"uvs":[0,0],
+				"triangles":[
+					{"material":0,"parameters":[0,1,2,0,0,0,0,0,0,0,2,3,1,1,1,0,0,0]}
+				]
+			},
+			{
+				"name":"second",
+				"vertices":[0,0,1,1,0,1,1,1,1,0,1,1],
+				"normals":[0,0,1,0,0,1],
+				"uvs":[0,0],
+				"triangles":[
+					{"material":0,"parameters":[0,1,2,0,0,0,0,0,0,0,2,3,1,1,1,0,0,0]}
+				]
+			}
+		]
+	};
+	test.Assert (JSON.stringify (jsonData) == JSON.stringify (refJsonData));		
+
 	var jsonData = JSM.ConvertObjToJsonData (GetStringBufferFromFile ('../testfiles/meshesobj.obj'), {
 		onFileRequested : function (fileName) {
 			test.Assert (fileName == 'meshesobj.mtl');
