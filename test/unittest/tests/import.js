@@ -273,6 +273,30 @@ importSuite.AddTest ('ConvertObjToJsonDataTest', function (test)
 	};
 	test.Assert (JSON.stringify (jsonData) == JSON.stringify (refJsonData));
 	
+	var jsonData = JSM.ConvertObjToJsonData (GetStringBufferFromFile ('../testfiles/negativeindices.obj'), {
+		onFileRequested : function (fileName) {
+			return null;
+		}
+	});
+	var refJsonData = {
+		"version":1,
+		"materials":[
+			{"name":"Default","ambient":[0.5,0.5,0.5],"diffuse":[0.5,0.5,0.5],"specular":[0.1,0.1,0.1],"shininess":0,"opacity":1}
+		],
+		"meshes":[
+			{
+				"name":"Default",
+				"vertices":[0,0,0,1,0,0,1,1,0,0,1,0],
+				"normals":[0,0,1,0,0,1],
+				"uvs":[0,0],
+				"triangles":[
+					{"material":0,"parameters":[0,1,2,0,0,0,0,0,0,0,2,3,1,1,1,0,0,0]}
+				]
+			}
+		]
+	};
+	test.Assert (JSON.stringify (jsonData) == JSON.stringify (refJsonData));	
+	
 	var jsonData = JSM.ConvertObjToJsonData (GetStringBufferFromFile ('../testfiles/meshesobj.obj'), {
 		onFileRequested : function (fileName) {
 			test.Assert (fileName == 'meshesobj.mtl');
