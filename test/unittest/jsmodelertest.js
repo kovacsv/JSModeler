@@ -86,6 +86,7 @@ unitTest.AddSourceFile ('utils/triangulationcheck.js');
 unitTest.AddTestFile ('tests/core.js');
 unitTest.AddTestFile ('tests/geometry.js');
 unitTest.AddTestFile ('tests/polygon.js');
+unitTest.AddTestFile ('tests/cutpolygon.js');
 unitTest.AddTestFile ('tests/triangulation.js');
 unitTest.AddTestFile ('tests/modeler.js');
 unitTest.AddTestFile ('tests/import.js');
