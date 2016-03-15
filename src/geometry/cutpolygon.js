@@ -181,37 +181,39 @@ JSM.PolygonCutter.prototype.CalculateCutPolygonData = function ()
 
 JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 {
-	function IsEntryVertex (cutPolygonVertexTypes, cutPolygonVertexDistances, cutVertexIndices, index)
+	function IsEntryVertex (cutPolygonVertexTypes, cutPolygonVertexDistances, currIndex)
 	{
-		var vertexIndex = cutVertexIndices[index];
-		var vertexDistance = cutPolygonVertexDistances[vertexIndex];
-		var currSideType = cutPolygonVertexTypes[vertexIndex];
+		var currSideType = cutPolygonVertexTypes[currIndex];
 		if (currSideType != JSM.CutVertexType.Cut) {
 			return false;
 		}
 		
-		var prevIndex = JSM.PrevIndex (vertexIndex, cutPolygonVertexTypes.length);
-		var nextIndex = JSM.NextIndex (vertexIndex, cutPolygonVertexTypes.length);
+		var prevIndex = JSM.PrevIndex (currIndex, cutPolygonVertexTypes.length);
+		var nextIndex = JSM.NextIndex (currIndex, cutPolygonVertexTypes.length);
 		var prevSideType = cutPolygonVertexTypes[prevIndex];
 		var nextSideType = cutPolygonVertexTypes[nextIndex];
 
+		var currVertexDistance = cutPolygonVertexDistances[currIndex];
+		var prevVertexDistance = cutPolygonVertexDistances[prevIndex];
+		var nextVertexDistance = cutPolygonVertexDistances[nextIndex];
+		
 		if (prevSideType == JSM.CutVertexType.Right) {
 			if (nextSideType == JSM.CutVertexType.Left) {
 				return true;
 			} else if (nextSideType == JSM.CutVertexType.Cut) {
-				return vertexDistance < cutPolygonVertexDistances[nextIndex];
+				return currVertexDistance < nextVertexDistance;
 			}
 		} else if (prevSideType == JSM.CutVertexType.Left) {
 			if (nextSideType == JSM.CutVertexType.Right) {
 				return true;
 			} else if (nextSideType == JSM.CutVertexType.Cut) {
-				return vertexDistance > cutPolygonVertexDistances[nextIndex];
+				return currVertexDistance > nextVertexDistance;
 			}
 		} else if (prevSideType == JSM.CutVertexType.Cut) {
 			if (nextSideType == JSM.CutVertexType.Left) {
-				return vertexDistance < cutPolygonVertexDistances[prevIndex];
+				return currVertexDistance < prevVertexDistance;
 			} else if (nextSideType == JSM.CutVertexType.Right) {
-				return vertexDistance > cutPolygonVertexDistances[prevIndex];
+				return currVertexDistance > prevVertexDistance;
 			}
 		}
 		
@@ -222,7 +224,7 @@ JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 	var i, vertexIndex;
 	for (i = 0; i < this.cutVertexIndices.length; i++) {
 		vertexIndex = this.cutVertexIndices[i];
-		if (IsEntryVertex (this.cutPolygonVertexTypes, this.cutPolygonVertexDistances, this.cutVertexIndices, i)) {
+		if (IsEntryVertex (this.cutPolygonVertexTypes, this.cutPolygonVertexDistances, vertexIndex)) {
 			this.entryVertices.push (vertexIndex);
 		}
 	}
