@@ -652,9 +652,11 @@ generalSuite.AddTest ('CoordLinePositionTest', function (test)
 	var direction2D = new JSM.Coord2D (1.0, 0.0);
 	var line2D = new JSM.Line2D (start2D, direction2D);
 	test.Assert (line2D.CoordPosition (new JSM.Coord2D (0.0, 0.0)) == JSM.CoordLinePosition2D.CoordAtLineRight);
+	test.Assert (line2D.CoordPosition (new JSM.Coord2D (0.0, -1.0)) == JSM.CoordLinePosition2D.CoordAtLineRight);
 	test.Assert (line2D.CoordPosition (new JSM.Coord2D (0.0, 2.0)) == JSM.CoordLinePosition2D.CoordAtLineLeft);
+	test.Assert (line2D.CoordPosition (new JSM.Coord2D (0.0, 3.0)) == JSM.CoordLinePosition2D.CoordAtLineLeft);
 	test.Assert (line2D.CoordPosition (new JSM.Coord2D (0.0, 1.0)) == JSM.CoordLinePosition2D.CoordOnLine);
-
+	
 	var start = new JSM.Coord (1.0, 1.0, 1.0);
 	var direction = new JSM.Coord (1.0, 0.0, 0.0);
 	var line = new JSM.Line (start, direction);

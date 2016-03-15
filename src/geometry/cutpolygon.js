@@ -352,11 +352,15 @@ JSM.CutPolygon2DWithLine = function (polygon, line, leftPolygons, rightPolygons,
 			return intersection;
 		},
 		getVertexDistances : function (polygon, vertexIndices) {
+			var origo = new JSM.Coord2D (0.0, 0.0);
+			var refLineStart = line.start.Clone ();
+			var refLineDir = line.direction.Clone ().Rotate (-Math.PI / 2.0, origo);
+			var refLine = new JSM.Line2D (refLineStart, refLineDir);
 			var i, vertex;
 			var distances = [];
 			for (i = 0; i < vertexIndices.length; i++) {
 				vertex = polygon.GetVertex (vertexIndices[i]);
-				distances.push (JSM.CoordSignedDistance2D (line.start, vertex, line.direction));
+				distances.push (refLine.CoordSignedDistance (vertex));
 			}
 			return distances;
 		}

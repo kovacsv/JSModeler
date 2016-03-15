@@ -88,12 +88,7 @@ JSM.Line2D.prototype.Set = function (start, direction)
 */
 JSM.Line2D.prototype.CoordPosition = function (coord)
 {
-	var x = coord.x;
-	var y = coord.y;
-	var a = this.start;
-	var b = this.direction;
-
-	var position = b.x * (y - a.y) - b.y * (x - a.x);
+	var position = this.CoordSignedDistance (coord);
 	if (JSM.IsPositive (position)) {
 		return JSM.CoordLinePosition2D.CoordAtLineLeft;
 	} else if (JSM.IsNegative (position)) {
@@ -101,6 +96,23 @@ JSM.Line2D.prototype.CoordPosition = function (coord)
 	}
 
 	return JSM.CoordLinePosition2D.CoordOnLine;
+};
+
+/**
+* Function: Line2D.CoordSignedDistance
+* Description: Calculates the signed distance of the line and the given coordinate.
+* Parameters:
+*	coord {Coord2D} the coordinate
+* Returns:
+*	{number} the result
+*/
+JSM.Line2D.prototype.CoordSignedDistance = function (coord)
+{
+	var x = coord.x;
+	var y = coord.y;
+	var a = this.start;
+	var b = this.direction;
+	return b.x * (y - a.y) - b.y * (x - a.x);
 };
 
 /**
