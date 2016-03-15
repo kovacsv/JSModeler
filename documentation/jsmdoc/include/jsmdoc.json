@@ -1526,6 +1526,15 @@
 								["CoordLinePosition2D", "the result"]
 							]
 						},
+						"CoordSignedDistance" : {
+							"description" : "Calculates the signed distance of the line and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
 						"LinePosition" : {
 							"description" : "Calculates the position of the line and the given line.",
 							"parameters" : [
@@ -1990,6 +1999,12 @@
 							"description" : "Creates the polygon from an array of vertices.",
 							"parameters" : [
 								["vertices", "Coord2D[*]", "the array of vertices"]
+							]
+						},
+						"GetBoundingBox" : {
+							"description" : "Calculates the bounding box of the polygon.",
+							"returns" : [
+								["Box2D", "the result"]
 							]
 						},
 						"Clear" : {

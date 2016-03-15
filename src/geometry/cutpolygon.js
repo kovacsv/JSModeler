@@ -48,8 +48,8 @@ JSM.PolygonCutter.prototype.Reset = function ()
 	this.originalPolygonVertexTypes = null;
 	this.cutPolygon = null;
 	this.cutPolygonVertexTypes = null;
+	this.cutPolygonVertexDistances = null;
 	this.cutVertexIndices = null;
-	this.cutVertexDistances = null;
 	this.entryVertices = null;
 };
 
@@ -128,19 +128,20 @@ JSM.PolygonCutter.prototype.CalculateCutPolygonData = function ()
 		return true;
 	}
 	
-	function SortCutVertices (cutPolygon, cutVertexIndices, cutVertexDistances)
+	function SortCutVertices (cutPolygon, cutVertexIndices, cutPolygonVertexDistances)
 	{
 		if (cutVertexIndices.length < 2) {
 			return false;
 		}
 
-		JSM.BubbleSort (cutVertexDistances,
+		JSM.BubbleSort (cutVertexIndices,
 			function (a, b) {
-				return JSM.IsLower (a, b);
+				var aDist = cutPolygonVertexDistances[a];
+				var bDist = cutPolygonVertexDistances[b];
+				return JSM.IsLower (aDist, bDist);
 			},
 			function (i, j) {
 				JSM.SwapArrayValues (cutVertexIndices, i, j);
-				JSM.SwapArrayValues (cutVertexDistances, i, j);
 			}
 		);
 		
@@ -170,8 +171,8 @@ JSM.PolygonCutter.prototype.CalculateCutPolygonData = function ()
 		}
 	}
 	
-	this.cutVertexDistances = this.geometryInterface.getVertexDistances (this.cutPolygon, this.cutVertexIndices);
-	if (!SortCutVertices (this.cutPolygon, this.cutVertexIndices, this.cutVertexDistances)) {
+	this.cutPolygonVertexDistances = this.geometryInterface.getVertexDistances (this.cutPolygon);
+	if (!SortCutVertices (this.cutPolygon, this.cutVertexIndices, this.cutPolygonVertexDistances)) {
 		return false;
 	}
 	
@@ -180,10 +181,10 @@ JSM.PolygonCutter.prototype.CalculateCutPolygonData = function ()
 
 JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 {
-	function IsEntryVertex (cutPolygonVertexTypes, cutVertexIndices, cutVertexDistances, index)
+	function IsEntryVertex (cutPolygonVertexTypes, cutPolygonVertexDistances, cutVertexIndices, index)
 	{
 		var vertexIndex = cutVertexIndices[index];
-		var vertexDistance = cutVertexDistances[index];
+		var vertexDistance = cutPolygonVertexDistances[vertexIndex];
 		var currSideType = cutPolygonVertexTypes[vertexIndex];
 		if (currSideType != JSM.CutVertexType.Cut) {
 			return false;
@@ -198,19 +199,19 @@ JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 			if (nextSideType == JSM.CutVertexType.Left) {
 				return true;
 			} else if (nextSideType == JSM.CutVertexType.Cut) {
-				return vertexDistance < cutVertexDistances[index + 1];
+				return vertexDistance < cutPolygonVertexDistances[nextIndex];
 			}
 		} else if (prevSideType == JSM.CutVertexType.Left) {
 			if (nextSideType == JSM.CutVertexType.Right) {
 				return true;
 			} else if (nextSideType == JSM.CutVertexType.Cut) {
-				return vertexDistance > cutVertexDistances[index - 1];
+				return vertexDistance > cutPolygonVertexDistances[nextIndex];
 			}
 		} else if (prevSideType == JSM.CutVertexType.Cut) {
 			if (nextSideType == JSM.CutVertexType.Left) {
-				return vertexDistance < cutVertexDistances[index + 1];
+				return vertexDistance < cutPolygonVertexDistances[prevIndex];
 			} else if (nextSideType == JSM.CutVertexType.Right) {
-				return vertexDistance > cutVertexDistances[index - 1];
+				return vertexDistance > cutPolygonVertexDistances[prevIndex];
 			}
 		}
 		
@@ -221,7 +222,7 @@ JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 	var i, vertexIndex;
 	for (i = 0; i < this.cutVertexIndices.length; i++) {
 		vertexIndex = this.cutVertexIndices[i];
-		if (IsEntryVertex (this.cutPolygonVertexTypes, this.cutVertexIndices, this.cutVertexDistances, i)) {
+		if (IsEntryVertex (this.cutPolygonVertexTypes, this.cutPolygonVertexDistances, this.cutVertexIndices, i)) {
 			this.entryVertices.push (vertexIndex);
 		}
 	}
@@ -351,15 +352,15 @@ JSM.CutPolygon2DWithLine = function (polygon, line, leftPolygons, rightPolygons,
 			}
 			return intersection;
 		},
-		getVertexDistances : function (polygon, vertexIndices) {
+		getVertexDistances : function (polygon) {
 			var origo = new JSM.Coord2D (0.0, 0.0);
 			var refLineStart = line.start.Clone ();
 			var refLineDir = line.direction.Clone ().Rotate (-Math.PI / 2.0, origo);
 			var refLine = new JSM.Line2D (refLineStart, refLineDir);
 			var i, vertex;
 			var distances = [];
-			for (i = 0; i < vertexIndices.length; i++) {
-				vertex = polygon.GetVertex (vertexIndices[i]);
+			for (i = 0; i < polygon.VertexCount (); i++) {
+				vertex = polygon.GetVertex (i);
 				distances.push (refLine.CoordSignedDistance (vertex));
 			}
 			return distances;
@@ -409,7 +410,7 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 			}
 			return intersection;
 		},
-		getVertexDistances : function (polygon, vertexIndices) {
+		getVertexDistances : function (polygon) {
 			var polygonNormal = polygon.GetNormal ();
 			var planeNormal = new JSM.Vector (plane.a, plane.b, plane.c);
 			var refPlaneNormal = JSM.VectorCross (planeNormal, polygonNormal);
@@ -417,8 +418,8 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 			var refPlane = JSM.GetPlaneFromCoordAndDirection (refPlaneOrigin, refPlaneNormal);
 			var i, vertex;
 			var distances = [];
-			for (i = 0; i < vertexIndices.length; i++) {
-				vertex = polygon.GetVertex (vertexIndices[i]);
+			for (i = 0; i < polygon.VertexCount (); i++) {
+				vertex = polygon.GetVertex (i);
 				distances.push (refPlane.CoordSignedDistance (vertex));
 			}
 			return distances;
