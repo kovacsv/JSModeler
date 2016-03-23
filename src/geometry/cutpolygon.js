@@ -284,30 +284,33 @@ JSM.PolygonCutter.prototype.CalculateCuttedPolygons = function (aSidePolygons, b
 		{
 			function FindPairIndex (entryPairs, entryVertices, entryVertexTypes, startIndex)
 			{
-				var i, currentVertexIndex;
+				var i;
 				for (i = startIndex + 1; i < entryVertices.length; i++) {
-					currentVertexIndex = entryVertices[i];
-					if (entryPairs[currentVertexIndex] == -1 && entryVertexTypes[startIndex] != entryVertexTypes[i]) {
+					if (entryPairs[entryVertices[i]] != -1) {
+						continue;
+					}
+					if (entryVertexTypes[startIndex] != entryVertexTypes[i]) {
 						return i;
 					}
 				}
 				return -1;
 			}
-			
+
+			var entryPairs = [];
 			var i;
 			for (i = 0; i < cutPolygon.VertexCount (); i++) {
 				entryPairs.push (-1);
 			}
 
-			var entryVertex, pairIndex;
+			var pairIndex;
 			for (i = 0; i < entryVertices.length; i++) {
-				entryVertex = entryVertices[i];
-				if (entryPairs[entryVertex] != -1) {
+				if (entryPairs[entryVertices[i]] != -1) {
 					continue;
 				}
 				pairIndex = FindPairIndex (entryPairs, entryVertices, entryVertexTypes, i);
 				AddEntryPairToArray (entryPairs, entryVertices, i, pairIndex);
 			}
+			return entryPairs;
 		}
 		
 		function GetNextVertex (currVertexIndex, cutPolygon, entryPairs)
@@ -358,8 +361,7 @@ JSM.PolygonCutter.prototype.CalculateCuttedPolygons = function (aSidePolygons, b
 			
 		}
 		
-		var entryPairs = [];
-		CreateEntryPairsArray (polygonCutter.cutPolygon, polygonCutter.entryVertices, polygonCutter.entryVertexTypes, entryPairs);
+		var entryPairs = CreateEntryPairsArray (polygonCutter.cutPolygon, polygonCutter.entryVertices, polygonCutter.entryVertexTypes, entryPairs);
 		var currEntryVertex = reversed ? polygonCutter.entryVertices.length - 1 : 0;
 		while (currEntryVertex >= 0 && currEntryVertex < polygonCutter.entryVertices.length) {
 			AddCutPolygon (polygonCutter, entryPairs, currEntryVertex, aSidePolygons, bSidePolygons);
