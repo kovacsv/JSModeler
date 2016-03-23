@@ -103,7 +103,6 @@
 					if (!JSM.CutPolygon2DWithLine (polygon, line, left, right, cut)) {
 						return;
 					}
-
 					var i;
 					for (i = 0; i < left.length; i++) {
 						leftPolygons.push (left[i]);
@@ -180,7 +179,7 @@
 			polygon.AddVertex (10, 0);
 			polygon.AddVertex (10, 10);
 			polygon.AddVertex (0, 10);
-			polygon.AddVertex (-5, 5);
+			polygon.AddVertex (4, 5);
 
 			var segmented = JSM.SegmentPolygon2D (polygon, 5, 5);
 			var i;

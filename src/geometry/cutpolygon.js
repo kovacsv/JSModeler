@@ -51,6 +51,7 @@ JSM.PolygonCutter.prototype.Reset = function ()
 	this.cutPolygonVertexDistances = null;
 	this.cutVertexIndices = null;
 	this.entryVertices = null;
+	this.entryVertexTypes = null;
 };
 
 JSM.PolygonCutter.prototype.CalculateOriginalPolygonData = function (polygon)
@@ -197,11 +198,11 @@ JSM.PolygonCutter.prototype.CalculateCutPolygonData = function ()
 
 JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 {
-	function IsEntryVertex (cutPolygonVertexTypes, cutPolygonVertexDistances, currIndex)
+	function GetEntryVertexType (cutPolygonVertexTypes, cutPolygonVertexDistances, currIndex)
 	{
 		var currSideType = cutPolygonVertexTypes[currIndex];
 		if (currSideType != JSM.CutVertexType.Cut) {
-			return false;
+			return 0;
 		}
 		
 		var prevIndex = JSM.PrevIndex (currIndex, cutPolygonVertexTypes.length);
@@ -215,36 +216,47 @@ JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 		
 		if (prevSideType == JSM.CutVertexType.Right) {
 			if (nextSideType == JSM.CutVertexType.Left) {
-				return true;
+				return 1;
 			} else if (nextSideType == JSM.CutVertexType.Cut) {
-				return JSM.IsLowerOrEqual (currVertexDistance, nextVertexDistance);
+				if (JSM.IsLowerOrEqual (currVertexDistance, nextVertexDistance)) {
+					return 1;
+				}
 			}
 		} else if (prevSideType == JSM.CutVertexType.Left) {
 			if (nextSideType == JSM.CutVertexType.Right) {
-				return true;
+				return -1;
 			} else if (nextSideType == JSM.CutVertexType.Cut) {
-				return JSM.IsGreaterOrEqual (currVertexDistance, nextVertexDistance);
+				if (JSM.IsGreaterOrEqual (currVertexDistance, nextVertexDistance)) {
+					return -1;
+				}
 			}
 		} else if (prevSideType == JSM.CutVertexType.Cut) {
 			if (nextSideType == JSM.CutVertexType.Left) {
-				return JSM.IsLowerOrEqual (currVertexDistance, prevVertexDistance);
+				if (JSM.IsLowerOrEqual (currVertexDistance, prevVertexDistance)) {
+					return 1;
+				}
 			} else if (nextSideType == JSM.CutVertexType.Right) {
-				return JSM.IsGreaterOrEqual (currVertexDistance, prevVertexDistance);
+				if (JSM.IsGreaterOrEqual (currVertexDistance, prevVertexDistance)) {
+					return -1;
+				}
 			}
 		}
 		
-		return false;
+		return 0;
 	}
 
 	this.entryVertices = [];
-	var i, vertexIndex;
+	this.entryVertexTypes = [];
+	var i, vertexIndex, vertexType;
 	for (i = 0; i < this.cutVertexIndices.length; i++) {
 		vertexIndex = this.cutVertexIndices[i];
-		if (IsEntryVertex (this.cutPolygonVertexTypes, this.cutPolygonVertexDistances, vertexIndex)) {
+		vertexType = GetEntryVertexType (this.cutPolygonVertexTypes, this.cutPolygonVertexDistances, vertexIndex);
+		if (vertexType !== 0) {
 			this.entryVertices.push (vertexIndex);
+			this.entryVertexTypes.push (vertexType);
 		}
 	}
-
+	
 	if (this.entryVertices.length === 0 || this.entryVertices.length % 2 !== 0) {
 		return false;
 	}
@@ -256,10 +268,10 @@ JSM.PolygonCutter.prototype.CalculateCuttedPolygons = function (aSidePolygons, b
 {
 	function AddOneSideCuttedPolygons (polygonCutter, aSidePolygons, bSidePolygons, reversed)
 	{
-		function AddEntryPairToArray (entryPairs, entryVertices, index)
+		function AddEntryPairToArray (entryPairs, entryVertices, fromIndex, toIndex)
 		{
-			entryPairs[entryVertices[index]] = entryVertices[index + 1];
-			entryPairs[entryVertices[index + 1]] = entryVertices[index];
+			entryPairs[entryVertices[fromIndex]] = entryVertices[toIndex];
+			entryPairs[entryVertices[toIndex]] = entryVertices[fromIndex];
 		}
 
 		function RemoveEntryPairFromArray (entryPairs, index)
@@ -268,14 +280,33 @@ JSM.PolygonCutter.prototype.CalculateCuttedPolygons = function (aSidePolygons, b
 			entryPairs[index] = -1;
 		}
 
-		function CreateEntryPairsArray (cutPolygon, entryVertices, entryPairs)
+		function CreateEntryPairsArray (cutPolygon, entryVertices, entryVertexTypes, entryPairs)
 		{
+			function FindPairIndex (entryPairs, entryVertices, entryVertexTypes, startIndex)
+			{
+				var i, currentVertexIndex;
+				for (i = startIndex + 1; i < entryVertices.length; i++) {
+					currentVertexIndex = entryVertices[i];
+					if (entryPairs[currentVertexIndex] == -1 && entryVertexTypes[startIndex] != entryVertexTypes[i]) {
+						return i;
+					}
+				}
+				return -1;
+			}
+			
 			var i;
 			for (i = 0; i < cutPolygon.VertexCount (); i++) {
 				entryPairs.push (-1);
 			}
-			for (i = 0; i < entryVertices.length; i = i + 2) {
-				AddEntryPairToArray (entryPairs, entryVertices, i);
+
+			var entryVertex, pairIndex;
+			for (i = 0; i < entryVertices.length; i++) {
+				entryVertex = entryVertices[i];
+				if (entryPairs[entryVertex] != -1) {
+					continue;
+				}
+				pairIndex = FindPairIndex (entryPairs, entryVertices, entryVertexTypes, i);
+				AddEntryPairToArray (entryPairs, entryVertices, i, pairIndex);
 			}
 		}
 		
@@ -328,12 +359,11 @@ JSM.PolygonCutter.prototype.CalculateCuttedPolygons = function (aSidePolygons, b
 		}
 		
 		var entryPairs = [];
-		CreateEntryPairsArray (polygonCutter.cutPolygon, polygonCutter.entryVertices, entryPairs);
-		
+		CreateEntryPairsArray (polygonCutter.cutPolygon, polygonCutter.entryVertices, polygonCutter.entryVertexTypes, entryPairs);
 		var currEntryVertex = reversed ? polygonCutter.entryVertices.length - 1 : 0;
 		while (currEntryVertex >= 0 && currEntryVertex < polygonCutter.entryVertices.length) {
 			AddCutPolygon (polygonCutter, entryPairs, currEntryVertex, aSidePolygons, bSidePolygons);
-			currEntryVertex = reversed ? currEntryVertex - 2 : currEntryVertex + 2;
+			currEntryVertex = reversed ? currEntryVertex - 1 : currEntryVertex + 1;
 		}
 	}
 
