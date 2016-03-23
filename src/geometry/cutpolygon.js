@@ -201,19 +201,19 @@ JSM.PolygonCutter.prototype.CalculateEntryVertices = function ()
 			if (nextSideType == JSM.CutVertexType.Left) {
 				return true;
 			} else if (nextSideType == JSM.CutVertexType.Cut) {
-				return currVertexDistance < nextVertexDistance;
+				return JSM.IsLowerOrEqual (currVertexDistance, nextVertexDistance);
 			}
 		} else if (prevSideType == JSM.CutVertexType.Left) {
 			if (nextSideType == JSM.CutVertexType.Right) {
 				return true;
 			} else if (nextSideType == JSM.CutVertexType.Cut) {
-				return currVertexDistance > nextVertexDistance;
+				return JSM.IsGreaterOrEqual (currVertexDistance, nextVertexDistance);
 			}
 		} else if (prevSideType == JSM.CutVertexType.Cut) {
 			if (nextSideType == JSM.CutVertexType.Left) {
-				return currVertexDistance < prevVertexDistance;
+				return JSM.IsLowerOrEqual (currVertexDistance, prevVertexDistance);
 			} else if (nextSideType == JSM.CutVertexType.Right) {
-				return currVertexDistance > prevVertexDistance;
+				return JSM.IsGreaterOrEqual (currVertexDistance, prevVertexDistance);
 			}
 		}
 		
@@ -276,6 +276,15 @@ JSM.PolygonCutter.prototype.CalculateCuttedPolygons = function (aSidePolygons, b
 
 		function AddCutPolygon (polygonCutter, entryPairs, currEntryVertex, aSidePolygons, bSidePolygons)
 		{
+			function AddVertexIfNotDuplicated (polygon, vertex)
+			{
+				var vertexCount = polygon.VertexCount ();
+				if (vertexCount > 0 && polygon.GetVertex (vertexCount - 1).IsEqual (vertex)) {
+					return;
+				}
+				polygon.AddVertexCoord (vertex);
+			}
+			
 			var startVertexIndex = polygonCutter.entryVertices[currEntryVertex];
 			if (entryPairs[startVertexIndex] !== -1) {
 				var currPolygon = polygonCutter.geometryInterface.createPolygon ();
@@ -288,13 +297,15 @@ JSM.PolygonCutter.prototype.CalculateCuttedPolygons = function (aSidePolygons, b
 							polygonSide = polygonCutter.cutPolygonVertexTypes[currVertexIndex];
 						}
 					}
-					currPolygon.AddVertexCoord (polygonCutter.cutPolygon.GetVertex (currVertexIndex).Clone ());
+					AddVertexIfNotDuplicated (currPolygon, polygonCutter.cutPolygon.GetVertex (currVertexIndex).Clone ());
 					currVertexIndex = GetNextVertex (currVertexIndex, polygonCutter.cutPolygon, entryPairs);
 				}
-				if (polygonSide == JSM.CutVertexType.Left) {
-					aSidePolygons.push (currPolygon);
-				} else if (polygonSide == JSM.CutVertexType.Right) {
-					bSidePolygons.push (currPolygon);
+				if (currPolygon.VertexCount () > 2) {
+					if (polygonSide == JSM.CutVertexType.Left) {
+						aSidePolygons.push (currPolygon);
+					} else if (polygonSide == JSM.CutVertexType.Right) {
+						bSidePolygons.push (currPolygon);
+					}
 				}
 			}				
 			
