@@ -55,21 +55,37 @@ JSM.PolygonCutter.prototype.Reset = function ()
 
 JSM.PolygonCutter.prototype.CalculateOriginalPolygonData = function (polygon)
 {
-	this.originalPolygon = polygon;
+	this.originalPolygon = this.geometryInterface.createPolygon ();
 	this.originalPolygonVertexTypes = [];
 	var aSideFound = false;
 	var bSideFound = false;
 	
+	var vertexCount = polygon.VertexCount ();
+	var vertexTypes = [];
 	var i, vertex, type;
-	for (i = 0; i < this.originalPolygon.VertexCount (); i++) {
-		vertex = this.originalPolygon.GetVertex (i);
+	for (i = 0; i < vertexCount; i++) {
+		vertex = polygon.GetVertex (i);
 		type = this.geometryInterface.getVertexSide (vertex);
 		if (type == JSM.CutVertexType.Left) {
 			aSideFound = true;
 		} else if (type == JSM.CutVertexType.Right) {
 			bSideFound = true;
 		}
+		vertexTypes.push (type);
+	}
+	
+	var prevType, nextType;
+	for (i = 0; i < vertexCount; i++) {
+		vertex = polygon.GetVertex (i);
+		type = vertexTypes[i];
+		prevType = vertexTypes[JSM.PrevIndex (i, vertexCount)];
+		nextType = vertexTypes[JSM.NextIndex (i, vertexCount)];
 		this.originalPolygonVertexTypes.push (type);
+		this.originalPolygon.AddVertexCoord (vertex.Clone ());
+		if (type == JSM.CutVertexType.Cut && prevType == nextType) {
+			this.originalPolygonVertexTypes.push (type);
+			this.originalPolygon.AddVertexCoord (vertex.Clone ());
+		}
 	}
 	
 	if (aSideFound && bSideFound) {

@@ -118,44 +118,30 @@
 		function Load ()
 		{
 			var polygon = new JSM.Polygon2D ();
-			polygon.AddVertex (0.0, 0.0);
-			polygon.AddVertex (2.0, 0.0);
-			polygon.AddVertex (2.0, 2.0);
-			polygon.AddVertex (1.0, 1.0);
-			polygon.AddVertex (1.0, 1.0);
-			polygon.AddVertex (0.0, 2.0);			
-			var line = new JSM.Line2D (new JSM.Coord2D (0.0, 1.0), new JSM.Vector2D (1.0, 0.0));
+			polygon.AddVertex (0, 0);
+			polygon.AddVertex (4, 0);
+			polygon.AddVertex (3, 1);
+			polygon.AddVertex (4, 2);
+			polygon.AddVertex (0, 2);
+			polygon.AddVertex (1, 1);
+			var line = new JSM.Line2D (new JSM.Coord2D (1.0, 1.0), new JSM.Vector2D (0.0, 1.0));
 
-			/*
-			var polygon = new JSM.Polygon2D ();
-			polygon.AddVertex (0.0, 0.0);
-			polygon.AddVertex (2.0, 0.0);
-			polygon.AddVertex (2.0, 3.0);
-			polygon.AddVertex (0.0, 3.0);
-			polygon.AddVertex (0.0, 2.0);
-			polygon.AddVertex (1.0, 2.0);
-			polygon.AddVertex (1.0, 1.0);
-			polygon.AddVertex (0.0, 1.0);
-			polygon.AddVertex (0.0, 1.0);
-			var line = new JSM.Line2D (new JSM.Coord2D (-1.0, 0.0), new JSM.Vector2D (1.0, 1.0));
-			*/
-			
 			var leftPolygons = [];
 			var rightPolygons = [];
 			var cutPolygons = [];
 			var result = JSM.CutPolygon2DWithLine (polygon, line, leftPolygons, rightPolygons, cutPolygons);
 			Log ('result: ' + result);
 			Log ('left polygon count: ' + leftPolygons.length);
-			Log ('left polygon count: ' + rightPolygons.length);
+			Log ('right polygon count: ' + rightPolygons.length);
 			
 			var originalDrawer = new PolygonDrawer ();
-			originalDrawer.Init (document.body, 400, 400, 50);
+			originalDrawer.Init (document.body, 600, 400, 50);
 			originalDrawer.DrawCoordSystem ();
 			originalDrawer.DrawPolygon (PolygonToArray (polygon), '#ffeeee', '#cc0000');
 			originalDrawer.DrawIndices (PolygonToArray (polygon));
 			
 			var resultDrawer = new PolygonDrawer ();
-			resultDrawer.Init (document.body, 400, 400, 50);			
+			resultDrawer.Init (document.body, 600, 400, 50);			
 			resultDrawer.DrawCoordSystem ();
 			var i;
 			for (i = 0; i < leftPolygons.length; i++) {
