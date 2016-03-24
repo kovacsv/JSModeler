@@ -300,6 +300,9 @@ JSM.PolygonCutter.prototype.CalculateCuttedPolygons = function (aSidePolygons, b
 					continue;
 				}
 				pairIndex = FindPairIndex (entryPairs, entryVertices, entryVertexTypes, i);
+				if (pairIndex == -1) {
+					return null;
+				}
 				AddEntryPairToArray (entryPairs, entryVertices, i, pairIndex);
 			}
 			return entryPairs;
@@ -354,15 +357,25 @@ JSM.PolygonCutter.prototype.CalculateCuttedPolygons = function (aSidePolygons, b
 		}
 		
 		var entryPairs = CreateEntryPairsArray (polygonCutter.cutPolygon, polygonCutter.entryVertices, polygonCutter.entryVertexTypes);
+		if (entryPairs === null) {
+			return false;
+		}
 		var currEntryVertex = reversed ? polygonCutter.entryVertices.length - 1 : 0;
 		while (currEntryVertex >= 0 && currEntryVertex < polygonCutter.entryVertices.length) {
 			AddCutPolygon (polygonCutter, entryPairs, currEntryVertex, aSidePolygons, bSidePolygons);
 			currEntryVertex = reversed ? currEntryVertex - 1 : currEntryVertex + 1;
 		}
+		return true;
 	}
 
-	AddOneSideCuttedPolygons (this, aSidePolygons, bSidePolygons, false);
-	AddOneSideCuttedPolygons (this, aSidePolygons, bSidePolygons, true);
+	if (!AddOneSideCuttedPolygons (this, aSidePolygons, bSidePolygons, false)) {
+		return false;
+	}
+	
+	if (!AddOneSideCuttedPolygons (this, aSidePolygons, bSidePolygons, true)) {
+		return false;
+	}
+	
 	return true;
 };
 
