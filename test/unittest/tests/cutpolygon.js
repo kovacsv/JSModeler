@@ -1409,4 +1409,46 @@ cutPolygonSuite.AddTest ('CutTriangleTest', function (test)
 	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0.5, 1, 0)));
 });
 
+cutPolygonSuite.AddTest ('SegmentPolygonTest', function (test)
+{
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0, 0);
+	polygon.AddVertex (10, 0);
+	polygon.AddVertex (10, 10);
+	polygon.AddVertex (0, 10);
+	polygon.AddVertex (4, 5);
+
+	var area = polygon.GetArea ();
+	var segmented = JSM.SegmentPolygon2D (polygon, 5, 5);
+	test.Assert (segmented.length == 25);
+
+	var segmentedArea = 0.0;
+	var i;
+	for (i = 0; i < segmented.length; i++) {
+		segmentedArea += segmented[i].GetArea ();
+	}	
+	test.Assert (JSM.IsEqual (area, segmentedArea));
+
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (2.0, 0.0);
+	polygon.AddVertex (2.0, 3.0);
+	polygon.AddVertex (0.0, 3.0);
+	polygon.AddVertex (0.0, 2.0);
+	polygon.AddVertex (1.0, 2.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (0.0, 1.0);
+	
+	var area = polygon.GetArea ();
+	var segmented = JSM.SegmentPolygon2D (polygon, 5, 5);
+	test.Assert (segmented.length == 23);
+
+	var segmentedArea = 0.0;
+	var i;
+	for (i = 0; i < segmented.length; i++) {
+		segmentedArea += segmented[i].GetArea ();
+	}	
+	test.Assert (JSM.IsEqual (area, segmentedArea));	
+});
+
 }

@@ -495,3 +495,68 @@ JSM.CutPolygonWithPlane = function (polygon, plane, frontPolygons, backPolygons,
 	var cutter = new JSM.PolygonCutter (geometryInterface);
 	return cutter.Cut (polygon, frontPolygons, backPolygons, cutPolygons);
 };
+
+/**
+* Function: SegmentPolygon2D
+* Description: Segments up a polygon along x and y axis.
+* Parameters:
+*	polygon {Polygon2D} the polygon
+*	xSegments {integer} x segment number
+*	ySegments {integer} y segment number
+* Returns:
+*	{Polygon[*]} result polygons
+*/
+JSM.SegmentPolygon2D = function (polygon, xSegments, ySegments)
+{
+	function CutPolygonsOneDirection (inputPolygons, resultPolygons, segmentCount, segmentSize, startCoordinate, segmentDir, cutDir)
+	{
+		function CutPolygon (polygon, line, leftPolygons, rightPolygons)
+		{
+			var left = [];
+			var right = [];
+			var cut = [];
+			if (!JSM.CutPolygon2DWithLine (polygon, line, left, right, cut)) {
+				return;
+			}
+			var i;
+			for (i = 0; i < left.length; i++) {
+				leftPolygons.push (left[i]);
+			}
+			for (i = 0; i < right.length; i++) {
+				rightPolygons.push (right[i]);
+			}
+		}
+
+		var polygonsToProcess = inputPolygons;
+		var startCoord = startCoordinate.Clone ();
+		var i, j, line, newPolygonsToProcess;
+		for (i = 1; i < segmentCount; i++) {
+			startCoord.Offset (segmentDir, segmentSize);
+			line = new JSM.Line2D (startCoord, cutDir);
+			newPolygonsToProcess = [];
+			for (j = 0; j < polygonsToProcess.length; j++) {
+				CutPolygon (polygonsToProcess[j], line, resultPolygons, newPolygonsToProcess);
+			}
+			polygonsToProcess = newPolygonsToProcess;
+		}
+		for (j = 0; j < polygonsToProcess.length; j++) {
+			resultPolygons.push (polygonsToProcess[j]);
+		}
+	}
+
+	var boundingBox = polygon.GetBoundingBox ();
+	var xSize = boundingBox.max.x - boundingBox.min.x;
+	var ySize = boundingBox.max.y - boundingBox.min.y;
+	var xSegmentSize = xSize / xSegments;
+	var ySegmentSize = ySize / ySegments;
+
+	var originalPolygons = [polygon];
+	var bottomLeft = new JSM.Coord2D (boundingBox.min.x, boundingBox.min.y);
+	var topLeft = new JSM.Coord2D (boundingBox.min.x, boundingBox.max.y);
+
+	var xCuttedPolygons = [];
+	var yCuttedPolygons = [];
+	CutPolygonsOneDirection (originalPolygons, xCuttedPolygons, xSegments, xSegmentSize, bottomLeft, new JSM.Vector2D (1.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+	CutPolygonsOneDirection (xCuttedPolygons, yCuttedPolygons, ySegments, ySegmentSize, topLeft, new JSM.Vector2D (0.0, -1.0), new JSM.Vector2D (1.0, 0.0));
+	return yCuttedPolygons;
+};
