@@ -414,7 +414,56 @@ cutPolygonSuite.AddTest ('DuplicatedVertexCasesTest', function (test)
 			}
 			return true;
 		}));
+		var line = new JSM.Line2D (new JSM.Coord2D (5.0, 0.0), new JSM.Vector2D (0.0, -1.0));
+		test.Assert (CutAndCheck (polygon, line, 1, 2, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+			if (leftPolygons[0].VertexCount () != 5) {
+				return false;
+			}
+			if (rightPolygons[0].VertexCount () != 3) {
+				return false;
+			}
+			if (rightPolygons[0].VertexCount () != 3) {
+				return false;
+			}
+			return true;
+		}));
 	}
+	
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (5, 5);
+	polygon.AddVertex (0, 10);
+	polygon.AddVertex (10, 10);
+	polygon.AddVertex (10, 0);
+	polygon.AddVertex (0, 0);
+	for (i = 0; i < 10; i++) {
+		polygon.ShiftVertices (1);
+		var line = new JSM.Line2D (new JSM.Coord2D (5.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+		test.Assert (CutAndCheck (polygon, line, 2, 1, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+			if (leftPolygons[0].VertexCount () != 3) {
+				return false;
+			}
+			if (leftPolygons[0].VertexCount () != 3) {
+				return false;
+			}
+			if (rightPolygons[0].VertexCount () != 5) {
+				return false;
+			}
+			return true;
+		}));
+		var line = new JSM.Line2D (new JSM.Coord2D (5.0, 0.0), new JSM.Vector2D (0.0, -1.0));
+		test.Assert (CutAndCheck (polygon, line, 1, 2, 0, function (leftPolygons, rightPolygons, cutPolygons) {
+			if (leftPolygons[0].VertexCount () != 5) {
+				return false;
+			}
+			if (rightPolygons[0].VertexCount () != 3) {
+				return false;
+			}
+			if (rightPolygons[0].VertexCount () != 3) {
+				return false;
+			}
+			return true;
+		}));
+	}	
 });
 
 cutPolygonSuite.AddTest ('OldCutPolygonTest', function (test)
