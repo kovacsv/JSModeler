@@ -132,19 +132,25 @@
 		{
 			function ConvertCoordinate (sphereRadius, coordinate)
 			{
+				var sphereOffset = sphereRadius * 0.005;
 				var lon = coordinate.x * JSM.DegRad;
 				var lat = (90.0 - coordinate.y) * JSM.DegRad;
-				return JSM.SphericalToCartesian (sphereRadius, lat, lon);
+				return JSM.SphericalToCartesian (sphereRadius + sphereOffset, lat, lon);
 			}
-			
-			function GetSegmentCount (begCoordinate, endCoordinate)
+
+			function GetSegmentCount (distance)
 			{
-				var distance = begCoordinate.DistanceTo (endCoordinate);
 				var segmentCount = parseInt (distance / 10.0, 10);
 				if (segmentCount === 0) {
 					segmentCount = 1;
 				}
 				return segmentCount;
+			}
+			
+			function GetSegmentCountBetweenCoords (begCoordinate, endCoordinate)
+			{
+				var distance = begCoordinate.DistanceTo (endCoordinate);
+				return GetSegmentCount (distance);
 			}
 			
 			function AddPointToBody (body, sphereRadius, sphereCoord)
@@ -157,7 +163,7 @@
 			function AddLineToBody (body, sphereRadius, begSphereCoord, endSphereCoord)
 			{
 				var sector = new JSM.Sector2D (begSphereCoord, endSphereCoord);
-				var segmentCount = GetSegmentCount (begSphereCoord, endSphereCoord);
+				var segmentCount = GetSegmentCountBetweenCoords (begSphereCoord, endSphereCoord);
 				var segmentedCoords = JSM.GetSectorSegmentation2D (sector, segmentCount);
 				var i, cartesianCoord, vertexIndex;
 				for (i = 0; i < segmentedCoords.length; i++) {
@@ -166,6 +172,24 @@
 					if (i > 0) {
 						JSM.AddLineToBody (body, vertexIndex - 1, vertexIndex);
 					}
+				}
+			}
+
+			function AddPolygonToBody (body, sphereRadius, polygon)
+			{
+				var box = polygon.GetBoundingBox ();
+				var xSegments = GetSegmentCount (box.max.x - box.min.x);
+				var ySegments = GetSegmentCount (box.max.y - box.min.y);
+				var segmentedPolygons = JSM.SegmentPolygon2D (polygon, xSegments, ySegments);
+				var i, j, currPolygon, vertices, cartesianCoord, vertexIndex;
+				for (i = 0; i < segmentedPolygons.length; i++) {
+					currPolygon = segmentedPolygons[i];
+					vertices = [];
+					for (j = 0; j < currPolygon.VertexCount (); j++) {
+						cartesianCoord = ConvertCoordinate (sphereRadius, currPolygon.GetVertex (j));
+						vertices.push (JSM.AddVertexToBody (body, cartesianCoord.x, cartesianCoord.y, cartesianCoord.z));
+					}
+					JSM.AddPolygonToBody (body, vertices);
 				}
 			}
 
@@ -193,25 +217,23 @@
 			
 			function AddPolygon (sphereRadius, coordinates)
 			{
-				if (linesBody === null) {
-					linesBody = new JSM.Body ();
-					result.model.AddBody (linesBody);
+				if (polygonsBody === null) {
+					polygonsBody = new JSM.Body ();
+					result.model.AddBody (polygonsBody);
 				}
 				
 				var mainContour = coordinates[0];
-				var i;
+				var polygon = new JSM.Polygon2D ();
+				var i, sphereCoord;
 				for (i = 0; i < mainContour.length - 1; i++) {
-					AddLine (sphereRadius, [mainContour[i], mainContour[i + 1]]);
+					sphereCoord = JSM.CoordFromArray2D (mainContour[i]);
+					polygon.AddVertexCoord (sphereCoord);
 				}
-			}			
+				AddPolygonToBody (polygonsBody, sphereRadius, polygon);	
+			}
 
 			function AddMultiPolygon (sphereRadius, coordinates)
 			{
-				if (linesBody === null) {
-					linesBody = new JSM.Body ();
-					result.model.AddBody (linesBody);
-				}
-				
 				var i;
 				for (i = 0; i < coordinates.length; i++) {
 					AddPolygon (sphereRadius, coordinates[i]);
@@ -248,6 +270,7 @@
 			var result = new JSM.ModelWithMaterials ();
 			var pointsBody = null;
 			var linesBody = null;
+			var polygonsBody = null;
 			
 			var i, feature;
 			for (i = 0; i < geoJson.features.length; i++) {
