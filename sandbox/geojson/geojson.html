@@ -175,21 +175,47 @@
 				}
 			}
 
-			function AddPolygonToBody (body, sphereRadius, polygon)
+			function AddPolygonToBody (body, sphereRadius, polygon, material)
 			{
+				function AddSegmentedPolygonToBody (body, polygon, sphereRadius)
+				{
+					var vertexCoords = [];
+					var i, cartesianCoord;
+					for (i = 0; i < polygon.VertexCount (); i++) {
+						cartesianCoord = ConvertCoordinate (sphereRadius, polygon.GetVertex (i));
+						if (vertexCoords.length > 0) {
+							if (vertexCoords[vertexCoords.length - 1].IsEqual (cartesianCoord)) {
+								continue;
+							}
+							if (i == polygon.VertexCount () - 1) {
+								if (vertexCoords[0].IsEqual (cartesianCoord)) {
+									continue;
+								}
+							}
+						}
+						vertexCoords.push (cartesianCoord);
+					}
+					if (vertexCoords.length >= 3) {
+						var vertices = [];
+						for (i = 0; i < vertexCoords.length; i++) {
+							cartesianCoord = vertexCoords[i];
+							vertices.push (JSM.AddVertexToBody (body, cartesianCoord.x, cartesianCoord.y, cartesianCoord.z));
+						}
+						JSM.AddPolygonToBody (body, vertices);
+					}				
+				}
+			
 				var box = polygon.GetBoundingBox ();
 				var xSegments = GetSegmentCount (box.max.x - box.min.x);
 				var ySegments = GetSegmentCount (box.max.y - box.min.y);
 				var segmentedPolygons = JSM.SegmentPolygon2D (polygon, xSegments, ySegments);
-				var i, j, currPolygon, vertices, cartesianCoord, vertexIndex;
+				var lastPolygon = body.PolygonCount ();
+				var i;
 				for (i = 0; i < segmentedPolygons.length; i++) {
-					currPolygon = segmentedPolygons[i];
-					vertices = [];
-					for (j = 0; j < currPolygon.VertexCount (); j++) {
-						cartesianCoord = ConvertCoordinate (sphereRadius, currPolygon.GetVertex (j));
-						vertices.push (JSM.AddVertexToBody (body, cartesianCoord.x, cartesianCoord.y, cartesianCoord.z));
-					}
-					JSM.AddPolygonToBody (body, vertices);
+					AddSegmentedPolygonToBody (body, segmentedPolygons[i], sphereRadius);
+				}
+				for (i = lastPolygon; i < body.PolygonCount (); i++) {
+					body.GetPolygon (i).SetMaterialIndex (material);
 				}
 			}
 
@@ -229,7 +255,9 @@
 					sphereCoord = JSM.CoordFromArray2D (mainContour[i]);
 					polygon.AddVertexCoord (sphereCoord);
 				}
-				AddPolygonToBody (polygonsBody, sphereRadius, polygon);	
+				var material = new JSM.Material ({ ambient : JSM.RandomInt (0, 16777215), diffuse : JSM.RandomInt (0, 16777215)});
+				var materialIndex = result.materials.AddMaterial (material);
+				AddPolygonToBody (polygonsBody, sphereRadius, polygon, materialIndex);	
 			}
 
 			function AddMultiPolygon (sphereRadius, coordinates)
@@ -300,14 +328,15 @@
 			var jsonFiles = [
 				'points.json',
 				'lines.json',
-				'rectangles.json'
+				'rectangles.json',
+				'world.json'
 			];
 			if (index < 0 || index >= jsonFiles.length) {
 				return;
 			}
 			
-			var sphereRadius = 1.0;
-			AddEarth (sphereRadius, viewer);
+			var sphereRadius = 100.0;
+			//AddEarth (sphereRadius, viewer);
 			JSM.LoadJsonFile (jsonFiles[index], function (jsonData) {
 				var model = JSM.ConvertGeoJsonToModel (jsonData, sphereRadius);
 				var renderBodies = JSM.ConvertModelToRenderBodies (model.model, model.materials);
@@ -319,7 +348,7 @@
 		function Load ()
 		{
 			var camera = new JSM.Camera (
-				new JSM.Coord (2.0, -2.0, 2.0),
+				new JSM.Coord (200.0, -200.0, 200.0),
 				new JSM.Coord (0.0, 0.0, 0.0),
 				new JSM.Vector (0.0, 0.0, 1.0)
 			);
