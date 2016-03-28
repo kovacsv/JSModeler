@@ -140,7 +140,7 @@
 
 			function GetSegmentCount (distance)
 			{
-				var segmentCount = parseInt (distance / 10.0, 10);
+				var segmentCount = parseInt (distance / 5.0, 10);
 				if (segmentCount === 0) {
 					segmentCount = 1;
 				}
@@ -179,16 +179,17 @@
 			{
 				function AddSegmentedPolygonToBody (body, polygon, sphereRadius)
 				{
+					var eps = 0.001;
 					var vertexCoords = [];
 					var i, cartesianCoord;
 					for (i = 0; i < polygon.VertexCount (); i++) {
 						cartesianCoord = ConvertCoordinate (sphereRadius, polygon.GetVertex (i));
 						if (vertexCoords.length > 0) {
-							if (vertexCoords[vertexCoords.length - 1].IsEqual (cartesianCoord)) {
+							if (vertexCoords[vertexCoords.length - 1].IsEqualWithEps (cartesianCoord, eps)) {
 								continue;
 							}
 							if (i == polygon.VertexCount () - 1) {
-								if (vertexCoords[0].IsEqual (cartesianCoord)) {
+								if (vertexCoords[0].IsEqualWithEps (cartesianCoord, eps)) {
 									continue;
 								}
 							}
@@ -214,8 +215,10 @@
 				for (i = 0; i < segmentedPolygons.length; i++) {
 					AddSegmentedPolygonToBody (body, segmentedPolygons[i], sphereRadius);
 				}
+				var bodyPolygon;
 				for (i = lastPolygon; i < body.PolygonCount (); i++) {
-					body.GetPolygon (i).SetMaterialIndex (material);
+					bodyPolygon = body.GetPolygon (i);
+					bodyPolygon.SetMaterialIndex (material);
 				}
 			}
 
