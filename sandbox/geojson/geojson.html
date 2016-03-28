@@ -157,7 +157,7 @@
 			{
 				var cartesianCoord = ConvertCoordinate (sphereRadius, sphereCoord);
 				var vertexIndex = JSM.AddVertexToBody (body, cartesianCoord.x, cartesianCoord.y, cartesianCoord.z);
-				JSM.AddPointToBody (body, vertexIndex);			
+				JSM.AddPointToBody (body, vertexIndex);
 			}
 		
 			function AddLineToBody (body, sphereRadius, begSphereCoord, endSphereCoord)
@@ -339,7 +339,7 @@
 			}
 			
 			var sphereRadius = 100.0;
-			//AddEarth (sphereRadius, viewer);
+			AddEarth (sphereRadius, viewer);
 			JSM.LoadJsonFile (jsonFiles[index], function (jsonData) {
 				var model = JSM.ConvertGeoJsonToModel (jsonData, sphereRadius);
 				var renderBodies = JSM.ConvertModelToRenderBodies (model.model, model.materials);
