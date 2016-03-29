@@ -153,18 +153,21 @@
 				return GetSegmentCount (distance);
 			}
 			
-			function AddPointToBody (body, sphereRadius, sphereCoord)
+			function AddPointToBody (body, sphereRadius, sphereCoord, materialIndex)
 			{
 				var cartesianCoord = ConvertCoordinate (sphereRadius, sphereCoord);
 				var vertexIndex = JSM.AddVertexToBody (body, cartesianCoord.x, cartesianCoord.y, cartesianCoord.z);
-				JSM.AddPointToBody (body, vertexIndex);
+				var pointIndex = JSM.AddPointToBody (body, vertexIndex);
+				var bodyPoint = body.GetPoint (pointIndex);
+				bodyPoint.SetMaterialIndex (materialIndex);
 			}
 		
-			function AddLineToBody (body, sphereRadius, begSphereCoord, endSphereCoord)
+			function AddLineToBody (body, sphereRadius, begSphereCoord, endSphereCoord, materialIndex)
 			{
 				var sector = new JSM.Sector2D (begSphereCoord, endSphereCoord);
 				var segmentCount = GetSegmentCountBetweenCoords (begSphereCoord, endSphereCoord);
 				var segmentedCoords = JSM.GetSectorSegmentation2D (sector, segmentCount);
+				var lastLine = body.LineCount ();
 				var i, cartesianCoord, vertexIndex;
 				for (i = 0; i < segmentedCoords.length; i++) {
 					cartesianCoord = ConvertCoordinate (sphereRadius, segmentedCoords[i]);
@@ -173,9 +176,14 @@
 						JSM.AddLineToBody (body, vertexIndex - 1, vertexIndex);
 					}
 				}
+				var bodyLine;
+				for (i = lastLine; i < body.LineCount (); i++) {
+					bodyLine = body.GetLine (i);
+					bodyLine.SetMaterialIndex (materialIndex);
+				}				
 			}
 
-			function AddPolygonToBody (body, sphereRadius, polygon, material)
+			function AddPolygonToBody (body, sphereRadius, polygon, materialIndex)
 			{
 				function AddSegmentedPolygonToBody (body, polygon, sphereRadius)
 				{
@@ -218,21 +226,21 @@
 				var bodyPolygon;
 				for (i = lastPolygon; i < body.PolygonCount (); i++) {
 					bodyPolygon = body.GetPolygon (i);
-					bodyPolygon.SetMaterialIndex (material);
+					bodyPolygon.SetMaterialIndex (materialIndex);
 				}
 			}
 
-			function AddPoint (sphereRadius, coordinate)
+			function AddPoint (sphereRadius, coordinate, materialIndex)
 			{
 				if (pointsBody === null) {
 					pointsBody = new JSM.Body ();
 					result.model.AddBody (pointsBody);
 				}
 				var sphereCoord = JSM.CoordFromArray2D (coordinate);
-				AddPointToBody (pointsBody, sphereRadius, sphereCoord);
+				AddPointToBody (pointsBody, sphereRadius, sphereCoord, materialIndex);
 			}
 			
-			function AddLine (sphereRadius, coordinates)
+			function AddLine (sphereRadius, coordinates, materialIndex)
 			{
 				if (linesBody === null) {
 					linesBody = new JSM.Body ();
@@ -241,10 +249,10 @@
 
 				var begSphereCoord = JSM.CoordFromArray2D (coordinates[0]);
 				var endSphereCoord = JSM.CoordFromArray2D (coordinates[1]);
-				AddLineToBody (linesBody, sphereRadius, begSphereCoord, endSphereCoord);
+				AddLineToBody (linesBody, sphereRadius, begSphereCoord, endSphereCoord, materialIndex);
 			}
 			
-			function AddPolygon (sphereRadius, coordinates)
+			function AddPolygon (sphereRadius, coordinates, materialIndex)
 			{
 				if (polygonsBody === null) {
 					polygonsBody = new JSM.Body ();
@@ -258,16 +266,14 @@
 					sphereCoord = JSM.CoordFromArray2D (mainContour[i]);
 					polygon.AddVertexCoord (sphereCoord);
 				}
-				var material = new JSM.Material ({ ambient : JSM.RandomInt (0, 16777215), diffuse : JSM.RandomInt (0, 16777215)});
-				var materialIndex = result.materials.AddMaterial (material);
 				AddPolygonToBody (polygonsBody, sphereRadius, polygon, materialIndex);	
 			}
 
-			function AddMultiPolygon (sphereRadius, coordinates)
+			function AddMultiPolygon (sphereRadius, coordinates, materialIndex)
 			{
 				var i;
 				for (i = 0; i < coordinates.length; i++) {
-					AddPolygon (sphereRadius, coordinates[i]);
+					AddPolygon (sphereRadius, coordinates[i], materialIndex);
 				}
 			}	
 
@@ -279,14 +285,18 @@
 				if (!feature.geometry || !feature.geometry.type || !feature.geometry.coordinates) {
 					return false;
 				}
+				
+				var material = new JSM.Material ({ ambient : JSM.RandomInt (0, 16777215), diffuse : JSM.RandomInt (0, 16777215)});
+				var materialIndex = result.materials.AddMaterial (material);
 				if (feature.geometry.type == 'Point') {
-					AddPoint (sphereRadius, feature.geometry.coordinates);
+					material.pointSize = 10;
+					AddPoint (sphereRadius, feature.geometry.coordinates, materialIndex);
 				} else if (feature.geometry.type == 'LineString') {
-					AddLine (sphereRadius, feature.geometry.coordinates);
+					AddLine (sphereRadius, feature.geometry.coordinates, materialIndex);
 				} else if (feature.geometry.type == 'Polygon') {
-					AddPolygon (sphereRadius, feature.geometry.coordinates);
+					AddPolygon (sphereRadius, feature.geometry.coordinates, materialIndex);
 				} else if (feature.geometry.type == 'MultiPolygon') {
-					AddMultiPolygon (sphereRadius, feature.geometry.coordinates);
+					AddMultiPolygon (sphereRadius, feature.geometry.coordinates, materialIndex);
 				}
 			}
 		
@@ -332,6 +342,7 @@
 				'points.json',
 				'lines.json',
 				'rectangles.json',
+				'hungary.json',
 				'world.json'
 			];
 			if (index < 0 || index >= jsonFiles.length) {
@@ -353,7 +364,10 @@
 			var camera = new JSM.Camera (
 				new JSM.Coord (200.0, -200.0, 200.0),
 				new JSM.Coord (0.0, 0.0, 0.0),
-				new JSM.Vector (0.0, 0.0, 1.0)
+				new JSM.Vector (0.0, 0.0, 1.0),
+				45.0,
+				1.0,
+				10000.0
 			);
 			
 			var viewer = new JSM.Viewer ();
