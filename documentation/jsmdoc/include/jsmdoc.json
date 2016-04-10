@@ -1006,6 +1006,17 @@
 						["boolean", "success"]
 					]
 				},
+				"SegmentPolygon2D" : {
+					"description" : "Segments up a polygon along x and y axis.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"],
+						["xSegments", "integer", "x segment number"],
+						["ySegments", "integer", "y segment number"]
+					],
+					"returns" : [
+						["Polygon[*]", "result polygons"]
+					]
+				},
 				"TriangulatePolygon" : {
 					"description" : "Triangulates a polygon. The result defines triangles as an array of arrays with three original vertex indices.",
 					"parameters" : [
@@ -1018,6 +1029,7 @@
 				"TraverseOctreeNodes" : {
 					"description" : "Traverses the nodes of the tree, and calls the given callback when a node found. The return value of the callback determines if we need to continue traverse along that given node.",
 					"parameters" : [
+						["octree", "Octree", "the octree"],
 						["nodeFound", "function", "the callback"]
 					]
 				},
