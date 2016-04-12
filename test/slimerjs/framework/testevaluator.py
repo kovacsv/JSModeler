@@ -57,7 +57,6 @@ class Evaluator:
 		self.testRootUrl = testRootUrl
 		
 		imagesPath = os.path.join (self.workingDir, 'images')
-		print imagesPath
 		if not os.path.exists (imagesPath):
 			os.mkdir (imagesPath)
 

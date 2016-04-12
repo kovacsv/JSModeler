@@ -31,6 +31,7 @@
 	<script type="text/javascript" src="../src/geometry/convexhull.js"></script>
 	<script type="text/javascript" src="../src/geometry/polygon2d.js"></script>
 	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/cutpolygon.js"></script>
 	<script type="text/javascript" src="../src/geometry/triangulation.js"></script>
 	<script type="text/javascript" src="../src/geometry/octree.js"></script>
 	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
@@ -88,8 +89,6 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		var viewer = null;
-
 		function Load ()
 		{
 			var viewerSettings = {
@@ -98,7 +97,7 @@
 				cameraUpVector : [0, 0, 1]
 			};
 
-			viewer = new JSM.ThreeViewer ();
+			var viewer = new JSM.ThreeViewer ();
 			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
 			var body = JSM.GenerateCuboid (1, 1, 1);

@@ -57,13 +57,15 @@
 				color: 0xffffff
 			});
 			
-			texture = THREE.ImageUtils.loadTexture ('texture.jpg', new THREE.UVMapping (), function (loadedTexture) {
-				loadedTexture.format = THREE.RGBFormat;
-				loadedTexture.wrapS = THREE.RepeatWrapping;
-				loadedTexture.wrapT = THREE.RepeatWrapping;
+			var loader = new THREE.TextureLoader ();
+			loader.load ('texture.jpg', function (texture) {
+				texture.format = THREE.RGBFormat;
+				texture.wrapS = THREE.RepeatWrapping;
+				texture.wrapT = THREE.RepeatWrapping;
+				material.map = texture;
+				material.needsUpdate = true;
 				renderer.render (scene, camera);
 			});
-			material.map = texture;
 			
 			var geometry = new THREE.Geometry ();
 			

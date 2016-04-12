@@ -30,6 +30,7 @@
 	<script type="text/javascript" src="../src/geometry/convexhull.js"></script>
 	<script type="text/javascript" src="../src/geometry/polygon2d.js"></script>
 	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/cutpolygon.js"></script>
 	<script type="text/javascript" src="../src/geometry/triangulation.js"></script>
 	<script type="text/javascript" src="../src/geometry/octree.js"></script>
 	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
@@ -116,7 +117,7 @@
 				new JSM.Coord (0, 2, 0)
 			];
 			var aBody = JSM.GeneratePrism (polygon, new JSM.Vector (0, 0, 1), 1, true, null);
-			*/		
+			*/	
 
 			var aBody = new JSM.GenerateCuboid (1, 1, 1);
 			var bBody = new JSM.GenerateSphere (0.8, 20, true);

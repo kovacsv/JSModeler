@@ -197,6 +197,7 @@
 				case '6': Demo6 (); break;
 				case '7': Demo7 (); break;
 				case '8': Demo8 (); break;
+				default : ClearBodiesFromViewer (); break;
 			}
 			viewer.Draw ();	
 		}
@@ -225,6 +226,27 @@
 
 			window.onresize = Resize;
 			window.onhashchange = RunHash;
+			window.onkeydown = function (event) {
+				var keyCode = event.which;
+				
+				var hash = 0;
+				var hashString = window.location.hash;
+				if (hashString.length > 0) {
+					hash = parseInt (hashString.substr (1), 10);
+				}
+				
+				if (isNaN (hash)) {
+					hash = 0;
+				}
+				if (keyCode == 37) {
+					hash--;
+				} else if (keyCode == 39) {
+					hash++;
+				}
+				hashString = hash.toString ();
+				window.location.hash = hashString;
+			};
+
 			Resize ();
 
 			viewer = new JSM.ThreeViewer ();

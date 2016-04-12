@@ -173,7 +173,7 @@
 
 				var i, j, k;
 				var body, transformation;
-				for (k = ticTacToe.zSize - 1; k >= 0; k--) {
+				for (k = 0; k < ticTacToe.zSize; k++) {
 					for (j = 0; j < ticTacToe.ySize; j++) {
 						for (i = 0; i < ticTacToe.xSize; i++) {
 							body = JSM.GenerateCircle (ticTacToe.shapeSize / 2.0, 20);

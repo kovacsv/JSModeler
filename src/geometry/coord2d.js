@@ -65,6 +65,25 @@ JSM.Coord2D.prototype.DistanceTo = function (coord)
 };
 
 /**
+* Function: Coord2D.AngleTo
+* Description: Calculates the coordinate vector angle to the given one.
+* Parameters:
+*	coord {Coord2D} the coordinate
+* Returns:
+*	{number} the result
+*/
+JSM.Coord2D.prototype.AngleTo = function (coord)
+{
+	var aDirection = this.Clone ().Normalize ();
+	var bDirection = coord.Clone ().Normalize ();
+	if (aDirection.IsEqual (bDirection)) {
+		return 0.0;
+	}
+	var product = JSM.VectorDot2D (aDirection, bDirection);
+	return JSM.ArcCos (product);
+};
+
+/**
 * Function: Coord2D.Length
 * Description: Calculates the length of the coordinate vector.
 * Returns:
@@ -238,5 +257,19 @@ JSM.CoordAdd2D = function (a, b)
 */
 JSM.CoordSub2D = function (a, b)
 {
-	return new JSM.Coord2D (a.x - b.x, a.y - b.y, a.z - b.z);
+	return new JSM.Coord2D (a.x - b.x, a.y - b.y);
+};
+
+/**
+* Function: VectorDot2D
+* Description: Calculates the dot product of two vectors.
+* Parameters:
+*	a {Vector2D} the first vector
+*	b {Vector2D} the second vector
+* Returns:
+*	{number} the result
+*/
+JSM.VectorDot2D = function (a, b)
+{
+	return a.x * b.x + a.y * b.y;
 };

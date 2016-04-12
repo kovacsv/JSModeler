@@ -1370,10 +1370,8 @@ JSM.GenerateRuledFromSectors = function (aSector, bSector, lineSegmentation, mes
 {
 	var result = new JSM.Body ();
 
-	var aCoords = [];
-	var bCoords = [];
-	JSM.GetSectorSegmentation (aSector, lineSegmentation, aCoords);
-	JSM.GetSectorSegmentation (bSector, lineSegmentation, bCoords);
+	var aCoords = JSM.GetSectorSegmentation (aSector, lineSegmentation);
+	var bCoords = JSM.GetSectorSegmentation (bSector, lineSegmentation);
 
 	var vertices = [];
 	var polygons = [];
@@ -1449,10 +1447,8 @@ JSM.GenerateRuledFromSectorsWithHeight = function (aSector, bSector, lineSegment
 {
 	var result = new JSM.Body ();
 
-	var aCoords = [];
-	var bCoords = [];
-	JSM.GetSectorSegmentation (aSector, lineSegmentation, aCoords);
-	JSM.GetSectorSegmentation (bSector, lineSegmentation, bCoords);
+	var aCoords = JSM.GetSectorSegmentation (aSector, lineSegmentation);
+	var bCoords = JSM.GetSectorSegmentation (bSector, lineSegmentation);
 
 	var vertices = [];
 	var polygons = [];

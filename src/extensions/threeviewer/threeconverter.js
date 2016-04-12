@@ -1,126 +1,5 @@
 JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 {
-	function OnPointGeometryStart (material)
-	{
-		threeMaterial = new THREE.PointCloudMaterial ({
-			ambient : material.ambient,
-			color : material.diffuse,
-			size: material.pointSize
-		});
-		threeGeometry = new THREE.Geometry ();
-	}
-
-	function OnPointGeometryEnd ()
-	{
-		var pointCloud = new THREE.PointCloud (threeGeometry, threeMaterial);
-		meshes.push (pointCloud);
-	}
-
-	function OnPoint (vertex)
-	{
-		threeGeometry.vertices.push (new THREE.Vector3 (vertex.x, vertex.y, vertex.z));
-	}	
-	
-	function OnLineGeometryStart (material)
-	{
-		threeMaterial = new THREE.LineBasicMaterial ({
-			ambient : material.ambient,
-			color : material.diffuse
-		});
-	}
-
-	function OnLineGeometryEnd ()
-	{
-
-	}
-
-	function OnLine (begVertex, endVertex)
-	{
-		var lineGeometry = new THREE.Geometry ();
-		lineGeometry.vertices.push (new THREE.Vector3 (begVertex.x, begVertex.y, begVertex.z));
-		lineGeometry.vertices.push (new THREE.Vector3 (endVertex.x, endVertex.y, endVertex.z));
-		var line = new THREE.Line (lineGeometry, threeMaterial);
-		meshes.push (line);
-	}
-
-	function OnGeometryStart (material)
-	{
-		var hasTexture = (material.texture !== null);
-		var hasOpacity = (material.opacity !== 1.0);
-
-		var ambient = material.ambient;
-		var diffuse = material.diffuse;
-		var specular = material.specular;
-		var shininess = material.shininess;
-		if (shininess === 0.0) {
-			specular = 0x000000;
-			shininess = 1;
-		}
-
-		threeMaterial = new THREE.MeshPhongMaterial ({
-			ambient : ambient,
-			color : diffuse,
-			specular : specular,
-			shininess : shininess
-		});
-
-		if (!material.singleSided) {
-			threeMaterial.side = THREE.DoubleSide;
-		}
-		
-		if (hasOpacity) {
-			threeMaterial.opacity = material.opacity;
-			threeMaterial.transparent = true;
-		}
-		if (hasTexture) {
-			var textureName = material.texture;
-			var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function () {
-				texture.image = JSM.ResizeImageToPowerOfTwoSides (texture.image);
-				if (theConversionData.textureLoadedCallback !== null) {
-					theConversionData.textureLoadedCallback ();
-				}
-			});
-			texture.wrapS = THREE.RepeatWrapping;
-			texture.wrapT = THREE.RepeatWrapping;
-			threeMaterial.map = texture;
-		}
-		
-		threeGeometry = new THREE.Geometry ();
-	}
-
-	function OnGeometryEnd ()
-	{
-		threeGeometry.computeFaceNormals ();
-		var mesh = new THREE.Mesh (threeGeometry, threeMaterial);
-		meshes.push (mesh);
-	}
-
-	function OnTriangle (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3)
-	{
-		var lastVertexIndex = threeGeometry.vertices.length;
-		threeGeometry.vertices.push (new THREE.Vector3 (vertex1.x, vertex1.y, vertex1.z));
-		threeGeometry.vertices.push (new THREE.Vector3 (vertex2.x, vertex2.y, vertex2.z));
-		threeGeometry.vertices.push (new THREE.Vector3 (vertex3.x, vertex3.y, vertex3.z));
-		var face = new THREE.Face3 (lastVertexIndex + 0, lastVertexIndex + 1, lastVertexIndex + 2);
-		threeGeometry.faces.push (face);
-		
-		if (normal1 !== null && normal2 !== null && normal3 !== null) {
-			var normalArray = [];
-			normalArray.push (new THREE.Vector3 (normal1.x, normal1.y, normal1.z));
-			normalArray.push (new THREE.Vector3 (normal2.x, normal2.y, normal2.z));
-			normalArray.push (new THREE.Vector3 (normal3.x, normal3.y, normal3.z));
-			threeGeometry.faces[threeGeometry.faces.length - 1].vertexNormals = normalArray;
-		}
-
-		if (uv1 !== null && uv2 !== null && uv3 !== null) {
-			var uvArray = [];
-			uvArray.push (new THREE.Vector2 (uv1.x, -uv1.y));
-			uvArray.push (new THREE.Vector2 (uv2.x, -uv2.y));
-			uvArray.push (new THREE.Vector2 (uv3.x, -uv3.y));
-			threeGeometry.faceVertexUvs[0].push (uvArray);
-		}
-	}
-
 	var theConversionData = {
 		textureLoadedCallback : null,
 		hasConvexPolygons : false
@@ -131,22 +10,116 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 		theConversionData.hasConvexPolygons = JSM.ValueOrDefault (conversionData.hasConvexPolygons, theConversionData.hasConvexPolygons);
 	}
 	
-	var explodeData = {
-		hasConvexPolygons : theConversionData.hasConvexPolygons,
-		onPointGeometryStart : OnPointGeometryStart,
-		onPointGeometryEnd : OnPointGeometryEnd,
-		onPoint : OnPoint,
-		onLineGeometryStart : OnLineGeometryStart,
-		onLineGeometryEnd : OnLineGeometryEnd,
-		onLine : OnLine,
-		onGeometryStart : OnGeometryStart,
-		onGeometryEnd : OnGeometryEnd,
-		onTriangle : OnTriangle
-	};
-
 	var meshes = [];
 	var threeGeometry = null;
 	var threeMaterial = null;
+
+	var explodeData = {
+		hasConvexPolygons : theConversionData.hasConvexPolygons,
+		onPointGeometryStart : function (material) {
+				threeMaterial = new THREE.PointsMaterial ({
+					color : material.diffuse,
+					size: material.pointSize
+				});
+				threeGeometry = new THREE.Geometry ();
+		},
+		onPointGeometryEnd : function () {
+			var points = new THREE.Points (threeGeometry, threeMaterial);
+			meshes.push (points);
+		},
+		onPoint : function (vertex)	{
+			threeGeometry.vertices.push (new THREE.Vector3 (vertex.x, vertex.y, vertex.z));
+		},
+		onLineGeometryStart : function (material) {
+			threeGeometry = new THREE.Geometry ();
+			threeMaterial = new THREE.LineBasicMaterial ({
+				color : material.diffuse
+			});
+		},
+		onLineGeometryEnd : function () {
+			var lines = new THREE.LineSegments (threeGeometry, threeMaterial);
+			meshes.push (lines);
+		},
+		onLine : function (begVertex, endVertex) {
+			threeGeometry.vertices.push (new THREE.Vector3 (begVertex.x, begVertex.y, begVertex.z));
+			threeGeometry.vertices.push (new THREE.Vector3 (endVertex.x, endVertex.y, endVertex.z));
+		},
+		onGeometryStart : function (material) {
+			var hasTexture = (material.texture !== null);
+			var hasOpacity = (material.opacity !== 1.0);
+
+			var diffuse = material.diffuse;
+			var specular = material.specular;
+			var shininess = material.shininess;
+			if (shininess === 0.0) {
+				specular = 0x000000;
+				shininess = 1;
+			}
+
+			threeMaterial = new THREE.MeshPhongMaterial ({
+				color : diffuse,
+				specular : specular,
+				shininess : shininess
+			});
+
+			if (!material.singleSided) {
+				threeMaterial.side = THREE.DoubleSide;
+			}
+			
+			if (hasOpacity) {
+				threeMaterial.opacity = material.opacity;
+				threeMaterial.transparent = true;
+			}
+			
+			if (hasTexture) {
+				var theMaterial = threeMaterial;
+				var textureName = material.texture;
+				var loader = new THREE.TextureLoader ();
+				loader.load (textureName, function (texture) {
+					texture.image = JSM.ResizeImageToPowerOfTwoSides (texture.image);
+					texture.wrapS = THREE.RepeatWrapping;
+					texture.wrapT = THREE.RepeatWrapping;
+					theMaterial.map = texture;
+					theMaterial.needsUpdate = true;
+					if (theConversionData.textureLoadedCallback !== null) {
+						theConversionData.textureLoadedCallback ();
+					}
+				});
+			}
+			
+			threeGeometry = new THREE.Geometry ();
+		},
+		onGeometryEnd : function () {
+			threeGeometry.computeFaceNormals ();
+			var mesh = new THREE.Mesh (threeGeometry, threeMaterial);
+			meshes.push (mesh);
+		},
+		onTriangle : function (vertex1, vertex2, vertex3, normal1, normal2, normal3, uv1, uv2, uv3) {
+			var lastVertexIndex = threeGeometry.vertices.length;
+			threeGeometry.vertices.push (new THREE.Vector3 (vertex1.x, vertex1.y, vertex1.z));
+			threeGeometry.vertices.push (new THREE.Vector3 (vertex2.x, vertex2.y, vertex2.z));
+			threeGeometry.vertices.push (new THREE.Vector3 (vertex3.x, vertex3.y, vertex3.z));
+			var face = new THREE.Face3 (lastVertexIndex + 0, lastVertexIndex + 1, lastVertexIndex + 2);
+			threeGeometry.faces.push (face);
+			
+			if (normal1 !== null && normal2 !== null && normal3 !== null) {
+				var normalArray = [];
+				normalArray.push (new THREE.Vector3 (normal1.x, normal1.y, normal1.z));
+				normalArray.push (new THREE.Vector3 (normal2.x, normal2.y, normal2.z));
+				normalArray.push (new THREE.Vector3 (normal3.x, normal3.y, normal3.z));
+				threeGeometry.faces[threeGeometry.faces.length - 1].vertexNormals = normalArray;
+			}
+
+			if (uv1 !== null && uv2 !== null && uv3 !== null) {
+				var uvArray = [];
+				uvArray.push (new THREE.Vector2 (uv1.x, -uv1.y));
+				uvArray.push (new THREE.Vector2 (uv2.x, -uv2.y));
+				uvArray.push (new THREE.Vector2 (uv3.x, -uv3.y));
+				threeGeometry.faceVertexUvs[0].push (uvArray);
+			}
+		}
+	};
+
 	JSM.ExplodeBody (body, materials, explodeData);
 	return meshes;
 };
@@ -168,9 +141,9 @@ JSM.ConvertModelToThreeMeshes = function (model, materials, conversionData)
 
 JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, asyncCallbacks)
 {
-	function AddMesh (mesh, meshIndex, resultMeshes)
+	function AddMesh (mesh, meshIndex, materials, resultMeshes)
 	{
-		function AddTriangles (currentTriangles, resultMeshes)
+		function AddTriangles (currentTriangles, vertices, normals, uvs, materials, resultMeshes)
 		{
 			function GetTextureCoordinate (u, v, offset, scale, rotation)
 			{
@@ -181,8 +154,8 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 					result.x = co * u - si * v;
 					result.y = si * u + co * v;
 				}
-				result.x = textureOffset[0] + result.x * textureScale[0];
-				result.y = textureOffset[1] + result.y * textureScale[1];
+				result.x = offset[0] + result.x * scale[0];
+				result.y = offset[1] + result.y * scale[1];
 				return result;
 			}
 		
@@ -197,7 +170,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 			
 			var diffuseColor = new THREE.Color ();
 			var specularColor = new THREE.Color ();
-			var shininess = materialData.shininess;
+			var shininess = materialData.shininess || 0.0;
 
 			diffuseColor.setRGB (materialData.diffuse[0], materialData.diffuse[1], materialData.diffuse[2]);
 			specularColor.setRGB (materialData.specular[0], materialData.specular[1], materialData.specular[2]);
@@ -223,7 +196,6 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 			}
 			
 			var material = new THREE.MeshPhongMaterial ({
-					ambient : diffuseColor.getHex (),
 					color : diffuseColor.getHex (),
 					specular : specularColor.getHex (),
 					shininess : shininess,
@@ -237,16 +209,18 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 			}
 			
 			if (textureName !== undefined && textureName !== null) {
-				var texture = THREE.ImageUtils.loadTexture (textureName, new THREE.UVMapping (), function (texture) {
+				var loader = new THREE.TextureLoader ();
+				var theMaterial = material;
+				loader.load (textureName, function (texture) {
 					texture.image = JSM.ResizeImageToPowerOfTwoSides (texture.image);
+					texture.wrapS = THREE.RepeatWrapping;
+					texture.wrapT = THREE.RepeatWrapping;
+					theMaterial.map = texture;
+					theMaterial.needsUpdate = true;
 					if (textureLoadedCallback !== undefined && textureLoadedCallback !== null) {
 						textureLoadedCallback ();
 					}
 				});
-				
-				texture.wrapS = THREE.RepeatWrapping;
-				texture.wrapT = THREE.RepeatWrapping;
-				material.map = texture;
 			}
 			
 			var geometry = new THREE.Geometry ();
@@ -311,7 +285,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 		var triangles = mesh.triangles;
 		var i;
 		for (i = 0; i < triangles.length; i++) {
-			AddTriangles (triangles[i], resultMeshes);
+			AddTriangles (triangles[i], vertices, normals, uvs, materials, resultMeshes);
 		}
 	}
 
@@ -330,7 +304,7 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 	var i = 0;
 	JSM.AsyncRunTask (
 		function () {
-			AddMesh (meshes[i], i, resultMeshes);
+			AddMesh (meshes[i], i, materials, resultMeshes);
 			i = i + 1;
 			return true;
 		},

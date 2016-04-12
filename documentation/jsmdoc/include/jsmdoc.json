@@ -72,11 +72,20 @@
 						["message", "string", "the message"]
 					]
 				},
+				"SwapArrayValues" : {
+					"description" : "Swaps to array values.",
+					"parameters" : [
+						["array", "anything[]", "the array"],
+						["from", "integer", "from index"],
+						["to", "integer", "to index"]
+					]
+				},
 				"BubbleSort" : {
 					"description" : "Sorts an array with bubble sort.",
 					"parameters" : [
 						["array", "anything[]", "the array to sort"],
-						["compare", "function", "the compare function"]
+						["onCompare", "function", "the compare function"],
+						["onSwap", "function", "the swap function"]
 					]
 				},
 				"ShiftArray" : {
@@ -309,6 +318,16 @@
 						["Coord2D", "the result"]
 					]
 				},
+				"VectorDot2D" : {
+					"description" : "Calculates the dot product of two vectors.",
+					"parameters" : [
+						["a", "Vector2D", "the first vector"],
+						["b", "Vector2D", "the second vector"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
 				"CoordFromArray" : {
 					"description" : "Returns a coordinate from an array of components.",
 					"parameters" : [
@@ -413,6 +432,17 @@
 					],
 					"returns" : [
 						["Orientation", "the result"]
+					]
+				},
+				"CoordSignedDistance2D" : {
+					"description" : "Calculates the distance of two coordinates along a direction vector.",
+					"parameters" : [
+						["a", "Coord2D", "first coordinate"],
+						["b", "Coord2D", "second coordinate"],
+						["direction", "Vector2D", "direction vector"]
+					],
+					"returns" : [
+						["number", "the result"]
 					]
 				},
 				"PolarToCartesian" : {
@@ -714,12 +744,24 @@
 						["Coord", "the result"]
 					]
 				},
+				"GetSectorSegmentation2D" : {
+					"description" : "Returns the segmented coordinates of a sector.",
+					"parameters" : [
+						["sector", "Sector2D", "the sector"],
+						["segmentation", "integer", "the segmentation"]
+					],
+					"returns" : [
+						["Coord2D[*]", "the result coordinates"]
+					]
+				},
 				"GetSectorSegmentation" : {
 					"description" : "Returns the segmented coordinates of a sector.",
 					"parameters" : [
 						["sector", "Sector", "the sector"],
-						["segmentation", "integer", "the segmentation"],
-						["coords", "Coord[*]", "(out) the result coordinates"]
+						["segmentation", "integer", "the segmentation"]
+					],
+					"returns" : [
+						["Coord[*]", "the result coordinates"]
 					]
 				},
 				"BoxUnion" : {
@@ -938,6 +980,19 @@
 						["Polygon", "the result"]
 					]
 				},
+				"CutPolygon2DWithLine" : {
+					"description" : "Cuts a polygon with a line. The result array contains cutted polygons grouped by their position to the line.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"],
+						["line", "Line2D", "the line"],
+						["leftPolygons", "Polygon2D[*]", "(out) polygons on the left of the line"],
+						["rightPolygons", "Polygon2D[*]", "(out) polygons on the right of the line"],
+						["cutPolygons", "Polygon2D[*]", "(out) polygons on the line"]
+					],
+					"returns" : [
+						["boolean", "success"]
+					]
+				},
 				"CutPolygonWithPlane" : {
 					"description" : "Cuts a polygon with a plane. The result array contains cutted polygons grouped by their position to the plane.",
 					"parameters" : [
@@ -945,10 +1000,21 @@
 						["plane", "Plane", "the plane"],
 						["frontPolygons", "Polygon[*]", "(out) polygons in front of the plane"],
 						["backPolygons", "Polygon[*]", "(out) polygons at the back of the plane"],
-						["planePolygons", "Polygon[*]", "(out) polygons on the plane"]
+						["cutPolygons", "Polygon[*]", "(out) polygons on the plane"]
 					],
 					"returns" : [
 						["boolean", "success"]
+					]
+				},
+				"SegmentPolygon2D" : {
+					"description" : "Segments up a polygon along x and y axis.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the polygon"],
+						["xSegments", "integer", "x segment number"],
+						["ySegments", "integer", "y segment number"]
+					],
+					"returns" : [
+						["Polygon[*]", "result polygons"]
 					]
 				},
 				"TriangulatePolygon" : {
@@ -963,6 +1029,7 @@
 				"TraverseOctreeNodes" : {
 					"description" : "Traverses the nodes of the tree, and calls the given callback when a node found. The return value of the callback determines if we need to continue traverse along that given node.",
 					"parameters" : [
+						["octree", "Octree", "the octree"],
 						["nodeFound", "function", "the callback"]
 					]
 				},
@@ -1080,6 +1147,15 @@
 						},
 						"DistanceTo" : {
 							"description" : "Calculates the coordinate distance to the given one.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"AngleTo" : {
+							"description" : "Calculates the coordinate vector angle to the given one.",
 							"parameters" : [
 								["coord", "Coord2D", "the coordinate"]
 							],
@@ -1460,6 +1536,25 @@
 							],
 							"returns" : [
 								["CoordLinePosition2D", "the result"]
+							]
+						},
+						"CoordSignedDistance" : {
+							"description" : "Calculates the signed distance of the line and the given coordinate.",
+							"parameters" : [
+								["coord", "Coord2D", "the coordinate"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
+						"LinePosition" : {
+							"description" : "Calculates the position of the line and the given line.",
+							"parameters" : [
+								["line", "Line2D", "the line"],
+								["intersection", "Coord2D", "(out) the intersection point if it exists"]
+							],
+							"returns" : [
+								["LineLinePosition2D", "the result"]
 							]
 						},
 						"Clone" : {
@@ -1916,6 +2011,12 @@
 							"description" : "Creates the polygon from an array of vertices.",
 							"parameters" : [
 								["vertices", "Coord2D[*]", "the array of vertices"]
+							]
+						},
+						"GetBoundingBox" : {
+							"description" : "Calculates the bounding box of the polygon.",
+							"returns" : [
+								["Box2D", "the result"]
 							]
 						},
 						"Clear" : {
@@ -2540,6 +2641,14 @@
 						["CoordOnLine", "coordinate lies on the line"],
 						["CoordAtLineLeft", "coordinate lies on the left side of the line"],
 						["CoordAtLineRight", "coordinate lies on the left side right the line"]
+					]
+				},
+				"LineLinePosition2D" : {
+					"description" : "Position of two lines.",
+					"values" : [
+						["LinesDontIntersect", "lines do not intersect"],
+						["LinesIntersectsCoincident", "lines intersect coincident"],
+						["LinesIntersectsOnePoint", "lines intersect one point"]
 					]
 				},
 				"CoordLinePosition" : {
@@ -3502,7 +3611,7 @@
 						"Clone" : {
 							"description" : "Clones the vertex.",
 							"returns" : [
-								["BodyVertex", "a cloned instance"]
+								["BodyVertex", "the cloned instance"]
 							]
 						}
 					}
@@ -3552,7 +3661,7 @@
 						"Clone" : {
 							"description" : "Clones the point.",
 							"returns" : [
-								["BodyPoint", "a cloned instance"]
+								["BodyPoint", "the cloned instance"]
 							]
 						}
 					}
@@ -3615,7 +3724,7 @@
 						"Clone" : {
 							"description" : "Clones the line.",
 							"returns" : [
-								["BodyLine", "a cloned instance"]
+								["BodyLine", "the cloned instance"]
 							]
 						}
 					}
@@ -3721,7 +3830,74 @@
 						"Clone" : {
 							"description" : "Clones the polygon.",
 							"returns" : [
-								["BodyPolygon", "a cloned instance"]
+								["BodyPolygon", "the cloned instance"]
+							]
+						}
+					}
+				},
+				"BodyTextureProjection" : {
+					"description" : "Represents the texture projection of the body. It contains a projection type, and a coordinate system for projection.",
+					"functions" : {
+						"GetType" : {
+							"description" : "Returns the texture projection type.",
+							"returns" : [
+								["TextureProjectionType", "the result"]
+							]
+						},
+						"GetCoords" : {
+							"description" : "Returns the texture projection coordinate system.",
+							"returns" : [
+								["CoordSystem", "the result"]
+							]
+						},
+						"SetType" : {
+							"description" : "Sets the texture projection type.",
+							"parameters" : [
+								["type", "TextureProjectionType", "the type"]
+							]
+						},
+						"SetCoords" : {
+							"description" : "Sets the texture projection coordinates.",
+							"parameters" : [
+								["coords", "CoordSystem", "the coordinates"]
+							]
+						},
+						"SetPlanar" : {
+							"description" : "Sets the texture projection to planar with the given parameters.",
+							"parameters" : [
+								["origo", "Coord", "origo of the projection"],
+								["xDirection", "Vector", "x direction of the projection plane"],
+								["yDirection", "Vector", "y direction of the projection plane"]
+							]
+						},
+						"SetCubic" : {
+							"description" : "Sets the texture projection to cubic with the given parameters.",
+							"parameters" : [
+								["origo", "Coord", "origo of the projection"],
+								["xDirection", "Vector", "x direction (edge of the cube) of the projection"],
+								["yDirection", "Vector", "y direction (edge of the cube) of the projection"],
+								["zDirection", "Vector", "z direction (edge of the cube) of the projection"]
+							]
+						},
+						"SetCylindrical" : {
+							"description" : "Sets the texture projection to cylindrical with the given parameters.",
+							"parameters" : [
+								["origo", "Coord", "origo of the projection"],
+								["radius", "number", "radius of the cylinder"],
+								["xDirection", "Vector", "x direction (start point along perimeter) of the projection"],
+								["zDirection", "Vector", "z direction (normal vector) of the projection"]
+							]
+						},
+						"Transform" : {
+							"description" : "Transforms the texture projection coordinate system.",
+							"parameters" : [
+								["transformation", "Transformation", "the transformation"]
+							]
+						},
+						"Clone" : {
+							"description" : "Clones the texture projection.",
+							"returns" : [
+								["BodyTextureProjection", "the cloned instance"]
 							]
 						}
 					}
@@ -3889,36 +4065,24 @@
 								["integer", "the result"]
 							]
 						},
-						"GetTextureProjectionType" : {
-							"description" : "Returns the texture projection type of the body.",
+						"GetTextureProjection" : {
+							"description" : "Returns the texture projection of the body.",
 							"returns" : [
-								["string", "the result"]
+								["BodyTextureProjection", "the result"]
 							]
 						},
-						"SetTextureProjectionType" : {
-							"description" : "Sets the texture projection type of the body.",
+						"SetTextureProjection" : {
+							"description" : "Sets the texture projection of the body.",
 							"parameters" : [
-								["projection", "string", "the new texture projection type"]
-							]
-						},
-						"GetTextureProjectionCoords" : {
-							"description" : "Returns the texture projection coordinate system of the body.",
-							"returns" : [
-								["CoordSystem", "the result"]
-							]
-						},
-						"SetTextureProjectionCoords" : {
-							"description" : "Sets the texture projection coordinate system of the body.",
-							"parameters" : [
-								["coords", "CoordSystem", "the new texture projection coordinate system"]
+								["projection", "BodyTextureProjection", "the new texture projection"]
 							]
 						},
 						"SetPlanarTextureProjection" : {
 							"description" : "Sets the texture projection to planar with the given parameters.",
 							"parameters" : [
 								["origo", "Coord", "origo of the projection"],
-								["xDirection", "Vector", "x direction (start point along other axis) of the projection"],
-								["zDirection", "Vector", "z direction (normal vector) of the projection"]
+								["xDirection", "Vector", "x direction of the projection plane"],
+								["yDirection", "Vector", "y direction of the projection plane"]
 							]
 						},
 						"SetCubicTextureProjection" : {
@@ -3974,6 +4138,12 @@
 						},
 						"Clear" : {
 							"description" : "Makes the body empty."
+						},
+						"Clone" : {
+							"description" : "Clones the body.",
+							"returns" : [
+								["Body", "the cloned instance"]
+							]
 						}
 					}
 				},
@@ -4435,6 +4605,16 @@
 							"description" : "Finalizes the model. It finalizes materials and bodies."
 						}
 					}
+				}
+			},
+			"enums" : {
+				"TextureProjectionType" : {
+					"description" : "Texture projection type.",
+					"values" : [
+						["Planar", "planar projection"],
+						["Cubic", "cubic projection"],
+						["Cylindrical", "cylindrical projection"]
+					]
 				}
 			}
 		},

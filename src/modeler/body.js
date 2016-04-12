@@ -37,7 +37,7 @@ JSM.BodyVertex.prototype.SetPosition = function (position)
 * Function: BodyVertex.Clone
 * Description: Clones the vertex.
 * Returns:
-*	{BodyVertex} a cloned instance
+*	{BodyVertex} the cloned instance
 */
 JSM.BodyVertex.prototype.Clone = function ()
 {
@@ -128,7 +128,7 @@ JSM.BodyPoint.prototype.InheritAttributes = function (source)
 * Function: BodyPoint.Clone
 * Description: Clones the point.
 * Returns:
-*	{BodyPoint} a cloned instance
+*	{BodyPoint} the cloned instance
 */
 JSM.BodyPoint.prototype.Clone = function ()
 {
@@ -245,7 +245,7 @@ JSM.BodyLine.prototype.InheritAttributes = function (source)
 * Function: BodyLine.Clone
 * Description: Clones the line.
 * Returns:
-*	{BodyLine} a cloned instance
+*	{BodyLine} the cloned instance
 */
 JSM.BodyLine.prototype.Clone = function ()
 {
@@ -442,7 +442,7 @@ JSM.BodyPolygon.prototype.InheritAttributes = function (source)
 * Function: BodyPolygon.Clone
 * Description: Clones the polygon.
 * Returns:
-*	{BodyPolygon} a cloned instance
+*	{BodyPolygon} the cloned instance
 */
 JSM.BodyPolygon.prototype.Clone = function ()
 {
@@ -453,6 +453,166 @@ JSM.BodyPolygon.prototype.Clone = function ()
 	}
 	result.material = this.material;
 	result.curved = this.curved;
+	return result;
+};
+
+/**
+* Enum: TextureProjectionType
+* Description: Texture projection type.
+* Values:
+*	{Planar} planar projection
+*	{Cubic} cubic projection
+*	{Cylindrical} cylindrical projection
+*/
+JSM.TextureProjectionType = {
+	Planar : 0,
+	Cubic : 1,
+	Cylindrical : 2
+};
+
+/**
+* Class: BodyTextureProjection
+* Description:
+*	Represents the texture projection of the body. It contains a projection type,
+*	and a coordinate system for projection.
+*/
+JSM.BodyTextureProjection = function ()
+{
+	this.type = null;
+	this.coords = null;
+	this.SetCubic (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
+};
+
+/**
+* Function: BodyTextureProjection.GetType
+* Description: Returns the texture projection type.
+* Returns:
+*	{TextureProjectionType} the result
+*/
+JSM.BodyTextureProjection.prototype.GetType = function ()
+{
+	return this.type;
+};
+
+/**
+* Function: BodyTextureProjection.GetCoords
+* Description: Returns the texture projection coordinate system.
+* Returns:
+*	{CoordSystem} the result
+*/
+JSM.BodyTextureProjection.prototype.GetCoords = function ()
+{
+	return this.coords;
+};
+
+/**
+* Function: BodyTextureProjection.SetType
+* Description: Sets the texture projection type.
+* Parameters:
+*	type {TextureProjectionType} the type
+*/
+JSM.BodyTextureProjection.prototype.SetType = function (type)
+{
+	this.type = type;
+};
+
+/**
+* Function: BodyTextureProjection.SetCoords
+* Description: Sets the texture projection coordinates.
+* Parameters:
+*	coords {CoordSystem} the coordinates
+*/
+JSM.BodyTextureProjection.prototype.SetCoords = function (coords)
+{
+	this.coords = coords;
+};
+
+/**
+* Function: BodyTextureProjection.SetPlanar
+* Description: Sets the texture projection to planar with the given parameters.
+* Parameters:
+*	origo {Coord} origo of the projection
+*	xDirection {Vector} x direction of the projection plane
+*	yDirection {Vector} y direction of the projection plane
+*/
+JSM.BodyTextureProjection.prototype.SetPlanar = function (origo, xDirection, yDirection)
+{
+	this.type = JSM.TextureProjectionType.Planar;
+	this.coords = new JSM.CoordSystem (
+		origo,
+		xDirection,
+		yDirection,
+		new JSM.Coord (0.0, 0.0, 0.0)
+	);
+};
+
+/**
+* Function: BodyTextureProjection.SetCubic
+* Description: Sets the texture projection to cubic with the given parameters.
+* Parameters:
+*	origo {Coord} origo of the projection
+*	xDirection {Vector} x direction (edge of the cube) of the projection
+*	yDirection {Vector} y direction (edge of the cube) of the projection
+*	zDirection {Vector} z direction (edge of the cube) of the projection
+*/
+JSM.BodyTextureProjection.prototype.SetCubic = function (origo, xDirection, yDirection, zDirection)
+{
+	this.type = JSM.TextureProjectionType.Cubic;
+	this.coords = new JSM.CoordSystem (
+		origo,
+		xDirection,
+		yDirection,
+		zDirection
+	);
+};
+
+/**
+* Function: BodyTextureProjection.SetCylindrical
+* Description: Sets the texture projection to cylindrical with the given parameters.
+* Parameters:
+*	origo {Coord} origo of the projection
+*	radius {number} radius of the cylinder
+*	xDirection {Vector} x direction (start point along perimeter) of the projection
+*	zDirection {Vector} z direction (normal vector) of the projection
+*/
+JSM.BodyTextureProjection.prototype.SetCylindrical = function (origo, radius, xDirection, zDirection)
+{
+	this.type = JSM.TextureProjectionType.Cylindrical;
+	this.coords = new JSM.CoordSystem (
+		origo,
+		xDirection.Clone ().SetLength (radius),
+		JSM.VectorCross (zDirection, xDirection).SetLength (radius),
+		zDirection
+	);
+};
+
+/**
+* Function: BodyTextureProjection.Transform
+* Description: Transforms the texture projection coordinate system.
+* Parameters:
+*	transformation {Transformation} the transformation
+*/
+JSM.BodyTextureProjection.prototype.Transform = function (transformation)
+{
+	this.coords.ToAbsoluteCoords ();
+	this.coords.origo = transformation.Apply (this.coords.origo);
+	this.coords.e1 = transformation.Apply (this.coords.e1);
+	this.coords.e2 = transformation.Apply (this.coords.e2);
+	this.coords.e3 = transformation.Apply (this.coords.e3);
+	this.coords.ToDirectionVectors ();
+};
+
+/**
+* Function: BodyTextureProjection.Clone
+* Description: Clones the texture projection.
+* Returns:
+*	{BodyTextureProjection} the cloned instance
+*/
+JSM.BodyTextureProjection.prototype.Clone = function ()
+{
+	var result = new JSM.BodyTextureProjection ();
+	result.SetType (this.type);
+	result.SetCoords (this.coords.Clone ());
 	return result;
 };
 
@@ -791,47 +951,25 @@ JSM.Body.prototype.PolygonCount = function ()
 };
 
 /**
-* Function: Body.GetTextureProjectionType
-* Description: Returns the texture projection type of the body.
+* Function: Body.GetTextureProjection
+* Description: Returns the texture projection of the body.
 * Returns:
-*	{string} the result
+*	{BodyTextureProjection} the result
 */
-JSM.Body.prototype.GetTextureProjectionType = function ()
+JSM.Body.prototype.GetTextureProjection = function ()
 {
 	return this.projection;
 };
 
 /**
-* Function: Body.SetTextureProjectionType
-* Description: Sets the texture projection type of the body.
+* Function: Body.SetTextureProjection
+* Description: Sets the texture projection of the body.
 * Parameters:
-*	projection {string} the new texture projection type
+*	projection {BodyTextureProjection} the new texture projection
 */
-JSM.Body.prototype.SetTextureProjectionType = function (projection)
+JSM.Body.prototype.SetTextureProjection = function (projection)
 {
 	this.projection = projection;
-};
-
-/**
-* Function: Body.GetTextureProjectionCoords
-* Description: Returns the texture projection coordinate system of the body.
-* Returns:
-*	{CoordSystem} the result
-*/
-JSM.Body.prototype.GetTextureProjectionCoords = function ()
-{
-	return this.coords;
-};
-
-/**
-* Function: Body.SetTextureProjectionCoords
-* Description: Sets the texture projection coordinate system of the body.
-* Parameters:
-*	coords {CoordSystem} the new texture projection coordinate system
-*/
-JSM.Body.prototype.SetTextureProjectionCoords = function (coords)
-{
-	this.coords = coords;
 };
 
 /**
@@ -839,18 +977,12 @@ JSM.Body.prototype.SetTextureProjectionCoords = function (coords)
 * Description: Sets the texture projection to planar with the given parameters.
 * Parameters:
 *	origo {Coord} origo of the projection
-*	xDirection {Vector} x direction (start point along other axis) of the projection
-*	zDirection {Vector} z direction (normal vector) of the projection
+*	xDirection {Vector} x direction of the projection plane
+*	yDirection {Vector} y direction of the projection plane
 */
-JSM.Body.prototype.SetPlanarTextureProjection = function (origo, xDirection, zDirection)
+JSM.Body.prototype.SetPlanarTextureProjection = function (origo, xDirection, yDirection)
 {
-	this.SetTextureProjectionType ('Planar');
-	this.SetTextureProjectionCoords (new JSM.CoordSystem (
-		origo,
-		xDirection,
-		JSM.VectorCross (xDirection, zDirection),
-		new JSM.Coord (0.0, 0.0, 0.0)
-	));
+	this.projection.SetPlanar (origo, xDirection, yDirection);
 };
 
 /**
@@ -864,13 +996,7 @@ JSM.Body.prototype.SetPlanarTextureProjection = function (origo, xDirection, zDi
 */
 JSM.Body.prototype.SetCubicTextureProjection = function (origo, xDirection, yDirection, zDirection)
 {
-	this.SetTextureProjectionType ('Cubic');
-	this.SetTextureProjectionCoords (new JSM.CoordSystem (
-		origo,
-		xDirection,
-		yDirection,
-		zDirection
-	));
+	this.projection.SetCubic (origo, xDirection, yDirection, zDirection);
 };
 
 /**
@@ -884,13 +1010,7 @@ JSM.Body.prototype.SetCubicTextureProjection = function (origo, xDirection, yDir
 */
 JSM.Body.prototype.SetCylindricalTextureProjection = function (origo, radius, xDirection, zDirection)
 {
-	this.SetTextureProjectionType ('Cylindrical');
-	this.SetTextureProjectionCoords (new JSM.CoordSystem (
-		origo,
-		xDirection.Clone ().SetLength (radius),
-		JSM.VectorCross (zDirection, xDirection).SetLength (radius),
-		zDirection
-	));
+	this.projection.SetCylindrical (origo, radius, xDirection, zDirection);
 };
 
 /**
@@ -905,15 +1025,7 @@ JSM.Body.prototype.Transform = function (transformation)
 	for (i = 0; i < this.vertices.length; i++) {
 		this.vertices[i].position = transformation.Apply (this.vertices[i].position);
 	}
-	
-	if (this.coords !== null) {
-		this.coords.ToAbsoluteCoords ();
-		this.coords.origo = transformation.Apply (this.coords.origo);
-		this.coords.e1 = transformation.Apply (this.coords.e1);
-		this.coords.e2 = transformation.Apply (this.coords.e2);
-		this.coords.e3 = transformation.Apply (this.coords.e3);
-		this.coords.ToDirectionVectors ();
-	}
+	this.projection.Transform (transformation);
 };
 
 /**
@@ -1041,7 +1153,36 @@ JSM.Body.prototype.Clear = function ()
 	this.points = [];
 	this.lines = [];
 	this.polygons = [];
-	this.projection = null;
-	this.coords = null;
-	this.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
+	this.projection = new JSM.BodyTextureProjection ();
+};
+
+/**
+* Function: Body.Clone
+* Description: Clones the body.
+* Returns:
+*	{Body} the cloned instance
+*/
+JSM.Body.prototype.Clone = function ()
+{
+	var result = new JSM.Body ();
+	
+	var i;
+	for (i = 0; i < this.vertices.length; i++) {
+		result.AddVertex (this.vertices[i].Clone ());
+	}
+	
+	for (i = 0; i < this.points.length; i++) {
+		result.AddPoint (this.points[i].Clone ());
+	}
+
+	for (i = 0; i < this.lines.length; i++) {
+		result.AddLine (this.lines[i].Clone ());
+	}
+
+	for (i = 0; i < this.polygons.length; i++) {
+		result.AddPolygon (this.polygons[i].Clone ());
+	}
+
+	result.SetTextureProjection (this.projection.Clone ());
+	return result;
 };

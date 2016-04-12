@@ -18,9 +18,12 @@ JSM.RenderMaterial = function (type, parameters)
 	this.singleSided = false;
 	this.pointSize = 0.1;
 	this.texture = null;
-	this.textureWidth = 1.0;
-	this.textureHeight = 1.0;
 	JSM.CopyObjectProperties (parameters, this, true);
+};
+
+JSM.RenderMaterial.prototype.SetType = function (type)
+{
+	this.type = type;
 };
 
 JSM.RenderMaterial.prototype.SetBuffers = function (textureBuffer, textureImage)

@@ -507,6 +507,40 @@ simpleSuite.AddTest ('FromToArrayTest', function (test)
 	test.AssertEqual (polygon.GetLastContour ().VertexCount (), polygon.GetContour (1).VertexCount ());
 });
 
+simpleSuite.AddTest ('BoundingBoxTest', function (test)
+{
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (1.0, 0.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (0.0, 1.0);
+
+	var box = polygon.GetBoundingBox ();
+	test.Assert (box.min.IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (box.max.IsEqual (new JSM.Coord2D (1.0, 1.0)));
+
+	polygon.AddVertex (-1.0, 0.5);
+	var box = polygon.GetBoundingBox ();
+	test.Assert (box.min.IsEqual (new JSM.Coord2D (-1.0, 0.0)));
+	test.Assert (box.max.IsEqual (new JSM.Coord2D (1.0, 1.0)));
+
+	polygon.AddVertex (-2.0, 3.0);
+	polygon.AddVertex (-2.0, -0.5);
+	var box = polygon.GetBoundingBox ();
+	test.Assert (box.min.IsEqual (new JSM.Coord2D (-2.0, -0.5)));
+	test.Assert (box.max.IsEqual (new JSM.Coord2D (1.0, 3.0)));
+
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (-2.0, -2.0);
+	polygon.AddVertex (2.0, -2.0);
+	polygon.AddVertex (2.0, 2.0);
+	polygon.AddVertex (-2.0, 2.0);
+
+	var box = polygon.GetBoundingBox ();
+	test.Assert (box.min.IsEqual (new JSM.Coord2D (-2.0, -2.0)));
+	test.Assert (box.max.IsEqual (new JSM.Coord2D (2.0, 2.0)));
+});
+
 var pointInPolygonSuite = unitTest.AddTestSuite ('PointInPolygonTest');
 
 pointInPolygonSuite.AddTest ('PointInPolygonConvexTest', function (test)

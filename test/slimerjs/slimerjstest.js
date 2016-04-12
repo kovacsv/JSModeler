@@ -431,6 +431,32 @@ suite.AddTest ('TicTacToe', function (test, onReady) {
 	});
 });
 
+
+suite.AddTest ('Tutorial_Minimal', function (test, onReady) {
+	test.Open ('/documentation/tutorial/minimal.html', function () {
+		test.GenerateImage ('OnLoad');
+		onReady ();
+	});
+});
+
+suite.AddTest ('Tutorial_SVGTo3D', function (test, onReady) {
+	test.Open ('/documentation/tutorial/svgto3d.html', function () {
+		test.GenerateImage ('OnLoad');
+		onReady ();
+	});
+});
+
+suite.AddTest ('Tutorial_Examples', function (test, onReady) {
+	test.Open ('/documentation/tutorial/demo.html', function () {
+		var i;
+		for (i = 0; i < 8; i++) {
+			test.KeyDown (16777236); // right arrow
+			test.GenerateImage ('Demo', i + 1);
+		}
+		onReady ();
+	});
+});
+
 suite.Run (function () {
 	slimer.exit ();
 });

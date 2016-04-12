@@ -1,6 +1,11 @@
 module.exports = function (unitTest)
 {
 
+function FixNum (num)
+{
+	return num.toFixed (8);
+}
+
 function DrawAndCheck (body, drawMode, referenceFile)
 {
 	DummyDrawer = function ()
@@ -27,7 +32,7 @@ function DrawAndCheck (body, drawMode, referenceFile)
 
 	DummyDrawer.prototype.DrawLine = function (from, to)
 	{
-		this.svgContent += '<line stroke="black" x1="' + from.x + '" y1="' + (this.height - from.y) + '" x2="' + to.x + '" y2="' + (this.height - to.y) + '"/>\r\n';
+		this.svgContent += '<line stroke="black" x1="' + FixNum (from.x) + '" y1="' + FixNum (this.height - from.y) + '" x2="' + FixNum (to.x) + '" y2="' + FixNum (this.height - to.y) + '"/>\r\n';
 	};
 
 	DummyDrawer.prototype.DrawPolygon = function (polygon, color)
@@ -36,7 +41,7 @@ function DrawAndCheck (body, drawMode, referenceFile)
 		var i, vertex;
 		for (i = 0; i < polygon.VertexCount (); i++) {
 			vertex = polygon.GetVertex (i);
-			this.svgContent += vertex.x + ' ' + (this.height - vertex.y) + ' ';
+			this.svgContent += FixNum (vertex.x) + ' ' + FixNum (this.height - vertex.y) + ' ';
 		}
 		this.svgContent += '" style="fill:#ffffff;stroke:#000000;stroke-width:1"/>\r\n';
 	};

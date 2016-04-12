@@ -23,6 +23,7 @@
 		"../src/geometry/convexhull.js",
 		"../src/geometry/polygon2d.js",
 		"../src/geometry/polygon.js",
+		"../src/geometry/cutpolygon.js",
 		"../src/geometry/triangulation.js",
 		"../src/geometry/octree.js",
 		"../src/geometry/bsptree.js",

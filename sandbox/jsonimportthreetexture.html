@@ -31,6 +31,7 @@
 	<script type="text/javascript" src="../src/geometry/convexhull.js"></script>
 	<script type="text/javascript" src="../src/geometry/polygon2d.js"></script>
 	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/cutpolygon.js"></script>
 	<script type="text/javascript" src="../src/geometry/triangulation.js"></script>
 	<script type="text/javascript" src="../src/geometry/octree.js"></script>
 	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
@@ -132,60 +133,58 @@
 				return;
 			}
 
-			var textureData = JSM.GetArrayBufferFromURL ('texturenpot.jpg', function (arrayBuffer) {
-				var blob = new Blob ([arrayBuffer]);
-				var blobURL = URL.createObjectURL (blob);
-				var texture = blobURL;
-				var jsonData = {
-					"version" : 1,
-					"materials" : [
-						{
-							"ambient" : [0, 0, 0],
-							"diffuse" : [1, 0, 0],
-							"specular" : [0.329412, 0.329412, 0.329412],
-							"opacity" : 1,
-							"texture" : texture
-						}
-					],
-					"meshes" : [
-						{
-							"vertices" : [
-								0, 0, 0,
-								1, 0, 0,
-								1, 1, 0,
-								0, 1, 0
-							],
-							"normals" : [
-								0, 0, 1
-							],
-							"uvs" : [
-								0, 0,
-								2, 0,
-								2, 2,
-								0, 2
-							],
-							"triangles" : [
-								{
-									"material" : 0,
-									"parameters" : [
-										0, 1, 2, 0, 0, 0, 0, 1, 2,
-										0, 2, 3, 0, 0, 0, 0, 2, 3
-									]
-								}
-							]
-						}
-					]
-				};
+			var jsonData = {
+				"version" : 1,
+				"materials" : [
+					{
+						"ambient" : [0, 0, 0],
+						"diffuse" : [1, 0, 0],
+						"specular" : [0.329412, 0.329412, 0.329412],
+						"opacity" : 1,
+						"texture" : 'texturenpot.jpg',
+						"offset" : [0.2, 0.3],
+						"scale" : [2.0, 3.0],
+						"rotation" : 30.0
+					}
+				],
+				"meshes" : [
+					{
+						"vertices" : [
+							0, 0, 0,
+							1, 0, 0,
+							1, 1, 0,
+							0, 1, 0
+						],
+						"normals" : [
+							0, 0, 1
+						],
+						"uvs" : [
+							0, 0,
+							2, 0,
+							2, 2,
+							0, 2
+						],
+						"triangles" : [
+							{
+								"material" : 0,
+								"parameters" : [
+									0, 1, 2, 0, 0, 0, 0, 1, 2,
+									0, 2, 3, 0, 0, 0, 0, 2, 3
+								]
+							}
+						]
+					}
+				]
+			};
 
-				var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData, function () {
-					viewer.Draw ();
-				});
-				for (var i = 0; i < meshes.length; i++) {
-					viewer.AddMesh (meshes[i]);
-				}
-				viewer.FitInWindow ();
+			var meshes = JSM.ConvertJSONDataToThreeMeshes (jsonData, function () {
 				viewer.Draw ();
 			});
+			for (var i = 0; i < meshes.length; i++) {
+				viewer.AddMesh (meshes[i]);
+			}
+			viewer.FitInWindow ();
+			viewer.Draw ();
 		}
 
 	    window.onload = function ()

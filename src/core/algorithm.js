@@ -1,31 +1,54 @@
 /**
+* Function: SwapArrayValues
+* Description: Swaps to array values.
+* Parameters:
+*	array {anything[]} the array
+*	from {integer} from index
+*	to {integer} to index
+*/
+JSM.SwapArrayValues = function (array, from, to)
+{
+	var temp = array[from];
+	array[from] = array[to];
+	array[to] = temp;
+};
+
+/**
 * Function: BubbleSort
 * Description: Sorts an array with bubble sort.
 * Parameters:
 *	array {anything[]} the array to sort
-*	compare {function} the compare function
+*	onCompare {function} the compare function
+*	onSwap {function} the swap function
 */
-JSM.BubbleSort = function (array, compare)
+JSM.BubbleSort = function (array, onCompare, onSwap)
 {
-	function SwapArrayValues (array, from, to)
-	{
-		var temp = array[from];
-		array[from] = array[to];
-		array[to] = temp;
+	if (array.length < 2) {
+		return false;
 	}
 
-	if (array.length < 2 || compare === undefined || compare === null) {
-		return;
+	var compareFunction = onCompare;
+	if (compareFunction === undefined || compareFunction === null) {
+		return false;
 	}
-
+	
+	var swapFunction = onSwap;
+	if (swapFunction === undefined || swapFunction === null) {
+		swapFunction = function (i, j) {
+			JSM.SwapArrayValues (array, i, j);
+		};
+	}
+	
 	var i, j;
 	for (i = 0; i < array.length - 1; i++) {
 		for (j = 0; j < array.length - i - 1; j++) {
-			if (!compare (array[j], array[j + 1])) {
-				SwapArrayValues (array, j, j + 1);
+			if (!compareFunction (array[j], array[j + 1])) {
+				swapFunction (j, j + 1);
 			}
 		}
 	}
+	
+	return true;
 };
 
 /**

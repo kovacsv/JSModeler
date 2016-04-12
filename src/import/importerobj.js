@@ -78,8 +78,17 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 		return null;
 	}
 
-	function ProcessLine (line)
+	function ProcessLine (line, objectCounter)
 	{
+		function GetIndex (index, count)
+		{
+			if (index > 0) {
+				return index - 1;
+			} else {
+				return count + index;
+			}
+		}
+
 		function GetFileName (line, keyword)
 		{
 			var fileNameIndex = line.indexOf (keyword) + keyword.length;
@@ -94,7 +103,7 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 		if (line[0] == '#') {
 			return;
 		}
-		
+
 		var lineParts = line.split (/\s+/);
 		if (lineParts.length === 0 || lineParts[0][0] == '#') {
 			return;
@@ -117,16 +126,19 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 			if (lineParts.length < 4) {
 				return;
 			}
+			objectCounter.vertexCount += 1;
 			OnVertex (parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3]));
 		} else if (lineParts[0] == 'vn') {
 			if (lineParts.length < 4) {
 				return;
 			}
+			objectCounter.normalCount += 1;
 			OnNormal (parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3]));
 		} else if (lineParts[0] == 'vt') {
 			if (lineParts.length < 3) {
 				return;
 			}
+			objectCounter.uvCount += 1;
 			OnTexCoord (parseFloat (lineParts[1]), parseFloat (lineParts[2]));
 		} else if (lineParts[0] == 'f') {
 			if (lineParts.length < 4) {
@@ -140,12 +152,12 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 			var partSplitted;
 			for (i = 1; i < lineParts.length; i++) {
 				partSplitted = lineParts[i].split ('/');
-				vertices.push (parseInt (partSplitted[0], 10) - 1);
+				vertices.push (GetIndex (parseInt (partSplitted[0], 10), objectCounter.vertexCount));
 				if (partSplitted.length > 1 && partSplitted[1].length > 0) {
-					uvs.push (parseInt (partSplitted[1], 10) - 1);
+					uvs.push (GetIndex (parseInt (partSplitted[1], 10), objectCounter.uvCount));
 				}
 				if (partSplitted.length > 2 && partSplitted[2].length > 0) {
-					normals.push (parseInt (partSplitted[2], 10) - 1);
+					normals.push (GetIndex (parseInt (partSplitted[2], 10), objectCounter.normalCount));
 				}
 			}
 			OnFace (vertices, normals, uvs);
@@ -194,13 +206,13 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 		}
 	}
 	
-	function ProcessFile (stringBuffer)
+	function ProcessFile (stringBuffer, objectCounter)
 	{
 		var lines = stringBuffer.split ('\n');
 		var i, line;
 		for (i = 0; i < lines.length; i++) {
 			line = lines[i].trim ();
-			ProcessLine (line);
+			ProcessLine (line, objectCounter);
 		}
 	}
 	
@@ -208,7 +220,13 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 		callbacks = {};
 	}
 
-	ProcessFile (stringBuffer);
+	var objectCounter = {
+		vertexCount : 0,
+		normalCount : 0,
+		uvCount : 0
+	};
+
+	ProcessFile (stringBuffer, objectCounter);
 };
 
 JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
@@ -221,7 +239,7 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 		return null;
 	}
 
-	function FinalizeBodyVertices (triangleModel, globalVertices, globalNormals)
+	function FinalizeBodyVertices (triangleModel, globalVertices, globalNormals, globalUVs)
 	{
 		function GetLocalIndex (body, globalArray, globalIndex, globalToLocal, mode)
 		{

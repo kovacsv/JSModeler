@@ -371,24 +371,53 @@ JSM.Sector.prototype.Clone = function ()
 };
 
 /**
+* Function: GetSectorSegmentation2D
+* Description: Returns the segmented coordinates of a sector.
+* Parameters:
+*	sector {Sector2D} the sector
+*	segmentation {integer} the segmentation
+* Returns:
+*	{Coord2D[*]} the result coordinates
+*/
+JSM.GetSectorSegmentation2D = function (sector, segmentation)
+{
+	var direction = JSM.CoordSub2D (sector.end, sector.beg);
+	var length = sector.beg.DistanceTo (sector.end);
+	var step = length / segmentation;
+	var distance = 0.0;
+
+	var result = [];
+	var i, offseted;
+	for (i = 0; i <= segmentation; i++) {
+		offseted = sector.beg.Clone ().Offset (direction, distance);
+		result.push (offseted);
+		distance += step;
+	}
+	return result;
+};
+
+/**
 * Function: GetSectorSegmentation
 * Description: Returns the segmented coordinates of a sector.
 * Parameters:
 *	sector {Sector} the sector
 *	segmentation {integer} the segmentation
-*	coords {Coord[*]} (out) the result coordinates
+* Returns:
+*	{Coord[*]} the result coordinates
 */
-JSM.GetSectorSegmentation = function (sector, segmentation, coords)
+JSM.GetSectorSegmentation = function (sector, segmentation)
 {
 	var direction = JSM.CoordSub (sector.end, sector.beg);
 	var length = sector.beg.DistanceTo (sector.end);
 	var step = length / segmentation;
 	var distance = 0.0;
 
+	var result = [];
 	var i, offseted;
 	for (i = 0; i <= segmentation; i++) {
 		offseted = sector.beg.Clone ().Offset (direction, distance);
-		coords.push (offseted);
+		result.push (offseted);
 		distance += step;
 	}
+	return result;
 };

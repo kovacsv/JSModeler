@@ -356,6 +356,62 @@ generalSuite.AddTest ('BodyMergeTest', function (test)
 	test.Assert (JSM.CheckBody (body));
 });
 
+generalSuite.AddTest ('BodyCloneTest', function (test)
+{
+	var body = new JSM.Body ();
+	JSM.AddVertexToBody (body, 0, 0, 0);
+	JSM.AddVertexToBody (body, 1, 0, 0);
+	JSM.AddVertexToBody (body, 1, 1, 0);
+	JSM.AddVertexToBody (body, 0, 1, 0);
+	JSM.AddVertexToBody (body, 0, 0, 1);
+	JSM.AddVertexToBody (body, 1, 0, 1);
+	JSM.AddVertexToBody (body, 0, 0, 2);
+	JSM.AddPolygonToBody (body, [0, 1, 2, 3]);
+	JSM.AddLineToBody (body, 4, 5);
+	JSM.AddPointToBody (body, 6)
+	
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
+	
+	var cloned = body.Clone ();
+	
+	test.AssertEqual (body.VertexCount (), cloned.VertexCount ());
+	test.AssertEqual (body.PolygonCount (), cloned.PolygonCount ());
+	test.AssertEqual (body.LineCount (), cloned.LineCount ());
+	test.AssertEqual (body.PointCount (), cloned.PointCount ());
+	test.AssertEqual (body.GetTextureProjection ().GetType (), cloned.GetTextureProjection ().GetType ());
+	
+	test.Assert (body.GetVertexPosition (0).IsEqual (new JSM.Coord (0, 0, 0)));
+	test.Assert (body.GetPolygon (0).GetVertexIndex (0) == 0);
+	test.Assert (body.GetLine (0).GetBegVertexIndex (0) == 4);
+	test.Assert (body.GetPoint (0).GetVertexIndex (0) == 6);
+
+	test.Assert (cloned.GetVertexPosition (0).IsEqual (new JSM.Coord (0, 0, 0)));
+	test.Assert (cloned.GetPolygon (0).GetVertexIndex (0) == 0);
+	test.Assert (cloned.GetLine (0).GetBegVertexIndex (0) == 4);
+	test.Assert (cloned.GetPoint (0).GetVertexIndex (0) == 6);
+
+	body.SetVertexPosition (0, new JSM.Coord (-1, -1, 0));
+	body.GetPolygon (0).SetVertexIndex (0, 1);
+	body.GetLine (0).SetBegVertexIndex (2);
+	body.GetPoint (0).SetVertexIndex (3);
+	body.GetTextureProjection ().SetType (JSM.TextureProjectionType.Cylindrical);
+	body.GetTextureProjection ().GetCoords ().origo.x = 42.0;
+	
+	test.Assert (cloned.GetVertexPosition (0).IsEqual (new JSM.Coord (0, 0, 0)));
+	test.Assert (cloned.GetPolygon (0).GetVertexIndex (0) == 0);
+	test.Assert (cloned.GetLine (0).GetBegVertexIndex (0) == 4);
+	test.Assert (cloned.GetPoint (0).GetVertexIndex (0) == 6);
+	test.Assert (cloned.GetPoint (0).GetVertexIndex (0) == 6);
+	test.Assert (cloned.GetTextureProjection ().GetType (0) == JSM.TextureProjectionType.Planar);
+	test.Assert (cloned.GetTextureProjection ().GetCoords (0).origo.IsEqual (new JSM.Coord (0.0, 0.0, 0.0)));
+
+	body.Clear ();
+	test.AssertEqual (cloned.VertexCount (), 7);
+	test.AssertEqual (cloned.PolygonCount (), 1);
+	test.AssertEqual (cloned.LineCount (), 1);
+	test.AssertEqual (cloned.PointCount (), 1);
+});
+
 generalSuite.AddTest ('BodyReverseTest', function (test)
 {
 	var body = new JSM.Body ();
@@ -1680,12 +1736,6 @@ generatorSuite.AddTest ('GenerateRuledTest', function (test)
 	
 	var sector1 = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (2.0, 0.0, 0.0));
 	var sector2 = new JSM.Sector (new JSM.Coord (0.0, 2.0, 0.0), new JSM.Coord (2.0, 2.0, 0.0));
-	var sector1Coords = [];
-	JSM.GetSectorSegmentation (sector1, 2, sector1Coords);
-	test.Assert (sector1Coords.length == 3);
-	test.Assert (sector1Coords[0].IsEqual (new JSM.Vector (0.0, 0.0, 0.0)));
-	test.Assert (sector1Coords[1].IsEqual (new JSM.Vector (1.0, 0.0, 0.0)));
-	test.Assert (sector1Coords[2].IsEqual (new JSM.Vector (2.0, 0.0, 0.0)));
 	
 	var ruledFromSectors = JSM.GenerateRuledFromSectors (sector1, sector2, 2, 2, false);
 	test.Assert (ruledFromSectors.VertexCount () == 9);
@@ -2043,8 +2093,8 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 0.0, 1.0)));
 	
 	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2, 3]));
-
-	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
+	
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 	
 	var textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -2054,7 +2104,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
 	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
-	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.0, 0.2), new JSM.Coord (0.0, 0.0, 1.0), new JSM.Coord (0.0, -1.0, 0.0));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.0, 0.2), new JSM.Coord (0.0, 0.0, 1.0), new JSM.Coord (1.0, 0.0, 0.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -2064,7 +2114,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (0.8, 0.8)));
 	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0.8, -0.2)));
 
-	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
 
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, 0.0)));
 	body.AddVertex (new JSM.BodyVertex (new JSM.Coord (0.0, 1.0, 1.0)));
@@ -2094,7 +2144,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	
 	body.AddPolygon (new JSM.BodyPolygon ([0, 1, 2, 3]));
 	
-	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -2105,7 +2155,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
 	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
-	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (10.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -20.0));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (10.0, 0.0, 0.0), new JSM.Coord (0.0, 20.0, 0.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -2116,7 +2166,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (1, 1)));
 	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (0, 1)));
 
-	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));
+	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.2, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -2127,7 +2177,7 @@ textureSuite.AddTest ('BodyPlanarTextureCoordTest', function (test)
 	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (0.8, 0.8)));
 	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (-0.2, 0.8)));
 
-	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.3, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, -1.0));	
+	body.SetPlanarTextureProjection (new JSM.Coord (0.2, 0.3, 1.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0));	
 
 	textureCoords = JSM.CalculateBodyTextureCoords (body);
 	test.Assert (textureCoords.length == 1);
@@ -2230,6 +2280,23 @@ textureSuite.AddTest ('BodyCylindricalTextureCoordTest', function (test)
 	test.Assert (textureCoords[3][0].IsEqual (new JSM.Coord2D (radius * 3.0 / 6.0, 1.0)));
 	test.Assert (textureCoords[4][0].IsEqual (new JSM.Coord2D (radius * 2.0 / 6.0, 1.0)));
 	test.Assert (textureCoords[5][0].IsEqual (new JSM.Coord2D (radius * 1.0 / 6.0, 1.0)));
+	
+	var body = new JSM.GenerateCylinder (1.0, 1.0, 6, true, false);
+	body.GetTextureProjection ().coords.origo.z = 0.0;
+
+	var textureCoords = JSM.CalculateBodyTextureCoords (body);
+	test.Assert (textureCoords.length == 8);
+	test.Assert (textureCoords[0].length == 4);
+	test.Assert (textureCoords[1].length == 4);
+	test.Assert (textureCoords[2].length == 4);
+	test.Assert (textureCoords[3].length == 4);
+	test.Assert (textureCoords[4].length == 4);
+	test.Assert (textureCoords[5].length == 4);
+	
+	test.Assert (textureCoords[0][0].IsEqual (new JSM.Coord2D (radius, 0.5)));
+	test.Assert (textureCoords[0][1].IsEqual (new JSM.Coord2D (radius * 5.0 / 6.0, 0.5)));
+	test.Assert (textureCoords[0][2].IsEqual (new JSM.Coord2D (radius * 5.0 / 6.0, -0.5)));
+	test.Assert (textureCoords[0][3].IsEqual (new JSM.Coord2D (radius, -0.5)));
 });
 
 var utilsSuite = unitTest.AddTestSuite ('ModelerUtils');

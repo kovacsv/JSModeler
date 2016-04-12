@@ -11,6 +11,7 @@
 	"loopfunc" : true,
 	"shadow" : true,
 	"undef" : true,
+	"latedef" : false,
 	"globals" : {
 		"JSM" : true,
 		"THREE" : false,
