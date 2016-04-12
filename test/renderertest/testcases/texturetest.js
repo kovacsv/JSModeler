@@ -30,33 +30,27 @@ function AddTextureTests (canvasTester, viewer)
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
-		body1.SetTextureProjectionType ('Planar');
-		body1.SetTextureProjectionCoords (new JSM.CoordSystem (
+		body1.SetPlanarTextureProjection (
 			new JSM.Coord (0.0, 0.0, 0.0),
 			new JSM.Coord (1.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0),
-			new JSM.Coord (0.0, 0.0, 0.0)
-		));
+			new JSM.Coord (0.0, 0.0, 1.0)
+		);
 		body1.SetPolygonsMaterialIndex (0);
 
 		var body2 = JSM.GenerateCuboid (1, 1, 1);
-		body2.SetTextureProjectionType ('Planar');
-		body2.SetTextureProjectionCoords (new JSM.CoordSystem (
+		body2.SetPlanarTextureProjection (
 			new JSM.Coord (0.2, 0.3, 0.4),
 			new JSM.Coord (1.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0),
-			new JSM.Coord (0.0, 0.0, 0.0)
-		));
+			new JSM.Coord (0.0, 0.0, 1.0)
+		);
 		body2.SetPolygonsMaterialIndex (0);
 		
 		var body3 = JSM.GenerateCuboid (1, 1, 1);
-		body3.SetTextureProjectionType ('Planar');
-		body3.SetTextureProjectionCoords (new JSM.CoordSystem (
+		body3.SetPlanarTextureProjection (
 			new JSM.Coord (-0.5, -0.5, -0.5),
 			new JSM.Coord (1.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0),
-			new JSM.Coord (0.0, 0.0, 0.0)
-		));
+			new JSM.Coord (0.0, 0.0, 1.0)
+		);
 		body3.SetPolygonsMaterialIndex (0);		
 
 		OffsetTwoBodies (body1, body3, 1.2, 0.0, 0.0);
@@ -136,13 +130,11 @@ function AddTextureTests (canvasTester, viewer)
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
 		
-		body.SetTextureProjectionType ('Planar');
-		body.SetTextureProjectionCoords (new JSM.CoordSystem (
+		body.SetPlanarTextureProjection (
 			new JSM.Coord (-0.5, -0.5, -0.5),
 			new JSM.Coord (1.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 1.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0)
-		));		
+			new JSM.Coord (0.0, 1.0, 0.0)
+		);		
 		RenderBodyAndWait (viewer, body, materials, renderFinished);
 	}, 'references/texture/cube_planar.png');	
 
@@ -153,13 +145,11 @@ function AddTextureTests (canvasTester, viewer)
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
 		
-		body.SetTextureProjectionType ('Planar');
-		body.SetTextureProjectionCoords (new JSM.CoordSystem (
+		body.SetPlanarTextureProjection (
 			new JSM.Coord (-0.3, -0.3, -0.3),
 			new JSM.Coord (1.0, 0.0, 0.0),
-			new JSM.Coord (0.0, 1.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0)
-		));	
+			new JSM.Coord (0.0, 1.0, 0.0)
+		);	
 		RenderBodyAndWait (viewer, body, materials, renderFinished);
 	}, 'references/texture/cube_planar2.png');	
 	
@@ -170,13 +160,11 @@ function AddTextureTests (canvasTester, viewer)
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
 		
-		body.SetTextureProjectionType ('Planar');
-		body.SetTextureProjectionCoords (new JSM.CoordSystem (
+		body.SetPlanarTextureProjection (
 			new JSM.Coord (-0.4, -0.4, 0.4),
 			new JSM.Coord (1.0, 0.0, 1.0),
-			new JSM.Coord (0.0, 1.0, 0.0),
-			new JSM.Coord (0.0, 0.0, 1.0)
-		));
+			new JSM.Coord (0.0, 1.0, 0.0)
+		);
 		RenderBodyAndWait (viewer, body, materials, renderFinished);
 	}, 'references/texture/cube_planar3.png');	
 	

@@ -120,7 +120,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 		}
 	}
 
-	function ReadFile (reader)
+	function ReadFile (reader, chunks)
 	{
 		function ReadColorChunk (reader, id, length)
 		{
@@ -568,7 +568,7 @@ JSM.Read3dsFile = function (arrayBuffer, callbacks)
 	};
 	
 	var reader = new JSM.BinaryReader (arrayBuffer, true);
-	ReadFile (reader);
+	ReadFile (reader, chunks);
 };
 
 JSM.Convert3dsToJsonData = function (arrayBuffer, callbacks)

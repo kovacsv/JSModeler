@@ -6,8 +6,7 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="framework/test.css">
-
+	<script type="text/javascript" src="../build/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
@@ -32,6 +31,7 @@
 	<script type="text/javascript" src="../src/geometry/convexhull.js"></script>
 	<script type="text/javascript" src="../src/geometry/polygon2d.js"></script>
 	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/cutpolygon.js"></script>
 	<script type="text/javascript" src="../src/geometry/triangulation.js"></script>
 	<script type="text/javascript" src="../src/geometry/octree.js"></script>
 	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
@@ -86,42 +86,70 @@
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeconverter.js"></script>
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeviewer.js"></script>
 <!-- JSModeler includes end -->
-	
-	<title>JSModeler Test</title>
+	<title>Example</title>
 
 	<script type="text/javascript">
-		function RunFileTestExample (file)
+		var viewer = null;
+
+		function AddPolygonToBody (body, polygon)
 		{
-			var logDiv = document.getElementById ('log');
-			logDiv.innerHTML = '';
-			JSM.GetArrayBufferFromFile (file, function (arrayBuffer) {
-				JSM.Read3dsFile (arrayBuffer, callbacks = {		
-					onLog: function (logText, logLevel) {
-						logDiv.innerHTML += '<div style="margin-left:' + (logLevel * 20) + 'px;">' + logText + '</div>';
-					}
-				});
-			});
+			var vertexCount = body.VertexCount ();
+			var bodyPolygon = [];
+			var i, vertex;
+			for (i = 0; i < polygon.VertexCount (); i++) {
+				vertex = polygon.GetVertex (i);
+				JSM.AddVertexToBody (body, vertex.x, vertex.y, 0.0);
+				bodyPolygon.push (vertexCount++);
+			}
+			JSM.AddPolygonToBody (body, bodyPolygon);
 		}
 
-		function FileSelected (event)
+		function Load ()
 		{
-			var file = event.target.files[0];
-			RunFileTestExample (file);
-		}
+			var camera = new JSM.Camera (
+				new JSM.Coord (10.0, 30.0, 20.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Vector (0.0, 0.0, 1.0)
+			);
+			
+			viewer = new JSM.Viewer ();
+			if (!viewer.Init (document.getElementById ('example'), camera)) {
+				alert ('error');
+			}
 
-		window.onload = function ()
+			var body = new JSM.Body ();
+
+			var polygon = new JSM.Polygon2D ();
+			polygon.AddVertex (0, 0);
+			polygon.AddVertex (10, 0);
+			polygon.AddVertex (10, 10);
+			polygon.AddVertex (0, 10);
+			polygon.AddVertex (4, 5);
+
+			var segmented = JSM.SegmentPolygon2D (polygon, 5, 5);
+			var i;
+			for (i = 0; i < segmented.length; i++) {
+				AddPolygonToBody (body, segmented[i]);
+			}
+
+			var materials = new JSM.Materials ();
+			JSM.GenerateRandomMaterials (body, materials, false);
+			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
+
+			viewer.AddBody (renderBody);
+			viewer.Draw ();
+		}
+	
+	    window.onload = function ()
 		{
-			document.getElementById ('file').addEventListener ('change', FileSelected, false);
+			Load ();			
 		}
 	</script>
-	
+
 </head>
 
 <body>
-
-	<input type="file" id="file" name="file"/>
-	<div id="log"></div>
-
+	<canvas id="example" width="800" height="500"></canvas>
 </body>
 
 </html>

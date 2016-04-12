@@ -1,7 +1,7 @@
 var JSM = function ()
 {
 	this.mainVersion = 0;
-	this.subVersion = 40;
+	this.subVersion = 41;
 };
 
 /**

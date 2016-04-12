@@ -354,7 +354,7 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 			return body.AddNormal (averageNormal.x, averageNormal.y, averageNormal.z);
 		}
 	
-		var triangle = body.triangles[i];
+		var triangle = body.triangles[triangleIndex];
 		if (triangle.mat === undefined || triangle.mat < 0) {
 			triangle.mat = model.GetDefaultMaterialIndex ();
 		}
@@ -362,7 +362,7 @@ JSM.TriangleBody.prototype.Finalize = function (model)
 		var normal, normalIndex;
 		if (triangle.n0 === undefined || triangle.n1 === undefined || triangle.n2 === undefined) {
 			if (triangle.curve === undefined || triangle.curve < 0) {
-				normal = triangleNormals[i];
+				normal = triangleNormals[triangleIndex];
 				normalIndex = body.AddNormal (normal.x, normal.y, normal.z);
 				triangle.n0 = normalIndex;
 				triangle.n1 = normalIndex;

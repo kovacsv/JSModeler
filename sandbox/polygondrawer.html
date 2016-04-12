@@ -10,8 +10,6 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		var polygonDrawer = null;
-		
 		var polygon1 = [
 			[1, 0],
 			[3, 0],
@@ -42,7 +40,7 @@
 		
 		function Load ()
 		{
-			polygonDrawer = new PolygonDrawer ();
+			var polygonDrawer = new PolygonDrawer ();
 			polygonDrawer.Init (document.body, 600, 600, 50);
 			polygonDrawer.DrawCoordSystem ();
 			polygonDrawer.DrawPolygon (polygon1, '#ffeeee', '#cc0000');

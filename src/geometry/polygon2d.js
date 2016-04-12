@@ -539,6 +539,36 @@ JSM.Polygon2D.prototype.FromArray = function (vertices)
 };
 
 /**
+ * Function: Polygon2D.GetBoundingBox
+ * Description: Calculates the bounding box of the polygon.
+ * Returns:
+ *	{Box2D} the result
+ */
+JSM.Polygon2D.prototype.GetBoundingBox = function ()
+{
+	if (this.cache.boundingBox !== null) {
+		return this.cache.boundingBox;
+	}
+
+	var result = new JSM.Box2D (
+		new JSM.Coord2D (JSM.Inf, JSM.Inf),
+		new JSM.Coord2D (-JSM.Inf, -JSM.Inf)
+	);
+
+	var i, coord;
+	for (i = 0; i < this.vertices.length; i++) {
+		coord = this.vertices[i];
+		result.min.x = JSM.Minimum (result.min.x, coord.x);
+		result.min.y = JSM.Minimum (result.min.y, coord.y);
+		result.max.x = JSM.Maximum (result.max.x, coord.x);
+		result.max.y = JSM.Maximum (result.max.y, coord.y);
+	}
+
+	this.cache.boundingBox = result;
+	return result;
+};
+
+/**
 * Function: Polygon2D.Clear
 * Description: Makes the polygon empty.
 */
@@ -558,7 +588,8 @@ JSM.Polygon2D.prototype.ClearCache = function ()
 		signedArea : null,
 		orientation : null,
 		vertexOrientations : {},
-		complexity : null
+		complexity : null,
+		boundingBox : null
 	};
 };
 

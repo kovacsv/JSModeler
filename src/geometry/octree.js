@@ -4,6 +4,7 @@
 *	Traverses the nodes of the tree, and calls the given callback when a node found. The return value
 *	of the callback determines if we need to continue traverse along that given node.
 * Parameters:
+*	octree {Octree} the octree
 *	nodeFound {function} the callback
 */
 JSM.TraverseOctreeNodes = function (octree, nodeFound)

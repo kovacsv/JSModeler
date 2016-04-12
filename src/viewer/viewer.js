@@ -16,6 +16,10 @@ JSM.Viewer.prototype.Init = function (canvas, camera)
 		return false;
 	}
 
+	if (!this.InitLights ()) {
+		return false;
+	}
+
 	return true;
 };
 
@@ -48,6 +52,11 @@ JSM.Viewer.prototype.InitNavigation = function (camera)
 		return false;
 	}
 
+	return true;
+};
+
+JSM.Viewer.prototype.InitLights = function ()
+{
 	this.SetAmbientLight (new JSM.RenderAmbientLight (0x7f7f7f));
 	this.EnableCameraLight ();
 	return true;
@@ -57,7 +66,6 @@ JSM.Viewer.prototype.SetClearColor = function (red, green, blue)
 {
 	this.renderer.SetClearColor (red, green, blue);
 };
-
 
 JSM.Viewer.prototype.EnableCameraLight = function ()
 {
@@ -129,6 +137,11 @@ JSM.Viewer.prototype.FitInWindow = function ()
 	this.navigation.FitInWindow (sphere.GetCenter (), sphere.GetRadius ());
 };
 
+JSM.Viewer.prototype.SetFullscreen = function (fullscreen)
+{
+	this.navigation.SetFullscreen (fullscreen);
+};
+
 JSM.Viewer.prototype.GetCenter = function ()
 {
 	var boundingBox = this.GetBoundingBox ();
@@ -190,6 +203,7 @@ JSM.Viewer.prototype.FindObjects = function (screenX, screenY)
 JSM.Viewer.prototype.Resize = function ()
 {
 	this.renderer.Resize ();
+	this.Draw ();
 };
 
 JSM.Viewer.prototype.Draw = function ()

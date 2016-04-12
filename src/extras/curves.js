@@ -73,7 +73,7 @@ JSM.GenerateBezierCurve = function (points, segmentation)
 */
 JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, useTriangles, isCurved, getPointCallback, userData)
 {
-	function AddVertices ()
+	function AddVertices (result, xStart, yStart, xSegment, ySegment)
 	{
 		var i, j, u, v, coord;
 		for (i = 0; i <= ySegmentation; i++) {
@@ -86,7 +86,7 @@ JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, us
 		}
 	}
 
-	function AddPolygons ()
+	function AddPolygons (result)
 	{
 		var i, j;
 		var current, next, top, ntop;
@@ -130,8 +130,8 @@ JSM.GenerateSurface = function (xRange, yRange, xSegmentation, ySegmentation, us
 	var xSegment = xDiff / xSegmentation;
 	var ySegment = yDiff / ySegmentation;
 	
-	AddVertices ();
-	AddPolygons ();
+	AddVertices (result, xStart, yStart, xSegment, ySegment);
+	AddPolygons (result);
 
 	return result;
 };

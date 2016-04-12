@@ -55,6 +55,28 @@ JSM.CoordOrientation2D = function (a, b, c)
 	return JSM.Orientation.Invalid;	
 };
 
+/**
+* Function: CoordSignedDistance2D
+* Description: Calculates the distance of two coordinates along a direction vector.
+* Parameters:
+*	a {Coord2D} first coordinate
+*	b {Coord2D} second coordinate
+*	direction {Vector2D} direction vector
+* Returns:
+*	{number} the result
+*/
+JSM.CoordSignedDistance2D = function (a, b, direction)
+{
+	var abDirection = JSM.CoordSub2D (b, a);
+	var distance = a.DistanceTo (b);
+	
+	var angle = abDirection.AngleTo (direction);
+	if (JSM.IsPositive (angle)) {
+		distance = -distance;
+	}
+
+	return distance;
+};
 
 /**
 * Function: PolarToCartesian

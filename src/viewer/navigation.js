@@ -16,6 +16,7 @@ JSM.Navigation = function ()
 	this.cameraFarDistanceLimit = null;
 	
 	this.orbitCenter = null;
+	this.fullscreen = null;
 };
 
 JSM.Navigation.prototype.Init = function (canvas, camera, drawCallback, resizeCallback)
@@ -34,6 +35,7 @@ JSM.Navigation.prototype.Init = function (canvas, camera, drawCallback, resizeCa
 	this.cameraEnableZoom = true;
 	
 	this.orbitCenter = this.camera.center.Clone ();
+	this.fullscreen = false;
 
 	var myThis = this;
 	if (document.addEventListener) {
@@ -118,6 +120,12 @@ JSM.Navigation.prototype.FitInWindow = function (center, radius)
 	this.orbitCenter = this.camera.center.Clone ();
 };
 
+JSM.Navigation.prototype.SetFullscreen = function (fullscreen)
+{
+	this.fullscreen = fullscreen;
+	this.ResizeCallback ();
+};
+
 JSM.Navigation.prototype.Orbit = function (angleX, angleY)
 {
 	var radAngleX = angleX * JSM.DegRad;
@@ -190,6 +198,10 @@ JSM.Navigation.prototype.DrawCallback = function ()
 JSM.Navigation.prototype.ResizeCallback = function ()
 {
 	if (this.resizeCallback !== undefined && this.resizeCallback !== null) {
+		if (this.fullscreen) {
+			this.canvas.width = window.innerWidth;
+			this.canvas.height = window.innerHeight;
+		}
 		this.resizeCallback ();
 	}
 };

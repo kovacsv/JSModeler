@@ -88,6 +88,10 @@ generalSuite.AddTest ('VectorTest', function (test) {
 	var angle = 90.0 * JSM.DegRad;
 	test.Assert (coord.Clone ().Rotate (axis, angle, origo).IsEqual (new JSM.Coord (-1.0, 1.0, 1.0)));
 
+	var vector1 = new JSM.Vector2D (1.0, 0.0);
+	var vector2 = new JSM.Vector2D (0.0, 1.0);
+	test.Assert (JSM.IsEqual (vector1.AngleTo (vector2), 90.0 * JSM.DegRad));
+
 	var vector1 = new JSM.Vector (1.0, 0.0, 0.0);
 	var vector2 = new JSM.Vector (0.0, 1.0, 0.0);
 	test.Assert (JSM.IsEqual (vector1.AngleTo (vector2), 90.0 * JSM.DegRad));
@@ -153,6 +157,11 @@ generalSuite.AddTest ('VectorTest', function (test) {
 	var centroid3 = JSM.CalculateCentroid (coords3);
 	test.Assert (centroid3.IsEqual (new JSM.Coord (0.3, 0.5, 0.0)));
 
+	var vector1 = new JSM.Vector2D (1.0, 0.0);
+	var vector2 = new JSM.Vector2D (0.0, 1.0);
+	test.Assert (JSM.IsEqual (vector1.AngleTo (vector2), Math.PI / 2.0));
+	test.Assert (JSM.IsEqual (vector2.AngleTo (vector1), Math.PI / 2.0));
+
 	var vector1 = new JSM.Vector (1.0, 0.0, 0.0);
 	var vector2 = new JSM.Vector (0.0, 1.0, 0.0);
 	test.Assert (JSM.IsEqual (vector1.AngleTo (vector2), Math.PI / 2.0));
@@ -191,6 +200,12 @@ generalSuite.AddTest ('VectorTest', function (test) {
 	test.Assert (JSM.CoordOrientation (coord1, coord3, coord2, normal1) == JSM.Orientation.CounterClockwise);
 	test.Assert (JSM.CoordOrientation (coord1, coord3, coord3, normal1) == JSM.Orientation.Invalid);
 	
+	var coord1 = new JSM.Vector2D (0.0, 0.0);
+	var coord2 = new JSM.Vector2D (1.0, 0.0);
+	var coord3 = new JSM.Vector2D (-1.0, 0.0);
+	test.Assert (JSM.IsEqual (JSM.CoordSignedDistance2D (coord1, coord2, JSM.CoordSub2D (coord2, coord1)), 1.0));
+	test.Assert (JSM.IsEqual (JSM.CoordSignedDistance2D (coord1, coord3, JSM.CoordSub2D (coord1, coord3)), -1.0));
+
 	var coord1 = new JSM.Vector (0.0, 0.0, 0.0);
 	var coord2 = new JSM.Vector (1.0, 0.0, 0.0);
 	var coord3 = new JSM.Vector (-1.0, 0.0, 0.0);
@@ -607,15 +622,41 @@ generalSuite.AddTest ('SectorTest', function (test) {
 	test.Assert (sector.end.IsEqual (new JSM.Coord (1.0, 2.0, 3.0)));
 });
 
+generalSuite.AddTest ('SectorSegmentationTest', function (test) {
+	var sector = new JSM.Sector2D (new JSM.Coord2D (0.0, 0.0), new JSM.Coord2D (2.0, 0.0));
+	var segmentedCoords = JSM.GetSectorSegmentation2D (sector, 2, segmentedCoords);
+	test.Assert (segmentedCoords.length == 3);
+	test.Assert (segmentedCoords[0].IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (segmentedCoords[1].IsEqual (new JSM.Coord2D (1.0, 0.0)));
+	test.Assert (segmentedCoords[2].IsEqual (new JSM.Coord2D (2.0, 0.0)));
+
+	var segmentedCoords = JSM.GetSectorSegmentation2D (sector, 4, segmentedCoords);
+	test.Assert (segmentedCoords.length == 5);
+	test.Assert (segmentedCoords[0].IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (segmentedCoords[1].IsEqual (new JSM.Coord2D (0.5, 0.0)));
+	test.Assert (segmentedCoords[2].IsEqual (new JSM.Coord2D (1.0, 0.0)));
+	test.Assert (segmentedCoords[3].IsEqual (new JSM.Coord2D (1.5, 0.0)));
+	test.Assert (segmentedCoords[4].IsEqual (new JSM.Coord2D (2.0, 0.0)));
+
+	var sector = new JSM.Sector (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (2.0, 0.0, 0.0));
+	var segmentedCoords = JSM.GetSectorSegmentation (sector, 2, segmentedCoords);
+	test.Assert (segmentedCoords.length == 3);
+	test.Assert (segmentedCoords[0].IsEqual (new JSM.Coord (0.0, 0.0, 0.0)));
+	test.Assert (segmentedCoords[1].IsEqual (new JSM.Coord (1.0, 0.0, 0.0)));
+	test.Assert (segmentedCoords[2].IsEqual (new JSM.Coord (2.0, 0.0, 0.0)));
+});
+
 generalSuite.AddTest ('CoordLinePositionTest', function (test)
 {
 	var start2D = new JSM.Coord2D (1.0, 1.0);
 	var direction2D = new JSM.Coord2D (1.0, 0.0);
 	var line2D = new JSM.Line2D (start2D, direction2D);
 	test.Assert (line2D.CoordPosition (new JSM.Coord2D (0.0, 0.0)) == JSM.CoordLinePosition2D.CoordAtLineRight);
+	test.Assert (line2D.CoordPosition (new JSM.Coord2D (0.0, -1.0)) == JSM.CoordLinePosition2D.CoordAtLineRight);
 	test.Assert (line2D.CoordPosition (new JSM.Coord2D (0.0, 2.0)) == JSM.CoordLinePosition2D.CoordAtLineLeft);
+	test.Assert (line2D.CoordPosition (new JSM.Coord2D (0.0, 3.0)) == JSM.CoordLinePosition2D.CoordAtLineLeft);
 	test.Assert (line2D.CoordPosition (new JSM.Coord2D (0.0, 1.0)) == JSM.CoordLinePosition2D.CoordOnLine);
-
+	
 	var start = new JSM.Coord (1.0, 1.0, 1.0);
 	var direction = new JSM.Coord (1.0, 0.0, 0.0);
 	var line = new JSM.Line (start, direction);
@@ -631,7 +672,107 @@ generalSuite.AddTest ('CoordLinePositionTest', function (test)
 	test.Assert (line.ProjectCoord (new JSM.Coord (0.0, 0.0, 0.0)).IsEqual (new JSM.Coord (0.0, 1.0, 1.0)));
 	test.Assert (line.ProjectCoord (new JSM.Coord (1.0, 1.0, 1.0)).IsEqual (new JSM.Coord (1.0, 1.0, 1.0)));
 	test.Assert (line.ProjectCoord (new JSM.Coord (2.0, 1.0, 1.0)).IsEqual (new JSM.Coord (2.0, 1.0, 1.0)));
+});
+
+generalSuite.AddTest ('LineLinePosition2DTest', function (test)
+{	
+	var line1 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (1.0, 0.0));
+	var line1b = new JSM.Line2D (new JSM.Coord2D (2.0, 0.0), new JSM.Vector2D (10.0, 0.0));
+	var line1c = new JSM.Line2D (new JSM.Coord2D (2.0, 0.0), new JSM.Vector2D (-10.0, 0.0));
+	var line1d = new JSM.Line2D (new JSM.Coord2D (-2.0, 0.0), new JSM.Vector2D (10.0, 0.0));
+	var line1e = new JSM.Line2D (new JSM.Coord2D (-2.0, 0.0), new JSM.Vector2D (-10.0, 0.0));
+	var line1f = new JSM.Line2D (new JSM.Coord2D (0.5, 0.0), new JSM.Vector2D (1.0, 0.0));
+	var line1g = new JSM.Line2D (new JSM.Coord2D (0.5, 0.0), new JSM.Vector2D (-1.0, 0.0));
+	var line2 = new JSM.Line2D (new JSM.Coord2D (0.0, 1.0), new JSM.Vector2D (1.0, 0.0));
+	var line3 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line4 = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (0.0, 1.0));
+	var line5 = new JSM.Line2D (new JSM.Coord2D (0.0, 0.0), new JSM.Vector2D (1.0, 1.0));
+	var line5b = new JSM.Line2D (new JSM.Coord2D (1.0, 1.0), new JSM.Vector2D (1.0, 1.0));
+	var line5c = new JSM.Line2D (new JSM.Coord2D (10.0, 10.0), new JSM.Vector2D (100.0, 100.0));
+	var line6 = new JSM.Line2D (new JSM.Coord2D (1.0, 0.0), new JSM.Vector2D (-1.0, 1.0));
+	var line6b = new JSM.Line2D (new JSM.Coord2D (0.0, 1.0), new JSM.Vector2D (-1.0, 1.0));
+	var line6c = new JSM.Line2D (new JSM.Coord2D (0.0, 1.0), new JSM.Vector2D (-10.0, 10.0));
 	
+	var line7 = new JSM.Line2D (new JSM.Coord2D (1.0, 1.0), new JSM.Vector2D (1.0, 0.0));
+	var line8 = new JSM.Line2D (new JSM.Coord2D (6.0, 6.0), new JSM.Vector2D (0.0, 1.0));
+	
+	var intersection = new JSM.Coord2D (0.0, 0.0);
+	
+	test.Assert (line1.LinePosition (line1, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1b, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1c, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1d, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1e, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1f, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line1.LinePosition (line1g, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+
+	test.Assert (line5.LinePosition (line5, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line5.LinePosition (line5b, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line5.LinePosition (line5c, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+
+	test.Assert (line6.LinePosition (line6, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line6.LinePosition (line6b, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+	test.Assert (line6.LinePosition (line6c, intersection) == JSM.LineLinePosition2D.LinesIntersectsCoincident);
+
+	test.Assert (line2.LinePosition (line1, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1b, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1c, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1d, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1e, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1f, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line2.LinePosition (line1g, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+
+	test.Assert (line1.LinePosition (line2, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line1b.LinePosition (line2, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	test.Assert (line1c.LinePosition (line2, intersection) == JSM.LineLinePosition2D.LinesDontIntersect);
+	
+	test.Assert (line1.LinePosition (line3, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (line1.LinePosition (line4, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (1.0, 0.0)));
+	
+	test.Assert (line3.LinePosition (line1, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (line4.LinePosition (line1, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (1.0, 0.0)));
+
+	test.Assert (line1.LinePosition (line5, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (line1.LinePosition (line6, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (1.0, 0.0)));
+
+	test.Assert (line2.LinePosition (line5, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (1.0, 1.0)));
+	test.Assert (line2.LinePosition (line6, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 1.0)));
+
+	test.Assert (line3.LinePosition (line5, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 0.0)));
+	test.Assert (line3.LinePosition (line6, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.0, 1.0)));
+
+	test.Assert (line5.LinePosition (line6, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+	test.Assert (line5.LinePosition (line6b, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+	test.Assert (line5.LinePosition (line6c, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+	
+	test.Assert (line6.LinePosition (line5, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+	test.Assert (line6.LinePosition (line5b, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+	test.Assert (line6.LinePosition (line5c, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (0.5, 0.5)));
+
+	test.Assert (line7.LinePosition (line8, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (6.0, 1.0)));
+	test.Assert (line8.LinePosition (line7, intersection) == JSM.LineLinePosition2D.LinesIntersectsOnePoint);
+	test.Assert (intersection.IsEqual (new JSM.Coord2D (6.0, 1.0)));
+});
+
+generalSuite.AddTest ('LineLinePositionTest', function (test)
+{	
 	var line1 = new JSM.Line (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
 	var line2 = new JSM.Line (new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0));
 	var line3 = new JSM.Line (new JSM.Coord (0.0, 0.5, 0.0), new JSM.Coord (0.0, 1.0, 0.0));
@@ -1837,942 +1978,6 @@ polygonSuite.AddTest ('PolygonOffsetTest', function (test)
 	test.Assert (offseted.vertices[2].IsEqual (new JSM.Coord (1.8, 0.8, 0.0)));
 	test.Assert (offseted.vertices[3].IsEqual (new JSM.Coord (0.8, 0.8, 0.0)));
 	test.Assert (offseted.vertices[4].IsEqual (new JSM.Coord (0.8, 1.1527864045000422, 0.0)));
-});
-
-polygonSuite.AddTest ('OldCutPolygonTest', function (test)
-{
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0.0, 0.0, 0.0);
-	polygon.AddVertex (1.0, 0.0, 0.0);
-	polygon.AddVertex (1.0, 1.0, 0.0);
-	polygon.AddVertex (0.0, 1.0, 0.0);
-	
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 0);
-	test.Assert (frontPolygons.length == 1);
-
-	test.Assert (
-		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.0, 0.0, 0.0)) &&
-		frontPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (1.0, 0.0, 0.0)) &&
-		frontPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (1.0, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (0.0, 1.0, 0.0))
-		);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (-1.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 0);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-
-	test.Assert (
-		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.5, 0.0, 0.0)) &&
-		frontPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (0.5, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (0.0, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (0.0, 0.0, 0.0))
-		);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-
-	test.Assert (
-		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.5, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (0.5, 0.0, 0.0)) &&
-		frontPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (1.0, 0.0, 0.0)) &&
-		frontPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (1.0, 1.0, 0.0))
-		);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.8, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-
-	test.Assert (
-		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.8, 0.0, 0.0)) &&
-		frontPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (0.8, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (0.0, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (0.0, 0.0, 0.0))
-		);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 0);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 1.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-
-	test.Assert (backPolygons[0].VertexCount () == 3);
-	test.Assert (frontPolygons[0].VertexCount () == 3);
-	test.Assert (
-		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.0, 0.0, 0.0)) &&
-		frontPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (1.0, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (0.0, 1.0, 0.0))
-		);
-	test.Assert (
-		backPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (1.0, 1.0, 0.0)) &&
-		backPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (0.0, 0.0, 0.0)) &&
-		backPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (1.0, 0.0, 0.0))
-		);
-	
-	polygon = new JSM.Polygon ();
-	polygon.AddVertex (-1.0, -1.0, 0.0);
-	polygon.AddVertex (-1.0, 1.0, 0.0);
-	polygon.AddVertex (1.0, 1.0, 0.0);
-	polygon.AddVertex (1.0, -1.0, 0.0);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-
-	test.Assert (
-		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.0, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (0.0, -1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (-1.0, -1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (-1.0, 1.0, 0.0))
-		);
-	test.Assert (
-		backPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.0, -1.0, 0.0)) &&
-		backPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (0.0, 1.0, 0.0)) &&
-		backPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (1.0, 1.0, 0.0)) &&
-		backPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (1.0, -1.0, 0.0))
-		);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-	
-	test.Assert (
-		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.0, -1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (0.0, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (1.0, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (1.0, -1.0, 0.0))
-		);
-	test.Assert (
-		backPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.0, 1.0, 0.0)) &&
-		backPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (0.0, -1.0, 0.0)) &&
-		backPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (-1.0, -1.0, 0.0)) &&
-		backPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (-1.0, 1.0, 0.0))
-		);
-
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0.0, 0.0, 0.0);
-	polygon.AddVertex (2.0, 0.0, 0.0);
-	polygon.AddVertex (2.0, 1.0, 0.0);
-	polygon.AddVertex (1.0, 1.0, 0.0);
-	polygon.AddVertex (1.0, 2.0, 0.0);
-	polygon.AddVertex (2.0, 2.0, 0.0);
-	polygon.AddVertex (2.0, 3.0, 0.0);
-	polygon.AddVertex (0.0, 3.0, 0.0);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (3.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	planePolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 0);
-	test.Assert (frontPolygons.length == 1);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 2);
-	test.Assert (frontPolygons.length == 1);
-
-	test.Assert (frontPolygons[0].VertexCount () == 8);
-	test.Assert (
-		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (1.5, 0.0, 0.0)) &&
-		frontPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (1.5, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (1.0, 1.0, 0.0)) &&
-		frontPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (1.0, 2.0, 0.0)) &&
-		frontPolygons[0].GetVertex (4).IsEqual (new JSM.Vector (1.5, 2.0, 0.0)) &&
-		frontPolygons[0].GetVertex (5).IsEqual (new JSM.Vector (1.5, 3.0, 0.0)) &&
-		frontPolygons[0].GetVertex (6).IsEqual (new JSM.Vector (0.0, 3.0, 0.0)) &&
-		frontPolygons[0].GetVertex (7).IsEqual (new JSM.Vector (0.0, 0.0, 0.0))
-		);
-
-	test.Assert (backPolygons[0].VertexCount () == 4);
-	test.Assert (
-		backPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (1.5, 3.0, 0.0)) &&
-		backPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (1.5, 2.0, 0.0)) &&
-		backPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (2.0, 2.0, 0.0)) &&
-		backPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (2.0, 3.0, 0.0))
-		);
-
-	test.Assert (backPolygons[1].VertexCount () == 4);
-	test.Assert (
-		backPolygons[1].GetVertex (0).IsEqual (new JSM.Vector (1.5, 1.0, 0.0)) &&
-		backPolygons[1].GetVertex (1).IsEqual (new JSM.Vector (1.5, 0.0, 0.0)) &&
-		backPolygons[1].GetVertex (2).IsEqual (new JSM.Vector (2.0, 0.0, 0.0)) &&
-		backPolygons[1].GetVertex (3).IsEqual (new JSM.Vector (2.0, 1.0, 0.0))
-		);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-	
-	test.Assert (frontPolygons[0].VertexCount () == 4);
-	test.Assert (
-		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.5, 0.0, 0.0)) &&
-		frontPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (0.5, 3.0, 0.0)) &&
-		frontPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (0.0, 3.0, 0.0)) &&
-		frontPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (0.0, 0.0, 0.0))
-		);
-
-	test.Assert (backPolygons[0].VertexCount () == 8);
-	test.Assert (
-		backPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (0.5, 3.0, 0.0)) &&
-		backPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (0.5, 0.0, 0.0)) &&
-		backPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (2.0, 0.0, 0.0)) &&
-		backPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (2.0, 1.0, 0.0)) &&
-		backPolygons[0].GetVertex (4).IsEqual (new JSM.Vector (1.0, 1.0, 0.0)) &&
-		backPolygons[0].GetVertex (5).IsEqual (new JSM.Vector (1.0, 2.0, 0.0)) &&
-		backPolygons[0].GetVertex (6).IsEqual (new JSM.Vector (2.0, 2.0, 0.0)) &&
-		backPolygons[0].GetVertex (7).IsEqual (new JSM.Vector (2.0, 3.0, 0.0))
-		);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-
-	plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.5, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
-	backPolygons = [];
-	frontPolygons = [];
-	result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 2);
-
-	test.Assert (frontPolygons[0].VertexCount () == 4);
-	test.Assert (
-		frontPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (1.5, 3.0, 0.0)) &&
-		frontPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (1.5, 2.0, 0.0)) &&
-		frontPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (2.0, 2.0, 0.0)) &&
-		frontPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (2.0, 3.0, 0.0))
-		);
-
-	test.Assert (frontPolygons[1].VertexCount () == 4);
-	test.Assert (
-		frontPolygons[1].GetVertex (0).IsEqual (new JSM.Vector (1.5, 1.0, 0.0)) &&
-		frontPolygons[1].GetVertex (1).IsEqual (new JSM.Vector (1.5, 0.0, 0.0)) &&
-		frontPolygons[1].GetVertex (2).IsEqual (new JSM.Vector (2.0, 0.0, 0.0)) &&
-		frontPolygons[1].GetVertex (3).IsEqual (new JSM.Vector (2.0, 1.0, 0.0))
-		);
-
-	test.Assert (backPolygons[0].VertexCount () == 8);
-	test.Assert (
-		backPolygons[0].GetVertex (0).IsEqual (new JSM.Vector (1.5, 0.0, 0.0)) &&
-		backPolygons[0].GetVertex (1).IsEqual (new JSM.Vector (1.5, 1.0, 0.0)) &&
-		backPolygons[0].GetVertex (2).IsEqual (new JSM.Vector (1.0, 1.0, 0.0)) &&
-		backPolygons[0].GetVertex (3).IsEqual (new JSM.Vector (1.0, 2.0, 0.0)) &&
-		backPolygons[0].GetVertex (4).IsEqual (new JSM.Vector (1.5, 2.0, 0.0)) &&
-		backPolygons[0].GetVertex (5).IsEqual (new JSM.Vector (1.5, 3.0, 0.0)) &&
-		backPolygons[0].GetVertex (6).IsEqual (new JSM.Vector (0.0, 3.0, 0.0)) &&
-		backPolygons[0].GetVertex (7).IsEqual (new JSM.Vector (0.0, 0.0, 0.0))
-		);
-});
-
-polygonSuite.AddTest ('CutPolygonTest', function (test)
-{
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
-	var revPlane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-
-	// two cut polygons in both sides
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0, 0, 0);
-	polygon.AddVertex (3, 0, 0);
-	polygon.AddVertex (3, 1, 0);
-	polygon.AddVertex (1, 1, 0);
-	polygon.AddVertex (1, 2, 0);
-	polygon.AddVertex (4, 2, 0);
-	polygon.AddVertex (4, 5, 0);
-	polygon.AddVertex (0, 5, 0);
-	polygon.AddVertex (0, 4, 0);
-	polygon.AddVertex (3, 4, 0);
-	polygon.AddVertex (3, 3, 0);
-	polygon.AddVertex (0, 3, 0);
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 2);
-	test.Assert (frontPolygons.length == 2);
-
-	test.Assert (backPolygons[0].VertexCount () == 8);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 1, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (1, 1, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (1, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (4).IsEqual (new JSM.Coord (2, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (5).IsEqual (new JSM.Coord (2, 3, 0)));
-	test.Assert (backPolygons[0].GetVertex (6).IsEqual (new JSM.Coord (0, 3, 0)));
-	test.Assert (backPolygons[0].GetVertex (7).IsEqual (new JSM.Coord (0, 0, 0)));
-
-	test.Assert (backPolygons[1].VertexCount () == 4);
-	test.Assert (backPolygons[1].GetVertex (0).IsEqual (new JSM.Coord (2, 4, 0)));
-	test.Assert (backPolygons[1].GetVertex (1).IsEqual (new JSM.Coord (2, 5, 0)));
-	test.Assert (backPolygons[1].GetVertex (2).IsEqual (new JSM.Coord (0, 5, 0)));
-	test.Assert (backPolygons[1].GetVertex (3).IsEqual (new JSM.Coord (0, 4, 0)));
-
-	test.Assert (frontPolygons[0].VertexCount () == 8);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 5, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 4, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (3, 4, 0)));
-	test.Assert (frontPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (3, 3, 0)));
-	test.Assert (frontPolygons[0].GetVertex (4).IsEqual (new JSM.Coord (2, 3, 0)));
-	test.Assert (frontPolygons[0].GetVertex (5).IsEqual (new JSM.Coord (2, 2, 0)));
-	test.Assert (frontPolygons[0].GetVertex (6).IsEqual (new JSM.Coord (4, 2, 0)));
-	test.Assert (frontPolygons[0].GetVertex (7).IsEqual (new JSM.Coord (4, 5, 0)));
-
-	test.Assert (frontPolygons[1].VertexCount () == 4);
-	test.Assert (frontPolygons[1].GetVertex (0).IsEqual (new JSM.Coord (2, 1, 0)));
-	test.Assert (frontPolygons[1].GetVertex (1).IsEqual (new JSM.Coord (2, 0, 0)));
-	test.Assert (frontPolygons[1].GetVertex (2).IsEqual (new JSM.Coord (3, 0, 0)));
-	test.Assert (frontPolygons[1].GetVertex (3).IsEqual (new JSM.Coord (3, 1, 0)));
-
-	// same with reversed plane
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, revPlane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 2);
-	test.Assert (frontPolygons.length == 2);
-
-	test.Assert (frontPolygons[0].VertexCount () == 8);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (1, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (1, 2, 0)));
-	test.Assert (frontPolygons[0].GetVertex (4).IsEqual (new JSM.Coord (2, 2, 0)));
-	test.Assert (frontPolygons[0].GetVertex (5).IsEqual (new JSM.Coord (2, 3, 0)));
-	test.Assert (frontPolygons[0].GetVertex (6).IsEqual (new JSM.Coord (0, 3, 0)));
-	test.Assert (frontPolygons[0].GetVertex (7).IsEqual (new JSM.Coord (0, 0, 0)));
-
-	test.Assert (frontPolygons[1].VertexCount () == 4);
-	test.Assert (frontPolygons[1].GetVertex (0).IsEqual (new JSM.Coord (2, 4, 0)));
-	test.Assert (frontPolygons[1].GetVertex (1).IsEqual (new JSM.Coord (2, 5, 0)));
-	test.Assert (frontPolygons[1].GetVertex (2).IsEqual (new JSM.Coord (0, 5, 0)));
-	test.Assert (frontPolygons[1].GetVertex (3).IsEqual (new JSM.Coord (0, 4, 0)));
-
-	test.Assert (backPolygons[0].VertexCount () == 8);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 5, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 4, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (3, 4, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (3, 3, 0)));
-	test.Assert (backPolygons[0].GetVertex (4).IsEqual (new JSM.Coord (2, 3, 0)));
-	test.Assert (backPolygons[0].GetVertex (5).IsEqual (new JSM.Coord (2, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (6).IsEqual (new JSM.Coord (4, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (7).IsEqual (new JSM.Coord (4, 5, 0)));
-
-	test.Assert (backPolygons[1].VertexCount () == 4);
-	test.Assert (backPolygons[1].GetVertex (0).IsEqual (new JSM.Coord (2, 1, 0)));
-	test.Assert (backPolygons[1].GetVertex (1).IsEqual (new JSM.Coord (2, 0, 0)));
-	test.Assert (backPolygons[1].GetVertex (2).IsEqual (new JSM.Coord (3, 0, 0)));
-	test.Assert (backPolygons[1].GetVertex (3).IsEqual (new JSM.Coord (3, 1, 0)));
-
-	// all outside
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0, 0, 0);
-	polygon.AddVertex (1, 0, 0);
-	polygon.AddVertex (1, 1, 0);
-	polygon.AddVertex (0, 1, 0);
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 0);	
-
-	test.Assert (backPolygons[0].VertexCount () == 4);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (1, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (1, 1, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (0, 1, 0)));
-
-	// all outside, some on the plane
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0, 0, 0);
-	polygon.AddVertex (2, 0, 0);
-	polygon.AddVertex (2, 2, 0);
-	polygon.AddVertex (0, 2, 0);
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 0);	
-
-	test.Assert (backPolygons[0].VertexCount () == 4);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (2, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (0, 2, 0)));
-
-	// all inside
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (3, 0, 0);
-	polygon.AddVertex (4, 0, 0);
-	polygon.AddVertex (4, 1, 0);
-	polygon.AddVertex (3, 1, 0);
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 0);
-	test.Assert (frontPolygons.length == 1);	
-
-	test.Assert (frontPolygons[0].VertexCount () == 4);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (3, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (4, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (4, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (3, 1, 0)));
-
-	// all inside, some on the plane
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (2, 0, 0);
-	polygon.AddVertex (3, 0, 0);
-	polygon.AddVertex (3, 1, 0);
-	polygon.AddVertex (2, 1, 0);
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 0);
-	test.Assert (frontPolygons.length == 1);	
-
-	test.Assert (frontPolygons[0].VertexCount () == 4);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (3, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (3, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (2, 1, 0)));
-	
-	// both sides, clean cut
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0, 0, 0);
-	polygon.AddVertex (3, 0, 0);
-	polygon.AddVertex (3, 3, 0);
-	polygon.AddVertex (0, 3, 0);
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);	
-
-	test.Assert (backPolygons[0].VertexCount () == 4);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 3, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 3, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (0, 0, 0)));
-
-	test.Assert (frontPolygons[0].VertexCount () == 4);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 3, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (3, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (3, 3, 0)));
-
-	// both sides, edge on the plane cut
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0, 0, 0);
-	polygon.AddVertex (2, 0, 0);
-	polygon.AddVertex (2, 1, 0);
-	polygon.AddVertex (3, 1, 0);
-	polygon.AddVertex (3, 2, 0);
-	polygon.AddVertex (0, 2, 0);
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);	
-
-	test.Assert (backPolygons[0].VertexCount () == 5);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 1, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (4).IsEqual (new JSM.Coord (2, 0, 0)));
-	
-	test.Assert (frontPolygons[0].VertexCount () == 4);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 2, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (3, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (3, 2, 0)));
-
-	// both sides, edge on the plane cut
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (2, 0, 0);
-	polygon.AddVertex (2, 1, 0);
-	polygon.AddVertex (3, 1, 0);
-	polygon.AddVertex (3, 2, 0);
-	polygon.AddVertex (0, 2, 0);
-	polygon.AddVertex (0, 0, 0);
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);	
-
-	test.Assert (backPolygons[0].VertexCount () == 5);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 1, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (4).IsEqual (new JSM.Coord (2, 0, 0)));
-
-	test.Assert (frontPolygons[0].VertexCount () == 4);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 2, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (3, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (3, 2, 0)));
-
-	// both sides, edge on the plane cut
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (2, 1, 0);
-	polygon.AddVertex (3, 1, 0);
-	polygon.AddVertex (3, 2, 0);
-	polygon.AddVertex (0, 2, 0);
-	polygon.AddVertex (0, 0, 0);
-	polygon.AddVertex (2, 0, 0);
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);	
-
-	test.Assert (backPolygons[0].VertexCount () == 5);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 1, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (4).IsEqual (new JSM.Coord (2, 0, 0)));
-
-	test.Assert (frontPolygons[0].VertexCount () == 4);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 2, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (3, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (3, 2, 0)));
-	
-	// cut triangle
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0, 0, 0);
-	polygon.AddVertex (3, 0, 0);
-	polygon.AddVertex (0, 2, 0);
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);	
-
-	test.Assert (backPolygons[0].VertexCount () == 4);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 0.6666666666666666, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 2, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (0, 0, 0)));
-
-	test.Assert (frontPolygons[0].VertexCount () == 3);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (2, 0.6666666666666666, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (2, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (3, 0, 0)));
-
-	// cut triangles from polygon
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0, 0, 0);
-	polygon.AddVertex (10, 0, 0);
-	polygon.AddVertex (10, 3, 0);
-	polygon.AddVertex (9, 1, 0);
-	polygon.AddVertex (8, 3, 0);
-	polygon.AddVertex (7, 1, 0);
-	polygon.AddVertex (6, 3, 0);
-	polygon.AddVertex (5, 1, 0);
-	polygon.AddVertex (4, 3, 0);
-	polygon.AddVertex (3, 1, 0);
-	polygon.AddVertex (2, 3, 0);
-	polygon.AddVertex (1, 1, 0);
-	polygon.AddVertex (0, 3, 0);
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 2.0, 0.0), new JSM.Vector (0.0, 1.0, 0.0));
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 6);	
-
-	test.Assert (backPolygons[0].VertexCount () == 19);
-	test.Assert (frontPolygons[0].VertexCount () == 3);
-	test.Assert (frontPolygons[1].VertexCount () == 3);
-	test.Assert (frontPolygons[2].VertexCount () == 3);
-	test.Assert (frontPolygons[3].VertexCount () == 3);
-	test.Assert (frontPolygons[4].VertexCount () == 3);
-	test.Assert (frontPolygons[5].VertexCount () == 3);
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 2.0, 0.0), new JSM.Vector (0.0, -1.0, 0.0));
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 6);
-	test.Assert (frontPolygons.length == 1);	
-
-	test.Assert (frontPolygons[0].VertexCount () == 19);
-	test.Assert (backPolygons[0].VertexCount () == 3);
-	test.Assert (backPolygons[1].VertexCount () == 3);
-	test.Assert (backPolygons[2].VertexCount () == 3);
-	test.Assert (backPolygons[3].VertexCount () == 3);
-	test.Assert (backPolygons[4].VertexCount () == 3);
-	test.Assert (backPolygons[5].VertexCount () == 3);
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 1.0, 0.0), new JSM.Vector (0.0, 1.0, 0.0));
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-
-	test.Assert (backPolygons[0].VertexCount () == 4);
-	test.Assert (frontPolygons[0].VertexCount () == 13);
-
-	// cut through existing vertices
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0, 0, 0);
-	polygon.AddVertex (4, 0, 0);
-	polygon.AddVertex (3, 1, 0);
-	polygon.AddVertex (4, 2, 0);
-	polygon.AddVertex (0, 2, 0);
-	polygon.AddVertex (1, 1, 0);
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 1.0, 0.0), new JSM.Vector (0.0, 1.0, 0.0));
-
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-
-	test.Assert (backPolygons[0].VertexCount () == 4);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (3, 1, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (1, 1, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (4, 0, 0)));
-
-	test.Assert (frontPolygons[0].VertexCount () == 4);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (1, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (3, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (4, 2, 0)));
-	test.Assert (frontPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (0, 2, 0)));
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.0, 1.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 1.0), new JSM.Vector (0.0, 0.0, 1.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 0);
-	test.Assert (backPolygons[0].VertexCount () == 6);
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, -1.0), new JSM.Vector (0.0, 0.0, 1.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 0);
-	test.Assert (frontPolygons.length == 1);
-	test.Assert (frontPolygons[0].VertexCount () == 6);
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 0);
-	test.Assert (frontPolygons.length == 0);
-	test.Assert (planePolygons.length == 1);
-	test.Assert (planePolygons[0].VertexCount () == 6);
-});
-
-polygonSuite.AddTest ('CutTriangleTest', function (test)
-{
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0, 0, 0);
-	polygon.AddVertex (1, 0, 0);
-	polygon.AddVertex (0, 1, 0);
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 0);
-	test.Assert (backPolygons[0].VertexCount () == 3);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (1, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 1, 0)));
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (2.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 0);
-	test.Assert (frontPolygons.length == 1);
-	test.Assert (frontPolygons[0].VertexCount () == 3);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (1, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 1, 0)));
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 0);
-	test.Assert (backPolygons[0].VertexCount () == 3);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (1, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 1, 0)));
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (1.0, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 0);
-	test.Assert (frontPolygons.length == 1);
-	test.Assert (frontPolygons[0].VertexCount () == 3);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (1, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 1, 0)));
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, -1.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 0);
-	test.Assert (backPolygons[0].VertexCount () == 3);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (1, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 1, 0)));
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 0);
-	test.Assert (frontPolygons.length == 1);
-	test.Assert (frontPolygons[0].VertexCount () == 3);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (1, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 1, 0)));
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, 1.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 0);
-	test.Assert (frontPolygons.length == 0);
-	test.Assert (planePolygons.length == 1);
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Vector (0.0, 0.0, -1.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 0);
-	test.Assert (frontPolygons.length == 0);
-	test.Assert (planePolygons.length == 1);
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-	
-	test.Assert (backPolygons[0].VertexCount () == 4);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0.5, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (0.5, 0.5, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 1, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (0, 0, 0)));
-	
-	test.Assert (frontPolygons[0].VertexCount () == 3);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0.5, 0.5, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (0.5, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (1, 0, 0)));
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (-1.0, 0.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-	
-	test.Assert (frontPolygons[0].VertexCount () == 4);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0.5, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (0.5, 0.5, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (0, 0, 0)));
-	
-	test.Assert (backPolygons[0].VertexCount () == 3);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0.5, 0.5, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (0.5, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (1, 0, 0)));
-
-	var polygon = new JSM.Polygon ();
-	polygon.AddVertex (0, 0, 0);
-	polygon.AddVertex (1, 0, 0);
-	polygon.AddVertex (0.5, 1, 0);
-	
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.5, 0.0, 0.0), new JSM.Vector (1.0, 0.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-	
-	test.Assert (backPolygons[0].VertexCount () == 3);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0.5, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (0.5, 1, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 0, 0)));
-
-	test.Assert (frontPolygons[0].VertexCount () == 3);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0.5, 1, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (0.5, 0, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (1, 0, 0)));
-
-	var plane = JSM.GetPlaneFromCoordAndDirection (new JSM.Coord (0.0, 0.5, 0.0), new JSM.Vector (0.0, 1.0, 0.0));
-	var backPolygons = [];
-	var frontPolygons = [];
-	var planePolygons = [];
-	var result = JSM.CutPolygonWithPlane (polygon, plane, frontPolygons, backPolygons, planePolygons);
-	test.Assert (result == true);
-	test.Assert (backPolygons.length == 1);
-	test.Assert (frontPolygons.length == 1);
-
-	test.Assert (backPolygons[0].VertexCount () == 4);
-	test.Assert (backPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0.75, 0.5, 0)));
-	test.Assert (backPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (0.25, 0.5, 0)));
-	test.Assert (backPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0, 0, 0)));
-	test.Assert (backPolygons[0].GetVertex (3).IsEqual (new JSM.Coord (1, 0, 0)));
-
-	test.Assert (frontPolygons[0].VertexCount () == 3);
-	test.Assert (frontPolygons[0].GetVertex (0).IsEqual (new JSM.Coord (0.25, 0.5, 0)));
-	test.Assert (frontPolygons[0].GetVertex (1).IsEqual (new JSM.Coord (0.75, 0.5, 0)));
-	test.Assert (frontPolygons[0].GetVertex (2).IsEqual (new JSM.Coord (0.5, 1, 0)));
 });
 
 polygonSuite.AddTest ('BSPTreeTest', function (test)

@@ -251,7 +251,7 @@ JSM.MergeJsonDataMeshes = function (jsonData)
 			}
 		}
 	
-		function MergeTriangles (mesh, currentTriangles, materialToTriangles)
+		function MergeTriangles (mesh, currentTriangles, materialToTriangles, vertexOffset, normalOffset, uvOffset)
 		{
 			var material = currentTriangles.material;
 			var trianglesIndex = materialToTriangles[material];
@@ -290,7 +290,7 @@ JSM.MergeJsonDataMeshes = function (jsonData)
 		var i, currentTriangles;
 		for (i = 0; i < currentMesh.triangles.length; i++) {
 			currentTriangles = currentMesh.triangles[i];
-			MergeTriangles (mesh, currentTriangles, materialToTriangles);
+			MergeTriangles (mesh, currentTriangles, materialToTriangles, vertexOffset, normalOffset, uvOffset);
 		}
 	}
 

@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<script type="text/javascript" src="../build/three.min.js"></script>
+<!-- JSModeler includes start -->
+	<script type="text/javascript" src="../src/core/jsm.js"></script>
+	<script type="text/javascript" src="../src/core/timer.js"></script>
+	<script type="text/javascript" src="../src/core/algorithm.js"></script>
+	<script type="text/javascript" src="../src/core/async.js"></script>
+	<script type="text/javascript" src="../src/core/check.js"></script>
+	<script type="text/javascript" src="../src/core/jsonloader.js"></script>
+	<script type="text/javascript" src="../src/geometry/definitions.js"></script>
+	<script type="text/javascript" src="../src/geometry/coord2d.js"></script>
+	<script type="text/javascript" src="../src/geometry/coord.js"></script>
+	<script type="text/javascript" src="../src/geometry/determinant.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordutils.js"></script>
+	<script type="text/javascript" src="../src/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../src/geometry/coordsystem.js"></script>
+	<script type="text/javascript" src="../src/geometry/sector.js"></script>
+	<script type="text/javascript" src="../src/geometry/line.js"></script>
+	<script type="text/javascript" src="../src/geometry/box.js"></script>
+	<script type="text/javascript" src="../src/geometry/sphere.js"></script>
+	<script type="text/javascript" src="../src/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../src/geometry/plane.js"></script>
+	<script type="text/javascript" src="../src/geometry/projection.js"></script>
+	<script type="text/javascript" src="../src/geometry/convexhull.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygon2d.js"></script>
+	<script type="text/javascript" src="../src/geometry/polygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/cutpolygon.js"></script>
+	<script type="text/javascript" src="../src/geometry/triangulation.js"></script>
+	<script type="text/javascript" src="../src/geometry/octree.js"></script>
+	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../src/geometry/utilities.js"></script>
+	<script type="text/javascript" src="../src/geometry/ray.js"></script>
+	<script type="text/javascript" src="../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/modeler/color.js"></script>
+	<script type="text/javascript" src="../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../src/modeler/adjacencyinfo.js"></script>
+	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
+	<script type="text/javascript" src="../src/modeler/cututils.js"></script>
+	<script type="text/javascript" src="../src/modeler/generator.js"></script>
+	<script type="text/javascript" src="../src/modeler/camera.js"></script>
+	<script type="text/javascript" src="../src/modeler/explode.js"></script>
+	<script type="text/javascript" src="../src/modeler/exporter.js"></script>
+	<script type="text/javascript" src="../src/modeler/trianglebody.js"></script>
+	<script type="text/javascript" src="../src/modeler/trianglemodel.js"></script>
+	<script type="text/javascript" src="../src/modeler/converter.js"></script>
+	<script type="text/javascript" src="../src/modeler/rayutils.js"></script>
+	<script type="text/javascript" src="../src/import/binaryreader.js"></script>
+	<script type="text/javascript" src="../src/import/importer.js"></script>
+	<script type="text/javascript" src="../src/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../src/import/importerobj.js"></script>
+	<script type="text/javascript" src="../src/import/importerstl.js"></script>
+	<script type="text/javascript" src="../src/import/importercommon.js"></script>
+	<script type="text/javascript" src="../src/renderer/webglutils.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderlight.js"></script>
+	<script type="text/javascript" src="../src/renderer/rendermaterial.js"></script>
+	<script type="text/javascript" src="../src/renderer/rendermesh.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderbody.js"></script>
+	<script type="text/javascript" src="../src/renderer/shaderprogram.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderer.js"></script>
+	<script type="text/javascript" src="../src/renderer/pointcloudrenderer.js"></script>
+	<script type="text/javascript" src="../src/renderer/renderconverter.js"></script>
+	<script type="text/javascript" src="../src/viewer/mouse.js"></script>
+	<script type="text/javascript" src="../src/viewer/touch.js"></script>
+	<script type="text/javascript" src="../src/viewer/painter.js"></script>
+	<script type="text/javascript" src="../src/viewer/drawing.js"></script>
+	<script type="text/javascript" src="../src/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../src/viewer/softwareviewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/spriteviewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../src/viewer/pointcloudviewer.js"></script>
+	<script type="text/javascript" src="../src/extras/solidgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
+	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
+	<script type="text/javascript" src="../src/extras/csg.js"></script>
+	<script type="text/javascript" src="../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../src/extensions/svgtomodel/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/extensions/threeviewer/threeconverter.js"></script>
+	<script type="text/javascript" src="../src/extensions/threeviewer/threeviewer.js"></script>
+<!-- JSModeler includes end -->
+	<title>Example</title>
+	
+	<script type="text/javascript">
+		function Load ()
+		{
+			var camera = new JSM.Camera (
+				new JSM.Coord (3.0, -3.0, 3.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (0.0, 0.0, 1.0)
+			);
+
+			viewer = new JSM.Viewer ();
+			if (!viewer.Init (document.getElementById ('example'), camera)) {
+				return;
+			}
+
+			var jsonData = {
+				"version" : 1,
+				"materials" : [
+					{
+						"ambient" : [0, 0, 0],
+						"diffuse" : [1, 0, 0],
+						"specular" : [0.329412, 0.329412, 0.329412],
+						"opacity" : 1,
+						"texture" : 'texture.jpg',
+						"offset" : [0.2, 0.3],
+						"scale" : [2.0, 3.0],
+						"rotation" : 30.0
+					}
+				],
+				"meshes" : [
+					{
+						"vertices" : [
+							0, 0, 0,
+							1, 0, 0,
+							1, 1, 0,
+							0, 1, 0
+						],
+						"normals" : [
+							0, 0, 1
+						],
+						"uvs" : [
+							0, 0,
+							2, 0,
+							2, 2,
+							0, 2
+						],
+						"triangles" : [
+							{
+								"material" : 0,
+								"parameters" : [
+									0, 1, 2, 0, 0, 0, 0, 1, 2,
+									0, 2, 3, 0, 0, 0, 0, 2, 3
+								]
+							}
+						]
+					}
+				]
+			};			
+			
+			var renderBodies = JSM.ConvertJSONDataToRenderBodies (jsonData);
+			viewer.AddBodies (renderBodies);
+			viewer.FitInWindow ();
+			viewer.Draw ();
+		}
+		
+	    window.onload = function ()
+		{
+			Load ();
+		}
+	</script>
+
+</head>
+
+<body>
+	<canvas id="example" width="800" height="500"></canvas>
+</body>
+
+</html>

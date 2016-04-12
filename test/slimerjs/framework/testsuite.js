@@ -64,6 +64,12 @@ Test.prototype.DragDrop = function (fromX, fromY, toX, toY, wait)
 	this.Wait (wait);
 };
 
+Test.prototype.KeyDown = function (keyCode, wait)
+{
+	this.suite.page.sendEvent ('keydown', keyCode);
+	this.Wait (wait);
+};
+
 Test.prototype.WriteString = function (text, wait)
 {
 	this.suite.page.sendEvent ('keypress', text);

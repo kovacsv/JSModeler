@@ -57,7 +57,7 @@
 
 			scene.add (camera);
 
-			var texture = THREE.ImageUtils.loadTexture ('texture.jpg', new THREE.UVMapping (), function (image) {
+			var texture = THREE.ImageUtils.loadTexture ('texture.jpg', THREE.UVMapping, function (image) {
 				renderer.render (scene, camera);
 			});
 				
