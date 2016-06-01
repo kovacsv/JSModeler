@@ -804,7 +804,7 @@ JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom, 
 	var i;
 	for (i = 0; i < count; i++) {
 		result.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i).Clone ()));
-		result.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i).Clone ().Clone ().Offset (direction, height)));
+		result.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i).Clone ().Offset (direction, height)));
 	}
 
 	var current, next, bodyPolygon;
