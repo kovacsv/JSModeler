@@ -97,11 +97,13 @@
 				cameraUpVector : [0.0, 0.0, 1.0]
 			};
 
+			// initialize viewer
 			var viewer = new JSM.ThreeViewer ();
 			if (!viewer.Start (document.getElementById ('example'), viewerSettings)) {
 				return;
 			}
 
+			// room polygon points
 			var points = [
 				new JSM.Coord (0, 0, 0),
 				new JSM.Coord (-10, 0, 0),
