@@ -118,7 +118,7 @@ JSM.WebGLCreateFloatTextureBuffer = function (context, array, size)
 	context.texParameteri (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.NEAREST);
 	context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_S, context.CLAMP_TO_EDGE);
 	context.texParameteri (context.TEXTURE_2D, context.TEXTURE_WRAP_T, context.CLAMP_TO_EDGE);
-	context.texImage2D (context.TEXTURE_2D, 0, context.RGB, size, size, 0, context.RGB, context.FLOAT, floatArray);
+	context.texImage2D (context.TEXTURE_2D, 0, context.RGBA, size, size, 0, context.RGBA, context.FLOAT, floatArray);
 	context.bindTexture (context.TEXTURE_2D, null);
 	return textureBuffer;
 };
