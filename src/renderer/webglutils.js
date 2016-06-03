@@ -100,14 +100,14 @@ JSM.WebGLInitShaderProgram = function (context, vertexShader, fragmentShader, on
 
 JSM.WebGLGetFloatTextureBufferSize = function (array)
 {
-	return JSM.NextPowerOfTwo (Math.ceil (Math.sqrt (array.length / 3.0)));
+	return JSM.NextPowerOfTwo (Math.ceil (Math.sqrt (array.length / 4.0)));
 };
 
 JSM.WebGLCreateFloatTextureBuffer = function (context, array, size)
 {
 	var floatArray = null;
 	if (array !== null) {
-		while (array.length < size * size * 3) {
+		while (array.length < size * size * 4) {
 			array.push (0.0);
 		}
 		floatArray = new Float32Array (array);
