@@ -113,6 +113,7 @@
 			var myThis = this;
 			this.EnumerateGridPoints (this.xCount, this.yCount, function (xIndex, yIndex) {
 				JSM.AddVertexToBody (myThis.body, xIndex * myThis.parameters.gridSize, yIndex * myThis.parameters.gridSize, 0);
+				//JSM.AddPointToBody (myThis.body, myThis.body.VertexCount () - 1);
 			});
 		}
 		
@@ -132,9 +133,9 @@
 		
 			var myThis = this;
 			this.EnumerateGridPoints (this.xCount - 1, this.yCount - 1, function (xIndex, yIndex) {
-				var curr = yIndex + myThis.xCount * xIndex;
+				var curr = yIndex * myThis.xCount + xIndex;
 				var next = curr + 1;
-				var top = curr + myThis.yCount;
+				var top = curr + myThis.xCount;
 				var ntop = top + 1;
 				AddRectangleToBody (myThis.body, curr, next, ntop, top);
 			});
@@ -144,7 +145,7 @@
 		{
 			var myThis = this;
 			this.EnumerateGridPoints (this.xCount, this.yCount, function (xIndex, yIndex) {
-				var curr = yIndex + myThis.xCount * xIndex;
+				var curr = yIndex * myThis.xCount + xIndex;
 				var vertex = myThis.body.GetVertex (curr);
 				vertex.position.z = JSM.RandomNumber (0.0, myThis.parameters.baseHeightDifference);
 			});
@@ -153,8 +154,8 @@
 		TerrainGenerator.prototype.EnumerateGridPoints = function (xCount, yCount, callback)
 		{
 			var xIndex, yIndex;
-			for (xIndex = 0; xIndex < xCount; xIndex++) {
-				for (yIndex = 0; yIndex < yCount; yIndex++) {
+			for (yIndex = 0; yIndex < yCount; yIndex++) {
+				for (xIndex = 0; xIndex < xCount; xIndex++) {
 					callback (xIndex, yIndex);
 				}
 			}
@@ -173,9 +174,9 @@
 				alert ('error');
 			}
 			
-			var terrainGenerator = new TerrainGenerator (10, 10, {
+			var terrainGenerator = new TerrainGenerator (10, 20, {
 				gridSize : 0.1,
-				baseHeightDifference : 0.05
+				baseHeightDifference : 0.1
 			});
 			var terrain = terrainGenerator.Generate ();
 
