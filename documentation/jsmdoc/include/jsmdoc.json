@@ -23,6 +23,12 @@
 						["integer", "the result"]
 					]
 				},
+				"RandomBoolean" : {
+					"description" : "Generates a random boolean value.",
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
 				"SeededRandomInt" : {
 					"description" : "Generates a random integer between two integers. A seed number can be specified.",
 					"parameters" : [
