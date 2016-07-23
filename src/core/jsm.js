@@ -33,6 +33,17 @@ JSM.RandomInt = function (from, to)
 };
 
 /**
+* Function: RandomBoolean
+* Description: Generates a random boolean value.
+* Returns:
+*	{boolean} the result
+*/
+JSM.RandomBoolean = function ()
+{
+	return JSM.RandomInt (0, 1) === 1;
+};
+
+/**
 * Function: SeededRandomInt
 * Description: Generates a random integer between two integers. A seed number can be specified.
 * Parameters:
