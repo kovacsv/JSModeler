@@ -94,30 +94,51 @@
 			this.xCount = xCount;
 			this.yCount = yCount;
 			this.parameters = parameters;
-			this.body = null;
+			this.model = null;
+			this.materials = null;
+			this.terrain = null;
 		};
 
 		TerrainGenerator.prototype.Generate = function ()
 		{
-			this.body = new JSM.Body ();
-
-			this.GenerateGridPoints ();
-			this.GenerateGridPolygons ();
+			this.model = new JSM.Model ();
+			this.terrain = new JSM.Body ();
+			this.materials = new JSM.Materials ();
+			this.materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, singleSided : true}));
+			
+			this.GenerateTerrainPoints ();
+			this.GenerateTerrainPolygons ();
 			this.RandomizeGridHeight ();			
 			
-			return this.body;
+			this.terrain.SetPolygonsMaterialIndex (0);
+			this.model.AddBody (this.terrain);
+			return {
+				model : this.model,
+				materials : this.materials
+			};
 		};
 
-		TerrainGenerator.prototype.GenerateGridPoints = function ()
+		TerrainGenerator.prototype.GenerateTerrainPoints = function ()
 		{
+			function AddVertex (body, x, y, z)
+			{
+				var index = JSM.AddVertexToBody (body, x, y, z);
+				//JSM.AddPointToBody (body, index);
+				return index;
+			}
+		
 			var myThis = this;
 			this.EnumerateGridPoints (this.xCount, this.yCount, function (xIndex, yIndex) {
-				JSM.AddVertexToBody (myThis.body, xIndex * myThis.parameters.gridSize, yIndex * myThis.parameters.gridSize, 0);
-				//JSM.AddPointToBody (myThis.body, myThis.body.VertexCount () - 1);
+				AddVertex (myThis.terrain, xIndex * myThis.parameters.gridSize, yIndex * myThis.parameters.gridSize, 0);
 			});
+			
+			AddVertex (this.terrain, 0, 0, -this.parameters.terrainHeight);
+			AddVertex (this.terrain, (this.xCount - 1) * this.parameters.gridSize, 0, -this.parameters.terrainHeight);
+			AddVertex (this.terrain, (this.xCount - 1) * this.parameters.gridSize, (this.yCount - 1) * this.parameters.gridSize, -this.parameters.terrainHeight);
+			AddVertex (this.terrain, 0, (this.yCount - 1) * this.parameters.gridSize, -this.parameters.terrainHeight);
 		}
 		
-		TerrainGenerator.prototype.GenerateGridPolygons = function ()
+		TerrainGenerator.prototype.GenerateTerrainPolygons = function ()
 		{
 			function AddRectangleToBody (body, v1, v2, v3, v4)
 			{
@@ -137,8 +158,38 @@
 				var next = curr + 1;
 				var top = curr + myThis.xCount;
 				var ntop = top + 1;
-				AddRectangleToBody (myThis.body, curr, next, ntop, top);
+				AddRectangleToBody (myThis.terrain, curr, next, ntop, top);
 			});
+			
+			var i;
+
+			var firstBottomVertex = this.terrain.VertexCount () - 4;
+			
+			var sidePolygon1 = [firstBottomVertex + 2, firstBottomVertex + 3];
+			for (i = 0; i < this.xCount; i++) {
+				sidePolygon1.push ((this.yCount - 1) * this.xCount + i);
+			}
+
+			var sidePolygon2 = [firstBottomVertex + 3, firstBottomVertex];
+			for (i = 0; i < this.yCount; i++) {
+				sidePolygon2.push (i * this.xCount);
+			}
+
+			var sidePolygon3 = [firstBottomVertex, firstBottomVertex + 1];
+			for (i = this.xCount - 1; i >= 0 ; i--) {
+				sidePolygon3.push (i);
+			}
+			
+			var sidePolygon4 = [firstBottomVertex + 1, firstBottomVertex + 2];
+			for (i = this.yCount - 1; i >= 0 ; i--) {
+				sidePolygon4.push ((i + 1) * this.xCount - 1);
+			}
+
+			JSM.AddPolygonToBody (this.terrain, sidePolygon1);
+			JSM.AddPolygonToBody (this.terrain, sidePolygon2);
+			JSM.AddPolygonToBody (this.terrain, sidePolygon3);
+			JSM.AddPolygonToBody (this.terrain, sidePolygon4);
+			JSM.AddPolygonToBody (this.terrain, [firstBottomVertex + 3, firstBottomVertex + 2, firstBottomVertex + 1, firstBottomVertex]);
 		}
 	
 		TerrainGenerator.prototype.RandomizeGridHeight = function ()
@@ -146,7 +197,7 @@
 			var myThis = this;
 			this.EnumerateGridPoints (this.xCount, this.yCount, function (xIndex, yIndex) {
 				var curr = yIndex * myThis.xCount + xIndex;
-				var vertex = myThis.body.GetVertex (curr);
+				var vertex = myThis.terrain.GetVertex (curr);
 				vertex.position.z = JSM.RandomNumber (0.0, myThis.parameters.baseHeightDifference);
 			});
 		}		
@@ -174,14 +225,14 @@
 				alert ('error');
 			}
 			
-			var terrainGenerator = new TerrainGenerator (10, 20, {
+			var terrainGenerator = new TerrainGenerator (30, 20, {
 				gridSize : 0.1,
+				terrainHeight : 0.2,
 				baseHeightDifference : 0.1
 			});
 			var terrain = terrainGenerator.Generate ();
-
-			var renderTerrain = JSM.ConvertBodyToRenderBody (terrain);
-			viewer.AddBody (renderTerrain);
+			var renderTerrain = JSM.ConvertModelToRenderBodies (terrain.model, terrain.materials);
+			viewer.AddBodies (renderTerrain);
 			
 			viewer.FitInWindow ();
 			viewer.Draw ();
