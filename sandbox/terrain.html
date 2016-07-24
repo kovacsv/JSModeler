@@ -208,12 +208,12 @@
 			{
 				var heightUnit = mountainHeight / mountainRadius;
 				var linearHeight = (mountainRadius - peakDistance + 1) * heightUnit;
-				var heightRandomRatio = 0.1;
+				var heightRandomRatio = heightUnit / 2.0;
 				return JSM.RandomNumber (linearHeight - heightRandomRatio, linearHeight + heightRandomRatio);
 			}
 		
 			var mountainHeight = 0.6;
-			var mountainRadius = 3;
+			var mountainRadius = 4;
 			
 			var peakX = JSM.RandomInt (0, this.xCount - 1);
 			var peakY = JSM.RandomInt (0, this.yCount - 1);
