@@ -108,7 +108,8 @@
 			
 			this.GenerateTerrainPoints ();
 			this.GenerateTerrainPolygons ();
-			this.RandomizeGridHeight ();			
+			this.RandomizeGridHeight ();
+			this.GrowMountain ();
 			
 			this.terrain.SetPolygonsMaterialIndex (0);
 			this.model.AddBody (this.terrain);
@@ -196,11 +197,46 @@
 		{
 			var myThis = this;
 			this.EnumerateGridPoints (this.xCount, this.yCount, function (xIndex, yIndex) {
-				var curr = yIndex * myThis.xCount + xIndex;
-				var vertex = myThis.terrain.GetVertex (curr);
-				vertex.position.z = JSM.RandomNumber (0.0, myThis.parameters.baseHeightDifference);
+				var height = JSM.RandomNumber (0.0, myThis.parameters.baseHeightDifference);
+				myThis.GrowTerrainVertex (xIndex, yIndex, height);
 			});
-		}		
+		}
+		
+		TerrainGenerator.prototype.GrowMountain = function ()
+		{
+			function GetVertexHeight (mountainHeight, mountainRadius, peakDistance)
+			{
+				var heightUnit = mountainHeight / mountainRadius;
+				var linearHeight = (mountainRadius - peakDistance + 1) * heightUnit;
+				var heightRandomRatio = 0.1;
+				return JSM.RandomNumber (linearHeight - heightRandomRatio, linearHeight + heightRandomRatio);
+			}
+		
+			var mountainHeight = 0.6;
+			var mountainRadius = 3;
+			
+			var peakX = JSM.RandomInt (0, this.xCount - 1);
+			var peakY = JSM.RandomInt (0, this.yCount - 1);
+			
+			var i, j, currX, currY, currIndex, currVertex, peakDistance;
+			for (i = -mountainRadius; i <= mountainRadius; i++) {
+				for (j = -mountainRadius; j <= mountainRadius; j++) {
+					currX = peakX + i;
+					currY = peakY + j;
+					peakDistance = Math.max (Math.abs (i), Math.abs (j));
+					this.GrowTerrainVertex (currX, currY, GetVertexHeight (mountainHeight, mountainRadius, peakDistance));
+				}
+			}
+		}
+
+		TerrainGenerator.prototype.GrowTerrainVertex = function (xIndex, yIndex, height)
+		{
+			if (xIndex >= 0 && xIndex < this.xCount && yIndex >= 0 && yIndex < this.yCount) {
+				var index = yIndex * this.xCount + xIndex;
+				var vertex = this.terrain.GetVertex (index);
+				vertex.position.z += height;
+			}
+		};		
 		
 		TerrainGenerator.prototype.EnumerateGridPoints = function (xCount, yCount, callback)
 		{
