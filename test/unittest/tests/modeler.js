@@ -1091,6 +1091,15 @@ generalSuite.AddTest ('TriangulateWithCentroidsTest', function (test)
 	test.Assert (JSM.CheckSolidBody (body));
 });
 
+generalSuite.AddTest ('GenerateWireBodyTest', function (test)
+{
+	var body = JSM.GenerateCuboid (1, 1, 1);
+	var wireBody = JSM.GenerateWireBody (body);
+	test.Assert (wireBody.VertexCount () == 8);
+	test.Assert (wireBody.LineCount () == 12);
+	test.Assert (wireBody.PolygonCount () == 0);
+});
+
 generalSuite.AddTest ('CheckSolidBodyTest', function (test)
 {
 	var body = new JSM.Body ();

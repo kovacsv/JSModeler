@@ -89,25 +89,6 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		JSM.GenerateWireBody = function (body)
-		{
-			var result = new JSM.Body ();
-			
-			var i;
-			for (i = 0; i < body.VertexCount (); i++) {
-				result.AddVertex (body.GetVertex (i).Clone ());
-			}
-		
-			var adjacencyInfo = new JSM.AdjacencyInfo (body);
-			var i, edge;
-			for (i = 0; i < adjacencyInfo.edges.length; i++) {
-				edge = adjacencyInfo.edges[i];
-				JSM.AddLineToBody (result, edge.vert1, edge.vert2);
-			}
-			
-			return result;
-		};	
-	
 		function Load ()
 		{
 			var camera = new JSM.Camera (
