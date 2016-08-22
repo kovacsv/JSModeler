@@ -259,12 +259,22 @@
 					result.model.AddBody (polygonsBody);
 				}
 				
-				var mainContour = coordinates[0];
-				var polygon = new JSM.Polygon2D ();
-				var i, sphereCoord;
-				for (i = 0; i < mainContour.length - 1; i++) {
-					sphereCoord = JSM.CoordFromArray2D (mainContour[i]);
-					polygon.AddVertexCoord (sphereCoord);
+				var contourPolygon = new JSM.ContourPolygon2D ();
+				var i, j, currentContour, sphereCoord;
+				for (i = 0; i < coordinates.length; i++) {
+					contourPolygon.AddContour ();
+					currentContour = coordinates[i];
+					for (j = 0; j < currentContour.length - 1; j++) {
+						sphereCoord = JSM.CoordFromArray2D (currentContour[j]);
+						contourPolygon.AddVertexCoord (sphereCoord);
+					}
+				}
+				
+				var polygon = null;
+				if (contourPolygon.ContourCount () == 1) {
+					polygon = contourPolygon.GetContour (0);
+				} else {
+					polygon = JSM.ConvertContourPolygonToPolygon2D (contourPolygon);
 				}
 				AddPolygonToBody (polygonsBody, sphereRadius, polygon, materialIndex);	
 			}
@@ -343,6 +353,7 @@
 				'points.json',
 				'lines.json',
 				'rectangles.json',
+				'holes.json',
 				'hungary.json',
 				'world.json'
 			];
