@@ -220,7 +220,7 @@
 				
 					var eps = 0.001;
 					// TODO: if thickness is zero, do not generate bottom polygons
-					var thickness = 5;
+					var thickness = 1;
 					var vertexCoordsTop = [];
 					var vertexCoordsBottom = [];
 					var i, polygonVertex, cartesianCoord;
@@ -251,16 +251,11 @@
 				var xSegments = GetSegmentCount (box.max.x - box.min.x);
 				var ySegments = GetSegmentCount (box.max.y - box.min.y);
 				var segmentedPolygons = JSM.SegmentPolygon2D (polygon, xSegments, ySegments);
-				var lastPolygon = body.PolygonCount ();
 				var i;
 				for (i = 0; i < segmentedPolygons.length; i++) {
 					AddSegmentedPolygonToBody (body, segmentedPolygons[i], sphereRadius);
 				}
-				var bodyPolygon;
-				for (i = lastPolygon; i < body.PolygonCount (); i++) {
-					bodyPolygon = body.GetPolygon (i);
-					bodyPolygon.SetMaterialIndex (materialIndex);
-				}
+				body.SetPolygonsMaterialIndex (materialIndex);
 			}
 
 			function AddPoint (sphereRadius, coordinate, materialIndex)
@@ -287,10 +282,8 @@
 			
 			function AddPolygon (sphereRadius, coordinates, materialIndex)
 			{
-				if (polygonsBody === null) {
-					polygonsBody = new JSM.Body ();
-					result.model.AddBody (polygonsBody);
-				}
+				var body = new JSM.Body ();
+				result.model.AddBody (body);
 				
 				var contourPolygon = new JSM.ContourPolygon2D ();
 				var i, j, currentContour, sphereCoord;
@@ -305,13 +298,8 @@
 
 				// TODO: reverse orientation if needed
 				// alert (contourPolygon.GetOrientation ());
-				var polygon = null;
-				if (contourPolygon.ContourCount () == 1) {
-					polygon = contourPolygon.GetContour (0);
-				} else {
-					polygon = JSM.ConvertContourPolygonToPolygon2D (contourPolygon);
-				}
-				AddPolygonToBody (polygonsBody, sphereRadius, polygon, materialIndex);	
+				var polygon = JSM.ConvertContourPolygonToPolygon2D (contourPolygon);
+				AddPolygonToBody (body, sphereRadius, polygon, materialIndex);	
 			}
 
 			function AddMultiPolygon (sphereRadius, coordinates, materialIndex)
@@ -358,7 +346,6 @@
 			var result = new JSM.ModelWithMaterials ();
 			var pointsBody = null;
 			var linesBody = null;
-			var polygonsBody = null;
 			
 			var i, feature;
 			for (i = 0; i < geoJson.features.length; i++) {
