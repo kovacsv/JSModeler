@@ -332,7 +332,8 @@
 					return false;
 				}
 				
-				var material = new JSM.Material ({ ambient : JSM.RandomInt (0, 16777215), diffuse : JSM.RandomInt (0, 16777215), singleSided : true});
+				var materialColor = JSM.RandomInt (0, 16777215);
+				var material = new JSM.Material ({ambient : materialColor, diffuse : materialColor, singleSided : true});
 				var materialIndex = result.materials.AddMaterial (material);
 				if (feature.geometry.type == 'Point') {
 					material.pointSize = 10;
