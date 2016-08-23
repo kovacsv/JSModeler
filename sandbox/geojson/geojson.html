@@ -187,30 +187,62 @@
 			{
 				function AddSegmentedPolygonToBody (body, polygon, sphereRadius)
 				{
+					function AddMainPolygon (body, vertexCoords, reversed)
+					{
+						var vertices = [];
+						var i, vertexCoord;
+						for (i = 0; i < vertexCoords.length; i++) {
+							vertexCoord = vertexCoords[i];
+							vertices.push (JSM.AddVertexToBody (body, vertexCoord.x, vertexCoord.y, vertexCoord.z));
+						}
+						if (reversed) {
+							var reversedVertices = vertices.slice (0);
+							reversedVertices.reverse ();
+							JSM.AddPolygonToBody (body, reversedVertices);
+						} else {
+							JSM.AddPolygonToBody (body, vertices);
+						}
+						return vertices;
+					}
+					
+					function AddSidePolygons (body, topVertices, bottomVertices)
+					{
+						var vertexCount = topVertices.length;
+						var i, curr, next, bottom, nbottom;
+						for (i = 0; i < vertexCount; i++) {
+							curr = topVertices[i];
+							next = topVertices[JSM.NextIndex (i, vertexCount)];
+							bottom = bottomVertices[i];
+							nbottom = bottomVertices[JSM.NextIndex (i, vertexCount)];
+							JSM.AddPolygonToBody (body, [curr, next, nbottom, bottom]);
+						}
+					}
+				
 					var eps = 0.001;
-					var vertexCoords = [];
-					var i, cartesianCoord;
+					var thickness = 5;
+					var vertexCoordsTop = [];
+					var vertexCoordsBottom = [];
+					var i, polygonVertex, cartesianCoord;
 					for (i = 0; i < polygon.VertexCount (); i++) {
-						cartesianCoord = ConvertCoordinate (sphereRadius, polygon.GetVertex (i));
-						if (vertexCoords.length > 0) {
-							if (vertexCoords[vertexCoords.length - 1].IsEqualWithEps (cartesianCoord, eps)) {
+						polygonVertex = polygon.GetVertex (i);
+						cartesianCoord = ConvertCoordinate (sphereRadius, polygonVertex);
+						if (vertexCoordsTop.length > 0) {
+							if (vertexCoordsTop[vertexCoordsTop.length - 1].IsEqualWithEps (cartesianCoord, eps)) {
 								continue;
 							}
 							if (i == polygon.VertexCount () - 1) {
-								if (vertexCoords[0].IsEqualWithEps (cartesianCoord, eps)) {
+								if (vertexCoordsTop[0].IsEqualWithEps (cartesianCoord, eps)) {
 									continue;
 								}
 							}
 						}
-						vertexCoords.push (cartesianCoord);
+						vertexCoordsTop.push (cartesianCoord);
+						vertexCoordsBottom.push (ConvertCoordinate (sphereRadius - thickness, polygonVertex));
 					}
-					if (vertexCoords.length >= 3) {
-						var vertices = [];
-						for (i = 0; i < vertexCoords.length; i++) {
-							cartesianCoord = vertexCoords[i];
-							vertices.push (JSM.AddVertexToBody (body, cartesianCoord.x, cartesianCoord.y, cartesianCoord.z));
-						}
-						JSM.AddPolygonToBody (body, vertices);
+					if (vertexCoordsTop.length >= 3) {
+						var topVertices = AddMainPolygon (body, vertexCoordsTop, true);
+						var bottomVertices = AddMainPolygon (body, vertexCoordsBottom, false);
+						AddSidePolygons (body, topVertices, bottomVertices);
 					}				
 				}
 			
@@ -269,7 +301,9 @@
 						contourPolygon.AddVertexCoord (sphereCoord);
 					}
 				}
-				
+
+				// TODO: reverse orientation if needed
+				// alert (contourPolygon.GetOrientation ());
 				var polygon = null;
 				if (contourPolygon.ContourCount () == 1) {
 					polygon = contourPolygon.GetContour (0);
@@ -297,7 +331,7 @@
 					return false;
 				}
 				
-				var material = new JSM.Material ({ ambient : JSM.RandomInt (0, 16777215), diffuse : JSM.RandomInt (0, 16777215)});
+				var material = new JSM.Material ({ ambient : JSM.RandomInt (0, 16777215), diffuse : JSM.RandomInt (0, 16777215), singleSided : true});
 				var materialIndex = result.materials.AddMaterial (material);
 				if (feature.geometry.type == 'Point') {
 					material.pointSize = 10;
