@@ -168,7 +168,7 @@ JSM.Polygon2D.prototype.ShiftVertices = function (count)
 * Function: Polygon2D.ReverseVertices
 * Description: Reverses the orientation of the vertices.
 */
-JSM.Polygon2D.prototype.ReverseVertices = function (count)
+JSM.Polygon2D.prototype.ReverseVertices = function ()
 {
 	this.vertices.reverse ();
 	this.ClearCache ();
