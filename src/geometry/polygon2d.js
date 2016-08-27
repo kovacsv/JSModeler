@@ -165,6 +165,16 @@ JSM.Polygon2D.prototype.ShiftVertices = function (count)
 };
 
 /**
+* Function: Polygon2D.ReverseVertices
+* Description: Reverses the orientation of the vertices.
+*/
+JSM.Polygon2D.prototype.ReverseVertices = function (count)
+{
+	this.vertices.reverse ();
+	this.ClearCache ();
+};
+
+/**
 * Function: Polygon2D.GetSignedArea
 * Description: Calculates the signed area of the polygon.
 * Returns:
@@ -682,6 +692,18 @@ JSM.ContourPolygon2D.prototype.VertexCount = function ()
 		vertexCount += this.contours[i].VertexCount ();
 	}
 	return vertexCount;
+};
+
+/**
+* Function: ContourPolygon2D.ReverseVertices
+* Description: Reverses the orientation of the vertices.
+*/
+JSM.ContourPolygon2D.prototype.ReverseVertices = function ()
+{
+	var i;
+	for (i = 0; i < this.contours.length; i++) {
+		this.contours[i].ReverseVertices ();
+	}
 };
 
 /**

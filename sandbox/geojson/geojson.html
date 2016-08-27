@@ -296,8 +296,9 @@
 					}
 				}
 
-				// TODO: reverse orientation if needed
-				// alert (contourPolygon.GetOrientation ());
+				if (contourPolygon.GetOrientation () != JSM.Orientation.Clockwise) {
+					contourPolygon.ReverseVertices ();
+				}
 				var polygon = JSM.ConvertContourPolygonToPolygon2D (contourPolygon);
 				AddPolygonToBody (body, sphereRadius, polygon, materialIndex);	
 			}
