@@ -1926,6 +1926,9 @@
 								["count", "integer", "the number of shifts"]
 							]
 						},
+						"ReverseVertices" : {
+							"description" : "Reverses the orientation of the vertices."
+						},
 						"GetSignedArea" : {
 							"description" : "Calculates the signed area of the polygon.",
 							"returns" : [
@@ -2075,6 +2078,9 @@
 							"returns" : [
 								["integer", "vertex count"]
 							]
+						},
+						"ReverseVertices" : {
+							"description" : "Reverses the orientation of the vertices."
 						},
 						"ContourVertexCount" : {
 							"description" : "Returns the vertex count of the given contour of the polygon.",
@@ -2898,6 +2904,15 @@
 						["distance", "number", "the distance of the movement"]
 					]
 				},
+				"GenerateWireBody" : {
+					"description" : "Generates a body which contains only the lines from the given body.",
+					"parameters" : [
+						["body", "Body", "the original body"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
 				"TriangulateWithCentroids" : {
 					"description" : "Triangulates all polygons of the body by connecting all polygon vertices with the centroid vertex of the polygon.",
 					"parameters" : [
@@ -3596,6 +3611,47 @@
 				}
 			},
 			"classes" : {
+				"Material" : {
+					"description" : "Defines a material. The parameter structure can contain the following values: ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight.",
+					"parameters" : [
+						["parameters", "object", "parameters of the material"]
+					]
+				},
+				"Materials" : {
+					"description" : "Defines a material container.",
+					"functions" : {
+						"GetMaterial" : {
+							"description" : "Returns a material from the container.",
+							"parameters" : [
+								["index", "integer", "the index"]
+							],
+							"returns" : [
+								["Material", "the result"]
+							]
+						},
+						"AddMaterial" : {
+							"description" : "Adds a material to the container.",
+							"parameters" : [
+								["material", "Material", "the material"]
+							],
+							"returns" : [
+								["integer", "the index of the newly added material"]
+							]
+						},
+						"GetDefaultMaterial" : {
+							"description" : "Returns the default material from the container. It is always exists.",
+							"returns" : [
+								["Material", "the result"]
+							]
+						},
+						"Count" : {
+							"description" : "Returns the material count of the container.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						}
+					}
+				},
 				"BodyVertex" : {
 					"description" : "Represents a vertex of a 3D body. The vertex contains only its position as a 3D coordinate.",
 					"parameters" : [
@@ -4188,47 +4244,6 @@
 						},
 						"PolygonCount" : {
 							"description" : "Returns the polygon count of the model.",
-							"returns" : [
-								["integer", "the result"]
-							]
-						}
-					}
-				},
-				"Material" : {
-					"description" : "Defines a material. The parameter structure can contain the following values: ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight.",
-					"parameters" : [
-						["parameters", "object", "parameters of the material"]
-					]
-				},
-				"Materials" : {
-					"description" : "Defines a material container.",
-					"functions" : {
-						"GetMaterial" : {
-							"description" : "Returns a material from the container.",
-							"parameters" : [
-								["index", "integer", "the index"]
-							],
-							"returns" : [
-								["Material", "the result"]
-							]
-						},
-						"AddMaterial" : {
-							"description" : "Adds a material to the container.",
-							"parameters" : [
-								["material", "Material", "the material"]
-							],
-							"returns" : [
-								["integer", "the index of the newly added material"]
-							]
-						},
-						"GetDefaultMaterial" : {
-							"description" : "Returns the default material from the container. It is always exists.",
-							"returns" : [
-								["Material", "the result"]
-							]
-						},
-						"Count" : {
-							"description" : "Returns the material count of the container.",
 							"returns" : [
 								["integer", "the result"]
 							]
