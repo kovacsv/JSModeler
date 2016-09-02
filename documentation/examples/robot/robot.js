@@ -226,7 +226,7 @@ JSM.Robot.prototype =
 			coneHeight : 0.2
 		};
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffcc33, diffuse : 0xffcc33}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc3333, diffuse : 0xcc3333}));
 

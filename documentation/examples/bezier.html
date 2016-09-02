@@ -138,7 +138,7 @@
 		{
 			RemoveEverythingFromScene (viewer.scene);
 			
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 1.0, opacity : 1.0, texture : 'tiles.png', textureWidth : 1.0, textureHeight : 1.0}));
 
 			bezierData.surfaceBody = JSM.GenerateBezierSurface (scp, 32, 32, true);

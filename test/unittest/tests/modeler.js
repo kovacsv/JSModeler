@@ -742,7 +742,7 @@ generalSuite.AddTest ('ExplodeTest', function (test)
 	}
 	
 	var body = JSM.GenerateCuboid (1, 1, 1);
-	var materials = new JSM.Materials ();
+	var materials = new JSM.MaterialSet ();
 	materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 	materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 	body.GetPolygon (0).SetMaterialIndex (0);
@@ -811,7 +811,7 @@ generalSuite.AddTest ('ExplodeTest2', function (test)
 	}
 	
 	var body, result;
-	var materials = new JSM.Materials ();
+	var materials = new JSM.MaterialSet ();
 	materials.AddMaterial (new JSM.Material ({ambient : 0xff0000, diffuse : 0xff0000}));
 	materials.AddMaterial (new JSM.Material ({ambient : 0x00ff00, diffuse : 0x00ff00}));
 	
@@ -1005,7 +1005,7 @@ generalSuite.AddTest ('ExportTest', function (test)
 	model.AddBody (body1);
 	model.AddBody (body2);
 	
-	var materials = new JSM.Materials ();
+	var materials = new JSM.MaterialSet ();
 	materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 	materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 	
@@ -2731,14 +2731,14 @@ conversionSuite.AddTest ('TriangleModelConversion', function (test)
 	test.Assert (triangleBody.TriangleCount () == 12 * 3);
 	
 	var model = new JSM.Model ();
-	var materials = new JSM.Materials ();
+	var materials = new JSM.MaterialSet ();
 	model.AddBody (body);
 	var triangleModel = JSM.ConvertModelToTriangleModel (model, materials);
 	test.Assert (triangleModel.MaterialCount () == 1);
 	test.Assert (triangleModel.BodyCount () == 1);
 
 	var model = new JSM.Model ();
-	var materials = new JSM.Materials ();
+	var materials = new JSM.MaterialSet ();
 	materials.AddMaterial (new JSM.Material ({ambient : 0xff0000, diffuse : 0xff0000}));
 	materials.AddMaterial (new JSM.Material ({ambient : 0x00ff00, diffuse : 0x00ff00}));
 

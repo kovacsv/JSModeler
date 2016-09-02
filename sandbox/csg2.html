@@ -120,7 +120,7 @@
 			var body = JSM.BooleanOperation ('Difference', aBody, bBody);
 			timer.Stop ();
 
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			JSM.GenerateRandomMaterials (body, materials);
 			
 			logDiv.innerHTML += 'Vertex count: '  + body.VertexCount () + '<br>';

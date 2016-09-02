@@ -5,7 +5,7 @@
 *	on geometry start and end, and when a triangle or a line is created.
 * Parameters:
 *	body {Body} the body
-*	materials {Materials} the materials
+*	materials {MaterialSet} the materials
 *	explodeData {object} the parameters and callback functions of explode
 * Returns:
 *	{boolean} success
@@ -304,7 +304,7 @@ JSM.ExplodeBody = function (body, materials, explodeData)
 	}
 
 	if (materials === undefined || materials === null) {
-		materials = new JSM.Materials ();
+		materials = new JSM.MaterialSet ();
 	}	
 	
 	ExplodePoints (body, materials, explodeData);

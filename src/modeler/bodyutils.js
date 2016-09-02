@@ -408,7 +408,7 @@ JSM.TriangulatePolygons = function (body)
 * Description: Generates random materials for a body. A seed number can be specified.
 * Parameters:
 *	body {Body} the body
-*	materials {Materials} the materials
+*	materials {MaterialSet} the materials
 *	seeded {boolean} seeded random generation
 */
 JSM.GenerateRandomMaterials = function (body, materials, seeded)

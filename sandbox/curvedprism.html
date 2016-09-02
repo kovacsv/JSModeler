@@ -107,7 +107,7 @@
 			viewer = new JSM.Viewer ();
 			viewer.Init (document.getElementById ('example'), camera);
 
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.jpg', textureWidth : 1.0, textureHeight : 1.0}));
 
 			var circle = JSM.GenerateCirclePoints (1, 20, new JSM.Coord (0, 0, 0));

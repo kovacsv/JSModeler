@@ -107,7 +107,7 @@
 		JSM.ModelWithMaterials = function ()
 		{
 			this.model = new JSM.Model ();
-			this.materials = new JSM.Materials ();
+			this.materials = new JSM.MaterialSet ();
 		}
 		
 		JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
@@ -345,7 +345,7 @@
 			var body = new JSM.GenerateSphere (sphereRadius, 20);
 			body = JSM.GenerateWireBody (body);
 			
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0xdddddd, diffuse : 0xdddddd}));
 			body.SetLinesMaterialIndex (0);
 

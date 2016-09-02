@@ -71,7 +71,7 @@ JSM.ConvertBodyToTriangleBody = function (body)
 * Description: Converts a model to triangle model.
 * Parameters:
 *	model {Model} the model
-*	materials {Materials} the materials
+*	materials {MaterialSet} the materials
 * Returns:
 *	{TriangleModel} the result
 */

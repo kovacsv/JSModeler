@@ -31,7 +31,7 @@ function AddRendererTests (canvasTester, viewer)
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		
 		RenderBody (viewer, body, materials, renderFinished);
@@ -42,7 +42,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.GetPolygon (1).SetMaterialIndex (0);
 		body.GetPolygon (2).SetMaterialIndex (1);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 		
@@ -50,7 +50,7 @@ function AddRendererTests (canvasTester, viewer)
 	}, 'references/renderer/cube_materials.png');
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		
 		var body = JSM.GenerateCuboid (1, 1, 1);
@@ -63,7 +63,7 @@ function AddRendererTests (canvasTester, viewer)
 	}, 'references/renderer/cube_no_lights.png');
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		
 		var body = JSM.GenerateCuboid (1, 1, 1);
@@ -75,7 +75,7 @@ function AddRendererTests (canvasTester, viewer)
 	}, 'references/renderer/cube_only_ambient_light.png');	
 	
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		
 		var body = JSM.GenerateCuboid (1, 1, 1);
@@ -89,7 +89,7 @@ function AddRendererTests (canvasTester, viewer)
 	}, 'references/renderer/cube_directional_light_no_ambient.png');
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		
 		var body = JSM.GenerateCuboid (1, 1, 1);
@@ -102,7 +102,7 @@ function AddRendererTests (canvasTester, viewer)
 	}, 'references/renderer/cube_directional_light_ambient.png');
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		
 		var body = JSM.GenerateCuboid (1, 1, 1);
@@ -118,7 +118,7 @@ function AddRendererTests (canvasTester, viewer)
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
@@ -134,7 +134,7 @@ function AddRendererTests (canvasTester, viewer)
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
@@ -151,7 +151,7 @@ function AddRendererTests (canvasTester, viewer)
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
 	
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
@@ -184,7 +184,7 @@ function AddRendererTests (canvasTester, viewer)
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var body = JSM.GenerateCuboidSides (1, 1, 1, [0, 0, 1, 1, 1, 0]);
 		body.SetPolygonsMaterialIndex (0);
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 		RenderBodyAndWait (viewer, body, materials, renderFinished);
 	}, 'references/renderer/texture_double_side.png');
@@ -194,7 +194,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.GetPolygon (1).SetMaterialIndex (0);
 		body.GetPolygon (2).SetMaterialIndex (1);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 		
@@ -206,7 +206,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.GetPolygon (1).SetMaterialIndex (0);
 		body.GetPolygon (2).SetMaterialIndex (1);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texturenpot.png', textureWidth : 1.0, textureHeight : 1.0}));
 		
@@ -218,7 +218,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.GetPolygon (1).SetMaterialIndex (0);
 		body.GetPolygon (2).SetMaterialIndex (1);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 0.5, textureHeight : 0.2}));
 		
@@ -230,7 +230,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.GetPolygon (1).SetMaterialIndex (0);
 		body.GetPolygon (2).SetMaterialIndex (1);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 		
@@ -241,7 +241,7 @@ function AddRendererTests (canvasTester, viewer)
 		var body = JSM.GenerateCuboid (1, 1, 1);
 		body.SetPolygonsMaterialIndex (0);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 		
 		RenderBodyAndWait (viewer, body, materials, renderFinished);
@@ -251,7 +251,7 @@ function AddRendererTests (canvasTester, viewer)
 		var body = JSM.GenerateTorus (0.8, 0.3, 50, 50, true);
 		body.SetPolygonsMaterialIndex (0);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, specular : 0x333333, shininess : 5.0}));
 		
 		RenderBody (viewer, body, materials, renderFinished);
@@ -262,7 +262,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.GetPolygon (1).SetMaterialIndex (0);
 		body.GetPolygon (2).SetMaterialIndex (1);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, opacity : 0.5}));
 		
@@ -274,7 +274,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.GetPolygon (1).SetMaterialIndex (0);
 		body.GetPolygon (2).SetMaterialIndex (1);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000, opacity : 0.75}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, opacity : 0.75}));
 		
@@ -286,7 +286,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.GetPolygon (1).SetMaterialIndex (0);
 		body.GetPolygon (2).SetMaterialIndex (1);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000, opacity : 0.75}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, opacity : 0.75, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 		
@@ -300,7 +300,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.GetPolygon (2).SetMaterialIndex (2);
 		body.GetPolygon (5).SetMaterialIndex (3);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000, opacity : 0.75}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, opacity : 0.75, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
@@ -314,7 +314,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.GetPolygon (1).SetMaterialIndex (0);
 		body.GetPolygon (2).SetMaterialIndex (1);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, opacity : 0.75, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 		
@@ -332,7 +332,7 @@ function AddRendererTests (canvasTester, viewer)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 		
@@ -364,7 +364,7 @@ function AddRendererTests (canvasTester, viewer)
 		body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.5, 0, 0)));
 		body2.GetPolygon (2).SetMaterialIndex (1);
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 		
@@ -383,7 +383,7 @@ function AddRendererTests (canvasTester, viewer)
 		body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.5, 0, 0)));
 		body2.GetPolygon (2).SetMaterialIndex (1);
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 		
@@ -395,7 +395,7 @@ function AddRendererTests (canvasTester, viewer)
 	
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
@@ -424,7 +424,7 @@ function AddRendererTests (canvasTester, viewer)
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, singleSided : true}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 
@@ -443,7 +443,7 @@ function AddRendererTests (canvasTester, viewer)
 	
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, singleSided : true, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 
@@ -483,7 +483,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.AddLine (new JSM.BodyLine (1, 2));
 		body.AddLine (new JSM.BodyLine (2, 3));
 		body.AddLine (new JSM.BodyLine (3, 0));
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
 		body.SetLinesMaterialIndex (0);
@@ -500,7 +500,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.AddLine (new JSM.BodyLine (1, 2));
 		body.AddLine (new JSM.BodyLine (2, 3));
 		body.AddLine (new JSM.BodyLine (3, 0));
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 		body.GetLine (0).SetMaterialIndex (0);
@@ -518,7 +518,7 @@ function AddRendererTests (canvasTester, viewer)
 			line.SetMaterialIndex (i);
 			body.AddLine (line);
 		}
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
@@ -551,7 +551,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.AddLine (new JSM.BodyLine (vert1, vert2));
 		body.AddLine (new JSM.BodyLine (vert2, vert3));
 		body.AddLine (new JSM.BodyLine (vert3, vert0));
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 		body.GetLine (1).SetMaterialIndex (0);
@@ -571,7 +571,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.AddLine (new JSM.BodyLine (vert1, vert2));
 		body.AddLine (new JSM.BodyLine (vert2, vert3));
 		body.AddLine (new JSM.BodyLine (vert3, vert0));
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, opacity : 0.5}));
 		body.GetLine (1).SetMaterialIndex (0);
@@ -591,7 +591,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.AddLine (new JSM.BodyLine (vert1, vert2));
 		body.AddLine (new JSM.BodyLine (vert2, vert3));
 		body.AddLine (new JSM.BodyLine (vert3, vert0));
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 		body.SetLinesMaterialIndex (1);
@@ -622,7 +622,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.AddPoint (new JSM.BodyPoint (vert1, vert2));
 		body.AddPoint (new JSM.BodyPoint (vert2, vert3));
 		body.AddPoint (new JSM.BodyPoint (vert3, vert0));
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		body.SetPointsMaterialIndex (0);
 		RenderBody (viewer, body, materials, renderFinished);
@@ -638,7 +638,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.AddPoint (new JSM.BodyPoint (vert1, vert2));
 		body.AddPoint (new JSM.BodyPoint (vert2, vert3));
 		body.AddPoint (new JSM.BodyPoint (vert3, vert0));
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 		body.GetPoint (1).SetMaterialIndex (0);
@@ -656,7 +656,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.AddPoint (new JSM.BodyPoint (vert1, vert2));
 		body.AddPoint (new JSM.BodyPoint (vert2, vert3));
 		body.AddPoint (new JSM.BodyPoint (vert3, vert0));
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000, pointSize : 0.2}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc, pointSize : 0.3}));
 		body.GetPoint (1).SetMaterialIndex (0);
@@ -682,7 +682,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.AddPoint (new JSM.BodyPoint (vert5));
 		body.AddPoint (new JSM.BodyPoint (vert6));
 		body.AddPoint (new JSM.BodyPoint (vert7));
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 		body.GetPoint (1).SetMaterialIndex (0);
@@ -712,7 +712,7 @@ function AddRendererTests (canvasTester, viewer)
 		body.AddPoint (new JSM.BodyPoint (vert5));
 		body.AddPoint (new JSM.BodyPoint (vert6));
 		body.AddPoint (new JSM.BodyPoint (vert7));
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x00cccc, diffuse : 0x00cccc}));

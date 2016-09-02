@@ -2929,7 +2929,7 @@
 					"description" : "Generates random materials for a body. A seed number can be specified.",
 					"parameters" : [
 						["body", "Body", "the body"],
-						["materials", "Materials", "the materials"],
+						["materials", "MaterialSet", "the materials"],
 						["seeded", "boolean", "seeded random generation"]
 					]
 				},
@@ -3391,7 +3391,7 @@
 					"description" : "Explodes a body to primitives. The function calls callback functions on geometry start and end, and when a triangle or a line is created.",
 					"parameters" : [
 						["body", "Body", "the body"],
-						["materials", "Materials", "the materials"],
+						["materials", "MaterialSet", "the materials"],
 						["explodeData", "object", "the parameters and callback functions of explode"]
 					],
 					"returns" : [
@@ -3463,7 +3463,7 @@
 				"ExportMaterialsToGdl" : {
 					"description" : "Exports a material container to gdl.",
 					"parameters" : [
-						["materials", "Materials", "the material container"]
+						["materials", "MaterialSet", "the material container"]
 					],
 					"returns" : [
 						["string", "the result"]
@@ -3483,7 +3483,7 @@
 					"description" : "Exports a body to gdl.",
 					"parameters" : [
 						["body", "Body", "the body"],
-						["materials", "Materials", "the material container"]
+						["materials", "MaterialSet", "the material container"]
 					],
 					"returns" : [
 						["string", "the result"]
@@ -3493,7 +3493,7 @@
 					"description" : "Exports a model to gdl.",
 					"parameters" : [
 						["model", "Model", "the model"],
-						["materials", "Materials", "the material container"]
+						["materials", "MaterialSet", "the material container"]
 					],
 					"returns" : [
 						["string", "the result"]
@@ -3521,7 +3521,7 @@
 					"description" : "Converts a model to triangle model.",
 					"parameters" : [
 						["model", "Model", "the model"],
-						["materials", "Materials", "the materials"]
+						["materials", "MaterialSet", "the materials"]
 					],
 					"returns" : [
 						["TriangleModel", "the result"]
@@ -3617,7 +3617,7 @@
 						["parameters", "object", "parameters of the material"]
 					]
 				},
-				"Materials" : {
+				"MaterialSet" : {
 					"description" : "Defines a material container.",
 					"functions" : {
 						"GetMaterial" : {
@@ -4660,7 +4660,7 @@
 					"description" : "Draws a projected body.",
 					"parameters" : [
 						["body", "Body", "the body"],
-						["materials", "Materials", "the material container"],
+						["materials", "MaterialSet", "the material container"],
 						["camera", "Camera", "the camera for projection"],
 						["drawMode", "string", "draw mode ('HiddenLinePainter', 'HiddenLineFrontFacing' or 'Wireframe')"],
 						["needClear", "boolean", "clear the display before draw"],

@@ -421,7 +421,7 @@ function AddGeneratorTests (canvasTester, viewer)
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
 		var model = new JSM.Model ();
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
@@ -458,7 +458,7 @@ function AddGeneratorTests (canvasTester, viewer)
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
 		var model = new JSM.Model ();
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
@@ -495,7 +495,7 @@ function AddGeneratorTests (canvasTester, viewer)
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
 		var model = new JSM.Model ();
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 

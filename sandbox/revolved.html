@@ -113,7 +113,7 @@
 			var body = JSM.GenerateRevolved (polyLine, axis, 360.0 * JSM.DegRad, 50, true, 'CurveSegments');
 			body.SetPolygonsMaterialIndex (0);
 			
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			materials.AddMaterial (new JSM.Material ({
 				ambient : 0xffffff,
 				diffuse : 0xffffff,

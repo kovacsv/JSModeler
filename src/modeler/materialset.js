@@ -1,22 +1,22 @@
 /**
-* Class: Materials
+* Class: MaterialSet
 * Description: Defines a material container.
 */
-JSM.Materials = function ()
+JSM.MaterialSet = function ()
 {
 	this.materials = [];
 	this.defaultMaterial = new JSM.Material ();
 };
 
 /**
-* Function: Materials.GetMaterial
+* Function: MaterialSet.GetMaterial
 * Description: Returns a material from the container.
 * Parameters:
 *	index {integer} the index
 * Returns:
 *	{Material} the result
 */
-JSM.Materials.prototype.GetMaterial = function (index)
+JSM.MaterialSet.prototype.GetMaterial = function (index)
 {
 	if (index < 0 || index >= this.materials.length) {
 		return this.defaultMaterial;
@@ -25,37 +25,37 @@ JSM.Materials.prototype.GetMaterial = function (index)
 };
 
 /**
-* Function: Materials.AddMaterial
+* Function: MaterialSet.AddMaterial
 * Description: Adds a material to the container.
 * Parameters:
 *	material {Material} the material
 * Returns:
 *	{integer} the index of the newly added material
 */
-JSM.Materials.prototype.AddMaterial = function (material)
+JSM.MaterialSet.prototype.AddMaterial = function (material)
 {
 	this.materials.push (material);
 	return this.materials.length - 1;
 };
 
 /**
-* Function: Materials.GetDefaultMaterial
+* Function: MaterialSet.GetDefaultMaterial
 * Description: Returns the default material from the container. It is always exists.
 * Returns:
 *	{Material} the result
 */
-JSM.Materials.prototype.GetDefaultMaterial = function ()
+JSM.MaterialSet.prototype.GetDefaultMaterial = function ()
 {
 	return this.defaultMaterial;
 };
 
 /**
-* Function: Materials.Count
+* Function: MaterialSet.Count
 * Description: Returns the material count of the container.
 * Returns:
 *	{integer} the result
 */
-JSM.Materials.prototype.Count = function ()
+JSM.MaterialSet.prototype.Count = function ()
 {
 	return this.materials.length;
 };

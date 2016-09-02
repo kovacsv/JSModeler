@@ -110,7 +110,7 @@
 			var body = new JSM.GenerateCylinder (0.5, 1.0, 20, true, true);
 			JSM.TriangulatePolygons (body);
 			
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			JSM.GenerateRandomMaterials (body, materials);
 			
 			var meshes = JSM.ConvertBodyToThreeMeshes (body, materials);

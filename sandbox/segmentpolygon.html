@@ -133,7 +133,7 @@
 				AddPolygonToBody (body, segmented[i]);
 			}
 
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			JSM.GenerateRandomMaterials (body, materials, false);
 			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 

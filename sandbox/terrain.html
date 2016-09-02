@@ -104,7 +104,7 @@
 		{
 			this.model = new JSM.Model ();
 			this.terrain = new JSM.Body ();
-			this.materials = new JSM.Materials ();
+			this.materials = new JSM.MaterialSet ();
 			this.materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, singleSided : true}));
 			
 			this.GenerateTerrainPoints ();

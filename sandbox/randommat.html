@@ -121,7 +121,7 @@
 			body.AddLine (new JSM.BodyLine (vert2, vert3));
 			body.AddLine (new JSM.BodyLine (vert3, vert0));
 			
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			JSM.GenerateRandomMaterials (body, materials, false);
 			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 

@@ -49,7 +49,7 @@ JSM.GenerateClock = function (radius, segmentation)
 	};
 	
 	var model = new JSM.Model ();
-	var materials = new JSM.Materials ();
+	var materials = new JSM.MaterialSet ();
 	materials.AddMaterial (new JSM.Material ({ambient : 0xbbbbbb, diffuse : 0xbbbbbb}));
 	materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff}));
 	materials.AddMaterial (new JSM.Material ({ambient : 0x222222, diffuse : 0x222222}));

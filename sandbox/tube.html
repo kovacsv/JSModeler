@@ -118,7 +118,7 @@
 			
 			var direction = new JSM.Vector (0.0, 0.0, 1.0);
 			var body = JSM.GenerateTube (polygons, true);
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			JSM.GenerateRandomMaterials (body, materials, true);
 			var renderBody = JSM.ConvertBodyToRenderBody (body, materials);
 			viewer.AddBody (renderBody);

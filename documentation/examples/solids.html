@@ -40,7 +40,7 @@
 			
 			var materials;
 			if (coloredFaces) {
-				materials = new JSM.Materials ();
+				materials = new JSM.MaterialSet ();
 				materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 				materials.AddMaterial (new JSM.Material ({ambient : 0x279b61, diffuse : 0x279b61}));
 				materials.AddMaterial (new JSM.Material ({ambient : 0xcc3333, diffuse : 0xcc3333}));
@@ -59,7 +59,7 @@
 					polygon.SetMaterialIndex (vertexCountToColor[vertexCount]);
 				}
 			} else {
-				var materials = new JSM.Materials ();
+				var materials = new JSM.MaterialSet ();
 				materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff}));
 				body.SetPolygonsMaterialIndex (0);
 			}

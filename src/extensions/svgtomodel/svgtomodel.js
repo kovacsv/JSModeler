@@ -381,7 +381,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength, curveAngle)
 	}
 	
 	var model = new JSM.Model ();
-	var materials = new JSM.Materials ();
+	var materials = new JSM.MaterialSet ();
 	var polygons = SegmentPaths (svgObject, segmentLength);
 
 	var currentHeight = height;

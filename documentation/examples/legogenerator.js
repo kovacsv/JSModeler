@@ -96,7 +96,7 @@ JSM.LegoBuild.prototype =
 	{
 		var brick = this.bricks[index];
 		
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : brick.color, diffuse : brick.color}));
 		
 		var body = this.GetLegoBrickBody (brick, index === 0);
@@ -108,7 +108,7 @@ JSM.LegoBuild.prototype =
 	GetModelAndMaterials : function ()
 	{
 		var model = new JSM.Model ();
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		
 		var colorToIndex = [];
 		var i, brick;

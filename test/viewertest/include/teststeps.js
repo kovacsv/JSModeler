@@ -9,7 +9,7 @@ function TestStep (viewer, mode, step, info)
 	}
 	
 	if (step == current++) {
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body = JSM.GenerateCuboid (1, 1, 1);
@@ -19,7 +19,7 @@ function TestStep (viewer, mode, step, info)
 	}
 	
 	if (step == current++) {
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body = JSM.GenerateCuboid (1, 1, 1);
@@ -29,7 +29,7 @@ function TestStep (viewer, mode, step, info)
 	}
 	
 	if (step == current++) {
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png', textureWidth : 0.5, textureHeight : 0.3}));
 
 		var body = JSM.GenerateCuboid (1, 1, 1);
@@ -39,7 +39,7 @@ function TestStep (viewer, mode, step, info)
 	}
 	
 	if (step == current++) {
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
@@ -53,7 +53,7 @@ function TestStep (viewer, mode, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
@@ -69,7 +69,7 @@ function TestStep (viewer, mode, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
@@ -86,7 +86,7 @@ function TestStep (viewer, mode, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 	
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
@@ -534,7 +534,7 @@ function TestStep (viewer, mode, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
@@ -571,7 +571,7 @@ function TestStep (viewer, mode, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
@@ -608,7 +608,7 @@ function TestStep (viewer, mode, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
 		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
@@ -732,7 +732,7 @@ function TestStep (viewer, mode, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 	
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
@@ -751,7 +751,7 @@ function TestStep (viewer, mode, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 	
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
@@ -772,7 +772,7 @@ function TestStep (viewer, mode, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 	
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
@@ -810,7 +810,7 @@ function TestStep (viewer, mode, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 	
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
@@ -836,7 +836,7 @@ function TestStep (viewer, mode, step, info)
 	if (step == current++) {
 		var model = new JSM.Model ();
 	
-		var materials = new JSM.Materials ();
+		var materials = new JSM.MaterialSet ();
 		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCylinder (0.5, 1.0, 30, true, true);
