@@ -9,6 +9,20 @@ JSM.MaterialSet = function ()
 };
 
 /**
+* Function: MaterialSet.AddMaterial
+* Description: Adds a material to the container.
+* Parameters:
+*	material {Material} the material
+* Returns:
+*	{integer} the index of the newly added material
+*/
+JSM.MaterialSet.prototype.AddMaterial = function (material)
+{
+	this.materials.push (material);
+	return this.materials.length - 1;
+};
+
+/**
 * Function: MaterialSet.GetMaterial
 * Description: Returns a material from the container.
 * Parameters:
@@ -22,20 +36,6 @@ JSM.MaterialSet.prototype.GetMaterial = function (index)
 		return this.defaultMaterial;
 	}
 	return this.materials[index];
-};
-
-/**
-* Function: MaterialSet.AddMaterial
-* Description: Adds a material to the container.
-* Parameters:
-*	material {Material} the material
-* Returns:
-*	{integer} the index of the newly added material
-*/
-JSM.MaterialSet.prototype.AddMaterial = function (material)
-{
-	this.materials.push (material);
-	return this.materials.length - 1;
 };
 
 /**

@@ -71,28 +71,25 @@ JSM.ConvertBodyToTriangleBody = function (body)
 * Description: Converts a model to triangle model.
 * Parameters:
 *	model {Model} the model
-*	materials {MaterialSet} the materials
 * Returns:
 *	{TriangleModel} the result
 */
-JSM.ConvertModelToTriangleModel = function (model, materials)
+JSM.ConvertModelToTriangleModel = function (model)
 {
-
 	var result = new JSM.TriangleModel ();
+	var materials = model.GetMaterialSet ();
 	var i, material;
-	if (materials !== undefined && materials !== null) {
-		for (i = 0; i < materials.Count (); i++) {
-			material = materials.GetMaterial (i);
-			result.AddMaterial ({
-				name : 'Material' + i,
-				ambient : JSM.HexColorToNormalizedRGBComponents (material.ambient),
-				diffuse : JSM.HexColorToNormalizedRGBComponents (material.diffuse),
-				specular : JSM.HexColorToNormalizedRGBComponents (material.specular),
-				shininess : material.shininess,
-				opacity : material.opacity,
-				reflection : material.reflection
-			});
-		}
+	for (i = 0; i < materials.Count (); i++) {
+		material = materials.GetMaterial (i);
+		result.AddMaterial ({
+			name : 'Material' + i,
+			ambient : JSM.HexColorToNormalizedRGBComponents (material.ambient),
+			diffuse : JSM.HexColorToNormalizedRGBComponents (material.diffuse),
+			specular : JSM.HexColorToNormalizedRGBComponents (material.specular),
+			shininess : material.shininess,
+			opacity : material.opacity,
+			reflection : material.reflection
+		});
 	}
 	
 	var body, triangleBody;

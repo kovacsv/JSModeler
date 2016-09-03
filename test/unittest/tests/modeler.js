@@ -1313,6 +1313,22 @@ generalSuite.AddTest ('MaterialSetTest', function (test)
 	test.Assert (materials.GetMaterial (2).ambient == 0x00cc00);
 });
 
+generalSuite.AddTest ('ModelMaterialSetTest', function (test)
+{
+	var model = new JSM.Model ();
+	test.Assert (model.MaterialCount () == 0);
+	test.Assert (model.GetDefaultMaterial ().ambient == 0x00cc00);
+	test.Assert (model.MaterialCount () == 0);
+	test.Assert (model.AddMaterial (new JSM.Material ()) == 0);
+	test.Assert (model.AddMaterial (new JSM.Material ({ ambient : 0xcc0000 })) == 1);
+	test.Assert (model.MaterialCount () == 2);
+	test.Assert (model.GetMaterialSet ().Count () == 2);
+	test.Assert (model.GetMaterial (0).ambient == 0x00cc00);
+	test.Assert (model.GetMaterial (1).ambient == 0xcc0000);
+	test.Assert (model.GetMaterial (-1).ambient == 0x00cc00);
+	test.Assert (model.GetMaterial (2).ambient == 0x00cc00);
+});
+
 var generatorSuite = unitTest.AddTestSuite ('ModelerGenerator');
 
 generatorSuite.AddTest ('GenerateRectangleTest', function (test)
@@ -2746,23 +2762,21 @@ conversionSuite.AddTest ('TriangleModelConversion', function (test)
 	test.Assert (triangleBody.TriangleCount () == 12 * 3);
 	
 	var model = new JSM.Model ();
-	var materials = new JSM.MaterialSet ();
 	model.AddBody (body);
-	var triangleModel = JSM.ConvertModelToTriangleModel (model, materials);
+	var triangleModel = JSM.ConvertModelToTriangleModel (model);
 	test.Assert (triangleModel.MaterialCount () == 1);
 	test.Assert (triangleModel.BodyCount () == 1);
 
 	var model = new JSM.Model ();
-	var materials = new JSM.MaterialSet ();
-	materials.AddMaterial (new JSM.Material ({ambient : 0xff0000, diffuse : 0xff0000}));
-	materials.AddMaterial (new JSM.Material ({ambient : 0x00ff00, diffuse : 0x00ff00}));
+	model.AddMaterial (new JSM.Material ({ambient : 0xff0000, diffuse : 0xff0000}));
+	model.AddMaterial (new JSM.Material ({ambient : 0x00ff00, diffuse : 0x00ff00}));
 
 	var body = JSM.GenerateCuboid (1.0, 2.0, 3.0);
 	body.GetPolygon (0).SetMaterialIndex (0);
 	body.GetPolygon (1).SetMaterialIndex (1);
 	model.AddBody (body);
 	
-	var triangleModel = JSM.ConvertModelToTriangleModel (model, materials);
+	var triangleModel = JSM.ConvertModelToTriangleModel (model);
 	test.Assert (triangleModel.MaterialCount () == 3);
 	test.Assert (triangleModel.GetMaterial (0).ambient.toString () == [1.0, 0.0, 0.0].toString ());
 	test.Assert (triangleModel.GetMaterial (0).diffuse.toString () == [1.0, 0.0, 0.0].toString ());

@@ -3520,8 +3520,7 @@
 				"ConvertModelToTriangleModel" : {
 					"description" : "Converts a model to triangle model.",
 					"parameters" : [
-						["model", "Model", "the model"],
-						["materials", "MaterialSet", "the materials"]
+						["model", "Model", "the model"]
 					],
 					"returns" : [
 						["TriangleModel", "the result"]
@@ -3620,15 +3619,6 @@
 				"MaterialSet" : {
 					"description" : "Defines a material container.",
 					"functions" : {
-						"GetMaterial" : {
-							"description" : "Returns a material from the container.",
-							"parameters" : [
-								["index", "integer", "the index"]
-							],
-							"returns" : [
-								["Material", "the result"]
-							]
-						},
 						"AddMaterial" : {
 							"description" : "Adds a material to the container.",
 							"parameters" : [
@@ -3636,6 +3626,15 @@
 							],
 							"returns" : [
 								["integer", "the index of the newly added material"]
+							]
+						},
+						"GetMaterial" : {
+							"description" : "Returns a material from the container.",
+							"parameters" : [
+								["index", "integer", "the index"]
+							],
+							"returns" : [
+								["Material", "the result"]
 							]
 						},
 						"GetDefaultMaterial" : {
@@ -4232,6 +4231,42 @@
 						},
 						"BodyCount" : {
 							"description" : "Returns the body count of the model.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"AddMaterial" : {
+							"description" : "Adds a material to the mode.",
+							"parameters" : [
+								["material", "Material", "the material"]
+							],
+							"returns" : [
+								["integer", "the index of the newly added material"]
+							]
+						},
+						"GetMaterial" : {
+							"description" : "Returns a material from the model.",
+							"parameters" : [
+								["index", "integer", "the index"]
+							],
+							"returns" : [
+								["Material", "the result"]
+							]
+						},
+						"GetDefaultMaterial" : {
+							"description" : "Returns the default material from the model. It is always exists.",
+							"returns" : [
+								["Material", "the result"]
+							]
+						},
+						"GetMaterialSet" : {
+							"description" : "Returns the material set of the model.",
+							"returns" : [
+								["MaterialSet", "the result"]
+							]
+						},
+						"Count" : {
+							"description" : "Returns the material count of the model.",
 							"returns" : [
 								["integer", "the result"]
 							]
