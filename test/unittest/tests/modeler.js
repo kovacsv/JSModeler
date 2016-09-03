@@ -1298,6 +1298,21 @@ generalSuite.AddTest ('OctreeBodyTest', function (test)
 	test.Assert (TestOctree (body, test));
 });
 
+generalSuite.AddTest ('MaterialSetTest', function (test)
+{
+	var materials = new JSM.MaterialSet ();
+	test.Assert (materials.Count () == 0);
+	test.Assert (materials.GetDefaultMaterial ().ambient == 0x00cc00);
+	test.Assert (materials.Count () == 0);
+	test.Assert (materials.AddMaterial (new JSM.Material ()) == 0);
+	test.Assert (materials.AddMaterial (new JSM.Material ({ ambient : 0xcc0000 })) == 1);
+	test.Assert (materials.Count () == 2);
+	test.Assert (materials.GetMaterial (0).ambient == 0x00cc00);
+	test.Assert (materials.GetMaterial (1).ambient == 0xcc0000);
+	test.Assert (materials.GetMaterial (-1).ambient == 0x00cc00);
+	test.Assert (materials.GetMaterial (2).ambient == 0x00cc00);
+});
+
 var generatorSuite = unitTest.AddTestSuite ('ModelerGenerator');
 
 generatorSuite.AddTest ('GenerateRectangleTest', function (test)
