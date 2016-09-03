@@ -46,7 +46,7 @@ function AddBodyToViewer (viewer, mode, body, materials, info)
 	viewer.Draw ();
 }
 
-function AddModelToViewer (viewer, mode, model, materials, info)
+function AddModelToViewer (viewer, mode, model, info)
 {
 	function TextureLoaded () {
 		viewer.Draw ();
@@ -57,11 +57,11 @@ function AddModelToViewer (viewer, mode, model, materials, info)
 			textureLoadedCallback : TextureLoaded,
 			hasConvexPolygons : false
 		};
-		var meshes = JSM.ConvertModelToThreeMeshes (model, materials, conversionData);
+		var meshes = JSM.ConvertModelToThreeMeshes (model, model.GetMaterialSet (), conversionData);
 		viewer.AddMeshes (meshes);
 	} else if (mode == 'internal') {
-		var renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
-		viewer.AddBodies (renderBodies);	
+		var renderBodies = JSM.ConvertModelToRenderBodies (model);
+		viewer.AddBodies (renderBodies);
 	}	
 
 	SetInfoString (viewer, info);

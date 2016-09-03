@@ -90,12 +90,12 @@
 
 	<script type="text/javascript">
 		var viewer = null;
-		var modelAndMaterials = null;
+		var model = null;
 		
 		function ExportToStl ()
 		{
 			var stlTextArea = document.getElementById ('stl');
-			stlTextArea.value = JSM.ExportModelToStl (modelAndMaterials[0]);
+			stlTextArea.value = JSM.ExportModelToStl (model);
 		}
 		
 		function Load ()
@@ -112,9 +112,9 @@
 			var svgObject = document.getElementById ('exampleSvg');
 			var height = 10;
 			var segmentLength = 2;
-			modelAndMaterials = JSM.SvgToModel (svgObject, height, segmentLength);
+			model = JSM.SvgToModel (svgObject, height, segmentLength);
 			
-			var renderBodies = JSM.ConvertModelToRenderBodies (modelAndMaterials[0], modelAndMaterials[1]);
+			var renderBodies = JSM.ConvertModelToRenderBodies (model);
 			viewer.AddBodies (renderBodies);
 			
 			viewer.FitInWindow ();

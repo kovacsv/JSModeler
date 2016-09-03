@@ -117,9 +117,7 @@ function AddRendererTests (canvasTester, viewer)
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		var body2 = JSM.GenerateCuboid (1, 1, 1);
@@ -128,14 +126,12 @@ function AddRendererTests (canvasTester, viewer)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, materials, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/renderer/two_cubes.png');
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		var body2 = JSM.GenerateCuboid (1, 1, 1);
@@ -145,15 +141,13 @@ function AddRendererTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, materials, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/renderer/two_cubes_transformed.png');
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-	
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 
@@ -168,7 +162,7 @@ function AddRendererTests (canvasTester, viewer)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		model.AddBody (body3);
-		RenderModelAndWait (viewer, model, materials, renderFinished);
+		RenderModelAndWait (viewer, model, renderFinished);
 	}, 'references/renderer/three_cubes.png');
 	
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
@@ -332,11 +326,10 @@ function AddRendererTests (canvasTester, viewer)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 		
-		RenderModel (viewer, model, materials, renderFinished, function (bodies) {
+		RenderModel (viewer, model, renderFinished, function (bodies) {
 			bodies[0].SetTransformation (JSM.RotationZTransformation (20.0 * JSM.DegRad));
 			bodies[1].SetTransformation (JSM.TranslationTransformation (new JSM.Coord (-1.5, 0, 0)));
 		});
@@ -352,7 +345,7 @@ function AddRendererTests (canvasTester, viewer)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/renderer/model_default_material.png');			
 	
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
@@ -364,14 +357,13 @@ function AddRendererTests (canvasTester, viewer)
 		body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.5, 0, 0)));
 		body2.GetPolygon (2).SetMaterialIndex (1);
 
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
 		
-		RenderModel (viewer, model, materials, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/renderer/model_materials.png');	
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
@@ -383,25 +375,23 @@ function AddRendererTests (canvasTester, viewer)
 		body2.Transform (JSM.TranslationTransformation (new JSM.Coord (1.5, 0, 0)));
 		body2.GetPolygon (2).SetMaterialIndex (1);
 
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, texture : 'testfiles/texture.png', textureWidth : 1.0, textureHeight : 1.0}));
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
 		
-		RenderModelAndWait (viewer, model, materials, renderFinished);
+		RenderModelAndWait (viewer, model, renderFinished);
 	}, 'references/renderer/model_textures.png');
 	
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0xcccc00, diffuse : 0xcccc00}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0xcc00cc, diffuse : 0xcc00cc}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0x00cccc, diffuse : 0x00cccc}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xcccc00, diffuse : 0xcccc00}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xcc00cc, diffuse : 0xcc00cc}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x00cccc, diffuse : 0x00cccc}));
 
 		var i, body;
 		for (i = 0; i < 6; i++) {
@@ -410,7 +400,7 @@ function AddRendererTests (canvasTester, viewer)
 			model.AddBody (body);
 		}
 		
-		RenderModel (viewer, model, materials, renderFinished, function (bodies) {
+		RenderModel (viewer, model, renderFinished, function (bodies) {
 			var i, body, transformation;
 			for (i = 0; i < 6; i++) {
 				body = bodies[i];
@@ -424,9 +414,8 @@ function AddRendererTests (canvasTester, viewer)
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, singleSided : true}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, singleSided : true}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 
 		var body1 = JSM.GenerateCylinder (0.5, 0.5, 20, false, false);
 		var body2 = JSM.GenerateCylinder (0.5, 0.5, 20, false, false);
@@ -438,14 +427,13 @@ function AddRendererTests (canvasTester, viewer)
 		model.AddBody (body1);
 		model.AddBody (body2);
 
-		RenderModel (viewer, model, materials, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/renderer/single_sided_material.png');		
 	
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, singleSided : true, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, singleSided : true, texture : 'testfiles/texture2.jpg', textureWidth : 1.0, textureHeight : 1.0}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 
 		var body1 = JSM.GenerateCylinder (0.5, 0.5, 20, false, false);
 		var body2 = JSM.GenerateCylinder (0.5, 0.5, 20, false, false);
@@ -457,7 +445,7 @@ function AddRendererTests (canvasTester, viewer)
 		model.AddBody (body1);
 		model.AddBody (body2);
 
-		RenderModelAndWait (viewer, model, materials, renderFinished);
+		RenderModelAndWait (viewer, model, renderFinished);
 	}, 'references/renderer/single_sided_textured_material.png');	
 
 	canvasTester.AddTest (rendererSuite, function (renderFinished) {

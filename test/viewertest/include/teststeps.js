@@ -52,9 +52,7 @@ function TestStep (viewer, mode, step, info)
 	
 	if (step == current++) {
 		var model = new JSM.Model ();
-
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		var body2 = JSM.GenerateCuboid (1, 1, 1);
@@ -63,14 +61,12 @@ function TestStep (viewer, mode, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, materials, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 	
 	if (step == current++) {
 		var model = new JSM.Model ();
-
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		var body2 = JSM.GenerateCuboid (1, 1, 1);
@@ -80,15 +76,13 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, materials, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 	
 	if (step == current++) {
 		var model = new JSM.Model ();
-	
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 
@@ -103,7 +97,7 @@ function TestStep (viewer, mode, step, info)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		model.AddBody (body3);
-		AddModelToViewer (viewer, mode, model, materials, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -115,7 +109,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 	
 	if (step == current++) {
@@ -127,7 +121,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -139,7 +133,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -151,7 +145,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -163,7 +157,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -175,7 +169,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -187,7 +181,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -209,7 +203,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 	
 	if (step == current++) {
@@ -264,7 +258,7 @@ function TestStep (viewer, mode, step, info)
 		body1.OffsetToOrigo ();
 		
 		model.AddBody (body1);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -286,7 +280,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -298,7 +292,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -320,7 +314,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -332,7 +326,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 	
 	if (step == current++) {
@@ -353,7 +347,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 	
 	if (step == current++) {
@@ -376,7 +370,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -399,7 +393,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 	
 	if (step == current++) {
@@ -418,7 +412,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -437,7 +431,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 	
 	if (step == current++) {
@@ -460,7 +454,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}	
 
 	if (step == current++) {
@@ -483,7 +477,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}	
 
 	if (step == current++) {
@@ -528,15 +522,13 @@ function TestStep (viewer, mode, step, info)
 			}
 		}
 
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}	
 
 	if (step == current++) {
 		var model = new JSM.Model ();
-
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		body1.GetPolygon (3).SetMaterialIndex (0);	
@@ -565,15 +557,13 @@ function TestStep (viewer, mode, step, info)
 		model.AddBody (body2);
 		model.AddBody (body3);
 		model.AddBody (body4);
-		AddModelToViewer (viewer, mode, model, materials, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
 		var model = new JSM.Model ();
-
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (0.5, 1.0, 1.5);
 		body1.GetPolygon (3).SetMaterialIndex (0);	
@@ -602,15 +592,13 @@ function TestStep (viewer, mode, step, info)
 		model.AddBody (body2);
 		model.AddBody (body3);
 		model.AddBody (body4);
-		AddModelToViewer (viewer, mode, model, materials, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
 		var model = new JSM.Model ();
-
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var basePolygon = [
 			new JSM.Coord (-0.5, -0.5, 0.0),
@@ -649,7 +637,7 @@ function TestStep (viewer, mode, step, info)
 		model.AddBody (body2);
 		model.AddBody (body3);
 		model.AddBody (body4);
-		AddModelToViewer (viewer, mode, model, materials, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -660,7 +648,7 @@ function TestStep (viewer, mode, step, info)
 		JSM.SoftMoveBodyVertex (body, 1800, 0.5, new JSM.Vector (0.0, 0.0, -1.0), 0.1);
 
 		model.AddBody (body);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}	
 	
 	if (step == current++) {
@@ -678,7 +666,7 @@ function TestStep (viewer, mode, step, info)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 	
 	if (step == current++) {
@@ -726,14 +714,12 @@ function TestStep (viewer, mode, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
 		var model = new JSM.Model ();
-	
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		body1.SetPolygonsMaterialIndex (0);
@@ -745,14 +731,12 @@ function TestStep (viewer, mode, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, materials, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 	
 	if (step == current++) {
 		var model = new JSM.Model ();
-	
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		body1.Transform (new JSM.RotationXTransformation (-30.0 * JSM.DegRad));
@@ -766,14 +750,12 @@ function TestStep (viewer, mode, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, materials, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}	
 
 	if (step == current++) {
 		var model = new JSM.Model ();
-	
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		body1.SetPlanarTextureProjection (
@@ -804,14 +786,12 @@ function TestStep (viewer, mode, step, info)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		model.AddBody (body3);
-		AddModelToViewer (viewer, mode, model, materials, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
 		var model = new JSM.Model ();
-	
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		body1.SetCubicTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 1.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
@@ -830,14 +810,12 @@ function TestStep (viewer, mode, step, info)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		model.AddBody (body3);
-		AddModelToViewer (viewer, mode, model, materials, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
 		var model = new JSM.Model ();
-	
-		var materials = new JSM.MaterialSet ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
+		model.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'testfiles/texture.png'}));
 
 		var body1 = JSM.GenerateCylinder (0.5, 1.0, 30, true, true);
 		body1.SetCylindricalTextureProjection (new JSM.Coord (0.0, 0.0, 0.0), 0.5, new JSM.Coord (1.0, 0.0, 0.0), new JSM.Coord (0.0, 0.0, 1.0));
@@ -856,7 +834,7 @@ function TestStep (viewer, mode, step, info)
 		model.AddBody (body1);
 		model.AddBody (body2);
 		model.AddBody (body3);
-		AddModelToViewer (viewer, mode, model, materials, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 
 	if (step == current++) {
@@ -869,7 +847,7 @@ function TestStep (viewer, mode, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 	
 	if (step == current++) {
@@ -916,6 +894,6 @@ function TestStep (viewer, mode, step, info)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		AddModelToViewer (viewer, mode, model, null, info);
+		AddModelToViewer (viewer, mode, model, info);
 	}
 }

@@ -104,12 +104,6 @@
 	</style>
 
 	<script type="text/javascript">
-		JSM.ModelWithMaterials = function ()
-		{
-			this.model = new JSM.Model ();
-			this.materials = new JSM.MaterialSet ();
-		}
-		
 		JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
 		{
 			function ConvertCoordinate (sphereRadius, coordinate)
@@ -246,7 +240,7 @@
 			{
 				if (pointsBody === null) {
 					pointsBody = new JSM.Body ();
-					result.model.AddBody (pointsBody);
+					result.AddBody (pointsBody);
 				}
 				var sphereCoord = JSM.CoordFromArray2D (coordinate);
 				AddPointToBody (pointsBody, sphereRadius, sphereCoord, materialIndex);
@@ -256,7 +250,7 @@
 			{
 				if (linesBody === null) {
 					linesBody = new JSM.Body ();
-					result.model.AddBody (linesBody);
+					result.AddBody (linesBody);
 				}
 
 				var begSphereCoord = JSM.CoordFromArray2D (coordinates[0]);
@@ -267,7 +261,7 @@
 			function AddPolygon (sphereRadius, polygonThickness, coordinates, materialIndex)
 			{
 				var body = new JSM.Body ();
-				result.model.AddBody (body);
+				result.AddBody (body);
 				
 				var contourPolygon = new JSM.ContourPolygon2D ();
 				var i, j, currentContour, sphereCoord;
@@ -307,7 +301,7 @@
 				
 				var materialColor = JSM.RandomInt (0, 16777215);
 				var material = new JSM.Material ({ambient : materialColor, diffuse : materialColor, singleSided : true});
-				var materialIndex = result.materials.AddMaterial (material);
+				var materialIndex = result.AddMaterial (material);
 				if (feature.geometry.type == 'Point') {
 					material.pointSize = 10;
 					AddPoint (sphereRadius, feature.geometry.coordinates, materialIndex);
@@ -328,7 +322,7 @@
 				return null;
 			}
 			
-			var result = new JSM.ModelWithMaterials ();
+			var result = new JSM.Model ();
 			var pointsBody = null;
 			var linesBody = null;
 			
@@ -374,7 +368,7 @@
 			AddEarth (sphereRadius, viewer);
 			JSM.LoadJsonFile (jsonFiles[index], function (jsonData) {
 				var model = JSM.ConvertGeoJsonToModel (jsonData, sphereRadius, polygonThickness);
-				var renderBodies = JSM.ConvertModelToRenderBodies (model.model, model.materials);
+				var renderBodies = JSM.ConvertModelToRenderBodies (model);
 				viewer.AddBodies (renderBodies);
 				viewer.Draw ();
 			});

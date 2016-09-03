@@ -7,7 +7,7 @@
 *	segmentLength {number} the maximum length of curved segments
 *	curveAngle {number} if not null, defines the curve angle of the model
 * Returns:
-*	{Body} the result
+*	{Model} the result
 */
 JSM.SvgToModel = function (svgObject, height, segmentLength, curveAngle)
 {
@@ -381,7 +381,6 @@ JSM.SvgToModel = function (svgObject, height, segmentLength, curveAngle)
 	}
 	
 	var model = new JSM.Model ();
-	var materials = new JSM.MaterialSet ();
 	var polygons = SegmentPaths (svgObject, segmentLength);
 
 	var currentHeight = height;
@@ -394,13 +393,13 @@ JSM.SvgToModel = function (svgObject, height, segmentLength, curveAngle)
 		prismsAndMaterial = ContourPolygonToPrisms (polygons[i], currentHeight, curveAngle);
 		currentPrisms = prismsAndMaterial[0];
 		currentMaterial = prismsAndMaterial[1];
-		materials.AddMaterial (currentMaterial);
+		model.AddMaterial (currentMaterial);
 		for (j = 0; j < currentPrisms.length; j++) {
 			currentPrism = currentPrisms[j];
-			currentPrism.SetPolygonsMaterialIndex (materials.Count () - 1);
+			currentPrism.SetPolygonsMaterialIndex (model.MaterialCount () - 1);
 			model.AddBody (currentPrism);
 		}
 	}
 
-	return [model, materials];
+	return model;
 };

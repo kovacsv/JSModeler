@@ -96,7 +96,6 @@
 			this.yCount = yCount;
 			this.parameters = parameters;
 			this.model = null;
-			this.materials = null;
 			this.terrain = null;
 		};
 
@@ -104,8 +103,7 @@
 		{
 			this.model = new JSM.Model ();
 			this.terrain = new JSM.Body ();
-			this.materials = new JSM.MaterialSet ();
-			this.materials.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, singleSided : true}));
+			this.model.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, singleSided : true}));
 			
 			this.GenerateTerrainPoints ();
 			this.GenerateTerrainPolygons ();
@@ -114,10 +112,7 @@
 			
 			this.terrain.SetPolygonsMaterialIndex (0);
 			this.model.AddBody (this.terrain);
-			return {
-				model : this.model,
-				materials : this.materials
-			};
+			return this.model;
 		};
 
 		TerrainGenerator.prototype.GenerateTerrainPoints = function ()
@@ -268,7 +263,7 @@
 				baseHeightDifference : 0.1
 			});
 			var terrain = terrainGenerator.Generate ();
-			var renderTerrain = JSM.ConvertModelToRenderBodies (terrain.model, terrain.materials);
+			var renderTerrain = JSM.ConvertModelToRenderBodies (terrain);
 			viewer.AddBodies (renderTerrain);
 			
 			viewer.FitInWindow ();

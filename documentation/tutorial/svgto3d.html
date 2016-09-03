@@ -26,10 +26,8 @@
 			viewer.Start (document.getElementById ('example'), viewerSettings);
 
 			var svgObject = document.getElementById ('svgid');
-			var modelAndMaterials = JSM.SvgToModel (svgObject, 8, 5, null);
-			var model = modelAndMaterials[0];
-			var materials = modelAndMaterials[1];
-			var meshes = JSM.ConvertModelToThreeMeshes (model, materials);
+			var model = JSM.SvgToModel (svgObject, 8, 5, null);
+			var meshes = JSM.ConvertModelToThreeMeshes (model, model.GetMaterialSet ());
 			viewer.AddMeshes (meshes);
 
 			viewer.FitInWindow ();

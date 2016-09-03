@@ -124,9 +124,9 @@
 			light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
 			renderer.AddLight (light);
 
-			var materials = new JSM.MaterialSet ();
-			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
-			materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+			var model = new JSM.Model ();
+			model.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+			model.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 
 			var body1 = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 			body1.GetPolygon (1).SetMaterialIndex (1);
@@ -146,19 +146,18 @@
 			var body5 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body5.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, 0.5)));
 
-			var model = new JSM.Model ();
 			model.AddBody (body1);
 			model.AddBody (body2);
 			model.AddBody (body3);
 			model.AddBody (body4);
 			model.AddBody (body5);
 
-			var renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
+			var renderBodies = JSM.ConvertModelToRenderBodies (model);
 			renderer.AddBodies (renderBodies);
 
 			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));
-			var newRenderBody = JSM.ConvertBodyToRenderBody (body6, materials);
+			var newRenderBody = JSM.ConvertBodyToRenderBody (body6, model.GetMaterialSet ());
 			renderer.AddBody (newRenderBody);
 
 			Render ();
