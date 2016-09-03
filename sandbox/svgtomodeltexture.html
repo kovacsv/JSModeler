@@ -119,7 +119,7 @@
 			var newMaterialIndex = model.MaterialCount () - 1;
 			model.GetBody (0).SetPolygonsMaterialIndex (newMaterialIndex);	
 			
-			var meshes = JSM.ConvertModelToThreeMeshes (model, model.GetMaterialSet (), {
+			var meshes = JSM.ConvertModelToThreeMeshes (model, null, {
 				textureLoadedCallback : function () {
 					viewer.Draw ();
 				}

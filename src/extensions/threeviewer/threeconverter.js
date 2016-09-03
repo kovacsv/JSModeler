@@ -127,6 +127,10 @@ JSM.ConvertBodyToThreeMeshes = function (body, materials, conversionData)
 JSM.ConvertModelToThreeMeshes = function (model, materials, conversionData)
 {
 	var meshes = [];
+	if (materials === undefined || materials === null) {
+		materials = model.GetMaterialSet ();
+	}
+	
 	var i, j, body, currentMeshes;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);

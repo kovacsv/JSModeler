@@ -264,24 +264,24 @@ suite.AddTest ('Bezier', function (test, onReady) {
 	test.Open ('/documentation/examples/bezier.html', function () {
 		test.GenerateImage ('OnLoad');
 		
-		test.Click (172, 132);
+		test.Click (172, 132, 300);
 		test.GenerateImage ('HideControlPoints');
 		
-		test.Click (126, 132);
+		test.Click (126, 132, 300);
 		test.GenerateImage ('ShowControlPoints');
 
-		test.Click (142, 160);
+		test.Click (142, 160, 300);
 		test.GenerateImage ('Degree2');
 
-		test.Click (174, 160);
+		test.Click (174, 160, 300);
 		test.GenerateImage ('Degree3');
 
-		test.DragDrop (668, 418, 668, 318);
+		test.DragDrop (668, 418, 668, 318, 300);
 		test.GenerateImage ('MoveControlPoint', 1);
-		test.DragDrop (542, 378, 542, 638);
+		test.DragDrop (542, 378, 542, 638, 300);
 		test.GenerateImage ('MoveControlPoint', 2);
 
-		test.Click (78, 318);
+		test.Click (78, 318, 300);
 		test.GenerateImage ('ViewAsSvg');
 		onReady ();
 	});

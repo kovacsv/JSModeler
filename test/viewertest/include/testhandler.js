@@ -57,7 +57,7 @@ function AddModelToViewer (viewer, mode, model, info)
 			textureLoadedCallback : TextureLoaded,
 			hasConvexPolygons : false
 		};
-		var meshes = JSM.ConvertModelToThreeMeshes (model, model.GetMaterialSet (), conversionData);
+		var meshes = JSM.ConvertModelToThreeMeshes (model, null, conversionData);
 		viewer.AddMeshes (meshes);
 	} else if (mode == 'internal') {
 		var renderBodies = JSM.ConvertModelToRenderBodies (model);
