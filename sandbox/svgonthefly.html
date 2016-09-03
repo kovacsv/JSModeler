@@ -123,7 +123,7 @@
 			var segmentLength = 2;
 			var svgElement = CreateSVGElement ();
 			var model = JSM.SvgToModel (svgElement, height, segmentLength, null);
-			var meshes = JSM.ConvertModelToThreeMeshes (model, null, {
+			var meshes = JSM.ConvertModelToThreeMeshes (model, {
 				textureLoadedCallback : function () {
 					viewer.Draw ();
 				}

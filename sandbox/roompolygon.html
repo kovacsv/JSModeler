@@ -116,9 +116,8 @@
 			
 			// create model and initialize materials
 			var model = new JSM.Model ();
-			var materials = new JSM.MaterialSet ();
-			materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
-			materials.AddMaterial (new JSM.Material ({ambient : 0x279b61, diffuse : 0x279b61}));
+			model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+			model.AddMaterial (new JSM.Material ({ambient : 0x279b61, diffuse : 0x279b61}));
 			
 			// base parameters of the room
 			var slabThickness = 0.3;
@@ -143,7 +142,7 @@
 			model.AddBody (walls);
 			
 			// add model to viewer
-			var meshes = JSM.ConvertModelToThreeMeshes (model, materials);
+			var meshes = JSM.ConvertModelToThreeMeshes (model);
 			viewer.AddMeshes (meshes);
 
 			viewer.FitInWindow ();

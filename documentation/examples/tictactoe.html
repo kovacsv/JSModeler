@@ -26,10 +26,8 @@
 			function GetItemModel (ticTacToe, i, j, k)
 			{
 				var model = new JSM.Model ();
-				
-				var materials = new JSM.MaterialSet ();
-				materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
-				materials.AddMaterial (new JSM.Material ({ambient : 0xcc3333, diffuse : 0xcc3333}));
+				model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+				model.AddMaterial (new JSM.Material ({ambient : 0xcc3333, diffuse : 0xcc3333}));
 				
 				var offset = ticTacToe.shapeSize * 1.5;
 
@@ -46,7 +44,7 @@
 
 				model.AddBody (body);
 				
-				return [model, materials];			
+				return model;
 			}
 
 			var mesh = null;
@@ -69,7 +67,7 @@
 				textureLoadedCallback : null,
 				hasConvexPolygons : true
 			};
-			var meshes = JSM.ConvertModelToThreeMeshes (model[0], model[1], conversionData);
+			var meshes = JSM.ConvertModelToThreeMeshes (model, conversionData);
 			for (var i = 0; i < meshes.length; i++) {
 				viewer.AddMesh (meshes[i]);
 			}
@@ -166,8 +164,7 @@
 			function GetEmptyTableModel (ticTacToe)
 			{
 				var model = new JSM.Model ();
-				var materials = new JSM.MaterialSet ();
-				materials.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0x000000, specular : 0x000000, shininess : 0.0, opacity : 0.1}));
+				model.AddMaterial (new JSM.Material ({ambient : 0x000000, diffuse : 0x000000, specular : 0x000000, shininess : 0.0, opacity : 0.1}));
 				
 				var offset = ticTacToe.shapeSize * 1.5;
 
@@ -188,7 +185,7 @@
 					}
 				}
 				
-				return [model, materials];
+				return model;
 			}
 
 			if (error) {
@@ -212,9 +209,9 @@
 				textureLoadedCallback : null,
 				hasConvexPolygons : true
 			};
-			var meshes = JSM.ConvertModelToThreeMeshes (model[0], model[1], conversionData);
+			var meshes = JSM.ConvertModelToThreeMeshes (model, conversionData);
 			for (var i = 0; i < meshes.length; i++) {
-				meshes[i].ticTacToeId = model[0].GetBody (i).ticTacToeId;
+				meshes[i].ticTacToeId = model.GetBody (i).ticTacToeId;
 				viewer.AddMesh (meshes[i]);
 			}
 			
