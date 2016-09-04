@@ -4,11 +4,12 @@
 * Parameters:
 *	geoJson {object} the geojson content
 *	sphereRadius {number} the radius of the earth
+*	segmentSize {number} the size of line and polygon segments
 *	polygonThickness {number} the thickness of polygon models
 * Returns:
 *	{Model} the result
 */
-JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
+JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, segmentSize, polygonThickness)
 {
 	function ConvertCoordinate (sphereRadius, coordinate)
 	{
@@ -18,19 +19,19 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
 		return JSM.SphericalToCartesian (sphereRadius + sphereOffset, lat, lon);
 	}
 
-	function GetSegmentCount (distance)
+	function GetSegmentCount (distance, segmentSize)
 	{
-		var segmentCount = parseInt (distance / 5.0, 10);
+		var segmentCount = parseInt (distance / segmentSize, 10);
 		if (segmentCount === 0) {
 			segmentCount = 1;
 		}
 		return segmentCount;
 	}
 	
-	function GetSegmentCountBetweenCoords (begCoordinate, endCoordinate)
+	function GetSegmentCountBetweenCoords (begCoordinate, endCoordinate, segmentSize)
 	{
 		var distance = begCoordinate.DistanceTo (endCoordinate);
-		return GetSegmentCount (distance);
+		return GetSegmentCount (distance, segmentSize);
 	}
 	
 	function AddPointToBody (body, sphereRadius, sphereCoord, materialIndex)
@@ -42,10 +43,10 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
 		bodyPoint.SetMaterialIndex (materialIndex);
 	}
 
-	function AddLineToBody (body, sphereRadius, begSphereCoord, endSphereCoord, materialIndex)
+	function AddLineToBody (body, sphereRadius, begSphereCoord, endSphereCoord, segmentSize, materialIndex)
 	{
 		var sector = new JSM.Sector2D (begSphereCoord, endSphereCoord);
-		var segmentCount = GetSegmentCountBetweenCoords (begSphereCoord, endSphereCoord);
+		var segmentCount = GetSegmentCountBetweenCoords (begSphereCoord, endSphereCoord, segmentSize);
 		var segmentedCoords = JSM.GetSectorSegmentation2D (sector, segmentCount);
 		var lastLine = body.LineCount ();
 		var i, cartesianCoord, vertexIndex;
@@ -63,7 +64,7 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
 		}				
 	}
 
-	function AddPolygonToBody (body, sphereRadius, polygonThickness, polygon, materialIndex)
+	function AddPolygonToBody (body, sphereRadius, polygonThickness, segmentSize, polygon, materialIndex)
 	{
 		function AddSegmentedPolygonToBody (body, polygon, sphereRadius, polygonThickness)
 		{
@@ -130,8 +131,8 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
 		}
 	
 		var box = polygon.GetBoundingBox ();
-		var xSegments = GetSegmentCount (box.max.x - box.min.x);
-		var ySegments = GetSegmentCount (box.max.y - box.min.y);
+		var xSegments = GetSegmentCount (box.max.x - box.min.x, segmentSize);
+		var ySegments = GetSegmentCount (box.max.y - box.min.y, segmentSize);
 		var segmentedPolygons = JSM.SegmentPolygon2D (polygon, xSegments, ySegments);
 		var i;
 		for (i = 0; i < segmentedPolygons.length; i++) {
@@ -150,7 +151,7 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
 		AddPointToBody (pointsBody, sphereRadius, sphereCoord, materialIndex);
 	}
 	
-	function AddLine (sphereRadius, coordinates, materialIndex)
+	function AddLine (sphereRadius, coordinates, segmentSize, materialIndex)
 	{
 		if (linesBody === null) {
 			linesBody = new JSM.Body ();
@@ -159,10 +160,10 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
 
 		var begSphereCoord = JSM.CoordFromArray2D (coordinates[0]);
 		var endSphereCoord = JSM.CoordFromArray2D (coordinates[1]);
-		AddLineToBody (linesBody, sphereRadius, begSphereCoord, endSphereCoord, materialIndex);
+		AddLineToBody (linesBody, sphereRadius, begSphereCoord, endSphereCoord, segmentSize, materialIndex);
 	}
 	
-	function AddPolygon (sphereRadius, polygonThickness, coordinates, materialIndex)
+	function AddPolygon (sphereRadius, polygonThickness, segmentSize, coordinates, materialIndex)
 	{
 		var body = new JSM.Body ();
 		result.AddBody (body);
@@ -182,18 +183,18 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
 			contourPolygon.ReverseVertices ();
 		}
 		var polygon = JSM.ConvertContourPolygonToPolygon2D (contourPolygon);
-		AddPolygonToBody (body, sphereRadius, polygonThickness, polygon, materialIndex);	
+		AddPolygonToBody (body, sphereRadius, polygonThickness, segmentSize, polygon, materialIndex);	
 	}
 
-	function AddMultiPolygon (sphereRadius, polygonThickness, coordinates, materialIndex)
+	function AddMultiPolygon (sphereRadius, polygonThickness, segmentSize, coordinates, materialIndex)
 	{
 		var i;
 		for (i = 0; i < coordinates.length; i++) {
-			AddPolygon (sphereRadius, polygonThickness, coordinates[i], materialIndex);
+			AddPolygon (sphereRadius, polygonThickness, segmentSize, coordinates[i], materialIndex);
 		}
 	}	
 
-	function AddFeature (sphereRadius, polygonThickness, feature)
+	function AddFeature (sphereRadius, segmentSize, polygonThickness, feature)
 	{
 		if (!feature.type || feature.type != 'Feature') {
 			return false;
@@ -210,11 +211,11 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
 			material.pointSize = 10;
 			AddPoint (sphereRadius, feature.geometry.coordinates, materialIndex);
 		} else if (feature.geometry.type == 'LineString') {
-			AddLine (sphereRadius, feature.geometry.coordinates, materialIndex);
+			AddLine (sphereRadius, feature.geometry.coordinates, segmentSize, materialIndex);
 		} else if (feature.geometry.type == 'Polygon') {
-			AddPolygon (sphereRadius, polygonThickness, feature.geometry.coordinates, materialIndex);
+			AddPolygon (sphereRadius, polygonThickness, segmentSize, feature.geometry.coordinates, materialIndex);
 		} else if (feature.geometry.type == 'MultiPolygon') {
-			AddMultiPolygon (sphereRadius, polygonThickness, feature.geometry.coordinates, materialIndex);
+			AddMultiPolygon (sphereRadius, polygonThickness, segmentSize, feature.geometry.coordinates, materialIndex);
 		}
 	}
 
@@ -233,7 +234,7 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
 	var i, feature;
 	for (i = 0; i < geoJson.features.length; i++) {
 		feature = geoJson.features[i];
-		AddFeature (sphereRadius, polygonThickness, feature);
+		AddFeature (sphereRadius, segmentSize, polygonThickness, feature);
 	}
 	return result;
 };

@@ -135,10 +135,11 @@
 			}
 			
 			var sphereRadius = 100.0;
+			var segmentSize = 5.0;
 			var polygonThickness = 1.0;
 			AddEarth (sphereRadius, viewer);
 			JSM.LoadJsonFile (jsonFiles[index], function (jsonData) {
-				var model = JSM.ConvertGeoJsonToModel (jsonData, sphereRadius, polygonThickness);
+				var model = JSM.ConvertGeoJsonToModel (jsonData, sphereRadius, segmentSize, polygonThickness);
 				var renderBodies = JSM.ConvertModelToRenderBodies (model);
 				viewer.AddBodies (renderBodies);
 				viewer.Draw ();
