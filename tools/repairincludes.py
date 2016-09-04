@@ -76,6 +76,8 @@ def Main ():
 		fileNames.append (fileName)
 	for fileName in jsonFileNames['svgToModelExtensionFileList']:
 		fileNames.append (fileName)
+	for fileName in jsonFileNames['geojsonToModelExtensionFileList']:
+		fileNames.append (fileName)
 	for fileName in jsonFileNames['threeExtensionFileList']:
 		fileNames.append (fileName)
 	
