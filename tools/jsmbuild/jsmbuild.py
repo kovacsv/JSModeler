@@ -157,32 +157,28 @@ class JSMBuilder:
 			DeleteFile (mergedFilePath)
 			WriteVersionHeader (resultFilePath, version)
 			return True
-			
+		
+		def BuildFileList (inputFileNames, resultFileName, version, errors):
+			mergedFilePath = resultFileName + '.merged.js'
+			externsFilePath = resultFileName + '.externs.js'
+			resultFilePath = os.path.join ('..', 'build', resultFileName + '.js')
+			if not MergeAndCompileFiles (inputFileNames, mergedFilePath, externsFilePath, resultFilePath, version, errors):
+				return False
+			return True			
+		
 		wd = WorkingDirGuard (self.rootPath)
 		version = GetVersion (self.files['coreFileList'][0])
 		if version == None:
 			self.errors.append ('Invalid version.')
 			return False
-			
-		inputFileNames = self.files['coreFileList']
-		mergedFilePath = 'jsmodeler.merged.js'
-		externsFilePath = 'jsmodeler.externs.js'
-		resultFilePath = os.path.join ('..', 'build', 'jsmodeler.js')
-		if not MergeAndCompileFiles (inputFileNames, mergedFilePath, externsFilePath, resultFilePath, version, self.errors):
+		
+		if not BuildFileList (self.files['coreFileList'], 'jsmodeler', version, self.errors):
 			return False
 			
-		inputFileNames = self.files['svgToModelExtensionFileList']
-		mergedFilePath = 'jsmodeler.ext.svgtomodel.merged.js'
-		externsFilePath = 'jsmodeler.ext.svgtomodel.externs.js'
-		resultFilePath = os.path.join ('..', 'build', 'jsmodeler.ext.svgtomodel.js')
-		if not MergeAndCompileFiles (inputFileNames, mergedFilePath, externsFilePath, resultFilePath, version, self.errors):
+		if not BuildFileList (self.files['svgToModelExtensionFileList'], 'jsmodeler.ext.svgtomodel', version, self.errors):
 			return False
 
-		inputFileNames = self.files['threeExtensionFileList']
-		mergedFilePath = 'jsmodeler.ext.three.merged.js'
-		externsFilePath = 'jsmodeler.ext.three.externs.js'
-		resultFilePath = os.path.join ('..', 'build', 'jsmodeler.ext.three.js')
-		if not MergeAndCompileFiles (inputFileNames, mergedFilePath, externsFilePath, resultFilePath, version, self.errors):
+		if not BuildFileList (self.files['threeExtensionFileList'], 'jsmodeler.ext.three', version, self.errors):
 			return False
 
 		return True
