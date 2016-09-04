@@ -1,3 +1,13 @@
+/**
+* Function: ConvertGeoJsonToModel
+* Description: Converts a geoJson to 3D model.
+* Parameters:
+*	geoJson {object} the geojson content
+*	sphereRadius {number} the radius of the earth
+*	polygonThickness {number} the thickness of polygon models
+* Returns:
+*	{Model} the result
+*/
 JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, polygonThickness)
 {
 	function ConvertCoordinate (sphereRadius, coordinate)
