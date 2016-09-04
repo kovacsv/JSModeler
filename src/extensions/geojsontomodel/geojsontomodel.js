@@ -151,16 +151,19 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, segmentSize, polygo
 		AddPointToBody (pointsBody, sphereRadius, sphereCoord, materialIndex);
 	}
 	
-	function AddLine (sphereRadius, coordinates, segmentSize, materialIndex)
+	function AddLineString (sphereRadius, coordinates, segmentSize, materialIndex)
 	{
 		if (linesBody === null) {
 			linesBody = new JSM.Body ();
 			result.AddBody (linesBody);
 		}
-
-		var begSphereCoord = JSM.CoordFromArray2D (coordinates[0]);
-		var endSphereCoord = JSM.CoordFromArray2D (coordinates[1]);
-		AddLineToBody (linesBody, sphereRadius, begSphereCoord, endSphereCoord, segmentSize, materialIndex);
+		
+		var i, begSphereCoord, endSphereCoord;
+		for (i = 0; i < coordinates.length - 1; i++) {
+			begSphereCoord = JSM.CoordFromArray2D (coordinates[i]);
+			endSphereCoord = JSM.CoordFromArray2D (coordinates[i + 1]);
+			AddLineToBody (linesBody, sphereRadius, begSphereCoord, endSphereCoord, segmentSize, materialIndex);
+		}
 	}
 	
 	function AddPolygon (sphereRadius, polygonThickness, segmentSize, coordinates, materialIndex)
@@ -186,14 +189,6 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, segmentSize, polygo
 		AddPolygonToBody (body, sphereRadius, polygonThickness, segmentSize, polygon, materialIndex);	
 	}
 
-	function AddMultiPolygon (sphereRadius, polygonThickness, segmentSize, coordinates, materialIndex)
-	{
-		var i;
-		for (i = 0; i < coordinates.length; i++) {
-			AddPolygon (sphereRadius, polygonThickness, segmentSize, coordinates[i], materialIndex);
-		}
-	}	
-
 	function AddFeature (sphereRadius, segmentSize, polygonThickness, feature)
 	{
 		if (!feature.type || feature.type != 'Feature') {
@@ -204,18 +199,30 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, segmentSize, polygo
 			return false;
 		}
 		
+		var i;
 		var materialColor = JSM.RandomInt (0, 16777215);
 		var material = new JSM.Material ({ambient : materialColor, diffuse : materialColor, singleSided : true});
 		var materialIndex = result.AddMaterial (material);
 		if (feature.geometry.type == 'Point') {
 			material.pointSize = 10;
 			AddPoint (sphereRadius, feature.geometry.coordinates, materialIndex);
+		} else if (feature.geometry.type == 'MultiPoint') {
+			material.pointSize = 10;
+			for (i = 0; i < feature.geometry.coordinates.length; i++) {
+				AddPoint (sphereRadius, feature.geometry.coordinates[i], materialIndex);
+			}
 		} else if (feature.geometry.type == 'LineString') {
-			AddLine (sphereRadius, feature.geometry.coordinates, segmentSize, materialIndex);
+			AddLineString (sphereRadius, feature.geometry.coordinates, segmentSize, materialIndex);
+		} else if (feature.geometry.type == 'MultiLineString') {
+			for (i = 0; i < feature.geometry.coordinates.length; i++) {
+				AddLineString (sphereRadius, feature.geometry.coordinates[i], segmentSize, materialIndex);
+			}
 		} else if (feature.geometry.type == 'Polygon') {
 			AddPolygon (sphereRadius, polygonThickness, segmentSize, feature.geometry.coordinates, materialIndex);
 		} else if (feature.geometry.type == 'MultiPolygon') {
-			AddMultiPolygon (sphereRadius, polygonThickness, segmentSize, feature.geometry.coordinates, materialIndex);
+			for (i = 0; i < feature.geometry.coordinates.length; i++) {
+				AddPolygon (sphereRadius, polygonThickness, segmentSize, feature.geometry.coordinates[i], materialIndex);
+			}
 		}
 	}
 
