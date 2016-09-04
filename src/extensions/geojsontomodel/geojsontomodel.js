@@ -166,11 +166,8 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, segmentSize, polygo
 		}
 	}
 	
-	function AddPolygon (sphereRadius, polygonThickness, segmentSize, coordinates, materialIndex)
+	function AddPolygon (body, sphereRadius, polygonThickness, segmentSize, coordinates, materialIndex)
 	{
-		var body = new JSM.Body ();
-		result.AddBody (body);
-		
 		var contourPolygon = new JSM.ContourPolygon2D ();
 		var i, j, currentContour, sphereCoord;
 		for (i = 0; i < coordinates.length; i++) {
@@ -191,6 +188,13 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, segmentSize, polygo
 
 	function AddFeature (sphereRadius, segmentSize, polygonThickness, feature)
 	{
+		function CreateNewBody (model)
+		{
+			var body = new JSM.Body ();
+			model.AddBody (body);
+			return body;
+		}
+		
 		if (!feature.type || feature.type != 'Feature') {
 			return false;
 		}
@@ -218,10 +222,13 @@ JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius, segmentSize, polygo
 				AddLineString (sphereRadius, feature.geometry.coordinates[i], segmentSize, materialIndex);
 			}
 		} else if (feature.geometry.type == 'Polygon') {
-			AddPolygon (sphereRadius, polygonThickness, segmentSize, feature.geometry.coordinates, materialIndex);
+			var body = CreateNewBody (result);
+			AddPolygon (body, sphereRadius, polygonThickness, segmentSize, feature.geometry.coordinates, materialIndex);
 		} else if (feature.geometry.type == 'MultiPolygon') {
+			var body = CreateNewBody (result);
+			result.AddBody (body);
 			for (i = 0; i < feature.geometry.coordinates.length; i++) {
-				AddPolygon (sphereRadius, polygonThickness, segmentSize, feature.geometry.coordinates[i], materialIndex);
+				AddPolygon (body, sphereRadius, polygonThickness, segmentSize, feature.geometry.coordinates[i], materialIndex);
 			}
 		}
 	}
