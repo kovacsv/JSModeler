@@ -91,10 +91,9 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		JSM.Animation = function (object, target, settings)
+		JSM.Animation = function (object, settings)
 		{
 			this.object = object;
-			this.target = target;
 			this.settings = {
 				frameCount : 100,
 				onFrameCallback : null,
@@ -148,9 +147,7 @@
 			
 			viewer.AddBodies ([renderBody, renderBody2]);
 
-			var target = renderBody.GetTransformation ().Clone ();
-			target.Append (JSM.TranslationTransformation (new JSM.Coord (-4.0, 0.0, 0.0)));
-			var animation = new JSM.Animation (renderBody, target, {
+			var animation = new JSM.Animation (renderBody, {
 				onFrameCallback : function () {
 					viewer.Draw ();
 				},
