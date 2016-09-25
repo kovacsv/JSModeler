@@ -95,7 +95,8 @@
 		{
 			this.object = object;
 			this.settings = {
-				frameCount : 100,
+				frameCount : 0,
+				translation : new JSM.Vector (0.0, 0.0, 0.0),
 				onFrameCallback : null,
 				onReadyCallback : null
 			};
@@ -111,12 +112,15 @@
 
 		JSM.Animation.prototype.DoFrame = function ()
 		{
-			this.object.GetTransformation ().Append (JSM.TranslationTransformation (new JSM.Coord (-0.005, 0.0, 0.0)));
-			if (this.settings.onFrameCallback !== null) {
-				this.settings.onFrameCallback ();
-			}
-			this.currentFrame++;
 			if (this.currentFrame < this.settings.frameCount) {
+				if (this.settings.translation !== null) {
+					var translationUnit = this.settings.translation.Clone ().MultiplyScalar (1.0 / this.settings.frameCount);
+					this.object.AppendTransformation (JSM.TranslationTransformation (translationUnit));
+				}
+				if (this.settings.onFrameCallback !== null) {
+					this.settings.onFrameCallback ();
+				}
+				this.currentFrame++;
 				requestAnimationFrame (this.DoFrame.bind (this));
 			} else if (this.settings.onReadyCallback !== null) {
 				this.settings.onReadyCallback ();
@@ -138,21 +142,22 @@
 
 			var body = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 			var renderBody = JSM.ConvertBodyToRenderBody (body);
-			renderBody.SetTransformation (JSM.TranslationTransformation (new JSM.Coord (2.0, 0.0, 0.0)));
 			viewer.AddBody (renderBody);
 			
 			var body2 = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 			var renderBody2 = JSM.ConvertBodyToRenderBody (body);
-			renderBody2.SetTransformation (JSM.TranslationTransformation (new JSM.Coord (2.0, -1.5, 0.0)));
+			renderBody2.SetTransformation (JSM.TranslationTransformation (new JSM.Coord (0.0, -1.0, 0.0)));
 			
 			viewer.AddBodies ([renderBody, renderBody2]);
 
 			var animation = new JSM.Animation (renderBody, {
+				frameCount : 500,
+				translation : new JSM.Vector (-1.0, 0.0, -1.0),
 				onFrameCallback : function () {
 					viewer.Draw ();
 				},
 				onReadyCallback : function () {
-					alert ('ready');
+					//alert ('ready');
 				}
 			});
 			animation.Do ();
