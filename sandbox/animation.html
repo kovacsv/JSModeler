@@ -96,31 +96,49 @@
 			this.object = object;
 			this.settings = {
 				frameCount : 0,
-				translation : new JSM.Vector (0.0, 0.0, 0.0),
+				translation : null,
+				rotation : null,
 				onFrameCallback : null,
 				onReadyCallback : null
 			};
-			this.currentFrame = 0;
+			this.animationData = null;
 			JSM.CopyObjectProperties (settings, this.settings, true);
 		};
 
 		JSM.Animation.prototype.Do = function ()
 		{
-			this.currentFrame = 0;
+			this.animationData = {
+				currentFrame : 0,
+				originalTransformation : this.object.GetTransformation ().Clone ()
+			};
 			this.DoFrame ();
 		};
 
 		JSM.Animation.prototype.DoFrame = function ()
 		{
-			if (this.currentFrame < this.settings.frameCount) {
+			if (this.animationData.currentFrame < this.settings.frameCount) {
+				var currentTransformation = this.animationData.originalTransformation.Clone ();
+				var frameMultiplier = (this.animationData.currentFrame + 1) / this.settings.frameCount;
+
 				if (this.settings.translation !== null) {
-					var translationUnit = this.settings.translation.Clone ().MultiplyScalar (1.0 / this.settings.frameCount);
-					this.object.AppendTransformation (JSM.TranslationTransformation (translationUnit));
+					var currentTranslation = this.settings.translation.vector.Clone ().MultiplyScalar (frameMultiplier);
+					var translation = JSM.TranslationTransformation (currentTranslation);
+					currentTransformation.Append (translation);
 				}
+
+				if (this.settings.rotation !== null) {
+					var rotationOrigin = currentTransformation.Apply (this.settings.rotation.origo);
+					var currentRotation = frameMultiplier * this.settings.rotation.angle;
+					var rotation = JSM.RotationTransformation (this.settings.rotation.axis, currentRotation, rotationOrigin);
+					currentTransformation.Append (rotation);
+				}
+
+				this.object.SetTransformation (currentTransformation);
 				if (this.settings.onFrameCallback !== null) {
 					this.settings.onFrameCallback ();
 				}
-				this.currentFrame++;
+				
+				this.animationData.currentFrame++;
 				requestAnimationFrame (this.DoFrame.bind (this));
 			} else if (this.settings.onReadyCallback !== null) {
 				this.settings.onReadyCallback ();
@@ -151,13 +169,20 @@
 			viewer.AddBodies ([renderBody, renderBody2]);
 
 			var animation = new JSM.Animation (renderBody, {
-				frameCount : 500,
-				translation : new JSM.Vector (-1.0, 0.0, -1.0),
+				frameCount : 100,
+				translation : {
+					vector : new JSM.Vector (-1.0, 0.0, 0.0)
+				},
+				rotation : {
+					axis : new JSM.Vector (0.0, 0.0, 1.0),
+					angle : 2.0 * Math.PI,
+					origo : new JSM.Vector (0.0, 0.0, 0.0)
+				},
 				onFrameCallback : function () {
 					viewer.Draw ();
 				},
 				onReadyCallback : function () {
-					//alert ('ready');
+					// alert ('ready');
 				}
 			});
 			animation.Do ();
