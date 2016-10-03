@@ -294,42 +294,37 @@ JSM.SvgToModel = function (svgObject, height, segmentLength, curveAngle)
 	
 	function ContourPolygonToPrisms (polygon, height, curveAngle)
 	{
-		function CreateBasePolygon (polygon, orientation)
+		function AppendPolygonVertices (polygon, vertexArray, reversed)
 		{
-			var basePolygon = [];
-			
 			var i, coord;
-			if (orientation == JSM.Orientation.Clockwise) {
+			if (!reversed) {
 				for (i = 0; i < polygon.VertexCount (); i++) {
 					coord = polygon.GetVertex (i);
-					basePolygon.push (new JSM.Coord (coord.x, 0.0, -coord.y));
+					vertexArray.push (new JSM.Coord (coord.x, 0.0, -coord.y));
 				}
 			} else {
 				for (i = polygon.VertexCount () - 1; i >= 0; i--) {
 					coord = polygon.GetVertex (i);
-					basePolygon.push (new JSM.Coord (coord.x, 0.0, -coord.y));
+					vertexArray.push (new JSM.Coord (coord.x, 0.0, -coord.y));
 				}
 			}
-
+		}
+		
+		function CreateBasePolygon (polygon)
+		{
+			var basePolygon = [];
+			var orientation = polygon.GetOrientation ();
+			var reversed = (orientation == JSM.Orientation.CounterClockwise);
+			AppendPolygonVertices (polygon, basePolygon, reversed);
 			return basePolygon;
 		}
 	
-		function AddHoleToBasePolygon (basePolygon, polygon, orientation)
+		function AddHoleToBasePolygon (basePolygon, holePolygon)
 		{
 			basePolygon.push (null);
-		
-			var i, coord;
-			if (orientation == JSM.Orientation.CounterClockwise) {
-				for (i = 0; i < polygon.VertexCount (); i++) {
-					coord = polygon.GetVertex (i);
-					basePolygon.push (new JSM.Coord (coord.x, 0.0, -coord.y));
-				}
-			} else {
-				for (i = polygon.VertexCount () - 1; i >= 0; i--) {
-					coord = polygon.GetVertex (i);
-					basePolygon.push (new JSM.Coord (coord.x, 0.0, -coord.y));
-				}
-			}
+			var orientation = holePolygon.GetOrientation ();
+			var reversed = (orientation == JSM.Orientation.Clockwise);
+			AppendPolygonVertices (holePolygon, basePolygon, reversed);
 		}
 
 		var prisms = [];
@@ -344,25 +339,29 @@ JSM.SvgToModel = function (svgObject, height, segmentLength, curveAngle)
 		
 		var basePolygon, baseOrientation, prism;
 		var contourCount = polygon.ContourCount ();
+		if (contourCount === 0) {
+			return null;
+		}
+		
 		if (contourCount == 1) {
 			baseOrientation = polygon.GetContour (0).GetOrientation ();
-			basePolygon = CreateBasePolygon (polygon.GetContour (0), baseOrientation);
+			basePolygon = CreateBasePolygon (polygon.GetContour (0));
 			prism = JSM.GeneratePrism (basePolygon, direction, currentHeight, true, curveAngle);
 			prisms.push (prism);
 		} else if (contourCount > 1) {
 			baseOrientation = polygon.GetContour (0).GetOrientation ();
-			var holeBasePolygon = CreateBasePolygon (polygon.GetContour (0), baseOrientation);
+			var holeBasePolygon = CreateBasePolygon (polygon.GetContour (0));
 			var hasHoles = false;
 			
 			var i, orientation;
 			for (i = 1; i < polygon.ContourCount (); i++) {
 				orientation = polygon.GetContour (i).GetOrientation ();
 				if (orientation == baseOrientation) {
-					basePolygon = CreateBasePolygon (polygon.GetContour (i), baseOrientation);
+					basePolygon = CreateBasePolygon (polygon.GetContour (i));
 					prism = JSM.GeneratePrism (basePolygon, direction, currentHeight, true, curveAngle);
 					prisms.push (prism);
 				} else {
-					AddHoleToBasePolygon (holeBasePolygon, polygon.GetContour (i), orientation);
+					AddHoleToBasePolygon (holeBasePolygon, polygon.GetContour (i));
 					hasHoles = true;
 				}
 			}
@@ -391,6 +390,9 @@ JSM.SvgToModel = function (svgObject, height, segmentLength, curveAngle)
 	var i, j, prismsAndMaterial, currentPrisms, currentPrism, currentMaterial;
 	for (i = 0; i < polygons.length; i++) {
 		prismsAndMaterial = ContourPolygonToPrisms (polygons[i], currentHeight, curveAngle);
+		if (prismsAndMaterial === null) {
+			continue;
+		}
 		currentPrisms = prismsAndMaterial[0];
 		currentMaterial = prismsAndMaterial[1];
 		model.AddMaterial (currentMaterial);
