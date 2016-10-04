@@ -95,6 +95,17 @@ JSM.Polygon2D.prototype.GetVertex = function (index)
 };
 
 /**
+* Function: Polygon2D.RemoveVertex
+* Description: Removes a vertex from the polygon.
+* Parameters:
+*	index {integer} the index of the vertex
+*/
+JSM.Polygon2D.prototype.RemoveVertex = function (index)
+{
+	this.vertices.splice (index, 1);
+};
+
+/**
 * Function: Polygon2D.VertexCount
 * Description: Returns the vertex count of the polygon.
 * Returns:

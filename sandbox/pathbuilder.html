@@ -94,20 +94,22 @@
 
 	<script type="text/javascript">
 	
-		JSM.PathPolygon = function ()
+		JSM.PathBuilder = function ()
 		{
 			this.position = new JSM.Coord2D (0.0, 0.0);
 			this.positionAdded = false;
-			this.polygon = new JSM.Polygon2D ();
+			this.polygons = [];
+			this.currentPolygon = null;
 		};
 		
-		JSM.PathPolygon.prototype.MoveTo = function (x, y)
+		JSM.PathBuilder.prototype.MoveTo = function (x, y)
 		{
+			this.Close ();
 			this.position.Set (x, y);
 			this.positionAdded = false;
 		};
 		
-		JSM.PathPolygon.prototype.LineTo = function (x, y)
+		JSM.PathBuilder.prototype.LineTo = function (x, y)
 		{
 			if (!this.positionAdded) {
 				this.AddPolygonPoint (this.position.x, this.position.y);
@@ -115,7 +117,7 @@
 			this.AddPolygonPoint (x, y);
 		};
 							   
-		JSM.PathPolygon.prototype.CubicBezierTo = function (x, y, cp1x, cp1y, cp2x, cp2y)
+		JSM.PathBuilder.prototype.CubicBezierTo = function (x, y, cp1x, cp1y, cp2x, cp2y)
 		{
 			var bezierPoints = JSM.GenerateCubicBezierCurve (
 				new JSM.Coord2D (this.position.x, this.position.y),
@@ -130,56 +132,106 @@
 			}
 		};
 		
-		JSM.PathPolygon.prototype.GetCoordinateArray = function ()
+		JSM.PathBuilder.prototype.Close = function ()
+		{
+			function CheckAndCorrectPolygon (polygon)
+			{
+				if (polygon.VertexCount () === 0) {
+					return false;
+				}
+				if (polygon.GetVertex (0).IsEqual (polygon.GetVertex (polygon.VertexCount () - 1))) {
+					polygon.RemoveVertex (polygon.VertexCount () - 1);
+				}
+				if (polygon.VertexCount () < 3) {
+					return false;
+				}
+				return true;
+			}
+		
+			if (this.currentPolygon !== null) {
+				if (CheckAndCorrectPolygon (this.currentPolygon)) {
+					var contourPolygon = new JSM.ContourPolygon2D ();
+					contourPolygon.AddContour (this.currentPolygon);
+					this.polygons.push (contourPolygon);
+				}
+				this.currentPolygon = null;
+			}
+		};			
+		
+		JSM.PathBuilder.prototype.GetCoordinateArrays = function ()
 		{
 			var result = [];
-			var i, vertex;
-			for (i = 0; i < this.polygon.VertexCount (); i++) {
-				vertex = this.polygon.GetVertex (i);
-				result.push ([vertex.x, vertex.y]);
+			var i, j, polygon, polygonArray, polygonVertex, resultArray;
+			for (i = 0; i < this.polygons.length; i++) {
+				polygon = this.polygons[i];
+				polygonArray = polygon.ToArray ();
+				resultArray = [];
+				for (j = 0; j < polygonArray.length; j++) {
+					polygonVertex = polygonArray[j];
+					if (polygonVertex === null) {
+						resultArray.push (null);
+					} else {
+						resultArray.push ([polygonVertex.x, polygonVertex.y]);
+					}
+				}
+				result.push (resultArray);
 			}
 			return result;
 		};
 		
-		JSM.PathPolygon.prototype.AddPolygonPoint = function (x, y)
+		JSM.PathBuilder.prototype.GetCurrentPolygon = function (x, y)
 		{
-			this.polygon.AddVertex (x, y);
+			if (this.currentPolygon === null) {
+				this.currentPolygon = new JSM.Polygon2D ();
+			}
+			return this.currentPolygon;
+		};		
+		
+		JSM.PathBuilder.prototype.AddPolygonPoint = function (x, y)
+		{
+			var polygon = this.GetCurrentPolygon ();
+			polygon.AddVertex (x, y);
 			this.position.Set (x, y);
 			this.positionAdded = true;
-		};		
+		};
 
 		function Load ()
 		{
 			var polygonDrawer = new PolygonDrawer ();
 			polygonDrawer.Init (document.body, 800, 800, 0.5);
 			polygonDrawer.DrawCoordSystem ();
-			var pathPolygon = new JSM.PathPolygon ();
+			var pathBuilder = new JSM.PathBuilder ();
 
-			pathPolygon.MoveTo (650, 194);
-			pathPolygon.LineTo (650, 503);
-			pathPolygon.CubicBezierTo (368, 756, 650, 665, 564, 756);
-			pathPolygon.CubicBezierTo (101, 703, 285, 756, 192, 738);
-			pathPolygon.LineTo (143, 582);
-			pathPolygon.CubicBezierTo (338, 621, 217, 607, 288, 621);
-			pathPolygon.CubicBezierTo (475, 493, 432, 621, 475, 589);
-			pathPolygon.LineTo (475, 451);
-			pathPolygon.LineTo (383, 451);
-			pathPolygon.CubicBezierTo (49, 206, 169, 451, 49, 365);
-			pathPolygon.CubicBezierTo (286, -21, 49, 72, 139, -21);
-			pathPolygon.CubicBezierTo (506, 89, 374, -21, 454, 11);
-			pathPolygon.CubicBezierTo (668, -18, 535, 17, 588, -11);
-			pathPolygon.LineTo (706, 100);
-			pathPolygon.CubicBezierTo (650, 194, 669, 114, 650, 135);
+			pathBuilder.MoveTo (650, 194);
+			pathBuilder.LineTo (650, 503);
+			pathBuilder.CubicBezierTo (368, 756, 650, 665, 564, 756);
+			pathBuilder.CubicBezierTo (101, 703, 285, 756, 192, 738);
+			pathBuilder.LineTo (143, 582);
+			pathBuilder.CubicBezierTo (338, 621, 217, 607, 288, 621);
+			pathBuilder.CubicBezierTo (475, 493, 432, 621, 475, 589);
+			pathBuilder.LineTo (475, 451);
+			pathBuilder.LineTo (383, 451);
+			pathBuilder.CubicBezierTo (49, 206, 169, 451, 49, 365);
+			pathBuilder.CubicBezierTo (286, -21, 49, 72, 139, -21);
+			pathBuilder.CubicBezierTo (506, 89, 374, -21, 454, 11);
+			pathBuilder.CubicBezierTo (668, -18, 535, 17, 588, -11);
+			pathBuilder.LineTo (706, 100);
+			pathBuilder.CubicBezierTo (650, 194, 669, 114, 650, 135);
+			pathBuilder.Close ();
 			
-			pathPolygon.MoveTo (333, 108);
-			pathPolygon.CubicBezierTo (229, 219, 265, 108, 229, 149);
-			pathPolygon.CubicBezierTo (401, 347, 229, 306, 286, 347);
-			pathPolygon.LineTo (475, 347);
-			pathPolygon.LineTo (475, 199);
-			pathPolygon.CubicBezierTo (333, 108, 442, 140, 396, 108);
+			pathBuilder.MoveTo (333, 108);
+			pathBuilder.CubicBezierTo (229, 219, 265, 108, 229, 149);
+			pathBuilder.CubicBezierTo (401, 347, 229, 306, 286, 347);
+			pathBuilder.LineTo (475, 347);
+			pathBuilder.LineTo (475, 199);
+			pathBuilder.CubicBezierTo (333, 108, 442, 140, 396, 108);
+			pathBuilder.Close ();
 
-			var polygon = pathPolygon.GetCoordinateArray ();
-			polygonDrawer.DrawPolyline (polygon, '#ffffff', '#00cc00');
+			var coordArrays = pathBuilder.GetCoordinateArrays ();
+			var i;
+			for (i = 0; i < coordArrays.length; i++) {
+				polygonDrawer.DrawPolyline (coordArrays[i], '#ffffff', '#00cc00');
+			}
 		}
 	
 	    window.onload = function ()
