@@ -1922,6 +1922,12 @@
 								["Coord2D", "the vertex"]
 							]
 						},
+						"RemoveVertex" : {
+							"description" : "Removes a vertex from the polygon.",
+							"parameters" : [
+								["index", "integer", "the index of the vertex"]
+							]
+						},
 						"VertexCount" : {
 							"description" : "Returns the vertex count of the polygon.",
 							"returns" : [

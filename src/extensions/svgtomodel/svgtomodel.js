@@ -300,12 +300,12 @@ JSM.SvgToModel = function (svgObject, height, segmentLength, curveAngle)
 			if (!reversed) {
 				for (i = 0; i < polygon.VertexCount (); i++) {
 					coord = polygon.GetVertex (i);
-					vertexArray.push (new JSM.Coord (coord.x, 0.0, -coord.y));
+					vertexArray.push (new JSM.Coord (coord.x, -coord.y, 0.0));
 				}
 			} else {
 				for (i = polygon.VertexCount () - 1; i >= 0; i--) {
 					coord = polygon.GetVertex (i);
-					vertexArray.push (new JSM.Coord (coord.x, 0.0, -coord.y));
+					vertexArray.push (new JSM.Coord (coord.x, -coord.y, 0.0));
 				}
 			}
 		}
@@ -328,7 +328,7 @@ JSM.SvgToModel = function (svgObject, height, segmentLength, curveAngle)
 		}
 
 		var prisms = [];
-		var direction = new JSM.Vector (0.0, -1.0, 0.0);
+		var direction = new JSM.Vector (0.0, 0.0, 1.0);
 		
 		var currentHeight = height;
 		if (polygon.originalElem !== undefined) {
