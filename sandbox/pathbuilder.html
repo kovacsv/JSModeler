@@ -235,12 +235,19 @@
 				return result;
 			}
 		
+			var bodies = [];
 			var polygons = path.GetPolygons ();
 			var i, polygon;
 			for (i = 0; i < polygons.length; i++) {
 				polygon = polygons[i];
-				return JSM.GeneratePrismWithHole (GetPrismPolygon (polygon.ToArray ()), new JSM.Vector (0.0, 0.0, 1.0), 100.0, true);
+				var direction = new JSM.Vector (0.0, 0.0, 1.0);
+				if (polygon.ContourCount () === 1) {
+					bodies.push (JSM.GeneratePrism (GetPrismPolygon (polygon.ToArray ()), direction, 100.0, true));
+				} else if (polygon.ContourCount () > 1) {
+					bodies.push (JSM.GeneratePrismWithHole (GetPrismPolygon (polygon.ToArray ()), direction, 100.0, true));
+				}
 			}
+			return bodies;
 		};
 		
 		function Load ()
@@ -286,15 +293,18 @@
 			var viewer = new JSM.ThreeViewer ();
 			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
-			var body = JSM.GeneratePrismsFromPath2D (path);
-			var meshes = JSM.ConvertBodyToThreeMeshes (body);
-			viewer.AddMeshes (meshes);
+			
+			var bodies = JSM.GeneratePrismsFromPath2D (path);
+			var i, meshes;
+			for (i = 0; i < bodies.length; i++) {
+				meshes = JSM.ConvertBodyToThreeMeshes (bodies[i]);
+				viewer.AddMeshes (meshes);
+			}	
 			viewer.FitInWindow ();
 
 			viewer.Draw ();
 			
 			var coordArrays = path.GetCoordinateArrays ();
-			var i;
 			for (i = 0; i < coordArrays.length; i++) {
 				polygonDrawer.DrawPolyline (coordArrays[i], '#ffffff', '#00cc00');
 			}			
