@@ -152,7 +152,7 @@
 			{
 				var i, baseOrientation, polygonOrientation;
 				for (i = 0; i < polygons.length; i++) {
-					baseOrientation = polygons[i].GetOrientation ();
+					baseOrientation = polygons[i].GetContour (0).GetOrientation ();
 					polygonOrientation = polygon.GetOrientation ();
 					if (baseOrientation !== polygonOrientation) {
 						return polygons[i];
