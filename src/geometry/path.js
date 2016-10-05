@@ -114,6 +114,30 @@ JSM.Path2D.prototype.Close = function ()
 };			
 
 /**
+* Function: Path2D.GetPolygonCount
+* Description: Returns the polygon count of the path.
+* Returns:
+*	{integer} the result
+*/
+JSM.Path2D.prototype.GetPolygonCount = function ()
+{
+	return this.polygons.length;
+};
+
+/**
+* Function: Path2D.GetPolygon
+* Description: Returns the polygons from the path at the given index.
+* Parameters:
+*	index {integer} the polygon index
+* Returns:
+*	{ContourPolygon2D} the result
+*/
+JSM.Path2D.prototype.GetPolygon = function (index)
+{
+	return this.polygons[index];
+};
+
+/**
 * Function: Path2D.GetPolygons
 * Description: Returns the polygons from the path.
 * Returns:

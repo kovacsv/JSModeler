@@ -2048,4 +2048,25 @@ polygonSuite.AddTest ('BSPTreeTest', function (test)
 	test.Assert (bspTree.root.outside.outside.userData == 2);
 });
 
+var pathSuite = unitTest.AddTestSuite ('GeometryPath');
+
+pathSuite.AddTest ('BasicPathTest', function (test)
+{
+	var path = new JSM.Path2D ();
+	
+	test.Assert (path.GetPolygonCount () == 0);
+	path.MoveTo (1, 1);
+	path.LineTo (2, 1);
+	path.LineTo (2, 2);
+	
+	test.Assert (path.GetPolygonCount () == 0);
+	path.Close ();
+	test.Assert (path.GetPolygonCount () == 1);
+	test.Assert (path.GetPolygon (0).ContourCount () == 1);
+	test.Assert (path.GetPolygon (0).VertexCount () == 3);
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (0).IsEqual (new JSM.Coord2D (1, 1)));
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (1).IsEqual (new JSM.Coord2D (2, 1)));
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (2).IsEqual (new JSM.Coord2D (2, 2)));
+});
+
 }
