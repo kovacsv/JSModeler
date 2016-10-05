@@ -838,7 +838,7 @@ JSM.GeneratePrismFromPolygon = function (polygon, height, withTopAndBottom, curv
 	var i, vertex;
 	var count = polygon.VertexCount ();
 	for (i = 0; i < count; i++) {
-		var vertex = polygon.GetVertex (i);
+		vertex = polygon.GetVertex (i);
 		bottomVertices.push (new JSM.Coord (vertex.x, vertex.y, 0.0));
 		topVertices.push (new JSM.Coord (vertex.x, vertex.y, height));
 	}

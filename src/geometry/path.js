@@ -119,7 +119,7 @@ JSM.Path2D.prototype.Close = function ()
 * Returns:
 *	{ContourPolygon2D[*]} the result
 */
-JSM.Path2D.prototype.GetPolygons = function (x, y)
+JSM.Path2D.prototype.GetPolygons = function ()
 {
 	return this.polygons;
 };
@@ -130,7 +130,7 @@ JSM.Path2D.prototype.GetPolygons = function (x, y)
 * Returns:
 *	{Polygon2D} the result
 */
-JSM.Path2D.prototype.GetCurrentPolygon = function (x, y)
+JSM.Path2D.prototype.GetCurrentPolygon = function ()
 {
 	if (this.currentPolygon === null) {
 		this.currentPolygon = new JSM.Polygon2D ();
