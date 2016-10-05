@@ -101,17 +101,14 @@
 
 			var body = JSM.GenerateCuboid (1, 1, 1);
 			
-			var basePoints = [
-				new JSM.Coord (0.0, 0.0, -0.5),
-				new JSM.Coord (0.0, 1.0, -0.5),
-				new JSM.Coord (-1.0, 1.0, -0.5),
-				new JSM.Coord (-1.0, -1.0, -0.5),
-				new JSM.Coord (1.0, -1.0, -0.5),
-				new JSM.Coord (1.0, 0.0, -0.5)
-			];
-			
-			var direction = new JSM.Vector (0.0, 0.0, 1.0);
-			var body = JSM.GeneratePrism (basePoints, direction, 1.0, true, null);			
+			var basePoints = new JSM.Polygon2D ();
+			basePoints.AddVertex (0.0, 0.0);
+			basePoints.AddVertex (0.0, 1.0);
+			basePoints.AddVertex (-1.0, 1.0);
+			basePoints.AddVertex (-1.0, -1.0);
+			basePoints.AddVertex (1.0, -1.0);
+			basePoints.AddVertex (1.0, 0.0);
+			var body = JSM.GeneratePrismFromPolygon (basePoints, 1.0, true, null);			
 
 			//var aBody = JSM.GenerateCuboid (1, 1, 1);
 			//var bBody = JSM.GenerateCuboid (1, 1, 1);

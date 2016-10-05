@@ -116,8 +116,13 @@
 			circle[0].Set (2, 0, 0);
 			circle[10].Set (0, 0, 0);
 			
-			var direction = new JSM.Vector (0.0, 0.0, 1.0);
-			var prism = JSM.GeneratePrism (circle, direction, 1.0, true, 160 * JSM.DegRad);
+			var basePolygon = new JSM.Polygon2D ();
+			var i;
+			for (i = 0; i < circle.length; i++) {
+				basePolygon.AddVertex (circle[i].x, circle[i].y);
+			}
+			
+			var prism = JSM.GeneratePrismFromPolygon (basePolygon, 1.0, true, 160 * JSM.DegRad);
 			//prism.SetPolygonsMaterialIndex (0);
 			
 			var renderBody = JSM.ConvertBodyToRenderBody (prism, materials);

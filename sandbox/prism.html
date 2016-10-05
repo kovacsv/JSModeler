@@ -113,15 +113,13 @@
 				return;
 			}
 
-			var basePoints = [
-				new JSM.Coord (0, 0, 0),
-				new JSM.Coord (7, 0, 0),
-				new JSM.Coord (7, 3, 0),
-				new JSM.Coord (0, 3, 0),
-			];
+			var basePoints = new JSM.Polygon2D ();
+			basePoints.AddVertex (0, 0);
+			basePoints.AddVertex (7, 0);
+			basePoints.AddVertex (7, 3);
+			basePoints.AddVertex (0, 3);
 			
-			var direction = new JSM.Vector (0.0, 0.0, 1.0);
-			var prism = JSM.GeneratePrism (basePoints, direction, 0.3, true);
+			var prism = JSM.GeneratePrismFromPolygon (basePoints, 0.3, true);
 			var conversionData = {
 				textureLoadedCallback : TextureLoaded,
 				hasConvexPolygons : false

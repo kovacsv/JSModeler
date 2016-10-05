@@ -821,6 +821,50 @@ JSM.GeneratePrismGeometry = function (bottomVertices, topVertices, withTopAndBot
 };
 
 /**
+* Function: GeneratePrismFromPolygon
+* Description: Generates a prism defined by a polygon.
+* Parameters:
+*	polygon {Polygon2D} the base polygon
+*	height {number} the height of the prism
+*	withTopAndBottom {boolean} generate top and bottom polygons
+*	curveAngle {number} if not null, defines the curve angle of the prism
+* Returns:
+*	{Body} the result
+*/
+JSM.GeneratePrismFromPolygon = function (polygon, height, withTopAndBottom, curveAngle)
+{
+	var bottomVertices = [];
+	var topVertices = [];
+	var i, vertex;
+	var count = polygon.VertexCount ();
+	for (i = 0; i < count; i++) {
+		var vertex = polygon.GetVertex (i);
+		bottomVertices.push (new JSM.Coord (vertex.x, vertex.y, 0.0));
+		topVertices.push (new JSM.Coord (vertex.x, vertex.y, height));
+	}
+
+	var result = JSM.GeneratePrismGeometry (bottomVertices, topVertices, withTopAndBottom);
+	if (curveAngle !== undefined && curveAngle !== null) {
+		var curveGroups = JSM.CalculatePolygonCurveGroups (polygon, curveAngle);
+		var bodyPolygon;
+		for (i = 0; i < count; i++) {
+			bodyPolygon = result.GetPolygon (i);
+			bodyPolygon.SetCurveGroup (curveGroups[i]);
+		}
+	}
+	
+	var origo = bottomVertices[0].Clone ();
+	var firtVertex = bottomVertices[1].Clone ();
+	var firstDirection = JSM.CoordSub (firtVertex, origo).Normalize ();
+	var e3 = new JSM.Vector (0.0, 0.0, 1.0);
+	var e2 = JSM.VectorCross (e3, firstDirection);
+	var e1 = JSM.VectorCross (e2, e3);
+
+	result.SetCubicTextureProjection (origo, e1, e2, e3);
+	return result;
+};
+
+/**
 * Function: GeneratePrism
 * Description:
 *	Generates a prism defined by a polygon. The base polygon is an array

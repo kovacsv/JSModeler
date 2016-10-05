@@ -186,6 +186,24 @@ JSM.Polygon2D.prototype.ReverseVertices = function ()
 };
 
 /**
+* Function: Polygon2D.GetVertexAngle
+* Description: Returns the angle of the given vertex.
+* Parameters:
+*	index {integer} the vertex index
+* Returns:
+*	{number} the result
+*/
+JSM.Polygon2D.prototype.GetVertexAngle = function (index)
+{
+	var prev = this.vertices[this.GetPrevVertex (index)];
+	var curr = this.vertices[index];
+	var next = this.vertices[this.GetNextVertex (index)];
+	var prevDir = JSM.CoordSub2D (prev, curr);
+	var nextDir = JSM.CoordSub2D (next, curr);
+	return prevDir.AngleTo (nextDir);
+};
+
+/**
 * Function: Polygon2D.GetSignedArea
 * Description: Calculates the signed area of the polygon.
 * Returns:
