@@ -118,25 +118,10 @@
 				new JSM.Coord (7, 0, 0),
 				new JSM.Coord (7, 3, 0),
 				new JSM.Coord (0, 3, 0),
-				null,
-				new JSM.Coord (1, 1, 0),
-				new JSM.Coord (1, 2, 0),
-				new JSM.Coord (2, 2, 0),
-				null,
-				new JSM.Coord (3, 1, 0),
-				new JSM.Coord (3, 2, 0),
-				new JSM.Coord (4, 2, 0),
-				new JSM.Coord (4, 1, 0),
-				null,
-				new JSM.Coord (5, 1, 0),
-				new JSM.Coord (5, 2, 0),
-				new JSM.Coord (6, 2, 0),
-				new JSM.Coord (6, 1, 0),
-				new JSM.Coord (5.5, 1.5, 0)
 			];
 			
 			var direction = new JSM.Vector (0.0, 0.0, 1.0);
-			var prism = JSM.GeneratePrismWithHole (basePoints, direction, 0.3, true);
+			var prism = JSM.GeneratePrism (basePoints, direction, 0.3, true);
 			var conversionData = {
 				textureLoadedCallback : TextureLoaded,
 				hasConvexPolygons : false

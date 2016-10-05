@@ -775,6 +775,52 @@ JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, with
 };
 
 /**
+* Function: GeneratePrismGeometry
+* Description: Generates a prism defined by bottom and top vertices polygon.
+* Parameters:
+*	bottomVertices {Coord[*]} bottom vertices
+*	topVertices {Coord[*]} top vertices
+*	withTopAndBottom {boolean} generate top and bottom polygons
+* Returns:
+*	{Body} the result
+*/
+JSM.GeneratePrismGeometry = function (bottomVertices, topVertices, withTopAndBottom)
+{
+	var result = new JSM.Body ();
+	var count = bottomVertices.length;
+	
+	var i;
+	for (i = 0; i < count; i++) {
+		result.AddVertex (new JSM.BodyVertex (bottomVertices[i].Clone ()));
+		result.AddVertex (new JSM.BodyVertex (topVertices[i].Clone ()));
+	}
+
+	var current, next, bodyPolygon;
+	for (i = 0; i < count; i++) {
+		current = 2 * i;
+		next = current + 2;
+		if (i === count - 1) {
+			next = 0;
+		}
+		bodyPolygon = new JSM.BodyPolygon ([current, next, next + 1, current + 1]);
+		result.AddPolygon (bodyPolygon);
+	}
+
+	if (withTopAndBottom) {
+		var topPolygon = new JSM.BodyPolygon ([]);
+		var bottomPolygon = new JSM.BodyPolygon ([]);
+		for (i = 0; i < count; i++) {
+			topPolygon.AddVertexIndex (2 * i + 1);
+			bottomPolygon.AddVertexIndex (2 * (count - i - 1));
+		}
+		result.AddPolygon (topPolygon);
+		result.AddPolygon (bottomPolygon);
+	}
+	
+	return result;
+};
+
+/**
 * Function: GeneratePrism
 * Description:
 *	Generates a prism defined by a polygon. The base polygon is an array
@@ -790,48 +836,30 @@ JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, with
 */
 JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom, curveAngle)
 {
-	var result = new JSM.Body ();
-	
 	var polygon = new JSM.Polygon ();
 	polygon.FromArray (basePolygon);
 	var count = polygon.VertexCount ();
 
-	var curveGroups = null;
-	if (curveAngle !== undefined && curveAngle !== null) {
-		curveGroups = JSM.CalculatePolygonCurveGroups (polygon, curveAngle);
-	}
 
+	var bottomVertices = [];
+	var topVertices = [];
 	var i;
 	for (i = 0; i < count; i++) {
-		result.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i).Clone ()));
-		result.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i).Clone ().Offset (direction, height)));
+		bottomVertices.push (polygon.GetVertex (i).Clone ());
+		topVertices.push (polygon.GetVertex (i).Clone ().Offset (direction, height));
 	}
 
-	var current, next, bodyPolygon;
-	for (i = 0; i < count; i++) {
-		current = 2 * i;
-		next = current + 2;
-		if (i === count - 1) {
-			next = 0;
-		}
-		bodyPolygon = new JSM.BodyPolygon ([current, next, next + 1, current + 1]);
-		if (curveGroups !== null) {
+	var result = JSM.GeneratePrismGeometry (bottomVertices, topVertices, withTopAndBottom);
+	
+	if (curveAngle !== undefined && curveAngle !== null) {
+		var curveGroups = JSM.CalculatePolygonCurveGroups (polygon, curveAngle);
+		var bodyPolygon;
+		for (i = 0; i < count; i++) {
+			bodyPolygon = result.GetPolygon (i);
 			bodyPolygon.SetCurveGroup (curveGroups[i]);
 		}
-		result.AddPolygon (bodyPolygon);
 	}
-
-	if (withTopAndBottom) {
-		var topPolygon = new JSM.BodyPolygon ([]);
-		var bottomPolygon = new JSM.BodyPolygon ([]);
-		for (i = 0; i < count; i++) {
-			topPolygon.AddVertexIndex (2 * i + 1);
-			bottomPolygon.AddVertexIndex (2 * (count - i - 1));
-		}
-		result.AddPolygon (topPolygon);
-		result.AddPolygon (bottomPolygon);
-	}
-
+	
 	var origo = polygon.GetVertex (0).Clone ();
 	var firtVertex = polygon.GetVertex (1).Clone ();
 	var firstDirection = JSM.CoordSub (firtVertex, origo).Normalize ();
