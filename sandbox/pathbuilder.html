@@ -38,6 +38,7 @@
 	<script type="text/javascript" src="../src/geometry/curves.js"></script>
 	<script type="text/javascript" src="../src/geometry/utilities.js"></script>
 	<script type="text/javascript" src="../src/geometry/ray.js"></script>
+	<script type="text/javascript" src="../src/geometry/path.js"></script>
 	<script type="text/javascript" src="../src/modeler/color.js"></script>
 	<script type="text/javascript" src="../src/modeler/material.js"></script>
 	<script type="text/javascript" src="../src/modeler/materialset.js"></script>
@@ -93,131 +94,6 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-	
-		JSM.Path2D = function ()
-		{
-			this.position = new JSM.Coord2D (0.0, 0.0);
-			this.positionAdded = false;
-			this.polygons = [];
-			this.currentPolygon = null;
-		};
-		
-		JSM.Path2D.prototype.MoveTo = function (x, y)
-		{
-			this.Close ();
-			this.position.Set (x, y);
-			this.positionAdded = false;
-		};
-		
-		JSM.Path2D.prototype.LineTo = function (x, y)
-		{
-			if (!this.positionAdded) {
-				this.AddPolygonPoint (this.position.x, this.position.y);
-			}
-			this.AddPolygonPoint (x, y);
-		};
-							   
-		JSM.Path2D.prototype.CubicBezierTo = function (x, y, cp1x, cp1y, cp2x, cp2y)
-		{
-			var bezierPoints = JSM.GenerateCubicBezierCurve (
-				new JSM.Coord2D (this.position.x, this.position.y),
-				new JSM.Coord2D (cp1x, cp1y),
-				new JSM.Coord2D (cp2x, cp2y),
-				new JSM.Coord2D (x, y),
-				10
-			);
-			var i;
-			for (i = 1; i < bezierPoints.length; i++) {
-				this.LineTo (bezierPoints[i].x, bezierPoints[i].y);
-			}
-		};
-		
-		JSM.Path2D.prototype.Close = function ()
-		{
-			function CheckAndCorrectPolygon (polygon)
-			{
-				if (polygon.VertexCount () === 0) {
-					return false;
-				}
-				if (polygon.GetVertex (0).IsEqual (polygon.GetVertex (polygon.VertexCount () - 1))) {
-					polygon.RemoveVertex (polygon.VertexCount () - 1);
-				}
-				if (polygon.VertexCount () < 3) {
-					return false;
-				}
-				return true;
-			}
-			
-			function FindBasePolygon (polygons, polygon)
-			{
-				var i, baseOrientation, polygonOrientation;
-				for (i = 0; i < polygons.length; i++) {
-					baseOrientation = polygons[i].GetContour (0).GetOrientation ();
-					polygonOrientation = polygon.GetOrientation ();
-					if (baseOrientation !== polygonOrientation) {
-						return polygons[i];
-					}
-				}
-				return null;
-			}
-		
-			if (this.currentPolygon !== null) {
-				if (CheckAndCorrectPolygon (this.currentPolygon)) {
-					var basePolygon = FindBasePolygon (this.polygons, this.currentPolygon);
-					if (basePolygon === null) {
-						var contourPolygon = new JSM.ContourPolygon2D ();
-						contourPolygon.AddContour (this.currentPolygon);
-						this.polygons.push (contourPolygon);
-					} else {
-						basePolygon.AddContour (this.currentPolygon);
-					}
-				}
-				this.currentPolygon = null;
-			}
-		};			
-		
-		JSM.Path2D.prototype.GetPolygons = function (x, y)
-		{
-			return this.polygons;
-		};			
-		
-		JSM.Path2D.prototype.GetCoordinateArrays = function ()
-		{
-			var result = [];
-			var i, j, polygon, polygonArray, polygonVertex, resultArray;
-			for (i = 0; i < this.polygons.length; i++) {
-				polygon = this.polygons[i];
-				polygonArray = polygon.ToArray ();
-				resultArray = [];
-				for (j = 0; j < polygonArray.length; j++) {
-					polygonVertex = polygonArray[j];
-					if (polygonVertex === null) {
-						resultArray.push (null);
-					} else {
-						resultArray.push ([polygonVertex.x, polygonVertex.y]);
-					}
-				}
-				result.push (resultArray);
-			}
-			return result;
-		};
-		
-		JSM.Path2D.prototype.GetCurrentPolygon = function (x, y)
-		{
-			if (this.currentPolygon === null) {
-				this.currentPolygon = new JSM.Polygon2D ();
-			}
-			return this.currentPolygon;
-		};		
-		
-		JSM.Path2D.prototype.AddPolygonPoint = function (x, y)
-		{
-			var polygon = this.GetCurrentPolygon ();
-			polygon.AddVertex (x, y);
-			this.position.Set (x, y);
-			this.positionAdded = true;
-		};
-
 		JSM.GeneratePrismsFromPath2D = function (path)
 		{
 			function GetPrismPolygon (polygonArray)
@@ -249,6 +125,28 @@
 			}
 			return bodies;
 		};
+		
+		function GetCoordinateArrays (path)
+		{
+			var result = [];
+			var polygons = path.GetPolygons ();
+			var i, j, polygon, polygonArray, polygonVertex, resultArray;
+			for (i = 0; i < polygons.length; i++) {
+				polygon = polygons[i];
+				polygonArray = polygon.ToArray ();
+				resultArray = [];
+				for (j = 0; j < polygonArray.length; j++) {
+					polygonVertex = polygonArray[j];
+					if (polygonVertex === null) {
+						resultArray.push (null);
+					} else {
+						resultArray.push ([polygonVertex.x, polygonVertex.y]);
+					}
+				}
+				result.push (resultArray);
+			}
+			return result;
+		};		
 		
 		function Load ()
 		{
@@ -304,7 +202,7 @@
 
 			viewer.Draw ();
 			
-			var coordArrays = path.GetCoordinateArrays ();
+			var coordArrays = GetCoordinateArrays (path);
 			for (i = 0; i < coordArrays.length; i++) {
 				polygonDrawer.DrawPolyline (coordArrays[i], '#ffffff', '#00cc00');
 			}			

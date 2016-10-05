@@ -32,6 +32,7 @@ unitTest.AddSourceFile ('../../src/geometry/bsptree.js');
 unitTest.AddSourceFile ('../../src/geometry/curves.js');
 unitTest.AddSourceFile ('../../src/geometry/utilities.js');
 unitTest.AddSourceFile ('../../src/geometry/ray.js');
+unitTest.AddSourceFile ('../../src/geometry/path.js');
 unitTest.AddSourceFile ('../../src/modeler/color.js');
 unitTest.AddSourceFile ('../../src/modeler/material.js');
 unitTest.AddSourceFile ('../../src/modeler/materialset.js');

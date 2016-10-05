@@ -30,6 +30,7 @@
 		"../src/geometry/curves.js",
 		"../src/geometry/utilities.js",
 		"../src/geometry/ray.js",
+		"../src/geometry/path.js",
 		"../src/modeler/color.js",
 		"../src/modeler/material.js",
 		"../src/modeler/materialset.js",
