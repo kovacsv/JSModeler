@@ -2105,7 +2105,7 @@ pathSuite.AddTest ('BezierPathToTest', function (test)
 		test.Assert (path.PolygonCount () == 0);
 		path.MoveTo (0, 0);
 		path.LineTo (1, 1);
-		path.CubicBezierTo (-1, 1, 0, 0, 2, 0);
+		path.CubicBezierTo (-1, 1, 0, 0, 0, 2);
 		path.Close ();
 
 		test.Assert (path.PolygonCount () == 1);
