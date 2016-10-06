@@ -154,7 +154,9 @@
 			polygonDrawer.Init (document.body, 600, 600, 0.2);
 			polygonDrawer.DrawCoordSystem ();
 		
-			var path = new JSM.Path2D ();
+			var path = new JSM.Path2D ({
+				segmentation : 10
+			});
 
 			path.MoveTo (650, 194);
 			path.LineTo (650, 503);

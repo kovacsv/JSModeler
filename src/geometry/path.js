@@ -1,9 +1,16 @@
 /**
 * Class: Path2D
 * Description: Helper class for building polygons
+* Parameters:
+*	settings {object} path settings
 */
-JSM.Path2D = function ()
+JSM.Path2D = function (settings)
 {
+	this.settings = {
+		segmentation : 10
+	};
+	JSM.CopyObjectProperties (settings, this.settings, true);
+	
 	this.position = new JSM.Coord2D (0.0, 0.0);
 	this.positionAdded = false;
 	this.polygons = [];
@@ -57,7 +64,7 @@ JSM.Path2D.prototype.CubicBezierTo = function (x, y, cp1x, cp1y, cp2x, cp2y)
 		new JSM.Coord2D (cp1x, cp1y),
 		new JSM.Coord2D (cp2x, cp2y),
 		new JSM.Coord2D (x, y),
-		10
+		this.settings.segmentation
 	);
 	var i;
 	for (i = 1; i < bezierPoints.length; i++) {
@@ -87,11 +94,24 @@ JSM.Path2D.prototype.Close = function ()
 	
 	function FindBasePolygon (polygons, polygon)
 	{
-		var i, baseOrientation, polygonOrientation;
-		for (i = 0; i < polygons.length; i++) {
-			baseOrientation = polygons[i].GetContour (0).GetOrientation ();
+		function IsBasePolygon (basePolygon, polygon)
+		{
+			baseOrientation = baseContour.GetOrientation ();
 			polygonOrientation = polygon.GetOrientation ();
 			if (baseOrientation !== polygonOrientation) {
+				var firstVertex = polygon.GetVertex (0);
+				var firstVertexPosition = baseContour.CoordPosition (firstVertex);
+				if (firstVertexPosition == JSM.CoordPolygonPosition2D.Inside) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		var i, baseContour, baseOrientation, polygonOrientation;
+		for (i = polygons.length - 1; i >= 0; i--) {
+			baseContour = polygons[i].GetContour (0);
+			if (IsBasePolygon (baseContour, polygon)) {
 				return polygons[i];
 			}
 		}
