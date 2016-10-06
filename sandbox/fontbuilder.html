@@ -164,6 +164,9 @@
 			var current;
 			while (index < parts.length) {
 				current = parts[index++];
+				if (current.length === 0) {
+					continue;
+				}
 				if (current == 'm') {
 					path.MoveTo (Num (parts[index++]), Num (parts[index++]));
 				} else if (current == 'l') {
@@ -172,6 +175,8 @@
 					path.CubicBezierTo (Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]));
 				} else if (current == 'z') {
 					path.Close ();
+				} else {
+					alert (current);
 				}
 			}
 			return path;
