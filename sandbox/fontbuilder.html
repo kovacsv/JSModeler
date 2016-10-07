@@ -150,38 +150,62 @@
 			return result;
 		};		
 		
-		function CreatePathFromSpecification (commands)
+		JSM.GenerateText = function (text, fontSpec, offsetX)
 		{
-			function Num (str)
+			function CreatePathFromSpecification (commands, offsetX)
 			{
-				return parseFloat (str);
-			}
-		
-			var path = new JSM.Path2D ({
-				segmentation : 10
-			});
+				function Num (str)
+				{
+					return parseFloat (str);
+				}
 			
-			var parts = commands.split (' ');
-			var index = 0;
-			var current;
-			while (index < parts.length) {
-				current = parts[index++];
-				if (current.length === 0) {
-					continue;
+				var path = new JSM.Path2D ({
+					segmentation : 10
+				});
+				
+				var parts = commands.split (' ');
+				var index = 0;
+				var current;
+				while (index < parts.length) {
+					current = parts[index++];
+					if (current.length === 0) {
+						continue;
+					}
+					if (current == 'm') {
+						path.MoveTo (Num (parts[index++]) + offsetX, Num (parts[index++]));
+					} else if (current == 'l') {
+						path.LineTo (Num (parts[index++]) + offsetX, Num (parts[index++]));
+					} else if (current == 'b') {
+						path.CubicBezierTo (Num (parts[index++]) + offsetX, Num (parts[index++]), Num (parts[index++]) + offsetX, Num (parts[index++]), Num (parts[index++]) + offsetX, Num (parts[index++]));
+					} else if (current == 'z') {
+						path.Close ();
+					} else {
+						alert (current);
+					}
 				}
-				if (current == 'm') {
-					path.MoveTo (Num (parts[index++]), Num (parts[index++]));
-				} else if (current == 'l') {
-					path.LineTo (Num (parts[index++]), Num (parts[index++]));
-				} else if (current == 'b') {
-					path.CubicBezierTo (Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]));
-				} else if (current == 'z') {
-					path.Close ();
-				} else {
-					alert (current);
+				return path;
+			};
+
+			function GenerateCharacterBodies (character, fontSpec, offsetX, model)
+			{
+				var path = CreatePathFromSpecification (fontSpec, offsetX);
+				var bodies = JSM.GeneratePrismsFromPath2D (path);
+				var i, body;
+				for (i = 0; i < bodies.length; i++) {
+					body = bodies[i];
+					model.AddBody (body);
 				}
 			}
-			return path;
+			
+			var model = new JSM.Model ();
+			var offsetX = 0.0;
+			var i, character;
+			for (i = 0; i < text.length; i++) {
+				character = text[i];
+				GenerateCharacterBodies (character, fontSpec.glyphs[character]['o'], offsetX, model);
+				offsetX += fontSpec.glyphs[character]['ha'];
+			}
+			return model;
 		};
 		
 		function Load ()
@@ -202,16 +226,11 @@
 			
 			
 			JSM.LoadJsonFile ('firasans_font.json', function (jsonData) {
-				var path = CreatePathFromSpecification (jsonData.glyphs['a']['o']);
-				var bodies = JSM.GeneratePrismsFromPath2D (path);
-				var i, meshes;
-				for (i = 0; i < bodies.length; i++) {
-					meshes = JSM.ConvertBodyToThreeMeshes (bodies[i]);
-					viewer.AddMeshes (meshes);
-				}	
+				var model = JSM.GenerateText ('hello', jsonData);
+				var meshes = JSM.ConvertModelToThreeMeshes (model);
+				viewer.AddMeshes (meshes);
 				viewer.FitInWindow ();
 				viewer.Draw ();
-
 				var coordArrays = GetCoordinateArrays (path);
 				for (i = 0; i < coordArrays.length; i++) {
 					polygonDrawer.DrawPolyline (coordArrays[i], '#ffffff', '#00cc00');
