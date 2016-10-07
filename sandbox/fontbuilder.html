@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 	 "http://www.w3.org/TR/html4/strict.dtd">
 
 <html>
@@ -201,6 +201,9 @@
 			var i, character;
 			for (i = 0; i < text.length; i++) {
 				character = text[i];
+				if (fontSpec.glyphs[character] === undefined) {
+					continue;
+				}
 				GenerateCharacterBodies (character, fontSpec.glyphs[character]['o'], offsetX, model);
 				offsetX += fontSpec.glyphs[character]['ha'];
 			}
@@ -213,7 +216,7 @@
 				cameraEyePosition : [-2.0, -1.5, 1.0],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
 				cameraUpVector : [0, 0, 1],
-				farClippingPlane : 10000
+				farClippingPlane : 100000
 			};
 
 			var viewer = new JSM.ThreeViewer ();
@@ -221,7 +224,7 @@
 			
 			
 			JSM.LoadJsonFile ('firasans_font.json', function (jsonData) {
-				var model = JSM.GenerateText ('hello', jsonData);
+				var model = JSM.GenerateText ('hello!', jsonData);
 				var meshes = JSM.ConvertModelToThreeMeshes (model);
 				viewer.AddMeshes (meshes);
 				viewer.FitInWindow ();
