@@ -90,7 +90,6 @@
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeconverter.js"></script>
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeviewer.js"></script>
 <!-- JSModeler includes end -->
-	<script type="text/javascript" src="utils/polygondrawer.js"></script>
 	<title>Example</title>
 
 	<script type="text/javascript">
@@ -210,10 +209,6 @@
 		
 		function Load ()
 		{
-			var polygonDrawer = new PolygonDrawer ();
-			polygonDrawer.Init (document.body, 600, 600, 0.2);
-			polygonDrawer.DrawCoordSystem ();
-		
 			var viewerSettings = {
 				cameraEyePosition : [-2.0, -1.5, 1.0],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
@@ -231,10 +226,6 @@
 				viewer.AddMeshes (meshes);
 				viewer.FitInWindow ();
 				viewer.Draw ();
-				var coordArrays = GetCoordinateArrays (path);
-				for (i = 0; i < coordArrays.length; i++) {
-					polygonDrawer.DrawPolyline (coordArrays[i], '#ffffff', '#00cc00');
-				}
 			});
 		}
 	
