@@ -93,7 +93,7 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		JSM.GeneratePrismsFromPath2D = function (path)
+		JSM.GeneratePrismsFromPath2D = function (path, height, curveAngle)
 		{
 			function GetPrismPolygon (polygon)
 			{
@@ -119,39 +119,17 @@
 				polygon = polygons[i];
 				var direction = new JSM.Vector (0.0, 0.0, 1.0);
 				if (polygon.ContourCount () === 1) {
-					bodies.push (JSM.GeneratePrism (GetPrismPolygon (polygon), direction, 100.0, true));
+					bodies.push (JSM.GeneratePrism (GetPrismPolygon (polygon), direction, height, true, curveAngle));
 				} else if (polygon.ContourCount () > 1) {
-					bodies.push (JSM.GeneratePrismWithHole (GetPrismPolygon (polygon), direction, 100.0, true));
+					bodies.push (JSM.GeneratePrismWithHole (GetPrismPolygon (polygon), direction, height, true, curveAngle));
 				}
 			}
 			return bodies;
 		};
 		
-		function GetCoordinateArrays (path)
+		JSM.GenerateText = function (text, fontSpec)
 		{
-			var result = [];
-			var polygons = path.GetPolygons ();
-			var i, j, polygon, polygonArray, polygonVertex, resultArray;
-			for (i = 0; i < polygons.length; i++) {
-				polygon = polygons[i];
-				polygonArray = polygon.ToArray ();
-				resultArray = [];
-				for (j = 0; j < polygonArray.length; j++) {
-					polygonVertex = polygonArray[j];
-					if (polygonVertex === null) {
-						resultArray.push (null);
-					} else {
-						resultArray.push ([polygonVertex.x, polygonVertex.y]);
-					}
-				}
-				result.push (resultArray);
-			}
-			return result;
-		};		
-		
-		JSM.GenerateText = function (text, fontSpec, offsetX)
-		{
-			function CreatePathFromSpecification (commands, offsetX)
+			function CreatePathFromSpecification (commands, segmentation, offset, scale)
 			{
 				function Num (str)
 				{
@@ -159,7 +137,9 @@
 				}
 			
 				var path = new JSM.Path2D ({
-					segmentation : 10
+					segmentation : segmentation,
+					offset : offset,
+					scale : scale
 				});
 				
 				var parts = commands.split (' ');
@@ -171,11 +151,11 @@
 						continue;
 					}
 					if (current == 'm') {
-						path.MoveTo (Num (parts[index++]) + offsetX, Num (parts[index++]));
+						path.MoveTo (Num (parts[index++]), Num (parts[index++]));
 					} else if (current == 'l') {
-						path.LineTo (Num (parts[index++]) + offsetX, Num (parts[index++]));
+						path.LineTo (Num (parts[index++]), Num (parts[index++]));
 					} else if (current == 'b') {
-						path.CubicBezierTo (Num (parts[index++]) + offsetX, Num (parts[index++]), Num (parts[index++]) + offsetX, Num (parts[index++]), Num (parts[index++]) + offsetX, Num (parts[index++]));
+						path.CubicBezierTo (Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]));
 					} else if (current == 'z') {
 						path.Close ();
 					} else {
@@ -185,10 +165,10 @@
 				return path;
 			};
 
-			function GenerateCharacterBodies (character, fontSpec, offsetX, model)
+			function GenerateCharacterBodies (character, fontSpec, segmentation, offset, scale, height, model)
 			{
-				var path = CreatePathFromSpecification (fontSpec, offsetX);
-				var bodies = JSM.GeneratePrismsFromPath2D (path);
+				var path = CreatePathFromSpecification (fontSpec, segmentation, offset, scale);
+				var bodies = JSM.GeneratePrismsFromPath2D (path, height, 160 * JSM.DegRad);
 				var i, body;
 				for (i = 0; i < bodies.length; i++) {
 					body = bodies[i];
@@ -197,15 +177,18 @@
 			}
 			
 			var model = new JSM.Model ();
-			var offsetX = 0.0;
+			var offset = new JSM.Vector2D (0.0, 0.0);
+			var scale = new JSM.Coord2D (0.01, 0.01);
+			var segmentation = 10;
+			var height = 1;
 			var i, character;
 			for (i = 0; i < text.length; i++) {
 				character = text[i];
 				if (fontSpec.glyphs[character] === undefined) {
 					continue;
 				}
-				GenerateCharacterBodies (character, fontSpec.glyphs[character]['o'], offsetX, model);
-				offsetX += fontSpec.glyphs[character]['ha'];
+				GenerateCharacterBodies (character, fontSpec.glyphs[character]['o'], segmentation, offset, scale, height, model);
+				offset.x += fontSpec.glyphs[character]['ha'] * scale.x;
 			}
 			return model;
 		};
@@ -215,9 +198,7 @@
 			var viewerSettings = {
 				cameraEyePosition : [-2.0, -1.5, 1.0],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1],
-				nearClippingPlane : 10,
-				farClippingPlane : 100000
+				cameraUpVector : [0, 0, 1]
 			};
 
 			var viewer = new JSM.ThreeViewer ();

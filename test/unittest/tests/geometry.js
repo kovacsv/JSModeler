@@ -2201,5 +2201,68 @@ pathSuite.AddTest ('PathHoleTest3', function (test)
 	test.Assert (path.GetPolygon (1).VertexCount () == 3);
 });
 
+pathSuite.AddTest ('PathOffsetTest', function (test)
+{
+	var path = new JSM.Path2D ({
+		offset : new JSM.Vector2D (2.0, 3.0)
+	});
+	
+	test.Assert (path.PolygonCount () == 0);
+	path.MoveTo (0, 0);
+	path.LineTo (1, 0);
+	path.LineTo (0, 1);
+	
+	test.Assert (path.PolygonCount () == 0);
+	path.Close ();
+	test.Assert (path.PolygonCount () == 1);
+	test.Assert (path.GetPolygon (0).ContourCount () == 1);
+	test.Assert (path.GetPolygon (0).VertexCount () == 3);
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (0).IsEqual (new JSM.Coord2D (2, 3)));
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (1).IsEqual (new JSM.Coord2D (3, 3)));
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (2).IsEqual (new JSM.Coord2D (2, 4)));
+});
+
+pathSuite.AddTest ('PathScaleTest', function (test)
+{
+	var path = new JSM.Path2D ({
+		scale : new JSM.Coord2D (2.0, 3.0)
+	});
+	
+	test.Assert (path.PolygonCount () == 0);
+	path.MoveTo (0, 0);
+	path.LineTo (1, 0);
+	path.LineTo (0, 1);
+	
+	test.Assert (path.PolygonCount () == 0);
+	path.Close ();
+	test.Assert (path.PolygonCount () == 1);
+	test.Assert (path.GetPolygon (0).ContourCount () == 1);
+	test.Assert (path.GetPolygon (0).VertexCount () == 3);
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (0).IsEqual (new JSM.Coord2D (0, 0)));
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (1).IsEqual (new JSM.Coord2D (2, 0)));
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (2).IsEqual (new JSM.Coord2D (0, 3)));
+});
+
+pathSuite.AddTest ('PathOffsetScaleTest', function (test)
+{
+	var path = new JSM.Path2D ({
+		offset : new JSM.Vector2D (2.0, 3.0),
+		scale : new JSM.Coord2D (2.0, 3.0)
+	});
+	
+	test.Assert (path.PolygonCount () == 0);
+	path.MoveTo (0, 0);
+	path.LineTo (1, 0);
+	path.LineTo (0, 1);
+	
+	test.Assert (path.PolygonCount () == 0);
+	path.Close ();
+	test.Assert (path.PolygonCount () == 1);
+	test.Assert (path.GetPolygon (0).ContourCount () == 1);
+	test.Assert (path.GetPolygon (0).VertexCount () == 3);
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (0).IsEqual (new JSM.Coord2D (2, 3)));
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (1).IsEqual (new JSM.Coord2D (4, 3)));
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (2).IsEqual (new JSM.Coord2D (2, 6)));
+});
 
 }

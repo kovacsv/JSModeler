@@ -7,7 +7,9 @@
 JSM.Path2D = function (settings)
 {
 	this.settings = {
-		segmentation : 10
+		segmentation : 10,
+		offset : new JSM.Vector2D (0.0, 0.0),
+		scale : new JSM.Coord2D (1.0, 1.0)
 	};
 	JSM.CopyObjectProperties (settings, this.settings, true);
 	
@@ -192,7 +194,9 @@ JSM.Path2D.prototype.GetCurrentPolygon = function ()
 JSM.Path2D.prototype.AddPolygonPoint = function (x, y)
 {
 	var polygon = this.GetCurrentPolygon ();
-	polygon.AddVertex (x, y);
+	var polygonX = this.settings.offset.x + x * this.settings.scale.x;
+	var polygonY = this.settings.offset.y + y * this.settings.scale.y;
+	polygon.AddVertex (polygonX, polygonY);
 	this.position.Set (x, y);
 	this.positionAdded = true;
 };
