@@ -94,38 +94,6 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		JSM.GeneratePrismsFromPath2D = function (path)
-		{
-			function GetPrismPolygon (polygonArray)
-			{
-				var result = [];
-				var i, vertex;
-				for (i = 0; i < polygonArray.length; i++) {
-					vertex = polygonArray[i];
-					if (vertex === null) {
-						result.push (null);
-					} else {
-						result.push (new JSM.Coord (vertex.x, vertex.y, 0.0));
-					}
-				}
-				return result;
-			}
-		
-			var bodies = [];
-			var polygons = path.GetPolygons ();
-			var i, polygon;
-			for (i = 0; i < polygons.length; i++) {
-				polygon = polygons[i];
-				var direction = new JSM.Vector (0.0, 0.0, 1.0);
-				if (polygon.ContourCount () === 1) {
-					bodies.push (JSM.GeneratePrism (GetPrismPolygon (polygon.ToArray ()), direction, 100.0, true));
-				} else if (polygon.ContourCount () > 1) {
-					bodies.push (JSM.GeneratePrismWithHole (GetPrismPolygon (polygon.ToArray ()), direction, 100.0, true));
-				}
-			}
-			return bodies;
-		};
-		
 		function GetCoordinateArrays (path)
 		{
 			var result = [];
@@ -194,7 +162,7 @@
 			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
 			
-			var bodies = JSM.GeneratePrismsFromPath2D (path);
+			var bodies = JSM.GeneratePrismsFromPath2D (path, 100, true, 160 * JSM.DegRad);
 			var i, meshes;
 			for (i = 0; i < bodies.length; i++) {
 				meshes = JSM.ConvertBodyToThreeMeshes (bodies[i]);

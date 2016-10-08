@@ -204,7 +204,7 @@ JSM.CalculateBodyVertexNormals = function (body)
 * Function: CalculatePolygonCurveGroups
 * Description: Calculates the curve groups for a given polygon.
 * Parameters:
-*	polygon {Polygon or Polygon2D} the polygon
+*	polygon {Polygon|Polygon2D} the polygon
 *	curveAngle {number} the curve angle
 * Returns:
 *	{integer[*]} the curve groups

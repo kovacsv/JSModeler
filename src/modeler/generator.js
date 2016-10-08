@@ -1028,6 +1028,51 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 };
 
 /**
+* Function: GeneratePrismsFromPath2D
+* Description: Generates a prism from the given path.
+* Parameters:
+*	path {Path2D} the path
+*	height {number} the height of the prism
+*	width {number} the width of the prism sides
+*	withTopAndBottom {boolean} generate top and bottom polygons
+* Returns:
+*	{Body[*]} the result
+*/
+JSM.GeneratePrismsFromPath2D = function (path, height, withTopAndBottom, curveAngle)
+{
+	function GetPrismPolygon (polygon)
+	{
+		var result = [];
+		var i, j, contour, vertex;
+		for (i = 0; i < polygon.ContourCount (); i++) {
+			contour = polygon.GetContour (i);
+			for (j = 0; j < contour.VertexCount (); j++) {
+				vertex = contour.GetVertex (j);
+				result.push (new JSM.Coord (vertex.x, vertex.y, 0.0));
+			}
+			if (i < polygon.ContourCount () - 1) {
+				result.push (null);
+			}
+		}
+		return result;
+	}
+
+	var bodies = [];
+	var polygons = path.GetPolygons ();
+	var direction = new JSM.Vector (0.0, 0.0, 1.0);
+	var i, polygon;
+	for (i = 0; i < polygons.length; i++) {
+		polygon = polygons[i];
+		if (polygon.ContourCount () === 1) {
+			bodies.push (JSM.GeneratePrism (GetPrismPolygon (polygon), direction, height, withTopAndBottom, curveAngle));
+		} else if (polygon.ContourCount () > 1) {
+			bodies.push (JSM.GeneratePrismWithHole (GetPrismPolygon (polygon), direction, height, withTopAndBottom, curveAngle));
+		}
+	}
+	return bodies;
+};
+
+/**
 * Function: GeneratePrismShell
 * Description: Generates a prism with the given width of sides.
 * Parameters:

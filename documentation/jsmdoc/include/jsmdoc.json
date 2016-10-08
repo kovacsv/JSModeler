@@ -122,6 +122,13 @@
 					"returns" : [
 						["boolean", "the result"]
 					]
+				},
+				"LoadJsonFile" : {
+					"description" : "Loads a json file, and calls a callback with the parsed json.",
+					"parameters" : [
+						["fileName", "string", "the name of the json"],
+						["onReady", "function", "the callback"]
+					]
 				}
 			},
 			"classes" : {
@@ -1969,6 +1976,15 @@
 						"ReverseVertices" : {
 							"description" : "Reverses the orientation of the vertices."
 						},
+						"GetVertexAngle" : {
+							"description" : "Returns the angle of the given vertex.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["number", "the result"]
+							]
+						},
 						"GetSignedArea" : {
 							"description" : "Calculates the signed area of the polygon.",
 							"returns" : [
@@ -2651,6 +2667,76 @@
 							]
 						}
 					}
+				},
+				"Path2D" : {
+					"description" : "Helper class for building polygons",
+					"parameters" : [
+						["settings", "object", "path settings"]
+					],
+					"functions" : {
+						"MoveTo" : {
+							"description" : "Moves the current position to the given position.",
+							"parameters" : [
+								["x", "number", "new x position"],
+								["y", "number", "new y position"]
+							]
+						},
+						"LineTo" : {
+							"description" : "Draws a line from current position to the given position.",
+							"parameters" : [
+								["x", "number", "line end x position"],
+								["y", "number", "line end y position"]
+							]
+						},
+						"CubicBezierTo" : {
+							"description" : "Draws a cubic bezier curve from the current position to the given position.",
+							"parameters" : [
+								["x", "number", "curve end x position"],
+								["y", "number", "curve end y position"],
+								["cp1x", "number", "first control point x position"],
+								["cp1y", "number", "first control point y position"],
+								["cp2x", "number", "second control point x position"],
+								["cp2y", "number", "second control point y position"]
+							]
+						},
+						"Close" : {
+							"description" : "Closes the current polygon."
+						},
+						"PolygonCount" : {
+							"description" : "Returns the polygon count of the path.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetPolygon" : {
+							"description" : "Returns the polygons from the path at the given index.",
+							"parameters" : [
+								["index", "integer", "the polygon index"]
+							],
+							"returns" : [
+								["ContourPolygon2D", "the result"]
+							]
+						},
+						"GetPolygons" : {
+							"description" : "Returns the polygons from the path.",
+							"returns" : [
+								["ContourPolygon2D[*]", "the result"]
+							]
+						},
+						"GetCurrentPolygon" : {
+							"description" : "Returns the current polygon.",
+							"returns" : [
+								["Polygon2D", "the result"]
+							]
+						},
+						"AddPolygonPoint" : {
+							"description" : "Adds a point to the current polygon.",
+							"parameters" : [
+								["x", "number", "the x position of the point"],
+								["y", "number", "the y position of the point"]
+							]
+						}
+					}
 				}
 			},
 			"enums" : {
@@ -2911,7 +2997,7 @@
 				"CalculatePolygonCurveGroups" : {
 					"description" : "Calculates the curve groups for a given polygon.",
 					"parameters" : [
-						["polygon", "Polygon", "the polygon"],
+						["polygon", "Polygon|Polygon2D", "the polygon"],
 						["curveAngle", "number", "the curve angle"]
 					],
 					"returns" : [
@@ -3221,6 +3307,29 @@
 						["Body", "the result"]
 					]
 				},
+				"GeneratePrismGeometry" : {
+					"description" : "Generates a prism defined by bottom and top vertices polygon.",
+					"parameters" : [
+						["bottomVertices", "Coord[*]", "bottom vertices"],
+						["topVertices", "Coord[*]", "top vertices"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GeneratePrismFromPolygon" : {
+					"description" : "Generates a prism defined by a polygon.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the base polygon"],
+						["height", "number", "the height of the prism"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
+						["curveAngle", "number", "if not null, defines the curve angle of the prism"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
 				"GeneratePrism" : {
 					"description" : "Generates a prism defined by a polygon. The base polygon is an array of coordinates which will be offseted in the given direction.",
 					"parameters" : [
@@ -3245,6 +3354,18 @@
 					],
 					"returns" : [
 						["Body", "the result"]
+					]
+				},
+				"GeneratePrismsFromPath2D" : {
+					"description" : "Generates a prism from the given path.",
+					"parameters" : [
+						["path", "Path2D", "the path"],
+						["height", "number", "the height of the prism"],
+						["width", "number", "the width of the prism sides"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+					],
+					"returns" : [
+						["Body[*]", "the result"]
 					]
 				},
 				"GeneratePrismShell" : {
