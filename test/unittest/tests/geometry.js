@@ -2211,9 +2211,8 @@ pathSuite.AddTest ('PathOffsetTest', function (test)
 	path.MoveTo (0, 0);
 	path.LineTo (1, 0);
 	path.LineTo (0, 1);
-	
-	test.Assert (path.PolygonCount () == 0);
 	path.Close ();
+	
 	test.Assert (path.PolygonCount () == 1);
 	test.Assert (path.GetPolygon (0).ContourCount () == 1);
 	test.Assert (path.GetPolygon (0).VertexCount () == 3);
@@ -2232,9 +2231,8 @@ pathSuite.AddTest ('PathScaleTest', function (test)
 	path.MoveTo (0, 0);
 	path.LineTo (1, 0);
 	path.LineTo (0, 1);
-	
-	test.Assert (path.PolygonCount () == 0);
 	path.Close ();
+	
 	test.Assert (path.PolygonCount () == 1);
 	test.Assert (path.GetPolygon (0).ContourCount () == 1);
 	test.Assert (path.GetPolygon (0).VertexCount () == 3);
@@ -2254,6 +2252,28 @@ pathSuite.AddTest ('PathOffsetScaleTest', function (test)
 	path.MoveTo (0, 0);
 	path.LineTo (1, 0);
 	path.LineTo (0, 1);
+	path.Close ();
+	
+	test.Assert (path.PolygonCount () == 1);
+	test.Assert (path.GetPolygon (0).ContourCount () == 1);
+	test.Assert (path.GetPolygon (0).VertexCount () == 3);
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (0).IsEqual (new JSM.Coord2D (2, 3)));
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (1).IsEqual (new JSM.Coord2D (4, 3)));
+	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (2).IsEqual (new JSM.Coord2D (2, 6)));
+});
+
+pathSuite.AddTest ('PathRemoveEqualBeginEndVertices', function (test)
+{
+	var path = new JSM.Path2D ({
+		offset : new JSM.Vector2D (2.0, 3.0),
+		scale : new JSM.Coord2D (2.0, 3.0)
+	});
+	
+	test.Assert (path.PolygonCount () == 0);
+	path.MoveTo (0, 0);
+	path.LineTo (1, 0);
+	path.LineTo (0, 1);
+	path.LineTo (0, 0);
 	
 	test.Assert (path.PolygonCount () == 0);
 	path.Close ();
@@ -2264,5 +2284,6 @@ pathSuite.AddTest ('PathOffsetScaleTest', function (test)
 	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (1).IsEqual (new JSM.Coord2D (4, 3)));
 	test.Assert (path.GetPolygon (0).GetContour (0).GetVertex (2).IsEqual (new JSM.Coord2D (2, 6)));
 });
+
 
 }
