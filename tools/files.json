@@ -81,6 +81,9 @@
 	"svgToModelExtensionFileList" : [
 		"../src/extensions/svgtomodel/svgtomodel.js"
 	],
+	"textGeneratorExtensionFileList" : [
+		"../src/extensions/textgenerator/textgenerator.js"
+	],
 	"geojsonToModelExtensionFileList" : [
 		"../src/extensions/geojsontomodel/geojsontomodel.js"
 	],
