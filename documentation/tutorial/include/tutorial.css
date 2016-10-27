@@ -10,10 +10,11 @@ html, body
 
 div.header
 {
-	color : #ffffff;
-	background : #222222;
+	color : #222222;
+	background : #f2f2f2;
 	padding : 10px;
 	margin-bottom : 10px;
+	border-bottom : 1px solid #e2e2e2;
 }
 
 div.title
@@ -36,7 +37,7 @@ div.frame
 
 a.link
 {
-	color : #888888;
+	color : #225588;
 	background : transparent;
 	text-decoration : none;
 }
