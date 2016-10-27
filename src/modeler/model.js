@@ -23,6 +23,21 @@ JSM.Model.prototype.AddBody = function (body)
 };
 
 /**
+* Function: Model.AddBodies
+* Description: Adds bodies to the model.
+* Parameters:
+*	bodies {Body[*]} the body
+*/
+JSM.Model.prototype.AddBodies = function (bodies)
+{
+	var i, body;
+	for (i = 0; i < bodies.length; i++) {
+		body = bodies[i];
+		this.AddBody (body);
+	}
+};
+
+/**
 * Function: Model.GetBody
 * Description: Returns the stored body with the given index.
 * Parameters:

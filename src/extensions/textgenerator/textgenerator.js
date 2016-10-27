@@ -52,7 +52,7 @@ JSM.GenerateText = function (text, fontSpec)
 	var scale = new JSM.Coord2D (0.01, 0.01);
 	var segmentation = 10;
 	var height = 1;
-	var i, j, character, glyphs, path, bodies;
+	var i, character, glyphs, path, bodies;
 	for (i = 0; i < text.length; i++) {
 		character = text[i];
 		glyphs = fontSpec.glyphs[character];
@@ -61,9 +61,7 @@ JSM.GenerateText = function (text, fontSpec)
 		}
 		path = CreatePathFromSpecification (glyphs.o, segmentation, offset, scale);
 		bodies = JSM.GeneratePrismsFromPath2D (path, height, true, 160 * JSM.DegRad);
-		for (j = 0; j < bodies.length; j++) {
-			model.AddBody (bodies[j]);
-		}
+		model.AddBodies (bodies);
 		offset.x += glyphs.ha * scale.x;
 	}
 	return model;

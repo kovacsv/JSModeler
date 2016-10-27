@@ -106,7 +106,7 @@
 			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
 			
-			JSM.LoadJsonFile ('firasans_font.json', function (jsonData) {
+			JSM.LoadJsonFile ('font/firasans.json', function (jsonData) {
 				var model = JSM.GenerateText ('hello!', jsonData);
 				var meshes = JSM.ConvertModelToThreeMeshes (model);
 				viewer.AddMeshes (meshes);
