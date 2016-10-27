@@ -36,11 +36,14 @@ JSM.GenerateText = function (text, fontSpec, fontScale, fontHeight, fontSegmenta
 				continue;
 			}
 			if (current == 'm') {
-				path.MoveTo (Num (parts[index++]), Num (parts[index++]));
+				path.MoveTo (Num (parts[index + 0]), Num (parts[index + 1]));
+				index += 2;
 			} else if (current == 'l') {
-				path.LineTo (Num (parts[index++]), Num (parts[index++]));
+				path.LineTo (Num (parts[index + 0]), Num (parts[index + 1]));
+				index += 2;
 			} else if (current == 'b') {
-				path.CubicBezierTo (Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]), Num (parts[index++]));
+				path.CubicBezierTo (Num (parts[index + 0]), Num (parts[index + 1]), Num (parts[index + 2]), Num (parts[index + 3]), Num (parts[index + 4]), Num (parts[index + 5]));
+				index += 6;
 			} else if (current == 'z') {
 				path.Close ();
 			} else {
