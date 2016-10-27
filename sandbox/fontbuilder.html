@@ -105,9 +105,8 @@
 			var viewer = new JSM.ThreeViewer ();
 			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
-			
 			JSM.LoadJsonFile ('font/firasans.json', function (jsonData) {
-				var model = JSM.GenerateText ('hello!', jsonData);
+				var model = JSM.GenerateText ('hello!', jsonData, 0.01, 1, 10);
 				var meshes = JSM.ConvertModelToThreeMeshes (model);
 				viewer.AddMeshes (meshes);
 				viewer.FitInWindow ();

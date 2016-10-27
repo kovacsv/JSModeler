@@ -5,11 +5,14 @@
 *	specification object created with facetype.js.
 * Parameters:
 *	text {string} the text
-*	fontSpec {object} the font specification object
+*	fontSpec {object} the font specification object generated with facetype.js
+*	fontScale {number} the scale of the generated model
+*	fontHeight {number} the height of the generated model
+*	fontSegmentation {integer} the segmentation of font glyphs
 * Returns:
 *	{Model} the result
 */
-JSM.GenerateText = function (text, fontSpec)
+JSM.GenerateText = function (text, fontSpec, fontScale, fontHeight, fontSegmentation)
 {
 	function CreatePathFromSpecification (commands, segmentation, offset, scale)
 	{
@@ -49,9 +52,7 @@ JSM.GenerateText = function (text, fontSpec)
 
 	var model = new JSM.Model ();
 	var offset = new JSM.Vector2D (0.0, 0.0);
-	var scale = new JSM.Coord2D (0.01, 0.01);
-	var segmentation = 10;
-	var height = 1;
+	var scale = new JSM.Coord2D (fontScale, fontScale);
 	var i, character, glyphs, path, bodies;
 	for (i = 0; i < text.length; i++) {
 		character = text[i];
@@ -59,8 +60,8 @@ JSM.GenerateText = function (text, fontSpec)
 		if (glyphs === undefined) {
 			continue;
 		}
-		path = CreatePathFromSpecification (glyphs.o, segmentation, offset, scale);
-		bodies = JSM.GeneratePrismsFromPath2D (path, height, true, 160 * JSM.DegRad);
+		path = CreatePathFromSpecification (glyphs.o, fontSegmentation, offset, scale);
+		bodies = JSM.GeneratePrismsFromPath2D (path, fontHeight, true, 160 * JSM.DegRad);
 		model.AddBodies (bodies);
 		offset.x += glyphs.ha * scale.x;
 	}
