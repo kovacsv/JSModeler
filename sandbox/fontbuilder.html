@@ -96,19 +96,19 @@
 	<script type="text/javascript">
 		function Load ()
 		{
-			var viewerSettings = {
-				cameraEyePosition : [-2.0, -1.5, 1.0],
-				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0, 0, 1]
-			};
+			var camera = new JSM.Camera (
+				new JSM.Coord (-2.0, -1.5, 1.0),
+				new JSM.Coord (0.0, 0.0, 0.0),
+				new JSM.Coord (0, 0, 1)
+			);
 
-			var viewer = new JSM.ThreeViewer ();
-			viewer.Start (document.getElementById ('example'), viewerSettings);
+			var viewer = new JSM.Viewer ();
+			viewer.Init (document.getElementById ('example'), camera);
 			
 			JSM.LoadJsonFile ('font/firasans.json', function (jsonData) {
 				var model = JSM.GenerateText ('hello!', jsonData, 0.01, 1, 10);
-				var meshes = JSM.ConvertModelToThreeMeshes (model);
-				viewer.AddMeshes (meshes);
+				var bodies = JSM.ConvertModelToRenderBodies (model);
+				viewer.AddBodies (bodies);
 				viewer.FitInWindow ();
 				viewer.Draw ();
 			});
