@@ -4381,6 +4381,12 @@
 								["integer", "the index of the newly added body"]
 							]
 						},
+						"AddBodies" : {
+							"description" : "Adds bodies to the model.",
+							"parameters" : [
+								["bodies", "Body[*]", "the body"]
+							]
+						},
 						"GetBody" : {
 							"description" : "Returns the stored body with the given index.",
 							"parameters" : [
