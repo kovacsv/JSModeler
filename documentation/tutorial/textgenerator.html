@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	 "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="include/tutorial.css">
+	<script type="text/javascript" src="../../build/lib/pathseg.js"></script>
+	<script type="text/javascript" src="../../build/lib/three.min.js"></script>
+	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
+	<script type="text/javascript" src="../../build/jsmodeler.ext.textgenerator.js"></script>
+	<script type="text/javascript" src="../../build/jsmodeler.ext.three.js"></script>
+	<title>JSModeler TextGenerator</title>
+	<script type="text/javascript">
+		function Load (fontSpecification)
+		{
+			function GenerateText (viewer, text, fontSpecification)
+			{
+				var model = JSM.GenerateText (text, fontSpecification, 0.01, 1.5, 10);
+				var meshes = JSM.ConvertModelToThreeMeshes (model);
+				viewer.RemoveMeshes ();
+				viewer.AddMeshes (meshes);
+				viewer.FitInWindow ();
+				viewer.Draw ();			
+			}
+		
+			var viewerSettings = {
+				cameraEyePosition : [-2.0, 1.0, 1.5],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0.0, 1.0, 0.0]
+			};
+
+			var viewer = new JSM.ThreeViewer ();
+			viewer.Start (document.getElementById ('example'), viewerSettings);
+
+			var textInput = document.getElementById ('text');
+			var generateTimeout = null;
+			GenerateText (viewer, textInput.value, fontSpecification);
+			textInput.onkeyup = function () {
+				if (generateTimeout !== null) {
+					clearTimeout (generateTimeout);
+					generateTimeout = null;
+				}
+				generateTimeout = setTimeout (function () {
+					GenerateText (viewer, textInput.value, fontSpecification);
+				}, 1000)
+			};
+		}
+	
+	    window.onload = function ()
+		{
+			JSM.LoadJsonFile ('font/firasans.json', function (jsonData) {
+				Load (jsonData);
+			});
+		}
+	</script>
+
+</head>
+
+<body>
+	<div class="header">
+		<div class="title">JSModeler TextGenerator Example</div>
+		<div class="subtitle"><a class="link" href="https://github.com/kovacsv/JSModeler">https://github.com/kovacsv/JSModeler</a></div>
+	</div>
+	<div class="frame">
+		<center><input id="text" class="large" type="text" value="Hello!"></input></center>
+		<canvas class="demo" id="example" width="800" height="400"></canvas>
+	</div>
+
+</body>
+
+</html>

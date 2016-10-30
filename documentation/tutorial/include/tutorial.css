@@ -35,6 +35,17 @@ div.frame
 	margin : 0px auto;
 }
 
+input.large
+{
+	color : #222222;
+	font-size : 17px;
+	text-align : center;
+	width : 400px;
+	border : 1px solid #cccccc;
+	margin-bottom : 10px;
+	padding : 3px;
+}
+
 a.link
 {
 	color : #225588;
