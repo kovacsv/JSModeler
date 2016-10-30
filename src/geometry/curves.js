@@ -1,32 +1,4 @@
 /**
-* Function: BernsteinPolynomial
-* Description: Calculates the value of the Bernstein polynomial.
-* Parameters:
-*	k {integer} the start index
-*	n {integer} the end index
-*	x {number} the value
-* Returns:
-*	{number} the result
-*/
-JSM.BernsteinPolynomial = function (k, n, x)
-{
-	function BinomialCoefficient (n, k)
-	{
-		var result = 1.0;
-		var min = JSM.Minimum (k, n - k);
-		var i;
-		for (i = 0; i < min; i++) {
-			result = result * (n - i);
-			result = result / (i + 1);
-		}
-		return result;
-	}
-
-	var coefficient = BinomialCoefficient (n, k);
-	return coefficient * Math.pow (x, k) * Math.pow (1.0 - x, n - k);
-};
-
-/**
 * Function: GenerateCubicBezierCurve
 * Description: Generates a bezier curve from the given points.
 * Parameters:
@@ -60,6 +32,34 @@ JSM.GenerateCubicBezierCurve = function (p0, p1, p2, p3, segmentation)
 		result.push (coord);
 	}
 	return result;
+};
+
+/**
+* Function: BernsteinPolynomial
+* Description: Calculates the value of the Bernstein polynomial.
+* Parameters:
+*	k {integer} the start index
+*	n {integer} the end index
+*	x {number} the value
+* Returns:
+*	{number} the result
+*/
+JSM.BernsteinPolynomial = function (k, n, x)
+{
+	function BinomialCoefficient (n, k)
+	{
+		var result = 1.0;
+		var min = JSM.Minimum (k, n - k);
+		var i;
+		for (i = 0; i < min; i++) {
+			result = result * (n - i);
+			result = result / (i + 1);
+		}
+		return result;
+	}
+
+	var coefficient = BinomialCoefficient (n, k);
+	return coefficient * Math.pow (x, k) * Math.pow (1.0 - x, n - k);
 };
 
 /**
