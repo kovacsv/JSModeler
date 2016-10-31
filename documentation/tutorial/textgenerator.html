@@ -45,6 +45,7 @@
 				}
 				generateTimeout = setTimeout (function () {
 					GenerateText (viewer, textInput.value, fontSpecification);
+					generateTimeout = null;
 				}, 1000)
 			};
 		}
