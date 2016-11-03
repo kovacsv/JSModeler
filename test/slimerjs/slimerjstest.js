@@ -431,7 +431,6 @@ suite.AddTest ('TicTacToe', function (test, onReady) {
 	});
 });
 
-
 suite.AddTest ('Tutorial_Minimal', function (test, onReady) {
 	test.Open ('/documentation/tutorial/minimal.html', function () {
 		test.GenerateImage ('OnLoad');
@@ -442,6 +441,15 @@ suite.AddTest ('Tutorial_Minimal', function (test, onReady) {
 suite.AddTest ('Tutorial_SVGTo3D', function (test, onReady) {
 	test.Open ('/documentation/tutorial/svgto3d.html', function () {
 		test.GenerateImage ('OnLoad');
+		onReady ();
+	});
+});
+
+suite.AddTest ('Tutorial_TextGenerator', function (test, onReady) {
+	test.Open ('/documentation/tutorial/textgenerator.html', function () {
+		test.GenerateImage ('OnLoad');
+		test.WriteToForm (560, 80, 'Viktor!', 1500);
+		test.GenerateImage ('Modified');
 		onReady ();
 	});
 });
