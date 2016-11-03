@@ -1078,17 +1078,6 @@
 						["nodeFound", "function", "the callback function"]
 					]
 				},
-				"BernsteinPolynomial" : {
-					"description" : "Calculates the value of the Bernstein polynomial.",
-					"parameters" : [
-						["k", "integer", "the start index"],
-						["n", "integer", "the end index"],
-						["x", "number", "the value"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
 				"GenerateCubicBezierCurve" : {
 					"description" : "Generates a bezier curve from the given points.",
 					"parameters" : [
@@ -1100,6 +1089,17 @@
 					],
 					"returns" : [
 						["Coord2D[]", "the result"]
+					]
+				},
+				"BernsteinPolynomial" : {
+					"description" : "Calculates the value of the Bernstein polynomial.",
+					"parameters" : [
+						["k", "integer", "the start index"],
+						["n", "integer", "the end index"],
+						["x", "number", "the value"]
+					],
+					"returns" : [
+						["number", "the result"]
 					]
 				},
 				"GenerateBezierCurve" : {
