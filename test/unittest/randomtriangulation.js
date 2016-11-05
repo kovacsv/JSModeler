@@ -81,7 +81,6 @@ unitTest.AddSourceFile ('../../src/extras/csg.js');
 unitTest.AddSourceFile ('../../src/extras/surfaces.js');
 unitTest.AddSourceFile ('../../src/extensions/svgtomodel/svgtomodel.js');
 unitTest.AddSourceFile ('../../src/extensions/textgenerator/textgenerator.js');
-unitTest.AddSourceFile ('../../src/extensions/geojsontomodel/geojsontomodel.js');
 unitTest.AddSourceFile ('../../src/extensions/threeviewer/threeconverter.js');
 unitTest.AddSourceFile ('../../src/extensions/threeviewer/threeviewer.js');
 // JSModeler includes end

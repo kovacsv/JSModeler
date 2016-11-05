@@ -181,9 +181,6 @@ class JSMBuilder:
 		if not BuildFileList (self.files['textGeneratorExtensionFileList'], 'jsmodeler.ext.textgenerator', version, self.errors):
 			return False
 
-		if not BuildFileList (self.files['geojsonToModelExtensionFileList'], 'jsmodeler.ext.geojsontomodel', version, self.errors):
-			return False
-
 		if not BuildFileList (self.files['threeExtensionFileList'], 'jsmodeler.ext.three', version, self.errors):
 			return False
 

@@ -84,9 +84,6 @@
 	"textGeneratorExtensionFileList" : [
 		"../src/extensions/textgenerator/textgenerator.js"
 	],
-	"geojsonToModelExtensionFileList" : [
-		"../src/extensions/geojsontomodel/geojsontomodel.js"
-	],
 	"threeExtensionFileList" : [
 		"../src/extensions/threeviewer/threeconverter.js",
 		"../src/extensions/threeviewer/threeviewer.js"
