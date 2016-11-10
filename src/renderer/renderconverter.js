@@ -109,9 +109,10 @@ JSM.ConvertBodyToRenderBody = function (body, materials, parameters)
 	return renderBody;
 };
 
-JSM.ConvertModelToRenderBodies = function (model, materials, parameters)
+JSM.ConvertModelToRenderBodies = function (model, parameters)
 {
 	var bodies = [];
+	var materials = model.GetMaterialSet ();
 	var i, body, renderBody;
 	for (i = 0; i < model.BodyCount (); i++) {
 		body = model.GetBody (i);

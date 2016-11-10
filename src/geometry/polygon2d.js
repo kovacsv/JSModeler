@@ -95,6 +95,17 @@ JSM.Polygon2D.prototype.GetVertex = function (index)
 };
 
 /**
+* Function: Polygon2D.RemoveVertex
+* Description: Removes a vertex from the polygon.
+* Parameters:
+*	index {integer} the index of the vertex
+*/
+JSM.Polygon2D.prototype.RemoveVertex = function (index)
+{
+	this.vertices.splice (index, 1);
+};
+
+/**
 * Function: Polygon2D.VertexCount
 * Description: Returns the vertex count of the polygon.
 * Returns:
@@ -162,6 +173,34 @@ JSM.Polygon2D.prototype.ShiftVertices = function (count)
 {
 	JSM.ShiftArray (this.vertices, count);
 	this.ClearCache ();
+};
+
+/**
+* Function: Polygon2D.ReverseVertices
+* Description: Reverses the orientation of the vertices.
+*/
+JSM.Polygon2D.prototype.ReverseVertices = function ()
+{
+	this.vertices.reverse ();
+	this.ClearCache ();
+};
+
+/**
+* Function: Polygon2D.GetVertexAngle
+* Description: Returns the angle of the given vertex.
+* Parameters:
+*	index {integer} the vertex index
+* Returns:
+*	{number} the result
+*/
+JSM.Polygon2D.prototype.GetVertexAngle = function (index)
+{
+	var prev = this.vertices[this.GetPrevVertex (index)];
+	var curr = this.vertices[index];
+	var next = this.vertices[this.GetNextVertex (index)];
+	var prevDir = JSM.CoordSub2D (prev, curr);
+	var nextDir = JSM.CoordSub2D (next, curr);
+	return prevDir.AngleTo (nextDir);
 };
 
 /**
@@ -682,6 +721,18 @@ JSM.ContourPolygon2D.prototype.VertexCount = function ()
 		vertexCount += this.contours[i].VertexCount ();
 	}
 	return vertexCount;
+};
+
+/**
+* Function: ContourPolygon2D.ReverseVertices
+* Description: Reverses the orientation of the vertices.
+*/
+JSM.ContourPolygon2D.prototype.ReverseVertices = function ()
+{
+	var i;
+	for (i = 0; i < this.contours.length; i++) {
+		this.contours[i].ReverseVertices ();
+	}
 };
 
 /**

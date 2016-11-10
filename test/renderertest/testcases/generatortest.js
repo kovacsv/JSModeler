@@ -11,7 +11,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/cube.png');
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -23,7 +23,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/sphere.png');	
 	
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -35,7 +35,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/triangulated_sphere.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -47,7 +47,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/cylinder.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -59,7 +59,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/pie.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -71,7 +71,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/cone.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -83,7 +83,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/cone2.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -105,7 +105,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/prism.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -119,7 +119,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		var body = JSM.GeneratePrism (circle, direction, 1.0, true, 160 * JSM.DegRad);
 
 		model.AddBody (body);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/curved_prism.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -174,7 +174,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		body1.OffsetToOrigo ();
 		
 		model.AddBody (body1);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/prism_with_hole.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -196,7 +196,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/prism_shell.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -208,7 +208,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/cylinder_shell.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -230,7 +230,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/line_shell.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -242,7 +242,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/torus.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -263,7 +263,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/poly_torus.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -286,7 +286,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/ruled.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -305,7 +305,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/revolved.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -324,7 +324,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/revolved2.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -347,7 +347,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/function_surface.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -370,7 +370,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/function_surface_solid.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -415,15 +415,13 @@ function AddGeneratorTests (canvasTester, viewer)
 			}
 		}
 
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/solids.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-
-		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (1, 1, 1);
 		body1.GetPolygon (1).SetMaterialIndex (0);	
@@ -452,15 +450,13 @@ function AddGeneratorTests (canvasTester, viewer)
 		model.AddBody (body2);
 		model.AddBody (body3);
 		model.AddBody (body4);
-		RenderModel (viewer, model, materials, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/subdivision.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-
-		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var body1 = JSM.GenerateCuboid (0.5, 1.0, 1.5);
 		body1.GetPolygon (1).SetMaterialIndex (0);	
@@ -489,15 +485,13 @@ function AddGeneratorTests (canvasTester, viewer)
 		model.AddBody (body2);
 		model.AddBody (body3);
 		model.AddBody (body4);
-		RenderModel (viewer, model, materials, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/subdivision2.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
 		var model = new JSM.Model ();
-
-		var materials = new JSM.Materials ();
-		materials.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
-		materials.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x993333, diffuse : 0x993333}));
+		model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
 
 		var basePolygon = [
 			new JSM.Coord (-0.5, -0.5, 0.0),
@@ -536,7 +530,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		model.AddBody (body2);
 		model.AddBody (body3);
 		model.AddBody (body4);
-		RenderModel (viewer, model, materials, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/subdivision3.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -554,7 +548,7 @@ function AddGeneratorTests (canvasTester, viewer)
 		
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/cut_body.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -602,7 +596,7 @@ function AddGeneratorTests (canvasTester, viewer)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/convex_hull.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -615,7 +609,7 @@ function AddGeneratorTests (canvasTester, viewer)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/lego.png');	
 
 	canvasTester.AddTest (generatorSuite, function (renderFinished) {
@@ -662,7 +656,7 @@ function AddGeneratorTests (canvasTester, viewer)
 
 		model.AddBody (body1);
 		model.AddBody (body2);
-		RenderModel (viewer, model, null, renderFinished);
+		RenderModel (viewer, model, renderFinished);
 	}, 'references/generator/prism_with_hole_curved.png');	
 
 }

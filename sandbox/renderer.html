@@ -6,7 +6,7 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
+	<script type="text/javascript" src="../build/lib/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
@@ -35,12 +35,15 @@
 	<script type="text/javascript" src="../src/geometry/triangulation.js"></script>
 	<script type="text/javascript" src="../src/geometry/octree.js"></script>
 	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../src/geometry/curves.js"></script>
 	<script type="text/javascript" src="../src/geometry/utilities.js"></script>
 	<script type="text/javascript" src="../src/geometry/ray.js"></script>
-	<script type="text/javascript" src="../src/modeler/body.js"></script>
-	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/geometry/path.js"></script>
 	<script type="text/javascript" src="../src/modeler/color.js"></script>
 	<script type="text/javascript" src="../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../src/modeler/materialset.js"></script>
+	<script type="text/javascript" src="../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../src/modeler/model.js"></script>
 	<script type="text/javascript" src="../src/modeler/adjacencyinfo.js"></script>
 	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
@@ -81,8 +84,9 @@
 	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
 	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
-	<script type="text/javascript" src="../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../src/extras/surfaces.js"></script>
 	<script type="text/javascript" src="../src/extensions/svgtomodel/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/extensions/textgenerator/textgenerator.js"></script>
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeconverter.js"></script>
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeviewer.js"></script>
 <!-- JSModeler includes end -->
@@ -123,9 +127,9 @@
 			light.direction = JSM.CoordSub (camera.center, camera.eye).Normalize ();
 			renderer.AddLight (light);
 
-			var materials = new JSM.Materials ();
-			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
-			materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
+			var model = new JSM.Model ();
+			model.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
+			model.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 
 			var body1 = JSM.GenerateCuboid (1.0, 1.0, 1.0);
 			body1.GetPolygon (1).SetMaterialIndex (1);
@@ -145,19 +149,18 @@
 			var body5 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body5.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, 0.5)));
 
-			var model = new JSM.Model ();
 			model.AddBody (body1);
 			model.AddBody (body2);
 			model.AddBody (body3);
 			model.AddBody (body4);
 			model.AddBody (body5);
 
-			var renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
+			var renderBodies = JSM.ConvertModelToRenderBodies (model);
 			renderer.AddBodies (renderBodies);
 
 			var body6 = JSM.GenerateTorus (0.3, 0.05, 50, 50, 1);
 			body6.Transform (JSM.TranslationTransformation (new JSM.Vector (1.2, 0.5, -0.2)));
-			var newRenderBody = JSM.ConvertBodyToRenderBody (body6, materials);
+			var newRenderBody = JSM.ConvertBodyToRenderBody (body6, model.GetMaterialSet ());
 			renderer.AddBody (newRenderBody);
 
 			Render ();

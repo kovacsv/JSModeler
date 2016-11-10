@@ -742,7 +742,7 @@ generalSuite.AddTest ('ExplodeTest', function (test)
 	}
 	
 	var body = JSM.GenerateCuboid (1, 1, 1);
-	var materials = new JSM.Materials ();
+	var materials = new JSM.MaterialSet ();
 	materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 	materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 	body.GetPolygon (0).SetMaterialIndex (0);
@@ -811,7 +811,7 @@ generalSuite.AddTest ('ExplodeTest2', function (test)
 	}
 	
 	var body, result;
-	var materials = new JSM.Materials ();
+	var materials = new JSM.MaterialSet ();
 	materials.AddMaterial (new JSM.Material ({ambient : 0xff0000, diffuse : 0xff0000}));
 	materials.AddMaterial (new JSM.Material ({ambient : 0x00ff00, diffuse : 0x00ff00}));
 	
@@ -1005,7 +1005,7 @@ generalSuite.AddTest ('ExportTest', function (test)
 	model.AddBody (body1);
 	model.AddBody (body2);
 	
-	var materials = new JSM.Materials ();
+	var materials = new JSM.MaterialSet ();
 	materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 	materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 	
@@ -1089,6 +1089,15 @@ generalSuite.AddTest ('TriangulateWithCentroidsTest', function (test)
 	test.Assert (body.PolygonCount () == 12 * 5);
 	test.Assert (AllPolygonIsTriangle (body));
 	test.Assert (JSM.CheckSolidBody (body));
+});
+
+generalSuite.AddTest ('GenerateWireBodyTest', function (test)
+{
+	var body = JSM.GenerateCuboid (1, 1, 1);
+	var wireBody = JSM.GenerateWireBody (body);
+	test.Assert (wireBody.VertexCount () == 8);
+	test.Assert (wireBody.LineCount () == 12);
+	test.Assert (wireBody.PolygonCount () == 0);
 });
 
 generalSuite.AddTest ('CheckSolidBodyTest', function (test)
@@ -1287,6 +1296,37 @@ generalSuite.AddTest ('OctreeBodyTest', function (test)
 
 	var body = JSM.GenerateCylinder (1, 1, 50, true);
 	test.Assert (TestOctree (body, test));
+});
+
+generalSuite.AddTest ('MaterialSetTest', function (test)
+{
+	var materials = new JSM.MaterialSet ();
+	test.Assert (materials.Count () == 0);
+	test.Assert (materials.GetDefaultMaterial ().ambient == 0x00cc00);
+	test.Assert (materials.Count () == 0);
+	test.Assert (materials.AddMaterial (new JSM.Material ()) == 0);
+	test.Assert (materials.AddMaterial (new JSM.Material ({ ambient : 0xcc0000 })) == 1);
+	test.Assert (materials.Count () == 2);
+	test.Assert (materials.GetMaterial (0).ambient == 0x00cc00);
+	test.Assert (materials.GetMaterial (1).ambient == 0xcc0000);
+	test.Assert (materials.GetMaterial (-1).ambient == 0x00cc00);
+	test.Assert (materials.GetMaterial (2).ambient == 0x00cc00);
+});
+
+generalSuite.AddTest ('ModelMaterialSetTest', function (test)
+{
+	var model = new JSM.Model ();
+	test.Assert (model.MaterialCount () == 0);
+	test.Assert (model.GetDefaultMaterial ().ambient == 0x00cc00);
+	test.Assert (model.MaterialCount () == 0);
+	test.Assert (model.AddMaterial (new JSM.Material ()) == 0);
+	test.Assert (model.AddMaterial (new JSM.Material ({ ambient : 0xcc0000 })) == 1);
+	test.Assert (model.MaterialCount () == 2);
+	test.Assert (model.GetMaterialSet ().Count () == 2);
+	test.Assert (model.GetMaterial (0).ambient == 0x00cc00);
+	test.Assert (model.GetMaterial (1).ambient == 0xcc0000);
+	test.Assert (model.GetMaterial (-1).ambient == 0x00cc00);
+	test.Assert (model.GetMaterial (2).ambient == 0x00cc00);
 });
 
 var generatorSuite = unitTest.AddTestSuite ('ModelerGenerator');
@@ -2722,23 +2762,21 @@ conversionSuite.AddTest ('TriangleModelConversion', function (test)
 	test.Assert (triangleBody.TriangleCount () == 12 * 3);
 	
 	var model = new JSM.Model ();
-	var materials = new JSM.Materials ();
 	model.AddBody (body);
-	var triangleModel = JSM.ConvertModelToTriangleModel (model, materials);
+	var triangleModel = JSM.ConvertModelToTriangleModel (model);
 	test.Assert (triangleModel.MaterialCount () == 1);
 	test.Assert (triangleModel.BodyCount () == 1);
 
 	var model = new JSM.Model ();
-	var materials = new JSM.Materials ();
-	materials.AddMaterial (new JSM.Material ({ambient : 0xff0000, diffuse : 0xff0000}));
-	materials.AddMaterial (new JSM.Material ({ambient : 0x00ff00, diffuse : 0x00ff00}));
+	model.AddMaterial (new JSM.Material ({ambient : 0xff0000, diffuse : 0xff0000}));
+	model.AddMaterial (new JSM.Material ({ambient : 0x00ff00, diffuse : 0x00ff00}));
 
 	var body = JSM.GenerateCuboid (1.0, 2.0, 3.0);
 	body.GetPolygon (0).SetMaterialIndex (0);
 	body.GetPolygon (1).SetMaterialIndex (1);
 	model.AddBody (body);
 	
-	var triangleModel = JSM.ConvertModelToTriangleModel (model, materials);
+	var triangleModel = JSM.ConvertModelToTriangleModel (model);
 	test.Assert (triangleModel.MaterialCount () == 3);
 	test.Assert (triangleModel.GetMaterial (0).ambient.toString () == [1.0, 0.0, 0.0].toString ());
 	test.Assert (triangleModel.GetMaterial (0).diffuse.toString () == [1.0, 0.0, 0.0].toString ());

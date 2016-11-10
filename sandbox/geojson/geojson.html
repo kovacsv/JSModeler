@@ -6,7 +6,7 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
+	<script type="text/javascript" src="../build/lib/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../../src/core/timer.js"></script>
@@ -35,12 +35,15 @@
 	<script type="text/javascript" src="../../src/geometry/triangulation.js"></script>
 	<script type="text/javascript" src="../../src/geometry/octree.js"></script>
 	<script type="text/javascript" src="../../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../../src/geometry/curves.js"></script>
 	<script type="text/javascript" src="../../src/geometry/utilities.js"></script>
 	<script type="text/javascript" src="../../src/geometry/ray.js"></script>
-	<script type="text/javascript" src="../../src/modeler/body.js"></script>
-	<script type="text/javascript" src="../../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../../src/geometry/path.js"></script>
 	<script type="text/javascript" src="../../src/modeler/color.js"></script>
 	<script type="text/javascript" src="../../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../../src/modeler/materialset.js"></script>
+	<script type="text/javascript" src="../../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../../src/modeler/model.js"></script>
 	<script type="text/javascript" src="../../src/modeler/adjacencyinfo.js"></script>
 	<script type="text/javascript" src="../../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../../src/modeler/textureutils.js"></script>
@@ -81,12 +84,14 @@
 	<script type="text/javascript" src="../../src/extras/extgenerator.js"></script>
 	<script type="text/javascript" src="../../src/extras/subdivision.js"></script>
 	<script type="text/javascript" src="../../src/extras/csg.js"></script>
-	<script type="text/javascript" src="../../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../../src/extras/surfaces.js"></script>
 	<script type="text/javascript" src="../../src/extensions/svgtomodel/svgtomodel.js"></script>
+	<script type="text/javascript" src="../../src/extensions/textgenerator/textgenerator.js"></script>
 	<script type="text/javascript" src="../../src/extensions/threeviewer/threeconverter.js"></script>
 	<script type="text/javascript" src="../../src/extensions/threeviewer/threeviewer.js"></script>
 <!-- JSModeler includes end -->
 	<script type="text/javascript" src="../utils/hashchanger.js"></script>
+	<script type="text/javascript" src="geojsontomodel.js"></script>
 	<title>Example</title>
 	
 	<style>
@@ -103,231 +108,12 @@
 	</style>
 
 	<script type="text/javascript">
-		JSM.ModelWithMaterials = function ()
-		{
-			this.model = new JSM.Model ();
-			this.materials = new JSM.Materials ();
-		}
-	
-		JSM.GenerateWireBody = function (body)
-		{
-			var result = new JSM.Body ();
-			
-			var i;
-			for (i = 0; i < body.VertexCount (); i++) {
-				result.AddVertex (body.GetVertex (i).Clone ());
-			}
-		
-			var adjacencyInfo = new JSM.AdjacencyInfo (body);
-			var i, edge;
-			for (i = 0; i < adjacencyInfo.edges.length; i++) {
-				edge = adjacencyInfo.edges[i];
-				JSM.AddLineToBody (result, edge.vert1, edge.vert2);
-			}
-			
-			return result;
-		};
-		
-		JSM.ConvertGeoJsonToModel = function (geoJson, sphereRadius)
-		{
-			function ConvertCoordinate (sphereRadius, coordinate)
-			{
-				var sphereOffset = sphereRadius * 0.005;
-				var lon = coordinate.x * JSM.DegRad;
-				var lat = (90.0 - coordinate.y) * JSM.DegRad;
-				return JSM.SphericalToCartesian (sphereRadius + sphereOffset, lat, lon);
-			}
-
-			function GetSegmentCount (distance)
-			{
-				var segmentCount = parseInt (distance / 5.0, 10);
-				if (segmentCount === 0) {
-					segmentCount = 1;
-				}
-				return segmentCount;
-			}
-			
-			function GetSegmentCountBetweenCoords (begCoordinate, endCoordinate)
-			{
-				var distance = begCoordinate.DistanceTo (endCoordinate);
-				return GetSegmentCount (distance);
-			}
-			
-			function AddPointToBody (body, sphereRadius, sphereCoord, materialIndex)
-			{
-				var cartesianCoord = ConvertCoordinate (sphereRadius, sphereCoord);
-				var vertexIndex = JSM.AddVertexToBody (body, cartesianCoord.x, cartesianCoord.y, cartesianCoord.z);
-				var pointIndex = JSM.AddPointToBody (body, vertexIndex);
-				var bodyPoint = body.GetPoint (pointIndex);
-				bodyPoint.SetMaterialIndex (materialIndex);
-			}
-		
-			function AddLineToBody (body, sphereRadius, begSphereCoord, endSphereCoord, materialIndex)
-			{
-				var sector = new JSM.Sector2D (begSphereCoord, endSphereCoord);
-				var segmentCount = GetSegmentCountBetweenCoords (begSphereCoord, endSphereCoord);
-				var segmentedCoords = JSM.GetSectorSegmentation2D (sector, segmentCount);
-				var lastLine = body.LineCount ();
-				var i, cartesianCoord, vertexIndex;
-				for (i = 0; i < segmentedCoords.length; i++) {
-					cartesianCoord = ConvertCoordinate (sphereRadius, segmentedCoords[i]);
-					vertexIndex = JSM.AddVertexToBody (body, cartesianCoord.x, cartesianCoord.y, cartesianCoord.z);
-					if (i > 0) {
-						JSM.AddLineToBody (body, vertexIndex - 1, vertexIndex);
-					}
-				}
-				var bodyLine;
-				for (i = lastLine; i < body.LineCount (); i++) {
-					bodyLine = body.GetLine (i);
-					bodyLine.SetMaterialIndex (materialIndex);
-				}				
-			}
-
-			function AddPolygonToBody (body, sphereRadius, polygon, materialIndex)
-			{
-				function AddSegmentedPolygonToBody (body, polygon, sphereRadius)
-				{
-					var eps = 0.001;
-					var vertexCoords = [];
-					var i, cartesianCoord;
-					for (i = 0; i < polygon.VertexCount (); i++) {
-						cartesianCoord = ConvertCoordinate (sphereRadius, polygon.GetVertex (i));
-						if (vertexCoords.length > 0) {
-							if (vertexCoords[vertexCoords.length - 1].IsEqualWithEps (cartesianCoord, eps)) {
-								continue;
-							}
-							if (i == polygon.VertexCount () - 1) {
-								if (vertexCoords[0].IsEqualWithEps (cartesianCoord, eps)) {
-									continue;
-								}
-							}
-						}
-						vertexCoords.push (cartesianCoord);
-					}
-					if (vertexCoords.length >= 3) {
-						var vertices = [];
-						for (i = 0; i < vertexCoords.length; i++) {
-							cartesianCoord = vertexCoords[i];
-							vertices.push (JSM.AddVertexToBody (body, cartesianCoord.x, cartesianCoord.y, cartesianCoord.z));
-						}
-						JSM.AddPolygonToBody (body, vertices);
-					}				
-				}
-			
-				var box = polygon.GetBoundingBox ();
-				var xSegments = GetSegmentCount (box.max.x - box.min.x);
-				var ySegments = GetSegmentCount (box.max.y - box.min.y);
-				var segmentedPolygons = JSM.SegmentPolygon2D (polygon, xSegments, ySegments);
-				var lastPolygon = body.PolygonCount ();
-				var i;
-				for (i = 0; i < segmentedPolygons.length; i++) {
-					AddSegmentedPolygonToBody (body, segmentedPolygons[i], sphereRadius);
-				}
-				var bodyPolygon;
-				for (i = lastPolygon; i < body.PolygonCount (); i++) {
-					bodyPolygon = body.GetPolygon (i);
-					bodyPolygon.SetMaterialIndex (materialIndex);
-				}
-			}
-
-			function AddPoint (sphereRadius, coordinate, materialIndex)
-			{
-				if (pointsBody === null) {
-					pointsBody = new JSM.Body ();
-					result.model.AddBody (pointsBody);
-				}
-				var sphereCoord = JSM.CoordFromArray2D (coordinate);
-				AddPointToBody (pointsBody, sphereRadius, sphereCoord, materialIndex);
-			}
-			
-			function AddLine (sphereRadius, coordinates, materialIndex)
-			{
-				if (linesBody === null) {
-					linesBody = new JSM.Body ();
-					result.model.AddBody (linesBody);
-				}
-
-				var begSphereCoord = JSM.CoordFromArray2D (coordinates[0]);
-				var endSphereCoord = JSM.CoordFromArray2D (coordinates[1]);
-				AddLineToBody (linesBody, sphereRadius, begSphereCoord, endSphereCoord, materialIndex);
-			}
-			
-			function AddPolygon (sphereRadius, coordinates, materialIndex)
-			{
-				if (polygonsBody === null) {
-					polygonsBody = new JSM.Body ();
-					result.model.AddBody (polygonsBody);
-				}
-				
-				var mainContour = coordinates[0];
-				var polygon = new JSM.Polygon2D ();
-				var i, sphereCoord;
-				for (i = 0; i < mainContour.length - 1; i++) {
-					sphereCoord = JSM.CoordFromArray2D (mainContour[i]);
-					polygon.AddVertexCoord (sphereCoord);
-				}
-				AddPolygonToBody (polygonsBody, sphereRadius, polygon, materialIndex);	
-			}
-
-			function AddMultiPolygon (sphereRadius, coordinates, materialIndex)
-			{
-				var i;
-				for (i = 0; i < coordinates.length; i++) {
-					AddPolygon (sphereRadius, coordinates[i], materialIndex);
-				}
-			}	
-
-			function AddFeature (sphereRadius, feature)
-			{
-				if (!feature.type || feature.type != 'Feature') {
-					return false;
-				}
-				
-				if (!feature.geometry || !feature.geometry.type || !feature.geometry.coordinates) {
-					return false;
-				}
-				
-				var material = new JSM.Material ({ ambient : JSM.RandomInt (0, 16777215), diffuse : JSM.RandomInt (0, 16777215)});
-				var materialIndex = result.materials.AddMaterial (material);
-				if (feature.geometry.type == 'Point') {
-					material.pointSize = 10;
-					AddPoint (sphereRadius, feature.geometry.coordinates, materialIndex);
-				} else if (feature.geometry.type == 'LineString') {
-					AddLine (sphereRadius, feature.geometry.coordinates, materialIndex);
-				} else if (feature.geometry.type == 'Polygon') {
-					AddPolygon (sphereRadius, feature.geometry.coordinates, materialIndex);
-				} else if (feature.geometry.type == 'MultiPolygon') {
-					AddMultiPolygon (sphereRadius, feature.geometry.coordinates, materialIndex);
-				}
-			}
-		
-			if (!geoJson.type || geoJson.type != 'FeatureCollection') {
-				return null;
-			}
-			
-			if (!geoJson.features) {
-				return null;
-			}
-			
-			var result = new JSM.ModelWithMaterials ();
-			var pointsBody = null;
-			var linesBody = null;
-			var polygonsBody = null;
-			
-			var i, feature;
-			for (i = 0; i < geoJson.features.length; i++) {
-				feature = geoJson.features[i];
-				AddFeature (sphereRadius, feature);
-			}
-			return result;
-		}
-		
 		function AddEarth (sphereRadius, viewer)
 		{
 			var body = new JSM.GenerateSphere (sphereRadius, 20);
 			body = JSM.GenerateWireBody (body);
 			
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0xdddddd, diffuse : 0xdddddd}));
 			body.SetLinesMaterialIndex (0);
 
@@ -343,6 +129,8 @@
 				'points.json',
 				'lines.json',
 				'rectangles.json',
+				'features.json',
+				'holes.json',
 				'hungary.json',
 				'world.json'
 			];
@@ -351,10 +139,12 @@
 			}
 			
 			var sphereRadius = 100.0;
+			var segmentSize = 5.0;
+			var polygonThickness = 1.0;
 			AddEarth (sphereRadius, viewer);
 			JSM.LoadJsonFile (jsonFiles[index], function (jsonData) {
-				var model = JSM.ConvertGeoJsonToModel (jsonData, sphereRadius);
-				var renderBodies = JSM.ConvertModelToRenderBodies (model.model, model.materials);
+				var model = JSM.ConvertGeoJsonToModel (jsonData, sphereRadius, segmentSize, polygonThickness);
+				var renderBodies = JSM.ConvertModelToRenderBodies (model);
 				viewer.AddBodies (renderBodies);
 				viewer.Draw ();
 			});

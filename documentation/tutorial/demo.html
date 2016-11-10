@@ -6,7 +6,7 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../build/lib/three.min.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.ext.three.js"></script>
 	<title>JSModeler Demo</title>
@@ -92,7 +92,7 @@
 
 			body.AddPolygon (new JSM.BodyPolygon ([0, 3, 5, 4]));
 
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0xcc0000, diffuse : 0xcc0000}));
 			materials.AddMaterial (new JSM.Material ({ambient : 0x0000cc, diffuse : 0x0000cc}));
 

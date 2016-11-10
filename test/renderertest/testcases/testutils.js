@@ -33,10 +33,10 @@ function RenderBodyAndWait (viewer, body, materials, onFinished, beforeDraw)
 	}, 100);
 }
 
-function RenderModel (viewer, model, materials, onFinished, beforeDraw)
+function RenderModel (viewer, model, onFinished, beforeDraw)
 {
 	viewer.Reset ();
-	var renderBodies = JSM.ConvertModelToRenderBodies (model, materials);
+	var renderBodies = JSM.ConvertModelToRenderBodies (model);
 	if (beforeDraw !== undefined && beforeDraw !== null) {
 		beforeDraw (renderBodies);
 	}
@@ -48,9 +48,9 @@ function RenderModel (viewer, model, materials, onFinished, beforeDraw)
 	}
 }		
 
-function RenderModelAndWait (viewer, model, materials, onFinished, beforeDraw)
+function RenderModelAndWait (viewer, model, onFinished, beforeDraw)
 {
-	RenderModel (viewer, model, materials, null, beforeDraw);
+	RenderModel (viewer, model, null, beforeDraw);
 	setTimeout (function () {
 		viewer.Draw ();
 		onFinished ();

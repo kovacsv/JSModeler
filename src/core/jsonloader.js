@@ -1,3 +1,10 @@
+/**
+* Function: LoadJsonFile
+* Description: Loads a json file, and calls a callback with the parsed json.
+* Parameters:
+*	fileName {string} the name of the json
+*	onReady {function} the callback
+*/
 JSM.LoadJsonFile = function (fileName, onReady)
 {
 	var request = new XMLHttpRequest ();

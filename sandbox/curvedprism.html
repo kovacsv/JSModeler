@@ -34,12 +34,15 @@
 	<script type="text/javascript" src="../src/geometry/triangulation.js"></script>
 	<script type="text/javascript" src="../src/geometry/octree.js"></script>
 	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../src/geometry/curves.js"></script>
 	<script type="text/javascript" src="../src/geometry/utilities.js"></script>
 	<script type="text/javascript" src="../src/geometry/ray.js"></script>
-	<script type="text/javascript" src="../src/modeler/body.js"></script>
-	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/geometry/path.js"></script>
 	<script type="text/javascript" src="../src/modeler/color.js"></script>
 	<script type="text/javascript" src="../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../src/modeler/materialset.js"></script>
+	<script type="text/javascript" src="../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../src/modeler/model.js"></script>
 	<script type="text/javascript" src="../src/modeler/adjacencyinfo.js"></script>
 	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
@@ -80,8 +83,9 @@
 	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
 	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
-	<script type="text/javascript" src="../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../src/extras/surfaces.js"></script>
 	<script type="text/javascript" src="../src/extensions/svgtomodel/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/extensions/textgenerator/textgenerator.js"></script>
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeconverter.js"></script>
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeviewer.js"></script>
 <!-- JSModeler includes end -->
@@ -106,15 +110,20 @@
 			viewer = new JSM.Viewer ();
 			viewer.Init (document.getElementById ('example'), camera);
 
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'texture.jpg', textureWidth : 1.0, textureHeight : 1.0}));
 
 			var circle = JSM.GenerateCirclePoints (1, 20, new JSM.Coord (0, 0, 0));
 			circle[0].Set (2, 0, 0);
 			circle[10].Set (0, 0, 0);
 			
-			var direction = new JSM.Vector (0.0, 0.0, 1.0);
-			var prism = JSM.GeneratePrism (circle, direction, 1.0, true, 160 * JSM.DegRad);
+			var basePolygon = new JSM.Polygon2D ();
+			var i;
+			for (i = 0; i < circle.length; i++) {
+				basePolygon.AddVertex (circle[i].x, circle[i].y);
+			}
+			
+			var prism = JSM.GeneratePrismFromPolygon (basePolygon, 1.0, true, 160 * JSM.DegRad);
 			//prism.SetPolygonsMaterialIndex (0);
 			
 			var renderBody = JSM.ConvertBodyToRenderBody (prism, materials);

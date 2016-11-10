@@ -23,6 +23,12 @@
 						["integer", "the result"]
 					]
 				},
+				"RandomBoolean" : {
+					"description" : "Generates a random boolean value.",
+					"returns" : [
+						["boolean", "the result"]
+					]
+				},
 				"SeededRandomInt" : {
 					"description" : "Generates a random integer between two integers. A seed number can be specified.",
 					"parameters" : [
@@ -115,6 +121,13 @@
 					"description" : "Returns if file api is enabled in the browser.",
 					"returns" : [
 						["boolean", "the result"]
+					]
+				},
+				"LoadJsonFile" : {
+					"description" : "Loads a json file, and calls a callback with the parsed json.",
+					"parameters" : [
+						["fileName", "string", "the name of the json"],
+						["onReady", "function", "the callback"]
 					]
 				}
 			},
@@ -1065,6 +1078,40 @@
 						["nodeFound", "function", "the callback function"]
 					]
 				},
+				"GenerateCubicBezierCurve" : {
+					"description" : "Generates a bezier curve from the given points.",
+					"parameters" : [
+						["p0", "Coord2D", "point 1"],
+						["p1", "Coord2D", "point 2"],
+						["p2", "Coord2D", "point 3"],
+						["p3", "Coord2D", "point 4"],
+						["segmentation", "integer", "the segmentation of the result curve"]
+					],
+					"returns" : [
+						["Coord2D[]", "the result"]
+					]
+				},
+				"BernsteinPolynomial" : {
+					"description" : "Calculates the value of the Bernstein polynomial.",
+					"parameters" : [
+						["k", "integer", "the start index"],
+						["n", "integer", "the end index"],
+						["x", "number", "the value"]
+					],
+					"returns" : [
+						["number", "the result"]
+					]
+				},
+				"GenerateBezierCurve" : {
+					"description" : "Generates a bezier curve from the given points.",
+					"parameters" : [
+						["points", "Coord2D[]", "the points"],
+						["segmentation", "integer", "the segmentation of the result curve"]
+					],
+					"returns" : [
+						["Coord2D[]", "the result"]
+					]
+				},
 				"GetGaussianCParameter" : {
 					"description" : "Calculates the gaussian functions c parameter which can be used for the gaussian function to reach epsilon at a given value.",
 					"parameters" : [
@@ -1882,6 +1929,12 @@
 								["Coord2D", "the vertex"]
 							]
 						},
+						"RemoveVertex" : {
+							"description" : "Removes a vertex from the polygon.",
+							"parameters" : [
+								["index", "integer", "the index of the vertex"]
+							]
+						},
 						"VertexCount" : {
 							"description" : "Returns the vertex count of the polygon.",
 							"returns" : [
@@ -1918,6 +1971,18 @@
 							"description" : "Shifts polygon vertices.",
 							"parameters" : [
 								["count", "integer", "the number of shifts"]
+							]
+						},
+						"ReverseVertices" : {
+							"description" : "Reverses the orientation of the vertices."
+						},
+						"GetVertexAngle" : {
+							"description" : "Returns the angle of the given vertex.",
+							"parameters" : [
+								["index", "integer", "the vertex index"]
+							],
+							"returns" : [
+								["number", "the result"]
 							]
 						},
 						"GetSignedArea" : {
@@ -2069,6 +2134,9 @@
 							"returns" : [
 								["integer", "vertex count"]
 							]
+						},
+						"ReverseVertices" : {
+							"description" : "Reverses the orientation of the vertices."
 						},
 						"ContourVertexCount" : {
 							"description" : "Returns the vertex count of the given contour of the polygon.",
@@ -2599,6 +2667,76 @@
 							]
 						}
 					}
+				},
+				"Path2D" : {
+					"description" : "Helper class for building polygons",
+					"parameters" : [
+						["settings", "object", "path settings"]
+					],
+					"functions" : {
+						"MoveTo" : {
+							"description" : "Moves the current position to the given position.",
+							"parameters" : [
+								["x", "number", "new x position"],
+								["y", "number", "new y position"]
+							]
+						},
+						"LineTo" : {
+							"description" : "Draws a line from current position to the given position.",
+							"parameters" : [
+								["x", "number", "line end x position"],
+								["y", "number", "line end y position"]
+							]
+						},
+						"CubicBezierTo" : {
+							"description" : "Draws a cubic bezier curve from the current position to the given position.",
+							"parameters" : [
+								["x", "number", "curve end x position"],
+								["y", "number", "curve end y position"],
+								["cp1x", "number", "first control point x position"],
+								["cp1y", "number", "first control point y position"],
+								["cp2x", "number", "second control point x position"],
+								["cp2y", "number", "second control point y position"]
+							]
+						},
+						"Close" : {
+							"description" : "Closes the current polygon."
+						},
+						"PolygonCount" : {
+							"description" : "Returns the polygon count of the path.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
+						"GetPolygon" : {
+							"description" : "Returns the polygons from the path at the given index.",
+							"parameters" : [
+								["index", "integer", "the polygon index"]
+							],
+							"returns" : [
+								["ContourPolygon2D", "the result"]
+							]
+						},
+						"GetPolygons" : {
+							"description" : "Returns the polygons from the path.",
+							"returns" : [
+								["ContourPolygon2D[*]", "the result"]
+							]
+						},
+						"GetCurrentPolygon" : {
+							"description" : "Returns the current polygon.",
+							"returns" : [
+								["Polygon2D", "the result"]
+							]
+						},
+						"AddPolygonPoint" : {
+							"description" : "Adds a point to the current polygon.",
+							"parameters" : [
+								["x", "number", "the x position of the point"],
+								["y", "number", "the y position of the point"]
+							]
+						}
+					}
 				}
 			},
 			"enums" : {
@@ -2859,7 +2997,7 @@
 				"CalculatePolygonCurveGroups" : {
 					"description" : "Calculates the curve groups for a given polygon.",
 					"parameters" : [
-						["polygon", "Polygon", "the polygon"],
+						["polygon", "Polygon|Polygon2D", "the polygon"],
 						["curveAngle", "number", "the curve angle"]
 					],
 					"returns" : [
@@ -2892,6 +3030,15 @@
 						["distance", "number", "the distance of the movement"]
 					]
 				},
+				"GenerateWireBody" : {
+					"description" : "Generates a body which contains only the lines from the given body.",
+					"parameters" : [
+						["body", "Body", "the original body"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
 				"TriangulateWithCentroids" : {
 					"description" : "Triangulates all polygons of the body by connecting all polygon vertices with the centroid vertex of the polygon.",
 					"parameters" : [
@@ -2908,7 +3055,7 @@
 					"description" : "Generates random materials for a body. A seed number can be specified.",
 					"parameters" : [
 						["body", "Body", "the body"],
-						["materials", "Materials", "the materials"],
+						["materials", "MaterialSet", "the materials"],
 						["seeded", "boolean", "seeded random generation"]
 					]
 				},
@@ -3160,6 +3307,29 @@
 						["Body", "the result"]
 					]
 				},
+				"GeneratePrismGeometry" : {
+					"description" : "Generates a prism defined by bottom and top vertices polygon.",
+					"parameters" : [
+						["bottomVertices", "Coord[*]", "bottom vertices"],
+						["topVertices", "Coord[*]", "top vertices"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
+				"GeneratePrismFromPolygon" : {
+					"description" : "Generates a prism defined by a polygon.",
+					"parameters" : [
+						["polygon", "Polygon2D", "the base polygon"],
+						["height", "number", "the height of the prism"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"],
+						["curveAngle", "number", "if not null, defines the curve angle of the prism"]
+					],
+					"returns" : [
+						["Body", "the result"]
+					]
+				},
 				"GeneratePrism" : {
 					"description" : "Generates a prism defined by a polygon. The base polygon is an array of coordinates which will be offseted in the given direction.",
 					"parameters" : [
@@ -3184,6 +3354,18 @@
 					],
 					"returns" : [
 						["Body", "the result"]
+					]
+				},
+				"GeneratePrismsFromPath2D" : {
+					"description" : "Generates a prism from the given path.",
+					"parameters" : [
+						["path", "Path2D", "the path"],
+						["height", "number", "the height of the prism"],
+						["width", "number", "the width of the prism sides"],
+						["withTopAndBottom", "boolean", "generate top and bottom polygons"]
+					],
+					"returns" : [
+						["Body[*]", "the result"]
 					]
 				},
 				"GeneratePrismShell" : {
@@ -3370,7 +3552,7 @@
 					"description" : "Explodes a body to primitives. The function calls callback functions on geometry start and end, and when a triangle or a line is created.",
 					"parameters" : [
 						["body", "Body", "the body"],
-						["materials", "Materials", "the materials"],
+						["materials", "MaterialSet", "the materials"],
 						["explodeData", "object", "the parameters and callback functions of explode"]
 					],
 					"returns" : [
@@ -3442,7 +3624,7 @@
 				"ExportMaterialsToGdl" : {
 					"description" : "Exports a material container to gdl.",
 					"parameters" : [
-						["materials", "Materials", "the material container"]
+						["materials", "MaterialSet", "the material container"]
 					],
 					"returns" : [
 						["string", "the result"]
@@ -3462,7 +3644,7 @@
 					"description" : "Exports a body to gdl.",
 					"parameters" : [
 						["body", "Body", "the body"],
-						["materials", "Materials", "the material container"]
+						["materials", "MaterialSet", "the material container"]
 					],
 					"returns" : [
 						["string", "the result"]
@@ -3472,7 +3654,7 @@
 					"description" : "Exports a model to gdl.",
 					"parameters" : [
 						["model", "Model", "the model"],
-						["materials", "Materials", "the material container"]
+						["materials", "MaterialSet", "the material container"]
 					],
 					"returns" : [
 						["string", "the result"]
@@ -3499,8 +3681,7 @@
 				"ConvertModelToTriangleModel" : {
 					"description" : "Converts a model to triangle model.",
 					"parameters" : [
-						["model", "Model", "the model"],
-						["materials", "Materials", "the materials"]
+						["model", "Model", "the model"]
 					],
 					"returns" : [
 						["TriangleModel", "the result"]
@@ -3590,6 +3771,47 @@
 				}
 			},
 			"classes" : {
+				"Material" : {
+					"description" : "Defines a material. The parameter structure can contain the following values: ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight.",
+					"parameters" : [
+						["parameters", "object", "parameters of the material"]
+					]
+				},
+				"MaterialSet" : {
+					"description" : "Defines a material container.",
+					"functions" : {
+						"AddMaterial" : {
+							"description" : "Adds a material to the container.",
+							"parameters" : [
+								["material", "Material", "the material"]
+							],
+							"returns" : [
+								["integer", "the index of the newly added material"]
+							]
+						},
+						"GetMaterial" : {
+							"description" : "Returns a material from the container.",
+							"parameters" : [
+								["index", "integer", "the index"]
+							],
+							"returns" : [
+								["Material", "the result"]
+							]
+						},
+						"GetDefaultMaterial" : {
+							"description" : "Returns the default material from the container. It is always exists.",
+							"returns" : [
+								["Material", "the result"]
+							]
+						},
+						"Count" : {
+							"description" : "Returns the material count of the container.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						}
+					}
+				},
 				"BodyVertex" : {
 					"description" : "Represents a vertex of a 3D body. The vertex contains only its position as a 3D coordinate.",
 					"parameters" : [
@@ -4159,6 +4381,12 @@
 								["integer", "the index of the newly added body"]
 							]
 						},
+						"AddBodies" : {
+							"description" : "Adds bodies to the model.",
+							"parameters" : [
+								["bodies", "Body[*]", "the body"]
+							]
+						},
 						"GetBody" : {
 							"description" : "Returns the stored body with the given index.",
 							"parameters" : [
@@ -4174,6 +4402,42 @@
 								["integer", "the result"]
 							]
 						},
+						"AddMaterial" : {
+							"description" : "Adds a material to the mode.",
+							"parameters" : [
+								["material", "Material", "the material"]
+							],
+							"returns" : [
+								["integer", "the index of the newly added material"]
+							]
+						},
+						"GetMaterial" : {
+							"description" : "Returns a material from the model.",
+							"parameters" : [
+								["index", "integer", "the index"]
+							],
+							"returns" : [
+								["Material", "the result"]
+							]
+						},
+						"GetDefaultMaterial" : {
+							"description" : "Returns the default material from the model. It is always exists.",
+							"returns" : [
+								["Material", "the result"]
+							]
+						},
+						"GetMaterialSet" : {
+							"description" : "Returns the material set of the model.",
+							"returns" : [
+								["MaterialSet", "the result"]
+							]
+						},
+						"Count" : {
+							"description" : "Returns the material count of the model.",
+							"returns" : [
+								["integer", "the result"]
+							]
+						},
 						"VertexCount" : {
 							"description" : "Returns the vertex count of the model.",
 							"returns" : [
@@ -4182,47 +4446,6 @@
 						},
 						"PolygonCount" : {
 							"description" : "Returns the polygon count of the model.",
-							"returns" : [
-								["integer", "the result"]
-							]
-						}
-					}
-				},
-				"Material" : {
-					"description" : "Defines a material. The parameter structure can contain the following values: ambient, diffuse, specular, shininess, opacity, texture, textureWidth, textureHeight.",
-					"parameters" : [
-						["parameters", "object", "parameters of the material"]
-					]
-				},
-				"Materials" : {
-					"description" : "Defines a material container.",
-					"functions" : {
-						"GetMaterial" : {
-							"description" : "Returns a material from the container.",
-							"parameters" : [
-								["index", "integer", "the index"]
-							],
-							"returns" : [
-								["Material", "the result"]
-							]
-						},
-						"AddMaterial" : {
-							"description" : "Adds a material to the container.",
-							"parameters" : [
-								["material", "Material", "the material"]
-							],
-							"returns" : [
-								["integer", "the index of the newly added material"]
-							]
-						},
-						"GetDefaultMaterial" : {
-							"description" : "Returns the default material from the container. It is always exists.",
-							"returns" : [
-								["Material", "the result"]
-							]
-						},
-						"Count" : {
-							"description" : "Returns the material count of the container.",
 							"returns" : [
 								["integer", "the result"]
 							]
@@ -4639,7 +4862,7 @@
 					"description" : "Draws a projected body.",
 					"parameters" : [
 						["body", "Body", "the body"],
-						["materials", "Materials", "the material container"],
+						["materials", "MaterialSet", "the material container"],
 						["camera", "Camera", "the camera for projection"],
 						["drawMode", "string", "draw mode ('HiddenLinePainter', 'HiddenLineFrontFacing' or 'Wireframe')"],
 						["needClear", "boolean", "clear the display before draw"],
@@ -5022,27 +5245,6 @@
 					],
 					"returns" : [
 						["Body", "the result"]
-					]
-				},
-				"BernsteinPolynomial" : {
-					"description" : "Calculates the value of the Bernstein polynomial.",
-					"parameters" : [
-						["k", "integer", "the start index"],
-						["n", "integer", "the end index"],
-						["x", "number", "the value"]
-					],
-					"returns" : [
-						["number", "the result"]
-					]
-				},
-				"GenerateBezierCurve" : {
-					"description" : "Generates a bezier curve from the given points.",
-					"parameters" : [
-						["points", "Coord2D[]", "the points"],
-						["segmentation", "integer", "the segmentation of the result curve"]
-					],
-					"returns" : [
-						["Coord2D[]", "the result"]
 					]
 				},
 				"GenerateSurface" : {

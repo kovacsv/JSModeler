@@ -8,7 +8,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="simple.css">
-	<script type="text/javascript" src="../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../build/lib/three.min.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.ext.three.js"></script>
 	<title>JSModeler Deform Example</title>
@@ -168,7 +168,7 @@
 			var segmentation = 100;
 			body = JSM.GenerateSegmentedRectangle (1, 1, segmentation, segmentation);
 			
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0xffffff, diffuse : 0xffffff, specular : 0x000000, shininess : 0.0, opacity : 1.0, texture : 'tile.png', textureWidth : 0.1, textureHeight : 0.1}));
 			body.SetPolygonsMaterialIndex (0);
 
