@@ -8,7 +8,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7;" > 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="csg.css">
-	<script type="text/javascript" src="../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../build/lib/three.min.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.ext.three.js"></script>
 	<title>JSModeler CSG Example</title>
@@ -252,7 +252,7 @@
 
 			viewer.RemoveMeshes ();
 
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			materials.AddMaterial (new JSM.Material ({ambient : 0x279B61, diffuse : 0x279B61}));
 			materials.AddMaterial (new JSM.Material ({ambient : 0x008AB8, diffuse : 0x008AB8}));
 			leftBody.SetPolygonsMaterialIndex (0);

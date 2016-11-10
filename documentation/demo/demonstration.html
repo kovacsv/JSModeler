@@ -8,7 +8,7 @@
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="include/demonstration.css">
 
-	<script type="text/javascript" src="../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../build/lib/three.min.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.ext.three.js"></script>
 	<script type="text/javascript" src="include/basedialog.js"></script>
@@ -94,7 +94,7 @@
 				return parseInt (resultFormat);
 			};		
 		
-			materials = new JSM.Materials ();
+			materials = new JSM.MaterialSet ();
 			var color = ConvertColor (currentColor);
 			materials.AddMaterial (new JSM.Material ({ambient : color, diffuse : color}));
 

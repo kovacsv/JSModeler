@@ -63,11 +63,17 @@ PolygonDrawer.prototype.DrawPolygonInternal = function (polygon, fillStyle, stro
 	this.context.strokeStyle = strokeStyle;
 	this.context.beginPath ();
 
+	var needMove = true;
 	var i, current;
 	for (i = 0; i < polygon.length; i++) {
 		current = this.GetCoord (polygon[i], this.scale);
-		if (i === 0) {
+		if (current === null) {
+			needMove = true;
+			continue;
+		}
+		if (needMove) {
 			this.context.moveTo (current[0], current[1]);
+			needMove = false;
 		} else {
 			this.context.lineTo (current[0], current[1]);
 		}
@@ -89,6 +95,9 @@ PolygonDrawer.prototype.DrawIndices = function (polygon)
 	var i, current;
 	for (i = 0; i < polygon.length; i++) {
 		current = this.GetCoord (polygon[i], this.scale);
+		if (current === null) {
+			continue;
+		}
 		this.context.fillText (i, current[0] + 5, current[1] + 5);
 	}
 	
@@ -98,6 +107,9 @@ PolygonDrawer.prototype.DrawIndices = function (polygon)
 
 PolygonDrawer.prototype.GetCoord = function (coord, scale)
 {
+	if (coord === null) {
+		return null;
+	}
 	var centerX = parseInt (this.width / 2.0, 10);
 	var centerY = parseInt (this.height / 2.0, 10);
 	var scaled = [coord[0] * scale, coord[1] * scale];

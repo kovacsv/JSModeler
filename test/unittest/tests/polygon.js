@@ -88,6 +88,26 @@ simpleSuite.AddTest ('CloneTest', function (test)
 	test.Assert (IsEqualPolygons (polygon, cloned));
 });
 
+simpleSuite.AddTest ('ReverseTest', function (test)
+{
+	var polygon = new JSM.Polygon2D ();
+	polygon.AddVertex (0.0, 0.0);
+	polygon.AddVertex (1.0, 0.0);
+	polygon.AddVertex (1.0, 1.0);
+	polygon.AddVertex (0.5, 0.5);
+	polygon.AddVertex (0.0, 1.0);
+	
+	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.CounterClockwise);
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Concave);
+	test.AssertEqualNum (polygon.GetSignedArea (), 0.75, JSM.Eps);
+	
+	polygon.ReverseVertices ();
+	
+	test.AssertEqual (polygon.GetOrientation (), JSM.Orientation.Clockwise);
+	test.AssertEqual (polygon.GetComplexity (), JSM.Complexity.Concave);
+	test.AssertEqualNum (polygon.GetSignedArea (), -0.75, JSM.Eps);
+});
+
 simpleSuite.AddTest ('ShiftVerticesTest', function (test)
 {
 	var polygon = new JSM.Polygon2D ();

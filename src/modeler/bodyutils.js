@@ -204,7 +204,7 @@ JSM.CalculateBodyVertexNormals = function (body)
 * Function: CalculatePolygonCurveGroups
 * Description: Calculates the curve groups for a given polygon.
 * Parameters:
-*	polygon {Polygon} the polygon
+*	polygon {Polygon|Polygon2D} the polygon
 *	curveAngle {number} the curve angle
 * Returns:
 *	{integer[*]} the curve groups
@@ -311,6 +311,33 @@ JSM.SoftMoveBodyVertex = function (body, index, radius, direction, distance)
 };
 
 /**
+* Function: GenerateWireBody
+* Description: Generates a body which contains only the lines from the given body.
+* Parameters:
+*	body {Body} the original body
+* Returns:
+*	{Body} the result
+*/
+JSM.GenerateWireBody = function (body)
+{
+	var result = new JSM.Body ();
+	
+	var i;
+	for (i = 0; i < body.VertexCount (); i++) {
+		result.AddVertex (body.GetVertex (i).Clone ());
+	}
+
+	var adjacencyInfo = new JSM.AdjacencyInfo (body);
+	var edge;
+	for (i = 0; i < adjacencyInfo.edges.length; i++) {
+		edge = adjacencyInfo.edges[i];
+		JSM.AddLineToBody (result, edge.vert1, edge.vert2);
+	}
+	
+	return result;
+};
+
+/**
 * Function: TriangulateWithCentroids
 * Description:
 *	Triangulates all polygons of the body by connecting all polygon
@@ -381,7 +408,7 @@ JSM.TriangulatePolygons = function (body)
 * Description: Generates random materials for a body. A seed number can be specified.
 * Parameters:
 *	body {Body} the body
-*	materials {Materials} the materials
+*	materials {MaterialSet} the materials
 *	seeded {boolean} seeded random generation
 */
 JSM.GenerateRandomMaterials = function (body, materials, seeded)

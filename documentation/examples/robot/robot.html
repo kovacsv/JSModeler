@@ -7,7 +7,7 @@
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	
-	<script type="text/javascript" src="../../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../../build/lib/three.min.js"></script>
 	<script type="text/javascript" src="../../../build/jsmodeler.js"></script>
 	<script type="text/javascript" src="../../../build/jsmodeler.ext.three.js"></script>
 	<script type="text/javascript" src="robot.js"></script>
@@ -115,7 +115,7 @@
 
 		function AddExternalMeshes ()
 		{
-			var materials = new JSM.Materials ();
+			var materials = new JSM.MaterialSet ();
 			materials.AddMaterial (new JSM.Material ({
 				ambient : 0xffffff,
 				diffuse : 0xffffff,

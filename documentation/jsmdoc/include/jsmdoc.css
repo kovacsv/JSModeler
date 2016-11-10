@@ -146,7 +146,7 @@ table.parametertable td.parametertabletypecell
 	font-style : italic;
 }
 
-table.parametertable td.parametertabletypecell.link
+table.parametertable td.parametertabletypecell span.link
 {
 	color : #225588;
 	background : transparent;

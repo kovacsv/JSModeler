@@ -6,7 +6,7 @@
 <head>
 
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<script type="text/javascript" src="../build/three.min.js"></script>
+	<script type="text/javascript" src="../build/lib/three.min.js"></script>
 <!-- JSModeler includes start -->
 	<script type="text/javascript" src="../src/core/jsm.js"></script>
 	<script type="text/javascript" src="../src/core/timer.js"></script>
@@ -35,12 +35,15 @@
 	<script type="text/javascript" src="../src/geometry/triangulation.js"></script>
 	<script type="text/javascript" src="../src/geometry/octree.js"></script>
 	<script type="text/javascript" src="../src/geometry/bsptree.js"></script>
+	<script type="text/javascript" src="../src/geometry/curves.js"></script>
 	<script type="text/javascript" src="../src/geometry/utilities.js"></script>
 	<script type="text/javascript" src="../src/geometry/ray.js"></script>
-	<script type="text/javascript" src="../src/modeler/body.js"></script>
-	<script type="text/javascript" src="../src/modeler/model.js"></script>
+	<script type="text/javascript" src="../src/geometry/path.js"></script>
 	<script type="text/javascript" src="../src/modeler/color.js"></script>
 	<script type="text/javascript" src="../src/modeler/material.js"></script>
+	<script type="text/javascript" src="../src/modeler/materialset.js"></script>
+	<script type="text/javascript" src="../src/modeler/body.js"></script>
+	<script type="text/javascript" src="../src/modeler/model.js"></script>
 	<script type="text/javascript" src="../src/modeler/adjacencyinfo.js"></script>
 	<script type="text/javascript" src="../src/modeler/bodyutils.js"></script>
 	<script type="text/javascript" src="../src/modeler/textureutils.js"></script>
@@ -81,8 +84,9 @@
 	<script type="text/javascript" src="../src/extras/extgenerator.js"></script>
 	<script type="text/javascript" src="../src/extras/subdivision.js"></script>
 	<script type="text/javascript" src="../src/extras/csg.js"></script>
-	<script type="text/javascript" src="../src/extras/curves.js"></script>
+	<script type="text/javascript" src="../src/extras/surfaces.js"></script>
 	<script type="text/javascript" src="../src/extensions/svgtomodel/svgtomodel.js"></script>
+	<script type="text/javascript" src="../src/extensions/textgenerator/textgenerator.js"></script>
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeconverter.js"></script>
 	<script type="text/javascript" src="../src/extensions/threeviewer/threeviewer.js"></script>
 <!-- JSModeler includes end -->
@@ -99,7 +103,7 @@
 			}
 		
 			var viewerSettings = {
-				cameraEyePosition : [3.0, -3.0, 3.0],
+				cameraEyePosition : [3.0, -4.0, 2.0],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
 				cameraUpVector : [0.0, 0.0, 1.0]
 			};

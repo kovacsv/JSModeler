@@ -10,16 +10,16 @@ html, body
 
 div.header
 {
-	color : #404040;
-	background : #f0f0f0;
+	color : #222222;
+	background : #f2f2f2;
 	padding : 10px;
 	margin-bottom : 10px;
-	border-bottom : 1px solid #d0d0d0;
+	border-bottom : 1px solid #e2e2e2;
 }
 
 div.title
 {
-	font-size : 21px;
+	font-size : 17px;
 	text-align : center;
 	margin-bottom : 5px;
 }
@@ -33,6 +33,17 @@ div.frame
 {
 	width : 800px;
 	margin : 0px auto;
+}
+
+input.large
+{
+	color : #222222;
+	font-size : 17px;
+	text-align : center;
+	width : 400px;
+	border : 1px solid #cccccc;
+	margin-bottom : 10px;
+	padding : 3px;
 }
 
 a.link

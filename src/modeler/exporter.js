@@ -256,7 +256,7 @@ JSM.ExportModelToObj = function (model)
 * Function: ExportMaterialsToGdl
 * Description: Exports a material container to gdl.
 * Parameters:
-*	materials {Materials} the material container
+*	materials {MaterialSet} the material container
 * Returns:
 *	{string} the result
 */
@@ -417,7 +417,7 @@ JSM.ExportBodyGeometryToGdl = function (body, writeMaterials)
 * Description: Exports a body to gdl.
 * Parameters:
 *	body {Body} the body
-*	materials {Materials} the material container
+*	materials {MaterialSet} the material container
 * Returns:
 *	{string} the result
 */
@@ -440,7 +440,7 @@ JSM.ExportBodyToGdl = function (body, materials)
 * Description: Exports a model to gdl.
 * Parameters:
 *	model {Model} the model
-*	materials {Materials} the material container
+*	materials {MaterialSet} the material container
 * Returns:
 *	{string} the result
 */

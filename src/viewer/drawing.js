@@ -206,7 +206,7 @@ JSM.SVGDrawer.prototype.DrawPolygon = function (polygon, color/*, contour*/)
 * Description: Draws a projected body.
 * Parameters:
 *	body {Body} the body
-*	materials {Materials} the material container
+*	materials {MaterialSet} the material container
 *	camera {Camera} the camera for projection
 *	drawMode {string} draw mode ('HiddenLinePainter', 'HiddenLineFrontFacing' or 'Wireframe')
 *	needClear {boolean} clear the display before draw
@@ -262,7 +262,7 @@ JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, 
 	if (drawMode == 'HiddenLinePainter') {
 		var orderedPolygons = JSM.OrderPolygons (body, eye, center);
 		if (materials === undefined || materials === null) {
-			materials = new JSM.Materials ();
+			materials = new JSM.MaterialSet ();
 		}
 		for (i = 0; i < orderedPolygons.length; i++) {
 			polygon = body.GetPolygon (orderedPolygons[i]);
@@ -273,7 +273,7 @@ JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, 
 		}
 	} else if (drawMode == 'HiddenLineBSPTree') {
 		if (materials === undefined || materials === null) {
-			materials = new JSM.Materials ();
+			materials = new JSM.MaterialSet ();
 		}
 
 		var bspTree = new JSM.BSPTree ();
@@ -288,7 +288,7 @@ JSM.DrawProjectedBody = function (body, materials, camera, drawMode, needClear, 
 		});		
 	} else if (drawMode == 'HiddenLineFrontFacing') {
 		if (materials === undefined || materials === null) {
-			materials = new JSM.Materials ();
+			materials = new JSM.MaterialSet ();
 		}
 		
 		for (i = 0; i < body.PolygonCount (); i++) {

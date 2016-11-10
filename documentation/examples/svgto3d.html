@@ -6,10 +6,10 @@
 <head>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="svgto3d.css">
-	<script type="text/javascript" src="../libs/pathseg.js"></script>
+	<script type="text/javascript" src="../../build/lib/pathseg.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.ext.svgtomodel.js"></script>
-	<script type="text/javascript" src="../../build/three.min.js"></script>
+	<script type="text/javascript" src="../../build/lib/three.min.js"></script>
 	<script type="text/javascript" src="../../build/jsmodeler.ext.three.js"></script>
 	
 	<title>SVG To 3D Examples</title>
@@ -35,8 +35,8 @@
 				return;
 			}
 
-			var modelAndMaterials = JSM.SvgToModel (svgObjects[index], 8, 5, null);
-			var meshes = JSM.ConvertModelToThreeMeshes (modelAndMaterials[0], modelAndMaterials[1]);
+			var model = JSM.SvgToModel (svgObjects[index], 8, 5, null);
+			var meshes = JSM.ConvertModelToThreeMeshes (model);
 			viewer.AddMeshes (meshes);
 
 			viewer.FitInWindow ();
@@ -46,9 +46,9 @@
 		function Load ()
 		{
 			var viewerSettings = {
-				cameraEyePosition : [-3, -2, 1.0],
+				cameraEyePosition : [-3, 1, 2],
 				cameraCenterPosition : [0.0, 0.0, 0.0],
-				cameraUpVector : [0.0, 0.0, 1.0],
+				cameraUpVector : [0.0, 1.0, 0.0],
 				nearClippingPlane : 1.0,
 				farClippingPlane : 100000.0
 			};

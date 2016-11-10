@@ -4,4 +4,3 @@ var SVGRectElement = {};
 var SVGPolygonElement = {};
 var SVGSVGElement = {};
 var JSM = {};
-

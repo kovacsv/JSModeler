@@ -41,14 +41,29 @@
 		
 		function CreateLinkIfNeeded (elem, name)
 		{
-			nameToCheck = GetParameterNameToCheck (name);
-			if (nameToCheck in entryClickCommands) {
-				elem.className += ' link';
-				elem.onclick = function (theTypeName) {
-					return function () {
-						window.location.hash = theTypeName;
-					}
-				} (nameToCheck);
+			while (elem.lastChild) {
+				elem.removeChild (elem.lastChild);
+			}
+			var parameterParts = name.split ('|');
+			var i, nameToCheck, nameSpan, separatorSpan;
+			for (i = 0; i < parameterParts.length; i++) {
+				nameToCheck = GetParameterNameToCheck (parameterParts[i]);
+				nameSpan = document.createElement ('span');
+				nameSpan.innerHTML = parameterParts[i];
+				if (nameToCheck in entryClickCommands) {
+					nameSpan.className = 'parameter link';
+					nameSpan.onclick = function (theTypeName) {
+						return function () {
+							window.location.hash = theTypeName;
+						}
+					} (nameToCheck);
+				}
+				elem.appendChild (nameSpan);
+				if (i < parameterParts.length - 1) {
+					separatorSpan = document.createElement ('span');
+					separatorSpan.innerHTML = ' | ';
+					elem.appendChild (separatorSpan);
+				}
 			}
 		}
 		

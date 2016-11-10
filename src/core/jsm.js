@@ -1,7 +1,7 @@
 var JSM = function ()
 {
 	this.mainVersion = 0;
-	this.subVersion = 41;
+	this.subVersion = 42;
 };
 
 /**
@@ -30,6 +30,17 @@ JSM.RandomNumber = function (from, to)
 JSM.RandomInt = function (from, to)
 {
 	return Math.floor ((Math.random () * (to - from + 1)) + from);
+};
+
+/**
+* Function: RandomBoolean
+* Description: Generates a random boolean value.
+* Returns:
+*	{boolean} the result
+*/
+JSM.RandomBoolean = function ()
+{
+	return JSM.RandomInt (0, 1) === 1;
 };
 
 /**

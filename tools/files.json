@@ -27,12 +27,15 @@
 		"../src/geometry/triangulation.js",
 		"../src/geometry/octree.js",
 		"../src/geometry/bsptree.js",
+		"../src/geometry/curves.js",
 		"../src/geometry/utilities.js",
 		"../src/geometry/ray.js",
-		"../src/modeler/body.js",
-		"../src/modeler/model.js",
+		"../src/geometry/path.js",
 		"../src/modeler/color.js",
 		"../src/modeler/material.js",
+		"../src/modeler/materialset.js",
+		"../src/modeler/body.js",
+		"../src/modeler/model.js",
 		"../src/modeler/adjacencyinfo.js",
 		"../src/modeler/bodyutils.js",
 		"../src/modeler/textureutils.js",
@@ -73,10 +76,13 @@
 		"../src/extras/extgenerator.js",
 		"../src/extras/subdivision.js",
 		"../src/extras/csg.js",
-		"../src/extras/curves.js"
+		"../src/extras/surfaces.js"
 	],
 	"svgToModelExtensionFileList" : [
 		"../src/extensions/svgtomodel/svgtomodel.js"
+	],
+	"textGeneratorExtensionFileList" : [
+		"../src/extensions/textgenerator/textgenerator.js"
 	],
 	"threeExtensionFileList" : [
 		"../src/extensions/threeviewer/threeconverter.js",

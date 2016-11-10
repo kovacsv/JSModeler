@@ -65,3 +65,8 @@ JSM.RenderBody.prototype.SetTransformation = function (transformation)
 {
 	this.transformation = transformation;
 };
+
+JSM.RenderBody.prototype.AppendTransformation = function (transformation)
+{
+	this.transformation.Append (transformation);
+};

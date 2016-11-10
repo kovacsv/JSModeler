@@ -775,6 +775,96 @@ JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, with
 };
 
 /**
+* Function: GeneratePrismGeometry
+* Description: Generates a prism defined by bottom and top vertices polygon.
+* Parameters:
+*	bottomVertices {Coord[*]} bottom vertices
+*	topVertices {Coord[*]} top vertices
+*	withTopAndBottom {boolean} generate top and bottom polygons
+* Returns:
+*	{Body} the result
+*/
+JSM.GeneratePrismGeometry = function (bottomVertices, topVertices, withTopAndBottom)
+{
+	var result = new JSM.Body ();
+	var count = bottomVertices.length;
+	
+	var i;
+	for (i = 0; i < count; i++) {
+		result.AddVertex (new JSM.BodyVertex (bottomVertices[i].Clone ()));
+		result.AddVertex (new JSM.BodyVertex (topVertices[i].Clone ()));
+	}
+
+	var current, next, bodyPolygon;
+	for (i = 0; i < count; i++) {
+		current = 2 * i;
+		next = current + 2;
+		if (i === count - 1) {
+			next = 0;
+		}
+		bodyPolygon = new JSM.BodyPolygon ([current, next, next + 1, current + 1]);
+		result.AddPolygon (bodyPolygon);
+	}
+
+	if (withTopAndBottom) {
+		var topPolygon = new JSM.BodyPolygon ([]);
+		var bottomPolygon = new JSM.BodyPolygon ([]);
+		for (i = 0; i < count; i++) {
+			topPolygon.AddVertexIndex (2 * i + 1);
+			bottomPolygon.AddVertexIndex (2 * (count - i - 1));
+		}
+		result.AddPolygon (topPolygon);
+		result.AddPolygon (bottomPolygon);
+	}
+	
+	return result;
+};
+
+/**
+* Function: GeneratePrismFromPolygon
+* Description: Generates a prism defined by a polygon.
+* Parameters:
+*	polygon {Polygon2D} the base polygon
+*	height {number} the height of the prism
+*	withTopAndBottom {boolean} generate top and bottom polygons
+*	curveAngle {number} if not null, defines the curve angle of the prism
+* Returns:
+*	{Body} the result
+*/
+JSM.GeneratePrismFromPolygon = function (polygon, height, withTopAndBottom, curveAngle)
+{
+	var bottomVertices = [];
+	var topVertices = [];
+	var i, vertex;
+	var count = polygon.VertexCount ();
+	for (i = 0; i < count; i++) {
+		vertex = polygon.GetVertex (i);
+		bottomVertices.push (new JSM.Coord (vertex.x, vertex.y, 0.0));
+		topVertices.push (new JSM.Coord (vertex.x, vertex.y, height));
+	}
+
+	var result = JSM.GeneratePrismGeometry (bottomVertices, topVertices, withTopAndBottom);
+	if (curveAngle !== undefined && curveAngle !== null) {
+		var curveGroups = JSM.CalculatePolygonCurveGroups (polygon, curveAngle);
+		var bodyPolygon;
+		for (i = 0; i < count; i++) {
+			bodyPolygon = result.GetPolygon (i);
+			bodyPolygon.SetCurveGroup (curveGroups[i]);
+		}
+	}
+	
+	var origo = bottomVertices[0].Clone ();
+	var firtVertex = bottomVertices[1].Clone ();
+	var firstDirection = JSM.CoordSub (firtVertex, origo).Normalize ();
+	var e3 = new JSM.Vector (0.0, 0.0, 1.0);
+	var e2 = JSM.VectorCross (e3, firstDirection);
+	var e1 = JSM.VectorCross (e2, e3);
+
+	result.SetCubicTextureProjection (origo, e1, e2, e3);
+	return result;
+};
+
+/**
 * Function: GeneratePrism
 * Description:
 *	Generates a prism defined by a polygon. The base polygon is an array
@@ -790,48 +880,30 @@ JSM.GenerateCone = function (topRadius, bottomRadius, height, segmentation, with
 */
 JSM.GeneratePrism = function (basePolygon, direction, height, withTopAndBottom, curveAngle)
 {
-	var result = new JSM.Body ();
-	
 	var polygon = new JSM.Polygon ();
 	polygon.FromArray (basePolygon);
 	var count = polygon.VertexCount ();
 
-	var curveGroups = null;
-	if (curveAngle !== undefined && curveAngle !== null) {
-		curveGroups = JSM.CalculatePolygonCurveGroups (polygon, curveAngle);
-	}
 
+	var bottomVertices = [];
+	var topVertices = [];
 	var i;
 	for (i = 0; i < count; i++) {
-		result.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i).Clone ()));
-		result.AddVertex (new JSM.BodyVertex (polygon.GetVertex (i).Clone ().Clone ().Offset (direction, height)));
+		bottomVertices.push (polygon.GetVertex (i).Clone ());
+		topVertices.push (polygon.GetVertex (i).Clone ().Offset (direction, height));
 	}
 
-	var current, next, bodyPolygon;
-	for (i = 0; i < count; i++) {
-		current = 2 * i;
-		next = current + 2;
-		if (i === count - 1) {
-			next = 0;
-		}
-		bodyPolygon = new JSM.BodyPolygon ([current, next, next + 1, current + 1]);
-		if (curveGroups !== null) {
+	var result = JSM.GeneratePrismGeometry (bottomVertices, topVertices, withTopAndBottom);
+	
+	if (curveAngle !== undefined && curveAngle !== null) {
+		var curveGroups = JSM.CalculatePolygonCurveGroups (polygon, curveAngle);
+		var bodyPolygon;
+		for (i = 0; i < count; i++) {
+			bodyPolygon = result.GetPolygon (i);
 			bodyPolygon.SetCurveGroup (curveGroups[i]);
 		}
-		result.AddPolygon (bodyPolygon);
 	}
-
-	if (withTopAndBottom) {
-		var topPolygon = new JSM.BodyPolygon ([]);
-		var bottomPolygon = new JSM.BodyPolygon ([]);
-		for (i = 0; i < count; i++) {
-			topPolygon.AddVertexIndex (2 * i + 1);
-			bottomPolygon.AddVertexIndex (2 * (count - i - 1));
-		}
-		result.AddPolygon (topPolygon);
-		result.AddPolygon (bottomPolygon);
-	}
-
+	
 	var origo = polygon.GetVertex (0).Clone ();
 	var firtVertex = polygon.GetVertex (1).Clone ();
 	var firstDirection = JSM.CoordSub (firtVertex, origo).Normalize ();
@@ -953,6 +1025,51 @@ JSM.GeneratePrismWithHole = function (basePolygon, direction, height, withTopAnd
 
 	result.SetCubicTextureProjection (origo, e1, e2, e3);
 	return result;
+};
+
+/**
+* Function: GeneratePrismsFromPath2D
+* Description: Generates a prism from the given path.
+* Parameters:
+*	path {Path2D} the path
+*	height {number} the height of the prism
+*	width {number} the width of the prism sides
+*	withTopAndBottom {boolean} generate top and bottom polygons
+* Returns:
+*	{Body[*]} the result
+*/
+JSM.GeneratePrismsFromPath2D = function (path, height, withTopAndBottom, curveAngle)
+{
+	function GetPrismPolygon (polygon)
+	{
+		var result = [];
+		var i, j, contour, vertex;
+		for (i = 0; i < polygon.ContourCount (); i++) {
+			contour = polygon.GetContour (i);
+			for (j = 0; j < contour.VertexCount (); j++) {
+				vertex = contour.GetVertex (j);
+				result.push (new JSM.Coord (vertex.x, vertex.y, 0.0));
+			}
+			if (i < polygon.ContourCount () - 1) {
+				result.push (null);
+			}
+		}
+		return result;
+	}
+
+	var bodies = [];
+	var polygons = path.GetPolygons ();
+	var direction = new JSM.Vector (0.0, 0.0, 1.0);
+	var i, polygon;
+	for (i = 0; i < polygons.length; i++) {
+		polygon = polygons[i];
+		if (polygon.ContourCount () === 1) {
+			bodies.push (JSM.GeneratePrism (GetPrismPolygon (polygon), direction, height, withTopAndBottom, curveAngle));
+		} else if (polygon.ContourCount () > 1) {
+			bodies.push (JSM.GeneratePrismWithHole (GetPrismPolygon (polygon), direction, height, withTopAndBottom, curveAngle));
+		}
+	}
+	return bodies;
 };
 
 /**
