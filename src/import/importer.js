@@ -1,4 +1,4 @@
-JSM.GetArrayBufferFromURL = function (url, onReady)
+JSM.GetArrayBufferFromURL = function (url, callbacks)
 {
 	var request = new XMLHttpRequest ();
 	request.open ('GET', url, true);
@@ -6,28 +6,40 @@ JSM.GetArrayBufferFromURL = function (url, onReady)
 
 	request.onload = function () {
 		var arrayBuffer = request.response;
-		if (arrayBuffer) {
-			onReady (arrayBuffer);
+		if (arrayBuffer && callbacks.onReady) {
+			callbacks.onReady (arrayBuffer);
+		}
+	};
+	
+	request.onerror = function () {
+		if (callbacks.onError) {
+			callbacks.onError ();
 		}
 	};
 
 	request.send (null);
 };
 
-JSM.GetArrayBufferFromFile = function (file, onReady)
+JSM.GetArrayBufferFromFile = function (file, callbacks)
 {
 	var reader = new FileReader ();
 
 	reader.onloadend = function (event) {
-		if (event.target.readyState == FileReader.DONE) {
-			onReady (event.target.result);
+		if (event.target.readyState == FileReader.DONE && callbacks.onReady) {
+			callbacks.onReady (event.target.result);
+		}
+	};
+	
+	reader.onerror = function () {
+		if (callbacks.onError) {
+			callbacks.onError ();
 		}
 	};
 
 	reader.readAsArrayBuffer (file);
 };
 
-JSM.GetStringBufferFromURL = function (url, onReady)
+JSM.GetStringBufferFromURL = function (url, callbacks)
 {
 	var request = new XMLHttpRequest ();
 	request.open ('GET', url, true);
@@ -35,24 +47,36 @@ JSM.GetStringBufferFromURL = function (url, onReady)
 
 	request.onload = function () {
 		var stringBuffer = request.response;
-		if (stringBuffer) {
-			onReady (stringBuffer);
+		if (stringBuffer && callbacks.onReady) {
+			callbacks.onReady (stringBuffer);
+		}
+	};
+	
+	request.onerror = function () {
+		if (callbacks.onError) {
+			callbacks.onError ();
 		}
 	};
 
 	request.send (null);
 };
 
-JSM.GetStringBufferFromFile = function (file, onReady)
+JSM.GetStringBufferFromFile = function (file, callbacks)
 {
 	var reader = new FileReader ();
 
 	reader.onloadend = function (event) {
-		if (event.target.readyState == FileReader.DONE) {
-			onReady (event.target.result);
+		if (event.target.readyState == FileReader.DONE && callbacks.onReady) {
+			callbacks.onReady (event.target.result);
 		}
 	};
 
+	reader.onerror = function () {
+		if (callbacks.onError) {
+			callbacks.onError ();
+		}
+	};	
+	
 	reader.readAsText (file);
 };
 
@@ -79,9 +103,15 @@ JSM.LoadMultipleBuffersInternal = function (inputList, index, result, onReady)
 		}
 	}
 	
-	loaderFunction (currentInput.originalObject, function (resultBuffer) {
-		result.push (resultBuffer);
-		JSM.LoadMultipleBuffersInternal (inputList, index + 1, result, onReady);
+	loaderFunction (currentInput.originalObject, {
+		onReady : function (resultBuffer) {
+			result.push (resultBuffer);
+			JSM.LoadMultipleBuffersInternal (inputList, index + 1, result, onReady);
+		},
+		onError : function () {
+			result.push (null);
+			JSM.LoadMultipleBuffersInternal (inputList, index + 1, result, onReady);
+		}
 	});
 };
 

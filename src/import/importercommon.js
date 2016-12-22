@@ -186,39 +186,55 @@ JSM.ConvertImportFileListToJsonData = function (importFileList, callbacks)
 		if (mainFile.extension == '.3DS') {
 			JSM.LoadMultipleBuffers (inputList, function (resultBuffers) {
 				var mainFileBuffer = resultBuffers[mainFileIndex];
-				var jsonData = JSM.Convert3dsToJsonData (mainFileBuffer, {
-					onFileRequested : function (fileName) {
-						return FileRequested (importFileList, resultBuffers, fileName, fileNames);
-					}
-				});
-				OnReady (fileNames, jsonData);
+				if (mainFileBuffer === null) {
+					OnError ();
+				} else {
+					var jsonData = JSM.Convert3dsToJsonData (mainFileBuffer, {
+						onFileRequested : function (fileName) {
+							return FileRequested (importFileList, resultBuffers, fileName, fileNames);
+						}
+					});
+					OnReady (fileNames, jsonData);
+				}
 			});
 		} else if (mainFile.extension == '.OBJ') {
 			JSM.LoadMultipleBuffers (inputList, function (resultBuffers) {
 				var mainFileBuffer = resultBuffers[mainFileIndex];
-				var jsonData = JSM.ConvertObjToJsonData (mainFileBuffer, {
-					onFileRequested : function (fileName) {
-						return FileRequested (importFileList, resultBuffers, fileName, fileNames);
-					}
-				});
-				OnReady (fileNames, jsonData);
+				if (mainFileBuffer === null) {
+					OnError ();
+				} else {
+					var jsonData = JSM.ConvertObjToJsonData (mainFileBuffer, {
+						onFileRequested : function (fileName) {
+							return FileRequested (importFileList, resultBuffers, fileName, fileNames);
+						}
+					});
+					OnReady (fileNames, jsonData);
+				}
 			});
 		} else if (mainFile.extension == '.STL') {
 			JSM.LoadMultipleBuffers (inputList, function (resultBuffers) {
 				var mainFileBuffer = resultBuffers[mainFileIndex];
-				if (JSM.IsBinaryStlFile (mainFileBuffer)) {
-					var jsonData = JSM.ConvertStlToJsonData (mainFileBuffer, null);
-					OnReady (fileNames, jsonData);
+				if (mainFileBuffer === null) {
+					OnError ();
 				} else {
-					var i;
-					for (i = 0; i < inputList.length; i++) {
-						inputList[i].isArrayBuffer = false;
-					}
-					JSM.LoadMultipleBuffers (inputList, function (resultBuffers) {
-						var mainFileBuffer = resultBuffers[mainFileIndex];
-						var jsonData = JSM.ConvertStlToJsonData (null, mainFileBuffer);
+					if (JSM.IsBinaryStlFile (mainFileBuffer)) {
+						var jsonData = JSM.ConvertStlToJsonData (mainFileBuffer, null);
 						OnReady (fileNames, jsonData);
-					});
+					} else {
+						var i;
+						for (i = 0; i < inputList.length; i++) {
+							inputList[i].isArrayBuffer = false;
+						}
+						JSM.LoadMultipleBuffers (inputList, function (resultBuffers) {
+							var mainFileBuffer = resultBuffers[mainFileIndex];
+							if (mainFileBuffer === null) {
+								OnError ();
+							} else {
+								var jsonData = JSM.ConvertStlToJsonData (null, mainFileBuffer);
+								OnReady (fileNames, jsonData);
+							}
+						});
+					}
 				}
 			});
 		}
