@@ -19,9 +19,9 @@ def CheckSlimerJSVersion (versionString):
 def Main ():
 	currentPath = os.path.abspath (os.getcwd ())
 	scriptPath = os.path.join (os.path.dirname (os.path.abspath (__file__)), 'slimerjstest.js')
-	slimerJSVersion = 'SlimerJS 0.9.6'
+	slimerJSVersion = '0.9.6'
 	if not CheckSlimerJSVersion (slimerJSVersion):
-		print 'Error: ' + slimerJSVersion + ' is required.'
+		print 'Error: SlimerJS ' + slimerJSVersion + ' is required (npm install -g slimerjs@' + slimerJSVersion + ').'
 		return 1
 
 	rootPath = os.path.abspath (os.path.join (os.path.dirname (scriptPath), '..', '..'))
