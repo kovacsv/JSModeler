@@ -45,13 +45,14 @@ JSM.Touch.prototype.End = function (event, div)
 
 JSM.Touch.prototype.SetCurrent = function (event, div)
 {
-	function GetEventCoord (touch)
+	function GetEventCoord (touch, div)
 	{
 		var currX = touch.pageX;
 		var currY = touch.pageY;
-		if (div !== undefined && div.offsetLeft !== undefined && div.offsetTop !== undefined) {
-			currX -= div.offsetLeft;
-			currY -= div.offsetTop;
+		if (div.getBoundingClientRect !== undefined) {
+			var clientRect = div.getBoundingClientRect ();
+			currX -= clientRect.left;
+			currY -= clientRect.top;
 		}
 		if (window.pageXOffset !== undefined && window.pageYOffset !== undefined) {
 			currX += window.pageXOffset;
@@ -61,9 +62,9 @@ JSM.Touch.prototype.SetCurrent = function (event, div)
 	}
 	
 	if (event.touches.length == 1 || event.touches.length == 3) {
-		this.curr = GetEventCoord (event.touches[0]);
+		this.curr = GetEventCoord (event.touches[0], div);
 	} else if (event.touches.length == 2) {
-		var distance = GetEventCoord (event.touches[0]).DistanceTo (GetEventCoord (event.touches[1]));
+		var distance = GetEventCoord (event.touches[0], div).DistanceTo (GetEventCoord (event.touches[1], div));
 		this.curr = new JSM.Coord2D (distance, distance);
 	}
 };
