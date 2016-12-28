@@ -371,9 +371,9 @@ suite.AddTest ('Solids', function (test, onReady) {
 suite.AddTest ('CSGExample', function (test, onReady) {
 	test.Open ('/documentation/examples/csg.html', function () {
 		test.GenerateImage ('OnLoad');
-		var shapesY1 = 116;
-		var shapesY2 = 306;
-		var shapesX = [46, 88, 142];
+		var shapesY1 = 92;
+		var shapesY2 = 262;
+		var shapesX = [36, 84, 134];
 		
 		var i;
 		for (i = 0; i < shapesX.length; i++) {
@@ -389,19 +389,19 @@ suite.AddTest ('CSGExample', function (test, onReady) {
 		test.Click (shapesX[1], shapesY2);
 
 		// modify size
-		test.WriteToForm (112, 166, '0.5');
-		test.Click (272, 114);
+		test.WriteToForm (104, 132, '0.5');
+		test.Click (272, shapesY1);
 		test.GenerateImage ('Params', 1);
 		
-		test.WriteToForm (130, 460, '0.0');
-		test.Click (272, 306);
+		test.WriteToForm (120, 405, '0.0');
+		test.Click (272, shapesY2);
 		test.GenerateImage ('Params', 2);
 
 		// modify method
-		test.Click (90, 562);
-		test.GenerateImage ('Method', 2);
+		test.Click (88, 496);
+		test.GenerateImage ('Method', 1);
 
-		test.Click (214, 562);
+		test.Click (212, 496);
 		test.GenerateImage ('Method', 2);
 		
 		onReady ();
