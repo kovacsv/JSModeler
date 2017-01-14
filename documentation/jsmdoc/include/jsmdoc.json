@@ -2272,6 +2272,9 @@
 								["integer", "the result"]
 							]
 						},
+						"ReverseVertices" : {
+							"description" : "Reverses the orientation of the vertices."
+						},
 						"GetPrevVertex" : {
 							"description" : "Returns the vertex index before the given one.",
 							"parameters" : [
