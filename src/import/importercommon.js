@@ -16,7 +16,7 @@ JSM.ImportFileList.prototype.InitFromFiles = function (fileList)
 			originalObject : file,
 			originalFileName : file.name,
 			fileName : file.name.toUpperCase (),
-			extension : this.GetFileExtension (file.name)
+			extension : this.GetFileExtension (file.name).toUpperCase ()
 		};
 		this.descriptors.push (descriptor);
 	}
@@ -35,7 +35,7 @@ JSM.ImportFileList.prototype.InitFromURLs = function (urlList)
 			originalObject : url,
 			originalFileName : fileName,
 			fileName : fileName.toUpperCase (),
-			extension : this.GetFileExtension (fileName)
+			extension : this.GetFileExtension (fileName).toUpperCase ()
 		};
 		this.descriptors.push (descriptor);
 	}
@@ -80,7 +80,8 @@ JSM.ImportFileList.prototype.GetFileName = function (fullFileName)
 	if (splitted.length === 0) {
 		return '';
 	}
-	return splitted[splitted.length - 1];
+	var fileName = splitted[splitted.length - 1];
+	return decodeURI (fileName);
 };
 
 JSM.ImportFileList.prototype.GetFileDescriptor = function (index)
@@ -134,7 +135,6 @@ JSM.ImportFileList.prototype.GetFileExtension = function (fileName)
 	}
 	
 	var extension = fileName.substr (firstPoint);
-	extension = extension.toUpperCase ();
 	return extension;
 };
 
