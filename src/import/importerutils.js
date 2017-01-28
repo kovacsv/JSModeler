@@ -115,7 +115,7 @@ JSM.LoadMultipleBuffers = function (inputList, onReady)
 				LoadMultipleBuffersInternal (inputList, index + 1, result, onReady);
 			}
 		});
-	};
+	}
 
 	var result = [];
 	LoadMultipleBuffersInternal (inputList, 0, result, function (result) {

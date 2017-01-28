@@ -51,7 +51,7 @@ unitTest.AddSourceFile ('../../src/modeler/trianglemodel.js');
 unitTest.AddSourceFile ('../../src/modeler/converter.js');
 unitTest.AddSourceFile ('../../src/modeler/rayutils.js');
 unitTest.AddSourceFile ('../../src/import/binaryreader.js');
-unitTest.AddSourceFile ('../../src/import/importer.js');
+unitTest.AddSourceFile ('../../src/import/importerutils.js');
 unitTest.AddSourceFile ('../../src/import/importer3ds.js');
 unitTest.AddSourceFile ('../../src/import/importerobj.js');
 unitTest.AddSourceFile ('../../src/import/importerstl.js');
