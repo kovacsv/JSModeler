@@ -80,45 +80,45 @@ JSM.GetStringBufferFromFile = function (file, callbacks)
 	reader.readAsText (file);
 };
 
-JSM.LoadMultipleBuffersInternal = function (inputList, index, result, onReady)
-{
-	if (index >= inputList.length) {
-		onReady (result);
-		return;
-	}
-	
-	var currentInput = inputList[index];
-	var loaderFunction = null;
-	if (currentInput.isFile) {
-		if (currentInput.isArrayBuffer) {
-			loaderFunction = JSM.GetArrayBufferFromFile;
-		} else {
-			loaderFunction = JSM.GetStringBufferFromFile;
-		}
-	} else {
-		if (currentInput.isArrayBuffer) {
-			loaderFunction = JSM.GetArrayBufferFromURL;
-		} else {
-			loaderFunction = JSM.GetStringBufferFromURL;
-		}
-	}
-	
-	loaderFunction (currentInput.originalObject, {
-		onReady : function (resultBuffer) {
-			result.push (resultBuffer);
-			JSM.LoadMultipleBuffersInternal (inputList, index + 1, result, onReady);
-		},
-		onError : function () {
-			result.push (null);
-			JSM.LoadMultipleBuffersInternal (inputList, index + 1, result, onReady);
-		}
-	});
-};
-
 JSM.LoadMultipleBuffers = function (inputList, onReady)
 {
+	function LoadMultipleBuffersInternal (inputList, index, result, onReady)
+	{
+		if (index >= inputList.length) {
+			onReady (result);
+			return;
+		}
+		
+		var currentInput = inputList[index];
+		var loaderFunction = null;
+		if (currentInput.isFile) {
+			if (currentInput.isArrayBuffer) {
+				loaderFunction = JSM.GetArrayBufferFromFile;
+			} else {
+				loaderFunction = JSM.GetStringBufferFromFile;
+			}
+		} else {
+			if (currentInput.isArrayBuffer) {
+				loaderFunction = JSM.GetArrayBufferFromURL;
+			} else {
+				loaderFunction = JSM.GetStringBufferFromURL;
+			}
+		}
+		
+		loaderFunction (currentInput.originalObject, {
+			onReady : function (resultBuffer) {
+				result.push (resultBuffer);
+				LoadMultipleBuffersInternal (inputList, index + 1, result, onReady);
+			},
+			onError : function () {
+				result.push (null);
+				LoadMultipleBuffersInternal (inputList, index + 1, result, onReady);
+			}
+		});
+	};
+
 	var result = [];
-	JSM.LoadMultipleBuffersInternal (inputList, 0, result, function (result) {
+	LoadMultipleBuffersInternal (inputList, 0, result, function (result) {
 		onReady (result);
 	});
 };
