@@ -167,20 +167,25 @@ JSM.TriangleModel.prototype.BodyCount = function ()
 */
 JSM.TriangleModel.prototype.FinalizeMaterials = function ()
 {
-	var defaultMaterialData = {
-		name : 'Default',
-		ambient : [0.5, 0.5, 0.5],
-		diffuse : [0.5, 0.5, 0.5],
-		specular : [0.1, 0.1, 0.1],
-		shininess : 0.0,
-		opacity : 1.0,
-		reflection : 0.0,
-		texture : null,
-		offset : null,
-		scale : null,
-		rotation : null
-	};
-	
+	if(this.defaultMaterial !== -1) {
+		var defaultMaterialData = this.materials[this.defaultMaterial];
+		this.materials.splice(this.defaultMaterial, 1);
+	} else {
+		var defaultMaterialData = {
+			name : 'Default',
+			ambient : [0.5, 0.5, 0.5],
+			diffuse : [0.5, 0.5, 0.5],
+			specular : [0.1, 0.1, 0.1],
+			shininess : 0.0,
+			opacity : 1.0,
+			reflection : 0.0,
+			texture : null,
+			offset : null,
+			scale : null,
+			rotation : null
+		};
+	}
+
 	var i, material;
 	for (i = 0; i < this.materials.length; i++) {
 		material = this.materials[i];
