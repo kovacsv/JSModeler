@@ -55,7 +55,7 @@ JSM.ImportFileList.prototype.GetInputList = function ()
 		descriptor = this.descriptors[i];
 		inputListElem = {
 			originalObject : descriptor.originalObject,
-			isFile : this.IsFile (),
+			isFile : this.isFile,
 			isArrayBuffer : IsArrayBuffer (descriptor)
 		};
 		result.push (inputListElem);
@@ -79,11 +79,6 @@ JSM.ImportFileList.prototype.GetFileName = function (fullFileName)
 JSM.ImportFileList.prototype.GetFileDescriptor = function (index)
 {
 	return this.descriptors[index];
-};
-
-JSM.ImportFileList.prototype.IsFile = function ()
-{
-	return this.isFile;
 };
 
 JSM.ImportFileList.prototype.GetMainFileIndex = function ()
