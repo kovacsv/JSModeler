@@ -1,13 +1,11 @@
 JSM.ImportFileList = function ()
 {
-	this.originalList = null;
 	this.descriptors = null;
 	this.isFile = null;
 };
 
 JSM.ImportFileList.prototype.InitFromFiles = function (fileList)
 {
-	this.originalList = fileList;
 	this.descriptors = [];
 	var i, file, descriptor;
 	for (i = 0; i < fileList.length; i++) {
@@ -25,7 +23,6 @@ JSM.ImportFileList.prototype.InitFromFiles = function (fileList)
 
 JSM.ImportFileList.prototype.InitFromURLs = function (urlList)
 {
-	this.originalList = urlList;
 	this.descriptors = [];
 	var i, url, fileName, descriptor;
 	for (i = 0; i < urlList.length; i++) {
@@ -40,11 +37,6 @@ JSM.ImportFileList.prototype.InitFromURLs = function (urlList)
 		this.descriptors.push (descriptor);
 	}
 	this.isFile = false;
-};
-
-JSM.ImportFileList.prototype.GetOriginalList = function ()
-{
-	return this.originalList;
 };
 
 JSM.ImportFileList.prototype.GetInputList = function ()
