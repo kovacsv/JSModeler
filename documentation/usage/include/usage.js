@@ -7,10 +7,12 @@ Usage = function (menuGroups)
 		infoDiv : null,
 		menuContent : null,
 		searchField : null,
-		menuItemList : null
+		menuItemList : null,
+		floating : null
 	};
 	
 	this.hashChanging = false;
+	this.currentItem = null;
 	this.GenerateUI ();
 
 	var viewerSettings = {
@@ -33,12 +35,15 @@ Usage.prototype.GenerateUI = function ()
 {
 	var myThis = this;
 	this.uiElements.menu = $('<div>').addClass ('menu').appendTo ($(document.body));
-	this.uiElements.canvas = $('<canvas>').addClass ('viewer').appendTo ($(document.body));;
-	this.uiElements.infoDiv = $('<div>').addClass ('info').appendTo (this.uiElements.menu);
+	this.uiElements.canvas = $('<canvas>').addClass ('viewer').appendTo ($(document.body));
+	this.uiElements.infoDiv = $('<div>').addClass ('info').appendTo ($(document.body));
 	this.uiElements.menuContent = $('<div>').addClass ('content').appendTo (this.uiElements.menu);
 	var nameDiv = $('<div>').addClass ('name').html ('JSModeler').appendTo (this.uiElements.menuContent);
-	var sourceButtonDiv = $('<div>').addClass ('button').appendTo (this.uiElements.menuContent);
+	var sourceButtonDiv = $('<div>').addClass ('button').attr ('title', 'View source').appendTo ($(document.body));
 	var sourceButtonImg = $('<img>').attr ('src', 'include/settings.png').appendTo (sourceButtonDiv);
+	sourceButtonDiv.click (function () {
+		myThis.ShowSource ();
+	});
 	this.uiElements.searchField = $('<input>').addClass ('searchfield').appendTo (this.uiElements.menuContent);
 	this.uiElements.searchField.keyup (function () {
 		var searchString = myThis.uiElements.searchField.val ();
@@ -107,13 +112,36 @@ Usage.prototype.GenerateMenu = function (searchString)
 	}
 };
 
+Usage.prototype.RemoveSource = function ()
+{
+	if (this.uiElements.floating !== null) {
+		this.uiElements.floating.remove ();
+		this.uiElements.floating = null;
+	}
+};
+
+Usage.prototype.ShowSource = function ()
+{
+	if (this.currentItem === null) {
+		return;
+	}
+	if (this.uiElements.floating !== null) {
+		this.RemoveSource ();
+	} else {
+		this.uiElements.floating = $('<div>').addClass ('floating').appendTo ($(document.body));
+		var code = $('<pre>').addClass ('brush:js, toolbar: false').html (this.currentItem.handler.toString ()).appendTo (this.uiElements.floating);
+		SyntaxHighlighter.highlight ();
+	}
+};
+
 Usage.prototype.CallMenuItemHandler = function (menuGroup, menuItem, changeHash)
 {
 	if (changeHash) {
 		this.hashChanging = true;
 		window.location.hash = encodeURI (menuGroup.name + ',' + menuItem.name);
 	}
-	//alert (menuItem.handler.toString ());
+	this.RemoveSource ();
+	this.currentItem = menuItem;
 	this.viewer.RemoveMeshes ();
 	var infoText = '';
 	if (menuItem.info !== undefined && menuItem.info !== null) {

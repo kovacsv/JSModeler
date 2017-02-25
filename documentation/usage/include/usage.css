@@ -98,6 +98,19 @@ div.menuitem:hover
 	background : #008ab8;
 }
 
+div.floating
+{
+	color : #000000;
+	background : #ffffff;
+	overflow : auto;
+	position : absolute;
+	left : 300px;
+	top : 10px;
+	right : 10px;
+	bottom : 10px;
+	border : 1px solid #cccccc;
+}
+
 canvas.viewer
 {
 	display : block;
