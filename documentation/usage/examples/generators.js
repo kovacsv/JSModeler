@@ -109,10 +109,12 @@ handler : function (viewer) {
 		new JSM.Coord (0, 1, 0)
 	];
 	
-	var body1 = JSM.GeneratePrism (basePolygon, new JSM.Vector (0, 0, 1), 1, false);
-	var body2 = JSM.GeneratePrism (basePolygon, new JSM.Vector (0, 0, 1), 1, true);
-	var body3 = JSM.GeneratePrism (basePolygon, new JSM.Vector (0, 1, 1), 1, false);
-	var body4 = JSM.GeneratePrism (basePolygon, new JSM.Vector (0, 1, 1), 1, true);
+	var direction1 = new JSM.Vector (0, 0, 1);
+	var direction2 = new JSM.Vector (0, 1, 1);
+	var body1 = JSM.GeneratePrism (basePolygon, direction1, 1, false);
+	var body2 = JSM.GeneratePrism (basePolygon, direction1, 1, true);
+	var body3 = JSM.GeneratePrism (basePolygon, direction2, 1, false);
+	var body4 = JSM.GeneratePrism (basePolygon, direction2, 1, true);
 	
 	body2.Transform (JSM.TranslationTransformation (new JSM.Coord (3, 0, 0)));
 	body3.Transform (JSM.TranslationTransformation (new JSM.Coord (0, 3, 0)));
@@ -151,7 +153,8 @@ handler : function (viewer) {
 		new JSM.Coord (5.5, 1.5, 0)
 	];
 	
-	var body = JSM.GeneratePrismWithHole (basePoints, new JSM.Vector (0.0, 0.0, 1.0), 1, true);
+	var direction = new JSM.Vector (0, 0, 1);
+	var body = JSM.GeneratePrismWithHole (basePoints, direction, 1, true);
 	viewer.AddMeshes (JSM.ConvertBodyToThreeMeshes (body));
 }
 },
@@ -169,10 +172,12 @@ handler : function (viewer) {
 		new JSM.Coord (0, 1, 0)
 	];
 	
-	var body1 = JSM.GeneratePrismShell (basePolygon, new JSM.Vector (0, 0, 1), 1, 0.2, false);
-	var body2 = JSM.GeneratePrismShell (basePolygon, new JSM.Vector (0, 0, 1), 1, 0.2, true);
-	var body3 = JSM.GeneratePrismShell (basePolygon, new JSM.Vector (0, 1, 1), 1, 0.2, false);
-	var body4 = JSM.GeneratePrismShell (basePolygon, new JSM.Vector (0, 1, 1), 1, 0.2, true);
+	var direction1 = new JSM.Vector (0, 0, 1);
+	var direction2 = new JSM.Vector (0, 1, 1);
+	var body1 = JSM.GeneratePrismShell (basePolygon, direction1, 1, 0.2, false);
+	var body2 = JSM.GeneratePrismShell (basePolygon, direction1, 1, 0.2, true);
+	var body3 = JSM.GeneratePrismShell (basePolygon, direction2, 1, 0.2, false);
+	var body4 = JSM.GeneratePrismShell (basePolygon, direction2, 1, 0.2, true);
 	
 	body2.Transform (JSM.TranslationTransformation (new JSM.Coord (3, 0, 0)));
 	body3.Transform (JSM.TranslationTransformation (new JSM.Coord (0, 3, 0)));
@@ -198,10 +203,11 @@ handler : function (viewer) {
 		new JSM.Coord (0, 1, 0)
 	];
 	
-	var body1 = JSM.GenerateLineShell (basePolygon, new JSM.Vector (0, 0, 1), 1, 0.2, false, false);
-	var body2 = JSM.GenerateLineShell (basePolygon, new JSM.Vector (0, 0, 1), 1, 0.2, false, true);
-	var body3 = JSM.GenerateLineShell (basePolygon, new JSM.Vector (0, 0, 1), 1, 0.2, true, false);
-	var body4 = JSM.GenerateLineShell (basePolygon, new JSM.Vector (0, 0, 1), 1, 0.2, true, true);
+	var direction = new JSM.Vector (0, 0, 1);
+	var body1 = JSM.GenerateLineShell (basePolygon, direction, 1, 0.2, false, false);
+	var body2 = JSM.GenerateLineShell (basePolygon, direction, 1, 0.2, false, true);
+	var body3 = JSM.GenerateLineShell (basePolygon, direction, 1, 0.2, true, false);
+	var body4 = JSM.GenerateLineShell (basePolygon, direction, 1, 0.2, true, true);
 	
 	body2.Transform (JSM.TranslationTransformation (new JSM.Coord (3, 0, 0)));
 	body3.Transform (JSM.TranslationTransformation (new JSM.Coord (0, 3, 0)));
