@@ -48,9 +48,10 @@ div.info
 {
 	color : #000000;
 	background : rgba(0,0,0,0.05);
-	padding : 10px;
+	padding : 8px;
+	border-radius : 5px;
 	position : absolute;
-	width : 300px;
+	left : 300px;
 	top : 10px;
 	right : 10px;
 }
