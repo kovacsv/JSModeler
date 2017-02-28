@@ -39,9 +39,9 @@ Usage.prototype.GenerateUI = function ()
 	this.uiElements.infoDiv = $('<div>').addClass ('info').appendTo ($(document.body));
 	this.uiElements.menuContent = $('<div>').addClass ('content').appendTo (this.uiElements.menu);
 	var nameDiv = $('<div>').addClass ('name').html ('JSModeler').appendTo (this.uiElements.menuContent);
-	var sourceButtonDiv = $('<div>').addClass ('button').attr ('title', 'View source').appendTo ($(document.body));
-	var sourceButtonImg = $('<img>').attr ('src', 'include/settings.png').appendTo (sourceButtonDiv);
-	sourceButtonDiv.click (function () {
+	var buttonsDiv = $('<div>').addClass ('buttons').appendTo (this.uiElements.menuContent);
+	var sourceButtonImg = $('<img>').addClass ('button').attr ('src', 'include/source.png').appendTo (buttonsDiv);
+	sourceButtonImg.click (function () {
 		myThis.ShowSource ();
 	});
 	this.uiElements.searchField = $('<input>').addClass ('searchfield').appendTo (this.uiElements.menuContent);

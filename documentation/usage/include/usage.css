@@ -20,21 +20,10 @@ div.menu
 	overflow : auto;
 }
 
-div.button
-{
-	color : #ffffff;
-	background : #222222;
-	padding : 8px;
-	border-radius : 5px;
-	position : absolute;
-	left : 260px;
-	top : 10px;
-	cursor : pointer;
-}
-
-div.button img
+img.button
 {
 	display : block;
+	cursor : pointer
 }
 
 div.name
@@ -44,16 +33,20 @@ div.name
 	margin-bottom : 10px;
 }
 
+div.buttons
+{
+	margin : 10px 0px;
+}
+
 div.info
 {
 	color : #000000;
 	background : rgba(0,0,0,0.05);
 	padding : 8px;
-	border-radius : 5px;
 	position : absolute;
-	left : 300px;
-	top : 10px;
-	right : 10px;
+	left : 250px;
+	top : 0px;
+	right : 0px;
 }
 
 input.searchfield
@@ -105,11 +98,10 @@ div.floating
 	background : #ffffff;
 	overflow : auto;
 	position : absolute;
-	left : 300px;
-	top : 10px;
-	right : 10px;
-	bottom : 10px;
-	border : 1px solid #cccccc;
+	left : 250px;
+	top : 0px;
+	right : 0px;
+	bottom : 0px;
 }
 
 canvas.viewer
