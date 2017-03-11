@@ -69,7 +69,7 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				
 				'void main (void) {',
 				'	mediump vec3 ambientComponent = uMaterial.ambientColor * uAmbientLightColor;',
-				'	mediump vec3 diffuseComponent;',
+				'	mediump vec3 diffuseComponent = vec3 (0.0, 0.0, 0.0);',
 				'	for (int i = 0; i < MAX_LIGHTS; i++) {',
 				'		diffuseComponent += uMaterial.diffuseColor * uLights[i].diffuseColor;',
 				'	}',
@@ -115,8 +115,8 @@ JSM.ShaderProgram.prototype.InitShaders = function ()
 				'		N = -N;',
 				'	}',
 				'	mediump vec3 ambientComponent = uMaterial.ambientColor * uAmbientLightColor;',
-				'	mediump vec3 diffuseComponent;',
-				'	mediump vec3 specularComponent;',
+				'	mediump vec3 diffuseComponent = vec3 (0.0, 0.0, 0.0);',
+				'	mediump vec3 specularComponent = vec3 (0.0, 0.0, 0.0);',
 				'	mediump vec3 E = normalize (-vVertex);',
 
 				'	for (int i = 0; i < MAX_LIGHTS; i++) {',
