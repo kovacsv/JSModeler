@@ -1,4 +1,5 @@
-##JSModeler
+JSModeler
+---------
 
 JSModeler is a JavaScript framework to create and visualize 3D models.
 
