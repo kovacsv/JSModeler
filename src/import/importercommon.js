@@ -116,12 +116,11 @@ JSM.ImportFileList.prototype.IsSupportedExtension = function (extension)
 
 JSM.ImportFileList.prototype.GetFileExtension = function (fileName)
 {
-	var firstPoint = fileName.lastIndexOf ('.');
-	if (firstPoint == -1) {
+	var lastPoint = fileName.lastIndexOf ('.');
+	if (lastPoint == -1) {
 		return '';
 	}
-	
-	var extension = fileName.substr (firstPoint);
+	var extension = fileName.substr (lastPoint);
 	return extension;
 };
 
