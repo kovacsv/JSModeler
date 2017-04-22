@@ -127,6 +127,28 @@ JSM.CopyObjectProperties = function (source, target, overwrite)
 };
 
 /**
+* Function: GetObjectProperty
+* Description: Returns the given property of the object. If it doesn't exist, returns the given default value.
+* Parameters:
+*	object {anything} the object
+*	propertyName {string} the name of the property
+*	defaultValue {anything} the default value
+*/
+JSM.GetObjectProperty = function (object, propertyName, defaultValue)
+{
+	if (object === undefined || object === null) {
+		return defaultValue
+	}
+
+	var propertyValue = object[propertyName];
+	if (propertyValue === undefined || propertyValue === null) {
+		return defaultValue;
+	}
+	
+	return propertyValue;
+};
+
+/**
 * Function: Message
 * Description: Writes a message to the console.
 * Parameters:
