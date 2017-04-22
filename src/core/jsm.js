@@ -137,7 +137,7 @@ JSM.CopyObjectProperties = function (source, target, overwrite)
 JSM.GetObjectProperty = function (object, propertyName, defaultValue)
 {
 	if (object === undefined || object === null) {
-		return defaultValue
+		return defaultValue;
 	}
 
 	var propertyValue = object[propertyName];
