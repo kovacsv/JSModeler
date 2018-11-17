@@ -183,7 +183,7 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 			if (lineParts.length < 2) {
 				return;
 			}
-			
+
 			OnMaterialParameter (lineParts[0], lineParts[1]);
 		} else if (lineParts[0] == 'map_Kd') {
 			if (lineParts.length < 2) {
@@ -288,7 +288,9 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 				if (JSM.IsPositive (value)) {
 					currentMaterial.shininess = (Math.log2 (parseFloat (value)) - 1) / 10.0;
 				}
-			} else if (name == 'Tr' || name == 'd') {
+			} else if (name == 'Tr') {
+				currentMaterial.opacity = 1.0 - parseFloat (value);
+			} else if (name == 'd') {
 				currentMaterial.opacity = parseFloat (value);
 			}			
 		},
