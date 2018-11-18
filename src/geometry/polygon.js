@@ -72,6 +72,16 @@ JSM.Polygon.prototype.GetNextVertex = function (index)
 };
 
 /**
+* Function: Polygon.ReverseVertices
+* Description: Reverses the orientation of the vertices.
+*/
+JSM.Polygon.prototype.ReverseVertices = function ()
+{
+	this.vertices.reverse ();
+	this.ClearCache ();
+};
+
+/**
 * Function: Polygon.GetPrevVertex
 * Description: Returns the vertex index before the given one.
 * Parameters:

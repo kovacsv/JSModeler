@@ -26,7 +26,6 @@ html, body
 
 div.title
 {
-	padding : 10px;
 	margin-bottom : 10px;
 }
 
@@ -52,21 +51,18 @@ div.box
 	padding : 5px;
 	margin-bottom : 10px;
 	border : 1px solid #cccccc;
-	border-radius : 5px;
 }
 
 div.boxmenu
 {
 	color : #000000;
 	background : #eeeeee;
-	padding : 10px;
-	border-radius : 5px;
+	padding : 5px;
 }
 
 div.boxmenu a
 {
 	padding : 5px;
-	border-radius : 5px;
 	text-decoration : none;
 	float : left;
 }
@@ -86,8 +82,7 @@ div.boxmenu a.button
 
 div.boxmain
 {
-	padding : 10px;
-	border-radius : 5px;
+	padding : 5px;
 }
 
 div.operationbox
@@ -95,15 +90,13 @@ div.operationbox
 	color : #000000;
 	background : #eeeeee;
 	text-align : center;
-	padding : 15px;
+	padding : 10px;
 	border : 1px solid #cccccc;
-	border-radius : 5px;
 }
 
 div.operationbox a
 {
 	padding : 5px;
-	border-radius : 5px;
 	text-decoration : none;
 }
 
@@ -141,7 +134,6 @@ a.inputbutton
 	background : #f5f5f5;
 	padding : 3px 5px;
 	text-decoration : none;
-	border-radius : 5px;
 }
 
 a.inputbuttonmargin
@@ -150,7 +142,6 @@ a.inputbuttonmargin
 	background : #f5f5f5;
 	padding : 3px 5px;
 	text-decoration : none;
-	border-radius : 5px;
 	margin-right : 10px;
 }
 

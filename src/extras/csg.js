@@ -60,9 +60,12 @@ JSM.BooleanOperation = function (operation, aBody, bBody)
 	{
 		function SetPolygonsUserData (polygons, userData)
 		{
-			var i;
+			var i, polygon;
 			for (i = 0; i < polygons.length; i++) {
-				polygons[i].userData = userData;
+				polygon = polygons[i];
+				if (polygon.userData === undefined) {
+					polygon.userData = userData;
+				}
 			}
 		}
 	
