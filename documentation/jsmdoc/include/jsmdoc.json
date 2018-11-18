@@ -72,6 +72,14 @@
 						["overwrite", "boolean", "overwrite existing properties"]
 					]
 				},
+				"GetObjectProperty" : {
+					"description" : "Returns the given property of the object. If it doesn't exist, returns the given default value.",
+					"parameters" : [
+						["object", "anything", "the object"],
+						["propertyName", "string", "the name of the property"],
+						["defaultValue", "anything", "the default value"]
+					]
+				},
 				"Message" : {
 					"description" : "Writes a message to the console.",
 					"parameters" : [
