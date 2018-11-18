@@ -1,13 +1,11 @@
 JSM.ImportFileList = function ()
 {
-	this.originalList = null;
 	this.descriptors = null;
 	this.isFile = null;
 };
 
 JSM.ImportFileList.prototype.InitFromFiles = function (fileList)
 {
-	this.originalList = fileList;
 	this.descriptors = [];
 	var i, file, descriptor;
 	for (i = 0; i < fileList.length; i++) {
@@ -16,7 +14,7 @@ JSM.ImportFileList.prototype.InitFromFiles = function (fileList)
 			originalObject : file,
 			originalFileName : file.name,
 			fileName : file.name.toUpperCase (),
-			extension : this.GetFileExtension (file.name)
+			extension : this.GetFileExtension (file.name).toUpperCase ()
 		};
 		this.descriptors.push (descriptor);
 	}
@@ -25,7 +23,6 @@ JSM.ImportFileList.prototype.InitFromFiles = function (fileList)
 
 JSM.ImportFileList.prototype.InitFromURLs = function (urlList)
 {
-	this.originalList = urlList;
 	this.descriptors = [];
 	var i, url, fileName, descriptor;
 	for (i = 0; i < urlList.length; i++) {
@@ -35,16 +32,11 @@ JSM.ImportFileList.prototype.InitFromURLs = function (urlList)
 			originalObject : url,
 			originalFileName : fileName,
 			fileName : fileName.toUpperCase (),
-			extension : this.GetFileExtension (fileName)
+			extension : this.GetFileExtension (fileName).toUpperCase ()
 		};
 		this.descriptors.push (descriptor);
 	}
 	this.isFile = false;
-};
-
-JSM.ImportFileList.prototype.GetOriginalList = function ()
-{
-	return this.originalList;
 };
 
 JSM.ImportFileList.prototype.GetInputList = function ()
@@ -63,7 +55,7 @@ JSM.ImportFileList.prototype.GetInputList = function ()
 		descriptor = this.descriptors[i];
 		inputListElem = {
 			originalObject : descriptor.originalObject,
-			isFile : this.IsFile (),
+			isFile : this.isFile,
 			isArrayBuffer : IsArrayBuffer (descriptor)
 		};
 		result.push (inputListElem);
@@ -80,17 +72,13 @@ JSM.ImportFileList.prototype.GetFileName = function (fullFileName)
 	if (splitted.length === 0) {
 		return '';
 	}
-	return splitted[splitted.length - 1];
+	var fileName = splitted[splitted.length - 1];
+	return decodeURI (fileName);
 };
 
 JSM.ImportFileList.prototype.GetFileDescriptor = function (index)
 {
 	return this.descriptors[index];
-};
-
-JSM.ImportFileList.prototype.IsFile = function ()
-{
-	return this.isFile;
 };
 
 JSM.ImportFileList.prototype.GetMainFileIndex = function ()
@@ -128,13 +116,11 @@ JSM.ImportFileList.prototype.IsSupportedExtension = function (extension)
 
 JSM.ImportFileList.prototype.GetFileExtension = function (fileName)
 {
-	var firstPoint = fileName.lastIndexOf ('.');
-	if (firstPoint == -1) {
+	var lastPoint = fileName.lastIndexOf ('.');
+	if (lastPoint == -1) {
 		return '';
 	}
-	
-	var extension = fileName.substr (firstPoint);
-	extension = extension.toUpperCase ();
+	var extension = fileName.substr (lastPoint);
 	return extension;
 };
 
@@ -186,39 +172,55 @@ JSM.ConvertImportFileListToJsonData = function (importFileList, callbacks)
 		if (mainFile.extension == '.3DS') {
 			JSM.LoadMultipleBuffers (inputList, function (resultBuffers) {
 				var mainFileBuffer = resultBuffers[mainFileIndex];
-				var jsonData = JSM.Convert3dsToJsonData (mainFileBuffer, {
-					onFileRequested : function (fileName) {
-						return FileRequested (importFileList, resultBuffers, fileName, fileNames);
-					}
-				});
-				OnReady (fileNames, jsonData);
+				if (mainFileBuffer === null) {
+					OnError ();
+				} else {
+					var jsonData = JSM.Convert3dsToJsonData (mainFileBuffer, {
+						onFileRequested : function (fileName) {
+							return FileRequested (importFileList, resultBuffers, fileName, fileNames);
+						}
+					});
+					OnReady (fileNames, jsonData);
+				}
 			});
 		} else if (mainFile.extension == '.OBJ') {
 			JSM.LoadMultipleBuffers (inputList, function (resultBuffers) {
 				var mainFileBuffer = resultBuffers[mainFileIndex];
-				var jsonData = JSM.ConvertObjToJsonData (mainFileBuffer, {
-					onFileRequested : function (fileName) {
-						return FileRequested (importFileList, resultBuffers, fileName, fileNames);
-					}
-				});
-				OnReady (fileNames, jsonData);
+				if (mainFileBuffer === null) {
+					OnError ();
+				} else {
+					var jsonData = JSM.ConvertObjToJsonData (mainFileBuffer, {
+						onFileRequested : function (fileName) {
+							return FileRequested (importFileList, resultBuffers, fileName, fileNames);
+						}
+					});
+					OnReady (fileNames, jsonData);
+				}
 			});
 		} else if (mainFile.extension == '.STL') {
 			JSM.LoadMultipleBuffers (inputList, function (resultBuffers) {
 				var mainFileBuffer = resultBuffers[mainFileIndex];
-				if (JSM.IsBinaryStlFile (mainFileBuffer)) {
-					var jsonData = JSM.ConvertStlToJsonData (mainFileBuffer, null);
-					OnReady (fileNames, jsonData);
+				if (mainFileBuffer === null) {
+					OnError ();
 				} else {
-					var i;
-					for (i = 0; i < inputList.length; i++) {
-						inputList[i].isArrayBuffer = false;
-					}
-					JSM.LoadMultipleBuffers (inputList, function (resultBuffers) {
-						var mainFileBuffer = resultBuffers[mainFileIndex];
-						var jsonData = JSM.ConvertStlToJsonData (null, mainFileBuffer);
+					if (JSM.IsBinaryStlFile (mainFileBuffer)) {
+						var jsonData = JSM.ConvertStlToJsonData (mainFileBuffer, null);
 						OnReady (fileNames, jsonData);
-					});
+					} else {
+						var i;
+						for (i = 0; i < inputList.length; i++) {
+							inputList[i].isArrayBuffer = false;
+						}
+						JSM.LoadMultipleBuffers (inputList, function (resultBuffers) {
+							var mainFileBuffer = resultBuffers[mainFileIndex];
+							if (mainFileBuffer === null) {
+								OnError ();
+							} else {
+								var jsonData = JSM.ConvertStlToJsonData (null, mainFileBuffer);
+								OnReady (fileNames, jsonData);
+							}
+						});
+					}
 				}
 			});
 		}

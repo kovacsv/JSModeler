@@ -49,7 +49,7 @@
 		"../src/modeler/converter.js",
 		"../src/modeler/rayutils.js",
 		"../src/import/binaryreader.js",
-		"../src/import/importer.js",
+		"../src/import/importerutils.js",
 		"../src/import/importer3ds.js",
 		"../src/import/importerobj.js",
 		"../src/import/importerstl.js",

@@ -183,7 +183,7 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 			if (lineParts.length < 2) {
 				return;
 			}
-			
+
 			OnMaterialParameter (lineParts[0], lineParts[1]);
 		} else if (lineParts[0] == 'map_Kd') {
 			if (lineParts.length < 2) {
@@ -239,56 +239,6 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 		return null;
 	}
 
-	function FinalizeBodyVertices (triangleModel, globalVertices, globalNormals, globalUVs)
-	{
-		function GetLocalIndex (body, globalArray, globalIndex, globalToLocal, mode)
-		{
-			if (globalIndex === undefined) {
-				return undefined;
-			}
-		
-			var result = globalToLocal[globalIndex];
-			if (result !== undefined) {
-				return result;
-			}
-			if (globalIndex < 0 || globalIndex >= globalArray.length) {
-				return undefined;
-			}
-			
-			var coordinate = globalArray[globalIndex];
-			if (mode === 0) {
-				result = body.AddVertex (coordinate.x, coordinate.y, coordinate.z);
-			} else if (mode === 1) {
-				result = body.AddNormal (coordinate.x, coordinate.y, coordinate.z);
-			} else if (mode === 2) {
-				result = body.AddUV (coordinate.x, coordinate.y);
-			}
-			globalToLocal[globalIndex] = result;
-			return result;
-		}
-	
-		var i, j, body, triangle;
-		var globalToLocalVertices, globalToLocalNormals, globalToLocalUVs;
-		for (i = 0; i < triangleModel.BodyCount (); i++) {
-			body = triangleModel.GetBody (i);
-			globalToLocalVertices = {};
-			globalToLocalNormals = {};
-			globalToLocalUVs = {};
-			for (j = 0; j < body.TriangleCount (); j++) {
-				triangle = body.GetTriangle (j);
-				triangle.v0 = GetLocalIndex (body, globalVertices, triangle.v0, globalToLocalVertices, 0);
-				triangle.v1 = GetLocalIndex (body, globalVertices, triangle.v1, globalToLocalVertices, 0);
-				triangle.v2 = GetLocalIndex (body, globalVertices, triangle.v2, globalToLocalVertices, 0);
-				triangle.n0 = GetLocalIndex (body, globalNormals, triangle.n0, globalToLocalNormals, 1);
-				triangle.n1 = GetLocalIndex (body, globalNormals, triangle.n1, globalToLocalNormals, 1);
-				triangle.n2 = GetLocalIndex (body, globalNormals, triangle.n2, globalToLocalNormals, 1);
-				triangle.u0 = GetLocalIndex (body, globalUVs, triangle.u0, globalToLocalUVs, 2);
-				triangle.u1 = GetLocalIndex (body, globalUVs, triangle.u1, globalToLocalUVs, 2);
-				triangle.u2 = GetLocalIndex (body, globalUVs, triangle.u2, globalToLocalUVs, 2);
-			}
-		}
-	}
-	
 	if (callbacks === undefined || callbacks === null) {
 		callbacks = {};
 	}
@@ -304,6 +254,10 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 	var globalVertices = [];
 	var globalNormals = [];
 	var globalUVs = [];
+	
+	var globalToLocalVertices = {};
+	var globalToLocalNormals = {};
+	var globalToLocalUVs = {};
 	
 	JSM.ReadObjFile (stringBuffer, {
 		onNewMaterial : function (name) {
@@ -334,7 +288,9 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 				if (JSM.IsPositive (value)) {
 					currentMaterial.shininess = (Math.log2 (parseFloat (value)) - 1) / 10.0;
 				}
-			} else if (name == 'Tr' || name == 'd') {
+			} else if (name == 'Tr') {
+				currentMaterial.opacity = 1.0 - parseFloat (value);
+			} else if (name == 'd') {
 				currentMaterial.opacity = parseFloat (value);
 			}			
 		},
@@ -361,6 +317,9 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 		onMesh : function (meshName) {
 			var index = triangleModel.AddBody (new JSM.TriangleBody (meshName));
 			currentBody = triangleModel.GetBody (index);
+			globalToLocalVertices = {};
+			globalToLocalNormals = {};
+			globalToLocalUVs = {};
 		},
 		onVertex : function (x, y, z) {
 			globalVertices.push (new JSM.Coord (x, y, z));
@@ -372,22 +331,60 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 			globalUVs.push (new JSM.Coord2D (x, y));
 		},
 		onFace : function (vertices, normals, uvs) {
-			var i, triangle, triangleIndex;
+			function GetLocalIndex (globalValueArray, globalToLocalIndices, globalIndex, valueAdderFunc)
+			{
+				if (globalIndex < 0 || globalIndex >= globalValueArray.length) {
+					return undefined;
+				}				
+				var result = globalToLocalIndices[globalIndex];
+				if (result === undefined) {
+					var globalValue = globalValueArray[globalIndex];
+					result = valueAdderFunc (globalValue);
+					globalToLocalIndices[globalIndex] = result;
+				}
+				return result;
+			}
+			
+			function GetLocalVertexIndex (triangleBody, globalValueArray, globalToLocalIndices, globalIndex)
+			{
+				return GetLocalIndex (globalValueArray, globalToLocalIndices, globalIndex, function (val) {
+					return triangleBody.AddVertex (val.x, val.y, val.z);
+				});
+			}
+			
+			function GetLocalNormalIndex (triangleBody, globalValueArray, globalToLocalIndices, globalIndex)
+			{
+				return GetLocalIndex (globalValueArray, globalToLocalIndices, globalIndex, function (val) {
+					return triangleBody.AddNormal (val.x, val.y, val.z);
+				});
+			}
+			
+			function GetLocalUVIndex (triangleBody, globalValueArray, globalToLocalIndices, globalIndex)
+			{
+				return GetLocalIndex (globalValueArray, globalToLocalIndices, globalIndex, function (val) {
+					return triangleBody.AddUV (val.x, val.y);
+				});
+			}
+			
+			var i, v0, v1, v2, triangle, triangleIndex;
 			var hasNormals = (normals.length == vertices.length);
 			var hasUVs = (uvs.length == vertices.length);
 			var count = vertices.length;
 			for (i = 0; i < count - 2; i++) {
-				triangleIndex = currentBody.AddTriangle (vertices[0], vertices[(i + 1) % count], vertices[(i + 2) % count]);
+				v0 = GetLocalVertexIndex (currentBody, globalVertices, globalToLocalVertices, vertices[0]);
+				v1 = GetLocalVertexIndex (currentBody, globalVertices, globalToLocalVertices, vertices[(i + 1) % count]);
+				v2 = GetLocalVertexIndex (currentBody, globalVertices, globalToLocalVertices, vertices[(i + 2) % count]);
+				triangleIndex = currentBody.AddTriangle (v0, v1, v2);
 				triangle = currentBody.GetTriangle (triangleIndex);
 				if (hasNormals) {
-					triangle.n0 = normals[0];
-					triangle.n1 = normals[(i + 1) % count];
-					triangle.n2 = normals[(i + 2) % count];
+					triangle.n0 = GetLocalNormalIndex (currentBody, globalNormals, globalToLocalNormals, normals[0]);
+					triangle.n1 = GetLocalNormalIndex (currentBody, globalNormals, globalToLocalNormals, normals[(i + 1) % count]);
+					triangle.n2 = GetLocalNormalIndex (currentBody, globalNormals, globalToLocalNormals, normals[(i + 2) % count]);
 				}
 				if (hasUVs) {
-					triangle.u0 = uvs[0];
-					triangle.u1 = uvs[(i + 1) % count];
-					triangle.u2 = uvs[(i + 2) % count];
+					triangle.u0 = GetLocalUVIndex (currentBody, globalUVs, globalToLocalUVs, uvs[0]);
+					triangle.u1 = GetLocalUVIndex (currentBody, globalUVs, globalToLocalUVs, uvs[(i + 1) % count]);
+					triangle.u2 = GetLocalUVIndex (currentBody, globalUVs, globalToLocalUVs, uvs[(i + 2) % count]);
 				}
 				if (currentMaterialIndex !== null) {
 					triangle.mat = currentMaterialIndex;
@@ -397,7 +394,6 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 		onFileRequested : OnFileRequested
 	});
 
-	FinalizeBodyVertices (triangleModel, globalVertices, globalNormals, globalUVs);
 	triangleModel.Finalize ();
 	
 	var jsonData = JSM.ConvertTriangleModelToJsonData (triangleModel);

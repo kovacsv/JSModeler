@@ -155,7 +155,7 @@ JSM.ConvertJSONDataToRenderBodies = function (jsonData, asyncCallbacks)
 			
 			var material = materials[triangles.material];
 			var renderMaterial = new JSM.RenderMaterial (JSM.RenderMaterialFlags.Triangle, {
-				ambient : material.diffuse || [1.0, 1.0, 1.0],
+				ambient : material.ambient || [1.0, 1.0, 1.0],
 				diffuse : material.diffuse || [1.0, 1.0, 1.0],
 				specular : material.specular || [1.0, 1.0, 1.0],
 				shininess : material.shininess || 0.0,
