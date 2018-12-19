@@ -320,7 +320,7 @@ JSM.ThreeViewer.prototype.Resize = function ()
 
 JSM.ThreeViewer.prototype.FitInWindow = function ()
 {
-	if (this.VisibleMeshCount () == 0) {
+	if (this.VisibleMeshCount () === 0) {
 		return;
 	}
 	
