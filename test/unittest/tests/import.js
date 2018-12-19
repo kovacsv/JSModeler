@@ -431,4 +431,17 @@ importSuite.AddTest ('ConvertStlToJsonDataTest', function (test)
 	test.Assert (jsonData.meshes[0].triangles[0].parameters.length == 5148);
 });
 
+importSuite.AddTest ('ConvertOffToJsonDataTest', function (test)
+{
+	var jsonData = JSM.ConvertOffToJsonData (GetStringBufferFromFile ('../testfiles/cube.off'));
+	test.Assert (jsonData.materials.length == 1);
+	test.Assert (jsonData.materials[0].name == 'Default');
+	test.Assert (jsonData.meshes.length == 1);
+	test.Assert (jsonData.meshes[0].name == 'Default');
+	test.Assert (jsonData.meshes[0].vertices.length == 8 * 3);
+	test.Assert (jsonData.meshes[0].triangles.length == 1);
+	test.Assert (jsonData.meshes[0].triangles[0].material == 0);
+	test.Assert (jsonData.meshes[0].triangles[0].parameters.length == 12 * 3 * 3);
+});
+
 }
