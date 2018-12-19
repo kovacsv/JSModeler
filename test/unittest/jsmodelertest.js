@@ -55,6 +55,7 @@ unitTest.AddSourceFile ('../../src/import/importerutils.js');
 unitTest.AddSourceFile ('../../src/import/importer3ds.js');
 unitTest.AddSourceFile ('../../src/import/importerobj.js');
 unitTest.AddSourceFile ('../../src/import/importerstl.js');
+unitTest.AddSourceFile ('../../src/import/importeroff.js');
 unitTest.AddSourceFile ('../../src/import/importercommon.js');
 unitTest.AddSourceFile ('../../src/renderer/webglutils.js');
 unitTest.AddSourceFile ('../../src/renderer/renderlight.js');
