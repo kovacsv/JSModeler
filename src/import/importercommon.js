@@ -43,7 +43,7 @@ JSM.ImportFileList.prototype.GetInputList = function ()
 {
 	function IsArrayBuffer (descriptor)
 	{
-		if (descriptor.extension == '.OBJ' || descriptor.extension == '.MTL') {
+		if (descriptor.extension == '.OBJ' || descriptor.extension == '.MTL' || descriptor.extension == '.OFF') {
 			return false;
 		}
 		return true;
@@ -108,7 +108,7 @@ JSM.ImportFileList.prototype.GetFileIndexByName = function (fileName)
 
 JSM.ImportFileList.prototype.IsSupportedExtension = function (extension)
 {
-	if (extension == '.3DS' || extension == '.OBJ' || extension == '.STL') {
+	if (extension == '.3DS' || extension == '.OBJ' || extension == '.STL' || extension == '.OFF') {
 		return true;
 	}
 	return false;
@@ -221,6 +221,16 @@ JSM.ConvertImportFileListToJsonData = function (importFileList, callbacks)
 							}
 						});
 					}
+				}
+			});
+		} else if (mainFile.extension == '.OFF') {
+			JSM.LoadMultipleBuffers (inputList, function (resultBuffers) {
+				var mainFileBuffer = resultBuffers[mainFileIndex];
+				if (mainFileBuffer === null) {
+					OnError ();
+				} else {
+					var jsonData = JSM.ConvertOffToJsonData (mainFileBuffer);
+					OnReady (fileNames, jsonData);
 				}
 			});
 		}
