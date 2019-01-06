@@ -191,6 +191,20 @@ JSM.ThreeViewer.prototype.MeshCount = function ()
 	return count;
 };
 
+JSM.ThreeViewer.prototype.VisibleMeshCount = function ()
+{
+	var count = 0;
+	
+	var myThis = this;
+	this.scene.traverse (function (current) {
+		if (myThis.IsVisibleObject (current)) {
+			count = count + 1;
+		}
+	});
+	
+	return count;
+};
+
 JSM.ThreeViewer.prototype.VertexCount = function ()
 {
 	var count = 0;
@@ -235,6 +249,18 @@ JSM.ThreeViewer.prototype.GetMesh = function (index)
 	}
 	
 	return null;
+};
+
+JSM.ThreeViewer.prototype.ShowMesh = function (mesh)
+{
+	mesh.visible = true;
+	this.DrawIfNeeded ();
+};
+
+JSM.ThreeViewer.prototype.HideMesh = function (mesh)
+{
+	mesh.visible = false;
+	this.DrawIfNeeded ();
 };
 
 JSM.ThreeViewer.prototype.RemoveMesh = function (mesh)
@@ -294,11 +320,23 @@ JSM.ThreeViewer.prototype.Resize = function ()
 
 JSM.ThreeViewer.prototype.FitInWindow = function ()
 {
-	if (this.MeshCount () === 0) {
+	if (this.VisibleMeshCount () === 0) {
 		return;
 	}
 	
 	var sphere = this.GetBoundingSphere ();
+	this.navigation.FitInWindow (sphere.GetCenter (), sphere.GetRadius ());
+	this.DrawIfNeeded ();
+};
+
+JSM.ThreeViewer.prototype.FitMeshesInWindow = function (meshes)
+{
+	if (meshes.length === 0) {
+		return;
+	}
+	var sphere = this.GetFilteredBoundingSphere (function (obj) {
+		return meshes.indexOf (obj) != -1;
+	});
 	this.navigation.FitInWindow (sphere.GetCenter (), sphere.GetRadius ());
 	this.DrawIfNeeded ();
 };
@@ -319,19 +357,42 @@ JSM.ThreeViewer.prototype.AdjustClippingPlanes = function (radiusLimit)
 
 JSM.ThreeViewer.prototype.GetCenter = function ()
 {
-	var boundingBox = this.GetBoundingBox ();
-	return boundingBox.GetCenter ();
+	var myThis = this;
+	return this.GetFilteredCenter (function (obj) {
+		return myThis.IsVisibleObject (obj);
+	});
 };
 
 JSM.ThreeViewer.prototype.GetBoundingBox = function ()
+{
+	var myThis = this;
+	return this.GetFilteredBoundingBox (function (obj) {
+		return myThis.IsVisibleObject (obj);
+	});
+};
+
+JSM.ThreeViewer.prototype.GetBoundingSphere = function ()
+{
+	var myThis = this;
+	return this.GetFilteredBoundingSphere (function (obj) {
+		return myThis.IsVisibleObject (obj);
+	});
+};
+
+JSM.ThreeViewer.prototype.GetFilteredCenter = function (needToProcess)
+{
+	var boundingBox = this.GetFilteredBoundingBox (needToProcess);
+	return boundingBox.GetCenter ();
+};
+
+JSM.ThreeViewer.prototype.GetFilteredBoundingBox = function (needToProcess)
 {
 	var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
 	var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
 	
 	var geometry, coord;
-	var myThis = this;
 	this.scene.traverse (function (current) {
-		if (myThis.IsRelevantObject (current)) {
+		if (needToProcess (current)) {
 			geometry = current.geometry;
 			var j;
 			for (j = 0; j < geometry.vertices.length; j++) {
@@ -350,15 +411,14 @@ JSM.ThreeViewer.prototype.GetBoundingBox = function ()
 	return new JSM.Box (min, max);
 };
 
-JSM.ThreeViewer.prototype.GetBoundingSphere = function ()
+JSM.ThreeViewer.prototype.GetFilteredBoundingSphere = function (needToProcess)
 {
-	var center = this.GetCenter ();
+	var center = this.GetFilteredCenter (needToProcess);
 	var radius = 0.0;
 
 	var geometry, coord, distance;
-	var myThis = this;
 	this.scene.traverse (function (current) {
-		if (myThis.IsRelevantObject (current)) {
+		if (needToProcess (current)) {
 			geometry = current.geometry;
 			var j;
 			for (j = 0; j < geometry.vertices.length; j++) {
@@ -464,4 +524,9 @@ JSM.ThreeViewer.prototype.StartDrawLoop = function ()
 JSM.ThreeViewer.prototype.IsRelevantObject = function (threeObj)
 {
 	return (threeObj instanceof THREE.Mesh || threeObj instanceof THREE.LineSegments || threeObj instanceof THREE.Points);
+};
+
+JSM.ThreeViewer.prototype.IsVisibleObject = function (threeObj)
+{
+	return this.IsRelevantObject (threeObj) && threeObj.visible;
 };

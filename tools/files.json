@@ -53,6 +53,7 @@
 		"../src/import/importer3ds.js",
 		"../src/import/importerobj.js",
 		"../src/import/importerstl.js",
+		"../src/import/importeroff.js",
 		"../src/import/importercommon.js",
 		"../src/renderer/webglutils.js",
 		"../src/renderer/renderlight.js",

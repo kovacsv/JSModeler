@@ -1,5 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-	 "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
 <html>
 
@@ -94,189 +93,73 @@
 	<title>Example</title>
 
 	<script type="text/javascript">
-		TerrainGenerator = function (xCount, yCount, parameters)
-		{
-			this.xCount = xCount;
-			this.yCount = yCount;
-			this.parameters = parameters;
-			this.model = null;
-			this.terrain = null;
-		};
-
-		TerrainGenerator.prototype.Generate = function ()
-		{
-			this.model = new JSM.Model ();
-			this.terrain = new JSM.Body ();
-			this.model.AddMaterial (new JSM.Material ({ambient : 0x00cc00, diffuse : 0x00cc00, singleSided : true}));
-			
-			this.GenerateTerrainPoints ();
-			this.GenerateTerrainPolygons ();
-			this.RandomizeGridHeight ();
-			this.GrowMountain ();
-			
-			this.terrain.SetPolygonsMaterialIndex (0);
-			this.model.AddBody (this.terrain);
-			return this.model;
-		};
-
-		TerrainGenerator.prototype.GenerateTerrainPoints = function ()
-		{
-			function AddVertex (body, x, y, z)
-			{
-				var index = JSM.AddVertexToBody (body, x, y, z);
-				//JSM.AddPointToBody (body, index);
-				return index;
-			}
-		
-			var myThis = this;
-			this.EnumerateGridPoints (this.xCount, this.yCount, function (xIndex, yIndex) {
-				AddVertex (myThis.terrain, xIndex * myThis.parameters.gridSize, yIndex * myThis.parameters.gridSize, 0);
-			});
-			
-			AddVertex (this.terrain, 0, 0, -this.parameters.terrainHeight);
-			AddVertex (this.terrain, (this.xCount - 1) * this.parameters.gridSize, 0, -this.parameters.terrainHeight);
-			AddVertex (this.terrain, (this.xCount - 1) * this.parameters.gridSize, (this.yCount - 1) * this.parameters.gridSize, -this.parameters.terrainHeight);
-			AddVertex (this.terrain, 0, (this.yCount - 1) * this.parameters.gridSize, -this.parameters.terrainHeight);
-		}
-		
-		TerrainGenerator.prototype.GenerateTerrainPolygons = function ()
-		{
-			function AddRectangleToBody (body, v1, v2, v3, v4)
-			{
-				var reverse = JSM.RandomBoolean ();
-				if (reverse) {
-					JSM.AddPolygonToBody (body, [v1, v2, v3]);
-					JSM.AddPolygonToBody (body, [v1, v3, v4]);
-				} else {
-					JSM.AddPolygonToBody (body, [v1, v2, v4]);
-					JSM.AddPolygonToBody (body, [v2, v3, v4]);
-				}
-			}
-		
-			var myThis = this;
-			this.EnumerateGridPoints (this.xCount - 1, this.yCount - 1, function (xIndex, yIndex) {
-				var curr = yIndex * myThis.xCount + xIndex;
-				var next = curr + 1;
-				var top = curr + myThis.xCount;
-				var ntop = top + 1;
-				AddRectangleToBody (myThis.terrain, curr, next, ntop, top);
-			});
-			
-			var i;
-
-			var firstBottomVertex = this.terrain.VertexCount () - 4;
-			
-			var sidePolygon1 = [firstBottomVertex + 2, firstBottomVertex + 3];
-			for (i = 0; i < this.xCount; i++) {
-				sidePolygon1.push ((this.yCount - 1) * this.xCount + i);
-			}
-
-			var sidePolygon2 = [firstBottomVertex + 3, firstBottomVertex];
-			for (i = 0; i < this.yCount; i++) {
-				sidePolygon2.push (i * this.xCount);
-			}
-
-			var sidePolygon3 = [firstBottomVertex, firstBottomVertex + 1];
-			for (i = this.xCount - 1; i >= 0 ; i--) {
-				sidePolygon3.push (i);
-			}
-			
-			var sidePolygon4 = [firstBottomVertex + 1, firstBottomVertex + 2];
-			for (i = this.yCount - 1; i >= 0 ; i--) {
-				sidePolygon4.push ((i + 1) * this.xCount - 1);
-			}
-
-			JSM.AddPolygonToBody (this.terrain, sidePolygon1);
-			JSM.AddPolygonToBody (this.terrain, sidePolygon2);
-			JSM.AddPolygonToBody (this.terrain, sidePolygon3);
-			JSM.AddPolygonToBody (this.terrain, sidePolygon4);
-			JSM.AddPolygonToBody (this.terrain, [firstBottomVertex + 3, firstBottomVertex + 2, firstBottomVertex + 1, firstBottomVertex]);
-		}
+		var viewer = null;
+		var body1 = null;
+		var body2 = null;
 	
-		TerrainGenerator.prototype.RandomizeGridHeight = function ()
-		{
-			var myThis = this;
-			this.EnumerateGridPoints (this.xCount, this.yCount, function (xIndex, yIndex) {
-				var height = JSM.RandomNumber (0.0, myThis.parameters.baseHeightDifference);
-				myThis.GrowTerrainVertex (xIndex, yIndex, height);
-			});
-		}
-		
-		TerrainGenerator.prototype.GrowMountain = function ()
-		{
-			function GetVertexHeight (mountainHeight, mountainRadius, peakDistance)
-			{
-				var heightUnit = mountainHeight / mountainRadius;
-				var linearHeight = (mountainRadius - peakDistance + 1) * heightUnit;
-				var heightRandomRatio = heightUnit / 2.0;
-				return JSM.RandomNumber (linearHeight - heightRandomRatio, linearHeight + heightRandomRatio);
-			}
-		
-			var mountainHeight = 0.6;
-			var mountainRadius = 4;
-			
-			var peakX = JSM.RandomInt (0, this.xCount - 1);
-			var peakY = JSM.RandomInt (0, this.yCount - 1);
-			
-			var i, j, currX, currY, currIndex, currVertex, peakDistance;
-			for (i = -mountainRadius; i <= mountainRadius; i++) {
-				for (j = -mountainRadius; j <= mountainRadius; j++) {
-					currX = peakX + i;
-					currY = peakY + j;
-					peakDistance = Math.max (Math.abs (i), Math.abs (j));
-					this.GrowTerrainVertex (currX, currY, GetVertexHeight (mountainHeight, mountainRadius, peakDistance));
-				}
-			}
-		}
-
-		TerrainGenerator.prototype.GrowTerrainVertex = function (xIndex, yIndex, height)
-		{
-			if (xIndex >= 0 && xIndex < this.xCount && yIndex >= 0 && yIndex < this.yCount) {
-				var index = yIndex * this.xCount + xIndex;
-				var vertex = this.terrain.GetVertex (index);
-				vertex.position.z += height;
-			}
-		};		
-		
-		TerrainGenerator.prototype.EnumerateGridPoints = function (xCount, yCount, callback)
-		{
-			var xIndex, yIndex;
-			for (yIndex = 0; yIndex < yCount; yIndex++) {
-				for (xIndex = 0; xIndex < xCount; xIndex++) {
-					callback (xIndex, yIndex);
-				}
-			}
-		};
-
 		function Load ()
 		{
-			var camera = new JSM.Camera (
-				new JSM.Coord (1.0, 3.0, 2.0),
-				new JSM.Coord (0.0, 0.0, 0.0),
-				new JSM.Vector (0.0, 0.0, 1.0)
-			);
+			var viewerSettings = {
+				cameraEyePosition : [-2.0, -1.5, 1.0],
+				cameraCenterPosition : [0.0, 0.0, 0.0],
+				cameraUpVector : [0, 0, 1]
+			};
+
+			viewer = new JSM.ThreeViewer ();
+			viewer.Start (document.getElementById ('example'), viewerSettings);
 			
-			viewer = new JSM.Viewer ();
-			if (!viewer.Init (document.getElementById ('example'), camera)) {
-				alert ('error');
-			}
+			var model = new JSM.Model ()
+			model.AddMaterial (new JSM.Material ({ambient : 0x008ab8, diffuse : 0x008ab8}));
+			model.AddMaterial (new JSM.Material ({ambient : 0x279b61, diffuse : 0x279b61}));			
 			
-			var terrainGenerator = new TerrainGenerator (30, 20, {
-				gridSize : 0.1,
-				terrainHeight : 0.2,
-				baseHeightDifference : 0.1
-			});
-			var terrain = terrainGenerator.Generate ();
-			var renderTerrain = JSM.ConvertModelToRenderBodies (terrain);
-			viewer.AddBodies (renderTerrain);
-			
-			viewer.FitInWindow ();
+			body1 = JSM.GenerateCuboid (1, 1, 1);
+			body1.SetPolygonsMaterialIndex (0);
+			body1.Transform (new JSM.TranslationTransformation (new JSM.Coord (-1.0, 0.0, 0.0)));
+			model.AddBody (body1);
+
+			body2 = JSM.GenerateCuboid (1, 1, 1);
+			body2.SetPolygonsMaterialIndex (1);
+			body2.Transform (new JSM.TranslationTransformation (new JSM.Coord (1.0, 0.0, 0.0)));
+			model.AddBody (body2);
+
+			viewer.AddMeshes (JSM.ConvertModelToThreeMeshes (model));
 			viewer.Draw ();
 		}
 	
-	    window.onload = function ()
+		function FitInWindow (index)
 		{
-			Load ();
+			if (index === 0) {
+				viewer.FitInWindow ();
+			}
+			viewer.Draw ();
+		}
+	
+	
+		function FitInWindow (index)
+		{
+			if (index === -1) {
+				viewer.FitInWindow ();
+			} else if (index === 0 || index === 1) {
+				viewer.FitMeshesInWindow ([viewer.GetMesh (index)]);
+			}
+			viewer.Draw ();
+		}
+	
+		function ShowMesh (index)
+		{
+			viewer.ShowMesh (viewer.GetMesh (index));
+			viewer.Draw ();
+		}
+	
+		function HideMesh (index)
+		{
+			viewer.HideMesh (viewer.GetMesh (index));
+			viewer.Draw ();
+		}
+		
+		window.onload = function ()
+		{
+			Load ();	
 		}
 	</script>
 
@@ -284,7 +167,13 @@
 
 <body>
 	<canvas id="example" width="800" height="500"></canvas>
-	<div id="fps"></div>
+	<div id="buttons">
+		<button onclick="javascript:FitInWindow (-1)">fit visible in window</button>
+		<button onclick="javascript:FitInWindow (0)">fit blue box in window</button>
+		<button onclick="javascript:FitInWindow (1)">fit green box in window</button>
+		<button onclick="javascript:ShowMesh (0)">show blue box</button>
+		<button onclick="javascript:HideMesh (0)">hide blue box</button>
+	</div>
 </body>
 
 </html>
