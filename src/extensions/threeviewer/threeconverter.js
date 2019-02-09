@@ -265,7 +265,8 @@ JSM.ConvertJSONDataToThreeMeshes = function (jsonData, textureLoadedCallback, as
 			}
 
 			var mesh = new THREE.Mesh (geometry, material);
-			mesh.originalJsonIndex = meshIndex;
+			mesh.originalJsonMaterialIndex = materialIndex;
+			mesh.originalJsonMeshIndex = meshIndex;
 			resultMeshes.push (mesh);
 		}
 
