@@ -27,8 +27,7 @@ JSM.ImportFileList.prototype.InitFromURLs = function (urlList)
 	var i, url, fileName, descriptor;
 	for (i = 0; i < urlList.length; i++) {
 		url = urlList[i];
-		var urlWithoutParams = url.split ('?')[0];
-		fileName = this.GetFileName (urlWithoutParams);
+		fileName = this.GetFileName (url);
 		descriptor = {
 			originalObject : url,
 			originalFileName : fileName,
@@ -74,7 +73,8 @@ JSM.ImportFileList.prototype.GetFileName = function (fullFileName)
 		return '';
 	}
 	var fileName = splitted[splitted.length - 1];
-	return decodeURI (fileName);
+	var fileNameWithoutParams = fileName.split ('?')[0];
+	return decodeURI (fileNameWithoutParams);
 };
 
 JSM.ImportFileList.prototype.GetFileDescriptor = function (index)
