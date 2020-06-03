@@ -49,6 +49,13 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 		}
 	}
 
+	function OnColorVertex (x, y, z, r, g, b)
+	{
+		if (typeof(callbacks.onColorVertex) === 'function') {
+			callbacks.onColorVertex (x, y, z, r, g, b);
+		}
+	}
+
 	function OnNormal (x, y, z)
 	{
 		if (callbacks.onNormal !== undefined && callbacks.onNormal !== null) {
@@ -127,7 +134,11 @@ JSM.ReadObjFile = function (stringBuffer, callbacks)
 				return;
 			}
 			objectCounter.vertexCount += 1;
-			OnVertex (parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3]));
+			if (lineParts.length < 7) {
+				OnVertex (parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3]));
+			} else {
+				OnColorVertex (parseFloat (lineParts[1]), parseFloat (lineParts[2]), parseFloat (lineParts[3]), parseFloat (lineParts[4]), parseFloat (lineParts[5]), parseFloat (lineParts[6]));
+			}
 		} else if (lineParts[0] == 'vn') {
 			if (lineParts.length < 4) {
 				return;
@@ -250,8 +261,9 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 	var materialNameToIndex = {};
 	var currentMaterial = null;
 	var currentMaterialIndex = null;
-	
+
 	var globalVertices = [];
+	var globalVertexMaterialIndices = [];
 	var globalNormals = [];
 	var globalUVs = [];
 	
@@ -323,6 +335,24 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 		},
 		onVertex : function (x, y, z) {
 			globalVertices.push (new JSM.Coord (x, y, z));
+			globalVertexMaterialIndices.push (undefined);
+		},
+		onColorVertex : function (x, y, z, r, g, b) {
+			var colorMaterialName = `Color #${Math.round (255 * r).toString (16)}${Math.round (255 * g).toString (16)}${Math.round (255 * b).toString (16)}`;
+			var materialIndex = materialNameToIndex[colorMaterialName];
+			if (materialIndex === undefined) {
+				materialIndex = triangleModel.AddMaterial ({
+					name : colorMaterialName
+				});
+				var colorMaterial = triangleModel.GetMaterial (materialIndex);
+				colorMaterial.ambient = [r / 4, g / 4, b / 4];
+				colorMaterial.diffuse = [r, g, b];
+				colorMaterial.specular = [ 1, 1, 1 ];
+				colorMaterial.shininess = 0.01;
+				materialNameToIndex[colorMaterialName] = materialIndex;
+			}
+			globalVertices.push (new JSM.Coord (x, y, z));
+			globalVertexMaterialIndices.push (materialIndex);
 		},
 		onNormal : function (x, y, z) {
 			globalNormals.push (new JSM.Coord (x, y, z));
@@ -366,14 +396,17 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 				});
 			}
 			
-			var i, v0, v1, v2, triangle, triangleIndex;
+			var i, gv0, gv1, gv2, v0, v1, v2, triangle, triangleIndex;
 			var hasNormals = (normals.length == vertices.length);
 			var hasUVs = (uvs.length == vertices.length);
 			var count = vertices.length;
+			gv0 = vertices[0];
+			v0 = GetLocalVertexIndex (currentBody, globalVertices, globalToLocalVertices, gv0);
 			for (i = 0; i < count - 2; i++) {
-				v0 = GetLocalVertexIndex (currentBody, globalVertices, globalToLocalVertices, vertices[0]);
-				v1 = GetLocalVertexIndex (currentBody, globalVertices, globalToLocalVertices, vertices[(i + 1) % count]);
-				v2 = GetLocalVertexIndex (currentBody, globalVertices, globalToLocalVertices, vertices[(i + 2) % count]);
+				gv1 = vertices[(i + 1) % count];
+				gv2 = vertices[(i + 2) % count];
+				v1 = GetLocalVertexIndex (currentBody, globalVertices, globalToLocalVertices, gv1);
+				v2 = GetLocalVertexIndex (currentBody, globalVertices, globalToLocalVertices, gv2);
 				triangleIndex = currentBody.AddTriangle (v0, v1, v2);
 				triangle = currentBody.GetTriangle (triangleIndex);
 				if (hasNormals) {
@@ -388,6 +421,11 @@ JSM.ConvertObjToJsonData = function (stringBuffer, callbacks)
 				}
 				if (currentMaterialIndex !== null) {
 					triangle.mat = currentMaterialIndex;
+				} else {
+					var materialIndex = globalVertexMaterialIndices[gv0];
+					if (materialIndex !== undefined && materialIndex === globalVertexMaterialIndices[gv1] && materialIndex === globalVertexMaterialIndices[gv2]) {
+						triangle.mat = materialIndex;
+					}
 				}
 			}
 		},
