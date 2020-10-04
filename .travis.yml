@@ -1,0 +1,8 @@
+before_install:
+  - npm install -g sutest
+  - npm install -g google-closure-compiler
+
+script:
+  - cd tools
+  - python build.py
+
