@@ -44,7 +44,7 @@ def LoadJsonFile (filePath):
 	return jsonContent
 		
 def CompileFile (inputFileName, externFileName, outputFileName):
-	result = os.system ('java -jar compiler/compiler.jar --language_in=ECMASCRIPT5_STRICT --warning_level=VERBOSE --jscomp_off=globalThis --jscomp_off=checkTypes --externs ' + externFileName + ' --js ' + inputFileName + ' --js_output_file ' + outputFileName)
+	result = os.system ('google-closure-compiler --language_in=ECMASCRIPT5_STRICT --warning_level=VERBOSE --jscomp_off=globalThis --jscomp_off=checkTypes --externs ' + externFileName + ' --js ' + inputFileName + ' --js_output_file ' + outputFileName)
 	if result != 0:
 		return False
 	return True
