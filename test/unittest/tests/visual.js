@@ -68,8 +68,10 @@ function DrawAndCheck (body, drawMode, referenceFile)
 		}
 	}
 	if (!succeeded) {
-		var differenceDir = path.join (__dirname, '../differences/')
-		fs.mkdir (differenceDir);
+		var differenceDir = path.join (__dirname, '../differences/');
+		if (!fs.existsSync (differenceDir)) {
+			fs.mkdirSync (differenceDir);
+		}
 		fs.writeFileSync (path.join (differenceDir, referenceFile), drawer.GetSvgContent ());
 	}
 	return succeeded;

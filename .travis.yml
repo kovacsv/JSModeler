@@ -3,6 +3,10 @@ before_install:
   - npm install -g google-closure-compiler
 
 script:
+  - cd test
+  - cd unittest
+  - sutest jsmodelertest.js
+  - cd ..
+  - cd ..
   - cd tools
   - python build.py
-
