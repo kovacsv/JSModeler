@@ -1,3 +1,5 @@
+os: windows
+
 before_install:
   - npm install -g sutest
   - npm install -g google-closure-compiler
