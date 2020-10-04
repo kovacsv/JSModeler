@@ -1,4 +1,3 @@
-os: windows
 language: node_js
 
 before_install:
